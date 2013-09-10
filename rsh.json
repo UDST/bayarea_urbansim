@@ -1,0 +1,43 @@
+{
+  "table": "dset.fetch('homesales')",
+  "model": "hedonicmodel",
+  "estimate_filters": [
+    "_tbl_.unit_sqft < 10000",
+    "_tbl_.Sale_price_flt > 30"
+  ],
+  "table_sim": "dset.building_filter(residential=1)",
+  "merge": {
+    "table":"dset.fetch('nodes')",
+    "left_on":"_node_id",
+    "right_index":true
+  },
+  "dep_var": "Sale_price_flt",
+  "dep_var_transform": "np.log",
+  "var_lib_file": "var_lib.json",
+  "ind_vars": [
+    "historic",
+    "new",
+    "accessibility",
+    "reliability",
+    "average_income",
+    "ln_unit_sqft",
+    "ln_lot_size"
+  ],
+  "ind_vars_transform": [
+    "np.log1p",
+    "np.log1p",
+    "np.log1p",
+    "np.log1p",
+    "np.log1p",
+    "None",
+    "None"
+  ],
+  "add_constant": true,
+  "output_names": [
+    "coeff-reshedonic-sales.csv",
+    "RESIDENTIAL HEDONIC MODEL (SALES)",
+    "residential_sales_price",
+    "residential_sales_price"
+  ],
+  "output_transform": "np.exp"
+}

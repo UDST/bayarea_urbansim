@@ -1,0 +1,17 @@
+{
+    "ln_stories": "_tbl_.stories.apply(np.log1p)",
+    "historic": "_tbl_.year_built < 1940",
+    "new": "_tbl_.year_built > 2005",
+    "san_fran": "(dset.parcels.county_id[_tbl_.parcel_id] == 38).values",
+    "accessibility": "_tbl_.nets_all_regional1_30.apply(np.log1p)",
+    "reliability": "_tbl_.nets_all_regional2_30.apply(np.log1p)",
+    "average_income": "_tbl_.demo_averageincome_average_local.apply(np.log)",
+    "ln_lot_size": "_tbl_.unit_lot_size.apply(np.log1p)",
+    "ln_unit_sqft": "_tbl_.unit_sqft.apply(np.log1p)",
+    "ln_price": "_tbl_.sales_price.apply(np.log1p)",
+    "ln_rent": "_tbl_.rent.apply(np.log1p)",
+    "ln_units": "_tbl_.residential_units.apply(np.log1p)",
+    "ln_renters": "_tbl_.hoodrenters.apply(np.log1p)",
+    "sales_price x income": "(_tbl_.sales_price*_tbl_.HHINCOME).apply(np.log)",
+    "income x income": "(_tbl_.demo_averageincome_average_local*_tbl_.HHINCOME).apply(np.log)"
+}

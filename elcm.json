@@ -1,0 +1,40 @@
+{
+  "table": "dset.fetch('nets')",
+  "model": "locationchoicemodel",
+  "modeldependencies": "nrh.json",
+  "table_sim": "dset.fetch('nets')[dset.fetch('nets').lastmove>2007]",
+  "alternatives":"dset.fetch('nodes').join(variables.compute_nonres_building_proportions(dset,year))",
+  "sample_size": 100,
+  "dep_var": "_node_id",
+  "segment": ["naics11cat"],
+  "ind_vars": [
+    "totsum",
+    "weightedrent",
+    "retpct",
+    "indpct",
+    "nets_all_regional1_30",
+    "nets_all_regional2_30"
+  ],
+  "ind_var_names": [
+    "total sqft",
+    "rent",
+    "retail pct",
+    "industrial pct",
+    "accessibility",
+    "reliability"
+  ],
+  "ind_vars_transform": [
+    "np.log1p",
+    "np.log1p",
+    "None",
+    "None",
+    "np.log1p",
+    "np.log1p"
+  ],
+  "output_names": [
+    "coeff-nonreslocation-rent-%s.csv",
+    "NON-RESIDENTIAL LOCATION CHOICE MODELS BY NAICS SECTOR (%s)",
+    "nonreslocation_%s",
+    "firms_building_ids"
+  ]
+}

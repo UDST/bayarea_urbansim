@@ -1,0 +1,27 @@
+{
+  "table": "dset.fetch('costar')",
+  "model": "hedonicmodel",
+  "table_sim": "dset.building_filter(residential=0)",
+  "merge": {
+    "table":"dset.fetch('nodes')",
+    "left_on":"_node_id",
+    "right_index":true
+  },
+  "segment": ["general_type"],
+  "dep_var": "averageweightedrent",
+  "dep_var_transform": "np.log",
+  "var_lib_file": "var_lib.json",
+  "ind_vars": [
+    "accessibility",
+    "reliability",
+    "ln_stories"
+  ],
+  "add_constant": true,
+  "output_names": [
+    "coeff-nonreshedonic-%s.csv",
+    "NON-RESIDENTIAL HEDONIC MODEL (%s)",
+    "nonresidential_rent_%s",
+    "nonresidential_rent"
+  ],
+  "output_transform": "np.exp"
+}

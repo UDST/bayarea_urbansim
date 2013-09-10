@@ -1,0 +1,27 @@
+{
+  "table": "dset.fetch_batshh(tenure='sales')",
+  "model": "locationchoicemodel",
+  "modeldependencies": "rsh.json",
+  "table_sim": "dset.fetch_households(tenure='sales')",
+  "alternatives":"dset.fetch('nodes').join(variables.compute_res_building_averages(dset,year,sales=1,rent=0))",
+  "sample_size": 100,
+  "dep_var": "_node_id",
+  "var_lib_file": "var_lib.json",
+  "segment": ["income_quartile"],
+  "ind_vars": [
+    "ln_price",
+    "sales_price x income",
+    "accessibility",
+    "reliability",
+    "average_income", 
+    "income x income",
+    "ln_units"
+  ],
+  "output_names": [
+    "coeff-reslocation-sales-%s.csv",
+    "RESIDENTIAL LOCATION CHOICE MODELS (SALES-%s)",
+    "res_sales_location_%s",
+    "sales_household_building_ids"
+  ],
+  "web_service": false
+}

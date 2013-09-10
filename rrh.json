@@ -1,0 +1,27 @@
+{
+  "table": "dset.fetch('apartments')",
+  "model": "hedonicmodel",
+  "table_sim": "dset.building_filter(residential=1)",
+  "merge": {
+    "table":"dset.fetch('nodes')",
+    "left_on":"_node_id",
+    "right_index":true
+  },
+  "dep_var": "rent",
+  "dep_var_transform": "np.log",
+  "var_lib_file": "var_lib.json",
+  "ind_vars": [
+    "accessibility",
+    "reliability",
+    "average_income",
+    "ln_unit_sqft"
+  ],
+  "add_constant": true,
+  "output_names": [
+    "coeff-reshedonic-rent.csv",
+    "RESIDENTIAL HEDONIC MODEL (RENT)",
+    "residential_rent",
+    "residential_rent"
+  ],
+  "output_transform": "np.exp"
+}
