@@ -13,5 +13,7 @@
     "ln_units": "_tbl_.residential_units.apply(np.log1p)",
     "ln_renters": "_tbl_.hoodrenters.apply(np.log1p)",
     "sales_price x income": "(_tbl_.sales_price*_tbl_.HHINCOME).apply(np.log)",
-    "income x income": "(_tbl_.demo_averageincome_average_local*_tbl_.HHINCOME).apply(np.log)"
+    "income x income": "(_tbl_.demo_averageincome_average_local*_tbl_.HHINCOME).apply(np.log)",
+    "total sqft": "_tbl_.totsum.apply(np.log1p)",
+    "ln_weighted_rent": "_tbl_.weightedrent.apply(np.log1p)"
 }

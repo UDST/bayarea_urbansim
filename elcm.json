@@ -7,29 +7,14 @@
   "sample_size": 100,
   "dep_var": "_node_id",
   "segment": ["naics11cat"],
+  "var_lib_file": "var_lib.json",
   "ind_vars": [
-    "totsum",
-    "weightedrent",
+    "total sqft",
+    "ln_weighted_rent",
     "retpct",
     "indpct",
-    "nets_all_regional1_30",
-    "nets_all_regional2_30"
-  ],
-  "ind_var_names": [
-    "total sqft",
-    "rent",
-    "retail pct",
-    "industrial pct",
     "accessibility",
     "reliability"
-  ],
-  "ind_vars_transform": [
-    "np.log1p",
-    "np.log1p",
-    "None",
-    "None",
-    "np.log1p",
-    "np.log1p"
   ],
   "output_names": [
     "coeff-nonreslocation-rent-%s.csv",
