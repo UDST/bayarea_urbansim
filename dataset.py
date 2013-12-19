@@ -6,6 +6,8 @@ import warnings
 
 warnings.filterwarnings('ignore',category=pd.io.pytables.PerformanceWarning)
 
+USECHTS = 1
+
 # this is the central location to do all the little data format issues that will be needed by all models
 
 class BayAreaDataset(dataset.Dataset):
@@ -135,15 +137,27 @@ class BayAreaDataset(dataset.Dataset):
 
   def fetch_batshh(self,tenure=None):
 
-    batshh = self.store['batshh']
+    if USECHTS:
+      batshh = pd.read_csv(os.path.join(misc.data_dir(),'bats2013MTC_household.csv')) 
 
-    batshh = batshh[batshh['HHINCOME'] < 16] # remove bogus income records
-    batshh['income_quartile'] = pd.qcut(batshh['HHINCOME'],4).labels
+      batshh = batshh[batshh['INCOM'] < 90] # remove bogus income records
+      batshh['income_quartile'] = pd.qcut(batshh['INCOM'],4).labels
+      batshh['HHINCOME'] = batshh['INCOM']
   
-    if tenure == "rent": batshh = batshh[batshh['TENURE']==1]
-    elif tenure == "sales": batshh = batshh[batshh['TENURE']<>1]
+      if tenure == "sales": batshh = batshh[batshh['OWN']==1]
+      elif tenure == "rent": batshh = batshh[batshh['OWN']==2]
     
-    return batshh
+      return batshh
+    else: 
+      batshh = self.store['batshh']
+
+      batshh = batshh[batshh['HHINCOME'] < 16] # remove bogus income records
+      batshh['income_quartile'] = pd.qcut(batshh['HHINCOME'],4).labels
+  
+      if tenure == "rent": batshh = batshh[batshh['TENURE']==1]
+      elif tenure == "sales": batshh = batshh[batshh['TENURE']<>1]
+    
+      return batshh
 
   def fetch_zoning_for_parcels(self):
 
