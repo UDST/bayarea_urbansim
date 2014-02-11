@@ -23,15 +23,6 @@
     "ln_unit_sqft",
     "ln_lot_size"
   ],
-  "ind_vars_transform": [
-    "np.log1p",
-    "np.log1p",
-    "np.log1p",
-    "np.log1p",
-    "np.log1p",
-    "None",
-    "None"
-  ],
   "add_constant": true,
   "output_names": [
     "coeff-reshedonic-sales.csv",

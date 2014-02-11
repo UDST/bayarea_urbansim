@@ -76,6 +76,8 @@ def compute_res_building_averages(dataset,year,rent=0,sales=0):
   if sales: buildings['sales_price'] = dataset.load_attr('residential_sales_price',year)
   else: buildings['sales_price'] = 0
 
+  #return buildings
+
   nodeaverages = buildings[['_node_id','unit_sqft','unit_lot_size','rent','sales_price']] \
                                      .groupby('_node_id').mean()
   nodesums = buildings[['_node_id','residential_units']].groupby('_node_id').sum()

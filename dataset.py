@@ -3,10 +3,11 @@ import time, os
 from synthicity.utils import misc
 from synthicity.urbansim import dataset, networks
 import warnings
+import variables
 
 warnings.filterwarnings('ignore',category=pd.io.pytables.PerformanceWarning)
 
-USECHTS = 1
+USECHTS = 0
 
 # this is the central location to do all the little data format issues that will be needed by all models
 
@@ -14,6 +15,7 @@ class BayAreaDataset(dataset.Dataset):
 
   def __init__(self,filename):
     super(BayAreaDataset,self).__init__(filename)
+    self.variables = variables
 
   def fetch(self,name,addnodeid=0,convertsrid=0,addbuildingid=0,pya=None,direct=0):
 
@@ -111,6 +113,8 @@ class BayAreaDataset(dataset.Dataset):
     elif tenure == "sales": households = households[households['tenure']<>1]
     
     households['HHINCOME'] = households['income']/10000.0
+    
+    households = self.join_for_field(households,'buildings','building_id','_node_id')
 
     return households
 
