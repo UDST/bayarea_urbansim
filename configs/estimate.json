@@ -7,12 +7,7 @@
   "modelpybase": "models",
   "modelstorun": [
     "rsh_estimate",
-    "rsh_simulate",
-    "hlcms_estimate",
-    "hlcms_simulate",
     "rrh_estimate",
-    "rrh_simulate",
-    "nrh_estimate",
-    "nrh_simulate"
+    "nrh_estimate"
   ]
 }
