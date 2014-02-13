@@ -1,7 +1,7 @@
 Variables,Coefficient,Stderr,T-score,Significance
-ln rent,-1.48,0.15,-10.13,***
-accessibility,0.26,0.06,4.09,***
-reliability,-0.13,0.02,-5.51,***
-average income,0.14,0.05,2.83,**
-ln units,0.79,0.03,24.87,***
-ln renters,0.51,0.03,17.63,***
+ln rent,-1.47,0.15,-10.06,***
+accessibility,0.26,0.06,4.18,***
+reliability,-0.13,0.02,-5.44,***
+average income,0.15,0.05,2.93,**
+ln units,0.79,0.03,24.65,***
+ln renters,0.50,0.03,17.44,***
