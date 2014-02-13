@@ -1,13 +1,8 @@
-null loglik,-7188.670660
-converged loglik,-6860.774807
-loglik ratio,0.045613
-
-
 Variables,Coefficient,Stderr,T-score,Significance
-ln price,-0.62,0.21,-2.92,**
-sales price x income,0.45,0.17,2.74,**
-accessibility,-0.02,0.04,-0.56,
-reliability,-0.05,0.02,-2.61,**
-average income,-0.16,0.18,-0.88,
-income x income,-0.16,0.16,-0.98,
-ln units,0.55,0.03,17.35,***
+ln price,-0.61,0.21,-2.88,**
+sales price x income,0.45,0.17,2.69,**
+accessibility,-0.02,0.04,-0.41,
+reliability,-0.06,0.02,-3.08,**
+average income,-0.16,0.18,-0.89,
+income x income,-0.16,0.16,-0.99,
+ln units,0.55,0.03,17.52,***

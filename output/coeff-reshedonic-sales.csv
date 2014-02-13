@@ -1,7 +1,3 @@
-R-squared,0.440116
-Adj-R-squared,0.440097
-
-
 Variables,Coefficient,Stderr,T-score,Significance
 historic,0.27,0.00,88.64,***
 new,0.17,0.00,34.71,***
