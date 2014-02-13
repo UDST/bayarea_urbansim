@@ -17,11 +17,6 @@
     "ln_stories"
   ],
   "add_constant": true,
-  "output_names": [
-    "coeff-nonreshedonic-%s.csv",
-    "NON-RESIDENTIAL HEDONIC MODEL (%s)",
-    "nonresidential_rent_%s",
-    "nonresidential_rent"
-  ],
+  "output_varname": "nonresidential_rent",
   "output_transform": "np.exp"
 }

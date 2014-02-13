@@ -20,10 +20,6 @@ def elcm_simulate(dset,year=None,show=True):
   choosers = dset.fetch('nets')[dset.fetch('nets').lastmove>2007]
   # ENDTEMPLATE
   
-  # TEMPLATE specifying output names
-  output_csv, output_title, coeff_name, output_varname = [u'coeff-nonreslocation-rent-%s.csv', u'NON-RESIDENTIAL LOCATION CHOICE MODELS BY NAICS SECTOR (%s)', u'nonreslocation_%s', u'firms_building_ids']
-  # ENDTEMPLATE
-  
   # TEMPLATE dependent variable
   depvar = "_node_id"
   # ENDTEMPLATE
@@ -53,8 +49,7 @@ def elcm_simulate(dset,year=None,show=True):
     segment = segment.head(1)
 
     name = str(name)
-    if name is not None: tmp_outcsv, tmp_outtitle, tmp_coeffname = output_csv%name, output_title%name, coeff_name%name
-    else: tmp_outcsv, tmp_outtitle, tmp_coeffname = output_csv, output_title, coeff_name
+    outname = "elcm" if name is None else "elcm_"+name
   
     SAMPLE_SIZE = alternatives.index.size # don't sample
     sample, alternative_sample, est_params = \
@@ -71,7 +66,7 @@ def elcm_simulate(dset,year=None,show=True):
     # ENDTEMPLATE
     data = data.as_matrix()
 
-    coeff = dset.load_coeff(tmp_coeffname)
+    coeff = dset.load_coeff(outname)
     probs = interaction.mnl_simulate(data,coeff,numalts=SAMPLE_SIZE,returnprobs=1)
     pdf['segment%s'%name] = pd.Series(probs.flatten(),index=alternatives.index) 
 

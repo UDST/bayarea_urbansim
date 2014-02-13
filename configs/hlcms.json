@@ -17,11 +17,6 @@
     "income x income",
     "ln_units"
   ],
-  "output_names": [
-    "coeff-reslocation-sales-%s.csv",
-    "RESIDENTIAL LOCATION CHOICE MODELS (SALES-%s)",
-    "res_sales_location_%s",
-    "sales_household_building_ids"
-  ],
+  "output_varname": "sales_household_building_ids",
   "web_service": false
 }

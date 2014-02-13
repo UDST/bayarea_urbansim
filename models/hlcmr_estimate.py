@@ -19,10 +19,6 @@ def hlcmr_estimate(dset,year=None,show=True):
   # ENDTEMPLATE
   
     
-  # TEMPLATE specifying output names
-  output_csv, output_title, coeff_name, output_varname = [u'coeff-reslocation-rent-%s.csv', u'RESIDENTIAL LOCATION CHOICE MODELS (RENT-%s)', u'res_rent_location_%s', u'rent_household_building_ids']
-  # ENDTEMPLATE
- 
   # TEMPLATE specifying alternatives
   alternatives = dset.fetch('nodes').join(variables.compute_res_building_averages(dset,year,sales=0,rent=1))
   # ENDTEMPLATE
@@ -37,8 +33,7 @@ def hlcmr_estimate(dset,year=None,show=True):
   for name, segment in segments:
 
     name = str(name)
-    if name is not None: tmp_outcsv, tmp_outtitle, tmp_coeffname = output_csv%name, output_title%name, coeff_name%name
-    else: tmp_outcsv, tmp_outtitle, tmp_coeffname = output_csv, output_title, coeff_name
+    outname = "hlcmr" if name is None else "hlcmr_"+name
 
     # TEMPLATE dependent variable
     depvar = "_node_id"
@@ -71,7 +66,7 @@ def hlcmr_estimate(dset,year=None,show=True):
     
     fnames = interaction.add_fnames(fnames,est_params)
     if show: print misc.resultstotable(fnames,results)
-    misc.resultstocsv(fit,fnames,results,tmp_outcsv,tblname=tmp_outtitle)
+    misc.resultstocsv(fit,fnames,results,outname+".csv",tblname=outname)
     
     d['null loglik'] = float(fit[0])
     d['converged loglik'] = float(fit[1])
@@ -79,7 +74,7 @@ def hlcmr_estimate(dset,year=None,show=True):
     d['est_results'] = [[float(x) for x in result] for result in results]
     returnobj[name] = d
     
-    dset.store_coeff(tmp_coeffname,zip(*results)[0],fnames)
+    dset.store_coeff(outname,zip(*results)[0],fnames)
 
   print "Finished executing in %f seconds" % (time.time()-t1)
   return returnobj

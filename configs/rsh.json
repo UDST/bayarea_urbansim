@@ -24,11 +24,6 @@
     "ln_lot_size"
   ],
   "add_constant": true,
-  "output_names": [
-    "coeff-reshedonic-sales.csv",
-    "RESIDENTIAL HEDONIC MODEL (SALES)",
-    "residential_sales_price",
-    "residential_sales_price"
-  ],
+  "output_varname": "residential_sales_price",
   "output_transform": "np.exp"
 }

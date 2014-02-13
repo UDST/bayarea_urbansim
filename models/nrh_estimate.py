@@ -19,10 +19,6 @@ def nrh_estimate(dset,year=None,show=True):
   print "Finished with merge in %f" % (time.time()-t_m)
   # ENDTEMPLATE
   
-  # TEMPLATE specifying output names
-  output_csv, output_title, coeff_name, output_varname = [u'coeff-nonreshedonic-%s.csv', u'NON-RESIDENTIAL HEDONIC MODEL (%s)', u'nonresidential_rent_%s', u'nonresidential_rent']
-  # ENDTEMPLATE
-
   print "Finished specifying in %f seconds" % (time.time()-t1)
   t1 = time.time()
 
@@ -32,6 +28,7 @@ def nrh_estimate(dset,year=None,show=True):
   # ENDTEMPLATE
     
   for name, segment in segments:
+    outname = "nrh" if name is None else "nrh_"+name
     
     # TEMPLATE computing vars
     est_data = pd.DataFrame(index=segment.index)
@@ -42,8 +39,6 @@ def nrh_estimate(dset,year=None,show=True):
     est_data = est_data.fillna(0)
     # ENDTEMPLATE
 
-    if name is not None: tmp_outcsv, tmp_outtitle, tmp_coeffname = output_csv%name, output_title%name, coeff_name%name
-    else: tmp_outcsv, tmp_outtitle, tmp_coeffname = output_csv, output_title, coeff_name
         
     # TEMPLATE dependent variable
     depvar = segment["averageweightedrent"]
@@ -58,11 +53,9 @@ def nrh_estimate(dset,year=None,show=True):
     results = model.fit()
     if show: print results.summary()
 
-    tmp_outcsv = output_csv if name is None else output_csv%name
-    tmp_outtitle = output_title if name is None else output_title%name
     misc.resultstocsv((results.rsquared,results.rsquared_adj),est_data.columns,
-                        zip(results.params,results.bse,results.tvalues),tmp_outcsv,hedonic=1,
-                        tblname=output_title)
+                        zip(results.params,results.bse,results.tvalues),outname+".csv",hedonic=1,
+                        tblname=outname)
     d = {}
     d['rsquared'] = results.rsquared
     d['rsquared_adj'] = results.rsquared_adj
@@ -70,7 +63,7 @@ def nrh_estimate(dset,year=None,show=True):
     d['est_results'] =  zip(results.params,results.bse,results.tvalues)
     returnobj[name] = d
 
-    dset.store_coeff("nrh",results.params.values,results.params.index)
+    dset.store_coeff(outname,results.params.values,results.params.index)
       
   print "Finished executing in %f seconds" % (time.time()-t1)
   return returnobj

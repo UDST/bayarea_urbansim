@@ -20,10 +20,6 @@ def hlcmr_simulate(dset,year=None,show=True):
   choosers = dset.fetch_households(tenure='rent')
   # ENDTEMPLATE
   
-  # TEMPLATE specifying output names
-  output_csv, output_title, coeff_name, output_varname = [u'coeff-reslocation-rent-%s.csv', u'RESIDENTIAL LOCATION CHOICE MODELS (RENT-%s)', u'res_rent_location_%s', u'rent_household_building_ids']
-  # ENDTEMPLATE
-  
   # TEMPLATE dependent variable
   depvar = "_node_id"
   # ENDTEMPLATE
@@ -53,8 +49,7 @@ def hlcmr_simulate(dset,year=None,show=True):
     segment = segment.head(1)
 
     name = str(name)
-    if name is not None: tmp_outcsv, tmp_outtitle, tmp_coeffname = output_csv%name, output_title%name, coeff_name%name
-    else: tmp_outcsv, tmp_outtitle, tmp_coeffname = output_csv, output_title, coeff_name
+    outname = "hlcmr" if name is None else "hlcmr_"+name
   
     SAMPLE_SIZE = alternatives.index.size # don't sample
     sample, alternative_sample, est_params = \
@@ -71,7 +66,7 @@ def hlcmr_simulate(dset,year=None,show=True):
     # ENDTEMPLATE
     data = data.as_matrix()
 
-    coeff = dset.load_coeff(tmp_coeffname)
+    coeff = dset.load_coeff(outname)
     probs = interaction.mnl_simulate(data,coeff,numalts=SAMPLE_SIZE,returnprobs=1)
     pdf['segment%s'%name] = pd.Series(probs.flatten(),index=alternatives.index) 
 

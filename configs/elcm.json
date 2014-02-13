@@ -16,10 +16,5 @@
     "accessibility",
     "reliability"
   ],
-  "output_names": [
-    "coeff-nonreslocation-rent-%s.csv",
-    "NON-RESIDENTIAL LOCATION CHOICE MODELS BY NAICS SECTOR (%s)",
-    "nonreslocation_%s",
-    "firms_building_ids"
-  ]
+  "output_varname": "firms_building_ids"
 }

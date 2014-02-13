@@ -16,10 +16,5 @@
     "ln_units",
     "ln_renters"
   ],
-  "output_names": [
-    "coeff-reslocation-rent-%s.csv",
-    "RESIDENTIAL LOCATION CHOICE MODELS (RENT-%s)",
-    "res_rent_location_%s",
-    "rent_household_building_ids"
-  ]
+  "output_varname": "rent_household_building_ids"
 }
