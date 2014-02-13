@@ -37,7 +37,6 @@ def rrh_estimate(dset,year=None,show=True):
     est_data = est_data.fillna(0)
     # ENDTEMPLATE
 
-        
     # TEMPLATE dependent variable
     depvar = segment["rent"]
     depvar = depvar.apply(np.log)

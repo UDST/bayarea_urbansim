@@ -36,9 +36,8 @@ def rrh_simulate(dset,year=None,show=True):
     est_data["ln_unit_sqft"] = (segment.unit_sqft.apply(np.log1p)).astype('float')
     est_data = sm.add_constant(est_data,prepend=False)
     est_data = est_data.fillna(0)
-    # ENDTEMPLATE
-
-      
+    # ENDTEMPLATE 
+    
     print "Generating rents on %d buildings" % (est_data.shape[0])
     vec = dset.load_coeff(outname)
     vec = np.reshape(vec,(vec.size,1))

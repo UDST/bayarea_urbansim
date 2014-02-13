@@ -36,7 +36,6 @@ def hlcmr_simulate(dset,year=None,show=True):
   
   lotterychoices = False
   
-  
   print "Finished specifying model in %f seconds" % (time.time()-t1)
 
   t1 = time.time()
@@ -76,10 +75,6 @@ def hlcmr_simulate(dset,year=None,show=True):
   if len(pdf.columns) and show: print pdf.describe()
   returnobj[name] = misc.pandasdfsummarytojson(pdf.describe(),ndigits=10)
   pdf.describe().to_csv(os.path.join(misc.output_dir(),"hlcmr_simulate.csv"))
-  t1 = time.time()
     
-  
-  
-  print "Finished assigning agents in %f seconds" % (time.time()-t1)
   return returnobj
 

@@ -22,7 +22,6 @@ def nrh_estimate(dset,year=None,show=True):
   print "Finished specifying in %f seconds" % (time.time()-t1)
   t1 = time.time()
 
-  
   # TEMPLATE creating segments
   segments = buildings.groupby([u'general_type'])
   # ENDTEMPLATE
@@ -39,7 +38,6 @@ def nrh_estimate(dset,year=None,show=True):
     est_data = est_data.fillna(0)
     # ENDTEMPLATE
 
-        
     # TEMPLATE dependent variable
     depvar = segment["averageweightedrent"]
     depvar = depvar.apply(np.log)

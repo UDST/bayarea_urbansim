@@ -23,7 +23,6 @@ def nrh_simulate(dset,year=None,show=True):
   t1 = time.time()
 
   simrents = []
-  
   # TEMPLATE creating segments
   segments = buildings.groupby([u'general_type'])
   # ENDTEMPLATE
@@ -38,9 +37,8 @@ def nrh_simulate(dset,year=None,show=True):
     est_data["ln_stories"] = (segment.stories.apply(np.log1p)).astype('float')
     est_data = sm.add_constant(est_data,prepend=False)
     est_data = est_data.fillna(0)
-    # ENDTEMPLATE
-
-      
+    # ENDTEMPLATE 
+    
     print "Generating rents on %d buildings" % (est_data.shape[0])
     vec = dset.load_coeff(outname)
     vec = np.reshape(vec,(vec.size,1))

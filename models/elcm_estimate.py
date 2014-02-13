@@ -18,19 +18,16 @@ def elcm_estimate(dset,year=None,show=True):
   choosers = dset.nets
   # ENDTEMPLATE
   
-   
   # TEMPLATE randomly choose estimatiors
   choosers = choosers.ix[np.random.choice(choosers.index, 10000,replace=False)]
   # ENDTEMPLATE
-    
   # TEMPLATE specifying alternatives
   alternatives = dset.nodes.join(dset.variables.compute_nonres_building_proportions(dset,year))
   # ENDTEMPLATE
   
-  
   t1 = time.time()
 
-    # TEMPLATE creating segments
+  # TEMPLATE creating segments
   segments = choosers.groupby([u'naics11cat'])
   # ENDTEMPLATE
     
@@ -43,7 +40,6 @@ def elcm_estimate(dset,year=None,show=True):
     depvar = "_node_id"
     # ENDTEMPLATE
     global SAMPLE_SIZE
-        
     sample, alternative_sample, est_params = interaction.mnl_interaction_dataset(
                                         segment,alternatives,SAMPLE_SIZE,chosenalts=segment[depvar])
 
@@ -62,10 +58,9 @@ def elcm_estimate(dset,year=None,show=True):
     if show: print data.describe()
 
     d = {}
-    d['columns'] =  data.columns.tolist()
-    data = data.as_matrix()
-    fnames = [u'total sqft', u'ln_weighted_rent', u'retpct', u'indpct', u'accessibility', u'reliability']
-    
+    d['columns'] = fnames = data.columns.tolist()
+
+    data = data.as_matrix()    
     fit, results = interaction.estimate(data,est_params,SAMPLE_SIZE)
     
     fnames = interaction.add_fnames(fnames,est_params)

@@ -18,15 +18,13 @@ def hlcmr_estimate(dset,year=None,show=True):
   choosers = dset.fetch_batshh(tenure='rent')
   # ENDTEMPLATE
   
-    
   # TEMPLATE specifying alternatives
   alternatives = dset.nodes.join(dset.variables.compute_res_building_averages(dset,year,sales=0,rent=1))
   # ENDTEMPLATE
   
-  
   t1 = time.time()
 
-    # TEMPLATE creating segments
+  # TEMPLATE creating segments
   segments = choosers.groupby([u'income_quartile'])
   # ENDTEMPLATE
     
@@ -39,7 +37,6 @@ def hlcmr_estimate(dset,year=None,show=True):
     depvar = "_node_id"
     # ENDTEMPLATE
     global SAMPLE_SIZE
-        
     sample, alternative_sample, est_params = interaction.mnl_interaction_dataset(
                                         segment,alternatives,SAMPLE_SIZE,chosenalts=segment[depvar])
 
@@ -58,10 +55,9 @@ def hlcmr_estimate(dset,year=None,show=True):
     if show: print data.describe()
 
     d = {}
-    d['columns'] =  data.columns.tolist()
-    data = data.as_matrix()
-    fnames = [u'ln_rent', u'accessibility', u'reliability', u'average_income', u'ln_units', u'ln_renters']
-    
+    d['columns'] = fnames = data.columns.tolist()
+
+    data = data.as_matrix()    
     fit, results = interaction.estimate(data,est_params,SAMPLE_SIZE)
     
     fnames = interaction.add_fnames(fnames,est_params)

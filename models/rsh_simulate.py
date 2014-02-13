@@ -39,9 +39,8 @@ def rsh_simulate(dset,year=None,show=True):
     est_data["ln_lot_size"] = (segment.unit_lot_size.apply(np.log1p)).astype('float')
     est_data = sm.add_constant(est_data,prepend=False)
     est_data = est_data.fillna(0)
-    # ENDTEMPLATE
-
-      
+    # ENDTEMPLATE 
+    
     print "Generating rents on %d buildings" % (est_data.shape[0])
     vec = dset.load_coeff(outname)
     vec = np.reshape(vec,(vec.size,1))
