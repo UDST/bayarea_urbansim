@@ -1,0 +1,10 @@
+{
+  "model": "modelset",
+  "datastore": "bayarea.h5",
+  "pathinsertcwd": true,
+  "dataset": "BayAreaDataset",
+  "modelstorun": [
+    "rsh_simulate",
+    "hlcms_simulate"
+  ]
+}

@@ -1,7 +1,7 @@
 import pandas as pd, numpy as np, statsmodels.api as sm
 from synthicity.urbanchoice import *
 from synthicity.utils import misc
-import time, copy
+import time, copy, os, sys
 
 SAMPLE_SIZE=100
 
@@ -14,6 +14,8 @@ SAMPLE_SIZE=100
 ############
 
 def hlcms_simulate(dset,year=None,show=True):
+
+  returnobj = {}
 
   t1 = time.time()
   # TEMPLATE configure table
@@ -72,10 +74,13 @@ def hlcms_simulate(dset,year=None,show=True):
     pdf['segment%s'%name] = pd.Series(probs.flatten(),index=alternatives.index) 
 
   print "Finished creating pdf in %f seconds" % (time.time()-t1)
-  if len(pdf.columns): print pdf.describe()
+  if len(pdf.columns) and show: print pdf.describe()
+  returnobj[name] = misc.pandasdfsummarytojson(pdf.describe(),ndigits=10)
+  pdf.describe().to_csv(os.path.join(misc.output_dir(),"hlcms_simulate.csv"))
   t1 = time.time()
     
   
   
   print "Finished assigning agents in %f seconds" % (time.time()-t1)
+  return returnobj
 

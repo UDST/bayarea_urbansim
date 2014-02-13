@@ -1,7 +1,7 @@
 import pandas as pd, numpy as np, statsmodels.api as sm
 from synthicity.urbanchoice import *
 from synthicity.utils import misc
-import time, copy
+import time, copy, os, sys
 
 def rrh_simulate(dset,year=None,show=True):
 
@@ -45,6 +45,8 @@ def rrh_simulate(dset,year=None,show=True):
     rents = est_data.dot(vec).astype('f4')
     rents = rents.apply(np.exp)
     simrents.append(rents[rents.columns[0]])
+    returnobj[name] = misc.pandassummarytojson(rents.describe())
+    rents.describe().to_csv(os.path.join(misc.output_dir(),"_simulate.csv"))
       
   simrents = pd.concat(simrents)
   dset.buildings[""] = simrents.reindex(dset.buildings.index)

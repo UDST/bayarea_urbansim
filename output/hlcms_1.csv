@@ -1,8 +1,8 @@
 Variables,Coefficient,Stderr,T-score,Significance
-ln price,-1.83,0.33,-5.62,***
-sales price x income,1.35,0.23,5.82,***
-accessibility,0.02,0.04,0.44,
-reliability,-0.03,0.02,-1.66,*
+ln price,-1.82,0.33,-5.58,***
+sales price x income,1.34,0.23,5.78,***
+accessibility,0.03,0.04,0.65,
+reliability,-0.03,0.02,-1.98,*
 average income,0.20,0.45,0.45,
 income x income,0.20,0.39,0.52,
-ln units,0.58,0.03,22.68,***
+ln units,0.58,0.03,22.60,***
