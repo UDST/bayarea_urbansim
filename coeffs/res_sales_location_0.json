@@ -1,1 +1,20 @@
-{"coeffs": [-0.59386119618468269, 0.43480874958843957, -0.023777042396188445, -0.048337287117718626, -0.1551665274590574, -0.15516802585446354, 0.54314719088466556], "fnames": ["ln_price", "sales_price x income", "accessibility", "reliability", "average_income", "income x income", "ln_units"]}
+{
+    "coeffs": [
+        -0.62445634786746984,
+        0.45423529179641153,
+        -0.02347464644144328,
+        -0.046853005012896638,
+        -0.15735070835388176,
+        -0.15735194243866613,
+        0.54712277403292908
+    ],
+    "fnames": [
+        "ln_price",
+        "sales_price x income",
+        "accessibility",
+        "reliability",
+        "average_income",
+        "income x income",
+        "ln_units"
+    ]
+}
