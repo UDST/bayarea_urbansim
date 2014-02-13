@@ -1,5 +1,5 @@
 {
-  "table": "dset.fetch('homesales')",
+  "table": "dset.homesales",
   "model": "hedonicmodel",
   "estimate_filters": [
     "_tbl_.unit_sqft < 10000",
@@ -7,7 +7,7 @@
   ],
   "table_sim": "dset.building_filter(residential=1)",
   "merge": {
-    "table":"dset.fetch('nodes')",
+    "table":"dset.nodes",
     "left_on":"_node_id",
     "right_index":true
   },

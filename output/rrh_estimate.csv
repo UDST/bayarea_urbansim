@@ -1,0 +1,6 @@
+Variables,Coefficient,Stderr,T-score,Significance
+accessibility,0.18,0.01,29.18,***
+reliability,-0.02,0.00,-8.65,***
+average income,0.14,0.01,12.27,***
+ln unit sqft,-0.31,0.01,-28.18,***
+const,-0.95,0.15,-6.43,***

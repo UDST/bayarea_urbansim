@@ -20,7 +20,7 @@ def hlcms_estimate(dset,year=None,show=True):
   
     
   # TEMPLATE specifying alternatives
-  alternatives = dset.fetch('nodes').join(dset.variables.compute_res_building_averages(dset,year,sales=1,rent=0))
+  alternatives = dset.nodes.join(dset.variables.compute_res_building_averages(dset,year,sales=1,rent=0))
   # ENDTEMPLATE
   
   

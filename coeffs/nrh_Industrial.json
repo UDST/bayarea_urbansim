@@ -1,0 +1,14 @@
+{
+    "coeffs": [
+        0.052,
+        -0.041,
+        0.385,
+        1.583
+    ],
+    "fnames": [
+        "accessibility",
+        "reliability",
+        "ln_stories",
+        "const"
+    ]
+}

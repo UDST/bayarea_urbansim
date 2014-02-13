@@ -1,0 +1,18 @@
+{
+    "coeffs": [
+        0.283,
+        -0.316,
+        0.186,
+        -0.459,
+        0.511,
+        -0.16
+    ],
+    "fnames": [
+        "total sqft",
+        "ln_weighted_rent",
+        "retpct",
+        "indpct",
+        "accessibility",
+        "reliability"
+    ]
+}

@@ -1,9 +1,9 @@
 {
-  "table": "dset.fetch('costar')",
+  "table": "dset.costar",
   "model": "hedonicmodel",
   "table_sim": "dset.building_filter(residential=0)",
   "merge": {
-    "table":"dset.fetch('nodes')",
+    "table":"dset.nodes",
     "left_on":"_node_id",
     "right_index":true
   },

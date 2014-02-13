@@ -10,12 +10,12 @@ def rrh_estimate(dset,year=None,show=True):
   t1 = time.time()
   
   # TEMPLATE configure table
-  buildings = dset.fetch('apartments')
+  buildings = dset.apartments
   # ENDTEMPLATE
 
   # TEMPLATE merge 
   t_m = time.time()
-  buildings = pd.merge(buildings,dset.fetch('nodes'),**{u'right_index': True, u'left_on': u'_node_id'})
+  buildings = pd.merge(buildings,dset.nodes,**{u'right_index': True, u'left_on': u'_node_id'})
   print "Finished with merge in %f" % (time.time()-t_m)
   # ENDTEMPLATE
   

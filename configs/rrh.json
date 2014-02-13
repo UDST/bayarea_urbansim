@@ -1,9 +1,9 @@
 {
-  "table": "dset.fetch('apartments')",
+  "table": "dset.apartments",
   "model": "hedonicmodel",
   "table_sim": "dset.building_filter(residential=1)",
   "merge": {
-    "table":"dset.fetch('nodes')",
+    "table":"dset.nodes",
     "left_on":"_node_id",
     "right_index":true
   },
@@ -17,6 +17,6 @@
     "ln_unit_sqft"
   ],
   "add_constant": true,
-  "output_names": "residential_rent",
+  "output_varname": "residential_rent",
   "output_transform": "np.exp"
 }

@@ -3,7 +3,7 @@
   "model": "locationchoicemodel",
   "modeldependencies": "rrh.json",
   "table_sim": "dset.fetch_households(tenure='rent')",
-  "alternatives":"dset.fetch('nodes').join(variables.compute_res_building_averages(dset,year,sales=0,rent=1))",
+  "alternatives":"dset.nodes.join(dset.variables.compute_res_building_averages(dset,year,sales=0,rent=1))",
   "sample_size": 100,
   "dep_var": "_node_id",
   "segment": ["income_quartile"],

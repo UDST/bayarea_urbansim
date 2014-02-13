@@ -1,0 +1,18 @@
+{
+    "coeffs": [
+        -1.335,
+        0.538,
+        -0.152,
+        0.939,
+        0.691,
+        0.47
+    ],
+    "fnames": [
+        "ln_rent",
+        "accessibility",
+        "reliability",
+        "average_income",
+        "ln_units",
+        "ln_renters"
+    ]
+}

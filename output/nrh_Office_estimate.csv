@@ -1,0 +1,5 @@
+Variables,Coefficient,Stderr,T-score,Significance
+accessibility,0.08,0.01,5.76,***
+reliability,-0.02,0.01,-2.86,**
+ln stories,0.20,0.02,13.39,***
+const,1.97,0.14,14.30,***

@@ -3,7 +3,7 @@
   "model": "locationchoicemodel",
   "modeldependencies": "rsh.json",
   "table_sim": "dset.fetch_households(tenure='sales')",
-  "alternatives":"dset.fetch('nodes').join(dset.variables.compute_res_building_averages(dset,year,sales=1,rent=0))",
+  "alternatives":"dset.nodes.join(dset.variables.compute_res_building_averages(dset,year,sales=1,rent=0))",
   "sample_size": 100,
   "dep_var": "_node_id",
   "var_lib_file": "var_lib.json",

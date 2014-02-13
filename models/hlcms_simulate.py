@@ -31,7 +31,7 @@ def hlcms_simulate(dset,year=None,show=True):
   print "Total new agents and movers = %d" % len(movers.index)
 
   # TEMPLATE specifying alternatives
-  alternatives = dset.fetch('nodes').join(dset.variables.compute_res_building_averages(dset,year,sales=1,rent=0))
+  alternatives = dset.nodes.join(dset.variables.compute_res_building_averages(dset,year,sales=1,rent=0))
   # ENDTEMPLATE
   
   lotterychoices = False

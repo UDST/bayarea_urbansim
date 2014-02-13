@@ -15,7 +15,7 @@ def rrh_simulate(dset,year=None,show=True):
 
   # TEMPLATE merge 
   t_m = time.time()
-  buildings = pd.merge(buildings,dset.fetch('nodes'),**{u'right_index': True, u'left_on': u'_node_id'})
+  buildings = pd.merge(buildings,dset.nodes,**{u'right_index': True, u'left_on': u'_node_id'})
   print "Finished with merge in %f" % (time.time()-t_m)
   # ENDTEMPLATE
   
@@ -49,8 +49,8 @@ def rrh_simulate(dset,year=None,show=True):
     rents.describe().to_csv(os.path.join(misc.output_dir(),"rrh_simulate.csv"))
       
   simrents = pd.concat(simrents)
-  dset.buildings[""] = simrents.reindex(dset.buildings.index)
-  dset.store_attr("",year,simrents)
+  dset.buildings["residential_rent"] = simrents.reindex(dset.buildings.index)
+  dset.store_attr("residential_rent",year,simrents)
 
   print "Finished executing in %f seconds" % (time.time()-t1)
   return returnobj

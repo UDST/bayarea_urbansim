@@ -15,12 +15,16 @@ def elcm_estimate(dset,year=None,show=True):
   returnobj = {}
   
   # TEMPLATE configure table
-  choosers = dset.fetch('nets')
+  choosers = dset.nets
   # ENDTEMPLATE
   
+   
+  # TEMPLATE randomly choose estimatiors
+  choosers = choosers.ix[np.random.choice(choosers.index, 10000,replace=False)]
+  # ENDTEMPLATE
     
   # TEMPLATE specifying alternatives
-  alternatives = dset.fetch('nodes').join(variables.compute_nonres_building_proportions(dset,year))
+  alternatives = dset.nodes.join(dset.variables.compute_nonres_building_proportions(dset,year))
   # ENDTEMPLATE
   
   

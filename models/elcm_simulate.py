@@ -19,7 +19,7 @@ def elcm_simulate(dset,year=None,show=True):
 
   t1 = time.time()
   # TEMPLATE configure table
-  choosers = dset.fetch('nets')[dset.fetch('nets').lastmove>2007]
+  choosers = dset.nets[dset.nets.lastmove>2007]
   # ENDTEMPLATE
   
   # TEMPLATE dependent variable
@@ -31,7 +31,7 @@ def elcm_simulate(dset,year=None,show=True):
   print "Total new agents and movers = %d" % len(movers.index)
 
   # TEMPLATE specifying alternatives
-  alternatives = dset.fetch('nodes').join(variables.compute_nonres_building_proportions(dset,year))
+  alternatives = dset.nodes.join(dset.variables.compute_nonres_building_proportions(dset,year))
   # ENDTEMPLATE
   
   lotterychoices = False

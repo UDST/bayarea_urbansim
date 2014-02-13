@@ -5,6 +5,10 @@
   "dataset": "BayAreaDataset",
   "modelstorun": [
     "rsh_simulate",
-    "hlcms_simulate"
+    "hlcms_simulate",
+    "rrh_simulate",
+    "hlcmr_simulate",
+    "nrh_simulate",
+    "elcm_simulate"
   ]
 }

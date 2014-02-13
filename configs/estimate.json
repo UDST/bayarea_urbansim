@@ -6,6 +6,12 @@
   "modelstorun": [
     "rsh_estimate",
     "rsh_simulate",
-    "hlcms_estimate"
+    "hlcms_estimate",
+    "rrh_estimate",
+    "rrh_simulate",
+    "hlcmr_estimate",
+    "nrh_estimate",
+    "nrh_simulate",
+    "elcm_estimate"
   ]
 }

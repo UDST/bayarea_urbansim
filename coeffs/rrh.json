@@ -1,0 +1,16 @@
+{
+    "coeffs": [
+        0.18,
+        -0.025,
+        0.137,
+        -0.311,
+        -0.947
+    ],
+    "fnames": [
+        "accessibility",
+        "reliability",
+        "average_income",
+        "ln_unit_sqft",
+        "const"
+    ]
+}
