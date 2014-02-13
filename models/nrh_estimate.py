@@ -54,7 +54,7 @@ def nrh_estimate(dset,year=None,show=True):
     if show: print results.summary()
 
     misc.resultstocsv((results.rsquared,results.rsquared_adj),est_data.columns,
-                        zip(results.params,results.bse,results.tvalues),outname+".csv",hedonic=1,
+                        zip(results.params,results.bse,results.tvalues),outname+"_estimate.csv",hedonic=1,
                         tblname=outname)
     d = {}
     d['rsquared'] = results.rsquared

@@ -66,7 +66,7 @@ def hlcmr_estimate(dset,year=None,show=True):
     
     fnames = interaction.add_fnames(fnames,est_params)
     if show: print misc.resultstotable(fnames,results)
-    misc.resultstocsv(fit,fnames,results,outname+".csv",tblname=outname)
+    misc.resultstocsv(fit,fnames,results,outname+"_estimate.csv",tblname=outname)
     
     d['null loglik'] = float(fit[0])
     d['converged loglik'] = float(fit[1])

@@ -49,7 +49,7 @@ def rsh_simulate(dset,year=None,show=True):
     rents = rents.apply(np.exp)
     simrents.append(rents[rents.columns[0]])
     returnobj[name] = misc.pandassummarytojson(rents.describe())
-    rents.describe().to_csv(os.path.join(misc.output_dir(),"_simulate.csv"))
+    rents.describe().to_csv(os.path.join(misc.output_dir(),"rsh_simulate.csv"))
       
   simrents = pd.concat(simrents)
   dset.buildings["residential_sales_price"] = simrents.reindex(dset.buildings.index)
