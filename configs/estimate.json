@@ -3,11 +3,9 @@
   "datastore": "bayarea.h5",
   "pathinsertcwd": true,
   "dataset": "BayAreaDataset",
-  "modeljsonbase": "configs",
-  "modelpybase": "models",
   "modelstorun": [
     "rsh_estimate",
-    "rrh_estimate",
-    "nrh_estimate"
+    "rsh_simulate",
+    "hlcms_estimate"
   ]
 }
