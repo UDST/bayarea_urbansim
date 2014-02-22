@@ -2,12 +2,9 @@ import pandas as pd, numpy as np, statsmodels.api as sm
 from synthicity.urbanchoice import *
 from synthicity.utils import misc
 import time, copy, os, sys
+from patsy import dmatrix
 
 SAMPLE_SIZE=100
-
-##############
-#  ESTIMATION
-##############
 
 def elcm_estimate(dset,year=None,show=True):
 
@@ -28,7 +25,7 @@ def elcm_estimate(dset,year=None,show=True):
   t1 = time.time()
 
   # TEMPLATE creating segments
-  segments = choosers.groupby([u'naics11cat'])
+  segments = choosers.groupby(['naics11cat'])
   # ENDTEMPLATE
     
   for name, segment in segments:
@@ -36,23 +33,22 @@ def elcm_estimate(dset,year=None,show=True):
     name = str(name)
     outname = "elcm" if name is None else "elcm_"+name
 
-    # TEMPLATE dependent variable
-    depvar = "_node_id"
-    # ENDTEMPLATE
     global SAMPLE_SIZE
     sample, alternative_sample, est_params = interaction.mnl_interaction_dataset(
-                                        segment,alternatives,SAMPLE_SIZE,chosenalts=segment[depvar])
+                                        segment,alternatives,SAMPLE_SIZE,chosenalts=segment["_node_id"])
 
     print "Estimating parameters for segment = %s, size = %d" % (name, len(segment.index)) 
 
     # TEMPLATE computing vars
     data = pd.DataFrame(index=alternative_sample.index)
-    data["total sqft"] = (alternative_sample.totsum.apply(np.log1p)).astype('float')
-    data["ln_weighted_rent"] = (alternative_sample.weightedrent.apply(np.log1p)).astype('float')
-    data["retpct"] = alternative_sample["retpct"]
-    data["indpct"] = alternative_sample["indpct"]
-    data["accessibility"] = (alternative_sample.nets_all_regional1_30.apply(np.log1p)).astype('float')
-    data["reliability"] = (alternative_sample.nets_all_regional2_30.apply(np.log1p)).astype('float')
+    if 0: pass
+    else:
+      data["total sqft"] = (alternative_sample.totsum.apply(np.log1p)).astype('float')
+      data["ln_weighted_rent"] = (alternative_sample.weightedrent.apply(np.log1p)).astype('float')
+      data["retpct"] = alternative_sample["retpct"]
+      data["indpct"] = alternative_sample["indpct"]
+      data["accessibility"] = (alternative_sample.nets_all_regional1_30.apply(np.log1p)).astype('float')
+      data["reliability"] = (alternative_sample.nets_all_regional2_30.apply(np.log1p)).astype('float')
     data = data.fillna(0)
     # ENDTEMPLATE
     if show: print data.describe()
@@ -60,9 +56,11 @@ def elcm_estimate(dset,year=None,show=True):
     d = {}
     d['columns'] = fnames = data.columns.tolist()
 
-    data = data.as_matrix()    
+    data = data.as_matrix()
+    if np.amax(data) > 500.0:
+      raise Exception("WARNING: the max value in this estimation data is large, it's likely you need to log transform the input")
     fit, results = interaction.estimate(data,est_params,SAMPLE_SIZE)
-    
+ 
     fnames = interaction.add_fnames(fnames,est_params)
     if show: print misc.resultstotable(fnames,results)
     misc.resultstocsv(fit,fnames,results,outname+"_estimate.csv",tblname=outname)

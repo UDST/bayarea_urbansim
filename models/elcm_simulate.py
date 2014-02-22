@@ -2,21 +2,13 @@ import pandas as pd, numpy as np, statsmodels.api as sm
 from synthicity.urbanchoice import *
 from synthicity.utils import misc
 import time, copy, os, sys
+from patsy import dmatrix
 
 SAMPLE_SIZE=100
-
-##############
-#  ESTIMATION
-##############
-
-############
-# SIMULATION
-############
 
 def elcm_simulate(dset,year=None,show=True):
 
   returnobj = {}
-
   t1 = time.time()
   # TEMPLATE configure table
   choosers = dset.nets[dset.nets.lastmove>2007]
@@ -34,15 +26,14 @@ def elcm_simulate(dset,year=None,show=True):
   alternatives = dset.nodes.join(dset.variables.compute_nonres_building_proportions(dset,year))
   # ENDTEMPLATE
   
-  lotterychoices = False
   
   print "Finished specifying model in %f seconds" % (time.time()-t1)
 
   t1 = time.time()
 
   pdf = pd.DataFrame(index=alternatives.index) 
-    # TEMPLATE creating segments
-  segments = movers.groupby([u'naics11cat'])
+  # TEMPLATE creating segments
+  segments = movers.groupby(['naics11cat'])
   # ENDTEMPLATE
   
   for name, segment in segments:
@@ -57,12 +48,14 @@ def elcm_simulate(dset,year=None,show=True):
              interaction.mnl_interaction_dataset(segment,alternatives,SAMPLE_SIZE,chosenalts=None)
     # TEMPLATE computing vars
     data = pd.DataFrame(index=alternative_sample.index)
-    data["total sqft"] = (alternative_sample.totsum.apply(np.log1p)).astype('float')
-    data["ln_weighted_rent"] = (alternative_sample.weightedrent.apply(np.log1p)).astype('float')
-    data["retpct"] = alternative_sample["retpct"]
-    data["indpct"] = alternative_sample["indpct"]
-    data["accessibility"] = (alternative_sample.nets_all_regional1_30.apply(np.log1p)).astype('float')
-    data["reliability"] = (alternative_sample.nets_all_regional2_30.apply(np.log1p)).astype('float')
+    if 0: pass
+    else:
+      data["total sqft"] = (alternative_sample.totsum.apply(np.log1p)).astype('float')
+      data["ln_weighted_rent"] = (alternative_sample.weightedrent.apply(np.log1p)).astype('float')
+      data["retpct"] = alternative_sample["retpct"]
+      data["indpct"] = alternative_sample["indpct"]
+      data["accessibility"] = (alternative_sample.nets_all_regional1_30.apply(np.log1p)).astype('float')
+      data["reliability"] = (alternative_sample.nets_all_regional2_30.apply(np.log1p)).astype('float')
     data = data.fillna(0)
     # ENDTEMPLATE
     data = data.as_matrix()
@@ -73,7 +66,7 @@ def elcm_simulate(dset,year=None,show=True):
 
   print "Finished creating pdf in %f seconds" % (time.time()-t1)
   if len(pdf.columns) and show: print pdf.describe()
-  returnobj[name] = misc.pandasdfsummarytojson(pdf.describe(),ndigits=10)
+  returnobj["elcm"] = misc.pandasdfsummarytojson(pdf.describe(),ndigits=10)
   pdf.describe().to_csv(os.path.join(misc.output_dir(),"elcm_simulate.csv"))
     
   return returnobj

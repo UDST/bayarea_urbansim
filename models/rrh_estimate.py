@@ -2,6 +2,7 @@ import pandas as pd, numpy as np, statsmodels.api as sm
 from synthicity.urbanchoice import *
 from synthicity.utils import misc
 import time, copy, os, sys
+from patsy import dmatrix
 
 def rrh_estimate(dset,year=None,show=True):
 
@@ -15,7 +16,7 @@ def rrh_estimate(dset,year=None,show=True):
 
   # TEMPLATE merge 
   t_m = time.time()
-  buildings = pd.merge(buildings,dset.nodes,**{u'right_index': True, u'left_on': u'_node_id'})
+  buildings = pd.merge(buildings,dset.nodes,**{'right_index': True, 'left_on': '_node_id'})
   print "Finished with merge in %f" % (time.time()-t_m)
   # ENDTEMPLATE
   
@@ -25,14 +26,17 @@ def rrh_estimate(dset,year=None,show=True):
   segments = [(None,buildings)]
     
   for name, segment in segments:
+    name = str(name)
     outname = "rrh" if name is None else "rrh_"+name
     
     # TEMPLATE computing vars
     est_data = pd.DataFrame(index=segment.index)
-    est_data["accessibility"] = (segment.nets_all_regional1_30.apply(np.log1p)).astype('float')
-    est_data["reliability"] = (segment.nets_all_regional2_30.apply(np.log1p)).astype('float')
-    est_data["average_income"] = (segment.demo_averageincome_average_local.apply(np.log)).astype('float')
-    est_data["ln_unit_sqft"] = (segment.unit_sqft.apply(np.log1p)).astype('float')
+    if 0: pass
+    else:
+      est_data["accessibility"] = (segment.nets_all_regional1_30.apply(np.log1p)).astype('float')
+      est_data["reliability"] = (segment.nets_all_regional2_30.apply(np.log1p)).astype('float')
+      est_data["average_income"] = (segment.demo_averageincome_average_local.apply(np.log)).astype('float')
+      est_data["ln_unit_sqft"] = (segment.unit_sqft.apply(np.log1p)).astype('float')
     est_data = sm.add_constant(est_data,prepend=False)
     est_data = est_data.fillna(0)
     # ENDTEMPLATE

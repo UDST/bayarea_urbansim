@@ -1,0 +1,25 @@
+{
+  "model": "networks",
+  "writetotmp": "nodes",
+  "writetocsv": "nodes.csv",
+  "networks": {
+    "filenames": ["osm_bayarea.jar"],
+    "factors": [1.0],
+    "maxdistances": [2000],
+    "twoway": [1]
+  },
+  "var_lib": {
+    "residential_units": "NETWORKS.accvar(dset.buildings,500,vname='residential_units').apply(np.log1p)",
+    "ave_unit_sqft": "NETWORKS.accvar(dset.buildings,500,vname='unit_sqft',agg='AGG_AVE',decay='DECAY_FLAT').apply(np.log1p)",
+    "ave_lot_sqft": "NETWORKS.accvar(dset.buildings,500,vname='unit_lot_size',agg='AGG_AVE',decay='DECAY_FLAT').apply(np.log1p)",
+    "population": "NETWORKS.accvar(dset.households,500,vname='persons').apply(np.log1p)",
+    "poor": "NETWORKS.accvar(dset.households[dset.households.income<40000],500,vname='persons').apply(np.log1p)",
+    "renters": "NETWORKS.accvar(dset.buildings[dset.buildings.tenure==2],500).apply(np.log1p)",
+    "sfdu": "NETWORKS.accvar(dset.households[dset.households.building_type_id==1],500).apply(np.log1p)",
+    "hhsize": "NETWORKS.accvar(dset.households,500,vname='persons',agg='AGG_AVE',decay='DECAY_FLAT')",
+    "jobs": "NETWORKS.accvar(dset.nets,500,vname='emp11').apply(np.log1p)",
+    "ave_income": "NETWORKS.accvar(dset.households,500,vname='income',agg='AGG_AVE',decay='DECAY_FLAT').apply(np.log1p)"
+  },
+  "ind_vars": ["residential_units","ave_unit_sqft","ave_lot_sqft","ave_income","population","poor","hhsize","jobs","sfdu","renters"],
+  "show": true
+}
