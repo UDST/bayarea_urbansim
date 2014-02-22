@@ -2,27 +2,23 @@
   "table": "dset.homesales",
   "model": "hedonicmodel",
   "estimate_filters": [
+    "_tbl_.unit_lot_size > 0",
+    "_tbl_.year_built > 1000",
+    "_tbl_.year_built < 2020",
+    "_tbl_.unit_sqft > 100",
     "_tbl_.unit_sqft < 10000",
-    "_tbl_.Sale_price_flt > 30"
+    "_tbl_.sale_price_flt > 30",
+    "_tbl_.sale_price_flt < 1000"
   ],
   "table_sim": "dset.building_filter(residential=1)",
   "merge": {
-    "table":"dset.nodes",
+    "table":"dset.fetch_csv('nodes.csv',index_col='node_id')",
     "left_on":"_node_id",
     "right_index":true
   },
   "dep_var": "Sale_price_flt",
   "dep_var_transform": "np.log",
-  "var_lib_file": "var_lib.json",
-  "ind_vars": [
-    "historic",
-    "new",
-    "accessibility",
-    "reliability",
-    "average_income",
-    "ln_unit_sqft",
-    "ln_lot_size"
-  ],
+  "patsy": "I(year_built < 1940) + I(year_built > 2005) + np.log1p(unit_sqft) + np.log1p(unit_lot_size) + sum_residential_units + ave_unit_sqft + ave_lot_sqft + ave_income + poor + jobs + sfdu + renters",
   "add_constant": true,
   "output_varname": "residential_sales_price",
   "output_transform": "np.exp"
