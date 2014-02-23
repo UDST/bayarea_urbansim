@@ -4,6 +4,7 @@
   "pathinsertcwd": true,
   "dataset": "BayAreaDataset",
   "modelstorun": [
-      "rsh_estimate"
+      "rsh_simulate",
+      "hlcms_simulate"
   ]
 }
