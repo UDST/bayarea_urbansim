@@ -1,0 +1,10 @@
+{
+  "model": "transitionmodel2",
+  "table": "dset.households",
+  "internalname": "households",
+  "growth_rate": 0.05,
+  "zero_out_names": [
+    "building_id"
+  ],
+  "output_varname": "household_id"
+}

@@ -1,9 +1,11 @@
 {
-  "table": "dset.fetch_households(tenure='sales')",
+  "table": "dset.households",
+  "internalname": "households",
+  "filters": ["households.tenure<>1"],
   "est_sample_size": 10000,
   "model": "locationchoicemodel",
-  "modeldependencies": "rsh.json",
-  "alternatives": "dset.building_filter(residential=1,year=year)",
+  "modeldependencies": "rsh_simulate",
+  "alternatives": "dset.building_filter(residential=1)",
   "merge": {
     "table":"dset.fetch_csv('nodes.csv',index_col='node_id')",
     "left_on":"_node_id",
@@ -16,5 +18,5 @@
   "relocation_rate": 0.04,
   "supply_constraint": "dset.building_filter(residential=1).residential_units.sub(dset.households.groupby('building_id').size(),fill_value=0)",
   "output_table": "dset.households",
-  "output_varname": "sales_household_building_ids"
+  "output_varname": "owner_building_ids"
 }

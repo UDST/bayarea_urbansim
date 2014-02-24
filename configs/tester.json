@@ -3,8 +3,10 @@
   "datastore": "bayarea.h5",
   "pathinsertcwd": true,
   "dataset": "BayAreaDataset",
+  "-saveoutput": true,
+  "startyear": 2010,
+  "numyearstorun": 1,
   "modelstorun": [
-      "rsh_simulate",
-      "hlcms_simulate"
+      "feasibility_run"
   ]
 }

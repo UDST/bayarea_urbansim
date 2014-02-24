@@ -1,13 +1,13 @@
 import numpy as np, pandas as pd
 import time, os
-from synthicity.utils import misc
-from synthicity.urbansim import dataset, networks
+from synthicity.utils import misc, networks
+from synthicity.urbansim import dataset
 import warnings
 import variables
 
 warnings.filterwarnings('ignore',category=pd.io.pytables.PerformanceWarning)
 
-USECHTS = 0
+USECHTS = 1
 
 # this is the central location to do all the little data format issues that will be needed by all models
 
@@ -103,18 +103,17 @@ class BayAreaDataset(dataset.Dataset):
 
     return buildings
 
-  def fetch_households(self,tenure=None):
+  def fetch_households(self):
 
     households = self.store['households']
     households['income'][households['income'] < 0] = 0
     households['income_quartile'] = pd.qcut(households['income'],4).labels
 
-    if tenure == "rent": households = households[households['tenure']==1]
-    elif tenure == "sales": households = households[households['tenure']<>1]
-    
     households['HHINCOME'] = households['income']/10000.0
     
-    households = self.join_for_field(households,'buildings','building_id','_node_id')
+    #households = self.join_for_field(households,'buildings','building_id','_node_id')
+    #households = self.join_for_field(households,'buildings','building_id','x')
+    #households = self.join_for_field(households,'buildings','building_id','y')
 
     return households
 
@@ -124,8 +123,8 @@ class BayAreaDataset(dataset.Dataset):
 
     homesales['Sale_price'] = homesales['Sale_price'].str.replace('$','')
     homesales['Sale_price'] = homesales['Sale_price'].str.replace(',','')
-    homesales['Sale_price_flt'] = homesales['Sale_price'].astype('f4')
-    homesales['Sale_price_flt'] /= homesales['SQft'] 
+    homesales['sale_price_flt'] = homesales['Sale_price'].astype('f4')
+    homesales['sale_price_flt'] /= homesales['SQft'] 
     homesales = homesales[homesales.SQft>0]
     homesales["year_built"] = homesales["Year_built"]
     homesales["unit_lot_size"] = homesales["Lot_size"]
@@ -207,11 +206,17 @@ class BayAreaDataset(dataset.Dataset):
     return pd.merge(table,self.fetch(tblname)[[fieldname]],left_on=foreign_key,right_index=True)
 
   # the norental and noowner leave buildings with unassigned tenure
-  def building_filter(self,norental=0,noowner=0,residential=1,nofilter=0):
+  def building_filter(self,norental=0,noowner=0,residential=1,nofilter=0,year=None):
     buildings = self.fetch('buildings')
+   
+    #if year is not None:
+    #  buildings['sales_price'] = self.load_attr('residential_sales_price',year)
+
     if nofilter: return buildings
     if residential: buildings = buildings[(buildings['general_type'] == 'Residential')]
     else:           buildings = buildings[(buildings['general_type'] <> 'Residential')]
     if norental:    buildings = buildings[buildings['tenure'] <> 1]
     if noowner:     buildings = buildings[buildings['tenure'] <> 2]
     return buildings 
+
+LocalDataset = BayAreaDataset
