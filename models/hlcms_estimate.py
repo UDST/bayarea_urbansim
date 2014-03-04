@@ -12,17 +12,26 @@ def hlcms_estimate(dset,year=None,show=True):
   returnobj = {}
   
   # TEMPLATE configure table
-  choosers = dset.fetch_batshh(tenure='sales')
+  households = dset.households
+  households = households[households.tenure<>1]
   # ENDTEMPLATE
   
+  # TEMPLATE randomly choose estimatiors
+  households = households.loc[np.random.choice(households.index, 10000,replace=False)]
+  # ENDTEMPLATE
   # TEMPLATE specifying alternatives
-  alternatives = dset.nodes.join(dset.variables.compute_res_building_averages(dset,year,sales=1,rent=0))
+  alternatives = dset.building_filter(residential=1)
   # ENDTEMPLATE
   
+  # TEMPLATE merge 
+  t_m = time.time()
+  alternatives = pd.merge(alternatives,dset.fetch_csv('nodes.csv',index_col='node_id'),**{'right_index': True, 'left_on': '_node_id'})
+  print "Finished with merge in %f" % (time.time()-t_m)
+  # ENDTEMPLATE
   t1 = time.time()
 
   # TEMPLATE creating segments
-  segments = choosers.groupby(['income_quartile'])
+  segments = households.groupby(['income_quartile'])
   # ENDTEMPLATE
     
   for name, segment in segments:
@@ -32,22 +41,13 @@ def hlcms_estimate(dset,year=None,show=True):
 
     global SAMPLE_SIZE
     sample, alternative_sample, est_params = interaction.mnl_interaction_dataset(
-                                        segment,alternatives,SAMPLE_SIZE,chosenalts=segment["_node_id"])
+                                        segment,alternatives,SAMPLE_SIZE,chosenalts=segment["building_id"])
 
     print "Estimating parameters for segment = %s, size = %d" % (name, len(segment.index)) 
 
     # TEMPLATE computing vars
-    data = pd.DataFrame(index=alternative_sample.index)
-    if 0: pass
-    else:
-      data["ln_price"] = (alternative_sample.sales_price.apply(np.log1p)).astype('float')
-      data["sales_price x income"] = ((alternative_sample.sales_price*alternative_sample.HHINCOME).apply(np.log)).astype('float')
-      data["accessibility"] = (alternative_sample.nets_all_regional1_30.apply(np.log1p)).astype('float')
-      data["reliability"] = (alternative_sample.nets_all_regional2_30.apply(np.log1p)).astype('float')
-      data["average_income"] = (alternative_sample.demo_averageincome_average_local.apply(np.log)).astype('float')
-      data["income x income"] = ((alternative_sample.demo_averageincome_average_local*alternative_sample.HHINCOME).apply(np.log)).astype('float')
-      data["ln_units"] = (alternative_sample.residential_units.apply(np.log1p)).astype('float')
-    data = data.fillna(0)
+    print "WARNING: using patsy, ind_vars will be ignored"
+    data = dmatrix("np.log1p(unit_sqft) + sum_residential_units + ave_unit_sqft + ave_lot_sqft + ave_income + poor + sfdu + renters + np.log1p(res_sales_price) - 1", data=alternative_sample, return_type='dataframe')
     # ENDTEMPLATE
     if show: print data.describe()
 

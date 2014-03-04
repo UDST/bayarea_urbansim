@@ -1,5 +1,6 @@
 {
   "table": "dset.costar",
+  "internalname": "jobs",
   "model": "hedonicmodel",
   "table_sim": "dset.building_filter(residential=0)",
   "merge": {
@@ -17,6 +18,7 @@
     "ln_stories"
   ],
   "add_constant": true,
+  "output_table": "dset.buildings",
   "output_varname": "nonresidential_rent",
   "output_transform": "np.exp"
 }

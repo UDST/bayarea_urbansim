@@ -7,6 +7,6 @@
   "startyear": 2010,
   "numyearstorun": 1,
   "modelstorun": [
-      "feasibility_run"
+    "developer_run"
   ]
 }

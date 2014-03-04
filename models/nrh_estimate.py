@@ -11,12 +11,12 @@ def nrh_estimate(dset,year=None,show=True):
   t1 = time.time()
   
   # TEMPLATE configure table
-  buildings = dset.costar
+  jobs = dset.costar
   # ENDTEMPLATE
 
   # TEMPLATE merge 
   t_m = time.time()
-  buildings = pd.merge(buildings,dset.nodes,**{'right_index': True, 'left_on': '_node_id'})
+  jobs = pd.merge(jobs,dset.nodes,**{'right_index': True, 'left_on': '_node_id'})
   print "Finished with merge in %f" % (time.time()-t_m)
   # ENDTEMPLATE
   
@@ -24,7 +24,7 @@ def nrh_estimate(dset,year=None,show=True):
   t1 = time.time()
 
   # TEMPLATE creating segments
-  segments = buildings.groupby(['general_type'])
+  segments = jobs.groupby(['general_type'])
   # ENDTEMPLATE
     
   for name, segment in segments:

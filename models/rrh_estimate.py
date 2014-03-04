@@ -11,19 +11,19 @@ def rrh_estimate(dset,year=None,show=True):
   t1 = time.time()
   
   # TEMPLATE configure table
-  buildings = dset.apartments
+  units = dset.apartments
   # ENDTEMPLATE
 
   # TEMPLATE merge 
   t_m = time.time()
-  buildings = pd.merge(buildings,dset.nodes,**{'right_index': True, 'left_on': '_node_id'})
+  units = pd.merge(units,dset.nodes,**{'right_index': True, 'left_on': '_node_id'})
   print "Finished with merge in %f" % (time.time()-t_m)
   # ENDTEMPLATE
   
   print "Finished specifying in %f seconds" % (time.time()-t1)
   t1 = time.time()
 
-  segments = [(None,buildings)]
+  segments = [(None,units)]
     
   for name, segment in segments:
     name = str(name)

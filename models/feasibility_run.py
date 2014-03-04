@@ -27,6 +27,7 @@ def current_rent_per_parcel(far_predictions,avgrents):
   # this is bad - need the right rents for each type
   return far_predictions.total_sqft*avgrents.residential
 
+RENTMULTIPLIER = 1.5 # this is essentially a calibration constant
 DEV = None
 def feasibility_run(dset,year=2010):
 
@@ -42,15 +43,18 @@ def feasibility_run(dset,year=2010):
   # compute total_sqft on the parcel, total current rent, and current far
   far_predictions = pd.DataFrame(index=parcels.index)
   far_predictions['total_sqft'] = dset.buildings.groupby('parcel_id').building_sqft.sum().fillna(0)
+  far_predictions['total_units'] = dset.buildings.groupby('parcel_id').residential_units.sum().fillna(0)
   far_predictions['year_built'] = dset.buildings.groupby('parcel_id').year_built.min().fillna(1960)
   far_predictions['currentrent'] = current_rent_per_parcel(far_predictions,avgrents)
   far_predictions['parcelsize'] = parcels.shape_area*10.764
-  far_predictions.parcelsize[far_predictions.parcelsize<300] = 300 # some parcels have unrealisticly small sizes
+  # some parcels have unrealisticly small sizes
+  far_predictions.parcelsize[far_predictions.parcelsize<300] = 300 
 
   print "Get zoning:", time.ctime()
   zoning = dset.fetch('zoning').dropna(subset=['max_far'])
 
-  parcels = pd.merge(parcels,zoning,left_on='zoning',right_index=True) # only keeps those with zoning
+  # only keeps those with zoning
+  parcels = pd.merge(parcels,zoning,left_on='zoning',right_index=True)
 
   # need to map building types in zoning to allowable forms in the developer model 
   type_d = { 
@@ -62,37 +66,46 @@ def feasibility_run(dset,year=2010):
   'mixedoffice': [14],
   }
   
-
-  # we have zoning by like 16 building types and rents/far predictions by 4 building types
-  # so we have to convert one into the other - would probably be better to have rents
-  # segmented by the same 16 building types if we had good observations for that
+  # we have zoning by like 16 building types and rents/far predictions by 4 building 
+  # types so we have to convert one into the other - would probably be better to have 
+  # rents segmented by the same 16 building types if we had good observations for that
   parcel_predictions = pd.DataFrame(index=parcels.index)
   for form in ["residential"]: #type_d.iteritems():
     
     btypes = type_d[form]
-    for btype in [3]:
+    for btype in [1,2,3]:
 
       print form, btype
       # is type allowed
-      tmp = parcels[parcels['type%d'%btype]=='t'][['max_far','max_height']] # is type allowed
+      tmp = parcels[parcels['type%d'%btype]=='t'][['max_far','max_height']]
       # at what far
-      far_predictions['type%d_zonedfar'%btype] = tmp['max_far'] # at what far
-      far_predictions['type%d_zonedheight'%btype] = tmp['max_height'] # at what height
+      far_predictions['type%d_zonedfar'%btype] = tmp['max_far'] 
+      # at what height
+      far_predictions['type%d_zonedheight'%btype] = tmp['max_height'] 
+
+      # need to use max_dua here!!
+      if btype == 1:
+        far_predictions['type%d_zonedfar'%btype] = .75
+      elif btype == 2: 
+        far_predictions['type%d_zonedfar'%btype] = 1.2
 
       # do the lookup in the developer model - this is where the profitability is computed
-      far_predictions[str(btype)+'_feasiblefar'], far_predictions[str(btype)+'_profit'] = \
+      far_predictions['type%d_feasiblefar'%btype], far_predictions['type%d_profit'%btype] = \
                                            DEV.lookup(form,avgrents[spotproforma.uses].as_matrix(),\
-                                           far_predictions.currentrent*2.5,far_predictions.parcelsize,
+                                           far_predictions.currentrent*RENTMULTIPLIER,
+                                           far_predictions.parcelsize,
                                            far_predictions['type%d_zonedfar'%btype],
                                            far_predictions['type%d_zonedheight'%btype])
 
-      far_predictions[str(btype)+'_feasiblefar'][far_predictions.year_built < 1945] = 0.0
-      far_predictions[str(btype)+'_profit'][far_predictions.year_built < 1945] = 0.0
-      #far_predictions[str(btype)+'_feasiblefar'][far_predictions.year_built > 1995] = 0.0
-      #far_predictions[str(btype)+'_profit'][far_predictions.year_built > 1995] = 0.0
+      # don't redevelop historic buildings
+      far_predictions['type%d_feasiblefar'%btype][far_predictions.year_built < 1945] = 0.0
+      far_predictions['type%d_profit'%btype][far_predictions.year_built < 1945] = 0.0
 
   far_predictions = far_predictions.join(avgrents)
   print "Feasibility and zoning\n", far_predictions.describe()
-  far_predictions['currentrent'] /= .06
-  far_predictions.to_csv('far_predictions.csv',index_col='parcel_id',float_format="%.2f")
+  far_predictions['currentrent'] /= spotproforma.CAPRATE
+  fname = os.path.join(misc.data_dir(),'far_predictions.csv')
+  far_predictions.to_csv(fname,index_col='parcel_id',float_format="%.2f")
+  dset.save_tmptbl("feasibility",far_predictions)
+
   print "Finished developer", time.ctime()

@@ -1,20 +1,24 @@
 {
     "coeffs": [
-        -2.033,
-        1.467,
-        0.311,
-        -0.104,
-        1.291,
-        1.291,
-        0.552
+        -0.383,
+        0.423,
+        0.322,
+        0.013,
+        1.593,
+        -0.175,
+        0.199,
+        -0.325,
+        -0.178
     ],
     "fnames": [
-        "ln_price",
-        "sales_price x income",
-        "accessibility",
-        "reliability",
-        "average_income",
-        "income x income",
-        "ln_units"
+        "np.log1p(unit_sqft)",
+        "sum_residential_units",
+        "ave_unit_sqft",
+        "ave_lot_sqft",
+        "ave_income",
+        "poor",
+        "sfdu",
+        "renters",
+        "np.log1p(res_sales_price)"
     ]
 }

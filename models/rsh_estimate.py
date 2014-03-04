@@ -11,43 +11,38 @@ def rsh_estimate(dset,year=None,show=True):
   t1 = time.time()
   
   # TEMPLATE configure table
-  buildings = dset.homesales
-  buildings = buildings[buildings.unit_sqft < 10000]
-  buildings = buildings[buildings.Sale_price_flt > 30]
+  units = dset.homesales
+  units = units[units.unit_lot_size > 0]
+  units = units[units.year_built > 1000]
+  units = units[units.year_built < 2020]
+  units = units[units.unit_sqft > 100]
+  units = units[units.unit_sqft < 10000]
+  units = units[units.sale_price_flt > 30]
+  units = units[units.sale_price_flt < 1000]
   # ENDTEMPLATE
 
   # TEMPLATE merge 
   t_m = time.time()
-  buildings = pd.merge(buildings,dset.nodes,**{'right_index': True, 'left_on': '_node_id'})
+  units = pd.merge(units,dset.fetch_csv('nodes.csv',index_col='node_id'),**{'right_index': True, 'left_on': '_node_id'})
   print "Finished with merge in %f" % (time.time()-t_m)
   # ENDTEMPLATE
   
   print "Finished specifying in %f seconds" % (time.time()-t1)
   t1 = time.time()
 
-  segments = [(None,buildings)]
+  segments = [(None,units)]
     
   for name, segment in segments:
     name = str(name)
     outname = "rsh" if name is None else "rsh_"+name
     
     # TEMPLATE computing vars
-    est_data = pd.DataFrame(index=segment.index)
-    if 0: pass
-    else:
-      est_data["historic"] = (segment.year_built < 1940).astype('float')
-      est_data["new"] = (segment.year_built > 2005).astype('float')
-      est_data["accessibility"] = (segment.nets_all_regional1_30.apply(np.log1p)).astype('float')
-      est_data["reliability"] = (segment.nets_all_regional2_30.apply(np.log1p)).astype('float')
-      est_data["average_income"] = (segment.demo_averageincome_average_local.apply(np.log)).astype('float')
-      est_data["ln_unit_sqft"] = (segment.unit_sqft.apply(np.log1p)).astype('float')
-      est_data["ln_lot_size"] = (segment.unit_lot_size.apply(np.log1p)).astype('float')
-    est_data = sm.add_constant(est_data,prepend=False)
-    est_data = est_data.fillna(0)
+    print "WARNING: using patsy, ind_vars will be ignored"
+    est_data = dmatrix("I(year_built < 1940) + I(year_built > 2005) + np.log1p(unit_sqft) + np.log1p(unit_lot_size) + sum_residential_units + ave_unit_sqft + ave_lot_sqft + ave_income + poor + jobs + sfdu + renters", data=segment, return_type='dataframe')
     # ENDTEMPLATE
 
     # TEMPLATE dependent variable
-    depvar = segment["Sale_price_flt"]
+    depvar = segment["sale_price_flt"]
     depvar = depvar.apply(np.log)
     # ENDTEMPLATE
     

@@ -1,5 +1,6 @@
 {
   "table": "dset.nets",
+  "internalname": "jobs",
   "model": "locationchoicemodel",
   "modeldependencies": "nrh.json",
   "table_sim": "dset.nets[dset.nets.lastmove>2007]",
@@ -17,5 +18,6 @@
     "accessibility",
     "reliability"
   ],
+  "output_table": "dset.nets",
   "output_varname": "firms_building_ids"
 }

@@ -12,7 +12,7 @@ def hlcmr_estimate(dset,year=None,show=True):
   returnobj = {}
   
   # TEMPLATE configure table
-  choosers = dset.fetch_batshh(tenure='rent')
+  households = dset.fetch_batshh(tenure='rent')
   # ENDTEMPLATE
   
   # TEMPLATE specifying alternatives
@@ -22,7 +22,7 @@ def hlcmr_estimate(dset,year=None,show=True):
   t1 = time.time()
 
   # TEMPLATE creating segments
-  segments = choosers.groupby(['income_quartile'])
+  segments = households.groupby(['income_quartile'])
   # ENDTEMPLATE
     
   for name, segment in segments:

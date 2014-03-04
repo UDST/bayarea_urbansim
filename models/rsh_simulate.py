@@ -11,12 +11,12 @@ def rsh_simulate(dset,year=None,show=True):
   t1 = time.time()
   
   # TEMPLATE configure table
-  buildings = dset.building_filter(residential=1)
+  units = dset.building_filter(residential=1)
   # ENDTEMPLATE
 
   # TEMPLATE merge 
   t_m = time.time()
-  buildings = pd.merge(buildings,dset.nodes,**{'right_index': True, 'left_on': '_node_id'})
+  units = pd.merge(units,dset.fetch_csv('nodes.csv',index_col='node_id'),**{'right_index': True, 'left_on': '_node_id'})
   print "Finished with merge in %f" % (time.time()-t_m)
   # ENDTEMPLATE
   
@@ -24,28 +24,18 @@ def rsh_simulate(dset,year=None,show=True):
   t1 = time.time()
 
   simrents = []
-  segments = [(None,buildings)]
+  segments = [(None,units)]
     
   for name, segment in segments:
     name = str(name)
     outname = "rsh" if name is None else "rsh_"+name
     
     # TEMPLATE computing vars
-    est_data = pd.DataFrame(index=segment.index)
-    if 0: pass
-    else:
-      est_data["historic"] = (segment.year_built < 1940).astype('float')
-      est_data["new"] = (segment.year_built > 2005).astype('float')
-      est_data["accessibility"] = (segment.nets_all_regional1_30.apply(np.log1p)).astype('float')
-      est_data["reliability"] = (segment.nets_all_regional2_30.apply(np.log1p)).astype('float')
-      est_data["average_income"] = (segment.demo_averageincome_average_local.apply(np.log)).astype('float')
-      est_data["ln_unit_sqft"] = (segment.unit_sqft.apply(np.log1p)).astype('float')
-      est_data["ln_lot_size"] = (segment.unit_lot_size.apply(np.log1p)).astype('float')
-    est_data = sm.add_constant(est_data,prepend=False)
-    est_data = est_data.fillna(0)
+    print "WARNING: using patsy, ind_vars will be ignored"
+    est_data = dmatrix("I(year_built < 1940) + I(year_built > 2005) + np.log1p(unit_sqft) + np.log1p(unit_lot_size) + sum_residential_units + ave_unit_sqft + ave_lot_sqft + ave_income + poor + jobs + sfdu + renters", data=segment, return_type='dataframe')
     # ENDTEMPLATE 
     
-    print "Generating rents on %d buildings" % (est_data.shape[0])
+    print "Generating rents on %d %s" % (est_data.shape[0],"units")
     vec = dset.load_coeff(outname)
     vec = np.reshape(vec,(vec.size,1))
     rents = est_data.dot(vec).astype('f4')
@@ -55,8 +45,9 @@ def rsh_simulate(dset,year=None,show=True):
     rents.describe().to_csv(os.path.join(misc.output_dir(),"rsh_simulate.csv"))
       
   simrents = pd.concat(simrents)
-  dset.buildings["residential_sales_price"] = simrents.reindex(dset.buildings.index)
-  dset.store_attr("residential_sales_price",year,simrents)
+
+  dset.buildings["res_sales_price"] = simrents.reindex(dset.buildings.index)
+  dset.store_attr("res_sales_price",year,simrents)
 
   print "Finished executing in %f seconds" % (time.time()-t1)
   return returnobj

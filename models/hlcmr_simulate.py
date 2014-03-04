@@ -11,16 +11,16 @@ def hlcmr_simulate(dset,year=None,show=True):
   returnobj = {}
   t1 = time.time()
   # TEMPLATE configure table
-  choosers = dset.fetch_households(tenure='rent')
+  households = dset.fetch_households(tenure='rent')
   # ENDTEMPLATE
   
   # TEMPLATE dependent variable
   depvar = "_node_id"
   # ENDTEMPLATE
 
-  movers = choosers # everyone moves
+  movers = households # everyone moves
   
-  print "Total new agents and movers = %d" % len(movers.index)
+  print "Total new agents and movers = %d (out of %d %s)" % (len(movers.index),len(households.index),"households")
 
   # TEMPLATE specifying alternatives
   alternatives = dset.nodes.join(dset.variables.compute_res_building_averages(dset,year,sales=0,rent=1))

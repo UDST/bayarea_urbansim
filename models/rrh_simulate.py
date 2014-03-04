@@ -11,12 +11,12 @@ def rrh_simulate(dset,year=None,show=True):
   t1 = time.time()
   
   # TEMPLATE configure table
-  buildings = dset.building_filter(residential=1)
+  units = dset.building_filter(residential=1)
   # ENDTEMPLATE
 
   # TEMPLATE merge 
   t_m = time.time()
-  buildings = pd.merge(buildings,dset.nodes,**{'right_index': True, 'left_on': '_node_id'})
+  units = pd.merge(units,dset.nodes,**{'right_index': True, 'left_on': '_node_id'})
   print "Finished with merge in %f" % (time.time()-t_m)
   # ENDTEMPLATE
   
@@ -24,7 +24,7 @@ def rrh_simulate(dset,year=None,show=True):
   t1 = time.time()
 
   simrents = []
-  segments = [(None,buildings)]
+  segments = [(None,units)]
     
   for name, segment in segments:
     name = str(name)
@@ -42,7 +42,7 @@ def rrh_simulate(dset,year=None,show=True):
     est_data = est_data.fillna(0)
     # ENDTEMPLATE 
     
-    print "Generating rents on %d buildings" % (est_data.shape[0])
+    print "Generating rents on %d %s" % (est_data.shape[0],"units")
     vec = dset.load_coeff(outname)
     vec = np.reshape(vec,(vec.size,1))
     rents = est_data.dot(vec).astype('f4')
@@ -52,6 +52,7 @@ def rrh_simulate(dset,year=None,show=True):
     rents.describe().to_csv(os.path.join(misc.output_dir(),"rrh_simulate.csv"))
       
   simrents = pd.concat(simrents)
+
   dset.buildings["residential_rent"] = simrents.reindex(dset.buildings.index)
   dset.store_attr("residential_rent",year,simrents)
 

@@ -1,5 +1,6 @@
 {
   "table": "dset.apartments",
+  "internalname": "units",
   "model": "hedonicmodel",
   "table_sim": "dset.building_filter(residential=1)",
   "merge": {
@@ -17,6 +18,7 @@
     "ln_unit_sqft"
   ],
   "add_constant": true,
+  "output_table": "dset.buildings",
   "output_varname": "residential_rent",
   "output_transform": "np.exp"
 }

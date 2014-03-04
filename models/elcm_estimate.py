@@ -12,11 +12,11 @@ def elcm_estimate(dset,year=None,show=True):
   returnobj = {}
   
   # TEMPLATE configure table
-  choosers = dset.nets
+  jobs = dset.nets
   # ENDTEMPLATE
   
   # TEMPLATE randomly choose estimatiors
-  choosers = choosers.ix[np.random.choice(choosers.index, 10000,replace=False)]
+  jobs = jobs.loc[np.random.choice(jobs.index, 10000,replace=False)]
   # ENDTEMPLATE
   # TEMPLATE specifying alternatives
   alternatives = dset.nodes.join(dset.variables.compute_nonres_building_proportions(dset,year))
@@ -25,7 +25,7 @@ def elcm_estimate(dset,year=None,show=True):
   t1 = time.time()
 
   # TEMPLATE creating segments
-  segments = choosers.groupby(['naics11cat'])
+  segments = jobs.groupby(['naics11cat'])
   # ENDTEMPLATE
     
   for name, segment in segments:

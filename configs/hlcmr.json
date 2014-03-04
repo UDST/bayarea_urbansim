@@ -1,5 +1,6 @@
 {
   "table": "dset.fetch_batshh(tenure='rent')",
+  "internalname": "households",
   "model": "locationchoicemodel",
   "modeldependencies": "rrh.json",
   "table_sim": "dset.fetch_households(tenure='rent')",
@@ -16,5 +17,6 @@
     "ln_units",
     "ln_renters"
   ],
-  "output_varname": "rent_household_building_ids"
+  "output_table": "dset.households",
+  "output_varname": "renter_building_ids"
 }

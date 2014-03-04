@@ -11,16 +11,16 @@ def elcm_simulate(dset,year=None,show=True):
   returnobj = {}
   t1 = time.time()
   # TEMPLATE configure table
-  choosers = dset.nets[dset.nets.lastmove>2007]
+  jobs = dset.nets[dset.nets.lastmove>2007]
   # ENDTEMPLATE
   
   # TEMPLATE dependent variable
   depvar = "_node_id"
   # ENDTEMPLATE
 
-  movers = choosers # everyone moves
+  movers = jobs # everyone moves
   
-  print "Total new agents and movers = %d" % len(movers.index)
+  print "Total new agents and movers = %d (out of %d %s)" % (len(movers.index),len(jobs.index),"jobs")
 
   # TEMPLATE specifying alternatives
   alternatives = dset.nodes.join(dset.variables.compute_nonres_building_proportions(dset,year))

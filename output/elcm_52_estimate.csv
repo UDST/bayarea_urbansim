@@ -1,7 +1,0 @@
-Variables,Coefficient,Stderr,T-score,Significance
-total sqft,0.44,0.04,10.80,***
-ln weighted rent,-0.74,0.15,-4.96,***
-retpct,-0.04,0.16,-0.28,
-indpct,-1.60,0.21,-7.48,***
-accessibility,0.45,0.03,17.01,***
-reliability,-0.06,0.04,-1.59,.
