@@ -1,0 +1,32 @@
+{
+    "coeffs": [
+        6.51,
+        0.221,
+        0.089,
+        -0.341,
+        0.098,
+        0.523,
+        -0.197,
+        -0.048,
+        0.197,
+        -0.494,
+        0.092,
+        -0.047,
+        -0.06
+    ],
+    "fnames": [
+        "Intercept",
+        "I(year_built < 1940)[T.True]",
+        "I(year_built > 2005)[T.True]",
+        "np.log1p(unit_sqft)",
+        "np.log1p(unit_lot_size)",
+        "sum_residential_units",
+        "ave_unit_sqft",
+        "ave_lot_sqft",
+        "ave_income",
+        "poor",
+        "jobs",
+        "sfdu",
+        "renters"
+    ]
+}
