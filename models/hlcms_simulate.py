@@ -41,7 +41,7 @@ def hlcms_simulate(dset,year=None,show=True):
   # ENDTEMPLATE
   # TEMPLATE merge 
   t_m = time.time()
-  alternatives = pd.merge(alternatives,dset.fetch_csv('nodes.csv',index_col='node_id'),**{'right_index': True, 'left_on': '_node_id'})
+  alternatives = pd.merge(alternatives,dset.nodes,**{'right_index': True, 'left_on': '_node_id'})
   print "Finished with merge in %f" % (time.time()-t_m)
   # ENDTEMPLATE
   

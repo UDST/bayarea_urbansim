@@ -7,11 +7,11 @@
   "startyear": 2010,
   "numyearstorun": 3,
   "modelstorun": [
+    "networks_run",
     "rsh_simulate",
     "hlcms_simulate",
-    "rrh_simulate",
-    "hlcmr_simulate",
-    "nrh_simulate",
-    "elcm_simulate"
+    "hhlds_run",
+    "feasibility_run",
+    "developer_run"
   ]
 }

@@ -14,6 +14,8 @@ import dataset
 dset = dataset.BayAreaDataset(os.path.join(misc.data_dir(),'bayarea.h5'))
 
 for year in range(1): 
+  print "Running year %d" % (year+1)
+
   print "Running developer_run"
   import developer_run
   retval = developer_run.developer_run(dset,year=2010+year)

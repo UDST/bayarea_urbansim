@@ -23,7 +23,7 @@ def rsh_estimate(dset,year=None,show=True):
 
   # TEMPLATE merge 
   t_m = time.time()
-  units = pd.merge(units,dset.fetch_csv('nodes.csv',index_col='node_id'),**{'right_index': True, 'left_on': '_node_id'})
+  units = pd.merge(units,dset.nodes,**{'right_index': True, 'left_on': '_node_id'})
   print "Finished with merge in %f" % (time.time()-t_m)
   # ENDTEMPLATE
   

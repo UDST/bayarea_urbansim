@@ -4,14 +4,9 @@
   "pathinsertcwd": true,
   "dataset": "BayAreaDataset",
   "modelstorun": [
+    "networks_run",
     "rsh_estimate",
     "rsh_simulate",
-    "hlcms_estimate",
-    "rrh_estimate",
-    "rrh_simulate",
-    "hlcmr_estimate",
-    "nrh_estimate",
-    "nrh_simulate",
-    "elcm_estimate"
+    "hlcms_estimate"
   ]
 }

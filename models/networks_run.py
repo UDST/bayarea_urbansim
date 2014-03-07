@@ -15,8 +15,10 @@ def networks_run(dset,year=None,show=True):
                     impedances=None)
     
   t1 = time.time()
- 
-  NETWORKS = networks.NETWORKS # make available for the variables 
+
+  dset.households = dset.add_xy(dset.households)
+  
+  NETWORKS = networks.NETWORKS # make available for the variables
   _tbl_ = pd.DataFrame(index=pd.MultiIndex.from_tuples(networks.NETWORKS.nodeids,names=['_graph_id','_node_id']))
   if 0: pass
   else:
@@ -31,10 +33,11 @@ def networks_run(dset,year=None,show=True):
     _tbl_["sfdu"] = (NETWORKS.accvar(dset.households[dset.households.building_type_id==1],500).apply(np.log1p)).astype('float')
     _tbl_["renters"] = (NETWORKS.accvar(dset.buildings[dset.buildings.tenure==2],500).apply(np.log1p)).astype('float')
   _tbl_ = _tbl_.fillna(0)
-  
+
   if show: print _tbl_.describe()
-   
+  
   _tbl_ = _tbl_.reset_index().set_index(networks.NETWORKS.external_nodeids)
+  
   dset.save_tmptbl("nodes",_tbl_)
   
   _tbl_.to_csv(os.path.join(misc.data_dir(),"nodes.csv"),index_label='node_id',float_format="%.3f")

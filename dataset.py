@@ -111,10 +111,6 @@ class BayAreaDataset(dataset.Dataset):
 
     households['HHINCOME'] = households['income']/10000.0
     
-    #households = self.join_for_field(households,'buildings','building_id','_node_id')
-    #households = self.join_for_field(households,'buildings','building_id','x')
-    #households = self.join_for_field(households,'buildings','building_id','y')
-
     return households
 
   def fetch_homesales(self):
@@ -189,25 +185,9 @@ class BayAreaDataset(dataset.Dataset):
 
     return bats
 
-  def fetch_networks(self,reload=True,maxdistance=30,rootdir=None,custom_impedances=None):
-    if not reload: return networks.Networks(os.path.join(misc.data_dir(),'network%d.pkl'))
-    
-    network = networks.Networks()
-    network.process_network(maxdistance,rootdir,walkminutes=1,custom_impedances=custom_impedances)
-    self.networks = network
-    return self.networks
-
-  # this is a shortcut function to join the table with dataset.fetch(tblname) 
-  # using the foreign_key in order to add fieldname to the source table
-  def join_for_field(self,table,tblname,foreign_key,fieldname):
-    if type(table) == type(''): table = self.fetch(table)
-    if foreign_key == None: # join on index
-        return pd.merge(table,self.fetch(tblname)[[fieldname]],left_index=True,right_index=True)
-    return pd.merge(table,self.fetch(tblname)[[fieldname]],left_on=foreign_key,right_index=True)
-
   # the norental and noowner leave buildings with unassigned tenure
   def building_filter(self,norental=0,noowner=0,residential=1,nofilter=0,year=None):
-    buildings = self.fetch('buildings')
+    buildings = self.buildings 
    
     #if year is not None:
     #  buildings['sales_price'] = self.load_attr('residential_sales_price',year)

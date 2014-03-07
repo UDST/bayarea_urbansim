@@ -67,4 +67,6 @@ def developer_run(dset,year=2010):
   df = df[['parcel_id','building_type','residential_units','non_residential_sqft', u'building_sqft', u'stories', u'building_type_id', u'year_built', u'tenure', u'id', u'building', u'scenario', u'county', u'lot_size', u'rent', u'rental', u'general_type', u'unit_sqft', u'unit_lot_size','x','y','_node_id0','_node_id1','_node_id2','_node_id']]
   maxind = np.max(dset.buildings.index.values)
   df.index = df.index+maxind+1
+  print df.describe()
   dset.buildings = pd.concat([dset.buildings,df],verify_integrity=True)
+  dset.buildings.index.name = 'building_id'

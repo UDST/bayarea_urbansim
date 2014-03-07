@@ -6,8 +6,9 @@
   "model": "locationchoicemodel",
   "modeldependencies": "rsh_simulate",
   "alternatives": "dset.building_filter(residential=1)",
+  "NOTUSED":"dset.fetch_csv('nodes.csv',index_col='node_id')",
   "merge": {
-    "table":"dset.fetch_csv('nodes.csv',index_col='node_id')",
+    "table":"dset.nodes", 
     "left_on":"_node_id",
     "right_index":true
   },

@@ -8,6 +8,9 @@
     "maxdistances": [2000],
     "twoway": [1]
   },
+  "update_xys": [
+    "dset.households"
+  ],
   "var_lib": {
     "sum_residential_units": "NETWORKS.accvar(dset.buildings,500,vname='residential_units').apply(np.log1p)",
     "ave_unit_sqft": "NETWORKS.accvar(dset.buildings,500,vname='unit_sqft',agg='AGG_AVE',decay='DECAY_FLAT').apply(np.log1p)",
