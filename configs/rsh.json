@@ -1,28 +1,28 @@
 {
-  "table": "dset.homesales",
-  "internalname": "units",
-  "model": "hedonicmodel",
-  "estimate_filters": [
-    "units.unit_lot_size > 0",
-    "units.year_built > 1000",
-    "units.year_built < 2020",
-    "units.unit_sqft > 100",
-    "units.unit_sqft < 10000",
-    "units.sale_price_flt > 30",
-    "units.sale_price_flt < 1000"
-  ],
-  "table_sim": "dset.building_filter(residential=1)",
-  "NOTUSED":"dset.fetch_csv('nodes.csv',index_col='node_id')",
-  "merge": {
-    "table":"dset.nodes",
-    "left_on":"_node_id",
-    "right_index":true
-  },
-  "dep_var": "sale_price_flt",
-  "dep_var_transform": "np.log",
-  "patsy": "I(year_built < 1940) + I(year_built > 2005) + np.log1p(unit_sqft) + np.log1p(unit_lot_size) + sum_residential_units + ave_unit_sqft + ave_lot_sqft + ave_income + poor + jobs + sfdu + renters",
-  "add_constant": true,
-  "output_table": "dset.buildings",
-  "output_varname": "res_sales_price",
-  "output_transform": "np.exp"
+    "model": "hedonicmodel",
+    "output_table": "dset.buildings",
+    "estimate_filters": [
+        "units.unit_lot_size > 0",
+        "units.year_built > 1000",
+        "units.year_built < 2020",
+        "units.unit_sqft > 100",
+        "units.unit_sqft < 10000",
+        "units.sale_price_flt > 30",
+        "units.sale_price_flt < 1000"
+    ],
+    "NOTUSED": "dset.fetch_csv('nodes.csv',index_col='node_id')",
+    "add_constant": true,
+    "internalname": "units",
+    "patsy": "I(year_built < 1940) + I(year_built > 2005) + np.log1p(unit_sqft) + np.log1p(unit_lot_size) + sum_residential_units + ave_unit_sqft + ave_lot_sqft + ave_income + poor + jobs + sfdu + renters",
+    "merge": {
+        "table": "dset.nodes",
+        "right_index": true,
+        "left_on": "_node_id"
+    },
+    "output_varname": "res_sales_price",
+    "table": "dset.homesales",
+    "table_sim": "dset.building_filter(residential=1)",
+    "dep_var": "sale_price_flt",
+    "dep_var_transform": "np.log",
+    "output_transform": "np.exp"
 }

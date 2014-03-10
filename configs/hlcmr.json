@@ -1,22 +1,22 @@
 {
-  "table": "dset.fetch_batshh(tenure='rent')",
+  "table": "dset.households",
   "internalname": "households",
+  "filters": ["households.tenure==1"],
+  "est_sample_size": 10000,
   "model": "locationchoicemodel",
-  "modeldependencies": "rrh.json",
-  "table_sim": "dset.fetch_households(tenure='rent')",
-  "alternatives":"dset.nodes.join(dset.variables.compute_res_building_averages(dset,year,sales=0,rent=1))",
+  "modeldependencies": "rrh_simulate",
+  "alternatives": "dset.building_filter(residential=1)",
+  "merge": {
+    "table":"dset.nodes", 
+    "left_on":"_node_id",
+    "right_index":true
+  },
   "sample_size": 100,
-  "dep_var": "_node_id",
+  "dep_var": "building_id",
   "segment": ["income_quartile"],
-  "var_lib_file": "var_lib.json",
-  "ind_vars": [
-    "ln_rent",
-    "accessibility",
-    "reliability",
-    "average_income", 
-    "ln_units",
-    "ln_renters"
-  ],
+  "patsy": "np.log1p(unit_sqft) + sum_residential_units + ave_unit_sqft + ave_lot_sqft + ave_income + poor + sfdu + renters + np.log1p(res_rent) - 1",
+  "relocation_rate": 0.04,
+  "supply_constraint": "dset.building_filter(residential=1).residential_units.sub(dset.households.groupby('building_id').size(),fill_value=0)",
   "output_table": "dset.households",
   "output_varname": "renter_building_ids"
 }

@@ -1,24 +1,26 @@
 {
     "coeffs": [
-        -0.409,
-        -0.351,
-        0.493,
-        0.018,
-        -0.128,
-        0.44,
-        0.395,
-        -0.37,
-        -0.137
+        2.719,
+        -0.32,
+        0.216,
+        -0.095,
+        -0.004,
+        0.033,
+        -0.167,
+        0.044,
+        -0.034,
+        -0.013
     ],
     "fnames": [
+        "Intercept",
         "np.log1p(unit_sqft)",
         "sum_residential_units",
         "ave_unit_sqft",
         "ave_lot_sqft",
         "ave_income",
         "poor",
+        "jobs",
         "sfdu",
-        "renters",
-        "np.log1p(res_sales_price)"
+        "renters"
     ]
 }

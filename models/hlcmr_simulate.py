@@ -11,21 +11,39 @@ def hlcmr_simulate(dset,year=None,show=True):
   returnobj = {}
   t1 = time.time()
   # TEMPLATE configure table
-  households = dset.fetch_households(tenure='rent')
+  households = dset.households
+  households = households[households.tenure==1]
   # ENDTEMPLATE
   
   # TEMPLATE dependent variable
-  depvar = "_node_id"
+  depvar = "building_id"
   # ENDTEMPLATE
 
-  movers = households # everyone moves
+  # TEMPLATE computing relocations
+  movers = households[np.random.sample(len(households.index)) < 0.04].index
+  print "Count of movers = %d" % len(movers)
+  households["building_id"].loc[movers] = -1
+  # add current unplaced
+  movers = households[households["building_id"]==-1]
+  # ENDTEMPLATE
   
   print "Total new agents and movers = %d (out of %d %s)" % (len(movers.index),len(households.index),"households")
 
   # TEMPLATE specifying alternatives
-  alternatives = dset.nodes.join(dset.variables.compute_res_building_averages(dset,year,sales=0,rent=1))
+  alternatives = dset.building_filter(residential=1)
   # ENDTEMPLATE
   
+  # TEMPLATE computing supply constraint
+  vacant_units = dset.building_filter(residential=1).residential_units.sub(dset.households.groupby('building_id').size(),fill_value=0)
+  vacant_units = vacant_units[vacant_units>0].order(ascending=False)
+  alternatives = alternatives.loc[np.repeat(vacant_units.index,vacant_units.values.astype('int'))].reset_index()
+  print "There are %s empty units in %s locations total in the region" % (vacant_units.sum(),len(vacant_units))
+  # ENDTEMPLATE
+  # TEMPLATE merge 
+  t_m = time.time()
+  alternatives = pd.merge(alternatives,dset.nodes,**{'right_index': True, 'left_on': '_node_id'})
+  print "Finished with merge in %f" % (time.time()-t_m)
+  # ENDTEMPLATE
   
   print "Finished specifying model in %f seconds" % (time.time()-t1)
 
@@ -47,16 +65,8 @@ def hlcmr_simulate(dset,year=None,show=True):
     sample, alternative_sample, est_params = \
              interaction.mnl_interaction_dataset(segment,alternatives,SAMPLE_SIZE,chosenalts=None)
     # TEMPLATE computing vars
-    data = pd.DataFrame(index=alternative_sample.index)
-    if 0: pass
-    else:
-      data["ln_rent"] = (alternative_sample.rent.apply(np.log1p)).astype('float')
-      data["accessibility"] = (alternative_sample.nets_all_regional1_30.apply(np.log1p)).astype('float')
-      data["reliability"] = (alternative_sample.nets_all_regional2_30.apply(np.log1p)).astype('float')
-      data["average_income"] = (alternative_sample.demo_averageincome_average_local.apply(np.log)).astype('float')
-      data["ln_units"] = (alternative_sample.residential_units.apply(np.log1p)).astype('float')
-      data["ln_renters"] = (alternative_sample.hoodrenters.apply(np.log1p)).astype('float')
-    data = data.fillna(0)
+    print "WARNING: using patsy, ind_vars will be ignored"
+    data = dmatrix("np.log1p(unit_sqft) + sum_residential_units + ave_unit_sqft + ave_lot_sqft + ave_income + poor + sfdu + renters + np.log1p(res_rent) - 1", data=alternative_sample, return_type='dataframe')
     # ENDTEMPLATE
     data = data.as_matrix()
 
@@ -69,5 +79,27 @@ def hlcmr_simulate(dset,year=None,show=True):
   returnobj["hlcmr"] = misc.pandasdfsummarytojson(pdf.describe(),ndigits=10)
   pdf.describe().to_csv(os.path.join(misc.output_dir(),"hlcmr_simulate.csv"))
     
+  t1 = time.time()
+  # draw from actual units
+  new_homes = pd.Series(np.ones(len(movers.index))*-1,index=movers.index)
+  mask = np.zeros(len(alternatives.index),dtype='bool')
+  for name, segment in segments:
+    name = str(name)
+    print "Assigning units to %d agents of segment %s" % (len(segment.index),name)
+    p=pdf['segment%s'%name].values
+     
+    mask,new_homes = dset.choose(p,mask,alternatives,segment,new_homes)
+    
+  new_homes = pd.Series(alternatives["building_id"].loc[new_homes].values,index=new_homes.index) 
+  
+  build_cnts = new_homes.value_counts()
+  print "Assigned %d agents to %d locations with %d unplaced" % \
+                      (new_homes.size,build_cnts.size,build_cnts.get(-1,0))
+
+  # need to go back to the whole dataset
+  table = dset.households 
+  table["building_id"].loc[new_homes.index] = new_homes.values
+  dset.store_attr("renter_building_ids",year,copy.deepcopy(table["building_id"]))
+  print "Finished assigning agents in %f seconds" % (time.time()-t1)
   return returnobj
 
