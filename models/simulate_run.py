@@ -29,6 +29,14 @@ for year in range(3):
   import hlcms_simulate
   retval = hlcms_simulate.hlcms_simulate(dset,year=2010+year)
   if retval: open(os.path.join(misc.output_dir(),"hlcms_simulate.json"),"w").write(simplejson.dumps(retval,sort_keys=True,indent=4))
+  print "Running rrh_simulate"
+  import rrh_simulate
+  retval = rrh_simulate.rrh_simulate(dset,year=2010+year)
+  if retval: open(os.path.join(misc.output_dir(),"rrh_simulate.json"),"w").write(simplejson.dumps(retval,sort_keys=True,indent=4))
+  print "Running hlcmr_simulate"
+  import hlcmr_simulate
+  retval = hlcmr_simulate.hlcmr_simulate(dset,year=2010+year)
+  if retval: open(os.path.join(misc.output_dir(),"hlcmr_simulate.json"),"w").write(simplejson.dumps(retval,sort_keys=True,indent=4))
   print "Running hhlds_run"
   import hhlds_run
   retval = hhlds_run.hhlds_run(dset,year=2010+year)

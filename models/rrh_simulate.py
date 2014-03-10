@@ -31,15 +31,8 @@ def rrh_simulate(dset,year=None,show=True):
     outname = "rrh" if name is None else "rrh_"+name
     
     # TEMPLATE computing vars
-    est_data = pd.DataFrame(index=segment.index)
-    if 0: pass
-    else:
-      est_data["accessibility"] = (segment.nets_all_regional1_30.apply(np.log1p)).astype('float')
-      est_data["reliability"] = (segment.nets_all_regional2_30.apply(np.log1p)).astype('float')
-      est_data["average_income"] = (segment.demo_averageincome_average_local.apply(np.log)).astype('float')
-      est_data["ln_unit_sqft"] = (segment.unit_sqft.apply(np.log1p)).astype('float')
-    est_data = sm.add_constant(est_data,prepend=False)
-    est_data = est_data.fillna(0)
+    print "WARNING: using patsy, ind_vars will be ignored"
+    est_data = dmatrix("np.log1p(unit_sqft) + sum_residential_units + ave_unit_sqft + ave_lot_sqft + ave_income + poor + jobs + sfdu + renters", data=segment, return_type='dataframe')
     # ENDTEMPLATE 
     
     print "Generating rents on %d %s" % (est_data.shape[0],"units")
@@ -53,8 +46,8 @@ def rrh_simulate(dset,year=None,show=True):
       
   simrents = pd.concat(simrents)
 
-  dset.buildings["residential_rent"] = simrents.reindex(dset.buildings.index)
-  dset.store_attr("residential_rent",year,simrents)
+  dset.buildings["res_rent"] = simrents.reindex(dset.buildings.index)
+  dset.store_attr("res_rent",year,simrents)
 
   print "Finished executing in %f seconds" % (time.time()-t1)
   return returnobj
