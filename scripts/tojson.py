@@ -1,5 +1,23 @@
 import dataset, simplejson as json, math
 import pandas as pd, numpy as np
+import simplejson as json
+from shapely.geometry import shape
+
+geom = json.load(open('/home/ffoti/shp/parcels.json'))
+C = 0
+def fix(g):
+  if not g: return g
+  s = shape(g)  
+  if not s.is_valid:
+    global C
+    C += 1
+    return None
+  return g
+geom = [(int(f["properties"]["PARCEL_ID"]),fix(f["geometry"])) for f in geom["features"]]
+geom = dict(geom)
+print "Read %d geometries" % len(geom)
+print "%d bogus geometries are removed" % C
+
 dset = dataset.BayAreaDataset('data/bayarea.h5')
 
 keep = [u'building_id', u'parcel_id', u'building_type', u'residential_units', u'non_residential_sqft', u'building_sqft', u'stories', u'building_type_id', u'year_built', u'tenure']
@@ -46,6 +64,8 @@ def merge_parcel(parcel):
       del parcel['zoning']
   if parcel['parcel_id'] in buildings_d:
     parcel['buildings'] = buildings_d[parcel['parcel_id']]
+  if parcel['parcel_id'] in geom and geom[parcel['parcel_id']] is not None:
+    parcel['geometry'] = geom[parcel['parcel_id']]
   return parcel
 
 dlist = [json.dumps(merge_parcel(parcel))+"\n" for parcel in parcels]
