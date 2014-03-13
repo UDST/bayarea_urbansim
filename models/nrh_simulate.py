@@ -22,7 +22,8 @@ def nrh_simulate(dset, year=None, show=True):
     jobs = dset.building_filter(residential=0)
     # ENDTEMPLATE
 
-    # TEMPLATE merget_m = time.time()
+    # TEMPLATE merge
+    t_m = time.time()
     jobs = pd.merge(jobs, dset.nodes, **{'right_index': True, 'left_on': '_node_id'})
     print("Finished with merge in %f" % (time.time() - t_m))
     # ENDTEMPLATE

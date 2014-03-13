@@ -29,7 +29,8 @@ def rsh_estimate(dset, year=None, show=True):
     units = units[units.sale_price_flt < 1000]
     # ENDTEMPLATE
 
-    # TEMPLATE merget_m = time.time()
+    # TEMPLATE merge
+    t_m = time.time()
     units = pd.merge(units, dset.nodes, **{'right_index': True, 'left_on': '_node_id'})
     print("Finished with merge in %f" % (time.time() - t_m))
     # ENDTEMPLATE
