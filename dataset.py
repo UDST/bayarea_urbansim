@@ -1,7 +1,7 @@
 import numpy as np, pandas as pd
 import time, os
-from synthicity.utils import misc, networks
-from synthicity.urbansim import dataset
+from urbansim.utils import misc, networks
+from urbansim.urbansim import dataset
 import warnings
 import variables
 

@@ -5,7 +5,7 @@
   "dataset": "BayAreaDataset",
   "saveoutput": true,
   "startyear": 2010,
-  "numyearstorun": 3,
+  "numyearstorun": 30,
   "modelstorun": [
     "networks_run",
     "rsh_simulate",

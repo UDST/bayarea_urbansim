@@ -1,78 +1,92 @@
-import pandas as pd, numpy as np, statsmodels.api as sm
-from synthicity.urbanchoice import *
-from synthicity.utils import misc
-import time, copy, os, sys
+from __future__ import print_function
+
+import copy
+import os
+import sys
+import time
+
+import numpy as np
+import pandas as pd
+import statsmodels.api as sm
 from patsy import dmatrix
+
+from urbansim.urbanchoice import *
+from urbansim.utils import misc
 
 SAMPLE_SIZE=100
 
-def elcm_estimate(dset,year=None,show=True):
+def elcm_estimate(dset, year=None, show=True):
+    assert "locationchoicemodel" == "locationchoicemodel"  # should match!
+    returnobj = {}
 
-  assert "locationchoicemodel" == "locationchoicemodel" # should match!
-  returnobj = {}
-  
-  # TEMPLATE configure table
-  jobs = dset.nets
-  # ENDTEMPLATE
-  
-  # TEMPLATE randomly choose estimatiors
-  jobs = jobs.loc[np.random.choice(jobs.index, 10000,replace=False)]
-  # ENDTEMPLATE
-  # TEMPLATE specifying alternatives
-  alternatives = dset.nodes.join(dset.variables.compute_nonres_building_proportions(dset,year))
-  # ENDTEMPLATE
-  
-  t1 = time.time()
-
-  # TEMPLATE creating segments
-  segments = jobs.groupby(['naics11cat'])
-  # ENDTEMPLATE
-    
-  for name, segment in segments:
-
-    name = str(name)
-    outname = "elcm" if name is None else "elcm_"+name
-
-    global SAMPLE_SIZE
-    sample, alternative_sample, est_params = interaction.mnl_interaction_dataset(
-                                        segment,alternatives,SAMPLE_SIZE,chosenalts=segment["_node_id"])
-
-    print "Estimating parameters for segment = %s, size = %d" % (name, len(segment.index)) 
-
-    # TEMPLATE computing vars
-    data = pd.DataFrame(index=alternative_sample.index)
-    if 0: pass
-    else:
-      data["total sqft"] = (alternative_sample.totsum.apply(np.log1p)).astype('float')
-      data["ln_weighted_rent"] = (alternative_sample.weightedrent.apply(np.log1p)).astype('float')
-      data["retpct"] = alternative_sample["retpct"]
-      data["indpct"] = alternative_sample["indpct"]
-      data["accessibility"] = (alternative_sample.nets_all_regional1_30.apply(np.log1p)).astype('float')
-      data["reliability"] = (alternative_sample.nets_all_regional2_30.apply(np.log1p)).astype('float')
-    data = data.fillna(0)
+    # TEMPLATE configure table
+    jobs = dset.nets
     # ENDTEMPLATE
-    if show: print data.describe()
 
-    d = {}
-    d['columns'] = fnames = data.columns.tolist()
+    # TEMPLATE randomly choose estimatiors
+    jobs = jobs.loc[np.random.choice(
+        jobs.index, 10000, replace=False)]
+    # ENDTEMPLATE
+    # TEMPLATE specifying alternatives
+    alternatives = dset.nodes.join(dset.variables.compute_nonres_building_proportions(dset,year))
+    # ENDTEMPLATE
 
-    data = data.as_matrix()
-    if np.amax(data) > 500.0:
-      raise Exception("WARNING: the max value in this estimation data is large, it's likely you need to log transform the input")
-    fit, results = interaction.estimate(data,est_params,SAMPLE_SIZE)
- 
-    fnames = interaction.add_fnames(fnames,est_params)
-    if show: print misc.resultstotable(fnames,results)
-    misc.resultstocsv(fit,fnames,results,outname+"_estimate.csv",tblname=outname)
+    t1 = time.time()
+
+    # TEMPLATE creating segments
+    segments = jobs.groupby(['naics11cat'])
+    # ENDTEMPLATE
     
-    d['null loglik'] = float(fit[0])
-    d['converged loglik'] = float(fit[1])
-    d['loglik ratio'] = float(fit[2])
-    d['est_results'] = [[float(x) for x in result] for result in results]
-    returnobj[name] = d
-    
-    dset.store_coeff(outname,zip(*results)[0],fnames)
+    for name, segment in segments:
+        name = str(name)
+        outname = "elcm" if name is None else "elcm_" + name
 
-  print "Finished executing in %f seconds" % (time.time()-t1)
-  return returnobj
+        global SAMPLE_SIZE
+        sample, alternative_sample, est_params = interaction.mnl_interaction_dataset(
+            segment, alternatives, SAMPLE_SIZE, chosenalts=segment["_node_id"])
+
+        print("Estimating parameters for segment = %s, size = %d" % (name, len(segment.index)))
+
+        # TEMPLATE computing vars
+        data = pd.DataFrame(index=alternative_sample.index)
+        
+        # start off this sequence of elif statements with a no-op
+        if False:
+            pass
+        else:
+            data["total sqft"] = (alternative_sample.totsum.apply(np.log1p)).astype('float')
+            data["ln_weighted_rent"] = (alternative_sample.weightedrent.apply(np.log1p)).astype('float')
+            data["retpct"] = alternative_sample["retpct"]
+            data["indpct"] = alternative_sample["indpct"]
+            data["accessibility"] = (alternative_sample.nets_all_regional1_30.apply(np.log1p)).astype('float')
+            data["reliability"] = (alternative_sample.nets_all_regional2_30.apply(np.log1p)).astype('float')
+        data = data.fillna(0)
+        # ENDTEMPLATE
+
+        if show:
+            print(data.describe())
+
+        d = {}
+        d['columns'] = fnames = data.columns.tolist()
+
+        data = data.as_matrix()
+        if np.amax(data) > 500.0:
+            raise Exception("WARNING: the max value in this estimation data is large, it's likely you need to log transform the input")
+        fit, results = interaction.estimate(data, est_params, SAMPLE_SIZE)
+
+        fnames = interaction.add_fnames(fnames, est_params)
+        if show:
+            print(misc.resultstotable(fnames,results))
+        misc.resultstocsv(fit, fnames, results, outname + "_estimate.csv", tblname=outname)
+
+        d['null loglik'] = float(fit[0])
+        d['converged loglik'] = float(fit[1])
+        d['loglik ratio'] = float(fit[2])
+        d['est_results'] = [[float(x) for x in result] for result in results]
+        returnobj[name] = d
+
+        dset.store_coeff(outname, zip(*results)[0], fnames)
+
+    print("Finished executing in %f seconds" % (time.time() - t1))
+    return returnobj
 

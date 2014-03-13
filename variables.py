@@ -1,5 +1,5 @@
 import time, numpy as np, pandas as pd
-from synthicity.utils import misc
+from urbansim.utils import misc
 
 # computes a weighted rent by non-residential building type and the proportion of each building type
 def compute_nonres_building_proportions(dataset,year):
