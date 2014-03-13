@@ -1,6 +1,6 @@
 import pandas as pd, numpy as np
 import sys, time, random, string, os
-from synthicity.utils import misc, spotproforma
+from urbansim.utils import misc, spotproforma
 
 # TODO better way of doing this?
 def get_possible_rents_by_use(dset):

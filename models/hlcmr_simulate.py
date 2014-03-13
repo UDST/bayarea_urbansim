@@ -49,7 +49,8 @@ def hlcmr_simulate(dset, year=None, show=True):
     print("There are %s empty units in %s locations total in the region" %
         (vacant_units.sum(),len(vacant_units)))
     # ENDTEMPLATE
-    # TEMPLATE merget_m = time.time()
+    # TEMPLATE merge
+    t_m = time.time()
     alternatives = pd.merge(alternatives, dset.nodes, **{'right_index': True, 'left_on': '_node_id'})
     print("Finished with merge in %f" % (time.time() - t_m))
     # ENDTEMPLATE
@@ -110,6 +111,6 @@ def hlcmr_simulate(dset, year=None, show=True):
     table = dset.households
     table["building_id"].loc[new_homes.index] = new_homes.values
     dset.store_attr("renter_building_ids", year, copy.deepcopy(table["building_id"]))
-    print "Finished assigning agents in %f seconds" % (time.time() - t1)
+    print ("Finished assigning agents in %f seconds" % (time.time() - t1))
     return returnobj
 

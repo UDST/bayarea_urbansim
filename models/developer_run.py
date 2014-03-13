@@ -1,6 +1,6 @@
 import pandas as pd, numpy as np
 import sys, time, random, string, os
-from synthicity.utils import misc
+from urbansim.utils import misc
 
 TARGETVACANCY = .15 # really should be a target per TAZ
 MAXPARCELSIZE = 200000 # really need some subdivision

@@ -32,7 +32,8 @@ def hlcms_estimate(dset, year=None, show=True):
     alternatives = dset.building_filter(residential=1)
     # ENDTEMPLATE
 
-    # TEMPLATE merget_m = time.time()
+    # TEMPLATE merge
+    t_m = time.time()
     alternatives = pd.merge(alternatives, dset.nodes, **{'right_index': True, 'left_on': '_node_id'})
     print("Finished with merge in %f" % (time.time() - t_m))
     # ENDTEMPLATE
