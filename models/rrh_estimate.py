@@ -38,7 +38,6 @@ def rrh_estimate(dset, year=None, show=True):
         outname = "rrh" if name is None else "rrh_" + name
 
         # TEMPLATE computing vars
-        print("WARNING: using patsy, ind_vars will be ignored")
         est_data = dmatrix("np.log1p(unit_sqft) + sum_residential_units + ave_unit_sqft + ave_lot_sqft + ave_income + poor + jobs + sfdu + renters", data=segment, return_type='dataframe')
         # ENDTEMPLATE
         # TEMPLATE dependent variable

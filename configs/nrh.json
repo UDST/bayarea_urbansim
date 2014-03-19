@@ -1,24 +1,21 @@
 {
-  "table": "dset.costar",
-  "internalname": "jobs",
-  "model": "hedonicmodel",
-  "table_sim": "dset.building_filter(residential=0)",
-  "merge": {
-    "table":"dset.nodes",
-    "left_on":"_node_id",
-    "right_index":true
-  },
-  "segment": ["general_type"],
-  "dep_var": "averageweightedrent",
-  "dep_var_transform": "np.log",
-  "var_lib_file": "var_lib.json",
-  "ind_vars": [
-    "accessibility",
-    "reliability",
-    "ln_stories"
-  ],
-  "add_constant": true,
-  "output_table": "dset.buildings",
-  "output_varname": "nonresidential_rent",
-  "output_transform": "np.exp"
+    "dep_var": "averageweightedrent",
+    "internalname": "buildings",
+    "segment": [
+        "general_type"
+    ],
+    "add_constant": true,
+    "output_table": "dset.buildings",
+    "merge": {
+        "table": "dset.nodes",
+        "right_index": true,
+        "left_on": "_node_id"
+    },
+    "patsy": "I(year_built < 1940) + I(year_built > 2005) + np.log1p(stories) + ave_income + poor + jobs + sfdu + renters",
+    "output_varname": "nonresidential_rent",
+    "table": "dset.costar",
+    "table_sim": "dset.building_filter(residential=0)",
+    "model": "hedonicmodel",
+    "dep_var_transform": "np.log",
+    "output_transform": "np.exp"
 }

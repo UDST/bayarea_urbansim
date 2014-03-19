@@ -13,6 +13,7 @@
   ],
   "var_lib": {
     "sum_residential_units": "NETWORKS.accvar(dset.buildings,500,vname='residential_units').apply(np.log1p)",
+    "sum_nonresidential_sqft": "NETWORKS.accvar(dset.buildings,500,vname='non_residential_sqft').apply(np.log1p)",
     "ave_unit_sqft": "NETWORKS.accvar(dset.buildings,500,vname='unit_sqft',agg='AGG_AVE',decay='DECAY_FLAT').apply(np.log1p)",
     "ave_lot_sqft": "NETWORKS.accvar(dset.buildings,500,vname='unit_lot_size',agg='AGG_AVE',decay='DECAY_FLAT').apply(np.log1p)",
     "population": "NETWORKS.accvar(dset.households,500,vname='persons').apply(np.log1p)",
@@ -23,6 +24,6 @@
     "jobs": "NETWORKS.accvar(dset.nets,500,vname='emp11').apply(np.log1p)",
     "ave_income": "NETWORKS.accvar(dset.households,500,vname='income',agg='AGG_AVE',decay='DECAY_FLAT').apply(np.log1p)"
   },
-  "ind_vars": ["sum_residential_units","ave_unit_sqft","ave_lot_sqft","ave_income","population","poor","hhsize","jobs","sfdu","renters"],
+  "ind_vars": ["sum_residential_units","sum_nonresidential_sqft","ave_unit_sqft","ave_lot_sqft","ave_income","population","poor","hhsize","jobs","sfdu","renters"],
   "show": true
 }

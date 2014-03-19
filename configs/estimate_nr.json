@@ -1,0 +1,11 @@
+{
+  "model": "modelset",
+  "datastore": "bayarea.h5",
+  "pathinsertcwd": true,
+  "dataset": "BayAreaDataset",
+  "modelstorun": [
+    "nrh_estimate",
+    "nrh_simulate",
+    "elcm_estimate"
+  ]
+}

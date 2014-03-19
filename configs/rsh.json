@@ -1,6 +1,6 @@
 {
-    "model": "hedonicmodel",
-    "output_table": "dset.buildings",
+    "dep_var": "sale_price_flt",
+    "internalname": "units",
     "estimate_filters": [
         "units.unit_lot_size > 0",
         "units.year_built > 1000",
@@ -12,7 +12,7 @@
     ],
     "NOTUSED": "dset.fetch_csv('nodes.csv',index_col='node_id')",
     "add_constant": true,
-    "internalname": "units",
+    "output_table": "dset.buildings",
     "patsy": "I(year_built < 1940) + I(year_built > 2005) + np.log1p(unit_sqft) + np.log1p(unit_lot_size) + sum_residential_units + ave_unit_sqft + ave_lot_sqft + ave_income + poor + jobs + sfdu + renters",
     "merge": {
         "table": "dset.nodes",
@@ -22,7 +22,7 @@
     "output_varname": "res_sales_price",
     "table": "dset.homesales",
     "table_sim": "dset.building_filter(residential=1)",
-    "dep_var": "sale_price_flt",
+    "model": "hedonicmodel",
     "dep_var_transform": "np.log",
     "output_transform": "np.exp"
 }

@@ -1,6 +1,6 @@
 import numpy as np, pandas as pd
 import time, os
-from urbansim.utils import misc, networks
+from urbansim.utils import misc, geomisc, networks
 from urbansim.urbansim import dataset
 import warnings
 import variables
@@ -18,7 +18,6 @@ class BayAreaDataset(dataset.Dataset):
     self.variables = variables
 
   def fetch(self,name,addnodeid=0,convertsrid=0,addbuildingid=0,pya=None,direct=0):
-
     if direct: return self.store[name]
     if name in self.d: return self.d[name]
 
@@ -30,6 +29,7 @@ class BayAreaDataset(dataset.Dataset):
     elif name == 'batshh': tbl = self.fetch_batshh()
     elif name == 'bats': tbl = self.fetch_bats()
     elif name == 'nets': tbl = self.fetch_nets()
+    elif name == 'nodes': tbl = self.fetch_nodes()
     elif name == 'networks': tbl = self.fetch_networks()
     elif name == 'apartments': tbl = self.fetch_apartments()
     elif name == 'zoning_for_parcels': tbl = self.fetch_zoning_for_parcels()
@@ -45,6 +45,11 @@ class BayAreaDataset(dataset.Dataset):
 
     self.d[name] = tbl
     return tbl
+
+  def fetch_nodes(self):
+    # default will fetch off disk unless networks have already been run
+    print "WARNING: fetching precomputed nodes off of disk"
+    return pd.read_csv(os.path.join(misc.data_dir(),'nodes.csv'),index_col='node_id')
 
   def fetch_costar(self):
     costar = self.store['costar']
@@ -79,6 +84,11 @@ class BayAreaDataset(dataset.Dataset):
     buildings['residential_units'][buildings['residential_units'] == 0] = np.nan
     buildings['residential_units'] = buildings['residential_units'].fillna(1) 
     buildings['residential_units'][buildings['residential_units']>300] = 300
+
+    sqft_job = pd.read_csv(os.path.join(misc.configs_dir(),'building_sqft_job.csv'),index_col='building_type_id')
+    buildings['sqft_per_job'] = sqft_job.ix[buildings.building_type_id.fillna(-1)].values
+    buildings['non_residential_units'] = buildings.non_residential_sqft/buildings.sqft_per_job
+    buildings['non_residential_units'] = buildings.non_residential_units.fillna(0).astype('int')
 
     buildings['stories'][buildings['stories'] == 0] = np.nan
     buildings['stories'] = buildings['stories'].fillna(1) 
@@ -131,7 +141,13 @@ class BayAreaDataset(dataset.Dataset):
   def fetch_nets(self):
 
     nets = self.store['nets']
-    nets = self.join_for_field(nets,'buildings','building_id','_node_id')
+    # go from establishments to jobs
+    nets = nets.ix[np.repeat(nets.index.values,nets.emp11.values)].reset_index() 
+    nets.index.name = 'job_id'
+    #del nets['building_id']
+    #nonres_buildlings = self.building_filter(residential=0)[['x','y']]
+    #labels, dists = geomisc.spatial_join_nearest(nets,'x','y',nonres_buildlings,'x','y')
+    #nets["building_id"] = labels
     return nets
 
   def fetch_batshh(self,tenure=None):

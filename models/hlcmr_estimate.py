@@ -54,7 +54,6 @@ def hlcmr_estimate(dset, year=None, show=True):
         print("Estimating parameters for segment = %s, size = %d" % (name, len(segment.index)))
 
         # TEMPLATE computing vars
-        print("WARNING: using patsy, ind_vars will be ignored")
         data = dmatrix("np.log1p(unit_sqft) + sum_residential_units + ave_unit_sqft + ave_lot_sqft + ave_income + poor + sfdu + renters + np.log1p(res_rent) - 1", data=alternative_sample, return_type='dataframe')
         # ENDTEMPLATE
 

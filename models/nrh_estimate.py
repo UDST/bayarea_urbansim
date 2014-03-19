@@ -19,12 +19,12 @@ def nrh_estimate(dset, year=None, show=True):
     t1 = time.time()
 
     # TEMPLATE configure table
-    jobs = dset.costar
+    buildings = dset.costar
     # ENDTEMPLATE
 
     # TEMPLATE merge
     t_m = time.time()
-    jobs = pd.merge(jobs, dset.nodes, **{'right_index': True, 'left_on': '_node_id'})
+    buildings = pd.merge(buildings, dset.nodes, **{'right_index': True, 'left_on': '_node_id'})
     print("Finished with merge in %f" % (time.time() - t_m))
     # ENDTEMPLATE
     
@@ -32,7 +32,7 @@ def nrh_estimate(dset, year=None, show=True):
     t1 = time.time()
 
     # TEMPLATE creating segments
-    segments = jobs.groupby(['general_type'])
+    segments = buildings.groupby(['general_type'])
     # ENDTEMPLATE
     
     for name, segment in segments:
@@ -40,17 +40,7 @@ def nrh_estimate(dset, year=None, show=True):
         outname = "nrh" if name is None else "nrh_" + name
 
         # TEMPLATE computing vars
-        est_data = pd.DataFrame(index=segment.index)
-        
-        # start off this sequence of elif statements with a no-op
-        if False:
-            pass
-        else:
-            est_data["accessibility"] = (segment.nets_all_regional1_30.apply(np.log1p)).astype('float')
-            est_data["reliability"] = (segment.nets_all_regional2_30.apply(np.log1p)).astype('float')
-            est_data["ln_stories"] = (segment.stories.apply(np.log1p)).astype('float')
-        est_data = sm.add_constant(est_data, prepend=False)
-        est_data = est_data.fillna(0)
+        est_data = dmatrix("I(year_built < 1940) + I(year_built > 2005) + np.log1p(stories) + ave_income + poor + jobs + sfdu + renters", data=segment, return_type='dataframe')
         # ENDTEMPLATE
         # TEMPLATE dependent variable
         depvar = segment["averageweightedrent"]

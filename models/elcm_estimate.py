@@ -23,14 +23,15 @@ def elcm_estimate(dset, year=None, show=True):
     jobs = dset.nets
     # ENDTEMPLATE
 
-    # TEMPLATE randomly choose estimatiors
-    jobs = jobs.loc[np.random.choice(
-        jobs.index, 10000, replace=False)]
-    # ENDTEMPLATE
     # TEMPLATE specifying alternatives
-    alternatives = dset.nodes.join(dset.variables.compute_nonres_building_proportions(dset,year))
+    alternatives = dset.building_filter(residential=0)
     # ENDTEMPLATE
 
+    # TEMPLATE merge
+    t_m = time.time()
+    alternatives = pd.merge(alternatives, dset.nodes, **{'right_index': True, 'left_on': '_node_id'})
+    print("Finished with merge in %f" % (time.time() - t_m))
+    # ENDTEMPLATE
     t1 = time.time()
 
     # TEMPLATE creating segments
@@ -43,24 +44,12 @@ def elcm_estimate(dset, year=None, show=True):
 
         global SAMPLE_SIZE
         sample, alternative_sample, est_params = interaction.mnl_interaction_dataset(
-            segment, alternatives, SAMPLE_SIZE, chosenalts=segment["_node_id"])
+            segment, alternatives, SAMPLE_SIZE, chosenalts=segment["building_id"])
 
         print("Estimating parameters for segment = %s, size = %d" % (name, len(segment.index)))
 
         # TEMPLATE computing vars
-        data = pd.DataFrame(index=alternative_sample.index)
-        
-        # start off this sequence of elif statements with a no-op
-        if False:
-            pass
-        else:
-            data["total sqft"] = (alternative_sample.totsum.apply(np.log1p)).astype('float')
-            data["ln_weighted_rent"] = (alternative_sample.weightedrent.apply(np.log1p)).astype('float')
-            data["retpct"] = alternative_sample["retpct"]
-            data["indpct"] = alternative_sample["indpct"]
-            data["accessibility"] = (alternative_sample.nets_all_regional1_30.apply(np.log1p)).astype('float')
-            data["reliability"] = (alternative_sample.nets_all_regional2_30.apply(np.log1p)).astype('float')
-        data = data.fillna(0)
+        data = dmatrix("np.log1p(stories) + ave_income + poor + sum_nonresidential_sqft + jobs + sfdu + renters + np.log1p(nonresidential_rent) - 1", data=alternative_sample, return_type='dataframe')
         # ENDTEMPLATE
 
         if show:

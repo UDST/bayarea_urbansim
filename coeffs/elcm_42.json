@@ -1,18 +1,22 @@
 {
     "coeffs": [
-        0.465,
-        -1.026,
-        0.45,
-        -0.022,
-        0.385,
-        -0.139
+        1.906,
+        0.029,
+        -0.079,
+        -0.002,
+        0.052,
+        0.02,
+        0.046,
+        -2.055
     ],
     "fnames": [
-        "total sqft",
-        "ln_weighted_rent",
-        "retpct",
-        "indpct",
-        "accessibility",
-        "reliability"
+        "np.log1p(stories)",
+        "ave_income",
+        "poor",
+        "sum_nonresidential_sqft",
+        "jobs",
+        "sfdu",
+        "renters",
+        "np.log1p(nonresidential_rent)"
     ]
 }

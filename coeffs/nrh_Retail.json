@@ -1,14 +1,24 @@
 {
     "coeffs": [
-        0.256,
-        -0.09,
-        0.179,
-        0.436
+        1.735,
+        -0.008,
+        0.283,
+        0.052,
+        0.059,
+        0.011,
+        0.091,
+        -0.018,
+        0.016
     ],
     "fnames": [
-        "accessibility",
-        "reliability",
-        "ln_stories",
-        "const"
+        "Intercept",
+        "I(year_built < 1940)[T.True]",
+        "I(year_built > 2005)[T.True]",
+        "np.log1p(stories)",
+        "ave_income",
+        "poor",
+        "jobs",
+        "sfdu",
+        "renters"
     ]
 }
