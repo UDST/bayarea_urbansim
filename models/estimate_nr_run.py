@@ -24,6 +24,11 @@ dset = dataset.BayAreaDataset(os.path.join(misc.data_dir(), 'bayarea.h5'))
 for year in range(1):
     print("Running year %d" % (year + 1))
 
+    print("Running networks_run")
+    import networks_run
+    retval = networks_run.networks_run(dset, year=2010 + year)
+    if retval:
+        open(os.path.join(misc.output_dir(), "networks_run.json"), "w").write(simplejson.dumps(retval, sort_keys=True, indent=4))
     print("Running nrh_estimate")
     import nrh_estimate
     retval = nrh_estimate.nrh_estimate(dset, year=2010 + year)

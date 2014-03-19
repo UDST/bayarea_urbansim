@@ -55,6 +55,21 @@ for year in range(30):
     retval = hhlds_run.hhlds_run(dset, year=2010 + year)
     if retval:
         open(os.path.join(misc.output_dir(), "hhlds_run.json"), "w").write(simplejson.dumps(retval, sort_keys=True, indent=4))
+    print("Running nrh_simulate")
+    import nrh_simulate
+    retval = nrh_simulate.nrh_simulate(dset, year=2010 + year)
+    if retval:
+        open(os.path.join(misc.output_dir(), "nrh_simulate.json"), "w").write(simplejson.dumps(retval, sort_keys=True, indent=4))
+    print("Running elcm_simulate")
+    import elcm_simulate
+    retval = elcm_simulate.elcm_simulate(dset, year=2010 + year)
+    if retval:
+        open(os.path.join(misc.output_dir(), "elcm_simulate.json"), "w").write(simplejson.dumps(retval, sort_keys=True, indent=4))
+    print("Running jobs_run")
+    import jobs_run
+    retval = jobs_run.jobs_run(dset, year=2010 + year)
+    if retval:
+        open(os.path.join(misc.output_dir(), "jobs_run.json"), "w").write(simplejson.dumps(retval, sort_keys=True, indent=4))
     print("Running feasibility_run")
     import feasibility_run
     retval = feasibility_run.feasibility_run(dset, year=2010 + year)

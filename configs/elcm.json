@@ -2,6 +2,7 @@
   "table": "dset.nets",
   "internalname": "jobs",
   "model": "locationchoicemodel",
+  "est_sample_size": 100000,
   "modeldependencies": "nrh.json",
   "alternatives": "dset.building_filter(residential=0)",
   "merge": {
@@ -9,7 +10,7 @@
     "left_on":"_node_id",
     "right_index":true
   },
-  "sample_size": 100,
+  "sample_size": 50,
   "dep_var": "building_id",
   "segment": ["naics11cat"],
   "patsy": "np.log1p(stories) + ave_income + poor + sum_nonresidential_sqft + jobs + sfdu + renters + np.log1p(nonresidential_rent) - 1",

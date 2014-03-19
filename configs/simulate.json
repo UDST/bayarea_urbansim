@@ -13,6 +13,9 @@
     "rrh_simulate",
     "hlcmr_simulate",
     "hhlds_run",
+    "nrh_simulate",
+    "elcm_simulate",
+    "jobs_run",
     "feasibility_run",
     "developer_run"
   ]

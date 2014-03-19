@@ -23,6 +23,10 @@ def elcm_estimate(dset, year=None, show=True):
     jobs = dset.nets
     # ENDTEMPLATE
 
+    # TEMPLATE randomly choose estimatiors
+    jobs = jobs.loc[np.random.choice(
+        jobs.index, 100000, replace=False)]
+    # ENDTEMPLATE
     # TEMPLATE specifying alternatives
     alternatives = dset.building_filter(residential=0)
     # ENDTEMPLATE
