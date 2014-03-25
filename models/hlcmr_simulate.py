@@ -10,7 +10,9 @@ import pandas as pd
 import statsmodels.api as sm
 from patsy import dmatrix
 
-from urbansim.urbanchoice import *
+from urbansim.urbanchoice import interaction
+from urbansim.urbanchoice import mnl
+from urbansim.urbanchoice import nl
 from urbansim.utils import misc
 
 SAMPLE_SIZE=100
@@ -74,6 +76,7 @@ def hlcmr_simulate(dset, year=None, show=True):
         sample, alternative_sample, est_params = \
             interaction.mnl_interaction_dataset(segment, alternatives, SAMPLE_SIZE, chosenalts=None)
         # TEMPLATE computing vars
+        print("WARNING: using patsy, ind_vars will be ignored")
         data = dmatrix("np.log1p(unit_sqft) + sum_residential_units + ave_unit_sqft + ave_lot_sqft + ave_income + poor + sfdu + renters + np.log1p(res_rent) - 1", data=alternative_sample, return_type='dataframe')
         # ENDTEMPLATE
         data = data.as_matrix()

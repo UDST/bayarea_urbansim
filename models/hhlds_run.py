@@ -10,7 +10,9 @@ import pandas as pd
 import statsmodels.api as sm
 from patsy import dmatrix
 
-from urbansim.urbanchoice import *
+from urbansim.urbanchoice import interaction
+from urbansim.urbanchoice import mnl
+from urbansim.urbanchoice import nl
 from urbansim.utils import misc
 
 def hhlds_run(dset,year=None,show=True):

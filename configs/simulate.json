@@ -7,8 +7,8 @@
   "startyear": 2010,
   "numyearstorun": 30,
   "modelstorun": [
-    "networks_run",
     "rsh_simulate",
+    "networks2_run",
     "hlcms_simulate",
     "rrh_simulate",
     "hlcmr_simulate",

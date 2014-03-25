@@ -8,9 +8,8 @@
         "units.unit_sqft > 100",
         "units.unit_sqft < 10000",
         "units.sale_price_flt > 30",
-        "units.sale_price_flt < 1000"
+        "units.sale_price_flt < 1500"
     ],
-    "NOTUSED": "dset.fetch_csv('nodes.csv',index_col='node_id')",
     "add_constant": true,
     "output_table": "dset.buildings",
     "patsy": "I(year_built < 1940) + I(year_built > 2005) + np.log1p(unit_sqft) + np.log1p(unit_lot_size) + sum_residential_units + ave_unit_sqft + ave_lot_sqft + ave_income + poor + jobs + sfdu + renters",

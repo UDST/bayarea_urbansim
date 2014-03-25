@@ -9,7 +9,8 @@
     "twoway": [1]
   },
   "update_xys": [
-    "dset.households"
+    "dset.households",
+    "dset.nets"
   ],
   "var_lib": {
     "sum_residential_units": "NETWORKS.accvar(dset.buildings,500,vname='residential_units').apply(np.log1p)",

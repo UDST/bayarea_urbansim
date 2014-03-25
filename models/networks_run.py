@@ -10,7 +10,9 @@ import pandas as pd
 import statsmodels.api as sm
 from patsy import dmatrix
 
-from urbansim.urbanchoice import *
+from urbansim.urbanchoice import interaction
+from urbansim.urbanchoice import mnl
+from urbansim.urbanchoice import nl
 from urbansim.utils import misc
 
 from urbansim.utils import networks
@@ -29,6 +31,7 @@ def networks_run(dset, year=None, show=True):
     t1 = time.time()
 
     dset.households = dset.add_xy(dset.households)
+    dset.nets = dset.add_xy(dset.nets)
     
     NETWORKS = networks.NETWORKS # make available for the variables
     _tbl_ = pd.DataFrame(

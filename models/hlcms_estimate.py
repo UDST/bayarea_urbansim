@@ -10,7 +10,9 @@ import pandas as pd
 import statsmodels.api as sm
 from patsy import dmatrix
 
-from urbansim.urbanchoice import *
+from urbansim.urbanchoice import interaction
+from urbansim.urbanchoice import mnl
+from urbansim.urbanchoice import nl
 from urbansim.utils import misc
 
 SAMPLE_SIZE=100
@@ -54,6 +56,7 @@ def hlcms_estimate(dset, year=None, show=True):
         print("Estimating parameters for segment = %s, size = %d" % (name, len(segment.index)))
 
         # TEMPLATE computing vars
+        print("WARNING: using patsy, ind_vars will be ignored")
         data = dmatrix("np.log1p(unit_sqft) + sum_residential_units + ave_unit_sqft + ave_lot_sqft + ave_income + poor + sfdu + renters + np.log1p(res_sales_price) - 1", data=alternative_sample, return_type='dataframe')
         # ENDTEMPLATE
 

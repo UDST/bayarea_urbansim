@@ -10,7 +10,9 @@ import pandas as pd
 import statsmodels.api as sm
 from patsy import dmatrix
 
-from urbansim.urbanchoice import *
+from urbansim.urbanchoice import interaction
+from urbansim.urbanchoice import mnl
+from urbansim.urbanchoice import nl
 from urbansim.utils import misc
 
 SAMPLE_SIZE=100
@@ -73,6 +75,7 @@ def elcm_simulate(dset, year=None, show=True):
         sample, alternative_sample, est_params = \
             interaction.mnl_interaction_dataset(segment, alternatives, SAMPLE_SIZE, chosenalts=None)
         # TEMPLATE computing vars
+        print("WARNING: using patsy, ind_vars will be ignored")
         data = dmatrix("np.log1p(stories) + ave_income + poor + sum_nonresidential_sqft + jobs + sfdu + renters + np.log1p(nonresidential_rent) - 1", data=alternative_sample, return_type='dataframe')
         # ENDTEMPLATE
         data = data.as_matrix()

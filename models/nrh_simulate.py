@@ -10,7 +10,9 @@ import pandas as pd
 import statsmodels.api as sm
 from patsy import dmatrix
 
-from urbansim.urbanchoice import *
+from urbansim.urbanchoice import interaction
+from urbansim.urbanchoice import mnl
+from urbansim.urbanchoice import nl
 from urbansim.utils import misc
 
 def nrh_simulate(dset, year=None, show=True):
@@ -41,6 +43,7 @@ def nrh_simulate(dset, year=None, show=True):
         outname = "nrh" if name is None else "nrh_" + name
 
         # TEMPLATE computing vars
+        print("WARNING: using patsy, ind_vars will be ignored")
         est_data = dmatrix("I(year_built < 1940) + I(year_built > 2005) + np.log1p(stories) + ave_income + poor + jobs + sfdu + renters", data=segment, return_type='dataframe')
         # ENDTEMPLATE
         print("Generating rents on %d %s" %

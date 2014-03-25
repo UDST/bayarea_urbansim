@@ -10,7 +10,9 @@ import pandas as pd
 import statsmodels.api as sm
 from patsy import dmatrix
 
-from urbansim.urbanchoice import *
+from urbansim.urbanchoice import interaction
+from urbansim.urbanchoice import mnl
+from urbansim.urbanchoice import nl
 from urbansim.utils import misc
 
 def rsh_estimate(dset, year=None, show=True):
@@ -26,7 +28,7 @@ def rsh_estimate(dset, year=None, show=True):
     units = units[units.unit_sqft > 100]
     units = units[units.unit_sqft < 10000]
     units = units[units.sale_price_flt > 30]
-    units = units[units.sale_price_flt < 1000]
+    units = units[units.sale_price_flt < 1500]
     # ENDTEMPLATE
 
     # TEMPLATE merge
@@ -45,6 +47,7 @@ def rsh_estimate(dset, year=None, show=True):
         outname = "rsh" if name is None else "rsh_" + name
 
         # TEMPLATE computing vars
+        print("WARNING: using patsy, ind_vars will be ignored")
         est_data = dmatrix("I(year_built < 1940) + I(year_built > 2005) + np.log1p(unit_sqft) + np.log1p(unit_lot_size) + sum_residential_units + ave_unit_sqft + ave_lot_sqft + ave_income + poor + jobs + sfdu + renters", data=segment, return_type='dataframe')
         # ENDTEMPLATE
         # TEMPLATE dependent variable
