@@ -5,27 +5,25 @@ from urbansim.utils import misc, spotproforma
 # TODO better way of doing this?
 def get_possible_rents_by_use(dset):
   parcels = dset.parcels 
-  # need a prevailing rent for each parcel
-  nodeavgrents = pd.read_csv(os.path.join(misc.data_dir(),'avenodeprice.csv'),index_col='node_id')
-  # convert from price per sqft to yearly rent per sqft
-  nodeavgrents['rent'] = np.pmt(spotproforma.INTERESTRATE,spotproforma.PERIODS,nodeavgrents.price*-1)
+  nodeavgrents = dset.nodes_prices 
+  nodeavgrents['ave_residential_rent'] = np.pmt(spotproforma.INTERESTRATE,
+    spotproforma.PERIODS,nodeavgrents.ave_residential_price*-1)
+  del nodeavgrents['ave_residential_price']
+  print nodeavgrents.describe()
 
   # need predictions of rents for each parcel
   avgrents = pd.DataFrame(index=parcels.index)
-  avgrents['residential'] = nodeavgrents.rent.ix[parcels._node_id].values
-  # make a stupid assumption converting the residential 
-  # rent which I have to non-residential rent which I don't have
-  avgrents['office'] = nodeavgrents.rent.ix[parcels._node_id].values*1.0
-  avgrents['retail'] = nodeavgrents.rent.ix[parcels._node_id].values*.8
-  avgrents['industrial'] = nodeavgrents.rent.ix[parcels._node_id].values*.5
+  for btype in ['residential','office','retail','industrial']:
+    avgrents[btype] = nodeavgrents['ave_%s_rent'%btype].ix[parcels._node_id].values
+  print avgrents.describe()
+  
   return avgrents
 
-# TODO
 # BIG QUESTION - should the above "possible rents" be greater than the
 # here computed actual rents?  probably, right? 
 def current_rent_per_parcel(far_predictions,avgrents):
   # this is bad - need the right rents for each type
-  return far_predictions.total_sqft*avgrents.residential
+  return far_predictions.total_sqft*avgrents.residential*1.2
 
 RENTMULTIPLIER = 1.5 # this is essentially a calibration constant
 DEV = None

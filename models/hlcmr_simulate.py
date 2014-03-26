@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import copy
 import os
+import string
 import sys
 import time
 
@@ -77,7 +78,8 @@ def hlcmr_simulate(dset, year=None, show=True):
             interaction.mnl_interaction_dataset(segment, alternatives, SAMPLE_SIZE, chosenalts=None)
         # TEMPLATE computing vars
         print("WARNING: using patsy, ind_vars will be ignored")
-        data = dmatrix("np.log1p(unit_sqft) + sum_residential_units + ave_unit_sqft + ave_lot_sqft + ave_income + poor + sfdu + renters + np.log1p(res_rent) - 1", data=alternative_sample, return_type='dataframe')
+        patsy = "np.log1p(unit_sqft) + sum_residential_units + ave_unit_sqft + ave_lot_sqft + ave_income + poor + sfdu + renters + np.log1p(res_rent) - 1"
+        data = dmatrix(patsy, data=alternative_sample, return_type='dataframe')
         # ENDTEMPLATE
         data = data.as_matrix()
 

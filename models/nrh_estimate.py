@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import copy
 import os
+import string
 import sys
 import time
 
@@ -43,7 +44,8 @@ def nrh_estimate(dset, year=None, show=True):
 
         # TEMPLATE computing vars
         print("WARNING: using patsy, ind_vars will be ignored")
-        est_data = dmatrix("I(year_built < 1940) + I(year_built > 2005) + np.log1p(stories) + ave_income + poor + jobs + sfdu + renters", data=segment, return_type='dataframe')
+        patsy = string.join(['I(year_built < 1940)', 'I(year_built > 2005)', 'np.log1p(stories)', 'ave_income', 'poor', 'jobs']," + ")
+        est_data = dmatrix(patsy, data=segment, return_type='dataframe')
         # ENDTEMPLATE
         # TEMPLATE dependent variable
         depvar = segment["averageweightedrent"]

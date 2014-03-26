@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import copy
 import os
+import string
 import sys
 import time
 

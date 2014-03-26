@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import copy
 import os
+import string
 import sys
 import time
 
@@ -42,7 +43,8 @@ def rrh_simulate(dset, year=None, show=True):
 
         # TEMPLATE computing vars
         print("WARNING: using patsy, ind_vars will be ignored")
-        est_data = dmatrix("np.log1p(unit_sqft) + sum_residential_units + ave_unit_sqft + ave_lot_sqft + ave_income + poor + jobs + sfdu + renters", data=segment, return_type='dataframe')
+        patsy = "np.log1p(unit_sqft) + sum_residential_units + ave_unit_sqft + ave_lot_sqft + ave_income + poor + jobs + sfdu + renters"
+        est_data = dmatrix(patsy, data=segment, return_type='dataframe')
         # ENDTEMPLATE
         print("Generating rents on %d %s" %
             (est_data.shape[0], "units"))
