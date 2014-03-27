@@ -1,5 +1,8 @@
 {
-  "table": "parcels", 
-  "metric": "shape_area.max()", 
-  "groupby": "zone_id"
+    "colorscheme": "Blues",
+    "buckets": 3,
+    "quantile": true,
+    "groupby": "zone_id",
+    "table": "parcels",
+    "metric": "shape_area.max()"
 }

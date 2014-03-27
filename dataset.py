@@ -111,6 +111,8 @@ class BayAreaDataset(dataset.Dataset):
     if add_xy_from_parcels and 'x' not in buildings.columns: # don't add twice
         buildings = pd.merge(buildings,self.fetch('parcels',addnodeid=1)[['x','y']],
                                 left_on='parcel_id',right_index=True,how='left')
+    
+    buildings = self.join_for_field(buildings,'parcels','parcel_id','zone_id')
 
     return buildings
 

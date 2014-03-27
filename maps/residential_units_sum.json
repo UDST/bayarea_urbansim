@@ -1,0 +1,6 @@
+{
+    "table": "buildings",
+    "metric": "residential_units.sum()",
+    "groupby": "zone_id",
+    "colorscheme": "YlGnBu"
+}
