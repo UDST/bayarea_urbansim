@@ -17,7 +17,7 @@ class BayAreaDataset(dataset.Dataset):
     super(BayAreaDataset,self).__init__(filename)
     self.variables = variables
 
-  def fetch(self,name,addnodeid=0,convertsrid=0,addbuildingid=0,pya=None,direct=0):
+  def fetch(self,name,addzoneid=0,addnodeid=0,convertsrid=0,addbuildingid=0,pya=None,direct=0):
     if direct: return self.store[name]
     if name in self.d: return self.d[name]
 
@@ -43,6 +43,9 @@ class BayAreaDataset(dataset.Dataset):
     if addbuildingid:
         assert self.networks
         tbl = self.networks.addbuildingid(self,tbl)
+
+    if addzoneid:
+        tbl = self.join_for_field(tbl,'buildings','building_id','zone_id')
 
     self.d[name] = tbl
     return tbl

@@ -1,0 +1,7 @@
+{
+    "table": "jobs",
+    "metric": "size()",
+    "colorscheme": "Blues",
+    "groupby": "zone_id",
+    "jointobuildings": true
+}

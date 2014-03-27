@@ -1,0 +1,6 @@
+{
+    "table": "households",
+    "metric": "size()",
+    "jointobuildings": true,
+    "groupby": "zone_id"
+}
