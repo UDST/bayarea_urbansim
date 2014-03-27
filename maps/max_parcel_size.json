@@ -1,10 +1,5 @@
 {
-  "sort": "", 
-  "filter": "", 
-  "limit": "", 
-  "jointoparcels": "", 
   "table": "parcels", 
   "metric": "shape_area.max()", 
-  "groupby": "zone_id", 
-  "orderdesc": ""
+  "groupby": "zone_id"
 }
