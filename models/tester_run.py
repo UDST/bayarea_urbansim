@@ -24,6 +24,11 @@ dset = dataset.BayAreaDataset(os.path.join(misc.data_dir(), 'bayarea.h5'))
 for year in range(1):
     print("Running year %d" % (year + 1))
 
+    print("Running networks_run")
+    import networks_run
+    retval = networks_run.networks_run(dset, year=2010 + year)
+    if retval:
+        open(os.path.join(misc.output_dir(), "networks_run.json"), "w").write(simplejson.dumps(retval, sort_keys=True, indent=4))
     print("Running rsh_simulate")
     import rsh_simulate
     retval = rsh_simulate.rsh_simulate(dset, year=2010 + year)

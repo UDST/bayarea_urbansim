@@ -18,7 +18,6 @@ def get_possible_rents_by_use(dset):
                                                   spotproforma.PERIODS,
                                                   price)
     del nodeavgrents['ave_residential_price']
-    print nodeavgrents.describe()
 
     # need predictions of rents for each parcel
     avgrents = pd.DataFrame(index=parcels.index)
@@ -29,15 +28,15 @@ def get_possible_rents_by_use(dset):
 
     return avgrents
 
+
 # BIG QUESTION - should the above "possible rents" be greater than the
 # here computed actual rents?  probably, right?
-
-
 def current_rent_per_parcel(far_predictions, avgrents):
     # this is bad - need the right rents for each type
-    return far_predictions.total_sqft * avgrents.residential * 1.2
+    return far_predictions.total_sqft * avgrents.residential * .8
 
-RENTMULTIPLIER = 1.5  # this is essentially a calibration constant
+
+RENTMULTIPLIER = 1.0  # this is essentially a calibration constant
 DEV = None
 
 
@@ -89,10 +88,10 @@ def feasibility_run(dset, year=2010):
     # probably be better to have rents segmented by the same 16 building
     # types if we had good observations for that
     parcel_predictions = pd.DataFrame(index=parcels.index)
-    for form in ["residential"]:  # type_d.iteritems():
+    for form, btypes in type_d.iteritems():
 
         btypes = type_d[form]
-        for btype in [1, 2, 3]:
+        for btype in btypes:
 
             print form, btype
             # is type allowed

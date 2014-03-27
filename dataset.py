@@ -28,6 +28,7 @@ class BayAreaDataset(dataset.Dataset):
     elif name == 'households': tbl = self.fetch_households()
     elif name == 'batshh': tbl = self.fetch_batshh()
     elif name == 'bats': tbl = self.fetch_bats()
+    elif name == 'jobs': tbl = self.fetch_jobs()
     elif name == 'nets': tbl = self.fetch_nets()
     elif name == 'nodes': tbl = self.fetch_nodes()
     elif name == 'networks': tbl = self.fetch_networks()
@@ -137,6 +138,9 @@ class BayAreaDataset(dataset.Dataset):
     homesales["unit_sqft"] = homesales["SQft"]
 
     return homesales
+
+  def fetch_jobs(self):
+    return self.fetch_nets()
 
   def fetch_nets(self):
 

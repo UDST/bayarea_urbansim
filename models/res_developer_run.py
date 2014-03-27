@@ -12,7 +12,7 @@ MAXPARCELSIZE = 200000  # really need some subdivision
 AVEUNITSIZE = 1300  # really should be an accessibility variable
 
 
-def developer_run(dset, year=2010):
+def res_developer_run(dset, year=2010):
     numhh = len(dset.households.index)
     numunits = dset.buildings.residential_units.sum()
     print "Number of households: %d" % numhh
@@ -23,17 +23,22 @@ def developer_run(dset, year=2010):
     print "Target vacancy = %.2f, target of new units = %d" % \
         (TARGETVACANCY, targetunits)
 
-    df = pd.read_csv(
-        os.path.join(misc.data_dir(), 'far_predictions.csv'),
-        index_col='parcel_id')
-    fnames = ["type%d_profit" % i for i in range(1, 4)]
+    df = dset.feasibility
+    #df = pd.read_csv(
+    #os.path.join(misc.data_dir(), 'far_predictions.csv'),
+    #    index_col='parcel_id')
+    fnames = ["type%d_profit" % i for i in [4,7,8,9,10,11,12,14]]
     fnames_d = dict((fnames[i], i + 1) for i in range(len(fnames)))
+    # pick the max profit building type so a parcel only gets
+    # developed once
     df["max_profit"] = df[fnames].max(axis=1)
     df["max_btype"] = df[fnames].idxmax(axis=1).map(fnames_d)
+
     # this is a little bit wonky too - need to take the far from the max
     # profit above
     df["max_feasiblefar"] = df[
         ["type%d_feasiblefar" % i for i in range(1, 4)]].max(axis=1)
+
     # feasible buildings only for this building type
     df = df[df.max_feasiblefar > 0]
     df = df[df.parcelsize < MAXPARCELSIZE]

@@ -7,6 +7,7 @@
   "startyear": 2010,
   "numyearstorun": 1,
   "modelstorun": [
+    "networks_run",
     "rsh_simulate",
     "nrh_simulate",
     "networks2_run",
