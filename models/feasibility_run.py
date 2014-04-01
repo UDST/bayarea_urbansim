@@ -24,6 +24,7 @@ def get_possible_rents_by_use(dset):
     for btype in ['residential', 'office', 'retail', 'industrial']:
         avgrents[btype] = nodeavgrents['ave_%s_rent' %
                                        btype].ix[parcels._node_id].values
+        if btype != 'residential': avgrents[btype] *= 1.2
     print avgrents.describe()
 
     return avgrents

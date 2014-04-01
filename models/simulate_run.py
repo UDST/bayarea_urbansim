@@ -22,19 +22,19 @@ sys.path.insert(0, ".")
 import dataset
 dset = dataset.BayAreaDataset(os.path.join(misc.data_dir(), 'bayarea.h5'))
 
-for year in range(30):
+for year in range(3):
     print("Running year %d" % (year + 1))
 
+    print("Running networks_run")
+    import networks_run
+    retval = networks_run.networks_run(dset, year=2010 + year)
+    if retval:
+        open(os.path.join(misc.output_dir(), "networks_run.json"), "w").write(simplejson.dumps(retval, sort_keys=True, indent=4))
     print("Running rsh_simulate")
     import rsh_simulate
     retval = rsh_simulate.rsh_simulate(dset, year=2010 + year)
     if retval:
         open(os.path.join(misc.output_dir(), "rsh_simulate.json"), "w").write(simplejson.dumps(retval, sort_keys=True, indent=4))
-    print("Running networks2_run")
-    import networks2_run
-    retval = networks2_run.networks2_run(dset, year=2010 + year)
-    if retval:
-        open(os.path.join(misc.output_dir(), "networks2_run.json"), "w").write(simplejson.dumps(retval, sort_keys=True, indent=4))
     print("Running hlcms_simulate")
     import hlcms_simulate
     retval = hlcms_simulate.hlcms_simulate(dset, year=2010 + year)
@@ -70,6 +70,11 @@ for year in range(30):
     retval = jobs_run.jobs_run(dset, year=2010 + year)
     if retval:
         open(os.path.join(misc.output_dir(), "jobs_run.json"), "w").write(simplejson.dumps(retval, sort_keys=True, indent=4))
+    print("Running networks2_run")
+    import networks2_run
+    retval = networks2_run.networks2_run(dset, year=2010 + year)
+    if retval:
+        open(os.path.join(misc.output_dir(), "networks2_run.json"), "w").write(simplejson.dumps(retval, sort_keys=True, indent=4))
     print("Running feasibility_run")
     import feasibility_run
     retval = feasibility_run.feasibility_run(dset, year=2010 + year)

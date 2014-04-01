@@ -5,10 +5,10 @@
   "dataset": "BayAreaDataset",
   "saveoutput": true,
   "startyear": 2010,
-  "numyearstorun": 30,
+  "numyearstorun": 3,
   "modelstorun": [
+    "networks_run",
     "rsh_simulate",
-    "networks2_run",
     "hlcms_simulate",
     "rrh_simulate",
     "hlcmr_simulate",
@@ -16,6 +16,7 @@
     "nrh_simulate",
     "elcm_simulate",
     "jobs_run",
+    "networks2_run",
     "feasibility_run",
     "developer_run"
   ]
