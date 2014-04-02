@@ -44,7 +44,7 @@ def networks_run(dset, year=None, show=True):
         pass
     else:
         _tbl_["sum_residential_units"] = (NETWORKS.accvar(dset.buildings,500,vname='residential_units').apply(np.log1p)).astype('float')
-        _tbl_["sum_nonresidential_sqft"] = (NETWORKS.accvar(dset.buildings,500,vname='non_residential_sqft').apply(np.log1p)).astype('float')
+        _tbl_["sum_nonresidential_units"] = (NETWORKS.accvar(dset.buildings,500,vname='non_residential_units').apply(np.log1p)).astype('float')
         _tbl_["ave_unit_sqft"] = (NETWORKS.accvar(dset.buildings,500,vname='unit_sqft',agg='AGG_AVE',decay='DECAY_FLAT').apply(np.log1p)).astype('float')
         _tbl_["ave_lot_sqft"] = (NETWORKS.accvar(dset.buildings,500,vname='unit_lot_size',agg='AGG_AVE',decay='DECAY_FLAT').apply(np.log1p)).astype('float')
         _tbl_["ave_income"] = (NETWORKS.accvar(dset.households,500,vname='income',agg='AGG_AVE',decay='DECAY_FLAT').apply(np.log1p)).astype('float')

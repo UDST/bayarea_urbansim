@@ -57,7 +57,7 @@ def elcm_estimate(dset, year=None, show=True):
 
         # TEMPLATE computing vars
         print("WARNING: using patsy, ind_vars will be ignored")
-        patsy = "np.log1p(stories) + ave_income + poor + sum_nonresidential_sqft + jobs + sfdu + renters + np.log1p(nonresidential_rent) - 1"
+        patsy = "np.log1p(stories) + ave_income + poor + sum_nonresidential_units + jobs + sfdu + renters + np.log1p(nonresidential_rent) - 1"
         data = dmatrix(patsy, data=alternative_sample, return_type='dataframe')
         # ENDTEMPLATE
 

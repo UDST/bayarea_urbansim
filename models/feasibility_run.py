@@ -7,8 +7,6 @@ import string
 import os
 from urbansim.utils import misc, spotproforma
 
-# TODO better way of doing this?
-
 
 def get_possible_rents_by_use(dset):
     parcels = dset.parcels
@@ -24,7 +22,8 @@ def get_possible_rents_by_use(dset):
     for btype in ['residential', 'office', 'retail', 'industrial']:
         avgrents[btype] = nodeavgrents['ave_%s_rent' %
                                        btype].ix[parcels._node_id].values
-        if btype != 'residential': avgrents[btype] *= 1.2
+        if btype != 'residential':
+            avgrents[btype] *= 1.2
     print avgrents.describe()
 
     return avgrents
@@ -34,6 +33,9 @@ def get_possible_rents_by_use(dset):
 # here computed actual rents?  probably, right?
 def current_rent_per_parcel(far_predictions, avgrents):
     # this is bad - need the right rents for each type
+    # my thinking here is that I don't want to go around tearing down
+    # buildings to convert to other uses - have to think about
+    # this more
     return far_predictions.total_sqft * avgrents.residential * .8
 
 

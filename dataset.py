@@ -13,6 +13,24 @@ USECHTS = 1
 
 class BayAreaDataset(dataset.Dataset):
 
+  BUILDING_TYPE_MAP = {
+    1: "Residential",
+    2: "Residential",
+    3: "Residential",
+    4: "Office",
+    5: "Hotel",
+    6: "School",
+    7: "Industrial",
+    8: "Industrial",
+    9: "Industrial",
+    10: "Retail",
+    11: "Retail",
+    12: "Residential",
+    13: "Retail",
+    14: "Office"
+  }
+
+
   def __init__(self,filename):
     super(BayAreaDataset,self).__init__(filename)
     self.variables = variables
@@ -93,6 +111,7 @@ class BayAreaDataset(dataset.Dataset):
     buildings['sqft_per_job'] = sqft_job.ix[buildings.building_type_id.fillna(-1)].values
     buildings['non_residential_units'] = buildings.non_residential_sqft/buildings.sqft_per_job
     buildings['non_residential_units'] = buildings.non_residential_units.fillna(0).astype('int')
+    del buildings['non_residential_sqft']
 
     buildings['stories'][buildings['stories'] == 0] = np.nan
     buildings['stories'] = buildings['stories'].fillna(1) 
