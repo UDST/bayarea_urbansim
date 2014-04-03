@@ -1,0 +1,12 @@
+{
+    "sort": true,
+    "name": "residential units query",
+    "metric": "Sale_price_flt.mean()",
+    "orderdesc": true,
+    "filter": "",
+    "limit": 6,
+    "table": "homesales",
+    "jointoparcels": false,
+    "groupby": "City",
+    "desc": "Mean Sale_price_flt by city"
+}
