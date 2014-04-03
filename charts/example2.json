@@ -1,0 +1,12 @@
+{
+    "sort": true,
+    "name": "residential units query",
+    "metric": "residential_units.sum()",
+    "filter": "",
+    "limit": 5,
+    "jointoparcels": false,
+    "table": "buildings",
+    "orderdesc": true,
+    "groupby": "building_type_id",
+    "desc": "Count of Residential Units by Building Type"
+}
