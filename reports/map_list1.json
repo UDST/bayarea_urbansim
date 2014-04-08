@@ -1,0 +1,8 @@
+{
+    "list": [
+        "household_count.json",
+        "max_parcel_size.json",
+        "jobs_count.json"
+    ],
+    "desc": "Only maps example report"
+}

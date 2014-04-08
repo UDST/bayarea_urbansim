@@ -1,4 +1,5 @@
 {
+    "desc": "Household Count",
     "table": "households",
     "metric": "size()",
     "jointobuildings": true,
