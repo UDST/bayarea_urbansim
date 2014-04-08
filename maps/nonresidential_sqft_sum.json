@@ -1,4 +1,5 @@
 {
+    "desc": "Nonresidential Sqft Sum",
     "table": "buildings",
     "metric": "non_residential_sqft.sum()",
     "groupby": "zone_id",

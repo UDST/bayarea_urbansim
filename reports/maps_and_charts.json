@@ -1,0 +1,11 @@
+{
+    "list": [
+        "household_count.json",
+        "examplechart2.json",
+        "max_parcel_size.json",
+        "examplechart3.json",
+        "jobs_count.json",
+        "examplechart1.json"
+    ],
+    "desc": "Maps and charts report"
+}

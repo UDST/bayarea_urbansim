@@ -1,7 +1,8 @@
 {
+    "desc": "Jobs Count",
     "table": "jobs",
     "metric": "size()",
-    "colorscheme": "Blues",
-    "groupby": "zone_id",
-    "jointobuildings": true
+    "colorscheme": "Purples",
+    "jointobuildings": true,
+    "groupby": "zone_id"
 }
