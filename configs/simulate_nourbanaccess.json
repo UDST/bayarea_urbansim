@@ -14,9 +14,6 @@
     "hhlds_run",
     "nrh_simulate",
     "elcm_simulate",
-    "jobs_run",
-    "networks2_run",
-    "feasibility_run",
-    "developer_run"
+    "jobs_run"
   ]
 }
