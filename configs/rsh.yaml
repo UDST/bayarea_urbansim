@@ -1,0 +1,47 @@
+name: Residential Sales Hedonic
+
+fit_filters:
+- unit_lot_size > 0
+- year_built > 1000
+- year_built < 2020
+- unit_sqft > 100
+- unit_sqft < 10000
+- sale_price_flt > 30
+- sale_price_flt < 1500
+
+predict_filters: null
+
+patsy:
+- I(year_built < 1940)
+- I(year_built > 2005)
+- np.log1p(unit_sqft)
+- np.log1p(unit_lot_size)
+- sum_residential_units
+- ave_unit_sqft
+- ave_lot_sqft
+- ave_income
+- poor
+- jobs
+- '1'
+
+dep_var: sale_price_flt
+
+dep_var_transform: np.log1p
+
+ytransform: np.exp
+
+fitted: true
+
+coefficients:
+    I(year_built < 1940)[T.True]: 0.2419310144286242
+    I(year_built > 2005)[T.True]: 0.08962030242579894
+    Intercept: 4.478926263915542
+    ave_income: 0.4127396595507783
+    ave_lot_sqft: -0.0257383869071082
+    ave_unit_sqft: -0.2970076101060972
+    jobs: 0.04428461819513323
+    np.log1p(unit_lot_size): 0.08890902813756452
+    np.log1p(unit_sqft): -0.2692823707149886
+    poor: -0.17605839999426798
+    sum_residential_units: 0.10187344776565974
+
