@@ -1,5 +1,7 @@
 name: Residential Sales Hedonic
 
+model_type: regression
+
 fit_filters:
 - unit_lot_size > 0
 - year_built > 1000
@@ -11,22 +13,9 @@ fit_filters:
 
 predict_filters: null
 
-patsy:
-- I(year_built < 1940)
-- I(year_built > 2005)
-- np.log1p(unit_sqft)
-- np.log1p(unit_lot_size)
-- sum_residential_units
-- ave_unit_sqft
-- ave_lot_sqft
-- ave_income
-- poor
-- jobs
-- '1'
-
-dep_var: sale_price_flt
-
-dep_var_transform: np.log1p
+model_expression: np.log1p(sale_price_flt) ~ I(year_built < 1940) + I(year_built >
+    2005) + np.log1p(unit_sqft) + np.log1p(unit_lot_size) + sum_residential_units
+    + ave_unit_sqft + ave_lot_sqft + ave_income + poor + jobs + 1
 
 ytransform: np.exp
 

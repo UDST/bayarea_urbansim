@@ -1,6 +1,6 @@
 import numpy as np, pandas as pd
 import time, os
-from urbansim.utils import misc, geomisc, networks
+from urbansim.utils import misc, networks
 from urbansim.urbansim import dataset
 import warnings
 import variables
@@ -71,7 +71,9 @@ class BayAreaDataset(dataset.Dataset):
   def fetch_nodes(self):
     # default will fetch off disk unless networks have already been run
     print "WARNING: fetching precomputed nodes off of disk"
-    return pd.read_csv(os.path.join(misc.data_dir(),'nodes.csv'),index_col='node_id')
+    df = pd.read_csv(os.path.join(misc.data_dir(),'nodes.csv'),index_col='node_id')
+    df = df.replace([np.inf, -np.inf], np.nan).fillna(0)
+    return df
 
   def fetch_costar(self):
     costar = self.store['costar']
