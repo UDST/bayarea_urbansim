@@ -3,7 +3,6 @@ import time, os
 from urbansim.utils import misc, networks
 from urbansim.urbansim import dataset
 import warnings
-import variables
 
 warnings.filterwarnings('ignore',category=pd.io.pytables.PerformanceWarning)
 
@@ -33,7 +32,6 @@ class BayAreaDataset(dataset.Dataset):
 
   def __init__(self,filename):
     super(BayAreaDataset,self).__init__(filename)
-    self.variables = variables
 
   def fetch(self,name,addzoneid=0,addnodeid=0,convertsrid=0,addbuildingid=0,pya=None,direct=0):
     if direct: return self.store[name]
