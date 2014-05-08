@@ -1,0 +1,22 @@
+name: Household Location Choice Model
+
+model_type: locationchoice
+
+sample_size: 100
+
+estimation_sample_size: 5000
+
+model_expression: np.log1p(stories) + ave_income + poor + sum_nonresidential_units
+    + jobs - 1
+
+location_id_col: building_id
+
+coefficients:
+- 0.6127436326433892
+- 0.009379283990508825
+- -0.15396048508499266
+- -0.15823552413123862
+- 0.4291353328713762
+
+fitted: true
+

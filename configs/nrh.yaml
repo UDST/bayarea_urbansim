@@ -6,6 +6,19 @@ fit_filters: null
 
 predict_filters: null
 
-model_expression: np.log1p(averageweightedrent) ~ I(year_built < 1940) + I(year_built > 2005) + np.log1p(stories) + ave_income + poor + jobs
+model_expression: np.log1p(averageweightedrent) ~ I(year_built < 1940) + I(year_built
+    > 2005) + np.log1p(stories) + ave_income + poor + jobs
 
 ytransform: np.exp
+
+fitted: true
+
+coefficients:
+    I(year_built < 1940)[T.True]: 0.06969317943439801
+    I(year_built > 2005)[T.True]: 0.21329440025754287
+    Intercept: 2.144159298461072
+    ave_income: 0.010361912246028294
+    jobs: -0.007411512793081183
+    np.log1p(stories): 0.47129375673810503
+    poor: 0.04429541165212898
+

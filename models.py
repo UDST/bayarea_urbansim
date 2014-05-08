@@ -4,97 +4,164 @@ from urbansim.utils import misc
 from urbansim.models import RegressionModel, MNLLocationChoiceModel
 
 
-def rsh_estimate(dset):
-    cfg = misc.config("rsh.yaml")
-    buildings = pd.merge(
-        dset.homesales, dset.nodes, left_on="_node_id", right_index=True)
+# hedonic methods
+def _hedonic_estimate(dset, df, cfgname):
+    print "Running hedonic estimation\n"
+    cfg = misc.config(cfgname)
+    buildings = pd.merge(df, dset.nodes, left_on="_node_id", right_index=True)
     hm = RegressionModel.from_yaml(str_or_buffer=cfg)
     print hm.fit(buildings).summary()
     hm.to_yaml(str_or_buffer=cfg)
+
+
+def _hedonic_simulate(dset, df, cfgname, outfname):
+    print "Running hedonic simulation\n"
+    cfg = misc.config(cfgname)
+    buildings = pd.merge(df, dset.nodes, left_on="_node_id", right_index=True)
+    hm = RegressionModel.from_yaml(str_or_buffer=cfg)
+    price_or_rent = hm.predict(buildings)
+    print price_or_rent.describe()
+    dset.buildings[outfname] = price_or_rent.reindex(dset.buildings.index)
+
+
+# residential sales hedonic
+def rsh_estimate(dset):
+    return _hedonic_estimate(dset, dset.homesales, "rsh.yaml")
 
 
 def rsh_simulate(dset):
-    cfg = misc.config("rsh.yaml")
-    buildings = dset.building_filter(residential=1)
-    buildings = pd.merge(
-        buildings, dset.nodes, left_on="_node_id", right_index=True)
-    hm = RegressionModel.from_yaml(str_or_buffer=cfg)
-    new_unit_price_res = hm.predict(buildings)
-    print new_unit_price_res.describe()
-    dset.buildings["res_sales_price"] = \
-        new_unit_price_res.reindex(dset.buildings.index)
+    df = dset.building_filter(residential=1)
+    return _hedonic_simulate(dset, df, "rsh.yaml", "res_sales_price")
 
 
+# residential rent hedonic
 def rrh_estimate(dset):
-    cfg = misc.config("rrh.yaml")
-    buildings = pd.merge(
-        dset.apartments, dset.nodes, left_on="_node_id", right_index=True)
-    hm = RegressionModel.from_yaml(str_or_buffer=cfg)
-    print hm.fit(buildings).summary()
-    hm.to_yaml(str_or_buffer=cfg)
+    return _hedonic_estimate(dset, dset.apartments, "rrh.yaml")
 
 
 def rrh_simulate(dset):
-    cfg = misc.config("rrh.yaml")
-    buildings = dset.building_filter(residential=1)
-    buildings = pd.merge(
-        buildings, dset.nodes, left_on="_node_id", right_index=True)
-    hm = RegressionModel.from_yaml(str_or_buffer=cfg)
-    new_unit_rent = hm.predict(buildings)
-    print new_unit_rent.describe()
-    dset.buildings["res_rent"] = \
-        new_unit_rent.reindex(dset.buildings.index)
+    df = dset.building_filter(residential=1)
+    return _hedonic_simulate(dset, df, "rrh.yaml", "residential_rent")
 
 
+# non-residential hedonic
 def nrh_estimate(dset):
-    cfg = misc.config("nrh.yaml")
-    buildings = pd.merge(
-        dset.costar, dset.nodes, left_on="_node_id", right_index=True)
-    hm = RegressionModel.from_yaml(str_or_buffer=cfg)
-    print hm.fit(buildings).summary()
-    hm.to_yaml(str_or_buffer=cfg)
+    return _hedonic_estimate(dset, dset.costar, "nrh.yaml")
 
 
 def nrh_simulate(dset):
-    cfg = misc.config("nrh.yaml")
-    buildings = dset.building_filter(residential=0)
-    buildings = pd.merge(
-        buildings, dset.nodes, left_on="_node_id", right_index=True)
-    hm = RegressionModel.from_yaml(str_or_buffer=cfg)
-    nonres_rent = hm.predict(buildings)
-    print nonres_rent.describe()
-    dset.buildings["nonresidential_rent"] = \
-        nonres_rent.reindex(dset.buildings.index)
+    df = dset.building_filter(residential=0)
+    return _hedonic_simulate(dset, df, "nrh.yaml", "nonresidential_rent")
 
 
-def hlcmo_estimate(dset):
-    cfg = misc.config("hlcmo.yaml")
-    buildings = pd.merge(dset.building_filter(residential=1),
-                         dset.nodes, left_on="_node_id", right_index=True)
+# location choice models
+def _lcm_estimate(dset, choosers, chosen_fname, alternatives, cfgname):
+    print "Running location choice model estimation\n"
+    cfg = misc.config(cfgname)
+    buildings = pd.merge(alternatives, dset.nodes,
+                         left_on="_node_id", right_index=True)
     lcm = MNLLocationChoiceModel.from_yaml(str_or_buffer=cfg)
-    lcm.fit(dset.households, buildings, dset.households.building_id)
+    lcm.fit(choosers, buildings, choosers[chosen_fname])
     lcm.report_fit()
     lcm.to_yaml(str_or_buffer=cfg)
 
 
-def get_vacant_units(buildings, vacant_units):
-    vacant_units = vacant_units[vacant_units > 0].order(ascending=False)
+def _get_vacant_units(choosers, buildings, supply_fname, vacant_units):
+    print "There are %d total available units" % buildings[supply_fname].sum()
+    print "    and %d total choosers" % len(choosers.index)
+    print "    but there are %d overfull buildings" % \
+        len(vacant_units[vacant_units < 0].index)
+    vacant_units = vacant_units[vacant_units > 0]
     alternatives = buildings.loc[np.repeat(vacant_units.index,
                                  vacant_units.values.astype('int'))] \
         .reset_index()
-    print("There are %s empty units in %s locations total in the region" %
-          (vacant_units.sum(), len(vacant_units)))
+    print "    for a total of %d empty units" % vacant_units.sum()
+    print "    in %d buildings total in the region" % len(vacant_units)
     return alternatives
 
 
-def hlcmo_simulate(dset):
-    cfg = misc.config("hlcmo.yaml")
-    buildings = pd.merge(dset.building_filter(residential=1),
-                         dset.nodes, left_on="_node_id", right_index=True)
-    vacant_units = buildings.residential_units.sub(
-        dset.households.groupby("building_id").size(), fill_value=0)
-    alternatives = get_vacant_units(buildings, vacant_units)
+def _print_number_unplaced(df, fieldname="building_id"):
+    counts = df[fieldname].isnull().value_counts()
+    count = 0 if True not in counts else counts[True]
+    print "Total currently unplaced: %d" % count
+
+
+def _lcm_simulate(dset, choosers, output_fname, alternatives,
+                  supply_fname, cfgname):
+    print "Running location choice model simulation\n"
+    cfg = misc.config(cfgname)
+    buildings = pd.merge(alternatives, dset.nodes,
+                         left_on="_node_id", right_index=True)
+    vacant_units = buildings[supply_fname].sub(
+        choosers.groupby(output_fname).size(), fill_value=0)
+    alternatives = _get_vacant_units(choosers, buildings, supply_fname,
+                                     vacant_units)
     lcm = MNLLocationChoiceModel.from_yaml(str_or_buffer=cfg)
-    new_units = lcm.predict(dset.households, alternatives)
-    dset.households["building_id"].loc[new_units.index] = \
-        alternatives.loc[new_units.values].building_id.values
+    new_units = lcm.predict(choosers, alternatives)
+    print "Assigned %d choosers to new units" % len(new_units.index)
+    choosers[output_fname].loc[new_units.index] = \
+        alternatives.loc[new_units.values][output_fname].values
+    _print_number_unplaced(choosers, output_fname)
+
+
+def _hlcm_estimate(dset, cfgname):
+    return _lcm_estimate(dset, dset.households, "building_id",
+                         dset.building_filter(residential=1),
+                         cfgname)
+
+
+def _hlcm_simulate(dset, cfgname):
+    return _lcm_simulate(dset, dset.households, "building_id",
+                         dset.building_filter(residential=1),
+                         "residential_units",
+                         cfgname)
+
+
+# household location choice owner
+def hlcmo_estimate(dset):
+    return _hlcm_estimate(dset, "hlcmo.yaml")
+
+
+def hlcmo_simulate(dset):
+    return _hlcm_simulate(dset, "hlcmo.yaml")
+
+
+# household location choice renter
+def hlcmr_estimate(dset):
+    return _hlcm_estimate(dset, "hlcmr.yaml")
+
+
+def hlcmr_simulate(dset):
+    return _hlcm_simulate(dset, "hlcmr.yaml")
+
+
+# employment location choice
+def elcm_estimate(dset):
+    return _lcm_estimate(dset, dset.jobs, "building_id",
+                         dset.building_filter(residential=0),
+                         "elcm.yaml")
+
+
+def elcm_simulate(dset):
+    return _lcm_simulate(dset, dset.jobs, "building_id",
+                         dset.building_filter(residential=0),
+                         "non_residential_units",
+                         "elcm.yaml")
+
+
+# relocation model implementation
+def _simple_relocation(choosers, relocation_rate, fieldname='building_id'):
+    print "Running relocation\n"
+    _print_number_unplaced(choosers, fieldname)
+    chooser_ids = np.random.choice(choosers.index, size=relocation_rate *
+                                   len(choosers.index), replace=False)
+    choosers[fieldname].loc[chooser_ids] = np.nan
+    _print_number_unplaced(choosers, fieldname)
+
+
+def household_relocation(dset):
+    return _simple_relocation(dset.households, .05)
+
+
+def jobs_relocation(dset):
+    return _simple_relocation(dset.jobs, .08)
