@@ -147,7 +147,8 @@ class BayAreaDataset(dataset.Dataset):
     households['income_quartile'] = pd.qcut(households['income'],4).labels
 
     households['HHINCOME'] = households['income']/10000.0
-    
+    households["building_id"][households.building_id == -1] = np.nan
+ 
     return households
 
   def fetch_homesales(self):

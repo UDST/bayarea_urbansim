@@ -1,0 +1,11 @@
+name: Non-residential Rent Hedonic
+
+model_type: regression
+
+fit_filters: null
+
+predict_filters: null
+
+model_expression: np.log1p(averageweightedrent) ~ I(year_built < 1940) + I(year_built > 2005) + np.log1p(stories) + ave_income + poor + jobs
+
+ytransform: np.exp

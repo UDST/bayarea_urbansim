@@ -7,7 +7,7 @@ fit_filters: null
 predict_filters: null
 
 model_expression: np.log1p(rent) ~ np.log1p(unit_sqft) + sum_residential_units + ave_unit_sqft
-    + ave_lot_sqft + poor + jobs + 1
+    + ave_lot_sqft + poor + jobs
 
 ytransform: np.exp
 

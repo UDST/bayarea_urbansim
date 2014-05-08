@@ -1,0 +1,25 @@
+name: Household Location Choice Model
+
+model_type: locationchoice
+
+sample_size: 100
+
+estimation_sample_size: 1000
+
+location_id_col: building_id
+
+simple_relocation_rate: .04
+
+model_expression: np.log1p(unit_sqft) + sum_residential_units + ave_unit_sqft + ave_lot_sqft
+    + ave_income + poor - 1
+
+coefficients:
+- -0.4465790361273099
+- 0.06368284656264146
+- 0.826350070201901
+- 0.003463712230574718
+- 0.2839985461395532
+- 0.03843468382739092
+
+fitted: true
+
