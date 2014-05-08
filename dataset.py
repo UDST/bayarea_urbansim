@@ -109,7 +109,7 @@ class BayAreaDataset(dataset.Dataset):
     buildings['residential_units'] = buildings['residential_units'].fillna(1) 
     buildings['residential_units'][buildings['residential_units']>300] = 300
 
-    sqft_job = pd.read_csv(os.path.join(misc.configs_dir(),'building_sqft_job.csv'),index_col='building_type_id')
+    sqft_job = pd.read_csv(os.path.join(misc.data_dir(),'building_sqft_job.csv'),index_col='building_type_id')
     buildings['sqft_per_job'] = sqft_job.ix[buildings.building_type_id.fillna(-1)].values
     buildings['non_residential_units'] = buildings.non_residential_sqft/buildings.sqft_per_job
     buildings['non_residential_units'] = buildings.non_residential_units.fillna(0).astype('int')
