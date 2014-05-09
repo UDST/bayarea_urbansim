@@ -1,0 +1,39 @@
+name: Neighborhood Accessibility Variables
+
+model_type: networks
+
+variable_definitions:
+
+  - name: ave_residential_price
+    dataframe: buildings
+    radius: 1500
+    varname: res_sales_price
+    aggregation: average
+    decay: flat
+
+  - name: ave_retail_rent
+    dataframe: buildings
+    filters:
+    - general_type == "Retail"
+    radius: 1500
+    varname: nonresidential_rent
+    aggregation: average
+    decay: flat
+
+  - name: ave_office_rent
+    dataframe: buildings
+    filters:
+    - general_type == "Office"
+    radius: 1500
+    varname: nonresidential_rent
+    aggregation: average
+    decay: flat
+
+  - name: ave_industrial_rent
+    dataframe: buildings
+    filters:
+    - general_type == "Industrial"
+    radius: 1500
+    varname: nonresidential_rent
+    aggregation: average
+    decay: flat

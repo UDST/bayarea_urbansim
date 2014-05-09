@@ -1,7 +1,8 @@
 import pandas as pd
 import numpy as np
-from urbansim.utils import misc
-from urbansim.models import RegressionModel, MNLLocationChoiceModel
+import os
+from urbansim.utils import misc, networks
+from urbansim.models import RegressionModel, MNLLocationChoiceModel, util
 
 
 # hedonic methods
@@ -165,3 +166,75 @@ def household_relocation(dset):
 
 def jobs_relocation(dset):
     return _simple_relocation(dset.jobs, .08)
+
+
+def build_networks():
+    if not networks.NETWORKS:
+        networks.NETWORKS = networks.Networks(
+            [os.path.join(misc.data_dir(), x) for x in ['osm_bayarea.jar']],
+            factors=[1.0],
+            maxdistances=[2000],
+            twoway=[1],
+            impedances=None)
+
+
+def update_xys(dset):
+    for dfname in ["households", "jobs"]:
+        print "Adding xys to dataframe: %s" % dfname
+        df = dset.add_xy(dset.fetch(dfname))
+        dset.save_tmptbl(dfname, df)
+
+
+def accessibility_variables(dset, cfgname):
+    print "Computing accessibility variables"
+    import yaml
+    cfg = yaml.load(open(misc.config(cfgname)))
+
+    nodes = pd.DataFrame(index=networks.NETWORKS.external_nodeids)
+
+    for variable in cfg['variable_definitions']:
+
+        name = variable["name"]
+        print "Computing %s" % name
+
+        decay = {
+            "exponential": "DECAY_EXP",
+            "linear": "DECAY_LINEAR",
+            "flat": "DECAY_FLAT"
+        }.get(variable.get("decay", "linear"))
+
+        agg = {
+            "sum": "AGG_SUM",
+            "average": "AGG_AVE",
+            "stddev": "AGG_STDDEV"
+        }.get(variable.get("aggregation", "sum"))
+
+        vname = variable.get("varname", None)
+
+        radius = variable["radius"]
+
+        dfname = variable["dataframe"]
+        df = dset.fetch(dfname)
+
+        if "filters" in variable:
+            util.apply_filter_query(df, variable["filters"])
+
+        print "    dataframe = %s, varname=%s" % (dfname, vname)
+        print "    radius = %s, aggregation = %s, decay = %s" % (radius, agg, decay)
+
+        nodes[name] = networks.NETWORKS.accvar(df,
+                                               radius,
+                                               agg=agg,
+                                               decay=decay,
+                                               vname=vname).astype('float').values
+
+        if "apply" in variable:
+            nodes[name] = nodes[name].apply(eval(variable["apply"]))
+
+
+def networks(dset):
+    return accessibility_variables(dset, "networks.yaml")
+
+
+def networks2(dset):
+    return accessibility_variables(dset, "networks2.yaml")
