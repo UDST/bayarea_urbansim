@@ -38,7 +38,7 @@ variable_definitions:
     radius: 500
     apply: np.log1p
 
-  - name: population
+  - name: poor
     dataframe: households
     filters:
     - income < 40000
@@ -47,14 +47,14 @@ variable_definitions:
     apply: np.log1p
 
   - name: renters
-    dataframe: buildings
+    dataframe: households
     filters:
     - tenure == 2
     radius: 500
     apply: np.log1p
 
   - name: sfdu
-    dataframe: households
+    dataframe: buildings
     filters:
     - building_type_id == 1
     radius: 500

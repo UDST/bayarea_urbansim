@@ -1,9 +1,6 @@
 import pandas as pd
 import numpy as np
-import sys
 import time
-import random
-import string
 import os
 from urbansim.utils import misc, spotproforma
 

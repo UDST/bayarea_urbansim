@@ -2,7 +2,8 @@ import pandas as pd
 import numpy as np
 import os
 from urbansim.utils import misc, networks
-from urbansim.models import RegressionModel, MNLLocationChoiceModel, util
+from urbansim.models import RegressionModel, MNLLocationChoiceModel, \
+    GRTransitionModel
 
 
 # hedonic methods
@@ -32,7 +33,7 @@ def rsh_estimate(dset):
 
 def rsh_simulate(dset):
     df = dset.building_filter(residential=1)
-    return _hedonic_simulate(dset, df, "rsh.yaml", "res_sales_price")
+    return _hedonic_simulate(dset, df, "rsh.yaml", "residential_sales_price")
 
 
 # residential rent hedonic
@@ -52,7 +53,7 @@ def nrh_estimate(dset):
 
 def nrh_simulate(dset):
     df = dset.building_filter(residential=0)
-    return _hedonic_simulate(dset, df, "nrh.yaml", "nonresidential_rent")
+    return _hedonic_simulate(dset, df, "nrh.yaml", "non_residential_rent")
 
 
 # location choice models
@@ -160,12 +161,29 @@ def _simple_relocation(choosers, relocation_rate, fieldname='building_id'):
     _print_number_unplaced(choosers, fieldname)
 
 
-def household_relocation(dset):
+def households_relocation(dset):
     return _simple_relocation(dset.households, .05)
 
 
 def jobs_relocation(dset):
     return _simple_relocation(dset.jobs, .08)
+
+
+def _simple_transition(dset, dfname, rate):
+    transition = GRTransitionModel(rate)
+    df = dset.fetch(dfname)
+    print "%d agents before transition" % len(df.index)
+    df, new_indexes = transition.transition(df)
+    print "%d agents after transition" % len(df.index)
+    dset.save_tmptbl(dfname, df)
+
+
+def households_transition(dset):
+    return _simple_transition(dset, "households", .05)
+
+
+def jobs_transition(dset):
+    return _simple_transition(dset, "jobs", .05)
 
 
 def build_networks():
@@ -185,56 +203,13 @@ def update_xys(dset):
         dset.save_tmptbl(dfname, df)
 
 
-def accessibility_variables(dset, cfgname):
-    print "Computing accessibility variables"
-    import yaml
-    cfg = yaml.load(open(misc.config(cfgname)))
-
-    nodes = pd.DataFrame(index=networks.NETWORKS.external_nodeids)
-
-    for variable in cfg['variable_definitions']:
-
-        name = variable["name"]
-        print "Computing %s" % name
-
-        decay = {
-            "exponential": "DECAY_EXP",
-            "linear": "DECAY_LINEAR",
-            "flat": "DECAY_FLAT"
-        }.get(variable.get("decay", "linear"))
-
-        agg = {
-            "sum": "AGG_SUM",
-            "average": "AGG_AVE",
-            "stddev": "AGG_STDDEV"
-        }.get(variable.get("aggregation", "sum"))
-
-        vname = variable.get("varname", None)
-
-        radius = variable["radius"]
-
-        dfname = variable["dataframe"]
-        df = dset.fetch(dfname)
-
-        if "filters" in variable:
-            util.apply_filter_query(df, variable["filters"])
-
-        print "    dataframe = %s, varname=%s" % (dfname, vname)
-        print "    radius = %s, aggregation = %s, decay = %s" % (radius, agg, decay)
-
-        nodes[name] = networks.NETWORKS.accvar(df,
-                                               radius,
-                                               agg=agg,
-                                               decay=decay,
-                                               vname=vname).astype('float').values
-
-        if "apply" in variable:
-            nodes[name] = nodes[name].apply(eval(variable["apply"]))
+def neighborhood_vars(dset):
+    update_xys(dset)
+    nodes = networks.from_yaml(dset, "networks.yaml")
+    print nodes.describe()
+    dset.save_tmptbl("nodes", nodes)
 
 
-def networks(dset):
-    return accessibility_variables(dset, "networks.yaml")
-
-
-def networks2(dset):
-    return accessibility_variables(dset, "networks2.yaml")
+def price_vars(dset):
+    nodes = networks.from_yaml(dset, "networks2.yaml")
+    dset.save_tmptbl("nodes_prices", nodes)

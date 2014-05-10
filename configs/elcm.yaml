@@ -6,17 +6,17 @@ sample_size: 100
 
 estimation_sample_size: 5000
 
-model_expression: np.log1p(stories) + ave_income + poor + sum_nonresidential_units
-    + jobs - 1
+model_expression: np.log1p(non_residential_rent) + np.log1p(stories) + ave_income
+    + sum_nonresidential_units + jobs - 1
 
 location_id_col: building_id
 
 coefficients:
-- 0.6127436326433892
-- 0.009379283990508825
-- -0.15396048508499266
-- -0.15823552413123862
-- 0.4291353328713762
+- -1.0181367140250224
+- 0.4968399679035401
+- -0.04084323062536839
+- -0.16848115665489513
+- 0.962640379694338
 
 fitted: true
 

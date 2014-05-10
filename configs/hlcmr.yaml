@@ -12,18 +12,18 @@ sample_size: 100
 
 estimation_sample_size: 5000
 
-model_expression: np.log1p(unit_sqft) + sum_residential_units + ave_unit_sqft + ave_lot_sqft
-    + ave_income + poor - 1
+model_expression: np.log1p(residential_rent) + np.log1p(unit_sqft) + sum_residential_units
+    + ave_unit_sqft + ave_lot_sqft + ave_income - 1
 
 location_id_col: building_id
 
 coefficients:
-- -1.1153017239064833
-- 0.44552171926166934
-- 1.3783912477668954
-- 0.004798126048782571
-- -0.37743013473729536
-- 0.2916431618002648
+- 3.0
+- -1.0303220158138735
+- 0.7605723325781093
+- 1.0061718094697825
+- 0.5075714905850593
+- -0.36795218533700813
 
 fitted: true
 

@@ -1,11 +1,5 @@
 import pandas as pd
 import numpy as np
-import sys
-import time
-import random
-import string
-import os
-from urbansim.utils import misc
 
 TARGETVACANCY = .1  # really should be a target per TAZ
 MAXPARCELSIZE = 200000  # really need some subdivision
@@ -78,9 +72,6 @@ def exec_developer(dset, year, agents, unit_fname, btypes,
     ind = np.searchsorted(totunits, targetunits, side="right")
     build = choices[:ind]
 
-    # need to remove parcels from consideration in feasibility
-    dset.save_tmptbl("feasibility", df.drop(build))
-
     # from here on just keep the ones to build
     df = df.loc[build]
 
@@ -90,7 +81,7 @@ def exec_developer(dset, year, agents, unit_fname, btypes,
     print "Units by type\n", \
         df.groupby('max_btype').netunits.sum().order(ascending=False)
 
-    df = df.join(dset.parcels).reset_index()
+    # df = df.join(dset.parcels).reset_index()
     # format new buildings to concatenate with old buildings
     NOTHING = np.zeros(len(df.index))
     df['parcel_id'] = df.index
@@ -101,24 +92,17 @@ def exec_developer(dset, year, agents, unit_fname, btypes,
     df['stories'] = df.max_feasiblefar
     df['building_type_id'] = df.max_btype
     df['year_built'] = np.ones(len(df.index)) * year
-    df['tenure'] = np.zeros(len(df.index))
-    df['rental'] = np.zeros(len(df.index))
-    df['rent'] = np.zeros(len(df.index))
     df['general_type'] = df.building_type_id.map(dset.BUILDING_TYPE_MAP)
-    df['county'] = np.zeros(len(df.index))
-    df['id'] = np.zeros(len(df.index))
-    df['building'] = np.zeros(len(df.index))
-    df['scenario'] = np.zeros(len(df.index))
     df['unit_sqft'] = AVEUNITSIZE
-    df['lot_size'] = df.shape_area * 10.764
+    df['lot_size'] = dset.parcels.shape_area * 10.764
     df['unit_lot_size'] = df.lot_size / df.residential_units
-    df = df[['parcel_id', 'building_type', 'residential_units',
-            'non_residential_units', u'building_sqft', u'stories',
-            'building_type_id', u'year_built', u'tenure', u'id', u'building',
-            'scenario', u'county', u'lot_size', u'rent', u'rental',
-            u'general_type', u'unit_sqft', u'unit_lot_size', 'x', 'y',
-            '_node_id0', '_node_id1', '_node_id2', '_node_id']]
+    for f in ['x', 'y', '_node_id']:
+        df[f] = dset.parcels[f]
     maxind = np.max(dset.buildings.index.values)
     df.index = df.index + maxind + 1
     dset.buildings = pd.concat([dset.buildings, df], verify_integrity=True)
     dset.buildings.index.name = 'building_id'
+
+    # need to remove parcels from consideration in feasibility
+    dset.save_tmptbl("feasibility", dset.feasibility.drop(build))
+
