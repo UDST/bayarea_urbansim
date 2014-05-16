@@ -1,24 +1,15 @@
 name: Residential Rent Hedonic
-
 model_type: regression
-
 fit_filters: null
-
 predict_filters: null
-
 model_expression: np.log1p(rent) ~ np.log1p(unit_sqft) + sum_residential_units + ave_unit_sqft
-    + ave_lot_sqft + poor + jobs
-
+    + ave_lot_sqft + jobs
 ytransform: np.exp
-
 fitted: true
-
 coefficients:
-    Intercept: 2.2813828986007865
-    ave_lot_sqft: -0.007548770409124599
-    ave_unit_sqft: -0.02808692042238678
-    jobs: 0.011291294163440341
-    np.log1p(unit_sqft): -0.20269557506134928
-    poor: -0.14198901907722972
-    sum_residential_units: 0.18576322370978304
-
+    Intercept: 2.238865171970364
+    ave_lot_sqft: -0.01042216334370384
+    ave_unit_sqft: 0.004854149528065711
+    jobs: 0.011642011657357697
+    np.log1p(unit_sqft): -0.20021806882811138
+    sum_residential_units: 0.01808320763977301
