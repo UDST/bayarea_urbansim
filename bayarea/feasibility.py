@@ -87,7 +87,6 @@ def feasibility_run(dset, year=2010):
     # 4 building types so we have to convert one into the other - would
     # probably be better to have rents segmented by the same 16 building
     # types if we had good observations for that
-    parcel_predictions = pd.DataFrame(index=parcels.index)
     for form, btypes in type_d.iteritems():
 
         btypes = type_d[form]

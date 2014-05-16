@@ -1,6 +1,6 @@
 import numpy as np, pandas as pd
-import time, os
-from urbansim.utils import misc, networks
+import os
+from urbansim.utils import misc
 from urbansim.urbansim import dataset
 import warnings
 

@@ -1,22 +1,20 @@
 name: Household Location Choice Model
-
 model_type: locationchoice
-
+choosers_fit_filters: null
+choosers_predict_filters: null
+alts_fit_filters: null
+alts_predict_filters: null
+interaction_predict_filters: null
+choice_column: null
 sample_size: 100
-
 estimation_sample_size: 5000
-
 model_expression: np.log1p(non_residential_rent) + np.log1p(stories) + ave_income
     + sum_nonresidential_units + jobs - 1
-
 location_id_col: building_id
-
 coefficients:
-- -1.0181367140250224
-- 0.4968399679035401
-- -0.04084323062536839
-- -0.16848115665489513
-- 0.962640379694338
-
+- -0.9293839455810194
+- 0.5184284553821028
+- -0.04592889440280053
+- -0.16622482022773802
+- 0.9065899120581954
 fitted: true
-

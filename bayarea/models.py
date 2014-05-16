@@ -3,7 +3,7 @@ import numpy as np
 import os
 from urbansim.utils import misc, networks
 from urbansim.models import RegressionModel, MNLLocationChoiceModel, \
-    GRTransitionModel
+    GrowthRateTransition
 
 
 # hedonic methods
@@ -170,7 +170,7 @@ def jobs_relocation(dset):
 
 
 def _simple_transition(dset, dfname, rate):
-    transition = GRTransitionModel(rate)
+    transition = GrowthRateTransition(rate)
     df = dset.fetch(dfname)
     print "%d agents before transition" % len(df.index)
     df, new_indexes = transition.transition(df)
@@ -206,7 +206,6 @@ def update_xys(dset):
 def neighborhood_vars(dset):
     update_xys(dset)
     nodes = networks.from_yaml(dset, "networks.yaml")
-    print nodes.describe()
     dset.save_tmptbl("nodes", nodes)
 
 
