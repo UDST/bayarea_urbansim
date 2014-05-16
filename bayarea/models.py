@@ -99,7 +99,8 @@ def _lcm_simulate(dset, choosers, output_fname, alternatives,
     alternatives = _get_vacant_units(choosers, buildings, supply_fname,
                                      vacant_units)
     lcm = MNLLocationChoiceModel.from_yaml(str_or_buffer=cfg)
-    new_units = lcm.predict(choosers, alternatives)
+    movers = choosers[choosers[output_fname].isnull()]
+    new_units = lcm.predict(movers, alternatives)
     print "Assigned %d choosers to new units" % len(new_units.index)
     choosers[output_fname].loc[new_units.index] = \
         alternatives.loc[new_units.values][output_fname].values
@@ -173,7 +174,7 @@ def _simple_transition(dset, dfname, rate):
     transition = GrowthRateTransition(rate)
     df = dset.fetch(dfname)
     print "%d agents before transition" % len(df.index)
-    df, new_indexes = transition.transition(df)
+    df, added, copied, removed = transition.transition(df, None)
     print "%d agents after transition" % len(df.index)
     dset.save_tmptbl(dfname, df)
 

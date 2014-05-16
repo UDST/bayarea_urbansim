@@ -66,6 +66,7 @@ variable_definitions:
     radius: 500
     aggregation: average
     decay: flat
+    apply: np.log1p
 
   - name: jobs
     dataframe: jobs
@@ -79,3 +80,4 @@ variable_definitions:
     radius: 500
     aggregation: average
     decay: flat
+    apply: np.log1p

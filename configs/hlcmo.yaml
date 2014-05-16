@@ -8,6 +8,14 @@ choosers_fit_filters:
 choosers_predict_filters:
 - tenure <> 1
 
+alts_fit_filters: null
+
+alts_predict_filters: null
+
+interaction_predict_filters: null
+
+choice_column: null
+
 sample_size: 100
 
 estimation_sample_size: 5000
@@ -15,15 +23,32 @@ estimation_sample_size: 5000
 model_expression: np.log1p(residential_sales_price) + np.log1p(unit_sqft) + sum_residential_units
     + ave_unit_sqft + ave_lot_sqft + ave_income - 1
 
-location_id_col: building_id
+log_likelihoods:
+    convergence: -22907.437850278275
+    'null': -22970.588887707992
+    ratio: 0.002749212818984881
 
-coefficients:
-- -0.013586347431797091
-- -0.2398350553839096
-- 0.07542098922818966
-- 0.30386539573996013
-- -0.006615824881919845
-- 0.07359467558414287
+fit_parameters:
+    Coefficient:
+        ave_income: 0.14701433419511642
+        ave_lot_sqft: 0.060064537461693886
+        ave_unit_sqft: 0.40022458749285855
+        np.log1p(residential_sales_price): -0.060963527034602484
+        np.log1p(unit_sqft): -0.34565588722691365
+        sum_residential_units: 0.09508866666845653
+    Std. Error:
+        ave_income: 0.02487306059649406
+        ave_lot_sqft: 0.020200668857114457
+        ave_unit_sqft: 0.058657773419298356
+        np.log1p(residential_sales_price): 0.04691269801974671
+        np.log1p(unit_sqft): 0.02777864555150952
+        sum_residential_units: 0.018461105002327415
+    T-Score:
+        ave_income: 5.910584812222046
+        ave_lot_sqft: 2.9733934993216726
+        ave_unit_sqft: 6.823044315575487
+        np.log1p(residential_sales_price): -1.2995101456100742
+        np.log1p(unit_sqft): -12.443223215688079
+        sum_residential_units: 5.150757046041859
 
 fitted: true
-

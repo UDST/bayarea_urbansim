@@ -11,13 +11,12 @@ model_expression: np.log1p(averageweightedrent) ~ I(year_built < 1940) + I(year_
 
 ytransform: np.exp
 
-fitted: true
-
 coefficients:
-    I(year_built < 1940)[T.True]: 0.1419647273961402
-    I(year_built > 2005)[T.True]: 0.2474050610416706
-    Intercept: 2.0783083213130404
-    ave_income: 0.023323574020821556
-    jobs: -0.0042417009652571894
-    np.log1p(stories): 0.504259845374617
+    I(year_built < 1940)[T.True]: 0.14073273966377525
+    I(year_built > 2005)[T.True]: 0.26696739612182596
+    Intercept: 2.0206147348880616
+    ave_income: 0.02152717282078399
+    jobs: 0.004533460502513721
+    np.log1p(stories): 0.48931059128029053
 
+fitted: true

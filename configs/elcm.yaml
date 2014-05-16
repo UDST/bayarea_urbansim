@@ -1,20 +1,49 @@
 name: Household Location Choice Model
+
 model_type: locationchoice
+
 choosers_fit_filters: null
+
 choosers_predict_filters: null
+
 alts_fit_filters: null
+
 alts_predict_filters: null
+
 interaction_predict_filters: null
+
 choice_column: null
+
 sample_size: 100
+
 estimation_sample_size: 5000
+
 model_expression: np.log1p(non_residential_rent) + np.log1p(stories) + ave_income
     + sum_nonresidential_units + jobs - 1
-location_id_col: building_id
-coefficients:
-- -0.9293839455810194
-- 0.5184284553821028
-- -0.04592889440280053
-- -0.16622482022773802
-- 0.9065899120581954
+
+log_likelihoods:
+    convergence: -13925.556453013807
+    'null': -16408.22137267661
+    ratio: 0.15130615703399752
+
+fit_parameters:
+    Coefficient:
+        ave_income: -0.04993837164735088
+        jobs: 0.9419985124285305
+        np.log1p(non_residential_rent): -1.1089190185017324
+        np.log1p(stories): 0.5447574797887178
+        sum_nonresidential_units: -0.11040528292022672
+    Std. Error:
+        ave_income: 0.004001680452174068
+        jobs: 0.04411320854573527
+        np.log1p(non_residential_rent): 0.08966933203937573
+        np.log1p(stories): 0.036966294006396144
+        sum_nonresidential_units: 0.013865699756203761
+    T-Score:
+        ave_income: -12.479350174054986
+        jobs: 21.354114640105905
+        np.log1p(non_residential_rent): -12.366758994198621
+        np.log1p(stories): 14.736599770982192
+        sum_nonresidential_units: -7.96247465771278
+
 fitted: true
