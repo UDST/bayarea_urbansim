@@ -1,4 +1,4 @@
-name: Household Location Choice Model
+name: Household Location Choice Model (RENTERS)
 
 model_type: locationchoice
 
@@ -23,10 +23,7 @@ estimation_sample_size: 5000
 model_expression: np.log1p(residential_rent) + np.log1p(unit_sqft) + sum_residential_units
     + ave_unit_sqft + ave_lot_sqft + ave_income - 1
 
-log_likelihoods:
-    convergence: -19149.25274695755
-    'null': -22823.22344175641
-    ratio: 0.16097510082984678
+fitted: true
 
 fit_parameters:
     Coefficient:
@@ -51,4 +48,7 @@ fit_parameters:
         np.log1p(unit_sqft): -51.47042762682336
         sum_residential_units: 54.81364447383601
 
-fitted: true
+log_likelihoods:
+    convergence: -19149.25274695755
+    'null': -22823.22344175641
+    ratio: 0.16097510082984678

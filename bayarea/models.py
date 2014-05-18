@@ -197,7 +197,7 @@ def build_networks():
             impedances=None)
 
 
-def update_xys(dset):
+def _update_xys(dset):
     for dfname in ["households", "jobs"]:
         print "Adding xys to dataframe: %s" % dfname
         df = dset.add_xy(dset.fetch(dfname))
@@ -205,7 +205,7 @@ def update_xys(dset):
 
 
 def neighborhood_vars(dset):
-    update_xys(dset)
+    _update_xys(dset)
     nodes = networks.from_yaml(dset, "networks.yaml")
     dset.save_tmptbl("nodes", nodes)
 

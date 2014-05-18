@@ -1,4 +1,4 @@
-name: Household Location Choice Model
+name: Employment Location Choice Model
 
 model_type: locationchoice
 
@@ -21,10 +21,7 @@ estimation_sample_size: 5000
 model_expression: np.log1p(non_residential_rent) + np.log1p(stories) + ave_income
     + sum_nonresidential_units + jobs - 1
 
-log_likelihoods:
-    convergence: -13925.556453013807
-    'null': -16408.22137267661
-    ratio: 0.15130615703399752
+fitted: true
 
 fit_parameters:
     Coefficient:
@@ -46,4 +43,7 @@ fit_parameters:
         np.log1p(stories): 14.736599770982192
         sum_nonresidential_units: -7.96247465771278
 
-fitted: true
+log_likelihoods:
+    convergence: -13925.556453013807
+    'null': -16408.22137267661
+    ratio: 0.15130615703399752

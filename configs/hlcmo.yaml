@@ -1,4 +1,4 @@
-name: Household Location Choice Model
+name: Household Location Choice Model (OWNERS)
 
 model_type: locationchoice
 
@@ -23,10 +23,7 @@ estimation_sample_size: 5000
 model_expression: np.log1p(residential_sales_price) + np.log1p(unit_sqft) + sum_residential_units
     + ave_unit_sqft + ave_lot_sqft + ave_income - 1
 
-log_likelihoods:
-    convergence: -22907.437850278275
-    'null': -22970.588887707992
-    ratio: 0.002749212818984881
+fitted: true
 
 fit_parameters:
     Coefficient:
@@ -51,4 +48,7 @@ fit_parameters:
         np.log1p(unit_sqft): -12.443223215688079
         sum_residential_units: 5.150757046041859
 
-fitted: true
+log_likelihoods:
+    convergence: -22907.437850278275
+    'null': -22970.588887707992
+    ratio: 0.002749212818984881
