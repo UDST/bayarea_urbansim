@@ -1,9 +1,13 @@
-{
-    "desc": "Max Parcel Size",
-    "colorscheme": "Blues",
-    "buckets": 3,
-    "quantile": true,
-    "table": "parcels",
-    "groupby": "zone_id",
-    "metric": "shape_area.max()"
-}
+desc: Max Parcel Size
+
+colorscheme: Blues
+
+buckets: 3
+
+quantile: true
+
+table: parcels
+
+groupby: zone_id
+
+metric: shape_area.max()

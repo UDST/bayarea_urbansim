@@ -1,21 +1,21 @@
-chart: multibarchart
+name: residential units query
 
-desc: Mean Sale_price_flt by city
+sort: true
+
+metric: Sale_price_flt.mean()
 
 filter: null
+
+limit: 6
+
+chart_type: multibarchart
+
+table: homesales
+
+orderdesc: false
 
 groupby: City
 
 jointoparcels: false
 
-limit: 6
-
-metric: Sale_price_flt.mean()
-
-name: residential units query
-
-orderdesc: false
-
-sort: true
-
-table: homesales
+desc: Mean Sale_price_flt by city
