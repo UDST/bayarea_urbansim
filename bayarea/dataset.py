@@ -1,7 +1,6 @@
 import numpy as np, pandas as pd
 import os
-from urbansim.utils import misc
-from urbansim.urbansim import dataset
+from urbansim.utils import misc, dataset
 import warnings
 
 warnings.filterwarnings('ignore',category=pd.io.pytables.PerformanceWarning)
