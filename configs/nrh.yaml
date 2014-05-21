@@ -11,7 +11,6 @@ model_expression: np.log1p(averageweightedrent) ~ I(year_built < 1940) + I(year_
 
 ytransform: np.exp
 
-coefficients:
     I(year_built < 1940)[T.True]: 0.14073273966377525
     I(year_built > 2005)[T.True]: 0.26696739612182596
     Intercept: 2.0206147348880616
