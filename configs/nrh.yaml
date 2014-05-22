@@ -11,11 +11,31 @@ model_expression: np.log1p(averageweightedrent) ~ I(year_built < 1940) + I(year_
 
 ytransform: np.exp
 
-    I(year_built < 1940)[T.True]: 0.14073273966377525
-    I(year_built > 2005)[T.True]: 0.26696739612182596
-    Intercept: 2.0206147348880616
-    ave_income: 0.02152717282078399
-    jobs: 0.004533460502513721
-    np.log1p(stories): 0.48931059128029053
-
 fitted: true
+
+fit_parameters:
+    Coefficient:
+        I(year_built < 1940)[T.True]: 0.14073273966377525
+        I(year_built > 2005)[T.True]: 0.26696739612182596
+        Intercept: 2.0206147348880616
+        ave_income: 0.02152717282078399
+        jobs: 0.004533460502513721
+        np.log1p(stories): 0.48931059128029053
+    Std. Error:
+        I(year_built < 1940)[T.True]: 0.014487542403457022
+        I(year_built > 2005)[T.True]: 0.033419407780880206
+        Intercept: 0.030203385467805908
+        ave_income: 0.0015178960017765723
+        jobs: 0.00251394456577621
+        np.log1p(stories): 0.014071365178511826
+    T-Score:
+        I(year_built < 1940)[T.True]: 3.5968344668164636e-22
+        I(year_built > 2005)[T.True]: 1.5812720239095562e-15
+        Intercept: 0.0
+        ave_income: 4.7786231371082954e-45
+        jobs: 0.07137906371807695
+        np.log1p(stories): 5.621838455099724e-245
+
+fit_rsquared_adj: 0.21809850590064928
+
+fit_rsquared: 0.21864338499061386
