@@ -29,12 +29,12 @@ fit_parameters:
         jobs: 0.00251394456577621
         np.log1p(stories): 0.014071365178511826
     T-Score:
-        I(year_built < 1940)[T.True]: 3.5968344668164636e-22
-        I(year_built > 2005)[T.True]: 1.5812720239095562e-15
-        Intercept: 0.0
-        ave_income: 4.7786231371082954e-45
-        jobs: 0.07137906371807695
-        np.log1p(stories): 5.621838455099724e-245
+        I(year_built < 1940)[T.True]: 9.714051958888042
+        I(year_built > 2005)[T.True]: 7.9883939856816495
+        Intercept: 66.90027305190192
+        ave_income: 14.182244893977062
+        jobs: 1.803325564226975
+        np.log1p(stories): 34.773498169709185
 
 fit_rsquared_adj: 0.21809850590064928
 
