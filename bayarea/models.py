@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 import os
+
+from dataset import *
 from urbansim.utils import misc, networks
 from urbansim.models import RegressionModel, MNLLocationChoiceModel, \
     GrowthRateTransition
@@ -28,32 +30,32 @@ def _hedonic_simulate(dset, df, cfgname, outfname):
 
 # residential sales hedonic
 def rsh_estimate(dset):
-    return _hedonic_estimate(dset, dset.homesales, "rsh.yaml")
+    return _hedonic_estimate(dset, HomeSales(dset).build_df(), "rsh.yaml")
 
 
 def rsh_simulate(dset):
-    df = dset.building_filter(residential=1)
-    return _hedonic_simulate(dset, df, "rsh.yaml", "residential_sales_price")
+    return _hedonic_simulate(dset, Buildings(dset).build_df(), "rsh.yaml",
+                             "residential_sales_price")
 
 
 # residential rent hedonic
 def rrh_estimate(dset):
-    return _hedonic_estimate(dset, dset.apartments, "rrh.yaml")
+    return _hedonic_estimate(dset, Apartments(dset).build_df(), "rrh.yaml")
 
 
 def rrh_simulate(dset):
-    df = dset.building_filter(residential=1)
-    return _hedonic_simulate(dset, df, "rrh.yaml", "residential_rent")
+    return _hedonic_simulate(dset, Buildings(dset).build_df(), "rrh.yaml",
+                             "residential_rent")
 
 
 # non-residential hedonic
 def nrh_estimate(dset):
-    return _hedonic_estimate(dset, dset.costar, "nrh.yaml")
+    return _hedonic_estimate(dset, CoStar(dset).build_df(), "nrh.yaml")
 
 
 def nrh_simulate(dset):
-    df = dset.building_filter(residential=0)
-    return _hedonic_simulate(dset, df, "nrh.yaml", "non_residential_rent")
+    return _hedonic_simulate(dset, Buildings(dset).build_df(), "nrh.yaml",
+                             "non_residential_rent")
 
 
 # location choice models
@@ -108,14 +110,14 @@ def _lcm_simulate(dset, choosers, output_fname, alternatives,
 
 
 def _hlcm_estimate(dset, cfgname):
-    return _lcm_estimate(dset, dset.households, "building_id",
-                         dset.building_filter(residential=1),
+    return _lcm_estimate(dset, Households(dset).build_df(), "building_id",
+                         Buildings(dset).build_df().query("general_type == 'Residential'"),
                          cfgname)
 
 
 def _hlcm_simulate(dset, cfgname):
-    return _lcm_simulate(dset, dset.households, "building_id",
-                         dset.building_filter(residential=1),
+    return _lcm_simulate(dset, Households(dset).build_df(), "building_id",
+                         Buildings(dset).build_df().query("general_type == 'Residential'"),
                          "residential_units",
                          cfgname)
 
@@ -140,14 +142,14 @@ def hlcmr_simulate(dset):
 
 # employment location choice
 def elcm_estimate(dset):
-    return _lcm_estimate(dset, dset.jobs, "building_id",
-                         dset.building_filter(residential=0),
+    return _lcm_estimate(dset, Jobs(dset).build_df(), "building_id",
+                         Buildings(dset).build_df().query("general_type != 'Residential'"),
                          "elcm.yaml")
 
 
 def elcm_simulate(dset):
-    return _lcm_simulate(dset, dset.jobs, "building_id",
-                         dset.building_filter(residential=0),
+    return _lcm_simulate(dset, Jobs(dset).build_df(), "building_id",
+                         Buildings(dset).build_df().query("general_type != 'Residential'"),
                          "non_residential_units",
                          "elcm.yaml")
 
