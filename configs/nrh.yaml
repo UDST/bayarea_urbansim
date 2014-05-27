@@ -2,12 +2,14 @@ name: Non-residential Rent Hedonic
 
 model_type: regression
 
-fit_filters: null
+fit_filters:
+- rent > 0
 
-predict_filters: null
+predict_filters:
+- general_type != 'Residential'
 
-model_expression: np.log1p(averageweightedrent) ~ I(year_built < 1940) + I(year_built
-    > 2005) + np.log1p(stories) + ave_income + jobs
+model_expression: np.log1p(rent) ~ I(year_built < 1940) + I(year_built > 2005) + np.log1p(stories)
+    + ave_income + jobs
 
 ytransform: np.exp
 
@@ -15,27 +17,27 @@ fitted: true
 
 fit_parameters:
     Coefficient:
-        I(year_built < 1940)[T.True]: 0.14073273966377525
-        I(year_built > 2005)[T.True]: 0.26696739612182596
-        Intercept: 2.0206147348880616
-        ave_income: 0.02152717282078399
-        jobs: 0.004533460502513721
-        np.log1p(stories): 0.48931059128029053
+        I(year_built < 1940)[T.True]: 0.14196472739613417
+        I(year_built > 2005)[T.True]: 0.24740506104165833
+        Intercept: 2.078308321313035
+        ave_income: 0.02332357402082154
+        jobs: -0.0042417009652574115
+        np.log1p(stories): 0.5042598453746269
     Std. Error:
-        I(year_built < 1940)[T.True]: 0.014487542403457022
-        I(year_built > 2005)[T.True]: 0.033419407780880206
-        Intercept: 0.030203385467805908
-        ave_income: 0.0015178960017765723
-        jobs: 0.00251394456577621
-        np.log1p(stories): 0.014071365178511826
+        I(year_built < 1940)[T.True]: 0.014441218970034565
+        I(year_built > 2005)[T.True]: 0.033362591265206
+        Intercept: 0.0333327235693453
+        ave_income: 0.0016313435845965564
+        jobs: 0.002567814562706672
+        np.log1p(stories): 0.014134554550613571
     T-Score:
-        I(year_built < 1940)[T.True]: 9.714051958888042
-        I(year_built > 2005)[T.True]: 7.9883939856816495
-        Intercept: 66.90027305190192
-        ave_income: 14.182244893977062
-        jobs: 1.803325564226975
-        np.log1p(stories): 34.773498169709185
+        I(year_built < 1940)[T.True]: 9.830522457329263
+        I(year_built > 2005)[T.True]: 7.415642840059555
+        Intercept: 62.350390210068745
+        ave_income: 14.297156185273892
+        jobs: -1.6518719952995111
+        np.log1p(stories): 35.67568002012043
 
-fit_rsquared_adj: 0.21809850590064928
+fit_rsquared_adj: 0.22053585819307941
 
-fit_rsquared: 0.21864338499061386
+fit_rsquared: 0.22107903877970436

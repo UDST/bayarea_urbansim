@@ -25,30 +25,30 @@ model_expression: np.log1p(residential_rent) + np.log1p(unit_sqft) + sum_residen
 
 fitted: true
 
+log_likelihoods:
+    convergence: -19443.26613945041
+    'null': -22846.249292686345
+    ratio: 0.14895150226366982
+
 fit_parameters:
     Coefficient:
-        ave_income: -0.28451453263348886
-        ave_lot_sqft: 0.4314487936558243
-        ave_unit_sqft: 0.7150848057813696
-        np.log1p(residential_rent): -0.7031213711681619
-        np.log1p(unit_sqft): -0.9766655149821416
-        sum_residential_units: 1.1237002262080493
+        ave_income: -0.44562537768215205
+        ave_lot_sqft: -0.00426566866402967
+        ave_unit_sqft: 1.20998139514279
+        np.log1p(residential_rent): -3.0
+        np.log1p(unit_sqft): -1.4852006288345339
+        sum_residential_units: 0.8870625744016138
     Std. Error:
-        ave_income: 0.028175773976153805
-        ave_lot_sqft: 0.029036008266262178
-        ave_unit_sqft: 0.0629163372368096
-        np.log1p(residential_rent): 0.20043048008832554
-        np.log1p(unit_sqft): 0.018975274929970875
-        sum_residential_units: 0.020500374258902287
+        ave_income: 0.032622069701731475
+        ave_lot_sqft: 0.005144019695447223
+        ave_unit_sqft: 0.0646580193230628
+        np.log1p(residential_rent): 0.2690081849488403
+        np.log1p(unit_sqft): 0.04487432319255651
+        sum_residential_units: 0.02056401634050805
     T-Score:
-        ave_income: -10.097842667047372
-        ave_lot_sqft: 14.85909460072505
-        ave_unit_sqft: 11.365645827249535
-        np.log1p(residential_rent): -3.5080561143111115
-        np.log1p(unit_sqft): -51.47042762682336
-        sum_residential_units: 54.81364447383601
-
-log_likelihoods:
-    convergence: -19149.25274695755
-    'null': -22823.22344175641
-    ratio: 0.16097510082984678
+        ave_income: -13.66024233767423
+        ave_lot_sqft: -0.829248120454331
+        ave_unit_sqft: 18.713554912610864
+        np.log1p(residential_rent): -11.152077029070831
+        np.log1p(unit_sqft): -33.096892012421264
+        sum_residential_units: 43.136640222087
