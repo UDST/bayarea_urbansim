@@ -16,6 +16,9 @@ class BayAreaDataset(dataset.Dataset):
     def add_zone_id(self, df):
         return self.join_for_field(df, 'buildings', 'building_id', 'zone_id')
 
+    def fetch_jobs(self):
+        return self.nets
+
     @staticmethod
     def fetch_nodes():
         # default will fetch off disk unless networks have already been run
@@ -46,6 +49,9 @@ class BayAreaDataset(dataset.Dataset):
         assert scenario in ["baseline", "test"]
         self.scenario = scenario
 
+    def merge_nodes(self, df):
+        return pd.merge(df, self.nodes, left_on="_node_id", right_index=True)
+
 
 class Buildings(dataset.CustomDataFrame):
 
@@ -66,11 +72,25 @@ class Buildings(dataset.CustomDataFrame):
         14: "Office"
     }
 
-    def __init__(self, dset):
+    def __init__(self, dset, addprices=True):
+        """
+        Parameters
+        ----------
+        dset : Dataset
+            Pass in the dataset object
+        addprices : boolean
+            Set addprices to true to add the simulated prices to the dataframe - set to false
+            when simulating those same prices
+        """
         self.dset = dset
         self.df = dset.buildings
-        self.flds = ["year_built", "unit_lot_size", "unit_sqft", "_node_id", "general_type", \
-                     "stories"]
+        self.df["residential_sales_price"] = self.df.unit_sqft
+        self.df["residential_rent"] = self.df.unit_sqft
+        self.df["non_residential_rent"] = self.df.unit_sqft
+        self.flds = ["year_built", "unit_lot_size", "unit_sqft", "_node_id", "general_type",
+                     "stories", "residential_units", "non_residential_units"]
+        if addprices:
+            self.flds += ["residential_sales_price", "residential_rent", "non_residential_rent"]
 
     @property
     def building_type_id(self):
@@ -122,7 +142,8 @@ class Buildings(dataset.CustomDataFrame):
 
     @property
     def non_residential_units(self):
-        sqft_per_job = self.dset.building_sqft_per_job.loc[self.building_type_id.fillna(-1)].values
+        sqft_per_job = misc.reindex(self.dset.building_sqft_per_job.sqft_per_job,
+                                    self.building_type_id.fillna(-1))
         return (self.non_residential_sqft/sqft_per_job).fillna(0).astype('int')
 
     @property
@@ -180,7 +201,7 @@ class Households(dataset.CustomDataFrame):
         self.dset = dset
         self.dset.households["building_id"][self.dset.households.building_id == -1] = np.nan
         self.df = self.dset.households
-        self.flds = ["income", "income_quartile", "building_id"]
+        self.flds = ["income", "income_quartile", "building_id", "tenure"]
 
     @property
     def income(self):
@@ -188,11 +209,15 @@ class Households(dataset.CustomDataFrame):
 
     @property
     def income_quartile(self):
-        return pd.qcut(self.df.income, 4).labels
+        return pd.Series(pd.qcut(self.df.income, 4).labels, index=self.df.index)
 
     @property
     def building_id(self):
         return self.df.building_id
+
+    @property
+    def tenure(self):
+        return self.df.tenure
 
 
 class Jobs(dataset.CustomDataFrame):
@@ -200,11 +225,12 @@ class Jobs(dataset.CustomDataFrame):
     def __init__(self, dset):
         self.dset = dset
         # go from establishments to jobs
-        jobs = dset.nets.ix[np.repeat(dset.nets.index.values, dset.nets.emp11.values)].reset_index()
+        jobs = dset.nets.loc[np.repeat(dset.nets.index.values, dset.nets.emp11.values)].reset_index()
         jobs.index.name = 'job_id'
-        self.df = jobs
+        dset.jobs = self.df = jobs
         self.flds = ["building_id"]
 
+    @property
     def building_id(self):
         return self.df.building_id
 
