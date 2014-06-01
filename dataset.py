@@ -28,11 +28,24 @@ class BayAreaDataset(dataset.Dataset):
         return df
 
     @staticmethod
+    def fetch_nodes_prices():
+        # default will fetch off disk unless networks have already been run
+        print "WARNING: fetching precomputed nodes_prices off of disk"
+        df = pd.read_csv(os.path.join(misc.data_dir(), 'nodes_prices.csv'), index_col='node_id')
+        df = df.replace([np.inf, -np.inf], np.nan).fillna(0)
+        return df
+
+    @staticmethod
     def fetch_building_sqft_per_job():
         return pd.read_csv(os.path.join(misc.data_dir(), 'building_sqft_job.csv'),
                            index_col='building_type_id')
 
-    def fetch_zoning(self):
+    def fetch_zoning_for_parcels(self):
+        df = self.store['zoning_for_parcels']
+        return df.reset_index().drop_duplicates(cols='parcel').set_index('parcel')
+
+    def fetch_zoning_baseline(self):
+        assert self.zoning_for_parcels.index.is_unique
         return pd.merge(self.zoning_for_parcels, self.zoning, left_on='zoning', right_index=True)
 
     @staticmethod
@@ -51,6 +64,17 @@ class BayAreaDataset(dataset.Dataset):
 
     def merge_nodes(self, df):
         return pd.merge(df, self.nodes, left_on="_node_id", right_index=True)
+
+    def fetch_object(self, name):
+        objects = {
+            "buildings": Buildings,
+            "households": Households,
+            "jobs": Jobs
+        }
+        df = objects[name](self).build_df()
+        df['x'] = self.fetch(name)['x']
+        df['y'] = self.fetch(name)['y']
+        return df
 
 
 class Buildings(dataset.CustomDataFrame):
@@ -84,11 +108,8 @@ class Buildings(dataset.CustomDataFrame):
         """
         self.dset = dset
         self.df = dset.buildings
-        self.df["residential_sales_price"] = self.df.unit_sqft
-        self.df["residential_rent"] = self.df.unit_sqft
-        self.df["non_residential_rent"] = self.df.unit_sqft
         self.flds = ["year_built", "unit_lot_size", "unit_sqft", "_node_id", "general_type",
-                     "stories", "residential_units", "non_residential_units"]
+                     "stories", "residential_units", "non_residential_units", "building_type_id"]
         if addprices:
             self.flds += ["residential_sales_price", "residential_rent", "non_residential_rent"]
 
@@ -201,7 +222,7 @@ class Households(dataset.CustomDataFrame):
         self.dset = dset
         self.dset.households["building_id"][self.dset.households.building_id == -1] = np.nan
         self.df = self.dset.households
-        self.flds = ["income", "income_quartile", "building_id", "tenure"]
+        self.flds = ["income", "income_quartile", "building_id", "tenure", "persons"]
 
     @property
     def income(self):
@@ -218,6 +239,10 @@ class Households(dataset.CustomDataFrame):
     @property
     def tenure(self):
         return self.df.tenure
+
+    @property
+    def persons(self):
+        return self.df.persons
 
 
 class Jobs(dataset.CustomDataFrame):
@@ -264,18 +289,58 @@ class HomeSales(dataset.CustomDataFrame):
         return self.df._node_id
 
 
-class Zoning:
+class Parcels(dataset.CustomDataFrame):
 
     def __init__(self, dset):
         self.dset = dset
+        self.df = self.dset.parcels
+        self.flds = ["parcel_size", "total_units", "total_sqft", "land_cost", "max_far",
+                     "max_height"]
 
+    def price(self, use):
+        return misc.reindex(self.dset.nodes_prices[use], self.df._node_id)
+
+    def allowed(self, form):
+        # we have zoning by building type but want to know if specific forms are allowed
+        allowed = [self.dset.zoning_baseline['type%d' % typ] == 't' for typ in self.type_d[form]]
+        return pd.concat(allowed, axis=1).max(axis=1)\
+            .reindex(self.df.index).fillna(False)
+
+    @property
     def max_far(self):
-        baseline = self.zoning
-        max_height = baseline.max_height
+        baseline = self.dset.zoning_baseline
+        max_far = baseline.max_far
         if self.dset.scenario == "test":
-            upzone = self.zoning_test_scenario.far_up.dropna()
-            max_height = pd.DataFrame({"one": max_height, "two": upzone}).max(skipna=True, axis=1)
-        return max_height
+            upzone = self.dset.zoning_test_scenario.far_up.dropna()
+            max_far = pd.concat([max_far, upzone], axis=1).max(skipna=True, axis=1)
+        return max_far.reindex(self.df.index).fillna(0)
+
+    @property
+    def max_height(self):
+        return self.dset.zoning_baseline.max_height\
+            .reindex(self.df.index).fillna(0)
+
+    @property
+    def parcel_size(self):
+        return self.df.shape_area * 10.764
+
+    @property
+    def total_units(self):
+        return self.dset.buildings.groupby('parcel_id').residential_units.sum()\
+            .reindex(self.df.index).fillna(0)
+
+    @property
+    def total_sqft(self):
+        return self.dset.buildings.groupby('parcel_id').building_sqft.sum()\
+            .reindex(self.df.index).fillna(0)
+
+    @property
+    def land_cost(self):
+        # TODO
+        # this needs to account for cost for the type of building it is
+        return (self.total_sqft * self.price("residential"))\
+            .reindex(self.df.index).fillna(0)
+
 
 
 LocalDataset = BayAreaDataset

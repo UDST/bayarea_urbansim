@@ -70,7 +70,6 @@ variable_definitions:
 
   - name: jobs
     dataframe: jobs
-    varname: emp11
     radius: 500
     apply: np.log1p
 

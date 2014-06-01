@@ -6,7 +6,7 @@ variable_definitions:
 -   aggregation: average
     dataframe: buildings
     decay: flat
-    name: ave_residential_price
+    name: residential
     radius: 1500
     varname: residential_sales_price
 -   aggregation: average
@@ -14,7 +14,7 @@ variable_definitions:
     decay: flat
     filters:
     - general_type == "Retail"
-    name: ave_retail_rent
+    name: retail
     radius: 1500
     varname: non_residential_rent
 -   aggregation: average
@@ -22,7 +22,7 @@ variable_definitions:
     decay: flat
     filters:
     - general_type == "Office"
-    name: ave_office_rent
+    name: office
     radius: 1500
     varname: non_residential_rent
 -   aggregation: average
@@ -30,6 +30,6 @@ variable_definitions:
     decay: flat
     filters:
     - general_type == "Industrial"
-    name: ave_industrial_rent
+    name: industrial
     radius: 1500
     varname: non_residential_rent
