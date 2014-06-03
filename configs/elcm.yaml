@@ -24,26 +24,26 @@ model_expression: np.log1p(non_residential_rent) + np.log1p(stories) + ave_incom
 fitted: true
 
 log_likelihoods:
-    convergence: -13967.051021727528
-    'null': -16339.143819886787
-    ratio: 0.14517852491586036
+    convergence: -13906.53073907217
+    'null': -23025.850929939836
+    ratio: 0.3960470437602843
 
 fit_parameters:
     Coefficient:
-        ave_income: 0.03486952657298216
-        jobs: 0.42245483852784765
-        np.log1p(non_residential_rent): -3.0
-        np.log1p(stories): 1.9878504464122744
-        sum_nonresidential_units: -0.147379155912233
+        ave_income: -0.058280228349472746
+        jobs: 0.450295324656524
+        np.log1p(non_residential_rent): 0.894874739865607
+        np.log1p(stories): 0.11757537213069612
+        sum_nonresidential_units: -0.17028679380005932
     Std. Error:
-        ave_income: 0.005937293949264717
-        jobs: 0.009238967338651241
-        np.log1p(non_residential_rent): 0.04613440943765437
-        np.log1p(stories): 0.04022892919407164
-        sum_nonresidential_units: 0.01454517009405919
+        ave_income: 0.0037347956330889606
+        jobs: 0.006062753963065493
+        np.log1p(non_residential_rent): 0.013101284273324968
+        np.log1p(stories): 0.04125433358484902
+        sum_nonresidential_units: 0.009960626938796333
     T-Score:
-        ave_income: 5.872966181386463
-        jobs: 45.72533087767362
-        np.log1p(non_residential_rent): -65.02738490787821
-        np.log1p(stories): 49.413456590468115
-        sum_nonresidential_units: -10.132515120770456
+        ave_income: -15.604663300216659
+        jobs: 74.2724061374977
+        np.log1p(non_residential_rent): 68.3043525502021
+        np.log1p(stories): 2.8500126390085865
+        sum_nonresidential_units: -17.095991532099003

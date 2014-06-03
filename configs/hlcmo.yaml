@@ -26,29 +26,29 @@ model_expression: np.log1p(residential_sales_price) + np.log1p(unit_sqft) + sum_
 fitted: true
 
 log_likelihoods:
-    convergence: -22889.293208614614
-    'null': -22924.537185848123
-    ratio: 0.0015373910036999838
+    convergence: -22541.99539330833
+    'null': -22910.721675290162
+    ratio: 0.0160940492057704
 
 fit_parameters:
     Coefficient:
-        ave_income: 0.22705901707399234
-        ave_lot_sqft: -0.0011317992182281094
-        ave_unit_sqft: 0.26250159951127155
-        np.log1p(residential_sales_price): -0.07445621816176444
-        np.log1p(unit_sqft): -0.2379422387700308
-        sum_residential_units: 0.04102519814163832
+        ave_income: -0.07684634429157969
+        ave_lot_sqft: 0.027191573929580458
+        ave_unit_sqft: 0.5402750605266973
+        np.log1p(residential_sales_price): 0.5739720395629557
+        np.log1p(unit_sqft): -0.13593270108775288
+        sum_residential_units: 0.11726505443545024
     Std. Error:
-        ave_income: 0.056203652968886984
-        ave_lot_sqft: 0.006529513002022738
-        ave_unit_sqft: 0.055018477528948506
-        np.log1p(residential_sales_price): 0.07104249587575606
-        np.log1p(unit_sqft): 0.025018127421529007
-        sum_residential_units: 0.015663300981156335
+        ave_income: 0.056828213904128684
+        ave_lot_sqft: 0.006599927863592694
+        ave_unit_sqft: 0.05594129988107578
+        np.log1p(residential_sales_price): 0.07511885238003235
+        np.log1p(unit_sqft): 0.029790968260718146
+        sum_residential_units: 0.016006183364590025
     T-Score:
-        ave_income: 4.0399334399080225
-        ave_lot_sqft: -0.17333593146648094
-        ave_unit_sqft: 4.771153461546692
-        np.log1p(residential_sales_price): -1.0480518349464878
-        np.log1p(unit_sqft): -9.510793304429045
-        sum_residential_units: 2.6191923523013125
+        ave_income: -1.352256898681038
+        ave_lot_sqft: 4.119980474268188
+        ave_unit_sqft: 9.657892499374427
+        np.log1p(residential_sales_price): 7.640852081434694
+        np.log1p(unit_sqft): -4.5628829482186175
+        sum_residential_units: 7.32623460348905

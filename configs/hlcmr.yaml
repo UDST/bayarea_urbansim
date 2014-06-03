@@ -26,29 +26,29 @@ model_expression: np.log1p(residential_rent) + np.log1p(unit_sqft) + sum_residen
 fitted: true
 
 log_likelihoods:
-    convergence: -19443.26613945041
-    'null': -22846.249292686345
-    ratio: 0.14895150226366982
+    convergence: -19046.441214450162
+    'null': -22814.013101384437
+    ratio: 0.16514288258673981
 
 fit_parameters:
     Coefficient:
-        ave_income: -0.44562537768215205
-        ave_lot_sqft: -0.00426566866402967
-        ave_unit_sqft: 1.20998139514279
-        np.log1p(residential_rent): -3.0
-        np.log1p(unit_sqft): -1.4852006288345339
-        sum_residential_units: 0.8870625744016138
+        ave_income: -0.4281230092390374
+        ave_lot_sqft: 0.034669829768657276
+        ave_unit_sqft: 1.0460300190100382
+        np.log1p(residential_rent): 3.0
+        np.log1p(unit_sqft): -0.5782575944126054
+        sum_residential_units: 0.6842901152501424
     Std. Error:
-        ave_income: 0.032622069701731475
-        ave_lot_sqft: 0.005144019695447223
-        ave_unit_sqft: 0.0646580193230628
-        np.log1p(residential_rent): 0.2690081849488403
-        np.log1p(unit_sqft): 0.04487432319255651
-        sum_residential_units: 0.02056401634050805
+        ave_income: 0.027802000328069166
+        ave_lot_sqft: 0.005069851811353918
+        ave_unit_sqft: 0.06818484738075373
+        np.log1p(residential_rent): 0.2637664097096565
+        np.log1p(unit_sqft): 0.043945410436051935
+        sum_residential_units: 0.020339984464572577
     T-Score:
-        ave_income: -13.66024233767423
-        ave_lot_sqft: -0.829248120454331
-        ave_unit_sqft: 18.713554912610864
-        np.log1p(residential_rent): -11.152077029070831
-        np.log1p(unit_sqft): -33.096892012421264
-        sum_residential_units: 43.136640222087
+        ave_income: -15.399000222541552
+        ave_lot_sqft: 6.838430600873638
+        ave_unit_sqft: 15.341092034258876
+        np.log1p(residential_rent): 11.373699946487804
+        np.log1p(unit_sqft): -13.158543490089114
+        sum_residential_units: 33.64260756649118
