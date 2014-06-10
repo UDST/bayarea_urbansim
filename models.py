@@ -1,4 +1,4 @@
-from urbansim.developer import sqftproforma
+from urbansim.developer import sqftproforma, developer
 from urbansim.utils import networks
 import urbansim.models.yamlmodelrunner as ymr
 from dataset import *
@@ -175,38 +175,47 @@ def price_vars(dset):
 
 
 def feasibility(dset):
-    dev = sqftproforma.SqFtProForma()
+    pf = sqftproforma.SqFtProForma()
 
-    parcels = Parcels(dset)
+    parcels = dset.view("parcels")
     df = parcels.build_df()
 
     # add prices for each use
-    for use in dev.config.uses:
+    for use in pf.config.uses:
         df[use] = parcels.price(use)
 
     # convert from cost to yearly rent
-    df["residential"] *= dev.config.cap_rate
+    df["residential"] *= pf.config.cap_rate
 
     d = {}
-    for form in dev.config.forms:
+    for form in pf.config.forms:
         print "Computing feasibility for form %s" % form
-        d[form] = dev.lookup(form, df[parcels.allowed(form)])
+        d[form] = pf.lookup(form, df[parcels.allowed(form)])
 
     far_predictions = pd.concat(d.values(), keys=d.keys(), axis=1)
 
     dset.save_tmptbl("feasibility", far_predictions)
 
 
-def developer(dset):
-    type_d = {
-        'residential': [1, 2, 3],
-        'industrial': [7, 8, 9],
-        'retail': [10, 11],
-        'office': [4],
-        'mixedresidential': [12],
-        'mixedoffice': [14],
-    }
-    pass
+def residential_developer(dset):
+    residential_target_vacancy = .15
+    dev = developer.Developer(dset.feasibility)
+
+    target_units = dev.compute_units_to_build(len(dset.households),
+                                              dset.buildings.residential_units.sum(),
+                                              residential_target_vacancy)
+
+    parcels = dset.view("parcels")
+    new_buildings = dev.pick("residential",
+                             target_units,
+                             parcels.parcel_size,
+                             parcels.ave_unit_sqft,
+                             parcels.total_units,
+                             max_parcel_size=200000,
+                             drop_after_build=True)
+
+    print new_buildings.describe()
+    print new_buildings.head()
 
 
 def _run_models(dset, model_list, years):

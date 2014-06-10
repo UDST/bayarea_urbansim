@@ -84,6 +84,7 @@ class BayAreaDataset(dataset.Dataset):
 
     def clear_views(self):
         self.views = {
+            "nodes": self.nodes,
             "parcels": Parcels(self),
             "households": Households(self),
             "homesales": HomeSales(self),
@@ -232,20 +233,27 @@ class HomeSales(dataset.CustomDataFrame):
 
 class Parcels(dataset.CustomDataFrame):
 
+    type_d = {
+        'residential': [1, 2, 3],
+        'industrial': [7, 8, 9],
+        'retail': [10, 11],
+        'office': [4],
+        'mixedresidential': [12],
+        'mixedoffice': [14],
+    }
+
     def __init__(self, dset):
         super(Parcels, self).__init__(dset, "parcels")
         self.flds = ["parcel_size", "total_units", "total_sqft", "land_cost", "max_far",
                      "max_height"]
 
-    @property
     def price(self, use):
         return misc.reindex(self.dset.nodes_prices[use], self.df._node_id)
 
     def allowed(self, form):
         # we have zoning by building type but want to know if specific forms are allowed
         allowed = [self.dset.zoning_baseline['type%d' % typ] == 't' for typ in self.type_d[form]]
-        return pd.concat(allowed, axis=1).max(axis=1)\
-            .reindex(self.df.index).fillna(False)
+        return pd.concat(allowed, axis=1).max(axis=1).reindex(self.df.index).fillna(False)
 
     @property
     def max_far(self):
@@ -264,6 +272,10 @@ class Parcels(dataset.CustomDataFrame):
     @variable
     def parcel_size(self):
         return "parcels.shape_area * 10.764"
+
+    @variable
+    def ave_unit_sqft(self):
+        return "reindex(nodes.ave_unit_sqft, parcels._node_id)"
 
     @variable
     def total_units(self):
