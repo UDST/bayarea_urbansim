@@ -1,6 +1,6 @@
-name: Non-residential Rent Hedonic
+model_type: segmented_regression
 
-model_type: regression
+segmentation_col: general_type
 
 fit_filters:
 - rent > 0
@@ -8,36 +8,95 @@ fit_filters:
 predict_filters:
 - general_type != 'Residential'
 
-model_expression: np.log1p(rent) ~ I(year_built < 1940) + I(year_built > 2005) + np.log1p(stories)
-    + ave_income + jobs
+default_config:
+    model_expression: np.log1p(rent) ~ I(year_built < 1940) + I(year_built > 2005)
+        + np.log1p(stories) + ave_income + jobs
+    ytransform: np.exp
 
-ytransform: np.exp
+models:
+    Industrial:
+        fit_parameters:
+            Coefficient:
+                I(year_built < 1940)[T.True]: 0.09151916667208998
+                I(year_built > 2005)[T.True]: 0.29705364615696705
+                Intercept: 1.6330460235136266
+                ave_income: 0.013148053093152562
+                jobs: 0.04919093881102247
+                np.log1p(stories): 0.27965801847647426
+            Std. Error:
+                I(year_built < 1940)[T.True]: 0.0251874469875536
+                I(year_built > 2005)[T.True]: 0.06426452719917101
+                Intercept: 0.06202998133135466
+                ave_income: 0.002089129352165217
+                jobs: 0.007161037362279837
+                np.log1p(stories): 0.05700802069412701
+            T-Score:
+                I(year_built < 1940)[T.True]: 3.6335229496389316
+                I(year_built > 2005)[T.True]: 4.622357918176654
+                Intercept: 26.3267211832637
+                ave_income: 6.293556250849497
+                jobs: 6.869247613499632
+                np.log1p(stories): 4.905590740940857
+        fit_rsquared: 0.0765242697702716
+        fit_rsquared_adj: 0.07396332764539715
+        fitted: true
+        name: Industrial
+        ytransform: np.exp
+    Office:
+        fit_parameters:
+            Coefficient:
+                I(year_built < 1940)[T.True]: -0.04152693128306306
+                I(year_built > 2005)[T.True]: 0.1815206341228069
+                Intercept: 2.5894895507147035
+                ave_income: 0.016806256478490163
+                jobs: 0.020393502732882506
+                np.log1p(stories): 0.18321030074625225
+            Std. Error:
+                I(year_built < 1940)[T.True]: 0.01831331789210983
+                I(year_built > 2005)[T.True]: 0.04334356348138325
+                Intercept: 0.03931469026883024
+                ave_income: 0.0021759072688930696
+                jobs: 0.005567570563333091
+                np.log1p(stories): 0.015589943709453375
+            T-Score:
+                I(year_built < 1940)[T.True]: -2.267580977281821
+                I(year_built > 2005)[T.True]: 4.187949018099836
+                Intercept: 65.8656988776463
+                ave_income: 7.723792607687672
+                jobs: 3.662908714114922
+                np.log1p(stories): 11.75182567433889
+        fit_rsquared: 0.10588783815185154
+        fit_rsquared_adj: 0.10430589872890728
+        fitted: true
+        name: Office
+        ytransform: np.exp
+    Retail:
+        fit_parameters:
+            Coefficient:
+                I(year_built < 1940)[T.True]: -0.005037462574354563
+                I(year_built > 2005)[T.True]: 0.28452555242951816
+                Intercept: 2.189056193453604
+                ave_income: 0.017635512014049753
+                jobs: 0.10648399044643575
+                np.log1p(stories): 0.04244361228265188
+            Std. Error:
+                I(year_built < 1940)[T.True]: 0.027494280965547187
+                I(year_built > 2005)[T.True]: 0.06280112562694257
+                Intercept: 0.11251399809561055
+                ave_income: 0.00814518707279931
+                jobs: 0.011054093037707682
+                np.log1p(stories): 0.05479301885294586
+            T-Score:
+                I(year_built < 1940)[T.True]: -0.18321856027684297
+                I(year_built > 2005)[T.True]: 4.5305804567848815
+                Intercept: 19.455856431245284
+                ave_income: 2.1651451165490347
+                jobs: 9.632992058525105
+                np.log1p(stories): 0.7746171532647715
+        fit_rsquared: 0.10575962292138485
+        fit_rsquared_adj: 0.1017278809147184
+        fitted: true
+        name: Retail
+        ytransform: np.exp
 
 fitted: true
-
-fit_parameters:
-    Coefficient:
-        I(year_built < 1940)[T.True]: 0.14196472739613417
-        I(year_built > 2005)[T.True]: 0.24740506104165833
-        Intercept: 2.078308321313035
-        ave_income: 0.02332357402082154
-        jobs: -0.0042417009652574115
-        np.log1p(stories): 0.5042598453746269
-    Std. Error:
-        I(year_built < 1940)[T.True]: 0.014441218970034565
-        I(year_built > 2005)[T.True]: 0.033362591265206
-        Intercept: 0.0333327235693453
-        ave_income: 0.0016313435845965564
-        jobs: 0.002567814562706672
-        np.log1p(stories): 0.014134554550613571
-    T-Score:
-        I(year_built < 1940)[T.True]: 9.830522457329263
-        I(year_built > 2005)[T.True]: 7.415642840059555
-        Intercept: 62.350390210068745
-        ave_income: 14.297156185273892
-        jobs: -1.6518719952995111
-        np.log1p(stories): 35.67568002012043
-
-fit_rsquared_adj: 0.22053585819307941
-
-fit_rsquared: 0.22107903877970436

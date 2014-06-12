@@ -154,14 +154,17 @@ def jobs_transition(dset):
     return ymr.simple_transition(dset, "jobs", .05)
 
 
-def build_networks():
-    if not networks.NETWORKS:
-        networks.NETWORKS = networks.Networks(
+def build_networks(dset):
+    if not hasattr(dset, "NETWORKS"):
+        dset.NETWORKS = networks.Networks(
             [os.path.join(misc.data_dir(), x) for x in ['osm_bayarea.jar']],
             factors=[1.0],
             maxdistances=[2000],
             twoway=[1],
             impedances=None)
+
+    #parcels = networks.NETWORKS.addnodeid(dset.parcels)
+    #dset.save_tmptbl("parcels", parcels)
 
 
 def neighborhood_vars(dset):
@@ -186,6 +189,7 @@ def feasibility(dset):
 
     # convert from cost to yearly rent
     df["residential"] *= pf.config.cap_rate
+    print df[pf.config.uses].describe()
 
     d = {}
     for form in pf.config.forms:
@@ -214,8 +218,17 @@ def residential_developer(dset):
                              max_parcel_size=200000,
                              drop_after_build=True)
 
-    print new_buildings.describe()
-    print new_buildings.head()
+    new_buildings["year_built"] = dset.year
+    new_buildings["building_type_id"] = 3
+    new_buildings["stories"] = new_buildings.stories.apply(np.ceil)
+    for col in ["residential_sales_price", "residential_rent", "non_residential_rent"]:
+        new_buildings[col] = np.nan
+
+    print "NEW BUILDINGS"
+    print new_buildings[dset.buildings.columns].describe()
+
+    all_buildings = dev.merge(dset.buildings, new_buildings[dset.buildings.columns])
+    #dset.save_tmptbl("buildings", all_buildings)
 
 
 def _run_models(dset, model_list, years):

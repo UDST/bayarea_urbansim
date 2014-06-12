@@ -12,6 +12,7 @@ class BayAreaDataset(dataset.Dataset):
 
     def __init__(self, filename):
         self.scenario = "baseline"
+        self.year = 2012
         super(BayAreaDataset, self).__init__(filename)
 
     def add_zone_id(self, df):
@@ -48,6 +49,17 @@ class BayAreaDataset(dataset.Dataset):
         jobs.index.name = 'job_id'
         return jobs
 
+    def fetch_buildings(self):
+        buildings = self.store['buildings']
+        # this should have been a data cleaning step
+        for col in ['scenario', 'county', '_node_id', '_node_id0', '_node_id1', '_node_id2',
+                    'building_type', 'tenure', 'rental', 'x', 'y', 'id', 'building',
+                    'general_type', 'lot_size', 'rent', 'unit_sqft', 'unit_lot_size']:
+            del buildings[col]
+        for col in ["residential_sales_price", "residential_rent", "non_residential_rent"]:
+            buildings[col] = np.nan
+        return buildings
+
     def fetch_households(self):
         households = self.store['households']
         households["building_id"][households.building_id == -1] = np.nan
@@ -55,7 +67,7 @@ class BayAreaDataset(dataset.Dataset):
 
     def fetch_costar(self):
         costar = self.store['costar']
-        return costar[costar.PropertyType.isin(["Office", "Retail", "Industrial", "Flex"])]
+        return costar[costar.PropertyType.isin(["Office", "Retail", "Industrial"])]
 
     def fetch_zoning_for_parcels(self):
         df = self.store['zoning_for_parcels']
@@ -84,7 +96,7 @@ class BayAreaDataset(dataset.Dataset):
 
     def clear_views(self):
         self.views = {
-            "nodes": self.nodes,
+            "nodes": Nodes(self),
             "parcels": Parcels(self),
             "households": Households(self),
             "homesales": HomeSales(self),
@@ -93,6 +105,12 @@ class BayAreaDataset(dataset.Dataset):
             "apartments": Apartments(self),
             "buildings": Buildings(self),
         }
+
+
+class Nodes(dataset.CustomDataFrame):
+    def __init__(self, dset):
+        super(Nodes, self).__init__(dset, "nodes")
+        self.flds = None
 
 
 class Buildings(dataset.CustomDataFrame):
@@ -116,9 +134,23 @@ class Buildings(dataset.CustomDataFrame):
 
     def __init__(self, dset):
         super(Buildings, self).__init__(dset, "buildings")
-        self.flds = ["year_built", "unit_lot_size", "unit_sqft", "_node_id", "general_type",
-                     "stories", "residential_units", "non_residential_units", "building_type_id",
-                     'x', 'y']
+        self.flds = ["year_built", "unit_lot_size", "unit_sqft", "general_type",
+                     "stories", "residential_units", "non_residential_units",
+                     "building_type_id", "residential_sales_price", "residential_rent",
+                     "non_residential_rent",
+                     "_node_id", "_node_id0", "zone_id", "lot_size"]
+
+    @variable
+    def _node_id(self):
+        return "reindex(parcels._node_id, buildings.parcel_id)"
+
+    @variable
+    def _node_id0(self):
+        return "reindex(parcels._node_id0, buildings.parcel_id)"
+
+    @variable
+    def zone_id(self):
+        return "reindex(parcels.zone_id, buildings.parcel_id)"
 
     @property
     def general_type(self):
@@ -127,6 +159,10 @@ class Buildings(dataset.CustomDataFrame):
     @variable
     def unit_sqft(self):
         return "buildings.building_sqft / buildings.residential_units"
+
+    @variable
+    def lot_size(self):
+        return "reindex(parcels.shape_area, buildings.parcel_id) * 10.764"
 
     @variable
     def unit_lot_size(self):
@@ -143,7 +179,11 @@ class CoStar(dataset.CustomDataFrame):
 
     def __init__(self, dset):
         super(CoStar, self).__init__(dset, "costar")
-        self.flds = ["rent", "stories", "_node_id", "year_built"]
+        self.flds = ["rent", "stories", "_node_id", "year_built", "general_type"]
+
+    @property
+    def general_type(self):
+        return self.df.PropertyType
 
     @property
     def rent(self):
@@ -177,34 +217,35 @@ class Households(dataset.CustomDataFrame):
 
     def __init__(self, dset):
         super(Households, self).__init__(dset, "households")
-        self.flds = ["income", "income_quartile", "building_id", "tenure", "persons", "x", "y"]
+        self.flds = ["income", "income_quartile", "building_id", "tenure", "persons",
+                     "_node_id", "_node_id0"]
 
     @property
     def income_quartile(self):
         return pd.Series(pd.qcut(self.df.income, 4).labels, index=self.df.index)
 
     @variable
-    def x(self):
-        return "reindex(buildings.x, households.building_id)"
+    def _node_id(self):
+        return "reindex(buildings._node_id, households.building_id)"
 
     @variable
-    def y(self):
-        return "reindex(buildings.y, households.building_id)"
+    def _node_id0(self):
+        return "reindex(buildings._node_id0, households.building_id)"
 
 
 class Jobs(dataset.CustomDataFrame):
 
     def __init__(self, dset):
         super(Jobs, self).__init__(dset, "jobs")
-        self.flds = ["building_id", "x", "y"]
+        self.flds = ["building_id", "_node_id0", "_node_id"]
 
     @variable
-    def x(self):
-        return "reindex(buildings.x, jobs.building_id)"
+    def _node_id(self):
+        return "reindex(buildings._node_id, jobs.building_id)"
 
     @variable
-    def y(self):
-        return "reindex(buildings.y, jobs.building_id)"
+    def _node_id0(self):
+        return "reindex(buildings._node_id0, jobs.building_id)"
 
 
 class HomeSales(dataset.CustomDataFrame):
