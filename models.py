@@ -155,7 +155,7 @@ def jobs_transition(dset):
 
 
 def build_networks(dset):
-    if not hasattr(dset, "NETWORKS"):
+    if dset.NETWORKS is None:
         dset.NETWORKS = networks.Networks(
             [os.path.join(misc.data_dir(), x) for x in ['osm_bayarea.jar']],
             factors=[1.0],

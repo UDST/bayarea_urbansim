@@ -13,6 +13,7 @@ class BayAreaDataset(dataset.Dataset):
     def __init__(self, filename):
         self.scenario = "baseline"
         self.year = 2012
+        self.NETWORKS = None
         super(BayAreaDataset, self).__init__(filename)
 
     def add_zone_id(self, df):
@@ -237,7 +238,7 @@ class Jobs(dataset.CustomDataFrame):
 
     def __init__(self, dset):
         super(Jobs, self).__init__(dset, "jobs")
-        self.flds = ["building_id", "_node_id0", "_node_id"]
+        self.flds = ["building_id", "_node_id0", "_node_id", "naics"]
 
     @variable
     def _node_id(self):
@@ -246,6 +247,10 @@ class Jobs(dataset.CustomDataFrame):
     @variable
     def _node_id0(self):
         return "reindex(buildings._node_id0, jobs.building_id)"
+
+    @variable
+    def naics(self):
+        return "jobs.naics11cat"
 
 
 class HomeSales(dataset.CustomDataFrame):

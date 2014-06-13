@@ -2,6 +2,8 @@ name: Neighborhood Accessibility Variables
 
 model_type: networks
 
+node_col: _node_id0
+
 variable_definitions:
     
   - name: sum_residential_units
@@ -40,6 +42,8 @@ variable_definitions:
 
   - name: poor
     dataframe: households
+    add_fields:
+    - income
     filters:
     - income < 40000
     varname: persons
@@ -48,6 +52,8 @@ variable_definitions:
 
   - name: renters
     dataframe: households
+    add_fields:
+    - tenure
     filters:
     - tenure == 2
     radius: 500
@@ -55,6 +61,8 @@ variable_definitions:
 
   - name: sfdu
     dataframe: buildings
+    add_fields:
+    - building_type_id
     filters:
     - building_type_id == 1
     radius: 500

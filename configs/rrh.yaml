@@ -16,27 +16,27 @@ fitted: true
 
 fit_parameters:
     Coefficient:
-        Intercept: 2.238865171970364
-        ave_lot_sqft: -0.01042216334370384
-        ave_unit_sqft: 0.004854149528065711
-        jobs: 0.011642011657357697
-        np.log1p(unit_sqft): -0.20021806882811138
-        sum_residential_units: 0.01808320763977301
+        Intercept: 2.0663850318753667
+        ave_lot_sqft: -0.020679991900455913
+        ave_unit_sqft: 0.04170594954934134
+        jobs: 0.021569843978934612
+        np.log1p(unit_sqft): -0.19953151984397383
+        sum_residential_units: 0.013017546333012942
     Std. Error:
-        Intercept: 0.07129909684436368
-        ave_lot_sqft: 0.0006926150959076726
-        ave_unit_sqft: 0.006548210479129069
-        jobs: 0.0008004455263230957
-        np.log1p(unit_sqft): 0.007669243585826863
-        sum_residential_units: 0.002852191119585038
+        Intercept: 0.05979731483994645
+        ave_lot_sqft: 0.003472637573254766
+        ave_unit_sqft: 0.003898662205635402
+        jobs: 0.001661628878059052
+        np.log1p(unit_sqft): 0.0077211940737951495
+        sum_residential_units: 0.0029880533848249354
     T-Score:
-        Intercept: 31.401031304190358
-        ave_lot_sqft: -15.04755441410873
-        ave_unit_sqft: 0.7412940594284817
-        jobs: 14.544414672209012
-        np.log1p(unit_sqft): -26.106625325882746
-        sum_residential_units: 6.340110771540413
+        Intercept: 34.55648531052364
+        ave_lot_sqft: -5.955125308706884
+        ave_unit_sqft: 10.697502720050126
+        jobs: 12.981144143408448
+        np.log1p(unit_sqft): -25.842054731037134
+        sum_residential_units: 4.356530709633093
 
-fit_rsquared_adj: 0.257098911280493
+fit_rsquared_adj: 0.2489415711323859
 
-fit_rsquared: 0.2579633528545209
+fit_rsquared: 0.24981550460791258

@@ -12,6 +12,8 @@ variable_definitions:
 -   aggregation: average
     dataframe: buildings
     decay: flat
+    add_fields:
+    - general_type
     filters:
     - general_type == "Retail"
     name: retail
@@ -20,6 +22,8 @@ variable_definitions:
 -   aggregation: average
     dataframe: buildings
     decay: flat
+    add_fields:
+    - general_type
     filters:
     - general_type == "Office"
     name: office
@@ -28,6 +32,8 @@ variable_definitions:
 -   aggregation: average
     dataframe: buildings
     decay: flat
+    add_fields:
+    - general_type
     filters:
     - general_type == "Industrial"
     name: industrial
