@@ -52,6 +52,7 @@ class BayAreaDataset(dataset.Dataset):
 
     def fetch_buildings(self):
         buildings = self.store['buildings']
+        buildings = buildings.dropna(subset=['building_type_id'])
         # this should have been a data cleaning step
         for col in ['scenario', 'county', '_node_id', '_node_id0', '_node_id1', '_node_id2',
                     'building_type', 'tenure', 'rental', 'x', 'y', 'id', 'building',
