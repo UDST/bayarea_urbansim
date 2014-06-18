@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import os
+import random
 from urbansim.utils import misc, dataset
 from urbansim.utils.dataset import variable
 
@@ -10,9 +11,18 @@ warnings.filterwarnings('ignore', category=pd.io.pytables.PerformanceWarning)
 
 class BayAreaDataset(dataset.Dataset):
 
+    type_d = {
+        'residential': [1, 2, 3],
+        'industrial': [7, 8, 9],
+        'retail': [10, 11],
+        'office': [4],
+        'mixedresidential': [12],
+        'mixedoffice': [14],
+    }
+
     def __init__(self, filename):
         self.scenario = "baseline"
-        self.year = 2012
+        self.year = 2013
         self.NETWORKS = None
         super(BayAreaDataset, self).__init__(filename)
 
@@ -108,6 +118,9 @@ class BayAreaDataset(dataset.Dataset):
             "buildings": Buildings(self),
         }
 
+    def random_type(self, form):
+        return random.choice(self.type_d[form])
+
 
 class Nodes(dataset.CustomDataFrame):
     def __init__(self, dset):
@@ -174,6 +187,8 @@ class Buildings(dataset.CustomDataFrame):
     def non_residential_units(self):
         sqft_per_job = misc.reindex(self.dset.building_sqft_per_job.sqft_per_job,
                                     self.building_type_id.fillna(-1))
+        # for some reason we don't have room for all the jobs in the Bay Area!
+        sqft_per_job *= .8
         return (self.non_residential_sqft/sqft_per_job).fillna(0).astype('int')
 
 
@@ -280,15 +295,6 @@ class HomeSales(dataset.CustomDataFrame):
 
 class Parcels(dataset.CustomDataFrame):
 
-    type_d = {
-        'residential': [1, 2, 3],
-        'industrial': [7, 8, 9],
-        'retail': [10, 11],
-        'office': [4],
-        'mixedresidential': [12],
-        'mixedoffice': [14],
-    }
-
     def __init__(self, dset):
         super(Parcels, self).__init__(dset, "parcels")
         self.flds = ["parcel_size", "total_units", "total_sqft", "land_cost", "max_far",
@@ -299,7 +305,7 @@ class Parcels(dataset.CustomDataFrame):
 
     def allowed(self, form):
         # we have zoning by building type but want to know if specific forms are allowed
-        allowed = [self.dset.zoning_baseline['type%d' % typ] == 't' for typ in self.type_d[form]]
+        allowed = [self.dset.zoning_baseline['type%d' % typ] == 't' for typ in self.dset.type_d[form]]
         return pd.concat(allowed, axis=1).max(axis=1).reindex(self.df.index).fillna(False)
 
     @property
@@ -327,6 +333,10 @@ class Parcels(dataset.CustomDataFrame):
     @variable
     def total_units(self):
         return "buildings.groupby(buildings.parcel_id).residential_units.sum().fillna(0)"
+
+    @variable
+    def total_nonres_units(self):
+        return "buildings.non_residential_units.groupby(buildings.parcel_id).sum().fillna(0)"
 
     @variable
     def total_sqft(self):

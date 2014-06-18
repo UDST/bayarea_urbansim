@@ -9,13 +9,13 @@ variable_definitions:
   - name: sum_residential_units
     dataframe: buildings
     varname: residential_units
-    radius: 500
+    radius: 1500
     apply: np.log1p
 
   - name: sum_nonresidential_units
     dataframe: buildings
     varname: non_residential_units
-    radius: 500
+    radius: 1500
     apply: np.log1p
 
   - name: ave_unit_sqft
@@ -25,7 +25,7 @@ variable_definitions:
     - general_type
     filters:
     - general_type == "Residential"
-    radius: 500
+    radius: 1500
     apply: np.log1p
     decay: flat
     aggregation: average
@@ -33,7 +33,7 @@ variable_definitions:
   - name: ave_lot_sqft
     dataframe: buildings
     varname: unit_lot_size
-    radius: 500
+    radius: 1500
     apply: np.log1p
     decay: flat
     aggregation: average
@@ -41,7 +41,7 @@ variable_definitions:
   - name: population
     dataframe: households
     varname: persons
-    radius: 500
+    radius: 1500
     apply: np.log1p
 
   - name: poor
@@ -51,7 +51,7 @@ variable_definitions:
     filters:
     - income < 40000
     varname: persons
-    radius: 500
+    radius: 1500
     apply: np.log1p
 
   - name: renters
@@ -60,7 +60,7 @@ variable_definitions:
     - tenure
     filters:
     - tenure == 2
-    radius: 500
+    radius: 1500
     apply: np.log1p
 
   - name: sfdu
@@ -69,26 +69,26 @@ variable_definitions:
     - building_type_id
     filters:
     - building_type_id == 1
-    radius: 500
+    radius: 1500
     apply: np.log1p
 
   - name: hhsize
     dataframe: households
     varname: persons
-    radius: 500
+    radius: 1500
     aggregation: average
     decay: flat
     apply: np.log1p
 
   - name: jobs
     dataframe: jobs
-    radius: 500
+    radius: 1500
     apply: np.log1p
 
   - name: ave_income
     dataframe: households
     varname: income
-    radius: 500
+    radius: 1500
     aggregation: average
     decay: flat
     apply: np.log1p

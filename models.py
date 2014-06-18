@@ -219,16 +219,66 @@ def residential_developer(dset):
                              drop_after_build=True)
 
     new_buildings["year_built"] = dset.year
-    new_buildings["building_type_id"] = 3
+    new_buildings["form"] = "residential"
+    new_buildings["building_type_id"] = new_buildings["form"].apply(dset.random_type)
     new_buildings["stories"] = new_buildings.stories.apply(np.ceil)
     for col in ["residential_sales_price", "residential_rent", "non_residential_rent"]:
         new_buildings[col] = np.nan
 
-    print "NEW BUILDINGS"
-    print new_buildings[dset.buildings.columns].describe()
+    #print "NEW BUILDINGS"
+    #print new_buildings[dset.buildings.columns].describe()
+
+    print "Adding {} buildings with {:,} residential units".format(len(new_buildings),
+                                                                   new_buildings.residential_units.sum())
 
     all_buildings = dev.merge(dset.buildings, new_buildings[dset.buildings.columns])
-    #dset.save_tmptbl("buildings", all_buildings)
+    dset.save_tmptbl("buildings", all_buildings)
+
+
+def non_residential_developer(dset):
+    non_residential_target_vacancy = .15
+    dev = developer.Developer(dset.feasibility)
+
+    target_units = dev.compute_units_to_build(len(dset.jobs),
+                                              dset.view("buildings").non_residential_units.sum(),
+                                              non_residential_target_vacancy)
+
+    parcels = dset.view("parcels")
+    new_buildings = dev.pick(["office", "retail", "industrial"],
+                             target_units,
+                             parcels.parcel_size,
+                             # This is hard-coding 500 as the average sqft per job
+                             # which isn't right but it doesn't affect outcomes much
+                             # developer will build enough units assuming 500 sqft
+                             # per job but then it just returns the result as square
+                             # footage and the actual building_sqft_per_job will be
+                             # used to compute non_residential_units.  In other words,
+                             # we can over- or under- build the number of units here
+                             # but we should still get roughly the right amount of
+                             # development out of this and the final numbers are precise.
+                             # just move this up and down if dev is over- or under-
+                             # buildings things
+                             pd.Series(500, index=parcels.index),
+                             dset.view("parcels").total_nonres_units,
+                             max_parcel_size=200000,
+                             drop_after_build=True,
+                             residential=False)
+
+    new_buildings["year_built"] = dset.year
+    new_buildings["building_type_id"] = new_buildings["form"].apply(dset.random_type)
+    new_buildings["residential_units"] = 0
+    new_buildings["stories"] = new_buildings.stories.apply(np.ceil)
+    for col in ["residential_sales_price", "residential_rent", "non_residential_rent"]:
+        new_buildings[col] = np.nan
+
+    #print "NEW BUILDINGS"
+    #print new_buildings[dset.buildings.columns].describe()
+
+    print "Adding {} buildings with {:,} non-residential sqft".format(len(new_buildings),
+                                                                      new_buildings.non_residential_sqft.sum())
+
+    all_buildings = dev.merge(dset.buildings, new_buildings[dset.buildings.columns])
+    dset.save_tmptbl("buildings", all_buildings)
 
 
 def _run_models(dset, model_list, years):
