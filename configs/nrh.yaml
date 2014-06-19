@@ -1,3 +1,5 @@
+name: Non-Residential Sales Hedonic
+
 model_type: segmented_regression
 
 segmentation_col: general_type

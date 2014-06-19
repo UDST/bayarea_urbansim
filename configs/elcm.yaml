@@ -1,3 +1,5 @@
+name: Employment Location Choice Model
+
 model_type: segmented_locationchoice
 
 segmentation_col: naics

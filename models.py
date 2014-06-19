@@ -5,35 +5,30 @@ from dataset import *
 import time
 
 
-def buildings_df(dset, addprices=False, filter=None):
-    buildings = dset.view("buildings")
-    if addprices:
-        flds = buildings.flds + ["residential_sales_price", "residential_rent", "non_residential_rent"]
-    else:
-        flds = buildings.flds
-    bdf = buildings.build_df(flds=flds)
+def _buildings_df(dset, filter=None):
+    bdf = dset.view("buildings").build_df()
     if filter is not None:
         bdf.query(filter)
     return dset.merge_nodes(bdf.fillna(0))
 
 
-def households_df(dset):
+def _households_df(dset):
     return dset.view("households").build_df()
 
 
-def jobs_df(dset):
+def _jobs_df(dset):
     return dset.view("jobs").build_df()
 
 
-def homesales_df(dset):
+def _homesales_df(dset):
     return dset.merge_nodes(dset.view("homesales").build_df())
 
 
-def apartments_df(dset):
+def _apartments_df(dset):
     return dset.merge_nodes(dset.view("apartments").build_df())
 
 
-def costar_df(dset):
+def _costar_df(dset):
     return dset.merge_nodes(dset.view("costar").build_df())
 
 
@@ -42,62 +37,60 @@ def clear_cache(dset):
 
 
 def cache_variables(dset):
-    buildings_df(dset)
-    households_df(dset)
-    jobs_df(dset)
-    homesales_df(dset)
-    apartments_df(dset)
-    costar_df(dset)
+    _buildings_df(dset)
+    _households_df(dset)
+    _jobs_df(dset)
+    _homesales_df(dset)
+    _apartments_df(dset)
+    _costar_df(dset)
 
 
 # residential sales hedonic
 def rsh_estimate(dset):
-    return ymr.hedonic_estimate(homesales_df(dset), "rsh.yaml")
+    return ymr.hedonic_estimate(_homesales_df(dset), "rsh.yaml")
 
 
 def rsh_simulate(dset):
-    return ymr.hedonic_simulate(buildings_df(dset), "rsh.yaml",
+    return ymr.hedonic_simulate(_buildings_df(dset), "rsh.yaml",
                                 dset.buildings, "residential_sales_price")
 
 
 # residential rent hedonic
 def rrh_estimate(dset):
-    return ymr.hedonic_estimate(apartments_df(dset), "rrh.yaml")
+    return ymr.hedonic_estimate(_apartments_df(dset), "rrh.yaml")
 
 
 def rrh_simulate(dset):
-    return ymr.hedonic_simulate(buildings_df(dset), "rrh.yaml",
+    return ymr.hedonic_simulate(_buildings_df(dset), "rrh.yaml",
                                 dset.buildings, "residential_rent")
 
 
 # non-residential hedonic
 def nrh_estimate(dset):
-    return ymr.hedonic_estimate(costar_df(dset), "nrh.yaml")
+    return ymr.hedonic_estimate(_costar_df(dset), "nrh.yaml")
 
 
 def nrh_simulate(dset):
-    return ymr.hedonic_simulate(buildings_df(dset), "nrh.yaml",
+    return ymr.hedonic_simulate(_buildings_df(dset), "nrh.yaml",
                                 dset.buildings, "non_residential_rent")
 
 
 # household location choice
 def _hlcm_estimate(dset, cfgname):
-    return ymr.lcm_estimate(households_df(dset),
+    return ymr.lcm_estimate(_households_df(dset),
                             "building_id",
-                            buildings_df(dset,
-                                         addprices=True,
-                                         filter="general_type == 'Residential'"),
+                            _buildings_df(dset,
+                                          filter="general_type == 'Residential'"),
                             cfgname)
 
 
 def _hlcm_simulate(dset, cfgname):
-    units = ymr.get_vacant_units(households_df(dset),
+    units = ymr.get_vacant_units(_households_df(dset),
                                  "building_id",
-                                 buildings_df(dset,
-                                              addprices=True,
-                                              filter="general_type == 'Residential'"),
+                                 _buildings_df(dset,
+                                               filter="general_type == 'Residential'"),
                                  "residential_units")
-    return ymr.lcm_simulate(households_df(dset), units, cfgname, dset.households, "building_id")
+    return ymr.lcm_simulate(_households_df(dset), units, cfgname, dset.households, "building_id")
 
 
 # household location choice owner
@@ -120,22 +113,20 @@ def hlcmr_simulate(dset):
 
 # employment location choice
 def elcm_estimate(dset):
-    return ymr.lcm_estimate(jobs_df(dset),
+    return ymr.lcm_estimate(_jobs_df(dset),
                             "building_id",
-                            buildings_df(dset,
-                                         addprices=True,
-                                         filter="general_type != 'Residential'"),
+                            _buildings_df(dset,
+                                          filter="general_type != 'Residential'"),
                             "elcm.yaml")
 
 
 def elcm_simulate(dset):
-    units = ymr.get_vacant_units(jobs_df(dset),
+    units = ymr.get_vacant_units(_jobs_df(dset),
                                  "building_id",
-                                 buildings_df(dset,
-                                              addprices=True,
-                                              filter="general_type != 'Residential'"),
+                                 _buildings_df(dset,
+                                               filter="general_type != 'Residential'"),
                                  "non_residential_units")
-    return ymr.lcm_simulate(jobs_df(dset), units, "elcm.yaml", dset.jobs, "building_id")
+    return ymr.lcm_simulate(_jobs_df(dset), units, "elcm.yaml", dset.jobs, "building_id")
 
 
 def households_relocation(dset):

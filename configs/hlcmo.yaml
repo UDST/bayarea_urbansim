@@ -1,3 +1,5 @@
+name: Household Location Choice Model (Owner)
+
 model_type: segmented_locationchoice
 
 segmentation_col: income_quartile
