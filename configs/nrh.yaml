@@ -4,6 +4,8 @@ model_type: segmented_regression
 
 segmentation_col: general_type
 
+min_segment_size: 10
+
 fit_filters:
 - rent > 0
 
