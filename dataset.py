@@ -77,6 +77,10 @@ class BayAreaDataset(dataset.Dataset):
         households["building_id"][households.building_id == -1] = np.nan
         return households
 
+    def fetch_homesales(self):
+        homesales = self.store['homesales']
+        return homesales.reset_index(drop=True)
+
     def fetch_costar(self):
         costar = self.store['costar']
         return costar[costar.PropertyType.isin(["Office", "Retail", "Industrial"])]
@@ -273,7 +277,7 @@ class HomeSales(dataset.CustomDataFrame):
 
     def __init__(self, dset):
         super(HomeSales, self).__init__(dset, "homesales")
-        self.flds = ["sale_price_flt", "year_built", "unit_lot_size", "unit_sqft", "_node_id"]
+        self.flds = ["sale_price_flt", "city", "year_built", "unit_lot_size", "unit_sqft", "_node_id", "zone_id"]
 
     @property
     def sale_price_flt(self):
@@ -291,6 +295,14 @@ class HomeSales(dataset.CustomDataFrame):
     @property
     def unit_sqft(self):
         return self.df.SQft
+
+    @property
+    def city(self):
+        return self.df.City
+
+    @variable
+    def zone_id(self):
+        return "reindex(parcels.zone_id, homesales.parcel_id)"
 
 
 class Parcels(dataset.CustomDataFrame):
