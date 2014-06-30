@@ -2,15 +2,15 @@ name: Full Simulation
 
 start_year: 2010
 
-end_year: 2015
+end_year: 2013
 
 start_models:
 - build_networks
 
 models:
 - clear_cache
-- cache_variables
 - neighborhood_vars
+- cache_variables
 - rsh_simulate
 - rrh_simulate
 - nrh_simulate
