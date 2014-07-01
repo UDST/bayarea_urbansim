@@ -1,0 +1,9 @@
+list: 
+- household_count.yaml
+- examplechart2.yaml
+- max_parcel_size.yaml
+- examplechart3.yaml
+- jobs_count.yaml
+- examplechart1.yaml
+
+desc: Maps and charts report
