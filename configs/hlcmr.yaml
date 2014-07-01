@@ -1,4 +1,6 @@
-name: Household Location Choice Model (Renter)
+name: hlcmr
+
+desc: Household Location Choice Model (Renter)
 
 model_type: segmented_locationchoice
 

@@ -1,4 +1,6 @@
-name: Residential Sales Hedonic
+name: rsh
+
+desc: Residential Sales Hedonic
 
 model_type: regression
 

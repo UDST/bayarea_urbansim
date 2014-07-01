@@ -1,4 +1,6 @@
-name: Non-Residential Sales Hedonic
+name: nrh
+
+desc: Non-Residential Sales Hedonic
 
 model_type: segmented_regression
 

@@ -1,4 +1,6 @@
-name: Neighborhood Accessibility Variables
+name: networks
+
+desc: Neighborhood Accessibility Variables
 
 model_type: networks
 

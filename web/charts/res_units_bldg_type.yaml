@@ -1,28 +1,27 @@
-name: !!python/unicode 'res_units_bldg_type'
+name: res_units_bldg_type
 
-!!python/unicode 'sort': true
+sort: true
 
-!!python/unicode 'yscale': !!python/unicode '1'
+yscale: 1
 
-!!python/unicode 'metric': !!python/unicode 'residential_units.sum()'
+metric: residential_units.sum()
 
-!!python/unicode 'filter': null
+filter: null
 
-!!python/unicode 'showXAxis': !!python/unicode 'true'
+showXAxis: true
 
-!!python/unicode 'limit': 5
+limit: 5
 
-!!python/unicode 'chart_type': !!python/unicode 'multibarchart'
+chart_type: multibarchart
 
-!!python/unicode 'xAxisRotateLabels': !!python/unicode '0'
+xAxisRotateLabels: 0
 
-!!python/unicode 'table': !!python/unicode 'buildings'
+table: buildings
 
-!!python/unicode 'orderdesc': true
+orderdesc: true
 
-!!python/unicode 'groupby': !!python/unicode 'building_type_id'
+groupby: building_type_id
 
-!!python/unicode 'jointoparcels': false
+jointoparcels: false
 
-!!python/unicode 'desc': !!python/unicode 'Count of Residential Units by Building
-    Type'
+desc: Count of Residential Units by Building Type

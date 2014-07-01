@@ -1,4 +1,6 @@
-name: Household Location Choice Model (Owner)
+name: hlcmo
+
+desc: Household Location Choice Model (Owner)
 
 model_type: segmented_locationchoice
 

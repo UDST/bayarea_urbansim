@@ -1,4 +1,6 @@
-name: Residential Rent Hedonic
+name: rrh
+
+desc: Residential Rent Hedonic
 
 model_type: regression
 
