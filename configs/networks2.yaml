@@ -1,45 +1,47 @@
-name: !!python/unicode 'networks2'
+name: Neighborhood Price Variables
 
-model_type: !!python/unicode 'networks'
+model_type: networks
 
-!!python/unicode 'desc': !!python/unicode 'Neighborhood Price Variables'
+node_col: _node_id0
 
-!!python/unicode 'variable_definitions':
--   !!python/unicode 'aggregation': !!python/unicode 'average'
-    !!python/unicode 'dataframe': !!python/unicode 'buildings'
-    !!python/unicode 'decay': !!python/unicode 'flat'
-    !!python/unicode 'name': !!python/unicode 'residential'
-    !!python/unicode 'radius': 2000
-    !!python/unicode 'varname': !!python/unicode 'residential_sales_price'
--   !!python/unicode 'add_fields':
-    - !!python/unicode 'general_type'
-    !!python/unicode 'aggregation': !!python/unicode 'average'
-    !!python/unicode 'dataframe': !!python/unicode 'buildings'
-    !!python/unicode 'decay': !!python/unicode 'flat'
-    !!python/unicode 'filters':
-    - !!python/unicode 'general_type == "Retail"'
-    !!python/unicode 'name': !!python/unicode 'retail'
-    !!python/unicode 'radius': 2000
-    !!python/unicode 'varname': !!python/unicode 'non_residential_rent'
--   !!python/unicode 'add_fields':
-    - !!python/unicode 'general_type'
-    !!python/unicode 'aggregation': !!python/unicode 'average'
-    !!python/unicode 'dataframe': !!python/unicode 'buildings'
-    !!python/unicode 'decay': !!python/unicode 'flat'
-    !!python/unicode 'filters':
-    - !!python/unicode 'general_type == "Office"'
-    !!python/unicode 'name': !!python/unicode 'office'
-    !!python/unicode 'radius': 2000
-    !!python/unicode 'varname': !!python/unicode 'non_residential_rent'
--   !!python/unicode 'add_fields':
-    - !!python/unicode 'general_type'
-    !!python/unicode 'aggregation': !!python/unicode 'average'
-    !!python/unicode 'dataframe': !!python/unicode 'buildings'
-    !!python/unicode 'decay': !!python/unicode 'flat'
-    !!python/unicode 'filters':
-    - !!python/unicode 'general_type == "Industrial"'
-    !!python/unicode 'name': !!python/unicode 'industrial'
-    !!python/unicode 'radius': 2000
-    !!python/unicode 'varname': !!python/unicode 'non_residential_rent'
+variable_definitions:
 
-!!python/unicode 'node_col': !!python/unicode '_node_id0'
+-   aggregation: average
+    dataframe: buildings
+    decay: flat
+    name: residential
+    radius: 2000
+    varname: residential_sales_price
+
+-   aggregation: average
+    dataframe: buildings
+    decay: flat
+    add_fields:
+    - general_type
+    filters:
+    - general_type == "Retail"
+    name: retail
+    radius: 2000
+    varname: non_residential_rent
+
+-   aggregation: average
+    dataframe: buildings
+    decay: flat
+    add_fields:
+    - general_type
+    filters:
+    - general_type == "Office"
+    name: office
+    radius: 2000
+    varname: non_residential_rent
+
+-   aggregation: average
+    dataframe: buildings
+    decay: flat
+    add_fields:
+    - general_type
+    filters:
+    - general_type == "Industrial"
+    name: industrial
+    radius: 2000
+    varname: non_residential_rent

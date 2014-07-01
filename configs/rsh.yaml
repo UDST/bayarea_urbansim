@@ -1,64 +1,62 @@
-name: !!python/unicode 'rsh'
+name: Residential Sales Hedonic
 
-model_type: !!python/unicode 'regression'
+model_type: regression
 
 fit_filters:
-- !!python/unicode 'unit_lot_size > 0'
-- !!python/unicode 'year_built > 1000'
-- !!python/unicode 'year_built < 2020'
-- !!python/unicode 'unit_sqft > 100'
-- !!python/unicode 'unit_sqft < 10000'
-- !!python/unicode 'sale_price_flt > 30'
-- !!python/unicode 'sale_price_flt < 1500'
+- unit_lot_size > 0
+- year_built > 1000
+- year_built < 2020
+- unit_sqft > 100
+- unit_sqft < 10000
+- sale_price_flt > 30
+- sale_price_flt < 1500
 
 predict_filters:
-- !!python/unicode 'general_type == ''Residential'''
+- general_type == 'Residential'
 
-model_expression: !!python/unicode 'np.log1p(sale_price_flt) ~ I(year_built < 1940)
-    + I(year_built > 2005) + np.log1p(unit_sqft) + np.log1p(unit_lot_size) + sum_residential_units
-    + ave_unit_sqft + ave_lot_sqft + ave_income + jobs'
+model_expression: np.log1p(sale_price_flt) ~ I(year_built < 1940) + I(year_built >
+    2005) + np.log1p(unit_sqft) + np.log1p(unit_lot_size) + sum_residential_units
+    + ave_unit_sqft + ave_lot_sqft + ave_income + jobs
 
-ytransform: !!python/unicode 'np.exp'
+ytransform: np.exp
 
 fitted: true
 
-!!python/unicode 'fit_rsquared_adj': 0.16926687429398013
+fit_parameters:
+    Coefficient:
+        I(year_built < 1940)[T.True]: 0.15748834164142175
+        I(year_built > 2005)[T.True]: 0.09848251556806037
+        Intercept: 5.818019550093726
+        ave_income: 0.22227539407442318
+        ave_lot_sqft: -0.14654486974097625
+        ave_unit_sqft: -0.06908386763946348
+        jobs: 0.17171316871236486
+        np.log1p(unit_lot_size): 0.11628038097210278
+        np.log1p(unit_sqft): -0.21690377913914077
+        sum_residential_units: -0.21515741583598247
+    Std. Error:
+        I(year_built < 1940)[T.True]: 0.003969613001527072
+        I(year_built > 2005)[T.True]: 0.006733690986849855
+        Intercept: 0.03421125683545061
+        ave_income: 0.0016541075248126163
+        ave_lot_sqft: 0.0017268907615129666
+        ave_unit_sqft: 0.002974829889988332
+        jobs: 0.0013357644547724603
+        np.log1p(unit_lot_size): 0.00160874313071042
+        np.log1p(unit_sqft): 0.003332907022583569
+        sum_residential_units: 0.002244541743490669
+    T-Score:
+        I(year_built < 1940)[T.True]: 39.67347486539305
+        I(year_built > 2005)[T.True]: 14.625339321389369
+        Intercept: 170.06155541368304
+        ave_income: 134.37783864722059
+        ave_lot_sqft: -84.86053258666176
+        ave_unit_sqft: -23.22279598976815
+        jobs: 128.55048515392275
+        np.log1p(unit_lot_size): 72.28026572567457
+        np.log1p(unit_sqft): -65.07945696336992
+        sum_residential_units: -95.85805942792301
 
-!!python/unicode 'fit_rsquared': 0.16930538626300895
+fit_rsquared_adj: 0.16926687429398013
 
-!!python/unicode 'fit_parameters':
-    !!python/unicode 'Coefficient':
-        !!python/unicode 'I(year_built < 1940)[T.True]': 0.15748834164142175
-        !!python/unicode 'I(year_built > 2005)[T.True]': 0.09848251556806037
-        !!python/unicode 'Intercept': 5.818019550093726
-        !!python/unicode 'ave_income': 0.22227539407442318
-        !!python/unicode 'ave_lot_sqft': -0.14654486974097625
-        !!python/unicode 'ave_unit_sqft': -0.06908386763946348
-        !!python/unicode 'jobs': 0.17171316871236486
-        !!python/unicode 'np.log1p(unit_lot_size)': 0.11628038097210278
-        !!python/unicode 'np.log1p(unit_sqft)': -0.21690377913914077
-        !!python/unicode 'sum_residential_units': -0.21515741583598247
-    !!python/unicode 'Std. Error':
-        !!python/unicode 'I(year_built < 1940)[T.True]': 0.003969613001527072
-        !!python/unicode 'I(year_built > 2005)[T.True]': 0.006733690986849855
-        !!python/unicode 'Intercept': 0.03421125683545061
-        !!python/unicode 'ave_income': 0.0016541075248126163
-        !!python/unicode 'ave_lot_sqft': 0.0017268907615129666
-        !!python/unicode 'ave_unit_sqft': 0.002974829889988332
-        !!python/unicode 'jobs': 0.0013357644547724603
-        !!python/unicode 'np.log1p(unit_lot_size)': 0.00160874313071042
-        !!python/unicode 'np.log1p(unit_sqft)': 0.003332907022583569
-        !!python/unicode 'sum_residential_units': 0.002244541743490669
-    !!python/unicode 'T-Score':
-        !!python/unicode 'I(year_built < 1940)[T.True]': 39.67347486539305
-        !!python/unicode 'I(year_built > 2005)[T.True]': 14.625339321389369
-        !!python/unicode 'Intercept': 170.06155541368304
-        !!python/unicode 'ave_income': 134.37783864722059
-        !!python/unicode 'ave_lot_sqft': -84.86053258666176
-        !!python/unicode 'ave_unit_sqft': -23.22279598976815
-        !!python/unicode 'jobs': 128.55048515392275
-        !!python/unicode 'np.log1p(unit_lot_size)': 72.28026572567457
-        !!python/unicode 'np.log1p(unit_sqft)': -65.07945696336992
-        !!python/unicode 'sum_residential_units': -95.85805942792301
-
-!!python/unicode 'desc': !!python/unicode 'Residential Sales Hedonic'
+fit_rsquared: 0.16930538626300895

@@ -1,85 +1,94 @@
-name: !!python/unicode 'networks'
+name: Neighborhood Accessibility Variables
 
-model_type: !!python/unicode 'networks'
+model_type: networks
 
-!!python/unicode 'desc': !!python/unicode 'Neighborhood Accessibility Variables'
+node_col: _node_id0
 
-!!python/unicode 'variable_definitions':
--   !!python/unicode 'apply': !!python/unicode 'np.log1p'
-    !!python/unicode 'dataframe': !!python/unicode 'buildings'
-    !!python/unicode 'name': !!python/unicode 'sum_residential_units'
-    !!python/unicode 'radius': 1500
-    !!python/unicode 'varname': !!python/unicode 'residential_units'
--   !!python/unicode 'apply': !!python/unicode 'np.log1p'
-    !!python/unicode 'dataframe': !!python/unicode 'buildings'
-    !!python/unicode 'name': !!python/unicode 'sum_nonresidential_units'
-    !!python/unicode 'radius': 1500
-    !!python/unicode 'varname': !!python/unicode 'non_residential_units'
--   !!python/unicode 'add_fields':
-    - !!python/unicode 'general_type'
-    !!python/unicode 'aggregation': !!python/unicode 'average'
-    !!python/unicode 'apply': !!python/unicode 'np.log1p'
-    !!python/unicode 'dataframe': !!python/unicode 'buildings'
-    !!python/unicode 'decay': !!python/unicode 'flat'
-    !!python/unicode 'filters':
-    - !!python/unicode 'general_type == "Residential"'
-    !!python/unicode 'name': !!python/unicode 'ave_unit_sqft'
-    !!python/unicode 'radius': 1500
-    !!python/unicode 'varname': !!python/unicode 'unit_sqft'
--   !!python/unicode 'aggregation': !!python/unicode 'average'
-    !!python/unicode 'apply': !!python/unicode 'np.log1p'
-    !!python/unicode 'dataframe': !!python/unicode 'buildings'
-    !!python/unicode 'decay': !!python/unicode 'flat'
-    !!python/unicode 'name': !!python/unicode 'ave_lot_sqft'
-    !!python/unicode 'radius': 1500
-    !!python/unicode 'varname': !!python/unicode 'unit_lot_size'
--   !!python/unicode 'apply': !!python/unicode 'np.log1p'
-    !!python/unicode 'dataframe': !!python/unicode 'households'
-    !!python/unicode 'name': !!python/unicode 'population'
-    !!python/unicode 'radius': 1500
-    !!python/unicode 'varname': !!python/unicode 'persons'
--   !!python/unicode 'add_fields':
-    - !!python/unicode 'income'
-    !!python/unicode 'apply': !!python/unicode 'np.log1p'
-    !!python/unicode 'dataframe': !!python/unicode 'households'
-    !!python/unicode 'filters':
-    - !!python/unicode 'income < 40000'
-    !!python/unicode 'name': !!python/unicode 'poor'
-    !!python/unicode 'radius': 1500
-    !!python/unicode 'varname': !!python/unicode 'persons'
--   !!python/unicode 'add_fields':
-    - !!python/unicode 'tenure'
-    !!python/unicode 'apply': !!python/unicode 'np.log1p'
-    !!python/unicode 'dataframe': !!python/unicode 'households'
-    !!python/unicode 'filters':
-    - !!python/unicode 'tenure == 2'
-    !!python/unicode 'name': !!python/unicode 'renters'
-    !!python/unicode 'radius': 1500
--   !!python/unicode 'add_fields':
-    - !!python/unicode 'building_type_id'
-    !!python/unicode 'apply': !!python/unicode 'np.log1p'
-    !!python/unicode 'dataframe': !!python/unicode 'buildings'
-    !!python/unicode 'filters':
-    - !!python/unicode 'building_type_id == 1'
-    !!python/unicode 'name': !!python/unicode 'sfdu'
-    !!python/unicode 'radius': 1500
--   !!python/unicode 'aggregation': !!python/unicode 'average'
-    !!python/unicode 'apply': !!python/unicode 'np.log1p'
-    !!python/unicode 'dataframe': !!python/unicode 'households'
-    !!python/unicode 'decay': !!python/unicode 'flat'
-    !!python/unicode 'name': !!python/unicode 'hhsize'
-    !!python/unicode 'radius': 1500
-    !!python/unicode 'varname': !!python/unicode 'persons'
--   !!python/unicode 'apply': !!python/unicode 'np.log1p'
-    !!python/unicode 'dataframe': !!python/unicode 'jobs'
-    !!python/unicode 'name': !!python/unicode 'jobs'
-    !!python/unicode 'radius': 1500
--   !!python/unicode 'aggregation': !!python/unicode 'average'
-    !!python/unicode 'apply': !!python/unicode 'np.log1p'
-    !!python/unicode 'dataframe': !!python/unicode 'households'
-    !!python/unicode 'decay': !!python/unicode 'flat'
-    !!python/unicode 'name': !!python/unicode 'ave_income'
-    !!python/unicode 'radius': 1500
-    !!python/unicode 'varname': !!python/unicode 'income'
+variable_definitions:
+    
+  - name: sum_residential_units
+    dataframe: buildings
+    varname: residential_units
+    radius: 1500
+    apply: np.log1p
 
-!!python/unicode 'node_col': !!python/unicode '_node_id0'
+  - name: sum_nonresidential_units
+    dataframe: buildings
+    varname: non_residential_units
+    radius: 1500
+    apply: np.log1p
+
+  - name: ave_unit_sqft
+    dataframe: buildings
+    varname: unit_sqft
+    add_fields:
+    - general_type
+    filters:
+    - general_type == "Residential"
+    radius: 1500
+    apply: np.log1p
+    decay: flat
+    aggregation: average
+
+  - name: ave_lot_sqft
+    dataframe: buildings
+    varname: unit_lot_size
+    radius: 1500
+    apply: np.log1p
+    decay: flat
+    aggregation: average
+
+  - name: population
+    dataframe: households
+    varname: persons
+    radius: 1500
+    apply: np.log1p
+
+  - name: poor
+    dataframe: households
+    add_fields:
+    - income
+    filters:
+    - income < 40000
+    varname: persons
+    radius: 1500
+    apply: np.log1p
+
+  - name: renters
+    dataframe: households
+    add_fields:
+    - tenure
+    filters:
+    - tenure == 2
+    radius: 1500
+    apply: np.log1p
+
+  - name: sfdu
+    dataframe: buildings
+    add_fields:
+    - building_type_id
+    filters:
+    - building_type_id == 1
+    radius: 1500
+    apply: np.log1p
+
+  - name: hhsize
+    dataframe: households
+    varname: persons
+    radius: 1500
+    aggregation: average
+    decay: flat
+    apply: np.log1p
+
+  - name: jobs
+    dataframe: jobs
+    radius: 1500
+    apply: np.log1p
+
+  - name: ave_income
+    dataframe: households
+    varname: income
+    radius: 1500
+    aggregation: average
+    decay: flat
+    apply: np.log1p
