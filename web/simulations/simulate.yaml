@@ -1,4 +1,6 @@
-name: Full Simulation
+name: simulate
+
+desc: Full Simulation
 
 start_year: 2010
 

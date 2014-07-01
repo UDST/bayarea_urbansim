@@ -1,104 +1,106 @@
-name: Non-Residential Sales Hedonic
+name: !!python/unicode 'nrh'
 
-model_type: segmented_regression
+model_type: !!python/unicode 'segmented_regression'
 
-segmentation_col: general_type
+segmentation_col: !!python/unicode 'general_type'
 
 fit_filters:
-- rent > 0
+- !!python/unicode 'rent > 0'
 
 predict_filters:
-- general_type != 'Residential'
+- !!python/unicode 'general_type != ''Residential'''
 
 default_config:
-    model_expression: np.log1p(rent) ~ I(year_built < 1940) + I(year_built > 2005)
-        + np.log1p(stories) + ave_income + jobs
-    ytransform: np.exp
+    !!python/unicode 'model_expression': !!python/unicode 'np.log1p(rent) ~ I(year_built
+        < 1940) + I(year_built > 2005) + np.log1p(stories) + ave_income + jobs'
+    !!python/unicode 'ytransform': !!python/unicode 'np.exp'
 
 models:
-    Industrial:
-        fit_parameters:
-            Coefficient:
-                I(year_built < 1940)[T.True]: 0.09078291401379142
-                I(year_built > 2005)[T.True]: 0.29576046661468725
-                Intercept: 1.630975037470451
-                ave_income: 0.013101730288290894
-                jobs: 0.05003664644689008
-                np.log1p(stories): 0.27924092367686554
-            Std. Error:
-                I(year_built < 1940)[T.True]: 0.025145113549923742
-                I(year_built > 2005)[T.True]: 0.06418373012850216
-                Intercept: 0.06095746901333907
-                ave_income: 0.0020863217938865237
-                jobs: 0.006958315658797716
-                np.log1p(stories): 0.05693486292862675
-            T-Score:
-                I(year_built < 1940)[T.True]: 3.6103600738787174
-                I(year_built > 2005)[T.True]: 4.608028639384866
-                Intercept: 26.755950728754033
-                ave_income: 6.279822377680394
-                jobs: 7.190913563058391
-                np.log1p(stories): 4.904568296351578
-        fit_rsquared: 0.07877614871787741
-        fit_rsquared_adj: 0.07622145140428305
-        fitted: true
-        name: Industrial
-        ytransform: np.exp
-    Office:
-        fit_parameters:
-            Coefficient:
-                I(year_built < 1940)[T.True]: -0.042213294775596495
-                I(year_built > 2005)[T.True]: 0.18210862488756935
-                Intercept: 2.5853636655372894
-                ave_income: 0.016836742575630573
-                jobs: 0.021358531133138865
-                np.log1p(stories): 0.1816962585218499
-            Std. Error:
-                I(year_built < 1940)[T.True]: 0.01830683337558057
-                I(year_built > 2005)[T.True]: 0.04333649778903703
-                Intercept: 0.039226778216972236
-                ave_income: 0.0021755122533007767
-                jobs: 0.005574590654312239
-                np.log1p(stories): 0.015610638784318072
-            T-Score:
-                I(year_built < 1940)[T.True]: -2.3058763855853233
-                I(year_built > 2005)[T.True]: 4.202199858744422
-                Intercept: 65.90813171647834
-                ave_income: 7.739208340511608
-                jobs: 3.8314079826860326
-                np.log1p(stories): 11.639258395010453
-        fit_rsquared: 0.10628530398159652
-        fit_rsquared_adj: 0.10470406778906571
-        fitted: true
-        name: Office
-        ytransform: np.exp
-    Retail:
-        fit_parameters:
-            Coefficient:
-                I(year_built < 1940)[T.True]: -0.006122101754774751
-                I(year_built > 2005)[T.True]: 0.2842757176774534
-                Intercept: 2.1760122998169487
-                ave_income: 0.017612176510685487
-                jobs: 0.10963474556407793
-                np.log1p(stories): 0.04034092283000011
-            Std. Error:
-                I(year_built < 1940)[T.True]: 0.027402021559006888
-                I(year_built > 2005)[T.True]: 0.06258187685930569
-                Intercept: 0.11182694070795404
-                ave_income: 0.008119350445392696
-                jobs: 0.010943361010208768
-                np.log1p(stories): 0.0544996415532589
-            T-Score:
-                I(year_built < 1940)[T.True]: -0.2234178869464633
-                I(year_built > 2005)[T.True]: 4.542460724157439
-                Intercept: 19.458748366369043
-                ave_income: 2.1691607757464726
-                jobs: 10.018379678948964
-                np.log1p(stories): 0.7402052872325333
-        fit_rsquared: 0.11135960269204703
-        fit_rsquared_adj: 0.10735310856532043
-        fitted: true
-        name: Retail
-        ytransform: np.exp
+    !!python/unicode 'Industrial':
+        !!python/unicode 'fit_parameters':
+            !!python/unicode 'Coefficient':
+                !!python/unicode 'I(year_built < 1940)[T.True]': 0.09078291401379142
+                !!python/unicode 'I(year_built > 2005)[T.True]': 0.29576046661468725
+                !!python/unicode 'Intercept': 1.630975037470451
+                !!python/unicode 'ave_income': 0.013101730288290894
+                !!python/unicode 'jobs': 0.05003664644689008
+                !!python/unicode 'np.log1p(stories)': 0.27924092367686554
+            !!python/unicode 'Std. Error':
+                !!python/unicode 'I(year_built < 1940)[T.True]': 0.025145113549923742
+                !!python/unicode 'I(year_built > 2005)[T.True]': 0.06418373012850216
+                !!python/unicode 'Intercept': 0.06095746901333907
+                !!python/unicode 'ave_income': 0.0020863217938865237
+                !!python/unicode 'jobs': 0.006958315658797716
+                !!python/unicode 'np.log1p(stories)': 0.05693486292862675
+            !!python/unicode 'T-Score':
+                !!python/unicode 'I(year_built < 1940)[T.True]': 3.6103600738787174
+                !!python/unicode 'I(year_built > 2005)[T.True]': 4.608028639384866
+                !!python/unicode 'Intercept': 26.755950728754033
+                !!python/unicode 'ave_income': 6.279822377680394
+                !!python/unicode 'jobs': 7.190913563058391
+                !!python/unicode 'np.log1p(stories)': 4.904568296351578
+        !!python/unicode 'fit_rsquared': 0.07877614871787741
+        !!python/unicode 'fit_rsquared_adj': 0.07622145140428305
+        !!python/unicode 'fitted': true
+        !!python/unicode 'name': !!python/unicode 'Industrial'
+        !!python/unicode 'ytransform': !!python/unicode 'np.exp'
+    !!python/unicode 'Office':
+        !!python/unicode 'fit_parameters':
+            !!python/unicode 'Coefficient':
+                !!python/unicode 'I(year_built < 1940)[T.True]': -0.042213294775596495
+                !!python/unicode 'I(year_built > 2005)[T.True]': 0.18210862488756935
+                !!python/unicode 'Intercept': 2.5853636655372894
+                !!python/unicode 'ave_income': 0.016836742575630573
+                !!python/unicode 'jobs': 0.021358531133138865
+                !!python/unicode 'np.log1p(stories)': 0.1816962585218499
+            !!python/unicode 'Std. Error':
+                !!python/unicode 'I(year_built < 1940)[T.True]': 0.01830683337558057
+                !!python/unicode 'I(year_built > 2005)[T.True]': 0.04333649778903703
+                !!python/unicode 'Intercept': 0.039226778216972236
+                !!python/unicode 'ave_income': 0.0021755122533007767
+                !!python/unicode 'jobs': 0.005574590654312239
+                !!python/unicode 'np.log1p(stories)': 0.015610638784318072
+            !!python/unicode 'T-Score':
+                !!python/unicode 'I(year_built < 1940)[T.True]': -2.3058763855853233
+                !!python/unicode 'I(year_built > 2005)[T.True]': 4.202199858744422
+                !!python/unicode 'Intercept': 65.90813171647834
+                !!python/unicode 'ave_income': 7.739208340511608
+                !!python/unicode 'jobs': 3.8314079826860326
+                !!python/unicode 'np.log1p(stories)': 11.639258395010453
+        !!python/unicode 'fit_rsquared': 0.10628530398159652
+        !!python/unicode 'fit_rsquared_adj': 0.10470406778906571
+        !!python/unicode 'fitted': true
+        !!python/unicode 'name': !!python/unicode 'Office'
+        !!python/unicode 'ytransform': !!python/unicode 'np.exp'
+    !!python/unicode 'Retail':
+        !!python/unicode 'fit_parameters':
+            !!python/unicode 'Coefficient':
+                !!python/unicode 'I(year_built < 1940)[T.True]': -0.006122101754774751
+                !!python/unicode 'I(year_built > 2005)[T.True]': 0.2842757176774534
+                !!python/unicode 'Intercept': 2.1760122998169487
+                !!python/unicode 'ave_income': 0.017612176510685487
+                !!python/unicode 'jobs': 0.10963474556407793
+                !!python/unicode 'np.log1p(stories)': 0.04034092283000011
+            !!python/unicode 'Std. Error':
+                !!python/unicode 'I(year_built < 1940)[T.True]': 0.027402021559006888
+                !!python/unicode 'I(year_built > 2005)[T.True]': 0.06258187685930569
+                !!python/unicode 'Intercept': 0.11182694070795404
+                !!python/unicode 'ave_income': 0.008119350445392696
+                !!python/unicode 'jobs': 0.010943361010208768
+                !!python/unicode 'np.log1p(stories)': 0.0544996415532589
+            !!python/unicode 'T-Score':
+                !!python/unicode 'I(year_built < 1940)[T.True]': -0.2234178869464633
+                !!python/unicode 'I(year_built > 2005)[T.True]': 4.542460724157439
+                !!python/unicode 'Intercept': 19.458748366369043
+                !!python/unicode 'ave_income': 2.1691607757464726
+                !!python/unicode 'jobs': 10.018379678948964
+                !!python/unicode 'np.log1p(stories)': 0.7402052872325333
+        !!python/unicode 'fit_rsquared': 0.11135960269204703
+        !!python/unicode 'fit_rsquared_adj': 0.10735310856532043
+        !!python/unicode 'fitted': true
+        !!python/unicode 'name': !!python/unicode 'Retail'
+        !!python/unicode 'ytransform': !!python/unicode 'np.exp'
 
 fitted: true
+
+!!python/unicode 'desc': !!python/unicode 'Non-Residential Sales Hedonic'

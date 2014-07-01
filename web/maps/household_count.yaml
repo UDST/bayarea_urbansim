@@ -1,3 +1,5 @@
+name: household_count
+
 desc: Household Count
 
 table: households
