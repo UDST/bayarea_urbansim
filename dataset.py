@@ -246,6 +246,10 @@ class Households(dataset.CustomDataFrame):
         return pd.Series(pd.qcut(self.df.income, 4).labels, index=self.df.index)
 
     @variable
+    def zone_id(self):
+        return "reindex(buildings.zone_id, households.building_id)"
+
+    @variable
     def _node_id(self):
         return "reindex(buildings._node_id, households.building_id)"
 
@@ -267,6 +271,10 @@ class Jobs(dataset.CustomDataFrame):
     @variable
     def _node_id0(self):
         return "reindex(buildings._node_id0, jobs.building_id)"
+    
+    @variable
+    def zone_id(self):
+        return "reindex(buildings.zone_id, jobs.building_id)"
 
     @variable
     def naics(self):
