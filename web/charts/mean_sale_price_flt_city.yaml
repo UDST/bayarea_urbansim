@@ -1,21 +1,27 @@
-name: mean_sale_price_flt_city
+name: !!python/unicode 'mean_sale_price_flt_city'
 
-sort: true
+!!python/unicode 'sort': true
 
-metric: Sale_price_flt.mean()
+!!python/unicode 'yscale': !!python/unicode '1'
 
-filter: null
+!!python/unicode 'metric': !!python/unicode 'Sale_price_flt.mean()'
 
-limit: 6
+!!python/unicode 'groupby': !!python/unicode 'City'
 
-chart_type: multibarchart
+!!python/unicode 'filter': null
 
-table: homesales
+!!python/unicode 'showXAxis': false
 
-orderdesc: true
+!!python/unicode 'limit': !!python/unicode '50'
 
-groupby: City
+!!python/unicode 'xAxisRotateLabels': !!python/unicode '90'
 
-jointoparcels: false
+!!python/unicode 'charttype': !!python/unicode 'multibarchart'
 
-desc: Mean Sale_price_flt by city
+!!python/unicode 'table': !!python/unicode 'homesales'
+
+!!python/unicode 'orderdesc': true
+
+!!python/unicode 'jointoparcels': false
+
+!!python/unicode 'desc': !!python/unicode 'Mean Sale_price_flt by city'
