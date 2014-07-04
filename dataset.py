@@ -239,7 +239,7 @@ class Households(dataset.CustomDataFrame):
     def __init__(self, dset):
         super(Households, self).__init__(dset, "households")
         self.flds = ["income", "income_quartile", "building_id", "tenure", "persons",
-                     "_node_id", "_node_id0"]
+                     "zone_id", "_node_id", "_node_id0"]
 
     @property
     def income_quartile(self):
@@ -262,7 +262,7 @@ class Jobs(dataset.CustomDataFrame):
 
     def __init__(self, dset):
         super(Jobs, self).__init__(dset, "jobs")
-        self.flds = ["building_id", "_node_id0", "_node_id", "naics"]
+        self.flds = ["building_id", "_node_id0", "_node_id", "zone_id", "naics"]
 
     @variable
     def _node_id(self):
