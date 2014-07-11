@@ -289,8 +289,10 @@ class HomeSales(dataset.CustomDataFrame):
 
     @property
     def sale_price_flt(self):
-        return self.df.Sale_price.str.replace('$', '').str.replace(',', '').astype('f4') / \
+        sale_price_flt = self.df.Sale_price.str.replace('$', '').str.replace(',', '').astype('f4') / \
             self.unit_sqft
+        sale_price_flt[self.unit_sqft == 0] = np.nan
+        return sale_price_flt
 
     @property
     def year_built(self):

@@ -1,9 +1,9 @@
-list: 
-- household_count.yaml
-- examplechart2.yaml
-- max_parcel_size.yaml
-- examplechart3.yaml
-- jobs_count.yaml
-- examplechart1.yaml
+name: maps_and_charts
 
 desc: Maps and charts report
+
+list:
+-   map: jobs_count
+-   chart: res_units_bldg_type
+-   map: residential_units_sum
+-   chart: mean_sale_price_flt_city
