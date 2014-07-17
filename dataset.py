@@ -156,7 +156,7 @@ class Buildings(dataset.CustomDataFrame):
         self.flds = ["year_built", "unit_lot_size", "unit_sqft", "general_type",
                      "stories", "residential_units", "non_residential_units",
                      "building_type_id", "residential_sales_price", "residential_rent",
-                     "non_residential_rent",
+                     "non_residential_rent", "non_residential_sqft",
                      "_node_id", "_node_id0", "zone_id", "lot_size"]
 
     @variable
