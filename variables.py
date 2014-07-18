@@ -9,19 +9,19 @@ import dataset
 #####################
 
 
-#@sim.column('buildings', '_node_id')
-#def _node_id(buildings, parcels):
-#    return misc.reindex(parcels._node_id, buildings.parcel_id)
+@sim.column('buildings', '_node_id')
+def _node_id(buildings, parcels):
+    return misc.reindex(parcels._node_id, buildings.parcel_id)
 
 
-#@sim.column('buildings', '_node_id0')
-#def _node_id0(buildings, parcels):
-#    return misc.reindex(parcels._node_id0, buildings.parcel_id)
+@sim.column('buildings', '_node_id0')
+def _node_id0(buildings, parcels):
+    return misc.reindex(parcels._node_id0, buildings.parcel_id)
 
 
-#@sim.column('buildings', 'zone_id')
-#def zone_id(buildings, parcels):
-#    return misc.reindex(parcels.zone_id, buildings.parcel_id)
+@sim.column('buildings', 'zone_id')
+def zone_id(buildings, parcels):
+    return misc.reindex(parcels.zone_id, buildings.parcel_id)
 
 
 @sim.column('buildings', 'general_type')
@@ -34,9 +34,9 @@ def unit_sqft(buildings):
     return buildings.building_sqft / buildings.residential_units
 
 
-#@sim.column('buildings', 'unit_lot_size')
-#def unit_lot_size(buildings, parcels):
-#    return misc.reindex(parcels.parcel_size, buildings.parcel_id) / buildings.residential_units
+@sim.column('buildings', 'unit_lot_size')
+def unit_lot_size(buildings, parcels):
+    return misc.reindex(parcels.parcel_size, buildings.parcel_id) / buildings.residential_units
 
 
 @sim.column('buildings', 'sqft_per_job')
@@ -74,9 +74,9 @@ def stories(costar):
 #####################
 
 
-#@sim.column('apartments', '_node_id')
-#def _node_id(parcels, apartments):
-#    return misc.reindex(parcels._node_id, apartments.parcel_id)
+@sim.column('apartments', '_node_id')
+def _node_id(parcels, apartments):
+    return misc.reindex(parcels._node_id, apartments.parcel_id)
 
 
 @sim.column('apartments', 'rent')
@@ -99,19 +99,19 @@ def income_quartile(households):
     return pd.Series(pd.qcut(households.income, 4).labels, index=households.index)
 
 
-#@sim.column('households', 'zone_id')
-#def zone_id(households, buildings):
-#    return misc.reindex(buildings.zone_id, households.building_id)
+@sim.column('households', 'zone_id')
+def zone_id(households, buildings):
+    return misc.reindex(buildings.zone_id, households.building_id)
 
 
-#@sim.column('households', '_node_id')
-#def _node_id(households, buildings):
-#    return misc.reindex(buildings._node_id, households.building_id)
+@sim.column('households', '_node_id')
+def _node_id(households, buildings):
+    return misc.reindex(buildings._node_id, households.building_id)
 
 
-#@sim.column('households', '_node_id0')
-#def _node_id0(households, buildings):
-#    return misc.reindex(buildings._node_id0, households.building_id)
+@sim.column('households', '_node_id0')
+def _node_id0(households, buildings):
+    return misc.reindex(buildings._node_id0, households.building_id)
 
 
 #####################
@@ -119,19 +119,19 @@ def income_quartile(households):
 #####################
 
 
-#@sim.column('jobs', '_node_id')
-#def _node_id(jobs, buildings):
-#    return misc.reindex(buildings._node_id, jobs.building_id)
+@sim.column('jobs', '_node_id')
+def _node_id(jobs, buildings):
+   return misc.reindex(buildings._node_id, jobs.building_id)
 
 
-#@sim.column('jobs', '_node_id0')
-#def _node_id0(jobs, buildings):
-#    return misc.reindex(buildings._node_id0, jobs.building_id)
+@sim.column('jobs', '_node_id0')
+def _node_id0(jobs, buildings):
+    return misc.reindex(buildings._node_id0, jobs.building_id)
 
 
-#@sim.column('jobs', 'zone_id')
-#def zone_id(jobs, buildings):
-#    return misc.reindex(buildings.zone_id, jobs.building_id)
+@sim.column('jobs', 'zone_id')
+def zone_id(jobs, buildings):
+    return misc.reindex(buildings.zone_id, jobs.building_id)
 
 
 @sim.column('jobs', 'naics')
@@ -170,9 +170,9 @@ def city(homesales):
     return homesales.City
 
 
-#@sim.column('homesales', 'zone_id')
-#def zone_id(parcels, homesales):
-#    return misc.reindex(parcels.zone_id, homesales.parcel_id)
+@sim.column('homesales', 'zone_id')
+def zone_id(parcels, homesales):
+    return misc.reindex(parcels.zone_id, homesales.parcel_id)
 
 
 #####################
