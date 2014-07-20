@@ -121,7 +121,7 @@ def _node_id0(households, buildings):
 
 @sim.column('jobs', '_node_id')
 def _node_id(jobs, buildings):
-   return misc.reindex(buildings._node_id, jobs.building_id)
+    return misc.reindex(buildings._node_id, jobs.building_id)
 
 
 @sim.column('jobs', '_node_id0')

@@ -15,7 +15,8 @@ def merge_nodes(df):
     return pd.merge(df.to_frame(),
                     sim.get_table("nodes").to_frame(),
                     left_on="_node_id",
-                    right_index=True)
+                    right_index=True,
+                    how="left")
 
 
 def random_type(form):
@@ -30,7 +31,7 @@ def rsh_estimate(homesales):
 @sim.model('rsh_simulate')
 def rsh_simulate(buildings):
     return ymr.hedonic_simulate(merge_nodes(buildings), "rsh.yaml",
-                                buildings, "residential_sales_price")
+                                "buildings", "residential_sales_price")
 
 
 @sim.model('rrh_estimate')
@@ -41,7 +42,7 @@ def rrh_estimate(apartments):
 @sim.model('rrh_simulate')
 def rrh_simulate(buildings):
     return ymr.hedonic_simulate(merge_nodes(buildings), "rrh.yaml",
-                                buildings, "residential_rent")
+                                "buildings", "residential_rent")
 
 
 @sim.model('nrh_estimate')
@@ -52,23 +53,22 @@ def nrh_estimate(costar):
 @sim.model('nrh_simulate')
 def nrh_simulate(buildings):
     return ymr.hedonic_simulate(merge_nodes(buildings), "nrh.yaml",
-                                buildings, "non_residential_rent")
+                                "buildings", "non_residential_rent")
 
 
 def _hlcm_estimate(households, buildings, cfgname):
-    return ymr.lcm_estimate(households.to_frame(),
+    return ymr.lcm_estimate(households,
                             "building_id",
-                            merge_nodes(buildings).query("general_type == 'Residential'"),
+                            merge_nodes(buildings),
                             cfgname)
 
 
 def _hlcm_simulate(households, buildings, cfgname):
-    households_df = households.to_frame()
-    units = ymr.get_vacant_units(households_df,
+    units = ymr.get_vacant_units(households,
                                  "building_id",
-                                 merge_nodes(buildings).query("general_type == 'Residential'"),
+                                 merge_nodes(buildings),
                                  "residential_units")
-    return ymr.lcm_simulate(households_df, units, cfgname, households, "building_id")
+    return ymr.lcm_simulate(households, units, cfgname, "households", "building_id")
 
 
 @sim.model('hlcmo_estimate')
@@ -95,28 +95,27 @@ def hlcmr_simulate(households, buildings):
 def elcm_estimate(jobs, buildings):
     return ymr.lcm_estimate(jobs,
                             "building_id",
-                            merge_nodes(buildings).query("general_type != 'Residential'"),
+                            merge_nodes(buildings),
                             "elcm.yaml")
 
 
 @sim.model('elcm_simulate')
 def elcm_simulate(jobs, buildings):
-    jobs_df = jobs.to_frame()
-    units = ymr.get_vacant_units(jobs_df,
+    units = ymr.get_vacant_units(jobs,
                                  "building_id",
-                                 merge_nodes(buildings).query("general_type != 'Residential'"),
+                                 merge_nodes(buildings),
                                  "non_residential_units")
-    return ymr.lcm_simulate(jobs_df, units, "elcm.yaml", jobs, "building_id")
+    return ymr.lcm_simulate(jobs, units, "elcm.yaml", "jobs", "building_id")
 
 
 @sim.model('households_relocation')
-def households_relocation(households):
-    return ymr.simple_relocation(households, .05)
+def households_relocation():
+    return ymr.simple_relocation("households", .05)
 
 
 @sim.model('jobs_relocation')
-def jobs_relocation(jobs):
-    return ymr.simple_relocation(jobs, .05)
+def jobs_relocation():
+    return ymr.simple_relocation("jobs", .05)
 
 
 @sim.model('households_transition')
@@ -213,7 +212,7 @@ def residential_developer(feasibility, households, buildings, parcels, year):
 @sim.model('non_residential_developer')
 def non_residential_developer(feasibility, jobs, buildings, parcels, year):
     non_residential_target_vacancy = .15
-    dev = developer.Developer(feasibility)
+    dev = developer.Developer(feasibility.to_frame())
 
     target_units = dev.compute_units_to_build(len(jobs),
                                               buildings.non_residential_units.sum(),
