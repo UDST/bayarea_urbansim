@@ -1,7 +1,7 @@
 from urbansim.developer import sqftproforma, developer
 from urbansim.utils import networks
-import urbansim.models.yamlmodelrunner as ymr
 import urbansim.sim.simulation as sim
+import urbansim.sim.yamlmodelrunner as ymr
 from urbansim.utils import misc
 import os
 import random
