@@ -82,7 +82,6 @@ def buildings():
     df = STORE['buildings']
     for col in ["residential_sales_price", "residential_rent", "non_residential_rent"]:
         df[col] = np.nan
-    df = df.dropna(subset=["building_type_id"])
     sim.add_table('buildings', df)
     return df
 

@@ -210,11 +210,6 @@ def parcel_size(parcels):
     return parcels.shape_area * 10.764
 
 
-#@sim.column('parcels', 'ave_unit_sqft')
-#def ave_unit_sqft(parcels, nodes):
-#    return misc.reindex(nodes.ave_unit_sqft, parcels._node_id)
-
-
 @sim.column('parcels', 'total_units')
 def total_units(buildings):
     return buildings.residential_units.groupby(buildings.parcel_id).sum().fillna(0)
