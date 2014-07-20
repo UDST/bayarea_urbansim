@@ -159,7 +159,7 @@ def feasibility(parcels):
 
     # add prices for each use
     for use in pf.config.uses:
-        df[use] = parcels.price(use)
+        df[use] = variables.parcel_average_price(use)
 
     # convert from cost to yearly rent
     df["residential"] *= pf.config.cap_rate
@@ -199,13 +199,11 @@ def residential_developer(feasibility, households, buildings, parcels, year):
     for col in ["residential_sales_price", "residential_rent", "non_residential_rent"]:
         new_buildings[col] = np.nan
 
-    #print "NEW BUILDINGS"
-    #print new_buildings[dset.buildings.columns].describe()
-
     print "Adding {} buildings with {:,} residential units".format(len(new_buildings),
                                                                    new_buildings.residential_units.sum())
 
-    all_buildings = dev.merge(buildings, new_buildings[buildings.columns])
+    all_buildings = dev.merge(buildings.to_frame(buildings.local_columns),
+                              new_buildings[buildings.local_columns])
     sim.add_table("buildings", all_buildings)
 
 
@@ -245,11 +243,20 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year):
     for col in ["residential_sales_price", "residential_rent", "non_residential_rent"]:
         new_buildings[col] = np.nan
 
-    #print "NEW BUILDINGS"
-    #print new_buildings[dset.buildings.columns].describe()
-
     print "Adding {} buildings with {:,} non-residential sqft".format(len(new_buildings),
                                                                       new_buildings.non_residential_sqft.sum())
 
-    all_buildings = dev.merge(buildings, new_buildings[buildings.columns])
+    all_buildings = dev.merge(buildings.to_frame(buildings.local_columns),
+                              new_buildings[buildings.local_columns])
     sim.add_table("buildings", all_buildings)
+
+
+@sim.model("write_output")
+def write_output():
+    fname = os.path.join(misc.runs_dir(), "run%d.h5" % misc.get_run_number())
+    tblnames = ["buildings", "households", "jobs", "parcels"]
+
+    store = pd.HDFStore(fname, "w")
+    for tblname in tblnames:
+        tbl = sim.get_table(tblname)
+        store[tblname] = tbl.to_frame(tbl.local_columns)
