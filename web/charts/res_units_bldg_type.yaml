@@ -6,13 +6,13 @@ desc: Count of Residential Units by Building Type
 
 table: buildings
 
-filter: ""
+filter: ''
 
 groupby: building_type_id
 
 metric: residential_units.sum()
 
-limit: 5
+limit: null
 
 sort: true
 
@@ -20,4 +20,4 @@ orderdesc: true
 
 showXAxis: true
 
-xAxisRotateLabels: 30
+xAxisRotateLabels: 0

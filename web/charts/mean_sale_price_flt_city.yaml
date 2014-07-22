@@ -14,10 +14,10 @@ metric: sale_price_flt.mean()
 
 sort: true
 
-orderdesc: false
+orderdesc: true
 
-limit: 50
+limit: 0
 
 showXAxis: false
 
-xAxisRotateLabels: 90
+xAxisRotateLabels: 0
