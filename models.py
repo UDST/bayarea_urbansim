@@ -1,151 +1,135 @@
 from urbansim.developer import sqftproforma, developer
 from urbansim.utils import networks
-import urbansim.models.yamlmodelrunner as ymr
-from dataset import *
-import time
+import urbansim.sim.simulation as sim
+import urbansim.sim.yamlmodelrunner as ymr
+from urbansim.utils import misc
+import os
+import random
+import variables
+import dataset
+import pandas as pd
+import numpy as np
 
 
-def _buildings_df(dset, filter=None):
-    bdf = dset.view("buildings").build_df()
-    if filter is not None:
-        bdf.query(filter)
-    return dset.merge_nodes(bdf.fillna(0))
+def merge_nodes(df):
+    return pd.merge(df.to_frame(),
+                    sim.get_table("nodes").to_frame(),
+                    left_on="_node_id",
+                    right_index=True,
+                    how="left")
 
 
-def _households_df(dset):
-    return dset.view("households").build_df()
+def random_type(form):
+    return random.choice(dataset.FORM_TO_BTYPE[form])
 
 
-def _jobs_df(dset):
-    return dset.view("jobs").build_df()
+@sim.model('rsh_estimate')
+def rsh_estimate(homesales):
+    return ymr.hedonic_estimate(merge_nodes(homesales), "rsh.yaml")
 
 
-def _homesales_df(dset):
-    return dset.merge_nodes(dset.view("homesales").build_df())
+@sim.model('rsh_simulate')
+def rsh_simulate(buildings):
+    return ymr.hedonic_simulate(merge_nodes(buildings), "rsh.yaml",
+                                "buildings", "residential_sales_price")
 
 
-def _apartments_df(dset):
-    return dset.merge_nodes(dset.view("apartments").build_df())
+@sim.model('rrh_estimate')
+def rrh_estimate(apartments):
+    return ymr.hedonic_estimate(merge_nodes(apartments), "rrh.yaml")
 
 
-def _costar_df(dset):
-    return dset.merge_nodes(dset.view("costar").build_df())
+@sim.model('rrh_simulate')
+def rrh_simulate(buildings):
+    return ymr.hedonic_simulate(merge_nodes(buildings), "rrh.yaml",
+                                "buildings", "residential_rent")
 
 
-def clear_cache(dset):
-    dset.clear_views()
+@sim.model('nrh_estimate')
+def nrh_estimate(costar):
+    return ymr.hedonic_estimate(merge_nodes(costar), "nrh.yaml")
 
 
-def cache_variables(dset):
-    _buildings_df(dset)
-    _households_df(dset)
-    _jobs_df(dset)
-    _homesales_df(dset)
-    _apartments_df(dset)
-    _costar_df(dset)
+@sim.model('nrh_simulate')
+def nrh_simulate(buildings):
+    return ymr.hedonic_simulate(merge_nodes(buildings), "nrh.yaml",
+                                "buildings", "non_residential_rent")
 
 
-# residential sales hedonic
-def rsh_estimate(dset):
-    return ymr.hedonic_estimate(_homesales_df(dset), "rsh.yaml")
-
-
-def rsh_simulate(dset):
-    return ymr.hedonic_simulate(_buildings_df(dset), "rsh.yaml",
-                                dset.buildings, "residential_sales_price")
-
-
-# residential rent hedonic
-def rrh_estimate(dset):
-    return ymr.hedonic_estimate(_apartments_df(dset), "rrh.yaml")
-
-
-def rrh_simulate(dset):
-    return ymr.hedonic_simulate(_buildings_df(dset), "rrh.yaml",
-                                dset.buildings, "residential_rent")
-
-
-# non-residential hedonic
-def nrh_estimate(dset):
-    return ymr.hedonic_estimate(_costar_df(dset), "nrh.yaml")
-
-
-def nrh_simulate(dset):
-    return ymr.hedonic_simulate(_buildings_df(dset), "nrh.yaml",
-                                dset.buildings, "non_residential_rent")
-
-
-# household location choice
-def _hlcm_estimate(dset, cfgname):
-    return ymr.lcm_estimate(_households_df(dset),
+def _hlcm_estimate(households, buildings, cfgname):
+    return ymr.lcm_estimate(households,
                             "building_id",
-                            _buildings_df(dset,
-                                          filter="general_type == 'Residential'"),
+                            merge_nodes(buildings),
                             cfgname)
 
 
-def _hlcm_simulate(dset, cfgname):
-    units = ymr.get_vacant_units(_households_df(dset),
+def _hlcm_simulate(households, buildings, cfgname):
+    units = ymr.get_vacant_units(households,
                                  "building_id",
-                                 _buildings_df(dset,
-                                               filter="general_type == 'Residential'"),
+                                 merge_nodes(buildings),
                                  "residential_units")
-    return ymr.lcm_simulate(_households_df(dset), units, cfgname, dset.households, "building_id")
+    return ymr.lcm_simulate(households, units, cfgname, "households", "building_id")
 
 
-# household location choice owner
-def hlcmo_estimate(dset):
-    return _hlcm_estimate(dset, "hlcmo.yaml")
+@sim.model('hlcmo_estimate')
+def hlcmo_estimate(households, buildings):
+    return _hlcm_estimate(households, buildings, "hlcmo.yaml")
 
 
-def hlcmo_simulate(dset):
-    return _hlcm_simulate(dset, "hlcmo.yaml")
+@sim.model('hlcmo_simulate')
+def hlcmo_simulate(households, buildings):
+    return _hlcm_simulate(households, buildings, "hlcmo.yaml")
 
 
-# household location choice renter
-def hlcmr_estimate(dset):
-    return _hlcm_estimate(dset, "hlcmr.yaml")
+@sim.model('hlcmr_estimate')
+def hlcmr_estimate(households, buildings):
+    return _hlcm_estimate(households, buildings, "hlcmr.yaml")
 
 
-def hlcmr_simulate(dset):
-    return _hlcm_simulate(dset, "hlcmr.yaml")
+@sim.model('hlcmr_simulate')
+def hlcmr_simulate(households, buildings):
+    return _hlcm_simulate(households, buildings, "hlcmr.yaml")
 
 
-# employment location choice
-def elcm_estimate(dset):
-    return ymr.lcm_estimate(_jobs_df(dset),
+@sim.model('elcm_estimate')
+def elcm_estimate(jobs, buildings):
+    return ymr.lcm_estimate(jobs,
                             "building_id",
-                            _buildings_df(dset,
-                                          filter="general_type != 'Residential'"),
+                            merge_nodes(buildings),
                             "elcm.yaml")
 
 
-def elcm_simulate(dset):
-    units = ymr.get_vacant_units(_jobs_df(dset),
+@sim.model('elcm_simulate')
+def elcm_simulate(jobs, buildings):
+    units = ymr.get_vacant_units(jobs,
                                  "building_id",
-                                 _buildings_df(dset,
-                                               filter="general_type != 'Residential'"),
+                                 merge_nodes(buildings),
                                  "non_residential_units")
-    return ymr.lcm_simulate(_jobs_df(dset), units, "elcm.yaml", dset.jobs, "building_id")
+    return ymr.lcm_simulate(jobs, units, "elcm.yaml", "jobs", "building_id")
 
 
-def households_relocation(dset):
-    return ymr.simple_relocation(dset.households, .05)
+@sim.model('households_relocation')
+def households_relocation():
+    return ymr.simple_relocation("households", .05)
 
 
-def jobs_relocation(dset):
-    return ymr.simple_relocation(dset.jobs, .08)
+@sim.model('jobs_relocation')
+def jobs_relocation():
+    return ymr.simple_relocation("jobs", .05)
 
 
-def households_transition(dset):
-    return ymr.simple_transition(dset, "households", .05)
+@sim.model('households_transition')
+def households_transition():
+    return ymr.simple_transition("households", .05)
 
 
-def jobs_transition(dset):
-    return ymr.simple_transition(dset, "jobs", .05)
+@sim.model('jobs_transition')
+def jobs_transition():
+    return ymr.simple_transition("jobs", .05)
 
 
-def build_networks(dset):
+@sim.model('build_networks')
+def build_networks():
     if networks.NETWORKS is None:
         networks.NETWORKS = networks.Networks(
             [os.path.join(misc.data_dir(), x) for x in ['osm_bayarea.jar']],
@@ -154,29 +138,28 @@ def build_networks(dset):
             twoway=[1],
             impedances=None)
 
-    #parcels = networks.NETWORKS.addnodeid(dset.parcels)
-    #dset.save_tmptbl("parcels", parcels)
+
+@sim.model('neighborhood_vars')
+def neighborhood_vars():
+    nodes = networks.from_yaml("networks.yaml")
+    sim.add_table("nodes", nodes)
 
 
-def neighborhood_vars(dset):
-    nodes = networks.from_yaml(dset, "networks.yaml")
-    dset.save_tmptbl("nodes", nodes)
+@sim.model('price_vars')
+def price_vars():
+    nodes = networks.from_yaml("networks2.yaml")
+    sim.add_table("nodes_prices", nodes)
 
 
-def price_vars(dset):
-    nodes = networks.from_yaml(dset, "networks2.yaml")
-    dset.save_tmptbl("nodes_prices", nodes)
-
-
-def feasibility(dset):
+@sim.model('feasibility')
+def feasibility(parcels):
     pf = sqftproforma.SqFtProForma()
 
-    parcels = dset.view("parcels")
-    df = parcels.build_df()
+    df = parcels.to_frame()
 
     # add prices for each use
     for use in pf.config.uses:
-        df[use] = parcels.price(use)
+        df[use] = variables.parcel_average_price(use)
 
     # convert from cost to yearly rent
     df["residential"] *= pf.config.cap_rate
@@ -185,22 +168,22 @@ def feasibility(dset):
     d = {}
     for form in pf.config.forms:
         print "Computing feasibility for form %s" % form
-        d[form] = pf.lookup(form, df[parcels.allowed(form)])
+        d[form] = pf.lookup(form, df[variables.parcel_is_allowed(form)])
 
     far_predictions = pd.concat(d.values(), keys=d.keys(), axis=1)
 
-    dset.save_tmptbl("feasibility", far_predictions)
+    sim.add_table("feasibility", far_predictions)
 
 
-def residential_developer(dset):
+@sim.model('residential_developer')
+def residential_developer(feasibility, households, buildings, parcels, year):
     residential_target_vacancy = .15
-    dev = developer.Developer(dset.feasibility)
+    dev = developer.Developer(feasibility.to_frame())
 
-    target_units = dev.compute_units_to_build(len(dset.households),
-                                              dset.buildings.residential_units.sum(),
+    target_units = dev.compute_units_to_build(len(households),
+                                              buildings.residential_units.sum(),
                                               residential_target_vacancy)
 
-    parcels = dset.view("parcels")
     new_buildings = dev.pick("residential",
                              target_units,
                              parcels.parcel_size,
@@ -209,32 +192,30 @@ def residential_developer(dset):
                              max_parcel_size=200000,
                              drop_after_build=True)
 
-    new_buildings["year_built"] = dset.year
+    new_buildings["year_built"] = year
     new_buildings["form"] = "residential"
-    new_buildings["building_type_id"] = new_buildings["form"].apply(dset.random_type)
+    new_buildings["building_type_id"] = new_buildings["form"].apply(random_type)
     new_buildings["stories"] = new_buildings.stories.apply(np.ceil)
     for col in ["residential_sales_price", "residential_rent", "non_residential_rent"]:
         new_buildings[col] = np.nan
 
-    #print "NEW BUILDINGS"
-    #print new_buildings[dset.buildings.columns].describe()
-
     print "Adding {} buildings with {:,} residential units".format(len(new_buildings),
                                                                    new_buildings.residential_units.sum())
 
-    all_buildings = dev.merge(dset.buildings, new_buildings[dset.buildings.columns])
-    dset.save_tmptbl("buildings", all_buildings)
+    all_buildings = dev.merge(buildings.to_frame(buildings.local_columns),
+                              new_buildings[buildings.local_columns])
+    sim.add_table("buildings", all_buildings)
 
 
-def non_residential_developer(dset):
+@sim.model('non_residential_developer')
+def non_residential_developer(feasibility, jobs, buildings, parcels, year):
     non_residential_target_vacancy = .15
-    dev = developer.Developer(dset.feasibility)
+    dev = developer.Developer(feasibility.to_frame())
 
-    target_units = dev.compute_units_to_build(len(dset.jobs),
-                                              dset.view("buildings").non_residential_units.sum(),
+    target_units = dev.compute_units_to_build(len(jobs),
+                                              buildings.non_residential_units.sum(),
                                               non_residential_target_vacancy)
 
-    parcels = dset.view("parcels")
     new_buildings = dev.pick(["office", "retail", "industrial"],
                              target_units,
                              parcels.parcel_size,
@@ -250,39 +231,32 @@ def non_residential_developer(dset):
                              # just move this up and down if dev is over- or under-
                              # buildings things
                              pd.Series(500, index=parcels.index),
-                             dset.view("parcels").total_nonres_units,
+                             parcels.total_nonres_units,
                              max_parcel_size=200000,
                              drop_after_build=True,
                              residential=False)
 
-    new_buildings["year_built"] = dset.year
-    new_buildings["building_type_id"] = new_buildings["form"].apply(dset.random_type)
+    new_buildings["year_built"] = year
+    new_buildings["building_type_id"] = new_buildings["form"].apply(random_type)
     new_buildings["residential_units"] = 0
     new_buildings["stories"] = new_buildings.stories.apply(np.ceil)
     for col in ["residential_sales_price", "residential_rent", "non_residential_rent"]:
         new_buildings[col] = np.nan
 
-    #print "NEW BUILDINGS"
-    #print new_buildings[dset.buildings.columns].describe()
-
     print "Adding {} buildings with {:,} non-residential sqft".format(len(new_buildings),
                                                                       new_buildings.non_residential_sqft.sum())
 
-    all_buildings = dev.merge(dset.buildings, new_buildings[dset.buildings.columns])
-    dset.save_tmptbl("buildings", all_buildings)
+    all_buildings = dev.merge(buildings.to_frame(buildings.local_columns),
+                              new_buildings[buildings.local_columns])
+    sim.add_table("buildings", all_buildings)
 
 
-def _run_models(dset, model_list, years):
+@sim.model("write_output")
+def write_output():
+    fname = os.path.join(misc.runs_dir(), "run%d.h5" % misc.get_run_number())
+    tblnames = ["buildings", "households", "jobs", "parcels"]
 
-    for year in years:
-
-        dset.year = year
-
-        t1 = time.time()
-
-        for model in model_list:
-            t2 = time.time()
-            print "\n" + model + "\n"
-            globals()[model](dset)
-            print "Model %s executed in %.3fs" % (model, time.time()-t2)
-        print "Year %d completed in %.3fs" % (year, time.time()-t1)
+    store = pd.HDFStore(fname, "w")
+    for tblname in tblnames:
+        tbl = sim.get_table(tblname)
+        store[tblname] = tbl.to_frame(tbl.local_columns)
