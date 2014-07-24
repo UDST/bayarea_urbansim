@@ -6,7 +6,7 @@ desc: Mean Sale_price_flt by city
 
 table: homesales
 
-filter: ''
+filter: ""
 
 groupby: city
 
