@@ -230,9 +230,8 @@ def total_sqft(buildings):
     return buildings.building_sqft.groupby(buildings.parcel_id).sum().fillna(0)
 
 
-# causing trouble trying to load 'nodes_prices.csv'
-#@sim.column('parcels', 'land_cost')
-#def land_cost(parcels):
-#    # TODO
-#    # this needs to account for cost for the type of building it is
-#    return (parcels.total_sqft * parcel_average_price("residential")).reindex(parcels.index).fillna(0)
+@sim.column('parcels', 'land_cost')
+def land_cost(parcels):
+    # TODO
+    # this needs to account for cost for the type of building it is
+    return (parcels.total_sqft * parcel_average_price("residential")).reindex(parcels.index).fillna(0)

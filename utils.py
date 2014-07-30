@@ -22,17 +22,8 @@ def deal_with_nas(df):
     return df
 
 
-def maybe_convert(df):
-    if isinstance(df, TableSourceWrapper):
-        return df.convert()
-    else:
-        return df
-
-
 def merge_nodes(tbl, nodes, cfg):
     cfg = yaml_to_class(cfg).from_yaml(str_or_buffer=cfg)
-    tbl = maybe_convert(tbl)
-    nodes = maybe_convert(nodes)
     columns = misc.column_map([tbl, nodes], cfg.columns_used(), onlyfound=True)
     df = sim.merge_tables(target=tbl.name, tables=[tbl, nodes], columns=columns)
     df = deal_with_nas(df)
@@ -41,8 +32,6 @@ def merge_nodes(tbl, nodes, cfg):
 
 def choosers_columns_used(choosers, chosen_fname, cfg):
     cfg = yaml_to_class(cfg).from_yaml(str_or_buffer=cfg)
-    # cache the tables to get column names
-    choosers = maybe_convert(choosers)
     columns = misc.column_map([choosers], cfg.columns_used(), onlyfound=True)
     columns.append(chosen_fname)
     return choosers.to_frame(columns)
@@ -157,7 +146,7 @@ def lcm_simulate(cfg, choosers, buildings, nodes, out_dfname, out_fname, supply_
                              supply_fname)
     alternatives = merge_nodes(units, nodes, cfg)
 
-    new_units = class_of_yaml(cfg).predict_from_cfg(movers, alternatives, cfg)
+    new_units = yaml_to_class(cfg).predict_from_cfg(movers, alternatives, cfg)
     new_units = pd.Series(alternatives.loc[new_units.values][out_fname].values,
                           index=new_units.index)
     sim.partial_update(new_units, out_dfname, out_fname)
