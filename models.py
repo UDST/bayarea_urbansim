@@ -22,7 +22,7 @@ def rsh_estimate(homesales, nodes):
 @sim.model('rsh_simulate')
 def rsh_simulate(buildings, nodes):
     return utils.hedonic_simulate("rsh.yaml", buildings, nodes,
-                                  "buildings", "residential_sales_price")
+                                  "residential_sales_price")
 
 
 @sim.model('rrh_estimate')
@@ -33,7 +33,7 @@ def rrh_estimate(apartments, nodes):
 @sim.model('rrh_simulate')
 def rrh_simulate(buildings, nodes):
     return utils.hedonic_simulate("rrh.yaml", buildings, nodes,
-                                  "buildings", "residential_rent")
+                                  "residential_rent")
 
 
 @sim.model('nrh_estimate')
@@ -44,7 +44,7 @@ def nrh_estimate(costar, nodes):
 @sim.model('nrh_simulate')
 def nrh_simulate(buildings, nodes):
     return utils.hedonic_simulate("nrh.yaml", buildings, nodes,
-                                  "buildings", "non_residential_rent")
+                                  "non_residential_rent")
 
 
 @sim.model('hlcmo_estimate')
@@ -56,7 +56,7 @@ def hlcmo_estimate(households, buildings, nodes):
 @sim.model('hlcmo_simulate')
 def hlcmo_simulate(households, buildings, nodes):
     return utils.lcm_simulate("hlcmo.yaml", households, buildings, nodes,
-                              "households", "building_id", "residential_units")
+                              "building_id", "residential_units")
 
 
 @sim.model('hlcmr_estimate')
@@ -68,7 +68,7 @@ def hlcmr_estimate(households, buildings, nodes):
 @sim.model('hlcmr_simulate')
 def hlcmr_simulate(households, buildings, nodes):
     return utils.lcm_simulate("hlcmr.yaml", households, buildings, nodes,
-                              "households", "building_id", "residential_units")
+                              "building_id", "residential_units")
 
 
 @sim.model('elcm_estimate')
@@ -80,7 +80,7 @@ def elcm_estimate(jobs, buildings, nodes):
 @sim.model('elcm_simulate')
 def elcm_simulate(jobs, buildings, nodes):
     return utils.lcm_simulate("elcm.yaml", jobs, buildings, nodes,
-                              "jobs", "building_id", "non_residential_units")
+                              "building_id", "non_residential_units")
 
 
 @sim.model('households_relocation')

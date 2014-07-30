@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 import urbansim.sim.simulation as sim
 from urbansim.utils import misc
-from urbansim.sim.simulation import TableSourceWrapper
 
 
 def enable_logging():
@@ -24,7 +23,7 @@ def deal_with_nas(df):
 
 def merge_nodes(tbl, nodes, cfg):
     cfg = yaml_to_class(cfg).from_yaml(str_or_buffer=cfg)
-    columns = misc.column_map([tbl, nodes], cfg.columns_used(), onlyfound=True)
+    columns = misc.column_list([tbl, nodes], cfg.columns_used())
     df = sim.merge_tables(target=tbl.name, tables=[tbl, nodes], columns=columns)
     df = deal_with_nas(df)
     return df
@@ -32,7 +31,7 @@ def merge_nodes(tbl, nodes, cfg):
 
 def choosers_columns_used(choosers, chosen_fname, cfg):
     cfg = yaml_to_class(cfg).from_yaml(str_or_buffer=cfg)
-    columns = misc.column_map([choosers], cfg.columns_used(), onlyfound=True)
+    columns = misc.column_list([choosers], cfg.columns_used())
     columns.append(chosen_fname)
     return choosers.to_frame(columns)
 
@@ -60,11 +59,11 @@ def hedonic_estimate(cfg, tbl, nodes):
     return yaml_to_class(cfg).fit_from_cfg(df, cfg)
 
 
-def hedonic_simulate(cfg, tbl, nodes, out_dfname, out_fname):
+def hedonic_simulate(cfg, tbl, nodes, out_fname):
     cfg = misc.config(cfg)
     df = merge_nodes(tbl, nodes, cfg)
-    price_or_rent = yaml_to_class(cfg).predict_from_cfg(df, cfg)
-    sim.partial_update(price_or_rent, out_dfname, out_fname)
+    price_or_rent, _ = yaml_to_class(cfg).predict_from_cfg(df, cfg)
+    tbl.update_col_from_series(out_fname, price_or_rent)
 
 
 def lcm_estimate(cfg, choosers, chosen_fname, buildings, nodes):
@@ -109,7 +108,7 @@ def get_vacant_units(choosers, location_fname, locations, supply_fname):
     return alternatives
 
 
-def lcm_simulate(cfg, choosers, buildings, nodes, out_dfname, out_fname, supply_fname):
+def lcm_simulate(cfg, choosers, buildings, nodes, out_fname, supply_fname):
     """
     Simulate the location choices for the specified choosers
 
@@ -146,11 +145,11 @@ def lcm_simulate(cfg, choosers, buildings, nodes, out_dfname, out_fname, supply_
                              supply_fname)
     alternatives = merge_nodes(units, nodes, cfg)
 
-    new_units = yaml_to_class(cfg).predict_from_cfg(movers, alternatives, cfg)
+    new_units, _ = yaml_to_class(cfg).predict_from_cfg(movers, alternatives, cfg)
     new_units = pd.Series(alternatives.loc[new_units.values][out_fname].values,
                           index=new_units.index)
-    sim.partial_update(new_units, out_dfname, out_fname)
-    _print_number_unplaced(sim.get_table(out_dfname), out_fname)
+    choosers.update_col_from_series(out_fname, new_units)
+    _print_number_unplaced(choosers, out_fname)
 
 
 def simple_relocation(choosers, relocation_rate, fieldname='building_id'):
