@@ -1,4 +1,4 @@
-name: Residential Rent Hedonic
+name: rrh
 
 model_type: regression
 
@@ -16,27 +16,27 @@ fitted: true
 
 fit_parameters:
     Coefficient:
-        Intercept: 2.556324646555166
-        ave_lot_sqft: -0.03778656816547171
-        ave_unit_sqft: 0.0005773645226150939
-        jobs: 0.07549391694435498
-        np.log1p(unit_sqft): -0.19540651512310706
-        sum_residential_units: -0.02751296244692529
+        Intercept: 2.5403531578400247
+        ave_lot_sqft: -0.036487189041966364
+        ave_unit_sqft: 0.0006098445454676632
+        jobs: 0.07522620398993973
+        np.log1p(unit_sqft): -0.1952819220137812
+        sum_residential_units: -0.026777947624045888
     Std. Error:
-        Intercept: 0.385519140938464
-        ave_lot_sqft: 0.027626376376051046
-        ave_unit_sqft: 0.014604927105656078
-        jobs: 0.014894674481879998
-        np.log1p(unit_sqft): 0.030179080759400834
-        sum_residential_units: 0.024153558497783466
+        Intercept: 0.3818929676115666
+        ave_lot_sqft: 0.02731006820239852
+        ave_unit_sqft: 0.014638570110278887
+        jobs: 0.014900635181669501
+        np.log1p(unit_sqft): 0.030179704540426636
+        sum_residential_units: 0.02411951072497868
     T-Score:
-        Intercept: 6.6308631014593455
-        ave_lot_sqft: -1.367771424348957
-        ave_unit_sqft: 0.03953217420657285
-        jobs: 5.068517411118754
-        np.log1p(unit_sqft): -6.474899506746493
-        sum_residential_units: -1.139085259401844
+        Intercept: 6.6520029780278245
+        ave_lot_sqft: -1.3360343435085913
+        ave_unit_sqft: 0.04166011713394354
+        jobs: 5.048523306072327
+        np.log1p(unit_sqft): -6.470637303695107
+        sum_residential_units: -1.1102193543384804
 
-fit_rsquared_adj: 0.3811521827066465
+fit_rsquared_adj: 0.38097737965764245
 
-fit_rsquared: 0.3986337594663458
+fit_rsquared: 0.39846389435657914

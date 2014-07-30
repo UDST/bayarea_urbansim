@@ -25,8 +25,8 @@ def zone_id(buildings, parcels):
 
 
 @sim.column('buildings', 'general_type')
-def general_type(buildings):
-    return buildings.building_type_id.map(dataset.BUILDING_TYPE_MAP)
+def general_type(buildings, building_type_map):
+    return buildings.building_type_id.map(building_type_map)
 
 
 @sim.column('buildings', 'unit_sqft')
@@ -192,9 +192,9 @@ def parcel_is_allowed(form):
 
 
 @sim.column('parcels', 'max_far')
-def max_far(parcels, zoning_baseline, zoning_test):
+def max_far(parcels, zoning_baseline, zoning_test, scenario):
     max_far = zoning_baseline.max_far
-    if dataset.SCENARIO == "test":
+    if scenario == "test":
         upzone = zoning_test.far_up.dropna()
         max_far = pd.concat([max_far, upzone], axis=1).max(skipna=True, axis=1)
     return max_far.reindex(parcels.index).fillna(0)
@@ -230,8 +230,9 @@ def total_sqft(buildings):
     return buildings.building_sqft.groupby(buildings.parcel_id).sum().fillna(0)
 
 
-@sim.column('parcels', 'land_cost')
-def land_cost(parcels):
-    # TODO
-    # this needs to account for cost for the type of building it is
-    return (parcels.total_sqft * parcel_average_price("residential")).reindex(parcels.index).fillna(0)
+# causing trouble trying to load 'nodes_prices.csv'
+#@sim.column('parcels', 'land_cost')
+#def land_cost(parcels):
+#    # TODO
+#    # this needs to account for cost for the type of building it is
+#    return (parcels.total_sqft * parcel_average_price("residential")).reindex(parcels.index).fillna(0)

@@ -1,3 +1,5 @@
+name: residential_units_sum
+
 desc: Residential Units Sum
 
 table: buildings

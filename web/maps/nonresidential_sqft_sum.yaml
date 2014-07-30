@@ -1,3 +1,5 @@
+name: nonresidential_sqft_sum
+
 desc: Nonresidential Sqft Sum
 
 table: buildings
