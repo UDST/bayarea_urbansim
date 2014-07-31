@@ -3,6 +3,7 @@ import os
 import pandas as pd
 from urbansim.utils import misc
 
+
 sim.add_injectable("building_type_map", {
     1: "Residential",
     2: "Residential",
@@ -20,6 +21,7 @@ sim.add_injectable("building_type_map", {
     14: "Office"
 })
 
+
 sim.add_injectable("form_to_btype", {
     'residential': [1, 2, 3],
     'industrial': [7, 8, 9],
@@ -29,6 +31,18 @@ sim.add_injectable("form_to_btype", {
     'mixedoffice': [14],
 })
 
+
 sim.add_injectable("store", pd.HDFStore(os.path.join(misc.data_dir(), "sanfran.h5"), mode="r"))
+
+
+sim.add_injectable("scenario_inputs", {
+    "baseline": {
+        "zoning_table_name": "zoning_baseline"
+    },
+    "test": {
+        "zoning_table_name": "zoning_test"
+    }
+})
+
 
 sim.add_injectable("scenario", "baseline")

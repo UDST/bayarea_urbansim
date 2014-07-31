@@ -6,6 +6,23 @@ import urbansim.sim.simulation as sim
 from urbansim.utils import misc
 
 
+def change_scenario(scenario):
+    assert scenario in sim.get_injectable("scenario_inputs"), "Invalid scenario name"
+    print "Changing scenario to '%s'" % scenario
+    sim.add_injectable("scenario", scenario)
+
+
+def conditional_upzone(scenario, attr_name, upzone_name):
+    scenario_inputs = sim.get_injectable("scenario_inputs")
+    zoning_baseline = sim.get_table(scenario_inputs["baseline"]["zoning_table_name"])
+    attr = zoning_baseline[attr_name]
+    if scenario != "baseline":
+        zoning_scenario = sim.get_table(scenario_inputs[scenario]["zoning_table_name"])
+        upzone = zoning_scenario[upzone_name].dropna()
+        attr = pd.concat([attr, upzone], axis=1).max(skipna=True, axis=1)
+    return attr
+
+
 def enable_logging():
     from urbansim.utils import logutil
     logutil.set_log_level(logutil.logging.INFO)

@@ -2,6 +2,7 @@ import pandas as pd
 from urbansim.utils import misc
 import urbansim.sim.simulation as sim
 import dataset
+import utils
 
 
 #####################
@@ -192,12 +193,15 @@ def parcel_is_allowed(form, form_to_btype):
 
 
 @sim.column('parcels', 'max_far')
-def max_far(parcels, zoning_baseline, zoning_test, scenario):
-    max_far = zoning_baseline.max_far
-    if scenario == "test":
-        upzone = zoning_test.far_up.dropna()
-        max_far = pd.concat([max_far, upzone], axis=1).max(skipna=True, axis=1)
-    return max_far.reindex(parcels.index).fillna(0)
+def max_far(parcels, scenario):
+    return utils.conditional_upzone(scenario, "max_far", "far_up").\
+        reindex(parcels.index).fillna(0)
+
+
+@sim.column('parcels', 'max_dua')
+def max_dua(parcels, scenario):
+    return utils.conditional_upzone(scenario, "max_far", "dua_up").\
+        reindex(parcels.index).fillna(0)
 
 
 @sim.column('parcels', 'max_height')
