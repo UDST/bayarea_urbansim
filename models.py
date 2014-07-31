@@ -85,22 +85,22 @@ def elcm_simulate(jobs, buildings, nodes):
 
 @sim.model('households_relocation')
 def households_relocation(households):
-    return utils.simple_relocation(households, .05)
+    return utils.simple_relocation(households, .05, "building_id")
 
 
 @sim.model('jobs_relocation')
 def jobs_relocation(jobs):
-    return utils.simple_relocation(jobs, .05)
+    return utils.simple_relocation(jobs, .05, "building_id")
 
 
 @sim.model('households_transition')
-def households_transition():
-    return utils.simple_transition("households", .05)
+def households_transition(households):
+    return utils.simple_transition(households, .05)
 
 
 @sim.model('jobs_transition')
-def jobs_transition():
-    return utils.simple_transition("jobs", .05)
+def jobs_transition(jobs):
+    return utils.simple_transition(jobs, .05)
 
 
 @sim.model('build_networks')

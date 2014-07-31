@@ -32,12 +32,6 @@ def to_frame(tables, cfg, additional_columns=[]):
     return df
 
 
-def _print_number_unplaced(df, fieldname="building_id"):
-    counts = (df[fieldname] == -1).value_counts()
-    count = 0 if True not in counts else counts[True]
-    print "Total currently unplaced: %d" % count
-
-
 def yaml_to_class(cfg):
     import yaml
     model_type = yaml.load(open(cfg))["model_type"]
@@ -68,39 +62,12 @@ def lcm_estimate(cfg, choosers, chosen_fname, buildings, nodes):
     alternatives = to_frame([buildings, nodes], cfg)
     return yaml_to_class(cfg).fit_from_cfg(choosers, chosen_fname, alternatives, cfg)
 
-
-def get_vacant_units(choosers, location_fname, locations, supply_fname):
-    """
-    This is a bit of a nuanced method for this skeleton which computes
-    the vacant units from a building dataset for both households and jobs.
-
-    Parameters
-    ----------
-    choosers : DataFrame
-        A dataframe of agents doing the choosing.
-    location_fname : string
-        A string indicating a column in choosers which indicates the locations
-        from the locations dataframe that these agents are located in.
-    locations : DataFrame
-        A dataframe of locations which the choosers are location in and which
-        have a supply.
-    supply_fname : string
-        A string indicating a column in locations which is an integer value
-        representing the number of agents that can be located at that location.
-    """
-    vacant_units = locations[supply_fname].sub(
-        choosers[location_fname].value_counts(), fill_value=0)
-    print "There are %d total available units" % locations[supply_fname].sum()
-    print "    and %d total choosers" % len(choosers.index)
-    print "    but there are %d overfull buildings" % \
-        len(vacant_units[vacant_units < 0])
-    vacant_units = vacant_units[vacant_units > 0]
-    alternatives = locations.loc[np.repeat(vacant_units.index,
-                                 vacant_units.values.astype('int'))] \
-        .reset_index()
-    print "    for a total of %d empty units" % vacant_units.sum()
-    print "    in %d buildings total in the region" % len(vacant_units)
-    return alternatives
+'''
+TODO
+-1 for relocation
+ask matt to review
+call add_table at the end of transition
+'''
 
 
 def lcm_simulate(cfg, choosers, buildings, nodes, out_fname, supply_fname):
@@ -131,14 +98,17 @@ def lcm_simulate(cfg, choosers, buildings, nodes, out_fname, supply_fname):
     cfg = misc.config(cfg)
 
     choosers_df = to_frame([choosers], cfg, additional_columns=[out_fname])
-    movers = choosers_df[choosers_df[out_fname] == -1]
 
     units = get_vacant_units(choosers_df,
                              out_fname,
                              to_frame([buildings, nodes], cfg, [supply_fname]),
                              supply_fname)
 
+    movers = choosers_df[choosers_df[out_fname] == -1]
+
     new_units, _ = yaml_to_class(cfg).predict_from_cfg(movers, units, cfg)
+
+    # go from units back to buildings
     new_buildings = pd.Series(units.loc[new_units.values][out_fname].values,
                               index=new_units.index)
 
@@ -146,21 +116,60 @@ def lcm_simulate(cfg, choosers, buildings, nodes, out_fname, supply_fname):
     _print_number_unplaced(choosers, out_fname)
 
 
-def simple_relocation(choosers, relocation_rate, fieldname='building_id'):
+def get_vacant_units(choosers, location_fname, locations, supply_fname):
+    """
+    This is a bit of a nuanced method for this skeleton which computes
+    the vacant units from a building dataset for both households and jobs.
+
+    Parameters
+    ----------
+    choosers : DataFrame
+        A dataframe of agents doing the choosing.
+    location_fname : string
+        A string indicating a column in choosers which indicates the locations
+        from the locations dataframe that these agents are located in.
+    locations : DataFrame
+        A dataframe of locations which the choosers are location in and which
+        have a supply.
+    supply_fname : string
+        A string indicating a column in locations which is an integer value
+        representing the number of agents that can be located at that location.
+    """
+    vacant_units = locations[supply_fname].sub(
+        choosers[location_fname].value_counts(), fill_value=0)
+    print "There are %d total available units" % locations[supply_fname].sum()
+    print "    and %d total choosers" % len(choosers.index)
+    print "    but there are %d overfull buildings" % len(vacant_units[vacant_units < 0])
+    vacant_units = vacant_units[vacant_units > 0]
+    units = locations.loc[np.repeat(vacant_units.index,
+                          vacant_units.values.astype('int'))].reset_index()
+    print "    for a total of %d empty units" % vacant_units.sum()
+    print "    in %d buildings total in the region" % len(vacant_units)
+    return units
+
+
+def simple_relocation(choosers, relocation_rate, fieldname):
     print "Total agents: %d" % len(choosers)
     _print_number_unplaced(choosers, fieldname)
+
+    print "Assinging for relocation..."
     chooser_ids = np.random.choice(choosers.index, size=int(relocation_rate *
                                    len(choosers)), replace=False)
     choosers.update_col_from_series(fieldname, pd.Series(-1, index=chooser_ids))
-    print "Assinging for relocation..."
+
     _print_number_unplaced(choosers, fieldname)
 
 
-def simple_transition(dfname, rate):
+def simple_transition(tbl, rate):
     transition = GrowthRateTransition(rate)
-    tbl = sim.get_table(dfname)
     df = tbl.to_frame(tbl.local_columns)
+
     print "%d agents before transition" % len(df.index)
     df, added, copied, removed = transition.transition(df, None)
     print "%d agents after transition" % len(df.index)
-    sim.add_table(dfname, df)
+
+    sim.add_table(tbl.name, df)
+
+
+def _print_number_unplaced(df, fieldname):
+    print "Total currently unplaced: %d" % df[fieldname].value_counts().get(-1, 0)
