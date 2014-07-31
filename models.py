@@ -84,13 +84,13 @@ def elcm_simulate(jobs, buildings, nodes):
 
 
 @sim.model('households_relocation')
-def households_relocation():
-    return utils.simple_relocation("households", .05)
+def households_relocation(households):
+    return utils.simple_relocation(households, .05)
 
 
 @sim.model('jobs_relocation')
-def jobs_relocation():
-    return utils.simple_relocation("jobs", .05)
+def jobs_relocation(jobs):
+    return utils.simple_relocation(jobs, .05)
 
 
 @sim.model('households_transition')
@@ -127,7 +127,7 @@ def price_vars():
 
 
 @sim.model('feasibility')
-def feasibility(parcels):
+def feasibility(parcels, form_to_btype):
     pf = sqftproforma.SqFtProForma()
 
     df = parcels.to_frame()
@@ -143,7 +143,7 @@ def feasibility(parcels):
     d = {}
     for form in pf.config.forms:
         print "Computing feasibility for form %s" % form
-        d[form] = pf.lookup(form, df[variables.parcel_is_allowed(form)])
+        d[form] = pf.lookup(form, df[variables.parcel_is_allowed(form, form_to_btype)])
 
     far_predictions = pd.concat(d.values(), keys=d.keys(), axis=1)
 
@@ -169,7 +169,7 @@ def residential_developer(feasibility, households, buildings, parcels, year, for
 
     new_buildings["year_built"] = year
     new_buildings["form"] = "residential"
-    new_buildings["building_type_id"] = new_buildings["form"].apply(random_type, args=(form_to_btype))
+    new_buildings["building_type_id"] = new_buildings["form"].apply(random_type, args=[form_to_btype])
     new_buildings["stories"] = new_buildings.stories.apply(np.ceil)
     for col in ["residential_sales_price", "residential_rent", "non_residential_rent"]:
         new_buildings[col] = np.nan
@@ -212,7 +212,7 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year, form_
                              residential=False)
 
     new_buildings["year_built"] = year
-    new_buildings["building_type_id"] = new_buildings["form"].apply(random_type, args=(form_to_btype))
+    new_buildings["building_type_id"] = new_buildings["form"].apply(random_type, args=[form_to_btype])
     new_buildings["residential_units"] = 0
     new_buildings["stories"] = new_buildings.stories.apply(np.ceil)
     for col in ["residential_sales_price", "residential_rent", "non_residential_rent"]:

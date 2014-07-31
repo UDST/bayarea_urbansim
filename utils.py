@@ -21,19 +21,15 @@ def deal_with_nas(df):
     return df
 
 
-def merge_nodes(tbl, nodes, cfg):
+def to_frame(tables, cfg, additional_columns=[]):
     cfg = yaml_to_class(cfg).from_yaml(str_or_buffer=cfg)
-    columns = misc.column_list([tbl, nodes], cfg.columns_used())
-    df = sim.merge_tables(target=tbl.name, tables=[tbl, nodes], columns=columns)
+    columns = misc.column_list(tables, cfg.columns_used()) + additional_columns
+    if len(tables) > 1:
+        df = sim.merge_tables(target=tables[0].name, tables=tables, columns=columns)
+    else:
+        df = tables[0].to_frame(columns)
     df = deal_with_nas(df)
     return df
-
-
-def choosers_columns_used(choosers, chosen_fname, cfg):
-    cfg = yaml_to_class(cfg).from_yaml(str_or_buffer=cfg)
-    columns = misc.column_list([choosers], cfg.columns_used())
-    columns.append(chosen_fname)
-    return choosers.to_frame(columns)
 
 
 def _print_number_unplaced(df, fieldname="building_id"):
@@ -55,22 +51,21 @@ def yaml_to_class(cfg):
 
 def hedonic_estimate(cfg, tbl, nodes):
     cfg = misc.config(cfg)
-    df = merge_nodes(tbl, nodes, cfg)
+    df = to_frame([tbl, nodes], cfg)
     return yaml_to_class(cfg).fit_from_cfg(df, cfg)
 
 
 def hedonic_simulate(cfg, tbl, nodes, out_fname):
     cfg = misc.config(cfg)
-    df = merge_nodes(tbl, nodes, cfg)
+    df = to_frame([tbl, nodes], cfg)
     price_or_rent, _ = yaml_to_class(cfg).predict_from_cfg(df, cfg)
     tbl.update_col_from_series(out_fname, price_or_rent)
 
 
 def lcm_estimate(cfg, choosers, chosen_fname, buildings, nodes):
     cfg = misc.config(cfg)
-    choosers = choosers_columns_used(choosers, chosen_fname, cfg)
-    choosers = deal_with_nas(choosers)
-    alternatives = merge_nodes(buildings, nodes, cfg)
+    choosers = to_frame([choosers], cfg, additional_columns=[chosen_fname])
+    alternatives = to_frame([buildings, nodes], cfg)
     return yaml_to_class(cfg).fit_from_cfg(choosers, chosen_fname, alternatives, cfg)
 
 
@@ -135,34 +130,29 @@ def lcm_simulate(cfg, choosers, buildings, nodes, out_fname, supply_fname):
     """
     cfg = misc.config(cfg)
 
-    choosers = choosers_columns_used(choosers, out_fname, cfg)
-    choosers = deal_with_nas(choosers)
-    movers = choosers[choosers[out_fname] == -1]
+    choosers_df = to_frame([choosers], cfg, additional_columns=[out_fname])
+    movers = choosers_df[choosers_df[out_fname] == -1]
 
-    units = get_vacant_units(choosers,
+    units = get_vacant_units(choosers_df,
                              out_fname,
-                             merge_nodes(buildings, nodes, cfg),
+                             to_frame([buildings, nodes], cfg, [supply_fname]),
                              supply_fname)
-    alternatives = merge_nodes(units, nodes, cfg)
 
-    new_units, _ = yaml_to_class(cfg).predict_from_cfg(movers, alternatives, cfg)
-    new_units = pd.Series(alternatives.loc[new_units.values][out_fname].values,
-                          index=new_units.index)
-    choosers.update_col_from_series(out_fname, new_units)
+    new_units, _ = yaml_to_class(cfg).predict_from_cfg(movers, units, cfg)
+    new_buildings = pd.Series(units.loc[new_units.values][out_fname].values,
+                              index=new_units.index)
+
+    choosers.update_col_from_series(out_fname, new_buildings)
     _print_number_unplaced(choosers, out_fname)
 
 
 def simple_relocation(choosers, relocation_rate, fieldname='building_id'):
-    choosers_name = choosers
-    choosers = sim.get_table(choosers)
-    print "Total agents: %d" % len(choosers[fieldname])
+    print "Total agents: %d" % len(choosers)
     _print_number_unplaced(choosers, fieldname)
     chooser_ids = np.random.choice(choosers.index, size=int(relocation_rate *
                                    len(choosers)), replace=False)
-    s = choosers[fieldname]
+    choosers.update_col_from_series(fieldname, pd.Series(-1, index=chooser_ids))
     print "Assinging for relocation..."
-    s.loc[chooser_ids] = -1
-    sim.add_column(choosers_name, fieldname, s)
     _print_number_unplaced(choosers, fieldname)
 
 

@@ -185,9 +185,9 @@ def parcel_average_price(use):
                         sim.get_table('parcels')._node_id)
 
 
-def parcel_is_allowed(form):
+def parcel_is_allowed(form, form_to_btype):
     # we have zoning by building type but want to know if specific forms are allowed
-    allowed = [sim.get_table('zoning_baseline')['type%d' % typ] == 't' for typ in dataset.FORM_TO_BTYPE[form]]
+    allowed = [sim.get_table('zoning_baseline')['type%d' % typ] == 't' for typ in form_to_btype[form]]
     return pd.concat(allowed, axis=1).max(axis=1).reindex(sim.get_table('parcels').index).fillna(False)
 
 

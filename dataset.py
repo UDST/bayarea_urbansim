@@ -54,7 +54,6 @@ def buildings(store):
 @sim.table_source('households')
 def households(store):
     df = store['households']
-    df["building_id"][df.building_id == -1] = np.nan
     return df
 
 
@@ -108,7 +107,7 @@ def zoning_baseline(zoning, zoning_for_parcels):
 
 @sim.table_source('zoning_test')
 def zoning_test():
-    parcels_to_zoning = pd.read_csv(os.path.join(misc.data_dir(), 'parcels_to_zoning.csv'))
+    parcels_to_zoning = pd.read_csv(os.path.join(misc.data_dir(), 'parcels_to_zoning.csv'), low_memory=False)
     scenario_zoning = pd.read_excel(os.path.join(misc.data_dir(), 'zoning_scenario_test.xls'),
                                     sheetname='zoning_lookup')
     df = pd.merge(parcels_to_zoning,
