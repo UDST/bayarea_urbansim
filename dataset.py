@@ -83,6 +83,12 @@ def costar(store):
     return df
 
 
+@sim.table_source('zones')
+def zones(store):
+    df = store['zones']
+    return df
+
+
 @sim.table_source('zoning_for_parcels')
 def zoning_for_parcels(store):
     df = store['zoning_for_parcels']

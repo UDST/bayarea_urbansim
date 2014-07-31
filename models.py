@@ -235,3 +235,23 @@ def write_output():
     for tblname in tblnames:
         tbl = sim.get_table(tblname)
         store[tblname] = tbl.to_frame(tbl.local_columns)
+
+
+@sim.model("travel_model_output")
+def travel_model_output(households, zones):
+    households = households.to_frame()
+    zones = zones.to_frame()
+
+    zones['HHINC1'] = households.query("income < 25000").\
+        groupby('zone_id').size()
+
+    zones['HHINC2'] = households.query("income >= 25000 and income < 45000").\
+        groupby('zone_id').size()
+
+    zones['HHINC3'] = households.query("income >= 45000 and income < 75000").\
+        groupby('zone_id').size()
+
+    zones['HHINC4'] = households.query("income >= 75000").\
+        groupby('zone_id').size()
+
+    sim.add_table("travel_model_output", zones)
