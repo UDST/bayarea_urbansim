@@ -1,3 +1,5 @@
+name: jobs_count
+
 desc: Jobs Count
 
 table: jobs

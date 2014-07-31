@@ -1,3 +1,5 @@
+name: sum_parcel_size
+
 desc: Sum Parcel Size
 
 table: parcels
