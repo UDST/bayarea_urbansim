@@ -62,13 +62,6 @@ def lcm_estimate(cfg, choosers, chosen_fname, buildings, nodes):
     alternatives = to_frame([buildings, nodes], cfg)
     return yaml_to_class(cfg).fit_from_cfg(choosers, chosen_fname, alternatives, cfg)
 
-'''
-TODO
--1 for relocation
-ask matt to review
-call add_table at the end of transition
-'''
-
 
 def lcm_simulate(cfg, choosers, buildings, nodes, out_fname, supply_fname):
     """
