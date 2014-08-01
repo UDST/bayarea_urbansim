@@ -219,6 +219,11 @@ def ave_unit_sqft(parcels, nodes):
     return misc.reindex(nodes.ave_unit_sqft, parcels._node_id)
 
 
+@sim.column('parcels', 'ave_unit_size')
+def ave_unit_size(parcels, nodes):
+    return misc.reindex(nodes.ave_unit_sqft, parcels._node_id)
+
+
 @sim.column('parcels', 'total_units')
 def total_units(buildings):
     return buildings.residential_units.groupby(buildings.parcel_id).sum().fillna(0)
