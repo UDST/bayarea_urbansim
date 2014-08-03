@@ -13,7 +13,8 @@ warnings.filterwarnings('ignore', category=pd.io.pytables.PerformanceWarning)
 def jobs(store):
     nets = store['nets']
     # go from establishments to jobs
-    df = nets.loc[np.repeat(nets.index.values, nets.emp11.values)].reset_index()
+    df = nets.loc[np.repeat(nets.index.values, nets.emp11.values)]\
+        .reset_index()
     df.index.name = 'job_id'
     return df
 
@@ -21,7 +22,8 @@ def jobs(store):
 @sim.table_source('buildings')
 def buildings(store):
     df = store['buildings']
-    for col in ["residential_sales_price", "residential_rent", "non_residential_rent"]:
+    for col in ["residential_sales_price", "residential_rent",
+                "non_residential_rent"]:
         df[col] = np.nan
     return df
 
@@ -99,8 +101,11 @@ def zoning_baseline(zoning, zoning_for_parcels):
 # so is kept outside of the hdf5
 @sim.table_source('zoning_test')
 def zoning_test():
-    parcels_to_zoning = pd.read_csv(os.path.join(misc.data_dir(), 'parcels_to_zoning.csv'), low_memory=False)
-    scenario_zoning = pd.read_excel(os.path.join(misc.data_dir(), 'zoning_scenario_test.xls'),
+    parcels_to_zoning = pd.read_csv(os.path.join(misc.data_dir(),
+                                                 'parcels_to_zoning.csv'),
+                                    low_memory=False)
+    scenario_zoning = pd.read_excel(os.path.join(misc.data_dir(),
+                                                 'zoning_scenario_test.xls'),
                                     sheetname='zoning_lookup')
     df = pd.merge(parcels_to_zoning,
                   scenario_zoning,
@@ -117,5 +122,6 @@ sim.broadcast('nodes', 'apartments', cast_index=True, onto_on='_node_id')
 sim.broadcast('nodes', 'buildings', cast_index=True, onto_on='_node_id')
 sim.broadcast('nodes_prices', 'buildings', cast_index=True, onto_on='_node_id')
 sim.broadcast('parcels', 'buildings', cast_index=True, onto_on='parcel_id')
-sim.broadcast('buildings', 'households', cast_index=True, onto_on='building_id')
+sim.broadcast('buildings', 'households', cast_index=True,
+              onto_on='building_id')
 sim.broadcast('buildings', 'jobs', cast_index=True, onto_on='building_id')

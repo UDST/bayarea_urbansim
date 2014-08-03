@@ -156,7 +156,9 @@ def feasibility(parcels, form_to_btype):
     d = {}
     for form in pf.config.forms:
         print "Computing feasibility for form %s" % form
-        d[form] = pf.lookup(form, df[variables.parcel_is_allowed(form, form_to_btype)])
+        d[form] = pf.lookup(form,
+                            df[variables.parcel_is_allowed(form,
+                                                           form_to_btype)])
 
     far_predictions = pd.concat(d.values(), keys=d.keys(), axis=1)
 
@@ -164,13 +166,15 @@ def feasibility(parcels, form_to_btype):
 
 
 @sim.model('residential_developer')
-def residential_developer(feasibility, households, buildings, parcels, year, form_to_btype):
+def residential_developer(feasibility, households, buildings, parcels,
+                          year, form_to_btype):
     residential_target_vacancy = .15
     dev = developer.Developer(feasibility.to_frame())
 
-    target_units = dev.compute_units_to_build(len(households),
-                                              buildings.residential_units.sum(),
-                                              residential_target_vacancy)
+    target_units = dev.\
+        compute_units_to_build(len(households),
+                               buildings.residential_units.sum(),
+                               residential_target_vacancy)
 
     new_buildings = dev.pick("residential",
                              target_units,
@@ -182,13 +186,15 @@ def residential_developer(feasibility, households, buildings, parcels, year, for
 
     new_buildings["year_built"] = year
     new_buildings["form"] = "residential"
-    new_buildings["building_type_id"] = new_buildings["form"].apply(random_type, args=[form_to_btype])
+    new_buildings["building_type_id"] = new_buildings["form"].\
+        apply(random_type, args=[form_to_btype])
     new_buildings["stories"] = new_buildings.stories.apply(np.ceil)
-    for col in ["residential_sales_price", "residential_rent", "non_residential_rent"]:
+    for col in ["residential_sales_price", "residential_rent",
+                "non_residential_rent"]:
         new_buildings[col] = np.nan
 
-    print "Adding {} buildings with {:,} residential units".format(len(new_buildings),
-                                                                   new_buildings.residential_units.sum())
+    print "Adding {} buildings with {:,} residential units".\
+        format(len(new_buildings), new_buildings.residential_units.sum())
 
     all_buildings = dev.merge(buildings.to_frame(buildings.local_columns),
                               new_buildings[buildings.local_columns])
@@ -196,7 +202,8 @@ def residential_developer(feasibility, households, buildings, parcels, year, for
 
 
 @sim.model('non_residential_developer')
-def non_residential_developer(feasibility, jobs, buildings, parcels, year, form_to_btype):
+def non_residential_developer(feasibility, jobs, buildings,
+                              parcels, year, form_to_btype):
     non_residential_target_vacancy = .15
     dev = developer.Developer(feasibility.to_frame())
 
@@ -204,35 +211,38 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year, form_
                                               buildings.job_spaces.sum(),
                                               non_residential_target_vacancy)
 
-    new_buildings = dev.pick(["office", "retail", "industrial"],
-                             target_units,
-                             parcels.parcel_size,
-                             # This is hard-coding 500 as the average sqft per job
-                             # which isn't right but it doesn't affect outcomes much
-                             # developer will build enough units assuming 500 sqft
-                             # per job but then it just returns the result as square
-                             # footage and the actual building_sqft_per_job will be
-                             # used to compute job_spaces.  In other words,
-                             # we can over- or under- build the number of units here
-                             # but we should still get roughly the right amount of
-                             # development out of this and the final numbers are precise.
-                             # just move this up and down if dev is over- or under-
-                             # buildings things
-                             pd.Series(500, index=parcels.index),
-                             parcels.total_nonres_units,
-                             max_parcel_size=200000,
-                             drop_after_build=True,
-                             residential=False)
+    new_buildings = dev.\
+        pick(["office", "retail", "industrial"],
+             target_units,
+             parcels.parcel_size,
+             # This is hard-coding 500 as the average sqft per job
+             # which isn't right but it doesn't affect outcomes much
+             # developer will build enough units assuming 500 sqft
+             # per job but then it just returns the result as square
+             # footage and the actual building_sqft_per_job will be
+             # used to compute job_spaces.  In other words,
+             # we can over- or under- build the number of units here
+             # but we should still get roughly the right amount of
+             # development out of this and the final numbers are precise.
+             # just move this up and down if dev is over- or under-
+             # buildings things
+             pd.Series(500, index=parcels.index),
+             parcels.total_nonres_units,
+             max_parcel_size=200000,
+             drop_after_build=True,
+             residential=False)
 
     new_buildings["year_built"] = year
-    new_buildings["building_type_id"] = new_buildings["form"].apply(random_type, args=[form_to_btype])
+    new_buildings["building_type_id"] = new_buildings["form"].\
+        apply(random_type, args=[form_to_btype])
     new_buildings["residential_units"] = 0
     new_buildings["stories"] = new_buildings.stories.apply(np.ceil)
-    for col in ["residential_sales_price", "residential_rent", "non_residential_rent"]:
+    for col in ["residential_sales_price", "residential_rent",
+                "non_residential_rent"]:
         new_buildings[col] = np.nan
 
-    print "Adding {} buildings with {:,} non-residential sqft".format(len(new_buildings),
-                                                                      new_buildings.non_residential_sqft.sum())
+    print "Adding {} buildings with {:,} non-residential sqft".\
+        format(len(new_buildings), new_buildings.non_residential_sqft.sum())
 
     all_buildings = dev.merge(buildings.to_frame(buildings.local_columns),
                               new_buildings[buildings.local_columns])

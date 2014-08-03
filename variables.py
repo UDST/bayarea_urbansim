@@ -37,7 +37,8 @@ def unit_sqft(buildings):
 
 @sim.column('buildings', 'unit_lot_size')
 def unit_lot_size(buildings, parcels):
-    return misc.reindex(parcels.parcel_size, buildings.parcel_id) / buildings.residential_units
+    return misc.reindex(parcels.parcel_size, buildings.parcel_id) / \
+        buildings.residential_units
 
 
 @sim.column('buildings', 'sqft_per_job')
@@ -47,16 +48,20 @@ def sqft_per_job(buildings, building_sqft_per_job):
 
 @sim.column('buildings', 'job_spaces')
 def job_spaces(buildings):
-    return (buildings.non_residential_sqft / buildings.sqft_per_job).fillna(0).astype('int')
+    return (buildings.non_residential_sqft /
+            buildings.sqft_per_job).fillna(0).astype('int')
 
 
 @sim.column('buildings', 'vacant_residential_units')
 def vacant_residential_units(buildings, households):
-    return buildings.residential_units.sub(households.building_id.value_counts(), fill_value=0)
+    return buildings.residential_units.sub(
+        households.building_id.value_counts(), fill_value=0)
+
 
 @sim.column('buildings', 'vacant_job_spaces')
 def vacant_residential_units(buildings, jobs):
-    return buildings.job_spaces.sub(jobs.building_id.value_counts(), fill_value=0)
+    return buildings.job_spaces.sub(
+        jobs.building_id.value_counts(), fill_value=0)
 
 
 #####################
@@ -91,7 +96,8 @@ def _node_id(parcels, apartments):
 
 @sim.column('apartments', 'rent')
 def rent(apartments):
-    return (apartments.MinOfLowRent + apartments.MaxOfHighRent) / 2.0 / apartments.unit_sqft
+    return (apartments.MinOfLowRent + apartments.MaxOfHighRent) / \
+        2.0 / apartments.unit_sqft
 
 
 @sim.column('apartments', 'unit_sqft')
@@ -106,7 +112,8 @@ def unit_sqft(apartments):
 
 @sim.column('households', 'income_quartile')
 def income_quartile(households):
-    return pd.Series(pd.qcut(households.income, 4).labels, index=households.index)
+    return pd.Series(pd.qcut(households.income, 4).labels,
+                     index=households.index)
 
 
 @sim.column('households', 'zone_id')
@@ -156,8 +163,8 @@ def naics(jobs):
 
 @sim.column('homesales', 'sale_price_flt')
 def sale_price_flt(homesales):
-    return homesales.Sale_price.str.replace('$', '').str.replace(',', '').astype('f4') / \
-        homesales.unit_sqft
+    return homesales.Sale_price.str.replace('$', '').\
+        str.replace(',', '').astype('f4') / homesales.unit_sqft
 
 
 @sim.column('homesales', 'year_built')
@@ -196,9 +203,12 @@ def parcel_average_price(use):
 
 
 def parcel_is_allowed(form, form_to_btype):
-    # we have zoning by building type but want to know if specific forms are allowed
-    allowed = [sim.get_table('zoning_baseline')['type%d' % typ] == 't' for typ in form_to_btype[form]]
-    return pd.concat(allowed, axis=1).max(axis=1).reindex(sim.get_table('parcels').index).fillna(False)
+    # we have zoning by building type but want
+    # to know if specific forms are allowed
+    allowed = [sim.get_table('zoning_baseline')
+               ['type%d' % typ] == 't' for typ in form_to_btype[form]]
+    return pd.concat(allowed, axis=1).max(axis=1).\
+        reindex(sim.get_table('parcels').index).fillna(False)
 
 
 @sim.column('parcels', 'max_far')
@@ -235,7 +245,8 @@ def ave_unit_size(parcels, nodes):
 
 @sim.column('parcels', 'total_units')
 def total_units(buildings):
-    return buildings.residential_units.groupby(buildings.parcel_id).sum().fillna(0)
+    return buildings.residential_units.\
+        groupby(buildings.parcel_id).sum().fillna(0)
 
 
 @sim.column('parcels', 'total_nonres_units')
@@ -252,4 +263,5 @@ def total_sqft(buildings):
 def land_cost(parcels):
     # TODO
     # this needs to account for cost for the type of building it is
-    return (parcels.total_sqft * parcel_average_price("residential")).reindex(parcels.index).fillna(0)
+    return (parcels.total_sqft * parcel_average_price("residential")).\
+        reindex(parcels.index).fillna(0)
