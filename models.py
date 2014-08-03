@@ -6,6 +6,7 @@ import os
 import random
 import utils
 import dataset
+import variables
 import pandas as pd
 import numpy as np
 
@@ -13,10 +14,7 @@ import numpy as np
 '''
 TODO
 feasibility and developer to utils as an api?
-join to more tables instead of reindexing?
-caching?
 write output using api
-where to import what?
 '''
 
 
@@ -179,7 +177,7 @@ def residential_developer(feasibility, households, buildings, parcels,
     new_buildings = dev.pick("residential",
                              target_units,
                              parcels.parcel_size,
-                             parcels.ave_unit_sqft,
+                             parcels.ave_unit_size,
                              parcels.total_units,
                              max_parcel_size=200000,
                              drop_after_build=True)
@@ -227,7 +225,7 @@ def non_residential_developer(feasibility, jobs, buildings,
              # just move this up and down if dev is over- or under-
              # buildings things
              pd.Series(500, index=parcels.index),
-             parcels.total_nonres_units,
+             parcels.total_job_spaces,
              max_parcel_size=200000,
              drop_after_build=True,
              residential=False)
@@ -278,3 +276,8 @@ def travel_model_output(households, zones):
         groupby('zone_id').size()
 
     sim.add_table("travel_model_output", zones)
+
+
+@sim.model("clear_cache")
+def clear_cache():
+    sim.clear_cache()

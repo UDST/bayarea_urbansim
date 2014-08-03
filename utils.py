@@ -5,6 +5,11 @@ import numpy as np
 import pandas as pd
 import urbansim.sim.simulation as sim
 from urbansim.utils import misc
+import os
+
+
+def get_run_filename():
+    return os.path.join(misc.runs_dir(), "run%d.h5" % misc.get_run_number())
 
 
 def change_scenario(scenario):
@@ -45,6 +50,7 @@ def deal_with_nas(df):
 
 def to_frame(tables, cfg, additional_columns=[]):
     cfg = yaml_to_class(cfg).from_yaml(str_or_buffer=cfg)
+    tables = [t for t in tables if t is not None]
     columns = misc.column_list(tables, cfg.columns_used()) + additional_columns
     if len(tables) > 1:
         df = sim.merge_tables(target=tables[0].name,

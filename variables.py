@@ -10,43 +10,43 @@ import utils
 #####################
 
 
-@sim.column('buildings', '_node_id')
+@sim.column('buildings', '_node_id', cache=True)
 def _node_id(buildings, parcels):
     return misc.reindex(parcels._node_id, buildings.parcel_id)
 
 
-@sim.column('buildings', '_node_id0')
+@sim.column('buildings', '_node_id0', cache=True)
 def _node_id0(buildings, parcels):
     return misc.reindex(parcels._node_id0, buildings.parcel_id)
 
 
-@sim.column('buildings', 'zone_id')
+@sim.column('buildings', 'zone_id', cache=True)
 def zone_id(buildings, parcels):
     return misc.reindex(parcels.zone_id, buildings.parcel_id)
 
 
-@sim.column('buildings', 'general_type')
+@sim.column('buildings', 'general_type', cache=True)
 def general_type(buildings, building_type_map):
     return buildings.building_type_id.map(building_type_map)
 
 
-@sim.column('buildings', 'unit_sqft')
+@sim.column('buildings', 'unit_sqft', cache=True)
 def unit_sqft(buildings):
     return buildings.building_sqft / buildings.residential_units
 
 
-@sim.column('buildings', 'unit_lot_size')
+@sim.column('buildings', 'unit_lot_size', cache=True)
 def unit_lot_size(buildings, parcels):
     return misc.reindex(parcels.parcel_size, buildings.parcel_id) / \
         buildings.residential_units
 
 
-@sim.column('buildings', 'sqft_per_job')
+@sim.column('buildings', 'sqft_per_job', cache=True)
 def sqft_per_job(buildings, building_sqft_per_job):
     return buildings.building_type_id.fillna(-1).map(building_sqft_per_job)
 
 
-@sim.column('buildings', 'job_spaces')
+@sim.column('buildings', 'job_spaces', cache=True)
 def job_spaces(buildings):
     return (buildings.non_residential_sqft /
             buildings.sqft_per_job).fillna(0).astype('int')
@@ -110,23 +110,23 @@ def unit_sqft(apartments):
 #####################
 
 
-@sim.column('households', 'income_quartile')
+@sim.column('households', 'income_quartile', cache=True)
 def income_quartile(households):
     return pd.Series(pd.qcut(households.income, 4).labels,
                      index=households.index)
 
 
-@sim.column('households', 'zone_id')
+@sim.column('households', 'zone_id', cache=True)
 def zone_id(households, buildings):
     return misc.reindex(buildings.zone_id, households.building_id)
 
 
-@sim.column('households', '_node_id')
+@sim.column('households', '_node_id', cache=True)
 def _node_id(households, buildings):
     return misc.reindex(buildings._node_id, households.building_id)
 
 
-@sim.column('households', '_node_id0')
+@sim.column('households', '_node_id0', cache=True)
 def _node_id0(households, buildings):
     return misc.reindex(buildings._node_id0, households.building_id)
 
@@ -136,22 +136,22 @@ def _node_id0(households, buildings):
 #####################
 
 
-@sim.column('jobs', '_node_id')
+@sim.column('jobs', '_node_id', cache=True)
 def _node_id(jobs, buildings):
     return misc.reindex(buildings._node_id, jobs.building_id)
 
 
-@sim.column('jobs', '_node_id0')
+@sim.column('jobs', '_node_id0', cache=True)
 def _node_id0(jobs, buildings):
     return misc.reindex(buildings._node_id0, jobs.building_id)
 
 
-@sim.column('jobs', 'zone_id')
+@sim.column('jobs', 'zone_id', cache=True)
 def zone_id(jobs, buildings):
     return misc.reindex(buildings.zone_id, jobs.building_id)
 
 
-@sim.column('jobs', 'naics')
+@sim.column('jobs', 'naics', cache=True)
 def naics(jobs):
     return jobs.naics11cat
 
@@ -211,56 +211,59 @@ def parcel_is_allowed(form, form_to_btype):
         reindex(sim.get_table('parcels').index).fillna(False)
 
 
-@sim.column('parcels', 'max_far')
+@sim.column('parcels', 'max_far', cache=True)
 def max_far(parcels, scenario):
     return utils.conditional_upzone(scenario, "max_far", "far_up").\
         reindex(parcels.index).fillna(0)
 
 
-@sim.column('parcels', 'max_dua')
+@sim.column('parcels', 'max_dua', cache=True)
 def max_dua(parcels, scenario):
     return utils.conditional_upzone(scenario, "max_far", "dua_up").\
         reindex(parcels.index).fillna(0)
 
 
-@sim.column('parcels', 'max_height')
+@sim.column('parcels', 'max_height', cache=True)
 def max_height(parcels, zoning_baseline):
     return zoning_baseline.max_height.reindex(parcels.index).fillna(0)
 
 
-@sim.column('parcels', 'parcel_size')
+@sim.column('parcels', 'parcel_size', cache=True)
 def parcel_size(parcels):
     return parcels.shape_area * 10.764
 
 
-@sim.column('parcels', 'ave_unit_sqft')
-def ave_unit_sqft(parcels, nodes):
-    return misc.reindex(nodes.ave_unit_sqft, parcels._node_id)
+@sim.column('parcels', 'total_units', cache=True)
+def total_units(parcels, buildings):
+    return buildings.residential_units.groupby(buildings.parcel_id).sum().\
+        reindex(parcels.index).fillna(0)
+
+
+@sim.column('parcels', 'total_job_spaces', cache=True)
+def total_job_spaces(parcels, buildings):
+    return buildings.job_spaces.groupby(buildings.parcel_id).sum().\
+        reindex(parcels.index).fillna(0)
+
+
+@sim.column('parcels', 'total_sqft', cache=True)
+def total_sqft(parcels, buildings):
+    return buildings.building_sqft.groupby(buildings.parcel_id).sum().\
+        reindex(parcels.index).fillna(0)
 
 
 @sim.column('parcels', 'ave_unit_size')
 def ave_unit_size(parcels, nodes):
+    if len(nodes) == 0:
+        # nodes isn't generated yet
+        return pd.Series(index=parcels.index)
     return misc.reindex(nodes.ave_unit_sqft, parcels._node_id)
 
 
-@sim.column('parcels', 'total_units')
-def total_units(buildings):
-    return buildings.residential_units.\
-        groupby(buildings.parcel_id).sum().fillna(0)
-
-
-@sim.column('parcels', 'total_nonres_units')
-def total_nonres_units(buildings):
-    return buildings.job_spaces.groupby(buildings.parcel_id).sum().fillna(0)
-
-
-@sim.column('parcels', 'total_sqft')
-def total_sqft(buildings):
-    return buildings.building_sqft.groupby(buildings.parcel_id).sum().fillna(0)
-
-
 @sim.column('parcels', 'land_cost')
-def land_cost(parcels):
+def land_cost(parcels, nodes_prices):
+    if len(nodes_prices) == 0:
+        # if nodes_prices isn't generated yet
+        return pd.Series(index=parcels.index)
     # TODO
     # this needs to account for cost for the type of building it is
     return (parcels.total_sqft * parcel_average_price("residential")).\

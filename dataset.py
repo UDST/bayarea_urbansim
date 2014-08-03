@@ -115,11 +115,23 @@ def zoning_test():
     return df
 
 
+# these are dummy returns that last until accessibility runs
+@sim.table("nodes")
+def nodes():
+    return pd.DataFrame()
+
+
+@sim.table("nodes_prices")
+def nodes_prices():
+    return pd.DataFrame()
+
+
 # this specifies the relationships between tables
 sim.broadcast('nodes', 'homesales', cast_index=True, onto_on='_node_id')
 sim.broadcast('nodes', 'costar', cast_index=True, onto_on='_node_id')
 sim.broadcast('nodes', 'apartments', cast_index=True, onto_on='_node_id')
 sim.broadcast('nodes', 'buildings', cast_index=True, onto_on='_node_id')
+sim.broadcast('nodes', 'parcels', cast_index=True, onto_on='_node_id')
 sim.broadcast('nodes_prices', 'buildings', cast_index=True, onto_on='_node_id')
 sim.broadcast('parcels', 'buildings', cast_index=True, onto_on='parcel_id')
 sim.broadcast('buildings', 'households', cast_index=True,
