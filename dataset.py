@@ -9,31 +9,6 @@ import warnings
 warnings.filterwarnings('ignore', category=pd.io.pytables.PerformanceWarning)
 
 
-@sim.table_source('nodes')
-def nodes():
-    # default will fetch off disk unless networks have already been run
-    print "WARNING: fetching precomputed nodes off of disk"
-    df = pd.read_csv(os.path.join(misc.data_dir(), 'nodes.csv'), index_col='node_id')
-    df = df.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return df
-
-
-@sim.table_source('nodes_prices')
-def nodes_prices():
-    # default will fetch off disk unless networks have already been run
-    print "WARNING: fetching precomputed nodes_prices off of disk"
-    df = pd.read_csv(os.path.join(misc.data_dir(), 'nodes_prices.csv'), index_col='node_id')
-    df = df.replace([np.inf, -np.inf], np.nan).fillna(0)
-    return df
-
-
-@sim.table_source('building_sqft_per_job')
-def building_sqft_per_job():
-    df = pd.read_csv(os.path.join(misc.data_dir(), 'building_sqft_job.csv'),
-                     index_col='building_type_id')
-    return df
-
-
 @sim.table_source('jobs')
 def jobs(store):
     nets = store['nets']
@@ -63,6 +38,7 @@ def parcels(store):
     return df
 
 
+# a table of home sales data
 @sim.table_source('homesales')
 def homesales(store):
     df = store['homesales']
@@ -70,12 +46,14 @@ def homesales(store):
     return df
 
 
+# a table of apartment rental data
 @sim.table_source('apartments')
 def apartments(store):
     df = store['apartments']
     return df
 
 
+# non-residential rent data
 @sim.table_source('costar')
 def costar(store):
     df = store['costar']
@@ -83,12 +61,14 @@ def costar(store):
     return df
 
 
+# these are shapes - "zones" in the bay area
 @sim.table_source('zones')
 def zones(store):
     df = store['zones']
     return df
 
 
+# this is the mapping of parcels to zoning attributes
 @sim.table_source('zoning_for_parcels')
 def zoning_for_parcels(store):
     df = store['zoning_for_parcels']
@@ -96,12 +76,15 @@ def zoning_for_parcels(store):
     return df
 
 
+# this is the actual zoning
 @sim.table_source('zoning')
 def zoning(store):
     df = store['zoning']
     return df
 
 
+# zoning for use in the "baseline" scenario
+# comes in the hdf5
 @sim.table_source('zoning_baseline')
 def zoning_baseline(zoning, zoning_for_parcels):
     df = pd.merge(zoning_for_parcels.to_frame(),
@@ -111,6 +94,9 @@ def zoning_baseline(zoning, zoning_for_parcels):
     return df
 
 
+# zoning for use in the "test" scenario - is often
+# specified by the user e.g. in arcgis or excel and
+# so is kept outside of the hdf5
 @sim.table_source('zoning_test')
 def zoning_test():
     parcels_to_zoning = pd.read_csv(os.path.join(misc.data_dir(), 'parcels_to_zoning.csv'), low_memory=False)
@@ -124,6 +110,7 @@ def zoning_test():
     return df
 
 
+# this specifies the relationships between tables
 sim.broadcast('nodes', 'homesales', cast_index=True, onto_on='_node_id')
 sim.broadcast('nodes', 'costar', cast_index=True, onto_on='_node_id')
 sim.broadcast('nodes', 'apartments', cast_index=True, onto_on='_node_id')

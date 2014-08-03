@@ -42,12 +42,21 @@ def unit_lot_size(buildings, parcels):
 
 @sim.column('buildings', 'sqft_per_job')
 def sqft_per_job(buildings, building_sqft_per_job):
-    return misc.reindex(building_sqft_per_job.sqft_per_job, buildings.building_type_id.fillna(-1))
+    return buildings.building_type_id.fillna(-1).map(building_sqft_per_job)
 
 
-@sim.column('buildings', 'non_residential_units')
-def non_residential_units(buildings):
+@sim.column('buildings', 'job_spaces')
+def job_spaces(buildings):
     return (buildings.non_residential_sqft / buildings.sqft_per_job).fillna(0).astype('int')
+
+
+@sim.column('buildings', 'vacant_residential_units')
+def vacant_residential_units(buildings, households):
+    return buildings.residential_units.sub(households.building_id.value_counts(), fill_value=0)
+
+@sim.column('buildings', 'vacant_job_spaces')
+def vacant_residential_units(buildings, jobs):
+    return buildings.job_spaces.sub(jobs.building_id.value_counts(), fill_value=0)
 
 
 #####################
@@ -231,7 +240,7 @@ def total_units(buildings):
 
 @sim.column('parcels', 'total_nonres_units')
 def total_nonres_units(buildings):
-    return buildings.non_residential_units.groupby(buildings.parcel_id).sum().fillna(0)
+    return buildings.job_spaces.groupby(buildings.parcel_id).sum().fillna(0)
 
 
 @sim.column('parcels', 'total_sqft')

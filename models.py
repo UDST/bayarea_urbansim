@@ -5,9 +5,19 @@ from urbansim.utils import misc
 import os
 import random
 import utils
-import variables
+import dataset
 import pandas as pd
 import numpy as np
+
+
+'''
+TODO
+feasibility and developer to utils as an api?
+join to more tables instead of reindexing?
+caching?
+write output using api
+where to import what?
+'''
 
 
 def random_type(form, form_to_btype):
@@ -56,7 +66,8 @@ def hlcmo_estimate(households, buildings, nodes):
 @sim.model('hlcmo_simulate')
 def hlcmo_simulate(households, buildings, nodes):
     return utils.lcm_simulate("hlcmo.yaml", households, buildings, nodes,
-                              "building_id", "residential_units")
+                              "building_id", "residential_units",
+                              "vacant_residential_units")
 
 
 @sim.model('hlcmr_estimate')
@@ -68,7 +79,8 @@ def hlcmr_estimate(households, buildings, nodes):
 @sim.model('hlcmr_simulate')
 def hlcmr_simulate(households, buildings, nodes):
     return utils.lcm_simulate("hlcmr.yaml", households, buildings, nodes,
-                              "building_id", "residential_units")
+                              "building_id", "residential_units",
+                              "vacant_residential_units")
 
 
 @sim.model('elcm_estimate')
@@ -80,7 +92,8 @@ def elcm_estimate(jobs, buildings, nodes):
 @sim.model('elcm_simulate')
 def elcm_simulate(jobs, buildings, nodes):
     return utils.lcm_simulate("elcm.yaml", jobs, buildings, nodes,
-                              "building_id", "non_residential_units")
+                              "building_id", "job_spaces",
+                              "vacant_job_spaces")
 
 
 @sim.model('households_relocation')
@@ -188,7 +201,7 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year, form_
     dev = developer.Developer(feasibility.to_frame())
 
     target_units = dev.compute_units_to_build(len(jobs),
-                                              buildings.non_residential_units.sum(),
+                                              buildings.job_spaces.sum(),
                                               non_residential_target_vacancy)
 
     new_buildings = dev.pick(["office", "retail", "industrial"],
@@ -199,7 +212,7 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year, form_
                              # developer will build enough units assuming 500 sqft
                              # per job but then it just returns the result as square
                              # footage and the actual building_sqft_per_job will be
-                             # used to compute non_residential_units.  In other words,
+                             # used to compute job_spaces.  In other words,
                              # we can over- or under- build the number of units here
                              # but we should still get roughly the right amount of
                              # development out of this and the final numbers are precise.
