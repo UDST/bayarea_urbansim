@@ -12,6 +12,12 @@ def get_run_filename():
     return os.path.join(misc.runs_dir(), "run%d.h5" % misc.get_run_number())
 
 
+def change_store(store_name):
+    sim.add_injectable("store",
+                       pd.HDFStore(os.path.join(misc.data_dir(),
+                                                store_name), mode="r"))
+
+
 def change_scenario(scenario):
     assert scenario in sim.get_injectable("scenario_inputs"), \
         "Invalid scenario name"
