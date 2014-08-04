@@ -11,14 +11,22 @@ variable_definitions:
   - name: sum_residential_units
     dataframe: buildings
     varname: residential_units
+    add_fields: []
+    filters: []
     radius: 1500
     apply: np.log1p
+    decay: ""
+    aggregation: ""
 
   - name: sum_nonresidential_units
     dataframe: buildings
     varname: job_spaces
+    add_fields: []
+    filters: []
     radius: 1500
     apply: np.log1p
+    decay: ""
+    aggregation: ""
 
   - name: ave_unit_sqft
     dataframe: buildings
@@ -35,6 +43,8 @@ variable_definitions:
   - name: ave_lot_sqft
     dataframe: buildings
     varname: unit_lot_size
+    add_fields: []
+    filters: []
     radius: 1500
     apply: np.log1p
     decay: flat
@@ -43,11 +53,16 @@ variable_definitions:
   - name: population
     dataframe: households
     varname: persons
+    add_fields: []
+    filters: []
     radius: 1500
     apply: np.log1p
+    decay: ""
+    aggregation: ""
 
   - name: poor
     dataframe: households
+    varname: ""
     add_fields:
     - income
     filters:
@@ -55,28 +70,38 @@ variable_definitions:
     varname: persons
     radius: 1500
     apply: np.log1p
+    decay: ""
+    aggregation: ""
 
   - name: renters
     dataframe: households
+    varname: ""
     add_fields:
     - tenure
     filters:
     - tenure == 2
     radius: 1500
     apply: np.log1p
+    decay: ""
+    aggregation: ""
 
   - name: sfdu
     dataframe: buildings
+    varname: ""
     add_fields:
     - building_type_id
     filters:
     - building_type_id == 1
     radius: 1500
     apply: np.log1p
+    decay: ""
+    aggregation: ""
 
   - name: hhsize
     dataframe: households
     varname: persons
+    add_fields: []
+    filters: []
     radius: 1500
     aggregation: average
     decay: flat
@@ -84,12 +109,19 @@ variable_definitions:
 
   - name: jobs
     dataframe: jobs
+    varname: ""
+    add_fields: []
+    filters: []
     radius: 1500
     apply: np.log1p
+    decay: ""
+    aggregation: ""
 
   - name: ave_income
     dataframe: households
     varname: income
+    add_fields: []
+    filters: []
     radius: 1500
     aggregation: average
     decay: flat
