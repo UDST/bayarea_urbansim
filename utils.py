@@ -1,6 +1,7 @@
 from urbansim.models import RegressionModel, SegmentedRegressionModel, \
     MNLLocationChoiceModel, SegmentedMNLLocationChoiceModel, \
     GrowthRateTransition
+from urbansim.developer import sqftproforma, developer
 import numpy as np
 import pandas as pd
 import urbansim.sim.simulation as sim
@@ -182,4 +183,106 @@ def simple_transition(tbl, rate):
 
 
 def _print_number_unplaced(df, fieldname):
-    print "Total currently unplaced: %d" % df[fieldname].value_counts().get(-1, 0)
+    print "Total currently unplaced: %d" % \
+          df[fieldname].value_counts().get(-1, 0)
+
+
+def run_feasibility(parcels, parcel_price_callback,
+                    parcel_use_allowed_callback, residential_to_yearly=True):
+    """
+    Execute development feasibility on all parcels
+
+    Parameters
+    ----------
+    parcels : dataframewrapper
+        The data frame wrapper for the parcel data
+    parcel_price_callback : function
+        A callback which takes each use of the pro forma and returns a series
+        with index as parcel_id and value as yearly_rent
+    parcel_use_allowed_callback : function
+        A callback which takes each form of the pro forma and returns a series
+        with index as parcel_id and value and boolean whether the form
+        is allowed on the parcel
+    residential_to_yearly : boolean (default true)
+        Whether to use the cap rate to convert the residential price from total
+        sales price per sqft to rent per sqft
+
+    Returns
+    -------
+    Adds a table called feasibility to the sim object (returns nothing)
+    """
+    pf = sqftproforma.SqFtProForma()
+
+    df = parcels.to_frame()
+
+    # add prices for each use
+    for use in pf.config.uses:
+        df[use] = parcel_price_callback(use)
+
+    # convert from cost to yearly rent
+    if residential_to_yearly:
+        df["residential"] *= pf.config.cap_rate
+
+    print "Describe of the yearly rent by use"
+    print df[pf.config.uses].describe()
+
+    d = {}
+    for form in pf.config.forms:
+        print "Computing feasibility for form %s" % form
+        d[form] = pf.lookup(form, df[parcel_use_allowed_callback(form)])
+
+    far_predictions = pd.concat(d.values(), keys=d.keys(), axis=1)
+
+    sim.add_table("feasibility", far_predictions)
+
+
+def run_developer(forms, agents, buildings, supply_fname, parcel_size,
+                  ave_unit_size, total_units, feasibility, year=None,
+                  target_vacancy=.1, form_to_btype_callback=None,
+                  add_more_columns_callback=None, max_parcel_size=200000,
+                  residential=True, bldg_sqft_per_job=400.0):
+
+    dev = developer.Developer(feasibility.to_frame())
+
+    target_units = dev.\
+        compute_units_to_build(len(agents),
+                               buildings[supply_fname].sum(),
+                               target_vacancy)
+
+    new_buildings = dev.pick(forms,
+                             target_units,
+                             parcel_size,
+                             ave_unit_size,
+                             total_units,
+                             max_parcel_size=max_parcel_size,
+                             drop_after_build=True,
+                             residential=residential,
+                             bldg_sqft_per_job=bldg_sqft_per_job)
+
+    if new_buildings is None:
+        return
+
+    if year is not None:
+        new_buildings["year_built"] = year
+
+    if not isinstance(forms, list):
+        # form gets set only if forms is a list
+        new_buildings["form"] = forms
+
+    if form_to_btype_callback is not None:
+        new_buildings["building_type_id"] = new_buildings["form"].\
+            apply(form_to_btype_callback)
+
+    new_buildings["stories"] = new_buildings.stories.apply(np.ceil)
+
+    if add_more_columns_callback is not None:
+        new_buildings = add_more_columns_callback(new_buildings)
+
+    print "Adding {} buildings with {:,} {}".\
+        format(len(new_buildings),
+               new_buildings[supply_fname].sum(),
+               supply_fname)
+
+    all_buildings = dev.merge(buildings.to_frame(buildings.local_columns),
+                              new_buildings[buildings.local_columns])
+    sim.add_table("buildings", all_buildings)

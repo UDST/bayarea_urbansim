@@ -202,7 +202,8 @@ def parcel_average_price(use):
                         sim.get_table('parcels')._node_id)
 
 
-def parcel_is_allowed(form, form_to_btype):
+def parcel_is_allowed(form):
+    form_to_btype = sim.get_injectable("form_to_btype")
     # we have zoning by building type but want
     # to know if specific forms are allowed
     allowed = [sim.get_table('zoning_baseline')
@@ -254,7 +255,7 @@ def total_sqft(parcels, buildings):
 @sim.column('parcels', 'ave_unit_size')
 def ave_unit_size(parcels, nodes):
     if len(nodes) == 0:
-        # nodes isn't generated yet
+        # if nodes isn't generated yet
         return pd.Series(index=parcels.index)
     return misc.reindex(nodes.ave_unit_sqft, parcels._node_id)
 
