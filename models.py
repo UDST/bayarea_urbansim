@@ -1,131 +1,119 @@
 from urbansim.developer import sqftproforma, developer
 from urbansim.utils import networks
 import urbansim.sim.simulation as sim
-import urbansim.sim.yamlmodelrunner as ymr
 from urbansim.utils import misc
 import os
 import random
-import variables
+import utils
 import dataset
 import pandas as pd
 import numpy as np
 
 
-def merge_nodes(df):
-    return pd.merge(df.to_frame(),
-                    sim.get_table("nodes").to_frame(),
-                    left_on="_node_id",
-                    right_index=True,
-                    how="left")
+'''
+TODO
+feasibility and developer to utils as an api?
+join to more tables instead of reindexing?
+caching?
+write output using api
+where to import what?
+'''
 
 
-def random_type(form):
-    return random.choice(dataset.FORM_TO_BTYPE[form])
+def random_type(form, form_to_btype):
+    return random.choice(form_to_btype[form])
 
 
 @sim.model('rsh_estimate')
-def rsh_estimate(homesales):
-    return ymr.hedonic_estimate(merge_nodes(homesales), "rsh.yaml")
+def rsh_estimate(homesales, nodes):
+    return utils.hedonic_estimate("rsh.yaml", homesales, nodes)
 
 
 @sim.model('rsh_simulate')
-def rsh_simulate(buildings):
-    return ymr.hedonic_simulate(merge_nodes(buildings), "rsh.yaml",
-                                "buildings", "residential_sales_price")
+def rsh_simulate(buildings, nodes):
+    return utils.hedonic_simulate("rsh.yaml", buildings, nodes,
+                                  "residential_sales_price")
 
 
 @sim.model('rrh_estimate')
-def rrh_estimate(apartments):
-    return ymr.hedonic_estimate(merge_nodes(apartments), "rrh.yaml")
+def rrh_estimate(apartments, nodes):
+    return utils.hedonic_estimate("rrh.yaml", apartments, nodes)
 
 
 @sim.model('rrh_simulate')
-def rrh_simulate(buildings):
-    return ymr.hedonic_simulate(merge_nodes(buildings), "rrh.yaml",
-                                "buildings", "residential_rent")
+def rrh_simulate(buildings, nodes):
+    return utils.hedonic_simulate("rrh.yaml", buildings, nodes,
+                                  "residential_rent")
 
 
 @sim.model('nrh_estimate')
-def nrh_estimate(costar):
-    return ymr.hedonic_estimate(merge_nodes(costar), "nrh.yaml")
+def nrh_estimate(costar, nodes):
+    return utils.hedonic_estimate("nrh.yaml", costar, nodes)
 
 
 @sim.model('nrh_simulate')
-def nrh_simulate(buildings):
-    return ymr.hedonic_simulate(merge_nodes(buildings), "nrh.yaml",
-                                "buildings", "non_residential_rent")
-
-
-def _hlcm_estimate(households, buildings, cfgname):
-    return ymr.lcm_estimate(households,
-                            "building_id",
-                            merge_nodes(buildings),
-                            cfgname)
-
-
-def _hlcm_simulate(households, buildings, cfgname):
-    units = ymr.get_vacant_units(households,
-                                 "building_id",
-                                 merge_nodes(buildings),
-                                 "residential_units")
-    return ymr.lcm_simulate(households, units, cfgname, "households", "building_id")
+def nrh_simulate(buildings, nodes):
+    return utils.hedonic_simulate("nrh.yaml", buildings, nodes,
+                                  "non_residential_rent")
 
 
 @sim.model('hlcmo_estimate')
-def hlcmo_estimate(households, buildings):
-    return _hlcm_estimate(households, buildings, "hlcmo.yaml")
+def hlcmo_estimate(households, buildings, nodes):
+    return utils.lcm_estimate("hlcmo.yaml", households, "building_id",
+                              buildings, nodes)
 
 
 @sim.model('hlcmo_simulate')
-def hlcmo_simulate(households, buildings):
-    return _hlcm_simulate(households, buildings, "hlcmo.yaml")
+def hlcmo_simulate(households, buildings, nodes):
+    return utils.lcm_simulate("hlcmo.yaml", households, buildings, nodes,
+                              "building_id", "residential_units",
+                              "vacant_residential_units")
 
 
 @sim.model('hlcmr_estimate')
-def hlcmr_estimate(households, buildings):
-    return _hlcm_estimate(households, buildings, "hlcmr.yaml")
+def hlcmr_estimate(households, buildings, nodes):
+    return utils.lcm_estimate("hlcmr.yaml", households, "building_id",
+                              buildings, nodes)
 
 
 @sim.model('hlcmr_simulate')
-def hlcmr_simulate(households, buildings):
-    return _hlcm_simulate(households, buildings, "hlcmr.yaml")
+def hlcmr_simulate(households, buildings, nodes):
+    return utils.lcm_simulate("hlcmr.yaml", households, buildings, nodes,
+                              "building_id", "residential_units",
+                              "vacant_residential_units")
 
 
 @sim.model('elcm_estimate')
-def elcm_estimate(jobs, buildings):
-    return ymr.lcm_estimate(jobs,
-                            "building_id",
-                            merge_nodes(buildings),
-                            "elcm.yaml")
+def elcm_estimate(jobs, buildings, nodes):
+    return utils.lcm_estimate("elcm.yaml", jobs, "building_id",
+                              buildings, nodes)
 
 
 @sim.model('elcm_simulate')
-def elcm_simulate(jobs, buildings):
-    units = ymr.get_vacant_units(jobs,
-                                 "building_id",
-                                 merge_nodes(buildings),
-                                 "non_residential_units")
-    return ymr.lcm_simulate(jobs, units, "elcm.yaml", "jobs", "building_id")
+def elcm_simulate(jobs, buildings, nodes):
+    return utils.lcm_simulate("elcm.yaml", jobs, buildings, nodes,
+                              "building_id", "job_spaces",
+                              "vacant_job_spaces")
 
 
 @sim.model('households_relocation')
-def households_relocation():
-    return ymr.simple_relocation("households", .05)
+def households_relocation(households):
+    return utils.simple_relocation(households, .05, "building_id")
 
 
 @sim.model('jobs_relocation')
-def jobs_relocation():
-    return ymr.simple_relocation("jobs", .05)
+def jobs_relocation(jobs):
+    return utils.simple_relocation(jobs, .05, "building_id")
 
 
 @sim.model('households_transition')
-def households_transition():
-    return ymr.simple_transition("households", .05)
+def households_transition(households):
+    return utils.simple_transition(households, .05)
 
 
 @sim.model('jobs_transition')
-def jobs_transition():
-    return ymr.simple_transition("jobs", .05)
+def jobs_transition(jobs):
+    return utils.simple_transition(jobs, .05)
 
 
 @sim.model('build_networks')
@@ -152,7 +140,7 @@ def price_vars():
 
 
 @sim.model('feasibility')
-def feasibility(parcels):
+def feasibility(parcels, form_to_btype):
     pf = sqftproforma.SqFtProForma()
 
     df = parcels.to_frame()
@@ -168,7 +156,7 @@ def feasibility(parcels):
     d = {}
     for form in pf.config.forms:
         print "Computing feasibility for form %s" % form
-        d[form] = pf.lookup(form, df[variables.parcel_is_allowed(form)])
+        d[form] = pf.lookup(form, df[variables.parcel_is_allowed(form, form_to_btype)])
 
     far_predictions = pd.concat(d.values(), keys=d.keys(), axis=1)
 
@@ -176,7 +164,7 @@ def feasibility(parcels):
 
 
 @sim.model('residential_developer')
-def residential_developer(feasibility, households, buildings, parcels, year):
+def residential_developer(feasibility, households, buildings, parcels, year, form_to_btype):
     residential_target_vacancy = .15
     dev = developer.Developer(feasibility.to_frame())
 
@@ -194,7 +182,7 @@ def residential_developer(feasibility, households, buildings, parcels, year):
 
     new_buildings["year_built"] = year
     new_buildings["form"] = "residential"
-    new_buildings["building_type_id"] = new_buildings["form"].apply(random_type)
+    new_buildings["building_type_id"] = new_buildings["form"].apply(random_type, args=[form_to_btype])
     new_buildings["stories"] = new_buildings.stories.apply(np.ceil)
     for col in ["residential_sales_price", "residential_rent", "non_residential_rent"]:
         new_buildings[col] = np.nan
@@ -208,12 +196,12 @@ def residential_developer(feasibility, households, buildings, parcels, year):
 
 
 @sim.model('non_residential_developer')
-def non_residential_developer(feasibility, jobs, buildings, parcels, year):
+def non_residential_developer(feasibility, jobs, buildings, parcels, year, form_to_btype):
     non_residential_target_vacancy = .15
     dev = developer.Developer(feasibility.to_frame())
 
     target_units = dev.compute_units_to_build(len(jobs),
-                                              buildings.non_residential_units.sum(),
+                                              buildings.job_spaces.sum(),
                                               non_residential_target_vacancy)
 
     new_buildings = dev.pick(["office", "retail", "industrial"],
@@ -224,7 +212,7 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year):
                              # developer will build enough units assuming 500 sqft
                              # per job but then it just returns the result as square
                              # footage and the actual building_sqft_per_job will be
-                             # used to compute non_residential_units.  In other words,
+                             # used to compute job_spaces.  In other words,
                              # we can over- or under- build the number of units here
                              # but we should still get roughly the right amount of
                              # development out of this and the final numbers are precise.
@@ -237,7 +225,7 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year):
                              residential=False)
 
     new_buildings["year_built"] = year
-    new_buildings["building_type_id"] = new_buildings["form"].apply(random_type)
+    new_buildings["building_type_id"] = new_buildings["form"].apply(random_type, args=[form_to_btype])
     new_buildings["residential_units"] = 0
     new_buildings["stories"] = new_buildings.stories.apply(np.ceil)
     for col in ["residential_sales_price", "residential_rent", "non_residential_rent"]:
@@ -260,3 +248,23 @@ def write_output():
     for tblname in tblnames:
         tbl = sim.get_table(tblname)
         store[tblname] = tbl.to_frame(tbl.local_columns)
+
+
+@sim.model("travel_model_output")
+def travel_model_output(households, zones):
+    households = households.to_frame()
+    zones = zones.to_frame()
+
+    zones['HHINC1'] = households.query("income < 25000").\
+        groupby('zone_id').size()
+
+    zones['HHINC2'] = households.query("income >= 25000 and income < 45000").\
+        groupby('zone_id').size()
+
+    zones['HHINC3'] = households.query("income >= 45000 and income < 75000").\
+        groupby('zone_id').size()
+
+    zones['HHINC4'] = households.query("income >= 75000").\
+        groupby('zone_id').size()
+
+    sim.add_table("travel_model_output", zones)

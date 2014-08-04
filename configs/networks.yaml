@@ -16,7 +16,7 @@ variable_definitions:
 
   - name: sum_nonresidential_units
     dataframe: buildings
-    varname: non_residential_units
+    varname: job_spaces
     radius: 1500
     apply: np.log1p
 

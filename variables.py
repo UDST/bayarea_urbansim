@@ -2,6 +2,7 @@ import pandas as pd
 from urbansim.utils import misc
 import urbansim.sim.simulation as sim
 import dataset
+import utils
 
 
 #####################
@@ -25,8 +26,8 @@ def zone_id(buildings, parcels):
 
 
 @sim.column('buildings', 'general_type')
-def general_type(buildings):
-    return buildings.building_type_id.map(dataset.BUILDING_TYPE_MAP)
+def general_type(buildings, building_type_map):
+    return buildings.building_type_id.map(building_type_map)
 
 
 @sim.column('buildings', 'unit_sqft')
@@ -41,12 +42,21 @@ def unit_lot_size(buildings, parcels):
 
 @sim.column('buildings', 'sqft_per_job')
 def sqft_per_job(buildings, building_sqft_per_job):
-    return misc.reindex(building_sqft_per_job.sqft_per_job, buildings.building_type_id.fillna(-1))
+    return buildings.building_type_id.fillna(-1).map(building_sqft_per_job)
 
 
-@sim.column('buildings', 'non_residential_units')
-def non_residential_units(buildings):
+@sim.column('buildings', 'job_spaces')
+def job_spaces(buildings):
     return (buildings.non_residential_sqft / buildings.sqft_per_job).fillna(0).astype('int')
+
+
+@sim.column('buildings', 'vacant_residential_units')
+def vacant_residential_units(buildings, households):
+    return buildings.residential_units.sub(households.building_id.value_counts(), fill_value=0)
+
+@sim.column('buildings', 'vacant_job_spaces')
+def vacant_residential_units(buildings, jobs):
+    return buildings.job_spaces.sub(jobs.building_id.value_counts(), fill_value=0)
 
 
 #####################
@@ -185,19 +195,22 @@ def parcel_average_price(use):
                         sim.get_table('parcels')._node_id)
 
 
-def parcel_is_allowed(form):
+def parcel_is_allowed(form, form_to_btype):
     # we have zoning by building type but want to know if specific forms are allowed
-    allowed = [sim.get_table('zoning_baseline')['type%d' % typ] == 't' for typ in dataset.FORM_TO_BTYPE[form]]
+    allowed = [sim.get_table('zoning_baseline')['type%d' % typ] == 't' for typ in form_to_btype[form]]
     return pd.concat(allowed, axis=1).max(axis=1).reindex(sim.get_table('parcels').index).fillna(False)
 
 
 @sim.column('parcels', 'max_far')
-def max_far(parcels, zoning_baseline, zoning_test):
-    max_far = zoning_baseline.max_far
-    if dataset.SCENARIO == "test":
-        upzone = zoning_test.far_up.dropna()
-        max_far = pd.concat([max_far, upzone], axis=1).max(skipna=True, axis=1)
-    return max_far.reindex(parcels.index).fillna(0)
+def max_far(parcels, scenario):
+    return utils.conditional_upzone(scenario, "max_far", "far_up").\
+        reindex(parcels.index).fillna(0)
+
+
+@sim.column('parcels', 'max_dua')
+def max_dua(parcels, scenario):
+    return utils.conditional_upzone(scenario, "max_far", "dua_up").\
+        reindex(parcels.index).fillna(0)
 
 
 @sim.column('parcels', 'max_height')
@@ -215,6 +228,11 @@ def ave_unit_sqft(parcels, nodes):
     return misc.reindex(nodes.ave_unit_sqft, parcels._node_id)
 
 
+@sim.column('parcels', 'ave_unit_size')
+def ave_unit_size(parcels, nodes):
+    return misc.reindex(nodes.ave_unit_sqft, parcels._node_id)
+
+
 @sim.column('parcels', 'total_units')
 def total_units(buildings):
     return buildings.residential_units.groupby(buildings.parcel_id).sum().fillna(0)
@@ -222,7 +240,7 @@ def total_units(buildings):
 
 @sim.column('parcels', 'total_nonres_units')
 def total_nonres_units(buildings):
-    return buildings.non_residential_units.groupby(buildings.parcel_id).sum().fillna(0)
+    return buildings.job_spaces.groupby(buildings.parcel_id).sum().fillna(0)
 
 
 @sim.column('parcels', 'total_sqft')
@@ -230,9 +248,8 @@ def total_sqft(buildings):
     return buildings.building_sqft.groupby(buildings.parcel_id).sum().fillna(0)
 
 
-# causing trouble trying to load 'nodes_prices.csv'
-#@sim.column('parcels', 'land_cost')
-#def land_cost(parcels):
-#    # TODO
-#    # this needs to account for cost for the type of building it is
-#    return (parcels.total_sqft * parcel_average_price("residential")).reindex(parcels.index).fillna(0)
+@sim.column('parcels', 'land_cost')
+def land_cost(parcels):
+    # TODO
+    # this needs to account for cost for the type of building it is
+    return (parcels.total_sqft * parcel_average_price("residential")).reindex(parcels.index).fillna(0)
