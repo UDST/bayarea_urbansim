@@ -194,7 +194,7 @@ def run_feasibility(parcels, parcel_price_callback,
 
     Parameters
     ----------
-    parcels : dataframewrapper
+    parcels : DataFrame Wrapper
         The data frame wrapper for the parcel data
     parcel_price_callback : function
         A callback which takes each use of the pro forma and returns a series
@@ -241,6 +241,54 @@ def run_developer(forms, agents, buildings, supply_fname, parcel_size,
                   target_vacancy=.1, form_to_btype_callback=None,
                   add_more_columns_callback=None, max_parcel_size=200000,
                   residential=True, bldg_sqft_per_job=400.0):
+    """
+    Run the developer model to pick and build buildings
+
+    Parameters
+    ----------
+    forms : string or list of strings
+        Passed directly dev.pick
+    agents : DataFrame Wrapper
+        Used to compute the current demand for units/floorspace in the area
+    buildings : DataFrame Wrapper
+        Used to compute the current supply of units/floorspace in the area
+    supply_fname : string
+        Identifies the column in buildings which indicates the supply of
+        units/floorspace
+    parcel_size : Series
+        Passed directly to dev.pick
+    ave_unit_size : Series
+        Passed directly to dev.pick - average residential unit size
+    total_units : Series
+        Passed directly to dev.pick - total current residential_units /
+        job_spaces
+    feasibility : DataFrame Wrapper
+        The output from feasibility above (the table called 'feasibility')
+    year : int
+        The year of the simulation - will be assigned to 'year_built' on the
+        new buildings
+    target_vacancy : float
+        The target vacancy rate - used to determine how much to build
+    form_to_btype_callback : function
+        Will be used to convert the 'forms' in the pro forma to
+        'building_type_id' in the larger model
+    add_more_columns_callback : function
+        Takes a dataframe and returns a dataframe - is used to make custom
+        modifications to the new buildings that get added
+    max_parcel_size : float
+        Passed directly to dev.pick - max parcel size to consider
+    residential : boolean
+        Passed directly to dev.pick - switches between adding/computing
+        residential_units and job_spaces
+    bldg_sqft_per_job : float
+        Passed directly to dev.pick - specified the multiplier between
+        floor spaces and job spaces for this form (does not vary by parcel
+        as ave_unit_size does)
+
+    Returns
+    -------
+    Writes the result back to the buildings table (returns nothing)
+    """
 
     dev = developer.Developer(feasibility.to_frame())
 
