@@ -1,4 +1,4 @@
 bayarea
 =======
 
-This is a very basic set of hedonics and location choice models for the Bay Area.
+This is the full UrbanSim implementation for the Bay Area.
