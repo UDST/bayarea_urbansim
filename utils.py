@@ -386,9 +386,3 @@ def run_developer(forms, agents, buildings, supply_fname, parcel_size,
                               new_buildings[buildings.local_columns])
 
     sim.add_table("buildings", all_buildings)
-
-    '''
-    TODO
-    accounting correct when run out of units in # of placed hhlds (end)
-    why do the 10 nonres buildings get built over and over (end) (land_cost?)
-    '''
