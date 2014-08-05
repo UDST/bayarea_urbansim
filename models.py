@@ -186,6 +186,9 @@ def travel_model_output(households, zones):
     households = households.to_frame()
     zones = zones.to_frame()
 
+    zones['TOTHH'] = households.query("income > 0").\
+        groupby('zone_id').size()
+
     zones['HHINC1'] = households.query("income < 25000").\
         groupby('zone_id').size()
 
