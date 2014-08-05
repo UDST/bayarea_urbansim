@@ -6,6 +6,9 @@ from urbansim.utils import misc
 
 sim.add_injectable("building_sqft_per_job", {
     -1: 400,
+    1: 400,
+    2: 400,
+    3: 400,
     4: 355,
     5: 1161,
     6: 470,

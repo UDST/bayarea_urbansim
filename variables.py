@@ -267,5 +267,5 @@ def land_cost(parcels, nodes_prices):
         return pd.Series(index=parcels.index)
     # TODO
     # this needs to account for cost for the type of building it is
-    return (parcels.total_sqft * parcel_average_price("retail")).\
+    return (parcels.total_sqft * parcel_average_price("residential")).\
         reindex(parcels.index).fillna(0)

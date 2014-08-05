@@ -28,15 +28,20 @@ def buildings(store, households, jobs, building_sqft_per_job):
     for col in ["residential_sales_price", "residential_rent",
                 "non_residential_rent"]:
         df[col] = 0
+
+    # prevent overfull buildings (residential)
     df["residential_units"] = pd.concat([df.residential_units,
                                          households.building_id.value_counts()
                                          ], axis=1).max(axis=1)
-    '''tmpdf = pd.concat([
+
+    # prevent overfull buildings (non-residential)
+    tmp_df = pd.concat([
         df.non_residential_sqft,
         jobs.building_id.value_counts() *
-        buildings.building_type_id.fillna(-1).map(building_sqft_per_job)
+        df.building_type_id.fillna(-1).map(building_sqft_per_job)
     ], axis=1)
-    df["non_residential_sqft"] = tmpdf.max(axis=1)'''
+    df["non_residential_sqft"] = tmp_df.max(axis=1).apply(np.ceil)
+
     df = utils.fill_nas_from_config('buildings', df)
     return df
 

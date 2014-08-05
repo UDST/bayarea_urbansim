@@ -100,7 +100,7 @@ def households_transition(households):
 
 @sim.model('jobs_transition')
 def jobs_transition(jobs):
-    return utils.simple_transition(jobs, .08, "building_id")
+    return utils.simple_transition(jobs, .05, "building_id")
 
 
 @sim.model('build_networks')

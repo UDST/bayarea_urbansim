@@ -354,8 +354,6 @@ def run_developer(forms, agents, buildings, supply_fname, parcel_size,
                              bldg_sqft_per_job=bldg_sqft_per_job)
 
     sim.add_table("feasibility", dev.feasibility)
-    print "{:,} feasible buildings after running developer".format(
-          len(dev.feasibility))
 
     if new_buildings is None:
         return
@@ -381,6 +379,9 @@ def run_developer(forms, agents, buildings, supply_fname, parcel_size,
                int(new_buildings[supply_fname].sum()),
                supply_fname)
 
+    print "{:,} feasible buildings after running developer".format(
+          len(dev.feasibility))
+
     all_buildings = dev.merge(buildings.to_frame(buildings.local_columns),
                               new_buildings[buildings.local_columns])
 
@@ -388,8 +389,6 @@ def run_developer(forms, agents, buildings, supply_fname, parcel_size,
 
     '''
     TODO
-    stop overfull nonres buildings (data)
-
     accounting correct when run out of units in # of placed hhlds (end)
     why do the 10 nonres buildings get built over and over (end) (land_cost?)
     '''
