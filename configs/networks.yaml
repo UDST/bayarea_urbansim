@@ -35,6 +35,10 @@ variable_definitions:
   - name: ave_lot_sqft
     dataframe: buildings
     varname: unit_lot_size
+    add_fields:
+    - general_type
+    filters:
+    - general_type == "Residential"
     radius: 1500
     apply: np.log1p
     decay: flat

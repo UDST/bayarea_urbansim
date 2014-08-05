@@ -59,6 +59,15 @@ sim.add_injectable("form_to_btype", {
 sim.add_injectable("store", pd.HDFStore(os.path.join(misc.data_dir(),
                                                      "sanfran.h5"), mode="r"))
 
+sim.add_injectable("fillna_config", {
+    "buildings": {
+        "residential_units": ("zero", "int"),
+        "non_residential_sqft": ("zero", "int"),
+        "year_built": ("median", "int"),
+        "building_type_id": ("mode", "int")
+    }
+})
+
 
 # this keeps track of all of the inputs that get "switched"
 # whenever a scenario is changed

@@ -95,12 +95,12 @@ def jobs_relocation(jobs):
 
 @sim.model('households_transition')
 def households_transition(households):
-    return utils.simple_transition(households, .05)
+    return utils.simple_transition(households, .05, "building_id")
 
 
 @sim.model('jobs_transition')
 def jobs_transition(jobs):
-    return utils.simple_transition(jobs, .05)
+    return utils.simple_transition(jobs, .08, "building_id")
 
 
 @sim.model('build_networks')
@@ -142,7 +142,7 @@ def random_type(form):
 def add_extra_columns(df):
     for col in ["residential_sales_price", "residential_rent",
                 "non_residential_rent"]:
-        df[col] = np.nan
+        df[col] = 0
     return df
 
 

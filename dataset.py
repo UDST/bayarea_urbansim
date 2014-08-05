@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import os
 import assumptions
+import utils
 from urbansim.utils import misc
 import urbansim.sim.simulation as sim
 
@@ -20,11 +21,23 @@ def jobs(store):
 
 
 @sim.table_source('buildings')
-def buildings(store):
+def buildings(store, households, jobs, building_sqft_per_job):
     df = store['buildings']
+    # non-res buildings get no residential units by default
+    df.residential_units[df.building_type_id > 3] = 0
     for col in ["residential_sales_price", "residential_rent",
                 "non_residential_rent"]:
-        df[col] = np.nan
+        df[col] = 0
+    df["residential_units"] = pd.concat([df.residential_units,
+                                         households.building_id.value_counts()
+                                         ], axis=1).max(axis=1)
+    '''tmpdf = pd.concat([
+        df.non_residential_sqft,
+        jobs.building_id.value_counts() *
+        buildings.building_type_id.fillna(-1).map(building_sqft_per_job)
+    ], axis=1)
+    df["non_residential_sqft"] = tmpdf.max(axis=1)'''
+    df = utils.fill_nas_from_config('buildings', df)
     return df
 
 
