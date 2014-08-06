@@ -56,7 +56,8 @@ sim.add_injectable("form_to_btype", {
 })
 
 
-sim.add_injectable("store", pd.HDFStore(os.path.join(misc.data_dir(), "sanfran.h5"), mode="r"))
+sim.add_injectable("store", pd.HDFStore(os.path.join(misc.data_dir(),
+                                                     "sanfran.h5"), mode="r"))
 
 
 # this keeps track of all of the inputs that get "switched"

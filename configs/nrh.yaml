@@ -83,20 +83,20 @@ models:
                 np.log1p(stories): -0.07546935076117639
             Std. Error:
                 I(year_built < 1940)[T.True]: 0.10504886309603684
-                I(year_built > 2005)[T.True]: 0.24568781475832285
-                Intercept: 2.476361580633968
+                I(year_built > 2005)[T.True]: 0.24568781475832283
+                Intercept: 2.4763615806339674
                 ave_income: 0.19267873080083395
                 jobs: 0.046371169131790714
-                np.log1p(stories): 0.11033907175573723
+                np.log1p(stories): 0.11033907175573722
             T-Score:
                 I(year_built < 1940)[T.True]: -0.8958492977602487
                 I(year_built > 2005)[T.True]: -0.4255534429780408
-                Intercept: -0.34765993142777846
+                Intercept: -0.3476599314277785
                 ave_income: 1.544545289971827
                 jobs: 2.4821850317383647
-                np.log1p(stories): -0.6839766690102888
-        fit_rsquared: 0.052823792346955445
-        fit_rsquared_adj: 0.01268920727691103
+                np.log1p(stories): -0.6839766690102889
+        fit_rsquared: 0.052823792346955556
+        fit_rsquared_adj: 0.012689207276911252
         fitted: true
         name: Retail
         ytransform: np.exp
