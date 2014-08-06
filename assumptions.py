@@ -60,7 +60,8 @@ sim.add_injectable("form_to_btype", {
 
 
 sim.add_injectable("store", pd.HDFStore(os.path.join(misc.data_dir(),
-                                                     "sanfran.h5"), mode="r"))
+                                                     "bayarea_v2.h5"),
+                                        mode="r"))
 
 sim.add_injectable("fillna_config", {
     "buildings": {

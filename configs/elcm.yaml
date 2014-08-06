@@ -8,15 +8,9 @@ choosers_fit_filters: null
 
 choosers_predict_filters: null
 
-alts_fit_filters:
-- general_type != 'Residential'
-- building_type_id != 5
-- building_type_id != 6
+alts_fit_filters: null
 
-alts_predict_filters:
-- general_type != 'Residential'
-- building_type_id != 5
-- building_type_id != 6
+alts_predict_filters: null
 
 interaction_predict_filters: null
 

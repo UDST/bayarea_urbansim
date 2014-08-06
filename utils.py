@@ -182,6 +182,11 @@ def lcm_simulate(cfg, choosers, buildings, nodes, out_fname,
 
     movers = choosers_df[choosers_df[out_fname] == -1]
 
+    if len(movers) > vacant_units.sum():
+        print "WARNING: Not enough locations for movers"
+        print "    reducing locations to size of movers for performance gain"
+        movers = movers.head(vacant_units.sum())
+
     new_units, _ = yaml_to_class(cfg).predict_from_cfg(movers, units, cfg)
 
     # new_units returns nans when there aren't enough units,

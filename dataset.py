@@ -42,6 +42,7 @@ def buildings(store, households, jobs, building_sqft_per_job):
     ], axis=1)
     df["non_residential_sqft"] = tmp_df.max(axis=1).apply(np.ceil)
 
+    df = df.query("building_type_id > 0 and building_type_id <= 14")
     df = utils.fill_nas_from_config('buildings', df)
     return df
 

@@ -37,7 +37,7 @@ def unit_sqft(buildings):
 
 @sim.column('buildings', 'unit_lot_size', cache=True)
 def unit_lot_size(buildings, parcels):
-    return misc.reindex(parcels.parcel_size, buildings.parcel_id) / \
+    return misc.reindex(parcels.parcel_size, buildings.parcel_id).fillna(0) / \
         buildings.residential_units.replace(0, 1)
 
 
