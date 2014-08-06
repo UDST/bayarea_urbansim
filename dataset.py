@@ -42,7 +42,8 @@ def buildings(store, households, jobs, building_sqft_per_job):
     ], axis=1)
     df["non_residential_sqft"] = tmp_df.max(axis=1).apply(np.ceil)
 
-    df = df.query("building_type_id > 0 and building_type_id <= 14")
+    df = df[df.building_type_id > 0]
+    df = df[df.building_type_id <= 14]
     df = utils.fill_nas_from_config('buildings', df)
     return df
 
@@ -50,6 +51,8 @@ def buildings(store, households, jobs, building_sqft_per_job):
 @sim.table_source('households')
 def households(store):
     df = store['households']
+    # have to do it this way to prevent circular reference
+    df.building_id.loc[~df.building_id.isin(store['buildings'].index)] = -1
     return df
 
 
