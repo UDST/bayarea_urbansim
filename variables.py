@@ -32,13 +32,13 @@ def general_type(buildings, building_type_map):
 
 @sim.column('buildings', 'unit_sqft', cache=True)
 def unit_sqft(buildings):
-    return buildings.building_sqft / buildings.residential_units
+    return buildings.building_sqft / buildings.residential_units.replace(0, 1)
 
 
 @sim.column('buildings', 'unit_lot_size', cache=True)
 def unit_lot_size(buildings, parcels):
-    return misc.reindex(parcels.parcel_size, buildings.parcel_id) / \
-        buildings.residential_units
+    return misc.reindex(parcels.parcel_size, buildings.parcel_id).fillna(0) / \
+        buildings.residential_units.replace(0, 1)
 
 
 @sim.column('buildings', 'sqft_per_job', cache=True)
@@ -59,7 +59,7 @@ def vacant_residential_units(buildings, households):
 
 
 @sim.column('buildings', 'vacant_job_spaces')
-def vacant_residential_units(buildings, jobs):
+def vacant_job_spaces(buildings, jobs):
     return buildings.job_spaces.sub(
         jobs.building_id.value_counts(), fill_value=0)
 
