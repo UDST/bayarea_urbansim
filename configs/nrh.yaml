@@ -10,6 +10,8 @@ fit_filters:
 predict_filters:
 - general_type != 'Residential'
 
+min_segment_size: 10
+
 default_config:
     model_expression: np.log1p(rent) ~ I(year_built < 1940) + I(year_built > 2005)
         + np.log1p(stories) + ave_income + jobs
@@ -102,5 +104,3 @@ models:
         ytransform: np.exp
 
 fitted: true
-
-min_segment_size: 10

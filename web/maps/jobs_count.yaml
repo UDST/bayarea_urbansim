@@ -8,6 +8,4 @@ metric: size()
 
 colorscheme: Purples
 
-jointobuildings: true
-
 groupby: zone_id

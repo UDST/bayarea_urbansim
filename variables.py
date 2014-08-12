@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 from urbansim.utils import misc
 import urbansim.sim.simulation as sim
@@ -163,8 +164,10 @@ def naics(jobs):
 
 @sim.column('homesales', 'sale_price_flt')
 def sale_price_flt(homesales):
-    return homesales.Sale_price.str.replace('$', '').\
+    col = homesales.Sale_price.str.replace('$', '').\
         str.replace(',', '').astype('f4') / homesales.unit_sqft
+    col[homesales.unit_sqft == 0] = np.nan
+    return col
 
 
 @sim.column('homesales', 'year_built')
