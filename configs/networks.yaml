@@ -4,7 +4,7 @@ desc: Neighborhood Accessibility Variables
 
 model_type: networks
 
-node_col: _node_id0
+node_col: _node_id
 
 variable_definitions:
     
@@ -23,8 +23,6 @@ variable_definitions:
   - name: ave_unit_sqft
     dataframe: buildings
     varname: unit_sqft
-    add_fields:
-    - general_type
     filters:
     - general_type == "Residential"
     radius: 1500
@@ -35,8 +33,6 @@ variable_definitions:
   - name: ave_lot_sqft
     dataframe: buildings
     varname: unit_lot_size
-    add_fields:
-    - general_type
     filters:
     - general_type == "Residential"
     radius: 1500
@@ -52,8 +48,6 @@ variable_definitions:
 
   - name: poor
     dataframe: households
-    add_fields:
-    - income
     filters:
     - income < 40000
     varname: persons
@@ -62,8 +56,6 @@ variable_definitions:
 
   - name: renters
     dataframe: households
-    add_fields:
-    - tenure
     filters:
     - tenure == 2
     radius: 1500
@@ -71,8 +63,6 @@ variable_definitions:
 
   - name: sfdu
     dataframe: buildings
-    add_fields:
-    - building_type_id
     filters:
     - building_type_id == 1
     radius: 1500

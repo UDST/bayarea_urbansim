@@ -1,12 +1,13 @@
 from urbansim.developer import developer
-from urbansim.utils import networks
 import urbansim.sim.simulation as sim
 from urbansim.utils import misc
+from urbansim.utils import pnetworks as networks
 import os
 import random
 import utils
 import dataset
 import variables
+import pandana as pdna
 import pandas as pd
 import numpy as np
 
@@ -105,24 +106,27 @@ def jobs_transition(jobs):
 
 @sim.model('build_networks')
 def build_networks():
-    if networks.NETWORKS is None:
-        networks.NETWORKS = networks.Networks(
-            [os.path.join(misc.data_dir(), x) for x in ['osm_bayarea.jar']],
-            factors=[1.0],
-            maxdistances=[2000],
-            twoway=[1],
-            impedances=None)
+    st = pd.HDFStore(os.path.join(misc.data_dir(), "osm_bayarea.h5"), "r")
+    nodes, edges = st.nodes, st.edges
+    net = pdna.Network(nodes["x"], nodes["y"], edges["from"], edges["to"],
+                       edges[["weight"]])
+    net.precompute(2000)
+    sim.add_injectable("net", net)
 
 
 @sim.model('neighborhood_vars')
-def neighborhood_vars():
-    nodes = networks.from_yaml("networks.yaml")
+def neighborhood_vars(net):
+    nodes = networks.from_yaml(net, "networks.yaml")
+    print nodes.describe()
+    print pd.Series(nodes.index).describe()
     sim.add_table("nodes", nodes)
 
 
 @sim.model('price_vars')
-def price_vars():
-    nodes = networks.from_yaml("networks2.yaml")
+def price_vars(net):
+    nodes = networks.from_yaml(net, "networks2.yaml")
+    print nodes.describe()
+    print pd.Series(nodes.index).describe()
     sim.add_table("nodes_prices", nodes)
 
 
