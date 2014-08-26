@@ -236,7 +236,7 @@ def _print_number_unplaced(df, fieldname):
 
 
 def run_feasibility(parcels, parcel_price_callback,
-                    parcel_use_allowed_callback, residential_to_yearly=True):
+                    parcel_use_allowed_callback, residential_to_yearly=True, config=None):
     """
     Execute development feasibility on all parcels
 
@@ -254,12 +254,14 @@ def run_feasibility(parcels, parcel_price_callback,
     residential_to_yearly : boolean (default true)
         Whether to use the cap rate to convert the residential price from total
         sales price per sqft to rent per sqft
+    config : SqFtProFormaConfig configuration object.  Optional.  Defaults to None
 
     Returns
     -------
     Adds a table called feasibility to the sim object (returns nothing)
     """
-    pf = sqftproforma.SqFtProForma()
+
+    pf = sqftproforma.SqFtProForma(config) if config else sqftproforma.SqFtProForma()
 
     df = parcels.to_frame()
 
