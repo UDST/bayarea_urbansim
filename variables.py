@@ -157,6 +157,11 @@ def naics(jobs):
     return jobs.naics11cat
 
 
+@sim.column('jobs', 'empsix', cache=True)
+def empsix(jobs, naics_to_empsix):
+    return jobs.naics.map(naics_to_empsix)
+
+
 #####################
 # HOMESALES VARIABLES
 #####################
