@@ -4,7 +4,7 @@ desc: Neighborhood Price Variables
 
 model_type: networks
 
-node_col: _node_id0
+node_col: _node_id
 
 variable_definitions:
 
@@ -18,8 +18,6 @@ variable_definitions:
 -   aggregation: average
     dataframe: buildings
     decay: flat
-    add_fields:
-    - general_type
     filters:
     - general_type == "Retail"
     name: retail
@@ -29,8 +27,6 @@ variable_definitions:
 -   aggregation: average
     dataframe: buildings
     decay: flat
-    add_fields:
-    - general_type
     filters:
     - general_type == "Office"
     name: office
@@ -40,8 +36,6 @@ variable_definitions:
 -   aggregation: average
     dataframe: buildings
     decay: flat
-    add_fields:
-    - general_type
     filters:
     - general_type == "Industrial"
     name: industrial
