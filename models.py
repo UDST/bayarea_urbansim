@@ -1,7 +1,7 @@
 from urbansim.developer import developer
 import urbansim.sim.simulation as sim
 from urbansim.utils import misc
-from urbansim.utils import pnetworks as networks
+from urbansim.utils import networks
 import os
 import random
 import utils
