@@ -1,5 +1,6 @@
 import urbansim.sim.simulation as sim
 import os
+import uuid
 import pandas as pd
 from urbansim.utils import misc
 
@@ -21,6 +22,9 @@ sim.add_injectable("building_sqft_per_job", {
     13: 383,
     14: 383,
 })
+
+
+sim.add_injectable("run_number", misc.get_run_number())
 
 
 # this maps building type ids to general building types
@@ -57,6 +61,39 @@ sim.add_injectable("form_to_btype", {
     'mixedresidential': [12],
     'mixedoffice': [14],
 })
+
+
+@sim.injectable("uuid")
+def get_run_uuid():
+    return uuid.uuid4().hex
+
+
+# this if the function for mapping a specific building that we build to a
+# specific building type
+@sim.injectable("form_to_btype_f", autocall=False)
+def form_to_btype_f(building):
+    form = building.form
+    dua = building.residential_units / (building.parcel_size / 43560.0)
+    # precise mapping of form to building type for residential
+    if form == "residential":
+        if dua < 16:
+            return 1
+        elif dua < 32:
+            return 2
+        return 3
+    return sim.get_injectable("form_to_btype")[form][0]
+
+
+@sim.injectable("empsix_name_to_id")
+def empsix_name_to_id_map():
+    return {
+        "AGREMPN": 1,
+        "MWTEMPN": 2,
+        "RETEMPN": 3,
+        "FPSEMPN": 4,
+        "HEREMPN": 5,
+        "OTHEMPN": 6
+    }
 
 
 # this maps Synthicity's 25 employment categories to

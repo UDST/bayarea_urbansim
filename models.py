@@ -2,9 +2,11 @@ from urbansim.developer import developer
 import urbansim.sim.simulation as sim
 from urbansim.utils import misc
 from urbansim.utils import networks
+from urbansim.models import transition
 import os
 import random
 import utils
+import time
 import dataset
 import variables
 import pandana as pdna
@@ -13,13 +15,13 @@ import numpy as np
 
 
 @sim.model('rsh_estimate')
-def rsh_estimate(homesales, nodes):
-    return utils.hedonic_estimate("rsh.yaml", homesales, nodes)
+def rsh_estimate(homesales, nodes, logsums):
+    return utils.hedonic_estimate("rsh.yaml", homesales, [nodes, logsums])
 
 
 @sim.model('rsh_simulate')
-def rsh_simulate(buildings, nodes):
-    return utils.hedonic_simulate("rsh.yaml", buildings, nodes,
+def rsh_simulate(buildings, nodes, logsums):
+    return utils.hedonic_simulate("rsh.yaml", buildings, [nodes, logsums],
                                   "residential_sales_price")
 
 
@@ -95,13 +97,39 @@ def jobs_relocation(jobs):
 
 
 @sim.model('households_transition')
-def households_transition(households):
+def households_transition(households, household_controls, year):
+    ct = household_controls.to_frame()
+    hh = households.to_frame(households.local_columns+['income_quartile'])
+    print "Total households before transition: {}".format(len(hh))
+    tran = transition.TabularTotalsTransition(ct, 'total_number_of_households')
+    model = transition.TransitionModel(tran)
+    new, added_hh_idx, new_linked = model.transition(hh, year)
+    new.loc[added_hh_idx, "building_id"] = -1
+    print "Total households after transition: {}".format(len(new))
+    sim.add_table("households", new)
+
+
+@sim.model('simple_households_transition')
+def simple_households_transition(households):
     return utils.simple_transition(households, .05, "building_id")
 
 
 @sim.model('jobs_transition')
+def jobs_transition(jobs, employment_controls, year):
+    ct = employment_controls.to_frame()
+    hh = jobs.to_frame(jobs.local_columns+['empsix_id'])
+    print "Total jobs before transition: {}".format(len(hh))
+    tran = transition.TabularTotalsTransition(ct, 'number_of_jobs')
+    model = transition.TransitionModel(tran)
+    new, added_hh_idx, new_linked = model.transition(hh, year)
+    new.loc[added_hh_idx, "building_id"] = -1
+    print "Total jobs after transition: {}".format(len(new))
+    sim.add_table("jobs", new)
+
+
+@sim.model('simple_jobs_transition')
 def jobs_transition(jobs):
-    return utils.simple_transition(jobs, .05, "building_id")
+    return utils.simple_transition(jobs, .015, "building_id")
 
 
 @sim.model('build_networks')
@@ -110,7 +138,7 @@ def build_networks():
     nodes, edges = st.nodes, st.edges
     net = pdna.Network(nodes["x"], nodes["y"], edges["from"], edges["to"],
                        edges[["weight"]])
-    net.precompute(2000)
+    net.precompute(1500)
     sim.add_injectable("net", net)
 
 
@@ -118,7 +146,6 @@ def build_networks():
 def neighborhood_vars(net):
     nodes = networks.from_yaml(net, "networks.yaml")
     print nodes.describe()
-    print pd.Series(nodes.index).describe()
     sim.add_table("nodes", nodes)
 
 
@@ -126,7 +153,6 @@ def neighborhood_vars(net):
 def price_vars(net):
     nodes = networks.from_yaml(net, "networks2.yaml")
     print nodes.describe()
-    print pd.Series(nodes.index).describe()
     sim.add_table("nodes_prices", nodes)
 
 
@@ -135,12 +161,12 @@ def feasibility(parcels):
     utils.run_feasibility(parcels,
                           variables.parcel_average_price,
                           variables.parcel_is_allowed,
-                          residential_to_yearly=True)
-
-
-def random_type(form):
-    form_to_btype = sim.get_injectable("form_to_btype")
-    return random.choice(form_to_btype[form])
+                          historic_preservation='oldest_building > 1940 and '
+                                                'oldest_building < 2000',
+                          residential_to_yearly=True,
+                          pass_through=["oldest_building", "total_sqft",
+                                        "max_far", "max_dua", "land_cost",
+                                        "residential"])
 
 
 def add_extra_columns(df):
@@ -152,41 +178,87 @@ def add_extra_columns(df):
 
 @sim.model('residential_developer')
 def residential_developer(feasibility, households, buildings, parcels, year):
-    utils.run_developer("residential",
-                        households,
-                        buildings,
-                        "residential_units",
-                        parcels.parcel_size,
-                        parcels.ave_unit_size,
-                        parcels.total_units,
-                        feasibility,
-                        year=year,
-                        target_vacancy=.08,
-                        form_to_btype_callback=random_type,
-                        add_more_columns_callback=add_extra_columns,
-                        bldg_sqft_per_job=400.0)
+    new_buildings = utils.run_developer(
+        "residential",
+        households,
+        buildings,
+        "residential_units",
+        parcels.parcel_size,
+        parcels.ave_unit_size,
+        parcels.total_units,
+        feasibility,
+        year=year,
+        target_vacancy=.13,
+        min_unit_size=1000,
+        form_to_btype_callback=sim.get_injectable("form_to_btype_f"),
+        add_more_columns_callback=add_extra_columns,
+        bldg_sqft_per_job=400.0)
+
+    utils.add_parcel_output(new_buildings)
 
 
 @sim.model('non_residential_developer')
 def non_residential_developer(feasibility, jobs, buildings, parcels, year):
-    utils.run_developer(["office", "retail", "industrial"],
-                        jobs,
-                        buildings,
-                        "job_spaces",
-                        parcels.parcel_size,
-                        parcels.ave_unit_size,
-                        parcels.total_job_spaces,
-                        feasibility,
-                        year=year,
-                        target_vacancy=.08,
-                        form_to_btype_callback=random_type,
-                        add_more_columns_callback=add_extra_columns,
-                        residential=False,
-                        bldg_sqft_per_job=400.0)
+    new_buildings = utils.run_developer(
+        ["office", "retail", "industrial"],
+        jobs,
+        buildings,
+        "job_spaces",
+        parcels.parcel_size,
+        parcels.ave_unit_size,
+        parcels.total_job_spaces,
+        feasibility,
+        year=year,
+        target_vacancy=.49,
+        form_to_btype_callback=sim.get_injectable("form_to_btype_f"),
+        add_more_columns_callback=add_extra_columns,
+        residential=False,
+        bldg_sqft_per_job=400.0)
+
+    utils.add_parcel_output(new_buildings)
+
+
+@sim.model("diagnostic_output")
+def diagnostic_output(households, homesales, buildings, zones, year):
+    households = households.to_frame()
+    buildings = buildings.to_frame()
+    zones = zones.to_frame()
+    homesales = homesales.to_frame()
+
+    zones['residential_units'] = buildings.groupby('zone_id').\
+        residential_units.sum()
+    zones['non_residential_sqft'] = buildings.groupby('zone_id').\
+        non_residential_sqft.sum()
+
+    zones['retail_sqft'] = buildings.query('general_type == "Retail"').\
+        groupby('zone_id').non_residential_sqft.sum()
+    zones['office_sqft'] = buildings.query('general_type == "Office"').\
+        groupby('zone_id').non_residential_sqft.sum()
+    zones['industrial_sqft'] = buildings.query('general_type == "Industrial"').\
+        groupby('zone_id').non_residential_sqft.sum()
+
+    zones['average_income'] = households.groupby('zone_id').income.quantile()
+    zones['household_size'] = households.groupby('zone_id').persons.quantile()
+
+    zones['empirical_res_price'] = homesales.groupby('zone_id').\
+        sale_price_flt.quantile()
+
+    zones['residential_sales_price'] = buildings.\
+        query('general_type == "Residential"').groupby('zone_id').\
+        residential_sales_price.quantile()
+    zones['retail_rent'] = buildings[buildings.general_type == "Retail"].\
+        groupby('zone_id').non_residential_rent.quantile()
+    zones['office_rent'] = buildings[buildings.general_type == "Office"].\
+        groupby('zone_id').non_residential_rent.quantile()
+    zones['industrial_rent'] = \
+        buildings[buildings.general_type == "Industrial"].\
+        groupby('zone_id').non_residential_rent.quantile()
+
+    utils.add_simulation_output(zones, "diagnostic_outputs", year)
 
 
 @sim.model("travel_model_output")
-def travel_model_output(households, jobs, buildings, zones):
+def travel_model_output(households, jobs, buildings, zones, year):
     households = households.to_frame()
     jobs = jobs.to_frame()
     buildings = buildings.to_frame()
@@ -197,16 +269,12 @@ def travel_model_output(households, jobs, buildings, zones):
     zones['hhpop'] = households.\
         groupby('zone_id').persons.sum()
 
-    #    totpop
-
-    #    empres
-
     zones['sfdu'] = \
-        households.query("building_type_id == 1 | building_type_id == 2").\
-        groupby('zone_id').size()
+        buildings.query("building_type_id == 1 or building_type_id == 2").\
+        groupby('zone_id').residential_units.sum()
     zones['mfdu'] = \
-        households.query("building_type_id == 3 | building_type_id == 12").\
-        groupby('zone_id').size()
+        buildings.query("building_type_id == 3 or building_type_id == 12").\
+        groupby('zone_id').residential_units.sum()
 
     zones['hhincq1'] = households.query("income < 25000").\
         groupby('zone_id').size()
@@ -237,9 +305,41 @@ def travel_model_output(households, jobs, buildings, zones):
     zones['othempn'] = jobs.query("empsix == 'OTHEMPN'").\
         groupby('zone_id').size()
 
-    sim.add_table("travel_model_output", zones)
+    sim.add_table("travel_model_output", zones, year)
+
+    utils.add_simulation_output(zones, "travel_model_outputs", year)
+    utils.write_simulation_output(os.path.join(misc.runs_dir(),
+                                               "run{}_simulation_output.json"))
+    utils.write_parcel_output(os.path.join(misc.runs_dir(),
+                                           "run{}_parcel_output.csv"))
 
 
 @sim.model("clear_cache")
 def clear_cache():
     sim.clear_cache()
+
+
+# this method is used to push messages from urbansim to websites for live
+# exploration of simulation results
+@sim.model("pusher")
+def pusher(year, run_number, uuid):
+    import pusher
+    import socket
+
+    p = pusher.Pusher(
+        app_id='90082',
+        key='2fb2b9562f4629e7e87c',
+        secret='2f0a7b794ec38d16d149'
+    )
+    host = "http://localhost:8765/"
+    sim_output = host+"runs/run{}_simulation_output.json".format(run_number)
+    parcel_output = host+"runs/run{}_parcel_output.csv".format(run_number)
+    p['urbansim'].trigger('simulation_year_completed',
+                          {'year': year,
+                           'run_number': run_number,
+                           'hostname': socket.gethostname(),
+                           'uuid': uuid,
+                           'time': time.ctime(),
+                           'sim_output': sim_output,
+                           'parcel_output': parcel_output})
+

@@ -162,6 +162,11 @@ def empsix(jobs, naics_to_empsix):
     return jobs.naics.map(naics_to_empsix)
 
 
+@sim.column('jobs', 'empsix_id', cache=True)
+def empsix_id(jobs, empsix_name_to_id):
+    return jobs.empsix.map(empsix_name_to_id)
+
+
 #####################
 # HOMESALES VARIABLES
 #####################
@@ -171,7 +176,7 @@ def empsix(jobs, naics_to_empsix):
 def sale_price_flt(homesales):
     col = homesales.Sale_price.str.replace('$', '').\
         str.replace(',', '').astype('f4') / homesales.unit_sqft
-    col[homesales.unit_sqft == 0] = np.nan
+    col[homesales.unit_sqft == 0] = 0
     return col
 
 
@@ -205,7 +210,15 @@ def zone_id(parcels, homesales):
 #####################
 
 
-def parcel_average_price(use):
+def parcel_average_price(use, quantile=.5):
+    # I'm testing out a zone aggregation rather than a network aggregation
+    # because I want to be able to determine the quantile of the distribution
+    # I also want more spreading in the development and not keep it so localized
+    if use == "residential":
+        buildings = sim.get_table('buildings')
+        return misc.reindex(buildings.residential_sales_price.
+                            groupby(buildings.zone_id).quantile(quantile),
+                            sim.get_table('parcels').zone_id)
     return misc.reindex(sim.get_table('nodes_prices')[use],
                         sim.get_table('parcels')._node_id)
 
@@ -228,7 +241,7 @@ def max_far(parcels, scenario):
 
 @sim.column('parcels', 'max_dua', cache=True)
 def max_dua(parcels, scenario):
-    return utils.conditional_upzone(scenario, "max_far", "dua_up").\
+    return utils.conditional_upzone(scenario, "max_dua", "dua_up").\
         reindex(parcels.index).fillna(0)
 
 
@@ -265,7 +278,17 @@ def ave_unit_size(parcels, nodes):
     if len(nodes) == 0:
         # if nodes isn't generated yet
         return pd.Series(index=parcels.index)
-    return misc.reindex(nodes.ave_unit_sqft, parcels._node_id)
+    s = misc.reindex(nodes.ave_unit_sqft, parcels._node_id)
+    s[s < 1000] = 1000
+    return s
+
+
+# returns the oldest building on the land and fills missing values with 9999 -
+# for use with historical preservation
+@sim.column('parcels', 'oldest_building')
+def oldest_building(parcels, buildings):
+    return buildings.year_built.groupby(buildings.parcel_id).min().\
+        reindex(parcels.index).fillna(9999)
 
 
 @sim.column('parcels', 'land_cost')
@@ -273,7 +296,9 @@ def land_cost(parcels, nodes_prices):
     if len(nodes_prices) == 0:
         # if nodes_prices isn't generated yet
         return pd.Series(index=parcels.index)
-    # TODO
+    # TODO fix this function!
     # this needs to account for cost for the type of building it is
-    return (parcels.total_sqft * parcel_average_price("residential")).\
+    building_cost = (parcels.total_sqft *
+                     parcel_average_price("residential", .5)).\
         reindex(parcels.index).fillna(0)
+    return building_cost + parcels.parcel_size * 20.0
