@@ -7,8 +7,9 @@ from urbansim.utils import misc
 import urbansim.sim.simulation as sim
 
 import warnings
-warnings.filterwarnings('ignore', category=pd.io.pytables.PerformanceWarning)
 
+warnings.filterwarnings('ignore', category=pd.io.pytables.PerformanceWarning)
+pd.options.mode.chained_assignment = None
 
 @sim.table_source('jobs')
 def jobs(store):
@@ -46,6 +47,21 @@ def buildings(store, households, jobs, building_sqft_per_job):
     df = df[df.building_type_id <= 14]
     df = utils.fill_nas_from_config('buildings', df)
     return df
+
+
+@sim.table_source('household_controls')
+def household_controls():
+    df = pd.read_csv(os.path.join(misc.data_dir(), "household_controls.csv"))
+    # these are going to be set from 0 to 3 by the variable, but they
+    # are identified as 1 to 4 in the control total file
+    df['income_quartile'] -= 1
+    return df.set_index('year')
+
+
+@sim.table_source('employment_controls')
+def employment_controls():
+    df = pd.read_csv(os.path.join(misc.data_dir(), "employment_controls.csv"))
+    return df.set_index('year')
 
 
 @sim.table_source('households')
@@ -103,7 +119,10 @@ def zoning_for_parcels(store):
 # this is the actual zoning
 @sim.table_source('zoning')
 def zoning(store):
+    db_df = pd.read_csv(os.path.join(misc.data_dir(), "zoning.csv"),
+                        index_col="id")
     df = store['zoning']
+    df["max_dua"] = db_df["max_dua"]
     return df
 
 
@@ -148,6 +167,13 @@ def nodes_prices():
     return pd.DataFrame()
 
 
+@sim.table("logsums")
+def logsums():
+    return pd.read_csv(os.path.join(misc.data_dir(),
+                                    'logsums.csv'),
+                       index_col='taz')
+
+
 # this specifies the relationships between tables
 sim.broadcast('nodes', 'homesales', cast_index=True, onto_on='_node_id')
 sim.broadcast('nodes', 'costar', cast_index=True, onto_on='_node_id')
@@ -155,6 +181,9 @@ sim.broadcast('nodes', 'apartments', cast_index=True, onto_on='_node_id')
 sim.broadcast('nodes', 'buildings', cast_index=True, onto_on='_node_id')
 sim.broadcast('nodes', 'parcels', cast_index=True, onto_on='_node_id')
 sim.broadcast('nodes_prices', 'buildings', cast_index=True, onto_on='_node_id')
+sim.broadcast('logsums', 'parcels', cast_index=True, onto_on='zone_id')
+sim.broadcast('logsums', 'homesales', cast_index=True, onto_on='zone_id')
+sim.broadcast('logsums', 'buildings', cast_index=True, onto_on='zone_id')
 sim.broadcast('parcels', 'buildings', cast_index=True, onto_on='parcel_id')
 sim.broadcast('buildings', 'households', cast_index=True,
               onto_on='building_id')
