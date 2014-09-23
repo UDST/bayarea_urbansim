@@ -116,14 +116,14 @@ def zoning_for_parcels(store):
     return df
 
 
-# this is the actual zoning
+# this is the actual baseline zoning, now editable in an excel file
+# (the zoning from the h5 file doesn't have all the parameters)
+# instead of creating a new h5 file I'm going to add zoning as a csv file
+# which is easily browsable in excel and is only 170k
 @sim.table_source('zoning')
-def zoning(store):
-    db_df = pd.read_csv(os.path.join(misc.data_dir(), "zoning.csv"),
-                        index_col="id")
-    df = store['zoning']
-    df["max_dua"] = db_df["max_dua"]
-    return df
+def zoning():
+    return pd.read_csv(os.path.join(misc.data_dir(), "baseline_zoning.csv"),
+                       index_col="id")
 
 
 # zoning for use in the "baseline" scenario

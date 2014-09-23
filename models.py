@@ -16,9 +16,6 @@ import numpy as np
 
 @sim.model('rsh_estimate')
 def rsh_estimate(homesales, nodes, logsums):
-    df = homesales.to_frame().dropna(subset=["sale_price_flt"])
-    sim.add_table("homesales", df)
-    homesales = sim.get_table("homesales")
     return utils.hedonic_estimate("rsh.yaml", homesales, [nodes, logsums])
 
 
@@ -316,10 +313,16 @@ def travel_model_output(households, jobs, buildings, zones, year):
     utils.write_parcel_output(os.path.join(misc.runs_dir(),
                                            "run{}_parcel_output.csv"))
 
+
 @sim.model("clear_cache")
-def clear_cache(year, run_number, uuid):
+def clear_cache():
     sim.clear_cache()
 
+
+# this method is used to push messages from urbansim to websites for live
+# exploration of simulation results
+@sim.model("pusher")
+def pusher(year, run_number, uuid):
     import pusher
     import socket
 
