@@ -323,7 +323,11 @@ def clear_cache():
 # exploration of simulation results
 @sim.model("pusher")
 def pusher(year, run_number, uuid):
-    import pusher
+    try:
+        import pusher
+    except:
+        # if pusher not installed, just return
+        return
     import socket
 
     p = pusher.Pusher(

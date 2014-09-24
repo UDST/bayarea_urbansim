@@ -216,7 +216,9 @@ def parcel_average_price(use, quantile=.5):
     # I also want more spreading in the development and not keep it so localized
     if use == "residential":
         buildings = sim.get_table('buildings')
-        return misc.reindex(buildings.residential_sales_price.
+        return misc.reindex(buildings.
+                            residential_sales_price[buildings.general_type ==
+                                                    "Residential"].
                             groupby(buildings.zone_id).quantile(quantile),
                             sim.get_table('parcels').zone_id)
     return misc.reindex(sim.get_table('nodes_prices')[use],
@@ -291,14 +293,20 @@ def oldest_building(parcels, buildings):
         reindex(parcels.index).fillna(9999)
 
 
+@sim.column('parcels', 'building_purchase_price')
+def building_purchase_price(parcels, nodes_prices):
+    if len(nodes_prices) == 0:
+        # if nodes_prices isn't generated yet
+        return pd.Series(index=parcels.index)
+
+    return (parcels.total_sqft * parcel_average_price("residential", .5)).\
+        reindex(parcels.index).fillna(0)
+
+
 @sim.column('parcels', 'land_cost')
 def land_cost(parcels, nodes_prices):
     if len(nodes_prices) == 0:
         # if nodes_prices isn't generated yet
         return pd.Series(index=parcels.index)
-    # TODO fix this function!
-    # this needs to account for cost for the type of building it is
-    building_cost = (parcels.total_sqft *
-                     parcel_average_price("residential", .5)).\
-        reindex(parcels.index).fillna(0)
-    return building_cost + parcels.parcel_size * 20.0
+
+    return parcels.building_purchase_price + parcels.parcel_size * 20.0
