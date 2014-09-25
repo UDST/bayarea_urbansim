@@ -166,7 +166,11 @@ def feasibility(parcels):
                           residential_to_yearly=True,
                           pass_through=["oldest_building", "total_sqft",
                                         "max_far", "max_dua", "land_cost",
-                                        "residential"])
+                                        "residential", "min_max_fars",
+                                        "max_far_from_dua", "max_height",
+                                        "max_far_from_heights",
+                                        "building_purchase_price",
+                                        "building_purchase_price_sqft"])
 
 
 def add_extra_columns(df):
@@ -340,10 +344,14 @@ def pusher(year, run_number, uuid):
     parcel_output = host+"runs/run{}_parcel_output.csv".format(run_number)
     p['urbansim'].trigger('simulation_year_completed',
                           {'year': year,
+                           'region': 'bayarea',
                            'run_number': run_number,
                            'hostname': socket.gethostname(),
                            'uuid': uuid,
                            'time': time.ctime(),
                            'sim_output': sim_output,
+                           'field_name': 'residential_units',
+                           'table': 'diagnostic_outputs',
+                           'scale': 'jenks',
                            'parcel_output': parcel_output})
 

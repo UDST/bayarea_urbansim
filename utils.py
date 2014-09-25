@@ -242,7 +242,7 @@ def _print_number_unplaced(df, fieldname):
 def run_feasibility(parcels, parcel_price_callback,
                     parcel_use_allowed_callback, residential_to_yearly=True,
                     historic_preservation=None,
-                    config=None, pass_through=None):
+                    config=None, pass_through=[]):
     """
     Execute development feasibility on all parcels
 
@@ -548,6 +548,8 @@ def add_parcel_output(new_buildings):
     -------
     Nothing
     """
+    if new_buildings is None:
+        return
 
     key = "developments"
     if key in sim.list_injectables():
