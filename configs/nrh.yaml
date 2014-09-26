@@ -43,6 +43,7 @@ models:
         fit_rsquared_adj: 0.9828819430545818
         fitted: true
         name: Industrial
+        ytransform: np.exp
     Office:
         fit_parameters:
             Coefficient:
@@ -70,6 +71,7 @@ models:
         fit_rsquared_adj: 0.03140798915540377
         fitted: true
         name: Office
+        ytransform: np.exp
     Retail:
         fit_parameters:
             Coefficient:
@@ -97,6 +99,7 @@ models:
         fit_rsquared_adj: 0.01268920727691103
         fitted: true
         name: Retail
+        ytransform: np.exp
 
 fitted: true
 

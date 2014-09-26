@@ -182,52 +182,23 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year):
 
 
 @sim.model("travel_model_output")
-def travel_model_output(households, jobs, buildings, zones):
+def travel_model_output(households, zones):
     households = households.to_frame()
-    jobs = jobs.to_frame()
-    buildings = buildings.to_frame()
     zones = zones.to_frame()
 
-    zones['tothh'] = households.\
-        groupby('zone_id').size()
-    zones['hhpop'] = households.\
-        groupby('zone_id').persons.sum()
-
-#    totpop
-
-#    empres
-
-    zones['sfdu'] = households.query("building_type_id == 1 | building_type_id == 2").\
-        groupby('zone_id').size()
-    zones['mfdu'] = households.query("building_type_id == 3 | building_type_id == 12").\
+    zones['TOTHH'] = households.query("income > 0").\
         groupby('zone_id').size()
 
-    zones['hhincq1'] = households.query("income < 25000").\
-        groupby('zone_id').size()
-    zones['hhincq2'] = households.query("income >= 25000 and income < 45000").\
-        groupby('zone_id').size()
-    zones['hhincq3'] = households.query("income >= 45000 and income < 75000").\
-        groupby('zone_id').size()
-    zones['hhincq4'] = households.query("income >= 75000").\
+    zones['HHINC1'] = households.query("income < 25000").\
         groupby('zone_id').size()
 
-# attempting to get at total zonal developed acres
-    zones['NEWdevacres'] = (buildings.query("building_sqft > 0").\
-        groupby('zone_id').unit_lot_size.sum()) / 43560
+    zones['HHINC2'] = households.query("income >= 25000 and income < 45000").\
+        groupby('zone_id').size()
 
-    zones['totemp'] = jobs.\
+    zones['HHINC3'] = households.query("income >= 45000 and income < 75000").\
         groupby('zone_id').size()
-    zones['agrempn'] = jobs.query("empsix == 'AGREMPN'").\
-        groupby('zone_id').size()
-    zones['mwtempn'] = jobs.query("empsix == 'MWTEMPN'").\
-        groupby('zone_id').size()
-    zones['retempn'] = jobs.query("empsix == 'RETEMPN'").\
-        groupby('zone_id').size()
-    zones['fpsempn'] = jobs.query("empsix == 'FPSEMPN'").\
-        groupby('zone_id').size()
-    zones['herempn'] = jobs.query("empsix == 'HEREMPN'").\
-        groupby('zone_id').size()
-    zones['othempn'] = jobs.query("empsix == 'OTHEMPN'").\
+
+    zones['HHINC4'] = households.query("income >= 75000").\
         groupby('zone_id').size()
 
     sim.add_table("travel_model_output", zones)
