@@ -11,6 +11,8 @@ variable_definitions:
 -   aggregation: average
     dataframe: buildings
     decay: flat
+    filters:
+    - general_type == "Residential"
     name: residential
     radius: 2000
     varname: residential_sales_price
