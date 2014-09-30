@@ -4,15 +4,16 @@ desc: Full Simulation
 
 start_year: 2010
 
-end_year: 2013
+end_year: 2012
 
 start_models:
 - build_networks
+- diagnostic_output
+- travel_model_output
 
 models:
 - neighborhood_vars
 - rsh_simulate
-- rrh_simulate
 - nrh_simulate
 - households_relocation
 - hlcmo_simulate
@@ -25,4 +26,7 @@ models:
 - feasibility
 - residential_developer
 - non_residential_developer
+- diagnostic_output
+- travel_model_output
+- pusher
 - clear_cache

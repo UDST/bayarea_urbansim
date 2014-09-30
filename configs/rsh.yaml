@@ -15,9 +15,8 @@ predict_filters:
 - general_type == 'Residential'
 
 model_expression: np.log1p(sale_price_flt) ~ I(year_built < 1940) + I(year_built >
-    2005) + np.log1p(unit_sqft) + np.log1p(unit_lot_size) + sum_residential_units
-    + ave_unit_sqft + ave_lot_sqft + ave_income + autoPeakTotal + transitPeakTotal
-    + nonMotorizedTotal
+    2005) + np.log1p(unit_sqft) + np.log1p(unit_lot_size) + sum_residential_units  +
+    ave_lot_sqft + ave_income + autoPeakTotal + transitPeakTotal + nonMotorizedTotal
 
 ytransform: np.exp
 
@@ -25,45 +24,42 @@ fitted: true
 
 fit_parameters:
     Coefficient:
-        I(year_built < 1940)[T.True]: 0.186180122107028
-        I(year_built > 2005)[T.True]: 0.11694823294557055
-        Intercept: -10.335454340110477
-        autoPeakTotal: 0.1978897863098638
-        ave_income: 1.2631179788412865
-        ave_lot_sqft: 0.08983140818929096
-        ave_unit_sqft: 0.0023225891732408166
-        nonMotorizedTotal: -0.006949244247885097
-        np.log1p(unit_lot_size): 0.09508924062782048
-        np.log1p(unit_sqft): -0.39521503016858983
-        sum_residential_units: 0.08911382191929125
-        transitPeakTotal: 0.016860824126560064
+        I(year_built < 1940)[T.True]: 0.1861550122175245
+        I(year_built > 2005)[T.True]: 0.11688535847637382
+        Intercept: -10.320791986889109
+        autoPeakTotal: 0.19752425910604343
+        ave_income: 1.2632804840724825
+        ave_lot_sqft: 0.09026511320102236
+        nonMotorizedTotal: -0.006891492188838009
+        np.log1p(unit_lot_size): 0.09502713924215714
+        np.log1p(unit_sqft): -0.3950383065554584
+        sum_residential_units: 0.08914566464632574
+        transitPeakTotal: 0.016854464421245312
     Std. Error:
-        I(year_built < 1940)[T.True]: 0.0030657474482342073
-        I(year_built > 2005)[T.True]: 0.0051513704732561345
-        Intercept: 0.05132518411890107
-        autoPeakTotal: 0.0017776060088521232
-        ave_income: 0.0037533009033833857
-        ave_lot_sqft: 0.002158031637109929
-        ave_unit_sqft: 0.002993733020196861
-        nonMotorizedTotal: 0.0006259717827238079
-        np.log1p(unit_lot_size): 0.0012378545634067822
-        np.log1p(unit_sqft): 0.002551591867727381
-        sum_residential_units: 0.0017162936397796115
-        transitPeakTotal: 0.000557298010942634
+        I(year_built < 1940)[T.True]: 0.003065573400932514
+        I(year_built > 2005)[T.True]: 0.0051507275672213965
+        Intercept: 0.04771884837865913
+        autoPeakTotal: 0.0017140284326359145
+        ave_income: 0.0037474475973186447
+        ave_lot_sqft: 0.002084364879395911
+        nonMotorizedTotal: 0.000621529169185368
+        np.log1p(unit_lot_size): 0.001235262444651109
+        np.log1p(unit_sqft): 0.002541401023606676
+        sum_residential_units: 0.001715801007889392
+        transitPeakTotal: 0.0005572371376542824
     T-Score:
-        I(year_built < 1940)[T.True]: 60.72911263915853
-        I(year_built > 2005)[T.True]: 22.702353393668584
-        Intercept: -201.37198760295007
-        autoPeakTotal: 111.32376090337914
-        ave_income: 336.5352289507772
-        ave_lot_sqft: 41.62654830658305
-        ave_unit_sqft: 0.7758170677116988
-        nonMotorizedTotal: -11.1015295572057
-        np.log1p(unit_lot_size): 76.8177808918998
-        np.log1p(unit_sqft): -154.88959467510566
-        sum_residential_units: 51.922246784492145
-        transitPeakTotal: 30.254592328512096
+        I(year_built < 1940)[T.True]: 60.72436959457509
+        I(year_built > 2005)[T.True]: 22.69298015686522
+        Intercept: -216.2833416471296
+        autoPeakTotal: 115.23977977557888
+        ave_income: 337.1042426254015
+        ave_lot_sqft: 43.3058118054565
+        nonMotorizedTotal: -11.08796260981704
+        np.log1p(unit_lot_size): 76.92870422284787
+        np.log1p(unit_sqft): -155.44115347637364
+        sum_residential_units: 51.955712950643324
+        transitPeakTotal: 30.246484453988515
 
-fit_rsquared_adj: 0.5514797330660439
+fit_rsquared_adj: 0.5514806684562975
 
-fit_rsquared: 0.5515055772012134
+fit_rsquared: 0.5515041630756352
