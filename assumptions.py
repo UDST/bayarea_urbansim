@@ -1,9 +1,14 @@
 import urbansim.sim.simulation as sim
 import os
 import uuid
+import yaml
 import pandas as pd
 from urbansim.utils import misc
 
+
+@sim.injectable("config")
+def config():
+    return yaml.load(open(os.path.join(misc.configs_dir(), "config.yaml")))
 
 sim.add_injectable("building_sqft_per_job", {
     -1: 400,

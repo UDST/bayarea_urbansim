@@ -1,0 +1,33 @@
+set_nan_price_to_zero: True
+
+remove_invalid_building_ids: True
+
+reconcile_residential_units_and_households: True
+
+reconcile_non_residential_sqft_and_jobs: True
+
+set_nan_price_to_zero: True
+
+_enable_supply_correction:
+  price_col: "residential_sales_price"
+  submarket_col": "zone_id"
+
+table_reprocess:
+  buildings:
+    filter: "building_type_id >= 1 and building_type_id <= 14"
+    fill_nas:
+      building_type_id:
+        how: "drop"
+        type: "int"
+      residential_units:
+        how: "zero"
+        type: "int"
+      non_residential_sqft:
+        how: "zero"
+        type: "int"
+      year_built:
+        how: "median"
+        type: "int"
+      building_type_id:
+        how: "mode"
+        type: "int"

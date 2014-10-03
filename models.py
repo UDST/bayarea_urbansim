@@ -5,7 +5,7 @@ from urbansim.utils import networks
 from urbansim.models import transition
 import os
 import random
-import utils
+from urbansim_defaults import utils
 import time
 import dataset
 import variables
@@ -25,17 +25,6 @@ def rsh_simulate(buildings, nodes, logsums):
                                   "residential_sales_price")
 
 
-@sim.model('rrh_estimate')
-def rrh_estimate(apartments, nodes):
-    return utils.hedonic_estimate("rrh.yaml", apartments, nodes)
-
-
-@sim.model('rrh_simulate')
-def rrh_simulate(buildings, nodes):
-    return utils.hedonic_simulate("rrh.yaml", buildings, nodes,
-                                  "residential_rent")
-
-
 @sim.model('nrh_estimate')
 def nrh_estimate(costar, nodes):
     return utils.hedonic_estimate("nrh.yaml", costar, nodes)
@@ -47,28 +36,15 @@ def nrh_simulate(buildings, nodes):
                                   "non_residential_rent")
 
 
-@sim.model('hlcmo_estimate')
-def hlcmo_estimate(households, buildings, nodes):
-    return utils.lcm_estimate("hlcmo.yaml", households, "building_id",
+@sim.model('hlcm_estimate')
+def hlcm_estimate(households, buildings, nodes):
+    return utils.lcm_estimate("hlcm.yaml", households, "building_id",
                               buildings, nodes)
 
 
-@sim.model('hlcmo_simulate')
+@sim.model('hlcm_simulate')
 def hlcmo_simulate(households, buildings, nodes):
-    return utils.lcm_simulate("hlcmo.yaml", households, buildings, nodes,
-                              "building_id", "residential_units",
-                              "vacant_residential_units")
-
-
-@sim.model('hlcmr_estimate')
-def hlcmr_estimate(households, buildings, nodes):
-    return utils.lcm_estimate("hlcmr.yaml", households, "building_id",
-                              buildings, nodes)
-
-
-@sim.model('hlcmr_simulate')
-def hlcmr_simulate(households, buildings, nodes):
-    return utils.lcm_simulate("hlcmr.yaml", households, buildings, nodes,
+    return utils.lcm_simulate("hlcm.yaml", households, buildings, nodes,
                               "building_id", "residential_units",
                               "vacant_residential_units")
 

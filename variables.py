@@ -3,7 +3,7 @@ import pandas as pd
 from urbansim.utils import misc
 import urbansim.sim.simulation as sim
 import dataset
-import utils
+from urbansim_defaults import utils
 
 
 #####################

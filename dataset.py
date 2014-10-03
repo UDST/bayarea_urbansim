@@ -3,7 +3,6 @@ import pandas as pd
 import os
 import assumptions
 from urbansim_defaults import datasources
-import utils
 from urbansim.utils import misc
 import urbansim.sim.simulation as sim
 

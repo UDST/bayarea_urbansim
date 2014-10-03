@@ -4,11 +4,9 @@ model_type: segmented_locationchoice
 
 segmentation_col: income_quartile
 
-choosers_fit_filters:
-- tenure <> 1
+choosers_fit_filters: null
 
-choosers_predict_filters:
-- tenure <> 1
+choosers_predict_filters: null
 
 alts_fit_filters:
 - general_type == 'Residential'
