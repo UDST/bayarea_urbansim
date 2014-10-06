@@ -4,7 +4,7 @@ desc: Neighborhood Price Variables
 
 model_type: networks
 
-node_col: _node_id
+node_col: node_id
 
 variable_definitions:
 

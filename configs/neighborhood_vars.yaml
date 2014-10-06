@@ -4,7 +4,7 @@ desc: Neighborhood Accessibility Variables
 
 model_type: networks
 
-node_col: _node_id
+node_col: node_id
 
 variable_definitions:
     
@@ -20,9 +20,9 @@ variable_definitions:
     radius: 1500
     apply: np.log1p
 
-  - name: ave_unit_sqft
+  - name: ave_sqft_per_unit
     dataframe: buildings
-    varname: unit_sqft
+    varname: sqft_per_unit
     filters:
     - general_type == "Residential"
     radius: 1500
@@ -30,9 +30,9 @@ variable_definitions:
     decay: flat
     aggregation: average
 
-  - name: ave_lot_sqft
+  - name: ave_lot_size_per_unit
     dataframe: buildings
-    varname: unit_lot_size
+    varname: lot_size_per_unit
     filters:
     - general_type == "Residential"
     radius: 1500
@@ -68,7 +68,7 @@ variable_definitions:
     radius: 1500
     apply: np.log1p
 
-  - name: hhsize
+  - name: ave_hhsize
     dataframe: households
     varname: persons
     radius: 1500

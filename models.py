@@ -7,7 +7,7 @@ import os
 import random
 from urbansim_defaults import utils
 import time
-import dataset
+import datasources
 import variables
 import pandana as pdna
 import pandas as pd
@@ -120,14 +120,14 @@ def build_networks():
 
 @sim.model('neighborhood_vars')
 def neighborhood_vars(net):
-    nodes = networks.from_yaml(net, "networks.yaml")
+    nodes = networks.from_yaml(net, "neighborhood_vars.yaml")
     print nodes.describe()
     sim.add_table("nodes", nodes)
 
 
 @sim.model('price_vars')
 def price_vars(net):
-    nodes = networks.from_yaml(net, "networks2.yaml")
+    nodes = networks.from_yaml(net, "price_vars.yaml")
     print nodes.describe()
     sim.add_table("nodes_prices", nodes)
 
@@ -164,8 +164,8 @@ def residential_developer(feasibility, households, buildings, parcels, year):
         buildings,
         "residential_units",
         parcels.parcel_size,
-        parcels.ave_unit_size,
-        parcels.total_units,
+        parcels.ave_sqft_per_unit,
+        parcels.total_residential_units,
         feasibility,
         year=year,
         target_vacancy=.13,
@@ -268,7 +268,7 @@ def travel_model_output(households, jobs, buildings, zones, year):
     # attempting to get at total zonal developed acres
     zones['NEWdevacres'] = \
         (buildings.query("building_sqft > 0").
-         groupby('zone_id').unit_lot_size.sum()) / 43560
+         groupby('zone_id').lot_size_per_unit.sum()) / 43560
 
     zones['totemp'] = jobs.\
         groupby('zone_id').size()

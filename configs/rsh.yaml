@@ -3,11 +3,11 @@ name: rsh
 model_type: regression
 
 fit_filters:
-- unit_lot_size > 0
+- lot_size_per_unit > 0
 - year_built > 1000
 - year_built < 2020
-- unit_sqft > 100
-- unit_sqft < 20000
+- sqft_per_unit > 100
+- sqft_per_unit < 20000
 - sale_price_flt > 30
 - sale_price_flt < 3000
 
@@ -15,8 +15,8 @@ predict_filters:
 - general_type == 'Residential'
 
 model_expression: np.log1p(sale_price_flt) ~ I(year_built < 1940) + I(year_built >
-    2005) + np.log1p(unit_sqft) + np.log1p(unit_lot_size) + sum_residential_units  +
-    ave_lot_sqft + ave_income + autoPeakTotal + transitPeakTotal + nonMotorizedTotal
+    2005) + np.log1p(sqft_per_unit) + np.log1p(lot_size_per_unit) + sum_residential_units  +
+    ave_lot_size_per_unit + ave_income + autoPeakTotal + transitPeakTotal + nonMotorizedTotal
 
 ytransform: np.exp
 
@@ -29,10 +29,10 @@ fit_parameters:
         Intercept: -10.320791986889109
         autoPeakTotal: 0.19752425910604343
         ave_income: 1.2632804840724825
-        ave_lot_sqft: 0.09026511320102236
+        ave_lot_size_per_unit: 0.09026511320102236
         nonMotorizedTotal: -0.006891492188838009
-        np.log1p(unit_lot_size): 0.09502713924215714
-        np.log1p(unit_sqft): -0.3950383065554584
+        np.log1p(lot_size_per_unit): 0.09502713924215714
+        np.log1p(sqft_per_unit): -0.3950383065554584
         sum_residential_units: 0.08914566464632574
         transitPeakTotal: 0.016854464421245312
     Std. Error:
@@ -41,10 +41,10 @@ fit_parameters:
         Intercept: 0.04771884837865913
         autoPeakTotal: 0.0017140284326359145
         ave_income: 0.0037474475973186447
-        ave_lot_sqft: 0.002084364879395911
+        ave_lot_size_per_unit: 0.002084364879395911
         nonMotorizedTotal: 0.000621529169185368
-        np.log1p(unit_lot_size): 0.001235262444651109
-        np.log1p(unit_sqft): 0.002541401023606676
+        np.log1p(lot_size_per_unit): 0.001235262444651109
+        np.log1p(sqft_per_unit): 0.002541401023606676
         sum_residential_units: 0.001715801007889392
         transitPeakTotal: 0.0005572371376542824
     T-Score:
@@ -53,10 +53,10 @@ fit_parameters:
         Intercept: -216.2833416471296
         autoPeakTotal: 115.23977977557888
         ave_income: 337.1042426254015
-        ave_lot_sqft: 43.3058118054565
+        ave_lot_size_per_unit: 43.3058118054565
         nonMotorizedTotal: -11.08796260981704
-        np.log1p(unit_lot_size): 76.92870422284787
-        np.log1p(unit_sqft): -155.44115347637364
+        np.log1p(lot_size_per_unit): 76.92870422284787
+        np.log1p(sqft_per_unit): -155.44115347637364
         sum_residential_units: 51.955712950643324
         transitPeakTotal: 30.246484453988515
 

@@ -22,16 +22,16 @@ estimation_sample_size: 15000
 
 default_config:
     model_expression: np.log1p(non_residential_rent) + np.log1p(stories) + sum_residential_units
-        + ave_unit_sqft + ave_lot_sqft + ave_income + hhsize + jobs + poor - 1
+        + ave_sqft_per_unit + ave_lot_size_per_unit + ave_income + ave_hhsize + jobs + poor - 1
 
 models:
     11:
         fit_parameters:
             Coefficient:
                 ave_income: -1.1645595090569483
-                ave_lot_sqft: -2.2925220022777157
-                ave_unit_sqft: 1.5811586648457425
-                hhsize: -3.0
+                ave_lot_size_per_unit: -2.2925220022777157
+                ave_sqft_per_unit: 1.5811586648457425
+                ave_hhsize: -3.0
                 jobs: 1.1196748692900313
                 np.log1p(non_residential_rent): 0.9227609556689276
                 np.log1p(stories): 0.49445795563194045
@@ -39,9 +39,9 @@ models:
                 sum_residential_units: -1.2135209906407005
             Std. Error:
                 ave_income: 0.2565204480400886
-                ave_lot_sqft: 0.24322695277969636
-                ave_unit_sqft: 0.30186989999094527
-                hhsize: 1.2729149980338303
+                ave_lot_size_per_unit: 0.24322695277969636
+                ave_sqft_per_unit: 0.30186989999094527
+                ave_hhsize: 1.2729149980338303
                 jobs: 0.08417180995670648
                 np.log1p(non_residential_rent): 0.25560761114441605
                 np.log1p(stories): 0.08204498345376277
@@ -49,9 +49,9 @@ models:
                 sum_residential_units: 0.4695487423628647
             T-Score:
                 ave_income: -4.53983110490651
-                ave_lot_sqft: -9.425443915971663
-                ave_unit_sqft: 5.237881169646825
-                hhsize: -2.356795233486807
+                ave_lot_size_per_unit: -9.425443915971663
+                ave_sqft_per_unit: 5.237881169646825
+                ave_hhsize: -2.356795233486807
                 jobs: 13.302254874475585
                 np.log1p(non_residential_rent): 3.6100683838697423
                 np.log1p(stories): 6.0266689664286055
@@ -67,9 +67,9 @@ models:
         fit_parameters:
             Coefficient:
                 ave_income: 3.0
-                ave_lot_sqft: 3.0
-                ave_unit_sqft: -3.0
-                hhsize: 3.0
+                ave_lot_size_per_unit: 3.0
+                ave_sqft_per_unit: -3.0
+                ave_hhsize: 3.0
                 jobs: 2.453586371585785
                 np.log1p(non_residential_rent): 0.7128587232122763
                 np.log1p(stories): 0.3443140670379813
@@ -77,9 +77,9 @@ models:
                 sum_residential_units: -0.1853359765460051
             Std. Error:
                 ave_income: 1.3974710743003844
-                ave_lot_sqft: 1.343535434614967
-                ave_unit_sqft: 1.9132734423910125
-                hhsize: 7.240203131255182
+                ave_lot_size_per_unit: 1.343535434614967
+                ave_sqft_per_unit: 1.9132734423910125
+                ave_hhsize: 7.240203131255182
                 jobs: 0.5853359301752877
                 np.log1p(non_residential_rent): 1.532723537840485
                 np.log1p(stories): 0.2229482211958052
@@ -87,9 +87,9 @@ models:
                 sum_residential_units: 3.4022100422523587
             T-Score:
                 ave_income: 2.1467349522793446
-                ave_lot_sqft: 2.232914683682865
-                ave_unit_sqft: -1.567993332019969
-                hhsize: 0.41435301546296693
+                ave_lot_size_per_unit: 2.232914683682865
+                ave_sqft_per_unit: -1.567993332019969
+                ave_hhsize: 0.41435301546296693
                 jobs: 4.1917576644424015
                 np.log1p(non_residential_rent): 0.4650928269925646
                 np.log1p(stories): 1.5443678590087786
@@ -105,9 +105,9 @@ models:
         fit_parameters:
             Coefficient:
                 ave_income: 1.4730142975052902
-                ave_lot_sqft: 2.766532340290632
-                ave_unit_sqft: -2.4774209441491264
-                hhsize: 3.0
+                ave_lot_size_per_unit: 2.766532340290632
+                ave_sqft_per_unit: -2.4774209441491264
+                ave_hhsize: 3.0
                 jobs: 2.849161368047414
                 np.log1p(non_residential_rent): 3.0
                 np.log1p(stories): -1.6523229045530625
@@ -115,9 +115,9 @@ models:
                 sum_residential_units: -0.19643533716669656
             Std. Error:
                 ave_income: 0.18368423154780072
-                ave_lot_sqft: 0.06897768037972317
-                ave_unit_sqft: 0.17566844677022544
-                hhsize: 0.9791824995034423
+                ave_lot_size_per_unit: 0.06897768037972317
+                ave_sqft_per_unit: 0.17566844677022544
+                ave_hhsize: 0.9791824995034423
                 jobs: 0.08432971016982906
                 np.log1p(non_residential_rent): 0.16248181940998924
                 np.log1p(stories): 0.05068951581534095
@@ -125,9 +125,9 @@ models:
                 sum_residential_units: 0.3325825739744239
             T-Score:
                 ave_income: 8.019274627402968
-                ave_lot_sqft: 40.1076453290518
-                ave_unit_sqft: -14.102822616685376
-                hhsize: 3.0637802468092965
+                ave_lot_size_per_unit: 40.1076453290518
+                ave_sqft_per_unit: -14.102822616685376
+                ave_hhsize: 3.0637802468092965
                 jobs: 33.785973677717784
                 np.log1p(non_residential_rent): 18.463604179801315
                 np.log1p(stories): -32.59693603253938
@@ -143,9 +143,9 @@ models:
         fit_parameters:
             Coefficient:
                 ave_income: 1.7007431419683448
-                ave_lot_sqft: 0.742101139670083
-                ave_unit_sqft: 0.31993575388820866
-                hhsize: 1.7031068527681057
+                ave_lot_size_per_unit: 0.742101139670083
+                ave_sqft_per_unit: 0.31993575388820866
+                ave_hhsize: 1.7031068527681057
                 jobs: 0.5626796943992338
                 np.log1p(non_residential_rent): -0.553694365816468
                 np.log1p(stories): 0.7921775480421833
@@ -153,9 +153,9 @@ models:
                 sum_residential_units: -0.8167596065181872
             Std. Error:
                 ave_income: 0.04310623583570677
-                ave_lot_sqft: 0.03177529720042142
-                ave_unit_sqft: 0.04668047926307875
-                hhsize: 0.18082200682151311
+                ave_lot_size_per_unit: 0.03177529720042142
+                ave_sqft_per_unit: 0.04668047926307875
+                ave_hhsize: 0.18082200682151311
                 jobs: 0.016489378927958202
                 np.log1p(non_residential_rent): 0.03536483243173777
                 np.log1p(stories): 0.020718601203902207
@@ -163,9 +163,9 @@ models:
                 sum_residential_units: 0.06294865301471388
             T-Score:
                 ave_income: 39.45468930412953
-                ave_lot_sqft: 23.354656133955558
-                ave_unit_sqft: 6.85373755665909
-                hhsize: 9.41869235224902
+                ave_lot_size_per_unit: 23.354656133955558
+                ave_sqft_per_unit: 6.85373755665909
+                ave_hhsize: 9.41869235224902
                 jobs: 34.123765173786786
                 np.log1p(non_residential_rent): -15.65663761832394
                 np.log1p(stories): 38.23508837522207
@@ -181,9 +181,9 @@ models:
         fit_parameters:
             Coefficient:
                 ave_income: 0.3918501990805776
-                ave_lot_sqft: -1.4246483157404248
-                ave_unit_sqft: 0.2628378490027709
-                hhsize: -3.0
+                ave_lot_size_per_unit: -1.4246483157404248
+                ave_sqft_per_unit: 0.2628378490027709
+                ave_hhsize: -3.0
                 jobs: 1.3483564344597851
                 np.log1p(non_residential_rent): 0.5553246419522095
                 np.log1p(stories): -0.21678628226217356
@@ -191,9 +191,9 @@ models:
                 sum_residential_units: -2.383204826372022
             Std. Error:
                 ave_income: 0.05176827961974138
-                ave_lot_sqft: 0.09176423239573804
-                ave_unit_sqft: 0.10867988918314288
-                hhsize: 0.2373931559520337
+                ave_lot_size_per_unit: 0.09176423239573804
+                ave_sqft_per_unit: 0.10867988918314288
+                ave_hhsize: 0.2373931559520337
                 jobs: 0.029891939997921498
                 np.log1p(non_residential_rent): 0.0527702152057396
                 np.log1p(stories): 0.03201061541358544
@@ -201,9 +201,9 @@ models:
                 sum_residential_units: 0.09557202071491526
             T-Score:
                 ave_income: 7.569310820426588
-                ave_lot_sqft: -15.525093803395583
-                ave_unit_sqft: 2.4184589345674374
-                hhsize: -12.63726406925633
+                ave_lot_size_per_unit: -15.525093803395583
+                ave_sqft_per_unit: 2.4184589345674374
+                ave_hhsize: -12.63726406925633
                 jobs: 45.107692393118064
                 np.log1p(non_residential_rent): 10.523448498118103
                 np.log1p(stories): -6.772324726070981
@@ -219,9 +219,9 @@ models:
         fit_parameters:
             Coefficient:
                 ave_income: 3.0
-                ave_lot_sqft: 0.16887197650913713
-                ave_unit_sqft: 1.8275780039429896
-                hhsize: 0.9982136120056663
+                ave_lot_size_per_unit: 0.16887197650913713
+                ave_sqft_per_unit: 1.8275780039429896
+                ave_hhsize: 0.9982136120056663
                 jobs: 1.327167038613513
                 np.log1p(non_residential_rent): -0.3908940363641087
                 np.log1p(stories): 0.5428828372238288
@@ -229,9 +229,9 @@ models:
                 sum_residential_units: -3.0
             Std. Error:
                 ave_income: 0.08258738605628743
-                ave_lot_sqft: 0.07545635703690022
-                ave_unit_sqft: 0.0978439684115458
-                hhsize: 0.36048392235224586
+                ave_lot_size_per_unit: 0.07545635703690022
+                ave_sqft_per_unit: 0.0978439684115458
+                ave_hhsize: 0.36048392235224586
                 jobs: 0.030905172883697478
                 np.log1p(non_residential_rent): 0.06788833018436112
                 np.log1p(stories): 0.0319575029433154
@@ -239,9 +239,9 @@ models:
                 sum_residential_units: 0.10214253834905856
             T-Score:
                 ave_income: 36.3251598489308
-                ave_lot_sqft: 2.2380086071019054
-                ave_unit_sqft: 18.678494276273973
-                hhsize: 2.7690932940700326
+                ave_lot_size_per_unit: 2.2380086071019054
+                ave_sqft_per_unit: 18.678494276273973
+                ave_hhsize: 2.7690932940700326
                 jobs: 42.94320059647993
                 np.log1p(non_residential_rent): -5.7578973485218485
                 np.log1p(stories): 16.98764882183589
@@ -257,9 +257,9 @@ models:
         fit_parameters:
             Coefficient:
                 ave_income: 1.7074030300729397
-                ave_lot_sqft: 0.005729023985013065
-                ave_unit_sqft: 0.6168068010835531
-                hhsize: 0.39010469639443174
+                ave_lot_size_per_unit: 0.005729023985013065
+                ave_sqft_per_unit: 0.6168068010835531
+                ave_hhsize: 0.39010469639443174
                 jobs: 0.9130229392211059
                 np.log1p(non_residential_rent): -0.633400598410321
                 np.log1p(stories): 0.4689064472828792
@@ -267,9 +267,9 @@ models:
                 sum_residential_units: -1.4640332814276744
             Std. Error:
                 ave_income: 0.07158951471739414
-                ave_lot_sqft: 0.09870966733229226
-                ave_unit_sqft: 0.12319218219041254
-                hhsize: 0.314604215904479
+                ave_lot_size_per_unit: 0.09870966733229226
+                ave_sqft_per_unit: 0.12319218219041254
+                ave_hhsize: 0.314604215904479
                 jobs: 0.03209215835063506
                 np.log1p(non_residential_rent): 0.05862372157720271
                 np.log1p(stories): 0.03229821545552915
@@ -277,9 +277,9 @@ models:
                 sum_residential_units: 0.11732000881162354
             T-Score:
                 ave_income: 23.849903673925745
-                ave_lot_sqft: 0.058039137805288195
-                ave_unit_sqft: 5.006866427044721
-                hhsize: 1.239985596737446
+                ave_lot_size_per_unit: 0.058039137805288195
+                ave_sqft_per_unit: 5.006866427044721
+                ave_hhsize: 1.239985596737446
                 jobs: 28.450032224243916
                 np.log1p(non_residential_rent): -10.804510211385736
                 np.log1p(stories): 14.518029577470259
@@ -295,9 +295,9 @@ models:
         fit_parameters:
             Coefficient:
                 ave_income: 0.575472047544055
-                ave_lot_sqft: 0.7049531520073958
-                ave_unit_sqft: -0.583356032896281
-                hhsize: 0.6745222286731418
+                ave_lot_size_per_unit: 0.7049531520073958
+                ave_sqft_per_unit: -0.583356032896281
+                ave_hhsize: 0.6745222286731418
                 jobs: 0.7679311161538311
                 np.log1p(non_residential_rent): -0.026480653441019606
                 np.log1p(stories): 0.8479792453859487
@@ -305,9 +305,9 @@ models:
                 sum_residential_units: -0.9376680082134429
             Std. Error:
                 ave_income: 0.04555776358857944
-                ave_lot_sqft: 0.028431030657628323
-                ave_unit_sqft: 0.04699341137073585
-                hhsize: 0.19657861757260053
+                ave_lot_size_per_unit: 0.028431030657628323
+                ave_sqft_per_unit: 0.04699341137073585
+                ave_hhsize: 0.19657861757260053
                 jobs: 0.016013793826817148
                 np.log1p(non_residential_rent): 0.035803001105099506
                 np.log1p(stories): 0.015716098996623063
@@ -315,9 +315,9 @@ models:
                 sum_residential_units: 0.06800481533557805
             T-Score:
                 ave_income: 12.63170099263424
-                ave_lot_sqft: 24.7952021330697
-                ave_unit_sqft: -12.4135706661967
-                hhsize: 3.4313102666114075
+                ave_lot_size_per_unit: 24.7952021330697
+                ave_sqft_per_unit: -12.4135706661967
+                ave_hhsize: 3.4313102666114075
                 jobs: 47.95435263240571
                 np.log1p(non_residential_rent): -0.7396210547625826
                 np.log1p(stories): 53.95608958483623
@@ -333,9 +333,9 @@ models:
         fit_parameters:
             Coefficient:
                 ave_income: 0.6739390625236555
-                ave_lot_sqft: 0.012773452137348517
-                ave_unit_sqft: 0.3975346890204244
-                hhsize: -1.0806054027348155
+                ave_lot_size_per_unit: 0.012773452137348517
+                ave_sqft_per_unit: 0.3975346890204244
+                ave_hhsize: -1.0806054027348155
                 jobs: 0.3491550785448804
                 np.log1p(non_residential_rent): 0.9668180654212513
                 np.log1p(stories): 0.6945776332326626
@@ -343,9 +343,9 @@ models:
                 sum_residential_units: -0.24538254525671266
             Std. Error:
                 ave_income: 0.049225315324866147
-                ave_lot_sqft: 0.04327329095494284
-                ave_unit_sqft: 0.06403461715524948
-                hhsize: 0.22391762567583345
+                ave_lot_size_per_unit: 0.04327329095494284
+                ave_sqft_per_unit: 0.06403461715524948
+                ave_hhsize: 0.22391762567583345
                 jobs: 0.02067632128971199
                 np.log1p(non_residential_rent): 0.04391273714006296
                 np.log1p(stories): 0.0206470731283738
@@ -353,9 +353,9 @@ models:
                 sum_residential_units: 0.08914851456878584
             T-Score:
                 ave_income: 13.690903919577647
-                ave_lot_sqft: 0.2951809731931074
-                ave_unit_sqft: 6.2081215861198435
-                hhsize: -4.825905953018691
+                ave_lot_size_per_unit: 0.2951809731931074
+                ave_sqft_per_unit: 6.2081215861198435
+                ave_hhsize: -4.825905953018691
                 jobs: 16.886711792325023
                 np.log1p(non_residential_rent): 22.01680260416272
                 np.log1p(stories): 33.6404888438233
@@ -371,9 +371,9 @@ models:
         fit_parameters:
             Coefficient:
                 ave_income: -0.20567574475560768
-                ave_lot_sqft: -0.0066760721179185386
-                ave_unit_sqft: 0.5666912954298254
-                hhsize: -3.0
+                ave_lot_size_per_unit: -0.0066760721179185386
+                ave_sqft_per_unit: 0.5666912954298254
+                ave_hhsize: -3.0
                 jobs: 0.20048416027440982
                 np.log1p(non_residential_rent): 1.1886704164167528
                 np.log1p(stories): 0.4329488051410005
@@ -381,9 +381,9 @@ models:
                 sum_residential_units: -0.4661383769287453
             Std. Error:
                 ave_income: 0.04671812112075506
-                ave_lot_sqft: 0.061599585171662696
-                ave_unit_sqft: 0.08160114862171063
-                hhsize: 0.23343112203320723
+                ave_lot_size_per_unit: 0.061599585171662696
+                ave_sqft_per_unit: 0.08160114862171063
+                ave_hhsize: 0.23343112203320723
                 jobs: 0.02303454946393824
                 np.log1p(non_residential_rent): 0.05168334448645047
                 np.log1p(stories): 0.022006744740583086
@@ -391,9 +391,9 @@ models:
                 sum_residential_units: 0.0890137390010013
             T-Score:
                 ave_income: -4.402483229665542
-                ave_lot_sqft: -0.10837852396755578
-                ave_unit_sqft: 6.944648512938368
-                hhsize: -12.851756757495382
+                ave_lot_size_per_unit: -0.10837852396755578
+                ave_sqft_per_unit: 6.944648512938368
+                ave_hhsize: -12.851756757495382
                 jobs: 8.703628459861044
                 np.log1p(non_residential_rent): 22.999100159402026
                 np.log1p(stories): 19.673459670870393
@@ -409,9 +409,9 @@ models:
         fit_parameters:
             Coefficient:
                 ave_income: 0.673252475988696
-                ave_lot_sqft: -0.38088915297942594
-                ave_unit_sqft: 0.3439383899878137
-                hhsize: -3.0
+                ave_lot_size_per_unit: -0.38088915297942594
+                ave_sqft_per_unit: 0.3439383899878137
+                ave_hhsize: -3.0
                 jobs: 1.0142397308589979
                 np.log1p(non_residential_rent): 0.09573416894974687
                 np.log1p(stories): 0.41752869811772114
@@ -419,9 +419,9 @@ models:
                 sum_residential_units: -2.2927053366076198
             Std. Error:
                 ave_income: 0.06043969597324199
-                ave_lot_sqft: 0.06781132756289814
-                ave_unit_sqft: 0.08871146830942304
-                hhsize: 0.23698539950327427
+                ave_lot_size_per_unit: 0.06781132756289814
+                ave_sqft_per_unit: 0.08871146830942304
+                ave_hhsize: 0.23698539950327427
                 jobs: 0.020843732531841425
                 np.log1p(non_residential_rent): 0.06594127017639605
                 np.log1p(stories): 0.025989020114383494
@@ -429,9 +429,9 @@ models:
                 sum_residential_units: 0.09456136951755315
             T-Score:
                 ave_income: 11.139243259707328
-                ave_lot_sqft: -5.616895682010261
-                ave_unit_sqft: 3.8770453983262514
-                hhsize: -12.659007712239044
+                ave_lot_size_per_unit: -5.616895682010261
+                ave_sqft_per_unit: 3.8770453983262514
+                ave_hhsize: -12.659007712239044
                 jobs: 48.65921827146933
                 np.log1p(non_residential_rent): 1.4518095980507109
                 np.log1p(stories): 16.065580629053496
@@ -447,9 +447,9 @@ models:
         fit_parameters:
             Coefficient:
                 ave_income: 0.02483032221187169
-                ave_lot_sqft: 0.7388096794052141
-                ave_unit_sqft: -0.1585398739297313
-                hhsize: 3.0
+                ave_lot_size_per_unit: 0.7388096794052141
+                ave_sqft_per_unit: -0.1585398739297313
+                ave_hhsize: 3.0
                 jobs: 0.6169269852587761
                 np.log1p(non_residential_rent): -0.37369819429469536
                 np.log1p(stories): -0.05633927750704669
@@ -457,9 +457,9 @@ models:
                 sum_residential_units: -2.950312797536812
             Std. Error:
                 ave_income: 0.1441893572134385
-                ave_lot_sqft: 0.05729610202402348
-                ave_unit_sqft: 0.14542660297526885
-                hhsize: 0.5130860403916482
+                ave_lot_size_per_unit: 0.05729610202402348
+                ave_sqft_per_unit: 0.14542660297526885
+                ave_hhsize: 0.5130860403916482
                 jobs: 0.04025783789981084
                 np.log1p(non_residential_rent): 0.10985409853928729
                 np.log1p(stories): 0.0847822739984988
@@ -467,9 +467,9 @@ models:
                 sum_residential_units: 0.1139123944733476
             T-Score:
                 ave_income: 0.17220634512654234
-                ave_lot_sqft: 12.894588869159742
-                ave_unit_sqft: -1.090171060082401
-                hhsize: 5.846972561775495
+                ave_lot_size_per_unit: 12.894588869159742
+                ave_sqft_per_unit: -1.090171060082401
+                ave_hhsize: 5.846972561775495
                 jobs: 15.324394389835696
                 np.log1p(non_residential_rent): -3.401768338766615
                 np.log1p(stories): -0.6645171785324402
@@ -485,9 +485,9 @@ models:
         fit_parameters:
             Coefficient:
                 ave_income: -0.13918619075238448
-                ave_lot_sqft: -0.7005979430350711
-                ave_unit_sqft: 0.4879370049156953
-                hhsize: -3.0
+                ave_lot_size_per_unit: -0.7005979430350711
+                ave_sqft_per_unit: 0.4879370049156953
+                ave_hhsize: -3.0
                 jobs: 1.1488162826716692
                 np.log1p(non_residential_rent): -0.30940566170857625
                 np.log1p(stories): 0.2774075274532114
@@ -495,9 +495,9 @@ models:
                 sum_residential_units: -0.4148489742148712
             Std. Error:
                 ave_income: 0.04675347763631176
-                ave_lot_sqft: 0.0553859872885125
-                ave_unit_sqft: 0.0729095535904369
-                hhsize: 0.2560736611390345
+                ave_lot_size_per_unit: 0.0553859872885125
+                ave_sqft_per_unit: 0.0729095535904369
+                ave_hhsize: 0.2560736611390345
                 jobs: 0.018570296734351358
                 np.log1p(non_residential_rent): 0.03637894923202038
                 np.log1p(stories): 0.0158362762982395
@@ -505,9 +505,9 @@ models:
                 sum_residential_units: 0.08402308866607537
             T-Score:
                 ave_income: -2.9770232673405137
-                ave_lot_sqft: -12.649371751478748
-                ave_unit_sqft: 6.692360340822263
-                hhsize: -11.715379030610876
+                ave_lot_size_per_unit: -12.649371751478748
+                ave_sqft_per_unit: 6.692360340822263
+                ave_hhsize: -11.715379030610876
                 jobs: 61.86310854939585
                 np.log1p(non_residential_rent): -8.505074177245353
                 np.log1p(stories): 17.51721946680423
@@ -523,9 +523,9 @@ models:
         fit_parameters:
             Coefficient:
                 ave_income: 3.0
-                ave_lot_sqft: 0.9723848743398728
-                ave_unit_sqft: -2.0701672864383194
-                hhsize: -3.0
+                ave_lot_size_per_unit: 0.9723848743398728
+                ave_sqft_per_unit: -2.0701672864383194
+                ave_hhsize: -3.0
                 jobs: 1.4246949194750982
                 np.log1p(non_residential_rent): 0.8226365131778209
                 np.log1p(stories): 1.0329264287036677
@@ -533,9 +533,9 @@ models:
                 sum_residential_units: -1.5539463601928145
             Std. Error:
                 ave_income: 0.06998845904438131
-                ave_lot_sqft: 0.08878314326902986
-                ave_unit_sqft: 0.10603683342479728
-                hhsize: 0.3916271468773245
+                ave_lot_size_per_unit: 0.08878314326902986
+                ave_sqft_per_unit: 0.10603683342479728
+                ave_hhsize: 0.3916271468773245
                 jobs: 0.03183186353057192
                 np.log1p(non_residential_rent): 0.08476025210549398
                 np.log1p(stories): 0.01569124951721831
@@ -543,9 +543,9 @@ models:
                 sum_residential_units: 0.13264922452847136
             T-Score:
                 ave_income: 42.86420991348917
-                ave_lot_sqft: 10.952359181442372
-                ave_unit_sqft: -19.523096074973886
-                hhsize: -7.660347409317202
+                ave_lot_size_per_unit: 10.952359181442372
+                ave_sqft_per_unit: -19.523096074973886
+                ave_hhsize: -7.660347409317202
                 jobs: 44.75688073074309
                 np.log1p(non_residential_rent): 9.705451467439646
                 np.log1p(stories): 65.82818197940308
@@ -561,9 +561,9 @@ models:
         fit_parameters:
             Coefficient:
                 ave_income: 1.1007920627722836
-                ave_lot_sqft: 0.14185742559511322
-                ave_unit_sqft: -1.2991863850743697
-                hhsize: -3.0
+                ave_lot_size_per_unit: 0.14185742559511322
+                ave_sqft_per_unit: -1.2991863850743697
+                ave_hhsize: -3.0
                 jobs: 0.33655929616298336
                 np.log1p(non_residential_rent): 0.28112746606344147
                 np.log1p(stories): 0.8511972669729267
@@ -571,9 +571,9 @@ models:
                 sum_residential_units: 0.03447596504119672
             Std. Error:
                 ave_income: 0.05399001467752216
-                ave_lot_sqft: 0.03390105621330068
-                ave_unit_sqft: 0.05371137651010381
-                hhsize: 0.27155610465105096
+                ave_lot_size_per_unit: 0.03390105621330068
+                ave_sqft_per_unit: 0.05371137651010381
+                ave_hhsize: 0.27155610465105096
                 jobs: 0.017742198504773234
                 np.log1p(non_residential_rent): 0.05467254594716997
                 np.log1p(stories): 0.019396511717100957
@@ -581,9 +581,9 @@ models:
                 sum_residential_units: 0.08950270191493712
             T-Score:
                 ave_income: 20.38880836293938
-                ave_lot_sqft: 4.184454451878025
-                ave_unit_sqft: -24.188290628335988
-                hhsize: -11.047440836783963
+                ave_lot_size_per_unit: 4.184454451878025
+                ave_sqft_per_unit: -24.188290628335988
+                ave_hhsize: -11.047440836783963
                 jobs: 18.969424565531597
                 np.log1p(non_residential_rent): 5.142022585432453
                 np.log1p(stories): 43.88403850072009
@@ -599,9 +599,9 @@ models:
         fit_parameters:
             Coefficient:
                 ave_income: 1.535427275054417
-                ave_lot_sqft: 0.9937155437892067
-                ave_unit_sqft: -1.4431802083112122
-                hhsize: -3.0
+                ave_lot_size_per_unit: 0.9937155437892067
+                ave_sqft_per_unit: -1.4431802083112122
+                ave_hhsize: -3.0
                 jobs: 1.0722904163840608
                 np.log1p(non_residential_rent): 0.1717768730501641
                 np.log1p(stories): 0.7734046279938893
@@ -609,9 +609,9 @@ models:
                 sum_residential_units: -0.6924602233266406
             Std. Error:
                 ave_income: 0.053243225855754917
-                ave_lot_sqft: 0.06282565396495395
-                ave_unit_sqft: 0.07660240782726825
-                hhsize: 0.2885819200495179
+                ave_lot_size_per_unit: 0.06282565396495395
+                ave_sqft_per_unit: 0.07660240782726825
+                ave_hhsize: 0.2885819200495179
                 jobs: 0.02130840362667433
                 np.log1p(non_residential_rent): 0.046174329642605316
                 np.log1p(stories): 0.013101210212557578
@@ -619,9 +619,9 @@ models:
                 sum_residential_units: 0.09256652028119017
             T-Score:
                 ave_income: 28.837983619064598
-                ave_lot_sqft: 15.817034620022122
-                ave_unit_sqft: -18.839880484768283
-                hhsize: -10.395661652972677
+                ave_lot_size_per_unit: 15.817034620022122
+                ave_sqft_per_unit: -18.839880484768283
+                ave_hhsize: -10.395661652972677
                 jobs: 50.32241904042703
                 np.log1p(non_residential_rent): 3.7201811998081418
                 np.log1p(stories): 59.03306759039535
@@ -637,9 +637,9 @@ models:
         fit_parameters:
             Coefficient:
                 ave_income: 3.0
-                ave_lot_sqft: 0.12845418032332406
-                ave_unit_sqft: -1.1091953540278596
-                hhsize: -1.9105495137199016
+                ave_lot_size_per_unit: 0.12845418032332406
+                ave_sqft_per_unit: -1.1091953540278596
+                ave_hhsize: -1.9105495137199016
                 jobs: 1.4804786983758367
                 np.log1p(non_residential_rent): 0.6823826810129937
                 np.log1p(stories): 0.8457607449791137
@@ -647,9 +647,9 @@ models:
                 sum_residential_units: -1.6745834183229182
             Std. Error:
                 ave_income: 0.2004694845071635
-                ave_lot_sqft: 0.2556987070649199
-                ave_unit_sqft: 0.31887668579042083
-                hhsize: 1.0663285745275175
+                ave_lot_size_per_unit: 0.2556987070649199
+                ave_sqft_per_unit: 0.31887668579042083
+                ave_hhsize: 1.0663285745275175
                 jobs: 0.07641521435400102
                 np.log1p(non_residential_rent): 0.18889066528044152
                 np.log1p(stories): 0.04292793036445499
@@ -657,9 +657,9 @@ models:
                 sum_residential_units: 0.3828877310834624
             T-Score:
                 ave_income: 14.964871124277266
-                ave_lot_sqft: 0.5023653885379662
-                ave_unit_sqft: -3.4784460685121066
-                hhsize: -1.7917080713760787
+                ave_lot_size_per_unit: 0.5023653885379662
+                ave_sqft_per_unit: -3.4784460685121066
+                ave_hhsize: -1.7917080713760787
                 jobs: 19.3741352542358
                 np.log1p(non_residential_rent): 3.612580219355341
                 np.log1p(stories): 19.701875627328565
@@ -675,9 +675,9 @@ models:
         fit_parameters:
             Coefficient:
                 ave_income: 0.9614446219328384
-                ave_lot_sqft: 0.30768069605035664
-                ave_unit_sqft: -0.7945181383501054
-                hhsize: -3.0
+                ave_lot_size_per_unit: 0.30768069605035664
+                ave_sqft_per_unit: -0.7945181383501054
+                ave_hhsize: -3.0
                 jobs: 0.5324090152131454
                 np.log1p(non_residential_rent): 0.4129685452407292
                 np.log1p(stories): 0.6607175937368978
@@ -685,9 +685,9 @@ models:
                 sum_residential_units: -0.7427894704466259
             Std. Error:
                 ave_income: 0.05365025820736295
-                ave_lot_sqft: 0.03438010108425682
-                ave_unit_sqft: 0.05419813663618463
-                hhsize: 0.26682379098595227
+                ave_lot_size_per_unit: 0.03438010108425682
+                ave_sqft_per_unit: 0.05419813663618463
+                ave_hhsize: 0.26682379098595227
                 jobs: 0.017331042730230263
                 np.log1p(non_residential_rent): 0.04244934568811113
                 np.log1p(stories): 0.01752450537805308
@@ -695,9 +695,9 @@ models:
                 sum_residential_units: 0.08941003775452501
             T-Score:
                 ave_income: 17.920596359793286
-                ave_lot_sqft: 8.949383112525181
-                ave_unit_sqft: -14.659510227878508
-                hhsize: -11.243375221207106
+                ave_lot_size_per_unit: 8.949383112525181
+                ave_sqft_per_unit: -14.659510227878508
+                ave_hhsize: -11.243375221207106
                 jobs: 30.719964372626745
                 np.log1p(non_residential_rent): 9.728502019205212
                 np.log1p(stories): 37.70249598966436
@@ -713,9 +713,9 @@ models:
         fit_parameters:
             Coefficient:
                 ave_income: -0.501038939492949
-                ave_lot_sqft: -0.27675200335243016
-                ave_unit_sqft: -0.044566336588787864
-                hhsize: 0.36400963918346696
+                ave_lot_size_per_unit: -0.27675200335243016
+                ave_sqft_per_unit: -0.044566336588787864
+                ave_hhsize: 0.36400963918346696
                 jobs: 0.1588816850508034
                 np.log1p(non_residential_rent): 0.742239235154348
                 np.log1p(stories): 0.9286208488022686
@@ -723,9 +723,9 @@ models:
                 sum_residential_units: -0.17428181293766182
             Std. Error:
                 ave_income: 0.07306780274383164
-                ave_lot_sqft: 0.02498926125793782
-                ave_unit_sqft: 0.06118804874776731
-                hhsize: 0.3165597689095138
+                ave_lot_size_per_unit: 0.02498926125793782
+                ave_sqft_per_unit: 0.06118804874776731
+                ave_hhsize: 0.3165597689095138
                 jobs: 0.02276889232997036
                 np.log1p(non_residential_rent): 0.06160872761911547
                 np.log1p(stories): 0.025320863224026213
@@ -733,9 +733,9 @@ models:
                 sum_residential_units: 0.11646149190593649
             T-Score:
                 ave_income: -6.857178136990667
-                ave_lot_sqft: -11.074837326954597
-                ave_unit_sqft: -0.728350347835108
-                hhsize: 1.1498922950234916
+                ave_lot_size_per_unit: -11.074837326954597
+                ave_sqft_per_unit: -0.728350347835108
+                ave_hhsize: 1.1498922950234916
                 jobs: 6.978015563878344
                 np.log1p(non_residential_rent): 12.047631298979333
                 np.log1p(stories): 36.6741386573712
@@ -751,9 +751,9 @@ models:
         fit_parameters:
             Coefficient:
                 ave_income: 0.6942282608658893
-                ave_lot_sqft: -1.599638371268724
-                ave_unit_sqft: 2.4986451832262793
-                hhsize: -0.6568046973900514
+                ave_lot_size_per_unit: -1.599638371268724
+                ave_sqft_per_unit: 2.4986451832262793
+                ave_hhsize: -0.6568046973900514
                 jobs: 0.33339595042080006
                 np.log1p(non_residential_rent): -0.24920133850967213
                 np.log1p(stories): 0.9045004235390444
@@ -761,9 +761,9 @@ models:
                 sum_residential_units: 0.18858269992581905
             Std. Error:
                 ave_income: 0.06082938382604952
-                ave_lot_sqft: 0.054475650223515505
-                ave_unit_sqft: 0.08294440432727242
-                hhsize: 0.26713994390057666
+                ave_lot_size_per_unit: 0.054475650223515505
+                ave_sqft_per_unit: 0.08294440432727242
+                ave_hhsize: 0.26713994390057666
                 jobs: 0.022923729924857996
                 np.log1p(non_residential_rent): 0.04878193290816736
                 np.log1p(stories): 0.021448266851242275
@@ -771,9 +771,9 @@ models:
                 sum_residential_units: 0.11576365761551284
             T-Score:
                 ave_income: 11.412712363668454
-                ave_lot_sqft: -29.364282293196165
-                ave_unit_sqft: 30.124336939806266
-                hhsize: -2.45865402155845
+                ave_lot_size_per_unit: -29.364282293196165
+                ave_sqft_per_unit: 30.124336939806266
+                ave_hhsize: -2.45865402155845
                 jobs: 14.543704341031898
                 np.log1p(non_residential_rent): -5.108476102798078
                 np.log1p(stories): 42.17125932889333
@@ -789,9 +789,9 @@ models:
         fit_parameters:
             Coefficient:
                 ave_income: -0.08046600631581265
-                ave_lot_sqft: 0.12385604405873106
-                ave_unit_sqft: 0.39945073596447034
-                hhsize: -3.0
+                ave_lot_size_per_unit: 0.12385604405873106
+                ave_sqft_per_unit: 0.39945073596447034
+                ave_hhsize: -3.0
                 jobs: 0.3853820270868495
                 np.log1p(non_residential_rent): 0.98776933366953
                 np.log1p(stories): 0.1771024983133589
@@ -799,9 +799,9 @@ models:
                 sum_residential_units: -0.6810795975337376
             Std. Error:
                 ave_income: 0.046908022471024886
-                ave_lot_sqft: 0.07316610689340146
-                ave_unit_sqft: 0.09566867554213924
-                hhsize: 0.24246687075661563
+                ave_lot_size_per_unit: 0.07316610689340146
+                ave_sqft_per_unit: 0.09566867554213924
+                ave_hhsize: 0.24246687075661563
                 jobs: 0.026958815955615688
                 np.log1p(non_residential_rent): 0.04504112864860748
                 np.log1p(stories): 0.02188463852496453
@@ -809,9 +809,9 @@ models:
                 sum_residential_units: 0.10129723112191699
             T-Score:
                 ave_income: -1.715399671037434
-                ave_lot_sqft: 1.6928062639601933
-                ave_unit_sqft: 4.175355556046388
-                hhsize: -12.372824339418115
+                ave_lot_size_per_unit: 1.6928062639601933
+                ave_sqft_per_unit: 4.175355556046388
+                ave_hhsize: -12.372824339418115
                 jobs: 14.295213399629
                 np.log1p(non_residential_rent): 21.930385922957296
                 np.log1p(stories): 8.09254848378383
@@ -827,9 +827,9 @@ models:
         fit_parameters:
             Coefficient:
                 ave_income: 0.18505794124768316
-                ave_lot_sqft: -0.2847748943030528
-                ave_unit_sqft: -0.1677032582942672
-                hhsize: -3.0
+                ave_lot_size_per_unit: -0.2847748943030528
+                ave_sqft_per_unit: -0.1677032582942672
+                ave_hhsize: -3.0
                 jobs: 0.5179503878901424
                 np.log1p(non_residential_rent): 1.0922671858563806
                 np.log1p(stories): 0.2971388773499149
@@ -837,9 +837,9 @@ models:
                 sum_residential_units: -0.596358262028228
             Std. Error:
                 ave_income: 0.04791266346895002
-                ave_lot_sqft: 0.06392116547900632
-                ave_unit_sqft: 0.08133979867254526
-                hhsize: 0.23222459936975837
+                ave_lot_size_per_unit: 0.06392116547900632
+                ave_sqft_per_unit: 0.08133979867254526
+                ave_hhsize: 0.23222459936975837
                 jobs: 0.02233453978704021
                 np.log1p(non_residential_rent): 0.051309427568125586
                 np.log1p(stories): 0.020515735326970742
@@ -847,9 +847,9 @@ models:
                 sum_residential_units: 0.10388324481573101
             T-Score:
                 ave_income: 3.8624014581783928
-                ave_lot_sqft: -4.455095462810071
-                ave_unit_sqft: -2.0617614136150095
-                hhsize: -12.918528046304285
+                ave_lot_size_per_unit: -4.455095462810071
+                ave_sqft_per_unit: -2.0617614136150095
+                ave_hhsize: -12.918528046304285
                 jobs: 23.1905556518647
                 np.log1p(non_residential_rent): 21.28784587210866
                 np.log1p(stories): 14.483462211529176
@@ -865,9 +865,9 @@ models:
         fit_parameters:
             Coefficient:
                 ave_income: -0.062052508054190866
-                ave_lot_sqft: 0.04755363977643051
-                ave_unit_sqft: -0.37184057423062555
-                hhsize: 0.07655777707382401
+                ave_lot_size_per_unit: 0.04755363977643051
+                ave_sqft_per_unit: -0.37184057423062555
+                ave_hhsize: 0.07655777707382401
                 jobs: 0.4082198406366436
                 np.log1p(non_residential_rent): 0.1693286395234376
                 np.log1p(stories): 0.5632698345823255
@@ -875,9 +875,9 @@ models:
                 sum_residential_units: 0.04434275562488154
             Std. Error:
                 ave_income: 0.05083043388655959
-                ave_lot_sqft: 0.024458087746732363
-                ave_unit_sqft: 0.046656126023736935
-                hhsize: 0.23405168566970713
+                ave_lot_size_per_unit: 0.024458087746732363
+                ave_sqft_per_unit: 0.046656126023736935
+                ave_hhsize: 0.23405168566970713
                 jobs: 0.016409038352738634
                 np.log1p(non_residential_rent): 0.04024396608891626
                 np.log1p(stories): 0.01883773350188525
@@ -885,9 +885,9 @@ models:
                 sum_residential_units: 0.08359971082732819
             T-Score:
                 ave_income: -1.220774707386446
-                ave_lot_sqft: 1.9442909956353291
-                ave_unit_sqft: -7.969812453812531
-                hhsize: 0.3270977384963681
+                ave_lot_size_per_unit: 1.9442909956353291
+                ave_sqft_per_unit: -7.969812453812531
+                ave_hhsize: 0.3270977384963681
                 jobs: 24.877743098730257
                 np.log1p(non_residential_rent): 4.2075534789319144
                 np.log1p(stories): 29.90114678742824
@@ -903,9 +903,9 @@ models:
         fit_parameters:
             Coefficient:
                 ave_income: -1.2601735013859068
-                ave_lot_sqft: -0.007853267461038097
-                ave_unit_sqft: 2.008623365073773
-                hhsize: -3.0
+                ave_lot_size_per_unit: -0.007853267461038097
+                ave_sqft_per_unit: 2.008623365073773
+                ave_hhsize: -3.0
                 jobs: 0.26536980819659794
                 np.log1p(non_residential_rent): 0.8480270222827958
                 np.log1p(stories): 1.1796468892212124
@@ -913,9 +913,9 @@ models:
                 sum_residential_units: -1.92493838291284
             Std. Error:
                 ave_income: 0.0952721018532062
-                ave_lot_sqft: 0.0859463318776738
-                ave_unit_sqft: 0.10352551230416375
-                hhsize: 0.49721142540704666
+                ave_lot_size_per_unit: 0.0859463318776738
+                ave_sqft_per_unit: 0.10352551230416375
+                ave_hhsize: 0.49721142540704666
                 jobs: 0.0304538903016781
                 np.log1p(non_residential_rent): 0.052671618226938596
                 np.log1p(stories): 0.019171427445676837
@@ -923,9 +923,9 @@ models:
                 sum_residential_units: 0.16084799980336234
             T-Score:
                 ave_income: -13.227098771553953
-                ave_lot_sqft: -0.09137408530960393
-                ave_unit_sqft: 19.402206474210196
-                hhsize: -6.033650569360957
+                ave_lot_size_per_unit: -0.09137408530960393
+                ave_sqft_per_unit: 19.402206474210196
+                ave_hhsize: -6.033650569360957
                 jobs: 8.713822948983804
                 np.log1p(non_residential_rent): 16.10026520599812
                 np.log1p(stories): 61.53151050248077
@@ -941,9 +941,9 @@ models:
         fit_parameters:
             Coefficient:
                 ave_income: -1.2398767848104417
-                ave_lot_sqft: -1.6777614789318005
-                ave_unit_sqft: 0.8728596685309605
-                hhsize: -1.8937545420943833
+                ave_lot_size_per_unit: -1.6777614789318005
+                ave_sqft_per_unit: 0.8728596685309605
+                ave_hhsize: -1.8937545420943833
                 jobs: 0.9389322326492868
                 np.log1p(non_residential_rent): 0.3723995844309827
                 np.log1p(stories): 0.7250633322581661
@@ -951,9 +951,9 @@ models:
                 sum_residential_units: 1.0301533380492855
             Std. Error:
                 ave_income: 0.28515377981005674
-                ave_lot_sqft: 0.28977579846999313
-                ave_unit_sqft: 0.3876003370154835
-                hhsize: 1.7228046266982484
+                ave_lot_size_per_unit: 0.28977579846999313
+                ave_sqft_per_unit: 0.3876003370154835
+                ave_hhsize: 1.7228046266982484
                 jobs: 0.08331385462521995
                 np.log1p(non_residential_rent): 0.2731678490194541
                 np.log1p(stories): 0.0751495660089782
@@ -961,9 +961,9 @@ models:
                 sum_residential_units: 0.5680226860028308
             T-Score:
                 ave_income: -4.348098719351831
-                ave_lot_sqft: -5.789860601852629
-                ave_unit_sqft: 2.251957971068772
-                hhsize: -1.0992276853375766
+                ave_lot_size_per_unit: -5.789860601852629
+                ave_sqft_per_unit: 2.251957971068772
+                ave_hhsize: -1.0992276853375766
                 jobs: 11.269821050448222
                 np.log1p(non_residential_rent): 1.3632628648200162
                 np.log1p(stories): 9.64827038617285

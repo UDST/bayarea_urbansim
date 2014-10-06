@@ -8,6 +8,12 @@ reconcile_non_residential_sqft_and_jobs: True
 
 set_nan_price_to_zero: True
 
+parcel_size_factor: 10.764
+
+ave_sqft_per_unit_clip:
+  lower: 800
+  upper: 2500
+
 _enable_supply_correction:
   price_col: "residential_sales_price"
   submarket_col": "zone_id"
