@@ -27,25 +27,14 @@ def stories(costar):
     return costar.number_of_stories
 
 
-#####################
-# APARTMENTS VARIABLES
-#####################
+@sim.column('costar', 'node_id')
+def node_id(parcels, costar):
+    return misc.reindex(parcels.node_id, costar.parcel_id)
 
 
-@sim.column('apartments', 'node_id')
-def node_id(parcels, apartments):
-    return misc.reindex(parcels.node_id, apartments.parcel_id)
-
-
-@sim.column('apartments', 'rent')
-def rent(apartments):
-    return (apartments.MinOfLowRent + apartments.MaxOfHighRent) / \
-        2.0 / apartments.unit_sqft
-
-
-@sim.column('apartments', 'unit_sqft')
-def unit_sqft(apartments):
-    return apartments.AvgOfSquareFeet
+@sim.column('costar', 'zone_id')
+def node_id(parcels, costar):
+    return misc.reindex(parcels.zone_id, costar.parcel_id)
 
 
 #####################
@@ -76,8 +65,8 @@ def empsix_id(jobs, empsix_name_to_id):
 @sim.column('homesales', 'sale_price_flt')
 def sale_price_flt(homesales):
     col = homesales.Sale_price.str.replace('$', '').\
-        str.replace(',', '').astype('f4') / homesales.unit_sqft
-    col[homesales.unit_sqft == 0] = 0
+        str.replace(',', '').astype('f4') / homesales.sqft_per_unit
+    col[homesales.sqft_per_unit == 0] = 0
     return col
 
 
@@ -86,13 +75,13 @@ def year_built(homesales):
     return homesales.Year_built
 
 
-@sim.column('homesales', 'unit_lot_size')
-def unit_lot_size(homesales):
+@sim.column('homesales', 'lot_size_per_unit')
+def lot_size_per_unit(homesales):
     return homesales.Lot_size
 
 
-@sim.column('homesales', 'unit_sqft')
-def unit_sqft(homesales):
+@sim.column('homesales', 'sqft_per_unit')
+def sqft_per_unit(homesales):
     return homesales.SQft
 
 
@@ -104,6 +93,11 @@ def city(homesales):
 @sim.column('homesales', 'zone_id')
 def zone_id(parcels, homesales):
     return misc.reindex(parcels.zone_id, homesales.parcel_id)
+
+
+@sim.column('homesales', 'node_id')
+def node_id(parcels, homesales):
+    return misc.reindex(parcels.node_id, homesales.parcel_id)
 
 
 #####################
@@ -124,6 +118,10 @@ def parcel_average_price(use, quantile=.5):
                             sim.get_table('parcels').zone_id)
     return misc.reindex(sim.get_table('nodes_prices')[use],
                         sim.get_table('parcels').node_id)
+
+
+def parcel_sales_price_sqft(use):
+    return parcel_average_price(use, .8)
 
 
 def parcel_is_allowed(form):

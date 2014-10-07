@@ -10,6 +10,11 @@ from urbansim.utils import misc
 def settings():
     return yaml.load(open(os.path.join(misc.configs_dir(), "settings.yaml")))
 
+
+@sim.injectable("land_use_tables")
+def land_use_tables(nodes, logsums):
+    return [nodes, logsums]
+
 sim.add_injectable("building_sqft_per_job", {
     -1: 400,
     1: 400,

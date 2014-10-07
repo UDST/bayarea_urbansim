@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import os
 import assumptions
-from urbansim_defaults import datasources
+from urbansim_defaults import datasources, utils
 from urbansim.utils import misc
 import urbansim.sim.simulation as sim
 
@@ -22,13 +22,6 @@ def jobs(store):
 def homesales(store):
     df = store['homesales']
     df = df.reset_index(drop=True)
-    return df
-
-
-# a table of apartment rental data
-@sim.table_source('apartments')
-def apartments(store):
-    df = store['apartments']
     return df
 
 
@@ -91,6 +84,29 @@ def zoning_test():
                   on=['jurisdiction', 'pda', 'tpp', 'expansion'],
                   how='left')
     df = df.set_index(df.parcel_id)
+    return df
+
+
+# this is really bizarre, but the parcel table I have right now has empty
+# zone_ids for a few parcels.  Not enough to worry about so just filling with
+# the mode
+@sim.table_source('parcels')
+def parcels(store):
+    df = store['parcels']
+    cfg = {
+        "fill_nas": {
+            "zone_id": {
+                "how": "mode",
+                "type": "int"
+            },
+            "shape_area": {
+                "how": "median",
+                "type": "float"
+            }
+        }
+    }
+    df = utils.table_reprocess(cfg, df)
+    df["zone_id"] = df.zone_id.replace(0, 1)
     return df
 
 

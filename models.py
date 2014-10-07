@@ -15,49 +15,51 @@ import numpy as np
 
 
 @sim.model('rsh_estimate')
-def rsh_estimate(homesales, nodes, logsums):
-    return utils.hedonic_estimate("rsh.yaml", homesales, [nodes, logsums])
+def rsh_estimate(homesales, land_use_tables):
+    return utils.hedonic_estimate("rsh.yaml", homesales, land_use_tables)
 
 
 @sim.model('rsh_simulate')
-def rsh_simulate(buildings, nodes, logsums):
-    return utils.hedonic_simulate("rsh.yaml", buildings, [nodes, logsums],
+def rsh_simulate(buildings, land_use_tables):
+    return utils.hedonic_simulate("rsh.yaml", buildings, land_use_tables,
                                   "residential_sales_price")
 
 
 @sim.model('nrh_estimate')
-def nrh_estimate(costar, nodes):
-    return utils.hedonic_estimate("nrh.yaml", costar, nodes)
+def nrh_estimate(costar, land_use_tables):
+    return utils.hedonic_estimate("nrh.yaml", costar, land_use_tables)
 
 
 @sim.model('nrh_simulate')
-def nrh_simulate(buildings, nodes):
-    return utils.hedonic_simulate("nrh.yaml", buildings, nodes,
+def nrh_simulate(buildings, land_use_tables):
+    return utils.hedonic_simulate("nrh.yaml", buildings, land_use_tables,
                                   "non_residential_rent")
 
 
 @sim.model('hlcm_estimate')
-def hlcm_estimate(households, buildings, nodes):
+def hlcm_estimate(households, buildings, land_use_tables):
     return utils.lcm_estimate("hlcm.yaml", households, "building_id",
-                              buildings, nodes)
+                              buildings, land_use_tables)
 
 
 @sim.model('hlcm_simulate')
-def hlcmo_simulate(households, buildings, nodes):
-    return utils.lcm_simulate("hlcm.yaml", households, buildings, nodes,
+def hlcm_simulate(households, buildings, land_use_tables, settings):
+    return utils.lcm_simulate("hlcm.yaml", households, buildings,
+                              land_use_tables,
                               "building_id", "residential_units",
-                              "vacant_residential_units")
+                              "vacant_residential_units",
+                              settings.get("enable_supply_correction", None))
 
 
 @sim.model('elcm_estimate')
-def elcm_estimate(jobs, buildings, nodes):
+def elcm_estimate(jobs, buildings, land_use_tables):
     return utils.lcm_estimate("elcm.yaml", jobs, "building_id",
-                              buildings, nodes)
+                              buildings, land_use_tables)
 
 
 @sim.model('elcm_simulate')
-def elcm_simulate(jobs, buildings, nodes):
-    return utils.lcm_simulate("elcm.yaml", jobs, buildings, nodes,
+def elcm_simulate(jobs, buildings, land_use_tables):
+    return utils.lcm_simulate("elcm.yaml", jobs, buildings, land_use_tables,
                               "building_id", "job_spaces",
                               "vacant_job_spaces")
 
@@ -135,7 +137,7 @@ def price_vars(net):
 @sim.model('feasibility')
 def feasibility(parcels):
     utils.run_feasibility(parcels,
-                          variables.parcel_average_price,
+                          variables.parcel_sales_price_sqft,
                           variables.parcel_is_allowed,
                           historic_preservation='oldest_building > 1940 and '
                                                 'oldest_building < 2000',

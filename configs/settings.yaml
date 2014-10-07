@@ -14,9 +14,13 @@ ave_sqft_per_unit_clip:
   lower: 800
   upper: 2500
 
-_enable_supply_correction:
+enable_supply_correction:
   price_col: "residential_sales_price"
-  submarket_col": "zone_id"
+  submarket_col: "zone_id"
+  kwargs:
+    clip_change_low: .8
+    clip_change_high: 1.2
+    iterations: 3
 
 table_reprocess:
   buildings:
