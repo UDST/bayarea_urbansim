@@ -11,8 +11,8 @@ def settings():
     return yaml.load(open(os.path.join(misc.configs_dir(), "settings.yaml")))
 
 
-@sim.injectable("land_use_tables")
-def land_use_tables(nodes, logsums):
+@sim.injectable("aggregations")
+def aggregations(nodes, logsums):
     return [nodes, logsums]
 
 sim.add_injectable("building_sqft_per_job", {

@@ -21,7 +21,7 @@ sample_size: 100
 estimation_sample_size: 15000
 
 default_config:
-    model_expression: np.log1p(non_residential_rent) + np.log1p(stories) + sum_residential_units
+    model_expression: np.log1p(non_residential_price) + np.log1p(stories) + sum_residential_units
         + ave_sqft_per_unit + ave_lot_size_per_unit + ave_income + ave_hhsize + jobs
         + poor + autoPeakTotal + transitPeakTotal + nonMotorizedTotal - 1
 
@@ -36,7 +36,7 @@ models:
                 ave_sqft_per_unit: -0.06440110985358026
                 jobs: 0.7734456321387333
                 nonMotorizedTotal: -0.11917934576321482
-                np.log1p(non_residential_rent): 0.6339866960712655
+                np.log1p(non_residential_price): 0.6339866960712655
                 np.log1p(stories): 0.7681650833849392
                 poor: 0.7525729360091251
                 sum_residential_units: -1.6176435952836283
@@ -49,7 +49,7 @@ models:
                 ave_sqft_per_unit: 0.0181119027566599
                 jobs: 0.009237269667837935
                 nonMotorizedTotal: 0.004030009649083296
-                np.log1p(non_residential_rent): 0.007642767288451466
+                np.log1p(non_residential_price): 0.007642767288451466
                 np.log1p(stories): 0.0362649312242109
                 poor: 0.019936402715084817
                 sum_residential_units: 0.027206138480481448
@@ -62,7 +62,7 @@ models:
                 ave_sqft_per_unit: -3.5557340782375517
                 jobs: 83.7309789527629
                 nonMotorizedTotal: -29.572967843966445
-                np.log1p(non_residential_rent): 82.95250557075646
+                np.log1p(non_residential_price): 82.95250557075646
                 np.log1p(stories): 21.182036128393456
                 poor: 37.7486824862187
                 sum_residential_units: -59.45877238124688
@@ -83,7 +83,7 @@ models:
                 ave_sqft_per_unit: -0.14790309030833024
                 jobs: 0.7463805888415332
                 nonMotorizedTotal: -0.011106249276336286
-                np.log1p(non_residential_rent): 0.712888970154479
+                np.log1p(non_residential_price): 0.712888970154479
                 np.log1p(stories): 0.992304997231893
                 poor: 0.042762171314321834
                 sum_residential_units: -0.6930136561482034
@@ -96,7 +96,7 @@ models:
                 ave_sqft_per_unit: 0.021021099569069425
                 jobs: 0.010065901741915932
                 nonMotorizedTotal: 0.006741595750627403
-                np.log1p(non_residential_rent): 0.006819866387951352
+                np.log1p(non_residential_price): 0.006819866387951352
                 np.log1p(stories): 0.024618171459262397
                 poor: 0.01894812227329089
                 sum_residential_units: 0.026877661140990616
@@ -109,7 +109,7 @@ models:
                 ave_sqft_per_unit: -7.035935005319881
                 jobs: 74.14940141264165
                 nonMotorizedTotal: -1.6474214247127899
-                np.log1p(non_residential_rent): 104.53122240252961
+                np.log1p(non_residential_price): 104.53122240252961
                 np.log1p(stories): 40.30782704044195
                 poor: 2.2568025843172346
                 sum_residential_units: -25.784001536179105
@@ -130,7 +130,7 @@ models:
                 ave_sqft_per_unit: -0.19121939781317904
                 jobs: 0.7483191915158263
                 nonMotorizedTotal: -0.042590408117253786
-                np.log1p(non_residential_rent): 0.8014876370699291
+                np.log1p(non_residential_price): 0.8014876370699291
                 np.log1p(stories): 0.6969475406722088
                 poor: 0.3944560425161296
                 sum_residential_units: -0.8393174136120187
@@ -143,7 +143,7 @@ models:
                 ave_sqft_per_unit: 0.021595653701005288
                 jobs: 0.01116002180185206
                 nonMotorizedTotal: 0.006887423530719522
-                np.log1p(non_residential_rent): 0.006057165340809917
+                np.log1p(non_residential_price): 0.006057165340809917
                 np.log1p(stories): 0.024477254177822056
                 poor: 0.020451205501523545
                 sum_residential_units: 0.029368787383855316
@@ -156,7 +156,7 @@ models:
                 ave_sqft_per_unit: -8.854531585875433
                 jobs: 67.05356000215332
                 nonMotorizedTotal: -6.183793972781054
-                np.log1p(non_residential_rent): 132.32058099354447
+                np.log1p(non_residential_price): 132.32058099354447
                 np.log1p(stories): 28.473273007218573
                 poor: 19.287667051545885
                 sum_residential_units: -28.578551870119444
@@ -177,7 +177,7 @@ models:
                 ave_sqft_per_unit: -0.04228117642389011
                 jobs: 1.093531822340567
                 nonMotorizedTotal: -0.01518011344461783
-                np.log1p(non_residential_rent): 0.8329421068509594
+                np.log1p(non_residential_price): 0.8329421068509594
                 np.log1p(stories): 0.28265219534348185
                 poor: 0.3423282845127581
                 sum_residential_units: -1.4944878784334612
@@ -190,7 +190,7 @@ models:
                 ave_sqft_per_unit: 0.017897666163031116
                 jobs: 0.012071406940529968
                 nonMotorizedTotal: 0.0065845041668278126
-                np.log1p(non_residential_rent): 0.008861877248682223
+                np.log1p(non_residential_price): 0.008861877248682223
                 np.log1p(stories): 0.03204352553546548
                 poor: 0.01622862964005077
                 sum_residential_units: 0.023545973205714915
@@ -203,7 +203,7 @@ models:
                 ave_sqft_per_unit: -2.3623849075487193
                 jobs: 90.58859731329362
                 nonMotorizedTotal: -2.3054300004993524
-                np.log1p(non_residential_rent): 93.99160961914919
+                np.log1p(non_residential_price): 93.99160961914919
                 np.log1p(stories): 8.820883177496963
                 poor: 21.09409679717647
                 sum_residential_units: -63.47106001423332
@@ -224,7 +224,7 @@ models:
                 ave_sqft_per_unit: -0.14307686963792499
                 jobs: 0.8882389759867484
                 nonMotorizedTotal: -0.01807015744950038
-                np.log1p(non_residential_rent): 0.7574490702837564
+                np.log1p(non_residential_price): 0.7574490702837564
                 np.log1p(stories): 0.42114178759455334
                 poor: 0.36962059683014215
                 sum_residential_units: -1.091782653473136
@@ -237,7 +237,7 @@ models:
                 ave_sqft_per_unit: 0.02019382138865216
                 jobs: 0.010625845370266918
                 nonMotorizedTotal: 0.006434601219828523
-                np.log1p(non_residential_rent): 0.006786925943425196
+                np.log1p(non_residential_price): 0.006786925943425196
                 np.log1p(stories): 0.026676743581428932
                 poor: 0.01719209325925354
                 sum_residential_units: 0.02442909580782504
@@ -250,7 +250,7 @@ models:
                 ave_sqft_per_unit: -7.085180505673209
                 jobs: 83.59231148537184
                 nonMotorizedTotal: -2.808279306232117
-                np.log1p(non_residential_rent): 111.6041454699431
+                np.log1p(non_residential_price): 111.6041454699431
                 np.log1p(stories): 15.786851431436782
                 poor: 21.49945275751666
                 sum_residential_units: -44.691897811601365
@@ -271,7 +271,7 @@ models:
                 ave_sqft_per_unit: 0.014008711549564882
                 jobs: 0.7416343472696353
                 nonMotorizedTotal: -0.006064950556188679
-                np.log1p(non_residential_rent): 0.9934140399624669
+                np.log1p(non_residential_price): 0.9934140399624669
                 np.log1p(stories): 0.008935305467315819
                 poor: 0.32628756590145513
                 sum_residential_units: -0.9374274175422954
@@ -284,7 +284,7 @@ models:
                 ave_sqft_per_unit: 0.019761354542007847
                 jobs: 0.011400822655216908
                 nonMotorizedTotal: 0.006886057523490503
-                np.log1p(non_residential_rent): 0.006565174285753871
+                np.log1p(non_residential_price): 0.006565174285753871
                 np.log1p(stories): 0.030448113525161916
                 poor: 0.018918302302810313
                 sum_residential_units: 0.02685046710120167
@@ -297,7 +297,7 @@ models:
                 ave_sqft_per_unit: 0.7088942976953203
                 jobs: 65.05095024263626
                 nonMotorizedTotal: -0.8807580441347215
-                np.log1p(non_residential_rent): 151.31571481935066
+                np.log1p(non_residential_price): 151.31571481935066
                 np.log1p(stories): 0.29346006805747754
                 poor: 17.24719061355654
                 sum_residential_units: -34.912890491217624

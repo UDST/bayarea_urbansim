@@ -105,6 +105,7 @@ def node_id(parcels, homesales):
 #####################
 
 
+@sim.injectable('parcel_average_price', autocall=False)
 def parcel_average_price(use, quantile=.5):
     # I'm testing out a zone aggregation rather than a network aggregation
     # because I want to be able to determine the quantile of the distribution
@@ -112,18 +113,24 @@ def parcel_average_price(use, quantile=.5):
     if use == "residential":
         buildings = sim.get_table('buildings')
         return misc.reindex(buildings.
-                            residential_sales_price[buildings.general_type ==
-                                                    "Residential"].
+                            residential_price[buildings.general_type ==
+                                              "Residential"].
                             groupby(buildings.zone_id).quantile(quantile),
                             sim.get_table('parcels').zone_id)
-    return misc.reindex(sim.get_table('nodes_prices')[use],
+
+    if 'nodes' not in sim.list_tables():
+        return pd.Series(0, sim.get_table('parcels').index)
+
+    return misc.reindex(sim.get_table('nodes')[use],
                         sim.get_table('parcels').node_id)
 
 
+@sim.injectable('parcel_sales_price_sqft', autocall=False)
 def parcel_sales_price_sqft(use):
     return parcel_average_price(use, .8)
 
 
+@sim.injectable('parcel_is_allowed', autocall=False)
 def parcel_is_allowed(form):
     form_to_btype = sim.get_injectable("form_to_btype")
     # we have zoning by building type but want
@@ -158,21 +165,13 @@ def building_purchase_price_sqft():
 
 
 @sim.column('parcels', 'building_purchase_price')
-def building_purchase_price(parcels, nodes_prices):
-    if len(nodes_prices) == 0:
-        # if nodes_prices isn't generated yet
-        return pd.Series(index=parcels.index)
-
+def building_purchase_price(parcels):
     return (parcels.total_sqft * parcels.building_purchase_price_sqft).\
         reindex(parcels.index).fillna(0)
 
 
 @sim.column('parcels', 'land_cost')
-def land_cost(parcels, nodes_prices):
-    if len(nodes_prices) == 0:
-        # if nodes_prices isn't generated yet
-        return pd.Series(index=parcels.index)
-
+def land_cost(parcels):
     return parcels.building_purchase_price + parcels.parcel_size * 20.0
 
 

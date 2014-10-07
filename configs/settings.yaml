@@ -15,7 +15,7 @@ ave_sqft_per_unit_clip:
   upper: 2500
 
 enable_supply_correction:
-  price_col: "residential_sales_price"
+  price_col: "residential_price"
   submarket_col: "zone_id"
   kwargs:
     clip_change_low: .8
@@ -41,3 +41,55 @@ table_reprocess:
       building_type_id:
         how: "mode"
         type: "int"
+
+rates:
+  households_relocation: .05
+  jobs_relocation: .05
+  simple_households_transition: .02
+  simple_jobs_transition: .02
+
+build_networks:
+  name: osm_bayarea.h5
+  max_distance: 1500
+
+households_transition:
+  add_columns:
+    - income_quartile
+  total_column: total_number_of_households
+
+jobs_transition:
+  add_columns:
+    - empsix_id
+  total_column: number_of_jobs
+
+feasibility:
+  parcel_filter: oldest_building > 1940 and oldest_building < 2000
+  residential_to_yearly: True
+  pass_through:
+    - oldest_building
+    - total_sqft
+    - max_far
+    - max_dua
+    - land_cost
+    - residential
+    - min_max_fars
+    - max_far_from_dua
+    - max_height
+    - max_far_from_heights
+    - building_purchase_price
+    - building_purchase_price_sqft
+
+residential_developer:
+  target_vacancy: .13
+  min_unit_size: 1000
+  bldg_sqft_per_job: 400
+
+non_residential_developer:
+  target_vacancy: .49
+  bldg_sqft_per_job: 400
+
+pusher:
+  key: 7d78b1b3454b78aed26f
+  secret: d87736e21dd7819926e6
+  host: http://localhost:8765/
+  region: bayarea

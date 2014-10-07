@@ -15,7 +15,7 @@ variable_definitions:
     - general_type == "Residential"
     name: residential
     radius: 2000
-    varname: residential_sales_price
+    varname: residential_price
 
 -   aggregation: average
     dataframe: buildings
@@ -24,7 +24,7 @@ variable_definitions:
     - general_type == "Retail"
     name: retail
     radius: 2000
-    varname: non_residential_rent
+    varname: non_residential_price
 
 -   aggregation: average
     dataframe: buildings
@@ -33,7 +33,7 @@ variable_definitions:
     - general_type == "Office"
     name: office
     radius: 2000
-    varname: non_residential_rent
+    varname: non_residential_price
 
 -   aggregation: average
     dataframe: buildings
@@ -42,4 +42,4 @@ variable_definitions:
     - general_type == "Industrial"
     name: industrial
     radius: 2000
-    varname: non_residential_rent
+    varname: non_residential_price
