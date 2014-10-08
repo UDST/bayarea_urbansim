@@ -1,10 +1,19 @@
 import numpy as np
 import pandas as pd
 import os
-import assumptions
-from urbansim_defaults import datasources, utils
+from urbansim_defaults import datasources
+from urbansim_defaults import utils
 from urbansim.utils import misc
 import urbansim.sim.simulation as sim
+
+
+# the starter submarket shifters is one per zone, all set to 1.0
+sim.add_injectable("price_shifters",
+                   pd.Series(1, sim.get_table('zones').index))
+
+
+sim.add_injectable("building_sqft_per_job",
+                   sim.get_injectable('settings')["building_sqft_per_job"])
 
 
 @sim.table_source('jobs')

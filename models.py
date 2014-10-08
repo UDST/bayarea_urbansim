@@ -1,11 +1,27 @@
 import urbansim.sim.simulation as sim
 from urbansim.utils import misc
 import os
-import assumptions
 import datasources
 import variables
 from urbansim_defaults import models
 from urbansim_defaults import utils
+
+
+# this if the function for mapping a specific building that we build to a
+# specific building type
+@sim.injectable("form_to_btype_f", autocall=False)
+def form_to_btype_f(building):
+    settings = sim.get_injectable("settings")
+    form = building.form
+    dua = building.residential_units / (building.parcel_size / 43560.0)
+    # precise mapping of form to building type for residential
+    if form == "residential":
+        if dua < 16:
+            return 1
+        elif dua < 32:
+            return 2
+        return 3
+    return settings["form_to_btype"][form][0]
 
 
 @sim.model("travel_model_output")

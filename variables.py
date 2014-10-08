@@ -48,13 +48,13 @@ def naics(jobs):
 
 
 @sim.column('jobs', 'empsix', cache=True)
-def empsix(jobs, naics_to_empsix):
-    return jobs.naics.map(naics_to_empsix)
+def empsix(jobs, settings):
+    return jobs.naics.map(settings['naics_to_empsix'])
 
 
 @sim.column('jobs', 'empsix_id', cache=True)
-def empsix_id(jobs, empsix_name_to_id):
-    return jobs.empsix.map(empsix_name_to_id)
+def empsix_id(jobs, settings):
+    return jobs.empsix.map(settings['empsix_name_to_id'])
 
 
 #####################
@@ -105,6 +105,8 @@ def node_id(parcels, homesales):
 #####################
 
 
+# these are actually functions that take parameters, but are parcel-related
+# so are defined here
 @sim.injectable('parcel_average_price', autocall=False)
 def parcel_average_price(use, quantile=.5):
     # I'm testing out a zone aggregation rather than a network aggregation
@@ -132,7 +134,8 @@ def parcel_sales_price_sqft(use):
 
 @sim.injectable('parcel_is_allowed', autocall=False)
 def parcel_is_allowed(form):
-    form_to_btype = sim.get_injectable("form_to_btype")
+    settings = sim.get_injectable("settings")
+    form_to_btype = settings["form_to_btype"]
     # we have zoning by building type but want
     # to know if specific forms are allowed
     allowed = [sim.get_table('zoning_baseline')
@@ -141,6 +144,7 @@ def parcel_is_allowed(form):
         reindex(sim.get_table('parcels').index).fillna(False)
 
 
+# actual columns start here
 @sim.column('parcels', 'max_far', cache=True)
 def max_far(parcels, scenario):
     return utils.conditional_upzone(scenario, "max_far", "far_up").\
