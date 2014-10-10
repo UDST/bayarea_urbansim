@@ -126,9 +126,9 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
                                building_sqft_per_job, settings)
     # set the vacancy rate in each building to 5% for testing purposes
     vacancy = .25
-    df["residential_units"] = 0
     df["residential_units"] = (households.building_id.value_counts() *
                                (1.0+vacancy)).apply(np.floor).astype('int')
+    df["residential_units"] = df.residential_units.fillna(0)
     return df
 
 
