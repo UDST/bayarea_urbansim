@@ -4,7 +4,7 @@ desc: Full Simulation
 
 start_year: 2010
 
-end_year: 2012
+end_year: 2020
 
 start_models:
 - build_networks
@@ -16,8 +16,7 @@ models:
 - rsh_simulate
 - nrh_simulate
 - households_relocation
-- hlcmo_simulate
-- hlcmr_simulate
+- hlcm_simulate
 - households_transition
 - jobs_relocation
 - elcm_simulate
@@ -25,7 +24,6 @@ models:
 - price_vars
 - feasibility
 - residential_developer
-- non_residential_developer
 - diagnostic_output
 - travel_model_output
 - pusher

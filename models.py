@@ -25,11 +25,16 @@ def form_to_btype_f(building):
 
 
 @sim.model("travel_model_output")
-def travel_model_output(households, jobs, buildings, zones, year):
+def travel_model_output(households, jobs, buildings, zones, homesales, year):
     households = households.to_frame()
     jobs = jobs.to_frame()
     buildings = buildings.to_frame()
     zones = zones.to_frame()
+    homesales = homesales.to_frame()
+
+    # put this here as a custom bay area indicator
+    zones['empirical_res_price'] = homesales.groupby('zone_id').\
+        sale_price_flt.quantile()
 
     zones['tothh'] = households.\
         groupby('zone_id').size()

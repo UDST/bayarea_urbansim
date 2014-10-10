@@ -8,6 +8,20 @@ from urbansim_defaults import variables
 
 
 #####################
+# LOCAL ZONES VARIABLES
+#####################
+
+
+'''
+@sim.column('logsums', 'empirical_price')
+def empirical_price(homesales, zones):
+    # put this here as a custom bay area indicator
+    s = homesales.sale_price_flt.groupby(homesales.zone_id).quantile()
+    # if price isn't present fill with median price
+    return s.reindex(zones.index).fillna(s.quantile())
+'''
+
+#####################
 # COSTAR VARIABLES
 #####################
 
@@ -129,7 +143,7 @@ def parcel_average_price(use, quantile=.5):
 
 @sim.injectable('parcel_sales_price_sqft', autocall=False)
 def parcel_sales_price_sqft(use):
-    return parcel_average_price(use, .8)
+    return parcel_average_price(use, .9)
 
 
 @sim.injectable('parcel_is_allowed', autocall=False)
@@ -165,7 +179,7 @@ def max_height(parcels, zoning_baseline):
 # for debugging reasons this is split out into its own function
 @sim.column('parcels', 'building_purchase_price_sqft')
 def building_purchase_price_sqft():
-    return parcel_average_price("residential", .6)
+    return parcel_average_price("residential", .4)
 
 
 @sim.column('parcels', 'building_purchase_price')

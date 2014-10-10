@@ -30,9 +30,9 @@ enable_supply_correction:
   price_col: "residential_price"
   submarket_col: "zone_id"
   kwargs:
-    clip_change_low: .8
+    clip_change_low: .9
     clip_change_high: 1.2
-    iterations: 3
+    iterations: 6
 
 
 table_reprocess:
@@ -99,7 +99,7 @@ feasibility:
 
 
 residential_developer:
-  target_vacancy: .13
+  target_vacancy: .08
   min_unit_size: 1000
   bldg_sqft_per_job: 400
 
