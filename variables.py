@@ -5,6 +5,7 @@ import urbansim.sim.simulation as sim
 import datasources
 from urbansim_defaults import utils
 from urbansim_defaults import variables
+from urbansim_defaults import datasources
 
 
 #####################
@@ -12,14 +13,15 @@ from urbansim_defaults import variables
 #####################
 
 
-'''
 @sim.column('logsums', 'empirical_price')
-def empirical_price(homesales, zones):
+def empirical_price(homesales, logsums):
     # put this here as a custom bay area indicator
     s = homesales.sale_price_flt.groupby(homesales.zone_id).quantile()
     # if price isn't present fill with median price
-    return s.reindex(zones.index).fillna(s.quantile())
-'''
+    s = s.reindex(logsums.index).fillna(s.quantile())
+    s[s < 200] = 200
+    return s
+
 
 #####################
 # COSTAR VARIABLES
