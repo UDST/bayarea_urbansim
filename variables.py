@@ -5,7 +5,6 @@ import urbansim.sim.simulation as sim
 import datasources
 from urbansim_defaults import utils
 from urbansim_defaults import variables
-from urbansim_defaults import datasources
 
 
 #####################

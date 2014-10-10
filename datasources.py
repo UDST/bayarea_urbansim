@@ -119,6 +119,22 @@ def parcels(store):
     return df
 
 
+@sim.table_source('buildings')
+def buildings(store, households, jobs, building_sqft_per_job, settings):
+    # start with buildings from urbansim_defaults
+    df = datasources.buildings(store, households, jobs,
+                               building_sqft_per_job, settings)
+    # set the vacancy rate in each building to 5% for testing purposes
+    vacancy = .25
+    df["residential_units"] = 0
+    df["residential_units"] = (households.building_id.value_counts() *
+                               (1.0+vacancy)).apply(np.floor).astype('int')
+    print len(households)
+    print households.building_id.value_counts().sum()
+    print df.residential_units.sum()
+    return df
+
+
 # this specifies the relationships between tables
 sim.broadcast('nodes', 'homesales', cast_index=True, onto_on='node_id')
 sim.broadcast('nodes', 'costar', cast_index=True, onto_on='node_id')
