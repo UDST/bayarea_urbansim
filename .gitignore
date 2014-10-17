@@ -1,2 +1,7 @@
+RUNNUM
+.cache
+.idea
+runs
 *.pyc
 .ipynb_checkpoints
+dump.rdb

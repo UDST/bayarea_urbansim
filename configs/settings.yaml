@@ -1,0 +1,237 @@
+aggregation_tables:
+  - nodes
+  - logsums
+
+
+set_nan_price_to_zero: True
+
+
+remove_invalid_building_ids: True
+
+
+reconcile_residential_units_and_households: True
+
+
+reconcile_non_residential_sqft_and_jobs: True
+
+
+set_nan_price_to_zero: True
+
+
+parcel_size_factor: 10.764
+
+
+ave_sqft_per_unit_clip:
+  lower: 800
+  upper: 2500
+
+
+enable_supply_correction:
+  price_col: residential_price
+  submarket_col: zone_id
+  submarket_table: zones
+  warm_start: False
+  multiplier_func: supply_and_demand_multiplier_func
+  clip_final_price_low: 200
+  clip_final_price_high: 2000
+  kwargs:
+    clip_change_low: 1.0
+    clip_change_high: 1.3
+    iterations: 20
+
+
+table_reprocess:
+  buildings:
+    filter: "building_type_id >= 1 and building_type_id <= 14"
+    fill_nas:
+      building_type_id:
+        how: "drop"
+        type: "int"
+      residential_units:
+        how: "zero"
+        type: "int"
+      non_residential_sqft:
+        how: "zero"
+        type: "int"
+      year_built:
+        how: "median"
+        type: "int"
+      building_type_id:
+        how: "mode"
+        type: "int"
+
+
+rates:
+  households_relocation: .05
+  jobs_relocation: .05
+  simple_households_transition: .02
+  simple_jobs_transition: .02
+
+
+build_networks:
+  name: osm_bayarea.h5
+  max_distance: 1500
+
+
+households_transition:
+  add_columns:
+    - income_quartile
+  total_column: total_number_of_households
+
+
+jobs_transition:
+  add_columns:
+    - empsix_id
+  total_column: number_of_jobs
+
+
+feasibility:
+  parcel_filter: oldest_building > 1940 and oldest_building < 2000
+  residential_to_yearly: True
+  pass_through:
+    - oldest_building
+    - total_sqft
+    - max_far
+    - max_dua
+    - land_cost
+    - residential
+    - min_max_fars
+    - max_far_from_dua
+    - max_height
+    - max_far_from_heights
+    - building_purchase_price
+    - building_purchase_price_sqft
+
+
+residential_developer:
+  target_vacancy: .08
+  min_unit_size: 1000
+  bldg_sqft_per_job: 400
+
+
+non_residential_developer:
+  target_vacancy: .49
+  bldg_sqft_per_job: 400
+
+
+pusher:
+  key: 7d78b1b3454b78aed26f
+  secret: d87736e21dd7819926e6
+  host: http://localhost:8765/
+  region: bayarea
+
+
+store: bayarea_v2.h5
+
+
+scenario: baseline
+
+
+scenario_inputs:
+  baseline:
+    zoning_table_name: zoning_baseline
+  test:
+    zoning_table_name: zoning_test
+
+
+# this maps Synthicity's 25 employment categories to
+# the six major employment categories traditionally
+# used by MTC and ABAG for use in output to the Travel Model
+naics_to_empsix:
+  11: AGREMPN
+  21: AGREMPN
+  22: MWTEMPN
+  23: OTHEMPN
+  31: MWTEMPN
+  32: MWTEMPN
+  33: MWTEMPN
+  42: MWTEMPN
+  44: RETEMPN
+  45: RETEMPN
+  48: MWTEMPN
+  49: MWTEMPN
+  51: OTHEMPN
+  52: FPSEMPN
+  53: FPSEMPN
+  54: FPSEMPN
+  55: FPSEMPN
+  56: FPSEMPN
+  61: HEREMPN
+  62: HEREMPN
+  71: HEREMPN
+  72: HEREMPN
+  81: OTHEMPN
+  92: OTHEMPN
+  99: OTHEMPN
+
+
+empsix_name_to_id:
+  AGREMPN: 1
+  MWTEMPN: 2
+  RETEMPN: 3
+  FPSEMPN: 4
+  HEREMPN: 5
+  OTHEMPN: 6
+
+
+# this maps building type ids to general building types
+# basically just reduces dimensionality
+building_type_map:
+  1: Residential
+  2: Residential
+  3: Residential
+  4: Office
+  5: Hotel
+  6: School
+  7: Industrial
+  8: Industrial
+  9: Industrial
+  10: Retail
+  11: Retail
+  12: Residential
+  13: Retail
+  14: Office
+
+
+# this maps building "forms" from the developer model
+# to building types so that when the developer builds a
+# "form" this can be converted for storing as a type
+# in the building table - in the long run, the developer
+# forms and the building types should be the same and the
+# developer model should account for the differences
+form_to_btype:
+  residential:
+    - 1
+    - 2
+    - 3
+  industrial:
+    - 7
+    - 8
+    - 9
+  retail:
+    - 10
+    - 11
+  office:
+    - 4
+  mixedresidential:
+    - 12
+  mixedoffice:
+    - 14
+
+
+building_sqft_per_job:
+  -1: 400
+  1: 400
+  2: 400
+  3: 400
+  4: 355
+  5: 1161
+  6: 470
+  7: 661
+  8: 960
+  9: 825
+  10: 445
+  11: 445
+  12: 383
+  13: 383
+  14: 383

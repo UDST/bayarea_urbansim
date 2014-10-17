@@ -1,0 +1,2 @@
+git+https://github.com/synthicity/urbansim.git@1bfac3128ce008a79a2b19078bb6511f0c306f45
+git+https://github.com/synthicity/urbansim_defaults.git@c25f54acb4846fb685b343c8b342efedca5fd07a
