@@ -31,7 +31,7 @@ enable_supply_correction:
   submarket_col: zone_id
   submarket_table: zones
   warm_start: False
-  map_func: supply_and_demand_map_func
+  multiplier_func: supply_and_demand_multiplier_func
   clip_final_price_low: 200
   clip_final_price_high: 2000
   kwargs:

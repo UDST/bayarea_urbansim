@@ -7,8 +7,8 @@ from urbansim_defaults import models
 from urbansim_defaults import utils
 
 
-@sim.injectable("supply_and_demand_map_func", autocall=False)
-def supply_and_demand_map_func(demand, supply):
+@sim.injectable("supply_and_demand_multiplier_func", autocall=False)
+def supply_and_demand_multiplier_func(demand, supply):
     s = demand / supply
     settings = sim.get_injectable("settings")
     print "Number of submarkets where demand exceeds supply:", len(s[s>1.0])

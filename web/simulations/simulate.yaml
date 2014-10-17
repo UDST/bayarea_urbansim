@@ -4,7 +4,7 @@ desc: Full Simulation
 
 start_year: 2010
 
-end_year: 2040
+end_year: 2012
 
 start_models:
 - build_networks
