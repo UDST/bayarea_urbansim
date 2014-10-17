@@ -144,7 +144,9 @@ def parcel_average_price(use, quantile=.5):
 
 @sim.injectable('parcel_sales_price_sqft', autocall=False)
 def parcel_sales_price_sqft(use):
-    return parcel_average_price(use, .9)
+    s = parcel_average_price(use)
+    if use == "residential": s *= 1.2
+    return s
 
 
 @sim.injectable('parcel_is_allowed', autocall=False)
@@ -177,10 +179,20 @@ def max_height(parcels, zoning_baseline):
     return zoning_baseline.max_height.reindex(parcels.index).fillna(0)
 
 
+@sim.column('parcels', 'residential_purchase_price_sqft')
+def residential_purchase_price_sqft(parcels):
+    return parcels.building_purchase_price_sqft
+
+
+@sim.column('parcels', 'residential_sales_price_sqft')
+def residential_sales_price_sqft(parcel_sales_price_sqft):
+    return parcel_sales_price_sqft("residential")
+
+
 # for debugging reasons this is split out into its own function
 @sim.column('parcels', 'building_purchase_price_sqft')
 def building_purchase_price_sqft():
-    return parcel_average_price("residential", .4)
+    return parcel_average_price("residential") * .8
 
 
 @sim.column('parcels', 'building_purchase_price')
