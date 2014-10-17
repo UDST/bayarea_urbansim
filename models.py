@@ -8,7 +8,8 @@ from urbansim_defaults import utils
 
 
 @sim.injectable("supply_and_demand_map_func", autocall=False)
-def supply_and_demand_map_func(s):
+def supply_and_demand_map_func(demand, supply):
+    s = demand / supply
     settings = sim.get_injectable("settings")
     print "Number of submarkets where demand exceeds supply:", len(s[s>1.0])
     print "Raw relationship of supply and demand\n", s.describe()
