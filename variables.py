@@ -203,7 +203,7 @@ def building_purchase_price(parcels):
 
 @sim.column('parcels', 'land_cost')
 def land_cost(parcels):
-    return parcels.building_purchase_price + parcels.parcel_size * 18.0
+    return parcels.building_purchase_price + parcels.parcel_size * 16.0
 
 
 @sim.column('parcels', 'node_id')
