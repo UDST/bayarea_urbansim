@@ -27,7 +27,7 @@ ave_sqft_per_unit_clip:
 
 
 acct_settings:
-  prop_tax_rate: .011
+  prop_tax_rate: .0001
 
 
 enable_supply_correction:
