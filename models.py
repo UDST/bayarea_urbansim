@@ -58,7 +58,7 @@ def property_taxes(parcels, settings, coffer, year):
     tot_tax_by_city = tax.groupby(parcels.county_id).sum()
     for city_id, amt in tot_tax_by_city.iteritems():
         coffer["prop_tax_acct"].add_transaction(amt, subaccount=city_id,
-                                                meta_data={
+                                                metadata={
                                                     "year": year
                                                 })
     print "Current property tax accounting:"
