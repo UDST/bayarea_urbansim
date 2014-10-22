@@ -62,7 +62,7 @@ def property_taxes(parcels, settings, coffer, year):
                                                     "year": year
                                                 })
     print "Current property tax accounting:"
-    print coffer["prop_tax_acct"].to_frame().describe()
+    print coffer["prop_tax_acct"].to_frame()
 
 
 @sim.model("travel_model_output")
