@@ -3,6 +3,7 @@ from urbansim.utils import misc
 import os
 import datasources
 # import variables
+from urbansim import accounts
 from urbansim_defaults import models
 from urbansim_defaults import utils
 
@@ -39,6 +40,29 @@ def form_to_btype_f(building):
             return 2
         return 3
     return settings["form_to_btype"][form][0]
+
+
+@sim.injectable("coffer")
+def coffer():
+    return {
+        "prop_tax_acct": accounts.Account("prop_tax_act")
+    }
+
+
+@sim.model("calc_prop_taxes")
+def property_taxes(parcels, settings, coffer, year):
+    # TODO might want to filter on only commercial buildings
+    tax = parcels.building_purchase_price * \
+        settings["acct_settings"]["prop_tax_rate"]
+    # TODO group by county_id
+    tot_tax_by_city = tax.groupby(parcels.county_id).sum()
+    for city_id, amt in tot_tax_by_city.iteritems():
+        coffer["prop_tax_acct"].add_transaction(amt, subaccount=city_id,
+                                                meta_data={
+                                                    "year": year
+                                                })
+    print "Current property tax accounting:"
+    print coffer["prop_tax_acct"].to_frame().describe()
 
 
 @sim.model("travel_model_output")

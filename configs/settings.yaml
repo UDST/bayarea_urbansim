@@ -26,6 +26,10 @@ ave_sqft_per_unit_clip:
   upper: 2500
 
 
+acct_settings:
+  prop_tax_rate: .011
+
+
 enable_supply_correction:
   price_col: residential_price
   submarket_col: zone_id
