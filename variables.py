@@ -142,16 +142,16 @@ def parcel_average_price(use, quantile=.5):
                         sim.get_table('parcels').node_id)
 
 
-@sim.injectable('parcel_sales_price_sqft', autocall=False)
+@sim.injectable('parcel_sales_price_sqft_func', autocall=False)
 def parcel_sales_price_sqft(use):
     s = parcel_average_price(use)
     if use == "residential": s *= 1.2
     return s
 
 
-@sim.injectable('parcel_is_allowed', autocall=False)
+@sim.injectable('parcel_is_allowed_func', autocall=False)
 def parcel_is_allowed(form):
-    settings = sim.get_injectable("settings")
+    settings = sim.settings
     form_to_btype = settings["form_to_btype"]
     # we have zoning by building type but want
     # to know if specific forms are allowed

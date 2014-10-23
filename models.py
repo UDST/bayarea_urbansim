@@ -11,7 +11,7 @@ from urbansim_defaults import utils
 @sim.injectable("supply_and_demand_multiplier_func", autocall=False)
 def supply_and_demand_multiplier_func(demand, supply):
     s = demand / supply
-    settings = sim.get_injectable("settings")
+    settings = sim.settings
     print "Number of submarkets where demand exceeds supply:", len(s[s>1.0])
     print "Raw relationship of supply and demand\n", s.describe()
     supply_correction = settings["enable_supply_correction"]
@@ -27,9 +27,9 @@ def supply_and_demand_multiplier_func(demand, supply):
 
 # this if the function for mapping a specific building that we build to a
 # specific building type
-@sim.injectable("form_to_btype_f", autocall=False)
-def form_to_btype_f(building):
-    settings = sim.get_injectable("settings")
+@sim.injectable("form_to_btype_func", autocall=False)
+def form_to_btype_func(building):
+    settings = sim.settings
     form = building.form
     dua = building.residential_units / (building.parcel_size / 43560.0)
     # precise mapping of form to building type for residential

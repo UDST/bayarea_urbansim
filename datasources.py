@@ -7,12 +7,6 @@ from urbansim.utils import misc
 import urbansim.sim.simulation as sim
 
 
-# the starter submarket shifters is one per zone, all set to 1.0
-@sim.injectable('price_shifters', cache=True)
-def price_shifters():
-    return pd.Series(1, sim.get_table('zones').index)
-
-
 @sim.injectable('building_sqft_per_job', cache=True)
 def building_sqft_per_job(settings):
     return settings['building_sqft_per_job']
