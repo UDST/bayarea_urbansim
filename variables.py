@@ -163,14 +163,16 @@ def parcel_is_allowed(form):
 
 # actual columns start here
 @sim.column('parcels', 'max_far', cache=True)
-def max_far(parcels, scenario):
-    return utils.conditional_upzone(scenario, "max_far", "far_up").\
+def max_far(parcels, scenario, scenario_inputs):
+    return utils.conditional_upzone(scenario, scenario_inputs,
+                                    "max_far", "far_up").\
         reindex(parcels.index).fillna(0)
 
 
 @sim.column('parcels', 'max_dua', cache=True)
-def max_dua(parcels, scenario):
-    return utils.conditional_upzone(scenario, "max_dua", "dua_up").\
+def max_dua(parcels, scenario, scenario_inputs):
+    return utils.conditional_upzone(scenario, scenario_inputs,
+                                    "max_dua", "dua_up").\
         reindex(parcels.index).fillna(0)
 
 

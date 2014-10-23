@@ -67,7 +67,7 @@ def property_taxes(parcels, settings, coffer, year):
 
 @sim.model("travel_model_output")
 def travel_model_output(parcels, households, jobs, buildings, 
-                        zones, homesales, year):
+                        zones, homesales, year, summary):
     households = households.to_frame()
     jobs = jobs.to_frame()
     buildings = buildings.to_frame()
@@ -132,9 +132,14 @@ def travel_model_output(parcels, households, jobs, buildings,
 
     sim.add_table("travel_model_output", zones, year)
 
-    utils.add_simulation_output(zones, "travel_model_outputs", year)
-    utils.write_simulation_output(os.path.join(misc.runs_dir(),
-                                               "run{}_simulation_output.json"))
-    utils.write_parcel_output(os.path.join(misc.runs_dir(),
-                                           "run{}_parcel_output.csv"))
-
+    summary.add_zone_output(zones, "travel_model_outputs", year)
+    summary.write_zone_output()
+    add_xy_config = {
+        "xy_table": "parcels",
+        "foreign_key": "parcel_id",
+    	"x_col": "x",
+     	"y_col": "y",
+    	"from_epsg": 3740,
+    	"to_epsg": 4326
+    }
+    summary.write_parcel_output(add_xy=add_xy_config)
