@@ -70,8 +70,8 @@ def property_taxes(buildings, parcels_geography, acct_settings, coffer, year):
                                                 metadata={
                                                     "year": year
                                                 })
-    print "Current status of property tax accounts:"
-    print coffer["prop_tax_acct"].to_frame()
+    print "Sample rows from property tax accounts:"
+    print coffer["prop_tax_acct"].to_frame().head(10)
 
 
 @sim.model("travel_model_output")
