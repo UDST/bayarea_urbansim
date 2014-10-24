@@ -194,7 +194,7 @@ def residential_sales_price_sqft(parcel_sales_price_sqft_func):
 # for debugging reasons this is split out into its own function
 @sim.column('parcels', 'building_purchase_price_sqft')
 def building_purchase_price_sqft():
-    return parcel_average_price("residential") * .8
+    return parcel_average_price("residential") * .82
 
 
 @sim.column('parcels', 'building_purchase_price')
