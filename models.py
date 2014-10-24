@@ -58,8 +58,7 @@ def acct_settings(settings):
 def property_taxes(buildings, parcels_geography, acct_settings, coffer, year):
     buildings = sim.merge_tables('buildings', [buildings, parcels_geography])
 
-    buildings = buildings.to_frame().\
-        query(acct_settings["sending_buildings_filter"])
+    buildings = buildings.query(acct_settings["sending_buildings_filter"])
 
     tax = buildings.eval(acct_settings["sending_buildings_tax"])
 
