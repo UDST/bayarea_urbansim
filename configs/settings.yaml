@@ -29,7 +29,7 @@ ave_sqft_per_unit_clip:
 acct_settings:
   sending_buildings_filter: "general_type != 'Residential'"
   sending_buildings_tax: "non_residential_price * non_residential_sqft * 20 * .0001"
-  sending_buildings_: sending_buildings_subaccount_def
+  sending_buildings_subaccount_def: sending_buildings_subaccount_def
 
 
 enable_supply_correction:
