@@ -115,6 +115,12 @@ def parcels(store):
     return df
 
 
+@sim.table_source('parcels_geography')
+def parcels_geography():
+    return pd.read_csv(os.path.join(misc.data_dir(), "parcels_geography.csv"),
+                      index_col="parcel_id")
+
+
 @sim.table_source('buildings')
 def buildings(store, households, jobs, building_sqft_per_job, settings):
     # start with buildings from urbansim_defaults
@@ -129,6 +135,8 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
 
 
 # this specifies the relationships between tables
+sim.broadcast('parcels_geography', 'buildings', cast_index=True,
+              onto_on='parcel_id')
 sim.broadcast('nodes', 'homesales', cast_index=True, onto_on='node_id')
 sim.broadcast('nodes', 'costar', cast_index=True, onto_on='node_id')
 sim.broadcast('logsums', 'homesales', cast_index=True, onto_on='zone_id')

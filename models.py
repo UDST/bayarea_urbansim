@@ -42,22 +42,32 @@ def form_to_btype_func(building):
     return settings["form_to_btype"][form][0]
 
 
-@sim.injectable("coffer")
+@sim.injectable("coffer", cache=True)
 def coffer():
     return {
         "prop_tax_acct": accounts.Account("prop_tax_act")
     }
 
 
+@sim.injectable("acct_settings", cache=True)
+def acct_settings(settings):
+    return settings["acct_settings"]
+
+
 @sim.model("calc_prop_taxes")
-def property_taxes(parcels, settings, coffer, year):
-    # TODO might want to filter on only commercial buildings
-    tax = parcels.building_purchase_price * \
-        settings["acct_settings"]["prop_tax_rate"]
-    # TODO group by county_id
-    tot_tax_by_city = tax.groupby(parcels.county_id).sum()
-    for city_id, amt in tot_tax_by_city.iteritems():
-        coffer["prop_tax_acct"].add_transaction(amt, subaccount=city_id,
+def property_taxes(buildings, parcels_geography, acct_settings, coffer, year):
+    buildings = sim.merge_tables('buildings', [buildings, parcels_geography])
+
+    buildings = buildings.to_frame().\
+        query(acct_settings["sending_buildings_filter"])
+
+    tax = buildings.eval(acct_settings["sending_buildings_tax"])
+
+    subaccounts = buildings[acct_settings["sending_buildings_subaccount_def"]]
+    tot_tax_by_subaccount = tax.groupby(subaccounts).sum()
+
+    for subacct, amt in tot_tax_by_subaccount.iteritems():
+        coffer["prop_tax_acct"].add_transaction(amt, subaccount=subacct,
                                                 metadata={
                                                     "year": year
                                                 })
@@ -66,7 +76,7 @@ def property_taxes(parcels, settings, coffer, year):
 
 
 @sim.model("travel_model_output")
-def travel_model_output(parcels, households, jobs, buildings, 
+def travel_model_output(parcels, households, jobs, buildings,
                         zones, homesales, year, summary):
     households = households.to_frame()
     jobs = jobs.to_frame()
@@ -86,7 +96,7 @@ def travel_model_output(parcels, households, jobs, buildings,
             residential_price_hedonic.\
             groupby(buildings.zone_id).quantile().\
             reindex(zones.index).fillna(0)
-    else: 
+    else:
         zones['residential_sales_price_hedonic'] = 0
 
     zones['tothh'] = households.\
