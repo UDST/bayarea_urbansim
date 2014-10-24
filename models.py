@@ -70,7 +70,7 @@ def property_taxes(buildings, parcels_geography, acct_settings, coffer, year):
                                                 metadata={
                                                     "year": year
                                                 })
-    print "Sample rows from property tax accounts:"
+    print "Sample rows from property tax accts:"
     print coffer["prop_tax_acct"].to_frame().head(10)
 
 
