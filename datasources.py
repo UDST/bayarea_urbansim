@@ -7,12 +7,6 @@ from urbansim.utils import misc
 import urbansim.sim.simulation as sim
 
 
-# the starter submarket shifters is one per zone, all set to 1.0
-@sim.injectable('price_shifters', cache=True)
-def price_shifters():
-    return pd.Series(1, sim.get_table('zones').index)
-
-
 @sim.injectable('building_sqft_per_job', cache=True)
 def building_sqft_per_job(settings):
     return settings['building_sqft_per_job']
@@ -48,7 +42,7 @@ def costar(store):
 @sim.table_source('zoning_for_parcels')
 def zoning_for_parcels(store):
     df = store['zoning_for_parcels']
-    df = df.reset_index().drop_duplicates(cols='parcel').set_index('parcel')
+    df = df.reset_index().drop_duplicates(subset='parcel').set_index('parcel')
     return df
 
 
@@ -121,6 +115,12 @@ def parcels(store):
     return df
 
 
+@sim.table_source('parcels_geography')
+def parcels_geography():
+    return pd.read_csv(os.path.join(misc.data_dir(), "parcels_geography.csv"),
+                      index_col="parcel_id")
+
+
 @sim.table_source('buildings')
 def buildings(store, households, jobs, building_sqft_per_job, settings):
     # start with buildings from urbansim_defaults
@@ -135,6 +135,8 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
 
 
 # this specifies the relationships between tables
+sim.broadcast('parcels_geography', 'buildings', cast_index=True,
+              onto_on='parcel_id')
 sim.broadcast('nodes', 'homesales', cast_index=True, onto_on='node_id')
 sim.broadcast('nodes', 'costar', cast_index=True, onto_on='node_id')
 sim.broadcast('logsums', 'homesales', cast_index=True, onto_on='zone_id')

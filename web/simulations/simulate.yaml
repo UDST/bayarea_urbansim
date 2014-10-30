@@ -7,7 +7,6 @@ start_year: 2010
 end_year: 2012
 
 start_models:
-- build_networks
 - diagnostic_output
 - travel_model_output
 
@@ -21,6 +20,7 @@ models:
 - jobs_relocation
 - elcm_simulate
 - jobs_transition
+- calc_prop_taxes
 - price_vars
 - feasibility
 - residential_developer

@@ -3,6 +3,7 @@ from urbansim.utils import misc
 import os
 import datasources
 import variables
+from urbansim import accounts
 from urbansim_defaults import models
 from urbansim_defaults import utils
 
@@ -10,7 +11,7 @@ from urbansim_defaults import utils
 @sim.injectable("supply_and_demand_multiplier_func", autocall=False)
 def supply_and_demand_multiplier_func(demand, supply):
     s = demand / supply
-    settings = sim.get_injectable("settings")
+    settings = sim.settings
     print "Number of submarkets where demand exceeds supply:", len(s[s>1.0])
     print "Raw relationship of supply and demand\n", s.describe()
     supply_correction = settings["enable_supply_correction"]
@@ -26,9 +27,9 @@ def supply_and_demand_multiplier_func(demand, supply):
 
 # this if the function for mapping a specific building that we build to a
 # specific building type
-@sim.injectable("form_to_btype_f", autocall=False)
-def form_to_btype_f(building):
-    settings = sim.get_injectable("settings")
+@sim.injectable("form_to_btype_func", autocall=False)
+def form_to_btype_func(building):
+    settings = sim.settings
     form = building.form
     dua = building.residential_units / (building.parcel_size / 43560.0)
     # precise mapping of form to building type for residential
@@ -41,9 +42,41 @@ def form_to_btype_f(building):
     return settings["form_to_btype"][form][0]
 
 
+@sim.injectable("coffer", cache=True)
+def coffer():
+    return {
+        "prop_tax_acct": accounts.Account("prop_tax_act")
+    }
+
+
+@sim.injectable("acct_settings", cache=True)
+def acct_settings(settings):
+    return settings["acct_settings"]
+
+
+@sim.model("calc_prop_taxes")
+def property_taxes(buildings, parcels_geography, acct_settings, coffer, year):
+    buildings = sim.merge_tables('buildings', [buildings, parcels_geography])
+
+    buildings = buildings.query(acct_settings["sending_buildings_filter"])
+
+    tax = buildings.eval(acct_settings["sending_buildings_tax"])
+
+    subaccounts = buildings[acct_settings["sending_buildings_subaccount_def"]]
+    tot_tax_by_subaccount = tax.groupby(subaccounts).sum()
+
+    for subacct, amt in tot_tax_by_subaccount.iteritems():
+        coffer["prop_tax_acct"].add_transaction(amt, subaccount=subacct,
+                                                metadata={
+                                                    "year": year
+                                                })
+    print "Sample rows from property tax accts:"
+    print coffer["prop_tax_acct"].to_frame().head(7)
+
+
 @sim.model("travel_model_output")
-def travel_model_output(parcels, households, jobs, buildings, 
-                        zones, homesales, year):
+def travel_model_output(parcels, households, jobs, buildings,
+                        zones, homesales, year, summary):
     households = households.to_frame()
     jobs = jobs.to_frame()
     buildings = buildings.to_frame()
@@ -62,7 +95,7 @@ def travel_model_output(parcels, households, jobs, buildings,
             residential_price_hedonic.\
             groupby(buildings.zone_id).quantile().\
             reindex(zones.index).fillna(0)
-    else: 
+    else:
         zones['residential_sales_price_hedonic'] = 0
 
     zones['tothh'] = households.\
@@ -108,9 +141,14 @@ def travel_model_output(parcels, households, jobs, buildings,
 
     sim.add_table("travel_model_output", zones, year)
 
-    utils.add_simulation_output(zones, "travel_model_outputs", year)
-    utils.write_simulation_output(os.path.join(misc.runs_dir(),
-                                               "run{}_simulation_output.json"))
-    utils.write_parcel_output(os.path.join(misc.runs_dir(),
-                                           "run{}_parcel_output.csv"))
-
+    summary.add_zone_output(zones, "travel_model_outputs", year)
+    summary.write_zone_output()
+    add_xy_config = {
+        "xy_table": "parcels",
+        "foreign_key": "parcel_id",
+    	"x_col": "x",
+     	"y_col": "y",
+    	"from_epsg": 3740,
+    	"to_epsg": 4326
+    }
+    summary.write_parcel_output(add_xy=add_xy_config)
