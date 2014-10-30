@@ -2,7 +2,7 @@ import urbansim.sim.simulation as sim
 from urbansim.utils import misc
 import os
 import datasources
-# import variables
+import variables
 from urbansim import accounts
 from urbansim_defaults import models
 from urbansim_defaults import utils
