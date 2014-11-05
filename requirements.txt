@@ -1,2 +1,2 @@
-git+https://github.com/synthicity/urbansim.git@45beba99ca23cb988d2bc9763d9ba46194390a84
-git+https://github.com/synthicity/urbansim_defaults.git@cc2ccfb80ad502d4988ef7f74eedad4af8cf95e6
+-e git+https://github.com/synthicity/urbansim.git@45beba99ca23cb988d2bc9763d9ba46194390a84#egg=urbansim
+-e git+https://github.com/synthicity/urbansim_defaults.git@cc2ccfb80ad502d4988ef7f74eedad4af8cf95e6#egg=urbansim_defaults
