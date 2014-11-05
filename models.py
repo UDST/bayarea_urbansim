@@ -2,7 +2,7 @@ import urbansim.sim.simulation as sim
 from urbansim.utils import misc
 import os
 import datasources
-import variables
+# import variables
 from urbansim import accounts
 from urbansim_defaults import models
 from urbansim_defaults import utils
@@ -114,9 +114,9 @@ def travel_model_output(parcels, households, jobs, buildings,
         groupby('zone_id').size()
     zones['hhincq2'] = households.query("income >= 25000 and income < 45000").\
         groupby('zone_id').size()
-    zones['hhincq3'] = households.query("income >= 45000 and income < 75000").\
+    zones['hhincq3'] = households.query("income >= 45000 and income < 70000").\
         groupby('zone_id').size()
-    zones['hhincq4'] = households.query("income >= 75000").\
+    zones['hhincq4'] = households.query("income >= 70000").\
         groupby('zone_id').size()
 
     # attempting to get at total zonal developed acres

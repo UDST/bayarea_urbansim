@@ -6,8 +6,7 @@ start_year: 2010
 
 end_year: 2011
 
-start_models:
-- build_networks
+start_models: []
 
 models:
 - neighborhood_vars
