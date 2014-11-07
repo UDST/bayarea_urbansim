@@ -63,6 +63,7 @@ def property_taxes(buildings, parcels_geography, acct_settings, coffer, year):
     tax = buildings.eval(acct_settings["sending_buildings_tax"])
 
     subaccounts = buildings[acct_settings["sending_buildings_subaccount_def"]]
+
     tot_tax_by_subaccount = tax.groupby(subaccounts).sum()
 
     for subacct, amt in tot_tax_by_subaccount.iteritems():
@@ -70,6 +71,7 @@ def property_taxes(buildings, parcels_geography, acct_settings, coffer, year):
                                                 metadata={
                                                     "year": year
                                                 })
+                                                
     print "Sample rows from property tax accts:"
     print coffer["prop_tax_acct"].to_frame().head(7)
 
