@@ -77,6 +77,90 @@ def property_taxes(buildings, parcels_geography, acct_settings, coffer, year):
         sort(columns=["amount"], ascending=False).head(7)
 
 
+@sim.model('subsidized_residential_developer')
+def subsidized_residential_developer(feasibility, households, buildings,
+                          parcels, parcels_geography, year, acct_settings,
+                          settings, summary, coffer, form_to_btype_func):
+    """
+    The subsidized residential developer model.
+
+    Subsidized residential developer is designed to run before the normal
+    residential developer - it will prioritize the developments we're
+    subsidizing (although maybe this should be an option of the scenario)
+    the steps for subsidizing are essentially these
+
+    1 run feasibility with only_built set to false so that the feasibility of
+        unprofitable units are recorded
+    2 temporarily filter to only unprofitable units to check for possible
+        subsidized units (normal developer takes care of market-rate units)
+    3 filter developments to parcels in "receiving zone" the same way we
+        identified "sending zones"
+    4 compute the number of units in these developments
+    5 divide cost by number of units in order to get the subsidy per unit
+    6 groupby subaccounts and iterate through subaccounts one at a time
+    7 sort ascending by cost per unit so that we minimize subsidy (but total
+        subsidy is equivalent to total building cost)
+    8 cumsum the total subsidy in each buildings and locate the development
+        where the subsidy is less than or equal to the amount in the account
+    9 include only those buildings up to the total subsidy and pass as
+        "feasible" to run_developer - this is sort of a boundary case of
+        developer but should run OK
+    10 for those developments that get built, make sure to subtract from account
+        and keep a record (on the off chance that demand is less than the
+        subsidized units, run through the standard code path, although it's
+        very unlikely that there would be more subsidy than demand)
+    11 finally filter feasibility to only profitable units for later use in the
+        market-rate developer model
+    """
+    # step 1 should have already been done - set only_built to False in
+    # settings.yaml under the feasibility key
+    
+    df = sim.merge_tables('feasibility', [feasibility, parcels_geography])
+
+    # step 2
+    df = full_feasibility.query('max_profit < 0')
+    sim.add_table("feasibility", df)
+
+    df['residential_units'] = np.round(df.residential_sqft /
+                                       df.ave_unit_size)
+
+
+    if "receiving_buildings_filter" in acct_settings:
+        df = df.query(acct_settings["receiving_buildings_filter"])
+    else:
+        # otherwise all buildings are valid
+        pass
+
+    df['subsidy_per_unit'] = df['building_cost'] / df['residential_units']
+    df = df.order(columns=['subsidy_per_units'], ascending=False)
+
+    coffer["prop_tax_acct"]
+    # need to iterate through the subaccounts and deal with them one at a time
+
+    # step 10
+    kwargs = settings['residential_developer']
+    new_buildings = utils.run_developer(
+        "residential",
+        households,
+        buildings,
+        "residential_units",
+        parcels.parcel_size,
+        parcels.ave_sqft_per_unit,
+        parcels.total_residential_units,
+        feasibility,
+        year=year,
+        form_to_btype_callback=form_to_btype_func,
+        add_more_columns_callback=add_extra_columns,
+        **kwargs)
+
+    summary.add_parcel_output(new_buildings)
+
+    # step 11
+    feasibility = sim.get_table("feasibility").to_frame()
+    profitable_feasibility = feasibility.query('max_profit >= 0')
+    sim.add_table("feasibility", profitable_feasibility)
+
+
 @sim.model("travel_model_output")
 def travel_model_output(parcels, households, jobs, buildings,
                         zones, homesales, year, summary):
