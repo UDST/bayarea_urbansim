@@ -161,6 +161,8 @@ def subsidized_residential_developer(feasibility, households, buildings,
 
         # step 9
         kwargs = settings['residential_developer']
+        new_buildings = []
+        '''
         new_buildings = utils.run_developer(
             "residential",
             households,
@@ -174,6 +176,7 @@ def subsidized_residential_developer(feasibility, households, buildings,
             form_to_btype_callback=form_to_btype_func,
             add_more_columns_callback=add_extra_columns,
             **kwargs)
+        '''
 
         # step 10
         for new_building in new_buildings:
