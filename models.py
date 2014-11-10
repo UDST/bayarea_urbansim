@@ -171,7 +171,7 @@ def subsidized_residential_developer(feasibility, households, buildings,
         for new_building in new_buildings:
             amt = new_building.building_cost * -1
             metadata={
-                "description": "Developing subsidized building"
+                "description": "Developing subsidized building",
                 "year": year,
                 "building_id": new_building.index
             }
