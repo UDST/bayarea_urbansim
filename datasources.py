@@ -137,6 +137,8 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
 # this specifies the relationships between tables
 sim.broadcast('parcels_geography', 'buildings', cast_index=True,
               onto_on='parcel_id')
+sim.broadcast('parcels_geography', 'feasibility', cast_index=True,
+              onto_index=True)
 sim.broadcast('nodes', 'homesales', cast_index=True, onto_on='node_id')
 sim.broadcast('nodes', 'costar', cast_index=True, onto_on='node_id')
 sim.broadcast('logsums', 'homesales', cast_index=True, onto_on='zone_id')

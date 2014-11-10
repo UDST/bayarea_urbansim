@@ -67,10 +67,12 @@ def property_taxes(buildings, parcels_geography, acct_settings, coffer, year):
     tot_tax_by_subaccount = tax.groupby(subaccounts).sum()
 
     for subacct, amt in tot_tax_by_subaccount.iteritems():
+        metadata={
+            "description": "Collecting property tax",
+            "year": year
+        }
         coffer["prop_tax_acct"].add_transaction(amt, subaccount=subacct,
-                                                metadata={
-                                                    "year": year
-                                                })
+                                                metadata=metadata)
 
     print "Sample rows from property tax accts:"
     print coffer["prop_tax_acct"].to_frame().\
@@ -93,18 +95,18 @@ def subsidized_residential_developer(feasibility, households, buildings,
         unprofitable units are recorded
     2 temporarily filter to only unprofitable units to check for possible
         subsidized units (normal developer takes care of market-rate units)
-    3 filter developments to parcels in "receiving zone" the same way we
+    3 filter developments to parcels in "receiving zone" similar to the way we
         identified "sending zones"
-    4 compute the number of units in these developments
-    5 divide cost by number of units in order to get the subsidy per unit
-    6 groupby subaccounts and iterate through subaccounts one at a time
+    4 groupby subaccounts and iterate through subaccounts one at a time
+    5 compute the number of units in these developments
+    6 divide cost by number of units in order to get the subsidy per unit
     7 sort ascending by cost per unit so that we minimize subsidy (but total
         subsidy is equivalent to total building cost)
-    8 cumsum the total subsidy in each buildings and locate the development
-        where the subsidy is less than or equal to the amount in the account
-    9 include only those buildings up to the total subsidy and pass as
-        "feasible" to run_developer - this is sort of a boundary case of
-        developer but should run OK
+    8 cumsum the total subsidy in the buildings and locate the development
+        where the subsidy is less than or equal to the amount in the account -
+        filter to only those buildings
+    9 pass the results as "feasible" to run_developer - this is sort of a
+        boundary case of developer but should run OK
     10 for those developments that get built, make sure to subtract from account
         and keep a record (on the off chance that demand is less than the
         subsidized units, run through the standard code path, although it's
@@ -114,51 +116,76 @@ def subsidized_residential_developer(feasibility, households, buildings,
     """
     # step 1 should have already been done - set only_built to False in
     # settings.yaml under the feasibility key
-    
-    df = sim.merge_tables('feasibility', [feasibility, parcels_geography])
+    full_feasibility = sim.merge_tables('feasibility', [feasibility,
+                                                        parcels_geography])
 
     # step 2
-    df = full_feasibility.query('max_profit < 0')
-    sim.add_table("feasibility", df)
+    subsidized_feasibility = full_feasibility.query('max_profit < 0')
 
-    df['residential_units'] = np.round(df.residential_sqft /
-                                       df.ave_unit_size)
-
-
+    # step 3
     if "receiving_buildings_filter" in acct_settings:
-        df = df.query(acct_settings["receiving_buildings_filter"])
+        subsidized_feasibility = subsidized_feasibility.\
+            query(acct_settings["receiving_buildings_filter"])
     else:
         # otherwise all buildings are valid
         pass
 
-    df['subsidy_per_unit'] = df['building_cost'] / df['residential_units']
-    df = df.order(columns=['subsidy_per_units'], ascending=False)
+    new_buildings_list = []
+    # step 4
+    subaccounts = subsidized_feasibility[\
+        acct_settings["sending_buildings_subaccount_def"]]
+    for subacct, df in subsidized_feasibility.groupby(subaccounts):
 
-    coffer["prop_tax_acct"]
-    # need to iterate through the subaccounts and deal with them one at a time
+        # step 5
+        df['residential_units'] = np.round(df.residential_sqft /
+                                           df.ave_sqft_per_unit)
 
-    # step 10
-    kwargs = settings['residential_developer']
-    new_buildings = utils.run_developer(
-        "residential",
-        households,
-        buildings,
-        "residential_units",
-        parcels.parcel_size,
-        parcels.ave_sqft_per_unit,
-        parcels.total_residential_units,
-        feasibility,
-        year=year,
-        form_to_btype_callback=form_to_btype_func,
-        add_more_columns_callback=add_extra_columns,
-        **kwargs)
+        # step 6
+        df['subsidy_per_unit'] = df['building_cost'] / df['residential_units']
 
+        # step 7
+        df = df.order(columns=['subsidy_per_units'], ascending=False)
+
+        # step 8
+        amount = coffer["prop_tax_acct"].get_balance(subaccount)
+        num_bldgs = df.building_cost.cumsum().searchsorted(amount)
+        df = df.loc[df.index.values[num_bldgs]]
+
+        # step 9
+        kwargs = settings['residential_developer']
+        new_buildings = utils.run_developer(
+            "residential",
+            households,
+            buildings,
+            "residential_units",
+            parcels.parcel_size,
+            parcels.ave_sqft_per_unit,
+            parcels.total_residential_units,
+            df,
+            year=year,
+            form_to_btype_callback=form_to_btype_func,
+            add_more_columns_callback=add_extra_columns,
+            **kwargs)
+
+        # step 10
+        for new_building in new_buildings:
+            amt = new_building.building_cost * -1
+            metadata={
+                "description": "Developing subsidized building"
+                "year": year,
+                "building_id": new_building.index
+            }
+            coffer["prop_tax_acct"].add_transaction(amt, subaccount=subacct,
+                                                    metadata=metadata)
+
+        new_buildings_list.append(new_buildings)
+
+    new_buildings = pd.concat(new_building_list)
     summary.add_parcel_output(new_buildings)
 
     # step 11
-    feasibility = sim.get_table("feasibility").to_frame()
-    profitable_feasibility = feasibility.query('max_profit >= 0')
-    sim.add_table("feasibility", profitable_feasibility)
+    df = full_feasibility.query('max_profit >= 0')
+    sim.add_table("feasibility", df)
 
 
 @sim.model("travel_model_output")
