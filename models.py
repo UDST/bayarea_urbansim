@@ -118,9 +118,11 @@ def subsidized_residential_developer(feasibility, households, buildings,
     # settings.yaml under the feasibility key
     full_feasibility = sim.merge_tables('feasibility', [feasibility,
                                                         parcels_geography])
+    print full_feasibility.describe()
 
     # step 2
     subsidized_feasibility = full_feasibility.query('max_profit < 0')
+    print subsidized_feasibility.describe()
 
     # step 3
     if "receiving_buildings_filter" in acct_settings:
@@ -129,12 +131,15 @@ def subsidized_residential_developer(feasibility, households, buildings,
     else:
         # otherwise all buildings are valid
         pass
+    print subsidized_feasibility.describe()
 
     new_buildings_list = []
     # step 4
     subaccounts = subsidized_feasibility[\
         acct_settings["sending_buildings_subaccount_def"]]
     for subacct, df in subsidized_feasibility.groupby(subaccounts):
+        print subacct
+        print df.describe()
 
         # step 5
         df['residential_units'] = np.round(df.residential_sqft /
@@ -142,13 +147,16 @@ def subsidized_residential_developer(feasibility, households, buildings,
 
         # step 6
         df['subsidy_per_unit'] = df['building_cost'] / df['residential_units']
+        print df.head(5)
 
         # step 7
         df = df.order(columns=['subsidy_per_units'], ascending=False)
+        print df.head(5)
 
         # step 8
         amount = coffer["prop_tax_acct"].get_balance(subaccount)
         num_bldgs = df.building_cost.cumsum().searchsorted(amount)
+        print "Building %d subsidized buildings" % num_bldgs
         df = df.loc[df.index.values[num_bldgs]]
 
         # step 9
