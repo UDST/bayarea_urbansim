@@ -30,6 +30,7 @@ acct_settings:
   sending_buildings_filter: general_type != 'Residential'
   sending_buildings_tax: non_residential_price * non_residential_sqft * 20 * .01 * .01
   sending_buildings_subaccount_def: city_id
+  receiving_buildings_filter: pda_id > 0 and residential_units > 1
 
 
 enable_supply_correction:
@@ -94,7 +95,6 @@ jobs_transition:
 feasibility:
   parcel_filter: oldest_building > 1940 and oldest_building < 2000
   residential_to_yearly: True
-  only_built: False
   pass_through:
     - oldest_building
     - total_sqft
