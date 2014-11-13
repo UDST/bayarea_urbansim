@@ -58,10 +58,28 @@ def acct_settings(settings):
     return settings["acct_settings"]
 
 
-@sim.model("calc_prop_taxes")
-def property_taxes(buildings, parcels_geography, acct_settings, coffer, year):
-    buildings = sim.merge_tables('buildings', [buildings, parcels_geography])
+def tax_buildings(buildings, acct_settings, account, year):
+    """
+    Tax buildings and add the tax to an Account object by subaccount
 
+    Parameters
+    ----------
+    buildings : DataFrameWrapper
+        The standard buildings DataFrameWrapper
+    acct_settings : Dict
+        A dictionary of settings to parameterize the model.  Needs these keys:
+        sending_buildings_subaccount_def - maps buildings to subaccounts
+        sending_buildings_filter - filter for eligible buildings
+        sending_buildings_tax - a Pandas eval expression to compute the tax
+    accounts : Account
+        The Account object to use for subsidization
+    year : int
+        The current simulation year (will be added as metadata)
+
+    Returns
+    -------
+    Nothing
+    """
     buildings = buildings.query(acct_settings["sending_buildings_filter"])
 
     tax = buildings.eval(acct_settings["sending_buildings_tax"])
@@ -75,22 +93,57 @@ def property_taxes(buildings, parcels_geography, acct_settings, coffer, year):
             "description": "Collecting property tax",
             "year": year
         }
-        coffer["prop_tax_acct"].add_transaction(amt, subaccount=subacct,
+        account.add_transaction(amt, subaccount=subacct,
                                                 metadata=metadata)
 
     print "Sample rows from property tax accts:"
-    print coffer["prop_tax_acct"].to_frame().\
+    print account.to_frame().\
         sort(columns=["amount"], ascending=False).head(7)
 
 
-@sim.model('subsidized_residential_developer')
-def subsidized_residential_developer(households, buildings,
-                          parcels, parcels_geography, year, acct_settings,
-                          settings, summary, coffer, form_to_btype_func,
-                          add_extra_columns_func, parcel_sales_price_sqft_func,
-                          parcel_is_allowed_func):
+@sim.model("calc_prop_taxes")
+def property_taxes(buildings, parcels_geography, acct_settings, coffer, year):
+    buildings = sim.merge_tables('buildings', [buildings, parcels_geography])
+    tax_buildings(buildings, acct_settings, coffer["prop_tax_acct"], year)
+
+
+def run_subsidized_developer(feasibility, parcels, buildings, households,
+                             acct_settings, settings, account, year,
+                             form_to_btype_func, add_extra_columns_func,
+                             summary):
     """
     The subsidized residential developer model.
+
+    Parameters
+    ----------
+    feasibility : DataFrame
+        A DataFrame that is returned from run_feasibility for a given form
+    parcels : DataFrameWrapper
+        The standard parcels DataFrameWrapper (mostly just for run_developer)
+    buildings : DataFrameWrapper
+        The standard buildings DataFrameWrapper (passed to run_developer)
+    households : DataFrameWrapper
+        The households DataFrameWrapper (passed to run_developer)
+    acct_settings : Dict
+        A dictionary of settings to parameterize the model.  Needs these keys:
+        sending_buildings_subaccount_def - maps buildings to subaccounts
+        receiving_buildings_filter - filter for eligible buildings
+    settings : Dict
+        The overall settings
+    accounts : Account
+        The Account object to use for subsidization
+    year : int
+        The current simulation year (will be added as metadata)
+    form_to_btype_func : function
+        Passed through to run_developer
+    add_extra_columns_func : function
+        Passed through to run_developer
+    summary : Summary
+        Used to add parcel summary information
+
+    Returns
+    -------
+    Nothing
 
     Subsidized residential developer is designed to run before the normal
     residential developer - it will prioritize the developments we're
@@ -122,20 +175,6 @@ def subsidized_residential_developer(households, buildings,
         subsidized units, run through the standard code path, although it's
         very unlikely that there would be more subsidized housing than demand)
     """
-    kwargs = settings['feasibility']
-    kwargs["only_built"] = False
-    kwargs["forms_to_test"] = ["residential"]
-    # step 1
-    utils.run_feasibility(parcels,
-                          parcel_sales_price_sqft_func,
-                          parcel_is_allowed_func,
-                          **kwargs)
-    feasibility = sim.get_table("feasibility").to_frame()
-    # get rid of the multiindex that comes back from feasibility
-    feasibility = feasibility.stack(level=0).reset_index(level=1, drop=True)
-    # join to parcels_geography for filtering
-    feasibility = feasibility.join(parcels_geography.to_frame())
-
     # step 2
     # feasibility = feasibility.replace([np.inf, -np.inf], np.nan)
     feasibility = feasibility[feasibility.max_profit < 0]
@@ -158,7 +197,6 @@ def subsidized_residential_developer(households, buildings,
         pass
 
     new_buildings_list = []
-    account = coffer["prop_tax_acct"]
     sending_bldgs = acct_settings["sending_buildings_subaccount_def"]
     feasibility["subaccount"] = feasibility.eval(sending_bldgs)
     # step 6
@@ -225,6 +263,39 @@ def subsidized_residential_developer(households, buildings,
     print "    Total subsidzed units: {:.0f}".\
         format(new_buildings.residential_units.sum())
     summary.add_parcel_output(new_buildings)
+
+
+@sim.model('subsidized_residential_developer')
+def subsidized_residential_developer(households, buildings,
+                          parcels, parcels_geography, year, acct_settings,
+                          settings, summary, coffer, form_to_btype_func,
+                          add_extra_columns_func, parcel_sales_price_sqft_func,
+                          parcel_is_allowed_func):
+    kwargs = settings['feasibility']
+    kwargs["only_built"] = False
+    kwargs["forms_to_test"] = ["residential"]
+    # step 1
+    utils.run_feasibility(parcels,
+                          parcel_sales_price_sqft_func,
+                          parcel_is_allowed_func,
+                          **kwargs)
+    feasibility = sim.get_table("feasibility").to_frame()
+    # get rid of the multiindex that comes back from feasibility
+    feasibility = feasibility.stack(level=0).reset_index(level=1, drop=True)
+    # join to parcels_geography for filtering
+    feasibility = feasibility.join(parcels_geography.to_frame())
+
+    run_subsidized_developer(feasibility,
+                             parcels,
+                             buildings,
+                             households,
+                             acct_settings,
+                             settings,
+                             coffer["prop_tax_acct"],
+                             year,
+                             form_to_btype_func,
+                             add_extra_columns_func,
+                             summary)
 
 
 @sim.model("travel_model_output")
