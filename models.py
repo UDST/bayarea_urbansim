@@ -3,7 +3,7 @@ from urbansim.utils import misc
 import os
 import sys
 import datasources
-import variables
+# import variables
 from urbansim import accounts
 from urbansim_defaults import models
 from urbansim_defaults import utils
@@ -248,6 +248,7 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
             metadata={
                 "description": "Developing subsidized building",
                 "year": year,
+                "residential_units": new_building.residential_units,
                 "building_id": index
             }
             account.add_transaction(amt, subaccount=subacct,
@@ -262,6 +263,7 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
     print "    Total subsidy: ${:,.2f}".format(-1*new_buildings.max_profit.sum())
     print "    Total subsidzed units: {:.0f}".\
         format(new_buildings.residential_units.sum())
+    new_buildings["subsidized"] = True
     summary.add_parcel_output(new_buildings)
 
 
@@ -271,7 +273,13 @@ def subsidized_residential_developer(households, buildings,
                           settings, summary, coffer, form_to_btype_func,
                           add_extra_columns_func, parcel_sales_price_sqft_func,
                           parcel_is_allowed_func):
-    kwargs = settings['feasibility']
+    
+    if "disable" in acct_settings and acct_settings["disable"] == True:
+        # allow disabling model from settings rather than
+        # having to remove the model name from the model list
+        return
+
+    kwargs = settings['feasibility'].copy()
     kwargs["only_built"] = False
     kwargs["forms_to_test"] = ["residential"]
     # step 1
@@ -300,7 +308,7 @@ def subsidized_residential_developer(households, buildings,
 
 @sim.model("travel_model_output")
 def travel_model_output(parcels, households, jobs, buildings,
-                        zones, homesales, year, summary):
+                        zones, homesales, year, summary, coffer, run_number):
     households = households.to_frame()
     jobs = jobs.to_frame()
     buildings = buildings.to_frame()
@@ -376,3 +384,6 @@ def travel_model_output(parcels, households, jobs, buildings,
     	"to_epsg": 4326
     }
     summary.write_parcel_output(add_xy=add_xy_config)
+    
+    subsidy_file = "runs/run{}_subsidy_summary.csv".format(run_number)
+    coffer["prop_tax_acct"].to_frame().to_csv(subsidy_file)

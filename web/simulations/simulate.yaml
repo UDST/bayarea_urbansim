@@ -4,7 +4,7 @@ desc: Full Simulation
 
 start_year: 2010
 
-end_year: 2012
+end_year: 2025
 
 start_models:
 - diagnostic_output
@@ -22,6 +22,7 @@ models:
 - jobs_transition
 - calc_prop_taxes
 - price_vars
+- subsidized_residential_developer
 - feasibility
 - residential_developer
 - diagnostic_output
