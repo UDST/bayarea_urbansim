@@ -238,6 +238,7 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
             add_more_columns_callback=add_extra_columns_func,
             **kwargs)
         sys.stdout = old_stdout
+        buildings = sim.get_table("buildings")
 
         if new_buildings is None:
             continue
