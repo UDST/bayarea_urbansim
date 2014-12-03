@@ -12,7 +12,7 @@ def building_sqft_per_job(settings):
     return settings['building_sqft_per_job']
 
 
-@sim.table_source('jobs')
+@sim.table('jobs', cache=True)
 def jobs(store):
     nets = store['nets']
     # go from establishments to jobs
@@ -23,7 +23,7 @@ def jobs(store):
 
 
 # a table of home sales data
-@sim.table_source('homesales')
+@sim.table('homesales', cache=True)
 def homesales(store):
     df = store['homesales']
     df = df.reset_index(drop=True)
@@ -31,7 +31,7 @@ def homesales(store):
 
 
 # non-residential rent data
-@sim.table_source('costar')
+@sim.table('costar', cache=True)
 def costar(store):
     df = store['costar']
     df = df[df.PropertyType.isin(["Office", "Retail", "Industrial"])]
@@ -39,7 +39,7 @@ def costar(store):
 
 
 # this is the mapping of parcels to zoning attributes
-@sim.table_source('zoning_for_parcels')
+@sim.table('zoning_for_parcels', cache=True)
 def zoning_for_parcels(store):
     df = store['zoning_for_parcels']
     df = df.reset_index().drop_duplicates(subset='parcel').set_index('parcel')
@@ -50,7 +50,7 @@ def zoning_for_parcels(store):
 # (the zoning from the h5 file doesn't have all the parameters)
 # instead of creating a new h5 file I'm going to add zoning as a csv file
 # which is easily browsable in excel and is only 170k bytes
-@sim.table_source('zoning')
+@sim.table('zoning', cache=True)
 def zoning(store):
     df = store.zoning
     df2 = pd.read_csv(os.path.join(misc.data_dir(), "baseline_zoning.csv"),
@@ -64,7 +64,7 @@ def zoning(store):
 
 # zoning for use in the "baseline" scenario
 # comes in the hdf5
-@sim.table_source('zoning_baseline')
+@sim.table('zoning_baseline', cache=True)
 def zoning_baseline(zoning, zoning_for_parcels):
     df = pd.merge(zoning_for_parcels.to_frame(),
                   zoning.to_frame(),
@@ -76,7 +76,7 @@ def zoning_baseline(zoning, zoning_for_parcels):
 # zoning for use in the "test" scenario - is often
 # specified by the user e.g. in arcgis or excel and
 # so is kept outside of the hdf5
-@sim.table_source('zoning_test')
+@sim.table('zoning_test', cache=True)
 def zoning_test():
     parcels_to_zoning = pd.read_csv(os.path.join(misc.data_dir(),
                                                  'parcels_to_zoning.csv'),
@@ -95,7 +95,7 @@ def zoning_test():
 # this is really bizarre, but the parcel table I have right now has empty
 # zone_ids for a few parcels.  Not enough to worry about so just filling with
 # the mode
-@sim.table_source('parcels')
+@sim.table('parcels', cache=True)
 def parcels(store):
     df = store['parcels']
     cfg = {
@@ -115,13 +115,13 @@ def parcels(store):
     return df
 
 
-@sim.table_source('parcels_geography')
+@sim.table('parcels_geography', cache=True)
 def parcels_geography():
     return pd.read_csv(os.path.join(misc.data_dir(), "parcels_geography.csv"),
                       index_col="parcel_id")
 
 
-@sim.table_source('buildings')
+@sim.table('buildings', cache=True)
 def buildings(store, households, jobs, building_sqft_per_job, settings):
     # start with buildings from urbansim_defaults
     df = datasources.buildings(store, households, jobs,
