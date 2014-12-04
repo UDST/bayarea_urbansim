@@ -169,6 +169,12 @@ def residential_units(buildings, households):
                households.loc[placed, ["building_id", "unit_num"]].values]
     households.loc[placed, "unit_id"] = unit_lookup.loc[indexes].unit_id.values
     households.loc[unplaced, "unit_id"] = -1
+    # this will only happen if there are overfull buildings at this point
+    # actually there's this weird boundary case happening here - building_ids
+    # that don't exist are filtered from households, then buildings with
+    # invalid data are dropped (and some households are assigned to those
+    # buildings) - this line protects against that and we can move on
+    households["unit_id"] = households.unit_id.fillna(-1)
     households.drop(["unit_num", "building_id"], axis=1, inplace=True)
     sim.add_table("households", households)
 
@@ -178,7 +184,8 @@ def residential_units(buildings, households):
 @sim.column('residential_units', 'vacant_units')
 def vacant_units(residential_units, households):
     return residential_units.num_units.sub(
-        households.unit_id.value_counts(), fill_value=0)
+        households.unit_id[households.unit_id != -1].value_counts(),
+        fill_value=0)
 
 
 # this specifies the relationships between tables

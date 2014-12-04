@@ -16,6 +16,10 @@ from cStringIO import StringIO
 # restrictions.  This is the first unit-based hlcm.
 @sim.model('hlcm_simulate')
 def hlcm_simulate(households, residential_units, settings):
+    # this actually triggers adding the unit_id to households
+    _ = sim.get_table('residential_units')
+    # because the households have been refreshed, need to get them again
+    households = sim.get_table("households")
     # for this hlcm, we need to add the buildings to the set of merge tables
     aggregations = [sim.get_table(tbl) for tbl in \
         ["buildings", "nodes", "logsums"]]
