@@ -130,8 +130,55 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
     vacancy = .25
     df["residential_units"] = (households.building_id.value_counts() *
                                (1.0+vacancy)).apply(np.floor).astype('int')
-    df["residential_units"] = df.residential_units.fillna(0)
+    df["residential_units"] = df.residential_units.fillna(0).astype("int32")
     return df
+
+
+@sim.table('residential_units', cache=True)
+def residential_units(buildings, households):
+    # in lieu of having a real units table in the base year, we're going to
+    # build one from the buildings table.
+    df = pd.DataFrame({
+        # this is going to set all the units as degenerate "buildings" with one
+        # unit each - in other words, every unit has one unit in it - duh
+        "num_units": 1,
+        # someone want to make this smarter? - right now no deed restriction
+        # in the base year
+        "deed_restricted": 0,
+        # counter of the units in a building
+        "unit_num": np.concatenate([np.arange(i) for i in \
+                                    buildings.residential_units.values]),
+        "building_id": np.repeat(buildings.index.values,
+                                 buildings.residential_units.values)
+    }).sort(columns=["building_id", "unit_num"]).reset_index(drop=True)
+    df.index.name = 'unit_id'
+
+    # This is terribly, terrribly ugly - I don't want to explain every line,
+    # but this converts from building_ids to unit_ids on the households
+    # data frame.  I did this a somewhat prettier way with a for loop and it
+    # was way too slow so I'm sticking with this for now.
+    unit_lookup = df.reset_index().set_index(["building_id", "unit_num"])
+    households = households.to_frame(households.local_columns)
+    households = households.sort(columns=["building_id"], ascending=True)
+    building_counts = households.building_id.value_counts().sort_index()
+    households["unit_num"] = np.concatenate([np.arange(i) for i in \
+                                             building_counts.values])
+    unplaced = households[households.building_id == -1].index
+    placed = households[households.building_id != -1].index
+    indexes = [tuple(t) for t in \
+               households.loc[placed, ["building_id", "unit_num"]].values]
+    households.loc[placed, "unit_id"] = unit_lookup.loc[indexes].unit_id.values
+    households.loc[unplaced, "unit_id"] = -1
+    households.drop(["unit_num", "building_id"], axis=1, inplace=True)
+    sim.add_table("households", households)
+
+    return df
+
+
+@sim.column('residential_units', 'vacant_units')
+def vacant_units(residential_units, households):
+    return residential_units.num_units.sub(
+        households.unit_id.value_counts(), fill_value=0)
 
 
 # this specifies the relationships between tables
@@ -141,3 +188,5 @@ sim.broadcast('nodes', 'homesales', cast_index=True, onto_on='node_id')
 sim.broadcast('nodes', 'costar', cast_index=True, onto_on='node_id')
 sim.broadcast('logsums', 'homesales', cast_index=True, onto_on='zone_id')
 sim.broadcast('logsums', 'costar', cast_index=True, onto_on='zone_id')
+sim.broadcast('buildings', 'residential_units', cast_index=True,
+              onto_on='building_id')

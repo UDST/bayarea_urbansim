@@ -12,6 +12,21 @@ import pandas as pd
 from cStringIO import StringIO
 
 
+# Overriding the urbansim_defaults hlcm_simulation in order to do deed
+# restrictions.  This is the first unit-based hlcm.
+@sim.model('hlcm_simulate')
+def hlcm_simulate(households, residential_units, settings):
+    # for this hlcm, we need to add the buildings to the set of merge tables
+    aggregations = [sim.get_table(tbl) for tbl in \
+        ["buildings", "nodes", "logsums"]]
+    return utils.lcm_simulate("hlcm.yaml", households, residential_units,
+                              aggregations,
+                              "unit_id",
+                              "num_units",
+                              "vacant_units",
+                              settings.get("enable_supply_correction", None))
+
+
 @sim.injectable("supply_and_demand_multiplier_func", autocall=False)
 def supply_and_demand_multiplier_func(demand, supply):
     s = demand / supply
@@ -274,7 +289,7 @@ def subsidized_residential_developer(households, buildings,
                           settings, summary, coffer, form_to_btype_func,
                           add_extra_columns_func, parcel_sales_price_sqft_func,
                           parcel_is_allowed_func):
-    
+
     if "disable" in acct_settings and acct_settings["disable"] == True:
         # allow disabling model from settings rather than
         # having to remove the model name from the model list
@@ -385,6 +400,6 @@ def travel_model_output(parcels, households, jobs, buildings,
     	"to_epsg": 4326
     }
     summary.write_parcel_output(add_xy=add_xy_config)
-    
+
     subsidy_file = "runs/run{}_subsidy_summary.csv".format(run_number)
     coffer["prop_tax_acct"].to_frame().to_csv(subsidy_file)
