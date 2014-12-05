@@ -34,9 +34,9 @@ acct_settings:
   receiving_buildings_filter: pda_id > 0 and residential_units > 1
 
 
-enable_supply_correction_foo:
-  price_col: residential_price
-  submarket_col: zone_id
+enable_supply_correction:
+  price_col: unit_residential_price
+  submarket_col: submarket_id
   submarket_table: zones
   warm_start: False
   multiplier_func: supply_and_demand_multiplier_func

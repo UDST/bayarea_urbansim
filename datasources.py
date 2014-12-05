@@ -139,6 +139,7 @@ def residential_units(buildings, households):
     # in lieu of having a real units table in the base year, we're going to
     # build one from the buildings table.
     df = pd.DataFrame({
+        "unit_residential_price": 0,
         # this is going to set all the units as degenerate "buildings" with one
         # unit each - in other words, every unit has one unit in it - duh
         "num_units": 1,
@@ -186,6 +187,11 @@ def vacant_units(residential_units, households):
     return residential_units.num_units.sub(
         households.unit_id[households.unit_id != -1].value_counts(),
         fill_value=0)
+
+
+@sim.column('residential_units', 'submarket_id')
+def submarket_id(residential_units, buildings):
+    return misc.reindex(buildings.zone_id, residential_units.building_id)
 
 
 # this specifies the relationships between tables

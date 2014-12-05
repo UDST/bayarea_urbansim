@@ -31,6 +31,23 @@ def hlcm_simulate(households, residential_units, settings):
                               settings.get("enable_supply_correction", None))
 
 
+# overriding the urbansim_defaults in order to do a unit-based hedonic
+@sim.model('rsh_simulate')
+def rsh_simulate(residential_units):
+    # for this rsh, we need to add the buildings to the set of merge tables
+    aggregations = [sim.get_table(tbl) for tbl in \
+        ["buildings", "nodes", "logsums"]]
+    return utils.hedonic_simulate("rsh.yaml", residential_units, aggregations,
+                                  "unit_residential_price")
+
+
+# now that price is on units, override default and aggregate UP to buildings
+@sim.column('buildings', 'residential_price')
+def residential_price(buildings, residential_units):
+    return residential_units.unit_residential_price.\
+        groupby(residential_units.building_id).median()
+
+
 @sim.injectable("supply_and_demand_multiplier_func", autocall=False)
 def supply_and_demand_multiplier_func(demand, supply):
     s = demand / supply
