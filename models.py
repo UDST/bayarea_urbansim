@@ -31,6 +31,21 @@ def hlcm_simulate(households, residential_units, settings):
                               settings.get("enable_supply_correction", None))
 
 
+# this is the low income hlcm - which allows the choice of
+# deed restricted units
+@sim.model('hlcm_li_simulate')
+def hlcm_li_simulate(households, residential_units, settings):
+    aggregations = [sim.get_table(tbl) for tbl in \
+        ["buildings", "nodes", "logsums"]]
+    # note supply correction is turned off since that's inappropraite
+    # for subsidized housing
+    return utils.lcm_simulate("hlcm_li.yaml", households, residential_units,
+                              aggregations,
+                              "unit_id",
+                              "num_units",
+                              "vacant_units")
+
+
 # overriding the urbansim_defaults in order to do a unit-based hedonic
 @sim.model('rsh_simulate')
 def rsh_simulate(residential_units):

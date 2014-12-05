@@ -152,6 +152,9 @@ def residential_units(buildings, households):
         "building_id": np.repeat(buildings.index.values,
                                  buildings.residential_units.values)
     }).sort(columns=["building_id", "unit_num"]).reset_index(drop=True)
+    # set a few units as randomly deed restricted (for testing)
+    df.loc[np.random.choice(df.index, .03*len(df), replace=False),
+           "deed_restricted"] = 1
     df.index.name = 'unit_id'
 
     # This is terribly, terrribly ugly - I don't want to explain every line,
