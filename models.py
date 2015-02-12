@@ -1,10 +1,12 @@
 import urbansim.sim.simulation as sim
 from urbansim.utils import misc
 import os
+import copy
 import sys
 import datasources
 import variables
 from urbansim import accounts
+from urbansim.developer.sqftproforma import SqFtProFormaConfig
 from urbansim_defaults import models
 from urbansim_defaults import utils
 import numpy as np
@@ -44,6 +46,45 @@ def form_to_btype_func(building):
             return 2
         return 3
     return settings["form_to_btype"][form][0]
+
+
+# this is a special feasibility with modified parking requirements - the
+# most tricky thing here is that the parking requirements change inside and
+# outside of san francisco, so we run feasibility a few times and concat the
+# final results
+@sim.model('feasibility')
+def feasibility(parcels, settings,
+                parcel_sales_price_sqft_func,
+                parcel_is_allowed_func):
+
+    # parking requirements is a list of configurations that have
+    # 1) a filter to apply the requirements too, and
+    # 2) the requirements themselves
+    feasibilities = []
+    for key, req_cfg in settings['parking_requirements'].iteritems():
+        config = SqFtProFormaConfig()
+        config.parking_rates = copy.copy(req_cfg["req"])
+        multiplier = 1.0
+        if "apply_multiplier" in req_cfg and \
+            req_cfg["apply_multiplier"] == True: 
+            multiplier = sim.get_injectable('parking_rates_multiplier')
+            for k, v in config.parking_rates.items():
+                config.parking_rates[k] = v * multiplier
+        print "Using parking rates ({})".format(req_cfg["desc"])
+        kwargs = copy.copy(settings['feasibility'])
+        kwargs['parcel_filter'] += req_cfg["filter"]
+        utils.run_feasibility(parcels,
+                              parcel_sales_price_sqft_func,
+                              parcel_is_allowed_func,
+                              config=config,
+                              **kwargs)
+        df = sim.get_table("feasibility").to_frame()
+        print "Found {} feasible projects".format(len(df))
+        feasibilities.append(df)
+    
+    # add the combined set of feasibile parcels 
+    # for all segments of the analysis
+    sim.add_table("feasibility", pd.concat(feasibilities))
 
 
 @sim.injectable("coffer", cache=True)
@@ -373,6 +414,9 @@ def travel_model_output(parcels, households, jobs, buildings,
         groupby('zone_id').size()
 
     sim.add_table("travel_model_output", zones, year)
+
+    tmo_file = "runs/run{}_travel_model_output.csv".format(run_number)
+    zones.to_csv(tmo_file)
 
     summary.add_zone_output(zones, "travel_model_outputs", year)
     summary.write_zone_output()
