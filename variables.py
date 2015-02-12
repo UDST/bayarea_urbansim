@@ -120,6 +120,12 @@ def node_id(parcels, homesales):
 #####################
 
 
+# move tpp_id from parcels_geography to parcels
+@sim.column('parcels')
+def tpp_id(parcels_geography):
+    return parcels_geography.tpp_id.fillna(-1)
+
+
 # these are actually functions that take parameters, but are parcel-related
 # so are defined here
 @sim.injectable('parcel_average_price', autocall=False)
@@ -134,18 +140,35 @@ def parcel_average_price(use, quantile=.5):
                                               "Residential"].
                             groupby(buildings.zone_id).quantile(quantile),
                             sim.get_table('parcels').zone_id)
-
+    
+    # experimenting using the zone base aggregation for nonres buildings too
+    buildings = sim.get_table('buildings')
+    # camel case
+    use = use[0].upper() + use[1:]
+    s =  misc.reindex(buildings.
+                        non_residential_price[buildings.general_type ==
+                                              use].
+                        groupby(buildings.zone_id).quantile(quantile),
+                        sim.get_table('parcels').zone_id)
+    # where the parcels aren't in a tpp, increase the revenue generation
+    # a bit - this is calibration because non-res prefers the tpas too much
+    # s[sim.get_table('parcels_geography').tpp_id.reindex(s.index).isnull()] += 30.0
+    return s
+    '''
     if 'nodes' not in sim.list_tables():
         return pd.Series(0, sim.get_table('parcels').index)
 
     return misc.reindex(sim.get_table('nodes')[use],
                         sim.get_table('parcels').node_id)
+    '''
 
 
 @sim.injectable('parcel_sales_price_sqft_func', autocall=False)
 def parcel_sales_price_sqft(use):
     s = parcel_average_price(use)
-    if use == "residential": s *= 1.2
+    # this was the factor used in the parking simulations
+    if use == "residential": s *= 1.7
+    # if use == "residential": s = s.clip(60)
     return s
 
 
@@ -164,9 +187,15 @@ def parcel_is_allowed(form):
 # actual columns start here
 @sim.column('parcels', 'max_far', cache=True)
 def max_far(parcels, scenario, scenario_inputs):
-    return utils.conditional_upzone(scenario, scenario_inputs,
+    s = utils.conditional_upzone(scenario, scenario_inputs,
                                     "max_far", "far_up").\
         reindex(parcels.index).fillna(0)
+    # clip the fars outside of san francisco to a max of 6
+    # the oakland fars are unreasonably high and the simulation is
+    # putting too many buildings there
+    t = s[parcels.county_id != 38].clip(0, 3.5)
+    s.loc[t.index] = t.values
+    return s
 
 
 @sim.column('parcels', 'max_dua', cache=True)
@@ -181,33 +210,38 @@ def max_height(parcels, zoning_baseline):
     return zoning_baseline.max_height.reindex(parcels.index).fillna(0)
 
 
-@sim.column('parcels', 'residential_purchase_price_sqft')
+@sim.column('parcels', 'residential_purchase_price_sqft',
+            cache=True, cache_scope='iteration')
 def residential_purchase_price_sqft(parcels):
     return parcels.building_purchase_price_sqft
 
 
-@sim.column('parcels', 'residential_sales_price_sqft')
+@sim.column('parcels', 'residential_sales_price_sqft',
+            cache=True, cache_scope='iteration')
 def residential_sales_price_sqft(parcel_sales_price_sqft_func):
     return parcel_sales_price_sqft_func("residential")
 
 
 # for debugging reasons this is split out into its own function
-@sim.column('parcels', 'building_purchase_price_sqft')
+@sim.column('parcels', 'building_purchase_price_sqft',
+            cache=True, cache_scope='iteration')
 def building_purchase_price_sqft():
     return parcel_average_price("residential") * .81
 
 
-@sim.column('parcels', 'building_purchase_price')
+@sim.column('parcels', 'building_purchase_price',
+            cache=True, cache_scope='iteration')
 def building_purchase_price(parcels):
     return (parcels.total_sqft * parcels.building_purchase_price_sqft).\
         reindex(parcels.index).fillna(0)
 
 
-@sim.column('parcels', 'land_cost')
+@sim.column('parcels', 'land_cost',
+            cache=True, cache_scope='iteration')
 def land_cost(parcels):
     return parcels.building_purchase_price + parcels.parcel_size * 12.21
 
 
-@sim.column('parcels', 'node_id')
+@sim.column('parcels', 'node_id', cache=True)
 def node_id(parcels):
     return parcels._node_id

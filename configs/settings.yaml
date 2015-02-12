@@ -23,7 +23,7 @@ parcel_size_factor: 10.764
 
 ave_sqft_per_unit_clip:
   lower: 800
-  upper: 2500
+  upper: 3000
 
 
 acct_settings:
@@ -41,7 +41,7 @@ dont_enable_supply_correction:
   warm_start: False
   multiplier_func: supply_and_demand_multiplier_func
   clip_final_price_low: 200
-  clip_final_price_high: 2000
+  clip_final_price_high: 3000
   kwargs:
     clip_change_low: 1.0
     clip_change_high: 1.3
@@ -111,15 +111,58 @@ feasibility:
     - building_purchase_price_sqft
 
 
+parking_requirements:
+  inside_sf_inside_tpp:
+    desc: 'Inside San Francisco and inside TPP'
+    filter: ' and county_id == 38 and tpp_id != -1'
+    apply_multiplier: true
+    req:
+      residential: 1.0
+      retail: 4.5
+      office: 4.0
+      industrial: 0.6
+  inside_sf_outside_tpp:
+    desc: 'Inside San Francisco and outside TPP'
+    filter: ' and county_id == 38 and tpp_id == -1'
+    apply_multiplier: false
+    req:
+      residential: 1.0
+      retail: 4.5
+      office: 4.0
+      industrial: 0.6
+  outside_sf_inside_tpp:
+    desc: 'Outside San Francisco and inside TPP'
+    filter: ' and county_id != 38 and tpp_id != -1'
+    apply_multiplier: true
+    req:
+      residential: 4.0
+      retail: 4.5
+      office: 4.0
+      industrial: 0.6
+  outside_sf_outside_tpp:
+    desc: 'Outside San Francisco and outside TPP'
+    filter: ' and county_id != 38 and tpp_id == -1'
+    apply_multiplier: false
+    req:
+      residential: 4.0
+      retail: 4.5
+      office: 4.0
+      industrial: 0.6
+
+  
+include_demolished_in_parcel_output: True
+
+
 residential_developer:
-  target_vacancy: .08
-  min_unit_size: 1000
-  bldg_sqft_per_job: 400
+  target_vacancy: .04
+  min_unit_size: 800
+  bldg_sqft_per_job: 450
+  max_parcel_size: 16000000
 
 
 non_residential_developer:
-  target_vacancy: .49
-  bldg_sqft_per_job: 400
+  target_vacancy: .42
+  bldg_sqft_per_job: 450
 
 
 pusher:
