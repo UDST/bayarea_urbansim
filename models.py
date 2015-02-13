@@ -63,6 +63,14 @@ def feasibility(parcels, settings,
     feasibilities = []
     for key, req_cfg in settings['parking_requirements'].iteritems():
         config = SqFtProFormaConfig()
+        config.profit_factor = 1.05
+        config.building_efficiency = .9
+        config.costs = {
+             "retail": [130.0, 150.0, 170.0, 200.0],
+             "industrial": [140.0, 175.0, 200.0, 230.0],
+             "office": [130.0, 150.0, 170.0, 200.0],
+             "residential": [170.0, 190.0, 210.0, 240.0]
+         }
         config.parking_rates = copy.copy(req_cfg["req"])
         multiplier = 1.0
         if "apply_multiplier" in req_cfg and \
