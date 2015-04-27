@@ -70,6 +70,7 @@ def unit_choice(chooser_ids, alternative_ids, probabilities):
 # Load TAZ-level synthetic population
 hh_path = loader.get_path('hh/synth/hhFile.p2011s3a1.2010.csv')
 hh = pd.read_csv(hh_path)
+hh = hh[hh['HHT'] > 0]
 hh = hh.set_index('HHID')
 hh.index.name = 'household_id'
 hh = hh.rename(columns = {'TAZ':'taz'})
