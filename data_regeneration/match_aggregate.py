@@ -584,36 +584,85 @@ buildings = pd.merge(buildings, targetvalues, left_on = 'taz', right_index = Tru
 
 buildings = buildings.set_index('building_id')
 
-# YEAR BUILT
-buildings.year_built[(buildings.res_type.isin(['single', 'multi'])) & ((buildings.year_built < year_built_lower_bound) | (buildings.year_built > year_built_upper_bound) | (buildings.year_built.isnull()))] = buildings.yearbuilt_av#note 353/1439 show up here as zero
-buildings.year_built[(buildings.res_type.isin(['single', 'multi'])) & buildings.year_built.isnull()] = buildings.year_built[(buildings.res_type.isin(['single', 'multi']))].mean()
+## YEAR BUILT
 
-buildings.year_built[(~buildings.res_type.isin(['single', 'multi'])) & ((buildings.year_built < year_built_lower_bound) | (buildings.year_built > year_built_upper_bound) | (buildings.year_built.isnull()))] = buildings.year_built_av_nonres#note 353/1439 show up here as zero
-buildings.year_built[(~buildings.res_type.isin(['single', 'multi'])) & buildings.year_built.isnull()] = buildings.year_built[(~buildings.res_type.isin(['single', 'multi']))].mean()
+#   Residential building with out-of-bounds or null year_built- replace with observed zonal average of good data points
+idx = (buildings.res_type.isin(['single', 'multi'])) & ((buildings.year_built < year_built_lower_bound) | (buildings.year_built > year_built_upper_bound) | (buildings.year_built.isnull()))
+buildings.year_built[idx] = buildings.yearbuilt_av
+# Imputation flag
+idx_parcel = np.unique(buildings.parcel_id[idx])
+parcels.imputation_flag.loc[idx_parcel] = parcels.imputation_flag.loc[idx_parcel] + ', res_zone_yrblt'
+
+# If any residential buildings with year_built value still out of bounds (e.g. if zonal average data from previous step had bad value), use average across all residential buildings
+idx = (buildings.res_type.isin(['single', 'multi'])) & buildings.year_built.isnull()
+buildings.year_built[idx] = buildings.year_built[(buildings.res_type.isin(['single', 'multi']))].mean()
+# Imputation flag
+idx_parcel = np.unique(buildings.parcel_id[idx])
+parcels.imputation_flag.loc[idx_parcel] = parcels.imputation_flag.loc[idx_parcel] + ', res_region_yrblt'
+
+#   Non-residential building with out-of-bounds or null year_built- replace with zonal average of good data points
+idx = (~buildings.res_type.isin(['single', 'multi'])) & ((buildings.year_built < year_built_lower_bound) | (buildings.year_built > year_built_upper_bound) | (buildings.year_built.isnull()))
+buildings.year_built[idx] = buildings.year_built_av_nonres
+# Imputation flag
+idx_parcel = np.unique(buildings.parcel_id[idx])
+parcels.imputation_flag.loc[idx_parcel] = parcels.imputation_flag.loc[idx_parcel] + ', nr_zone_yrblt'
+
+# If any non-residential buildings with year_built value still out of bounds (e.g. if zonal average data from previous step had bad value), use average across all non-residential buildings
+idx = (~buildings.res_type.isin(['single', 'multi'])) & buildings.year_built.isnull()
+buildings.year_built[idx] = buildings.year_built[(~buildings.res_type.isin(['single', 'multi']))].mean()
+# Imputation flag
+idx_parcel = np.unique(buildings.parcel_id[idx])
+parcels.imputation_flag.loc[idx_parcel] = parcels.imputation_flag.loc[idx_parcel] + ', nr_region_yrblt'
+
+## NON-RESIDENTIAL SQFT
 
 # If nonresidential structure (and this is known by btype and resunits), and nonres sqft is 0 but building_sqft is positive, nonres_sqft should equal building_sqft
 idx = (~buildings.res_type.isin(['single', 'multi'])) & (buildings.residential_units == 0) & (buildings.non_residential_sqft == 0) & (buildings.building_sqft > 0)
 buildings.non_residential_sqft[idx] = buildings.building_sqft
+#Imputation flag
+idx_parcel = np.unique(buildings.parcel_id[idx])
+parcels.imputation_flag.loc[idx_parcel] = parcels.imputation_flag.loc[idx_parcel] + ', nrsqft_from_bsqft'
 
 # If nonresidential structure with zero residential units, building_sqft should equal non-residential sqft
-buildings.building_sqft[(~buildings.res_type.isin(['single', 'multi'])) & (buildings.residential_units == 0)] = buildings.non_residential_sqft
+idx = (~buildings.res_type.isin(['single', 'multi'])) & (buildings.residential_units == 0)
+buildings.building_sqft[idx] = buildings.non_residential_sqft
+#Imputation flag
+idx_parcel = np.unique(buildings.parcel_id[idx])
+parcels.imputation_flag.loc[idx_parcel] = parcels.imputation_flag.loc[idx_parcel] + ', bsqft_from_nrsqft'
 
 # SQFT PER UNIT
 # Residential sqft_per_unit should be building_sqft / residential_units
 idx = (buildings.res_type.isin(['single', 'multi'])) & (buildings.building_sqft > 0) & (buildings.residential_units > 0) & np.logical_or((buildings.sqft_per_unit == 0), (buildings.sqft_per_unit.isnull())) & (buildings.non_residential_sqft == 0)
 buildings.sqft_per_unit[idx] = buildings.building_sqft[idx] / buildings.residential_units[idx]
 
-# Replacing sqft_per_unit nulls/zeros with county avg
+# Replacing sqft_per_unit nulls/zeros with county avg of good data points
 for cid in np.unique(buildings.county_id):
     if cid != 0:
-        idx = (buildings.res_type.isin(['single', 'multi'])) & (buildings.residential_units > 0) & (buildings.county_id == cid)
+        idx = (buildings.res_type.isin(['single', 'multi'])) & (buildings.residential_units > 0) & (buildings.county_id == cid) & (buildings.sqft_per_unit > 0)
         mean_sqft_per_unit = buildings[idx].sqft_per_unit.mean()
-        idx2 = (buildings.res_type.isin(['single', 'multi'])) & (buildings.residential_units > 0) & (buildings.county_id == cid) & (np.logical_or((buildings.sqft_per_unit.isnull()) , (buildings.sqft_per_unit == 0)))
+        if mean_sqft_per_unit < 1000: mean_sqft_per_unit = 1000
+        idx2 = (buildings.res_type.isin(['single', 'multi'])) & (buildings.residential_units > 0) & (buildings.county_id == cid) & (np.logical_or((buildings.sqft_per_unit.isnull()) , (buildings.sqft_per_unit < 100)))
         buildings.sqft_per_unit[idx2] = mean_sqft_per_unit
-
+        # Imputation flag
+        idx_parcel = np.unique(buildings.parcel_id[idx2])
+        parcels.imputation_flag.loc[idx_parcel] = parcels.imputation_flag.loc[idx_parcel] + ', cnty_sq_du'
+        
 # Applying bounds to sqft per unit
-buildings.sqft_per_unit[(buildings.res_type.isin(['single', 'multi'])) & (buildings.residential_units > 0) & (buildings.sqft_per_unit < sqft_per_unit_lower_bound)] = sqft_per_unit_lower_bound
-buildings.sqft_per_unit[(buildings.res_type.isin(['single', 'multi'])) & (buildings.residential_units > 0) & (buildings.sqft_per_unit > sqft_per_unit_upper_bound)] = sqft_per_unit_upper_bound
+
+# Enforce lower bound
+idx = (buildings.res_type.isin(['single', 'multi'])) & (buildings.residential_units > 0) & (buildings.sqft_per_unit < sqft_per_unit_lower_bound)
+buildings.sqft_per_unit[idx] = sqft_per_unit_lower_bound
+#Imputation flag
+idx_parcel = np.unique(buildings.parcel_id[idx])
+parcels.imputation_flag.loc[idx_parcel] = parcels.imputation_flag.loc[idx_parcel] + ', sq_du_lower_bound'
+
+# Enforce upper bound
+idx = (buildings.res_type.isin(['single', 'multi'])) & (buildings.residential_units > 0) & (buildings.sqft_per_unit > sqft_per_unit_upper_bound)
+buildings.sqft_per_unit[idx] = sqft_per_unit_upper_bound
+# Imputation flag
+idx_parcel = np.unique(buildings.parcel_id[idx])
+parcels.imputation_flag.loc[idx_parcel] = parcels.imputation_flag.loc[idx_parcel] + ', sq_du_upper_bound'
+
 buildings.sqft_per_unit[buildings.sqft_per_unit < 0] = 0
 buildings.sqft_per_unit[buildings.sqft_per_unit > sqft_per_unit_upper_bound] = sqft_per_unit_upper_bound
 
@@ -626,11 +675,23 @@ buildings.sqft_per_unit[buildings.sqft_per_unit.isnull()] = 0
 buildings.building_sqft = buildings.non_residential_sqft + (buildings.sqft_per_unit * buildings.residential_units)
 
 # STORIES
-buildings.stories[buildings.stories.isnull() | (buildings.stories < 1)] = 1
-buildings.stories[(buildings.stories == 1) & (buildings.costar_elevators > 0)] = 3
+# If stories null or less than 1, set to 1
+idx = buildings.stories.isnull() | (buildings.stories < 1)
+buildings.stories[idx] = 1
+idx_parcel = np.unique(buildings.parcel_id[idx])
+parcels.imputation_flag.loc[idx_parcel] = parcels.imputation_flag.loc[idx_parcel] + ', stories1'
+
+idx = (buildings.stories == 1) & (buildings.costar_elevators > 0)
+buildings.stories[idx] = 3
+idx_parcel = np.unique(buildings.parcel_id[idx])
+parcels.imputation_flag.loc[idx_parcel] = parcels.imputation_flag.loc[idx_parcel] + ', stories3_cs_elevator'
+
+idx = buildings.stories > 90
 buildings.stories[buildings.stories > 99] = 1  ##Marin data problem
 buildings.stories[buildings.stories > 98] = 2 ##SCL data problem
 buildings.stories[buildings.stories > 90] = 1 ##SF data problem
+idx_parcel = np.unique(buildings.parcel_id[idx])
+parcels.imputation_flag.loc[idx_parcel] = parcels.imputation_flag.loc[idx_parcel] + ', stories_corrected'
 
 # Replace nulls with zero
 buildings.improvement_value[buildings.improvement_value.isnull()] = 0.0
@@ -677,6 +738,7 @@ print len(buildings2[(buildings2.building_sqft == 0) & (buildings2.res_type=='ot
 
 # Post scaling bound-checking
 buildings2.year_built[buildings2.year_built > year_built_upper_bound] = year_built_upper_bound
+buildings2.year_built[buildings2.year_built < year_built_lower_bound] = year_built_lower_bound
 
 
 # COMPARE WITH TARGETS
@@ -689,7 +751,8 @@ summary_output_path = loader.get_path('out/regeneration/summaries/built_space_su
 targetunits[['sf','targetSF','mf','targetMF', 'nrsqft', 'targetnonressqft']].to_csv(summary_output_path)
 
 
-# EXPORT BUILDILNGS TO DB
+# EXPORT BUILDINGS TO DB
+print 'Loading processed buildings to db'
 df_to_db(buildings2, 'buildings', schema=loader.tables.public)
 
 
@@ -723,6 +786,7 @@ parcels2.parcel_id_local = parcels2.parcel_id_local.fillna(' ')
 parcels2.parcel_acres[parcels2.parcel_acres.isnull()] = 2.5
 parcels2.index.name = 'parcel_id'
 
+print 'Loading processed parcels to db'
 df_to_db(parcels2, 'parcel', schema=loader.tables.public)
 
 # Attach geom to the processed parcels

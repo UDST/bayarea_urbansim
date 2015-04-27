@@ -70,7 +70,7 @@ def unit_choice(chooser_ids, alternative_ids, probabilities):
 # Load TAZ-level synthetic population
 hh_path = loader.get_path('hh/synth/hhFile.p2011s3a1.2010.csv')
 hh = pd.read_csv(hh_path)
-hh = hh[hh['HHT'] > 0]
+hh = hh[hh['HHT'] > 0] #Filter out GQ households
 hh = hh.set_index('HHID')
 hh.index.name = 'household_id'
 hh = hh.rename(columns = {'TAZ':'taz'})
@@ -165,7 +165,7 @@ jobs_table['building_id'] = -1
 
 taz_job_counts = jobs_table.groupby('taz').size()
 
-#buildiing_sqft_per_job assumptions for the initial allocation
+#building_sqft_per_job assumptions for the initial allocation
 building_sqft_per_job = {'BR':355,
  'GV':355,
  'HO':1161,
@@ -233,6 +233,7 @@ jobs.building_id[jobs.building_id.isnull()] = -1
 hh.building_id[hh.building_id.isnull()] = -1
 
 #EXPORT DEMAND AGENTS TO DB
+print 'Loading jobs and households back to database'
 df_to_db(jobs, 'jobs', schema=loader.tables.public)
 df_to_db(hh, 'households', schema=loader.tables.public)
 

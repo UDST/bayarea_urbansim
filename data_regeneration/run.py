@@ -84,7 +84,7 @@ print("PROCESSING: Allocating households and jobs to buildings.")
 check_run('demand_agent_allocation.py')
 
 
-print("PROCESSING: Attaching zone_id's to parcels.")
+print("PROCESSING: Attaching zoning_id's to parcels.")
 
 # Reading the zoning inputs and joining/appending to parcels based on geom_id
 check_run('attach_zoning_id.py')
@@ -102,4 +102,4 @@ check_run('summaries.py')
 check_run('export_to_h5.py')
 
 # # Output buildings, parcels, and zoning tables to UrbanCanvas db.
-check_run('export_to_uc.py')
+# check_run('export_to_uc.py')
