@@ -1,6 +1,14 @@
 name: elcm
 
-model_type: segmented_locationchoice
+model_type: segmented_discretechoice
+
+probability_mode: single_chooser
+
+choice_mode: aggregate
+
+remove_alts: True
+
+prediction_sample_size: null
 
 segmentation_col: empsix
 

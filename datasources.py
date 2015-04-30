@@ -141,10 +141,13 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
     # start with buildings from urbansim_defaults
     df = datasources.buildings(store, households, jobs,
                                building_sqft_per_job, settings)
+
+    df = df.drop(['development_type_id', 'improvement_value', 'sqft_per_unit', 'nonres_rent_per_sqft', 'res_price_per_sqft', 'redfin_sale_price', 'redfin_sale_year', 'redfin_home_type', 'costar_property_type', 'costar_rent'], axis=1)
+
     # set the vacancy rate in each building to 5% for testing purposes
-    vacancy = .25
-    df["residential_units"] = (households.building_id.value_counts() *
-                               (1.0+vacancy)).apply(np.floor).astype('int')
+    #vacancy = .25
+    #df["residential_units"] = (households.building_id.value_counts() *
+    #                           (1.0+vacancy)).apply(np.floor).astype('int')
     df["residential_units"] = df.residential_units.fillna(0)
     return df
 

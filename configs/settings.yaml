@@ -34,7 +34,7 @@ acct_settings:
   receiving_buildings_filter: pda_id > 0 and residential_units > 1
 
 
-enable_supply_correction:
+dont_enable_supply_correction:
   price_col: residential_price
   submarket_col: zone_id
   submarket_table: zones
@@ -49,6 +49,11 @@ enable_supply_correction:
 
 
 table_reprocess:
+  jobs:
+    fill_nas:
+      empsix:
+        how: "mode"
+        type: "int"
   buildings:
     filter: "building_type_id >= 1 and building_type_id <= 14"
     fill_nas:
@@ -118,7 +123,7 @@ residential_developer:
 
 
 non_residential_developer:
-  target_vacancy: .49
+  target_vacancy: 0.0
   bldg_sqft_per_job: 400
 
 
@@ -129,7 +134,7 @@ pusher:
   region: bayarea
 
 
-store: bayarea_v2.h5
+store: bayarea_v3.h5
 
 
 scenario: baseline
@@ -171,7 +176,9 @@ naics_to_empsix:
   81: OTHEMPN
   92: OTHEMPN
   99: OTHEMPN
-
+  3133: MWTEMPN
+  4445: RETEMPN
+  4849: MWTEMPN
 
 empsix_name_to_id:
   AGREMPN: 1
