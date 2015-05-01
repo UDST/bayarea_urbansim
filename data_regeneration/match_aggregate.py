@@ -45,8 +45,9 @@ nonres_sqft_zone = pd.DataFrame({'observed':parcels.groupby('taz').non_residenti
 nonres_sqft_zone['difference'] = nonres_sqft_zone.target - nonres_sqft_zone.observed
 
 ##Append the unique parcel identifier to the establisment point records.  Uncomment this once notebook turned into script
-exec_sql("alter table staging.establishment_points add parcel_id integer default 0;")
-exec_sql("update staging.establishment_points set parcel_id = a.gid from parcels a where st_within(staging.establishment_points.geom, a.geom);")
+if 'parcel_id' not in db_to_df("SELECT column_name FROM information_schema.columns  WHERE table_name='parcel'").column_name.values:
+    exec_sql("alter table staging.establishment_points add parcel_id integer default 0;")
+    exec_sql("update staging.establishment_points set parcel_id = a.gid from parcels a where st_within(staging.establishment_points.geom, a.geom);")
 
 #Load the establishment points to be used for non-residential sqft imputation
 estab_points = db_to_df('select emp_here, naics2, parcel_id from staging.establishment_points;')
@@ -747,8 +748,10 @@ targetunits['mf'] = buildings2[buildings2.res_type == 'multi'].groupby('taz').re
 targetunits['nrsqft'] = buildings2.groupby('taz').non_residential_sqft.sum()
 print targetunits[['sf','targetSF','mf','targetMF', 'nrsqft', 'targetnonressqft']].head()
 targetunits[['sf','targetSF','mf','targetMF', 'nrsqft', 'targetnonressqft']].sum()
-summary_output_path = loader.get_path('out/regeneration/summaries/built_space_summary.csv')
-targetunits[['sf','targetSF','mf','targetMF', 'nrsqft', 'targetnonressqft']].to_csv(summary_output_path)
+# summary_output_path = loader.get_path('out/regeneration/summaries/built_space_summary.csv')
+# targetunits[['sf','targetSF','mf','targetMF', 'nrsqft', 'targetnonressqft']].to_csv(summary_output_path)
+targetunits = targetunits[['sf','targetSF','mf','targetMF', 'nrsqft', 'targetnonressqft']]
+df_to_db(targetunits, 'summary_built_space', schema=loader.tables.public)
 
 
 # EXPORT BUILDINGS TO DB
