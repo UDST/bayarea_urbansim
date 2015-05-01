@@ -58,3 +58,32 @@ building_output_path = loader.get_path('out/regeneration/summaries/buildings.csv
     
 buildings = db_to_df('select * from building').set_index('building_id')
 buildings.to_csv(building_output_path)
+
+## Export TAZ summary file
+summary_built_space = db_to_df('select * from summary_built_space').set_index('taz1454')
+summary_price = db_to_df('select * from summary_price').set_index('taz')
+summary_emp = db_to_df('select * from summary_emp').set_index('taz1454')
+summary_hh = db_to_df('select * from summary_hh').set_index('taz1454')
+
+summary_df = pd.DataFrame({
+'sf':summary_built_space.sf,
+'targetsf':summary_built_space.targetsf,
+'mf':summary_built_space.mf,
+'targetmf':summary_built_space.targetmf,
+'nrsqft':summary_built_space.nrsqft,
+'targetnrsqft':summary_built_space.targetnonressqft,
+'hh':summary_hh.hh,
+'hh_allocated':summary_hh.hh_allocated,
+'res_occupancy':summary_hh.occupancy,
+'job_spaces':summary_emp.job_spaces,
+'jobs':summary_emp.jobs,
+'jobs_allocated':summary_emp.jobs_allocated,
+'emp_occupancy':summary_emp.occupancy,
+'avg_nonres_rent_per_sqft':summary_price.avg_nonres_rent_per_sqft,
+'avg_res_price_per_sqft':summary_price.avg_res_price_per_sqft,
+})
+
+summary_df = summary_df[['sf', 'targetsf', 'mf', 'targetmf', 'nrsqft', 'targetnrsqft', 'hh', 'hh_allocated', 'res_occupancy', 'job_spaces', 'jobs', 'jobs_allocated', 'emp_occupancy', 'avg_res_price_per_sqft', 'avg_nonres_rent_per_sqft']].fillna(0)
+
+summary_output_path = loader.get_path('out/regeneration/summaries/taz_summary.csv')
+summary_df.to_csv(summary_output_path)
