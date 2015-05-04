@@ -34,7 +34,7 @@ acct_settings:
   receiving_buildings_filter: pda_id > 0 and residential_units > 1
 
 
-dont_enable_supply_correction:
+enable_supply_correction:
   price_col: residential_price
   submarket_col: zone_id
   submarket_table: zones
