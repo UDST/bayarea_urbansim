@@ -59,7 +59,7 @@ def node_id(parcels, costar):
 
 @sim.column('jobs', 'naics', cache=True)
 def naics(jobs):
-    return jobs.naics11cat
+    return jobs.sector_id
 
 
 @sim.column('jobs', 'empsix', cache=True)
