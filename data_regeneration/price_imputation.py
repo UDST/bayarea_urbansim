@@ -94,8 +94,10 @@ sim_data = pd.Series(sim_data, index = nonresbuildings.index)
 buildings['nonres_rent_per_sqft'] = 0
 buildings.loc[sim_data.index,'nonres_rent_per_sqft'] = sim_data
 
-summary_output_path = loader.get_path('out/regeneration/summaries/price_summary.csv')
-pd.DataFrame({'avg_nonres_rent_per_sqft':buildings[buildings.nonres_rent_per_sqft>0].groupby('taz').nonres_rent_per_sqft.mean(), 'avg_res_price_per_sqft':buildings[buildings.res_price_per_sqft>0].groupby('taz').res_price_per_sqft.mean(),}).to_csv(summary_output_path)
+#summary_output_path = loader.get_path('out/regeneration/summaries/price_summary.csv')
+price_summary = pd.DataFrame({'avg_nonres_rent_per_sqft':buildings[buildings.nonres_rent_per_sqft>0].groupby('taz').nonres_rent_per_sqft.mean(), 'avg_res_price_per_sqft':buildings[buildings.res_price_per_sqft>0].groupby('taz').res_price_per_sqft.mean(),})
+df_to_db(price_summary, 'summary_price', schema=loader.tables.public)
+
 
 ##Now export back to the database
 buildings2 = buildings[['parcel_id','county_id', 'land_use_type_id', 'res_type', 'improvement_value', 'year_assessed', 'year_built', 'building_sqft', 'non_residential_sqft', 'residential_units', 'sqft_per_unit', 'stories', 'development_type_id', 'taz', 'redfin_sale_price', 'redfin_sale_year', 'redfin_home_type', 'costar_property_type', 'costar_rent', 'nonres_rent_per_sqft', 'res_price_per_sqft']]
