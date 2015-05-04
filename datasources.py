@@ -14,11 +14,12 @@ def building_sqft_per_job(settings):
 
 @sim.table('jobs', cache=True)
 def jobs(store):
-    nets = store['nets']
-    # go from establishments to jobs
-    df = nets.loc[np.repeat(nets.index.values, nets.emp11.values)]\
-        .reset_index()
-    df.index.name = 'job_id'
+    # nets = store['nets']
+    ###go from establishments to jobs
+    # df = nets.loc[np.repeat(nets.index.values, nets.emp11.values)]\
+        # .reset_index()
+    # df.index.name = 'job_id'
+    df = store['jobs']
     return df
 
 
@@ -112,6 +113,20 @@ def parcels(store):
     }
     df = utils.table_reprocess(cfg, df)
     df["zone_id"] = df.zone_id.replace(0, 1)
+    
+    # Node id
+    # import pandana as pdna
+    # st = pd.HDFStore(os.path.join(misc.data_dir(), "osm_bayarea.h5"), "r")
+    # nodes, edges = st.nodes, st.edges
+    net = sim.get_injectable('net')
+    # net = pdna.Network(nodes["x"], nodes["y"], edges["from"], edges["to"],
+                       # edges[["weight"]])
+    # net.precompute(3000)
+    # sim.add_injectable("net", net)
+    
+    # p = parcels.to_frame(parcels.local_columns)
+    df['_node_id'] = net.get_node_ids(df['x'], df['y'])
+    # sim.add_table("parcels", p)
     return df
 
 
@@ -126,10 +141,13 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
     # start with buildings from urbansim_defaults
     df = datasources.buildings(store, households, jobs,
                                building_sqft_per_job, settings)
+
+    df = df.drop(['development_type_id', 'improvement_value', 'sqft_per_unit', 'nonres_rent_per_sqft', 'res_price_per_sqft', 'redfin_sale_price', 'redfin_sale_year', 'redfin_home_type', 'costar_property_type', 'costar_rent'], axis=1)
+
     # set the vacancy rate in each building to 5% for testing purposes
-    vacancy = .25
-    df["residential_units"] = (households.building_id.value_counts() *
-                               (1.0+vacancy)).apply(np.floor).astype('int')
+    #vacancy = .25
+    #df["residential_units"] = (households.building_id.value_counts() *
+    #                           (1.0+vacancy)).apply(np.floor).astype('int')
     df["residential_units"] = df.residential_units.fillna(0)
     return df
 

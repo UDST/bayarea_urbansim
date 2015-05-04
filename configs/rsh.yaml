@@ -14,7 +14,7 @@ fit_filters:
 predict_filters: null
 
 model_expression: np.log(sale_price_flt) ~ I(year_built < 1940) + sum_residential_units  +
-    ave_income + autoPeakTotal + np.log1p(empirical_price)
+    ave_income + autoPeakTotal
 
 ytransform: np.exp
 
@@ -26,21 +26,18 @@ fit_parameters:
         Intercept: -3.4604262638002288
         autoPeakTotal: 0.07571549292267017
         ave_income: 0.1817511403925174
-        np.log1p(empirical_price): 1.123176257047405
         sum_residential_units: -0.04102600453191334
     Std. Error:
         I(year_built < 1940)[T.True]: 0.002658792931544779
         Intercept: 0.038330047861794316
         autoPeakTotal: 0.0011903459651063865
         ave_income: 0.004022748871974102
-        np.log1p(empirical_price): 0.0033890648303666776
         sum_residential_units: 0.001180999001434192
     T-Score:
         I(year_built < 1940)[T.True]: 5.677080977848308
         Intercept: -90.27972718107215
         autoPeakTotal: 63.60797208726048
         ave_income: 45.18083185822282
-        np.log1p(empirical_price): 331.41185349525574
         sum_residential_units: -34.738390533854655
 
 fit_rsquared_adj: 0.6643113240538632
