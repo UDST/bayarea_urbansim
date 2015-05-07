@@ -44,8 +44,8 @@ nonres_sqft_zone = pd.DataFrame({'observed':parcels.groupby('taz').non_residenti
 #No need to tag in imputation_flag column based on scaling- otherwise everything would be tagged.
 nonres_sqft_zone['difference'] = nonres_sqft_zone.target - nonres_sqft_zone.observed
 
-##Append the unique parcel identifier to the establisment point records.  Uncomment this once notebook turned into script
-if 'parcel_id' not in db_to_df("SELECT column_name FROM information_schema.columns  WHERE table_name='parcel'").column_name.values:
+##Append the unique parcel identifier to the establisment point records.
+if 'parcel_id' not in db_to_df("SELECT column_name FROM information_schema.columns  WHERE table_name='establishment_points'").column_name.values:
     exec_sql("alter table staging.establishment_points add parcel_id integer default 0;")
     exec_sql("update staging.establishment_points set parcel_id = a.gid from parcels a where st_within(staging.establishment_points.geom, a.geom);")
 

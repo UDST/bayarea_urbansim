@@ -86,9 +86,14 @@ exec_sql("update parcels set year_built = a.year_built from staging.parcels_redf
 exec_sql("update parcels set sqft_per_unit = a.sqft_per_unit from staging.parcels_redfin a where a.gid = parcels.gid;")
 exec_sql("update parcels set imputation_flag = a.imputation_flag from staging.parcels_redfin a where a.gid = parcels.gid;")
 
-exec_sql("ALTER TABLE parcels ADD COLUMN redfin_sale_price numeric;")
-exec_sql("ALTER TABLE parcels ADD COLUMN redfin_sale_year numeric;")
-exec_sql("ALTER TABLE parcels ADD COLUMN redfin_home_type text;")
+if 'redfin_sale_price' not in db_to_df("SELECT column_name FROM information_schema.columns  WHERE table_name='parcels'").column_name.values:
+    exec_sql("ALTER TABLE parcels ADD COLUMN redfin_sale_price numeric;")
+    
+if 'redfin_sale_year' not in db_to_df("SELECT column_name FROM information_schema.columns  WHERE table_name='parcels'").column_name.values:
+    exec_sql("ALTER TABLE parcels ADD COLUMN redfin_sale_year numeric;")
+    
+if 'redfin_home_type' not in db_to_df("SELECT column_name FROM information_schema.columns  WHERE table_name='parcels'").column_name.values:
+    exec_sql("ALTER TABLE parcels ADD COLUMN redfin_home_type text;")
 
 exec_sql("update parcels set redfin_sale_price = a.redfin_sale_price from staging.parcels_redfin a where a.gid = parcels.gid;")
 exec_sql("update parcels set redfin_sale_year = a.redfin_sale_year from staging.parcels_redfin a where a.gid = parcels.gid;")
@@ -216,11 +221,12 @@ exec_sql("update parcels set year_built = a.year_built from staging.parcels_cost
 exec_sql("update parcels set non_residential_sqft = a.non_residential_sqft from staging.parcels_costar a where a.gid = parcels.gid;")
 exec_sql("update parcels set imputation_flag = a.imputation_flag from staging.parcels_costar a where a.gid = parcels.gid;")
 
-exec_sql("ALTER TABLE parcels ADD COLUMN costar_elevators numeric;")
-exec_sql("ALTER TABLE parcels ADD COLUMN costar_property_type text;")
-exec_sql("ALTER TABLE parcels ADD COLUMN costar_secondary_type text;")
-exec_sql("ALTER TABLE parcels ADD COLUMN costar_building_name text;")
-exec_sql("ALTER TABLE parcels ADD COLUMN costar_rent text;")
+if 'costar_elevators' not in db_to_df("SELECT column_name FROM information_schema.columns  WHERE table_name='parcels'").column_name.values:
+    exec_sql("ALTER TABLE parcels ADD COLUMN costar_elevators numeric;")
+    exec_sql("ALTER TABLE parcels ADD COLUMN costar_property_type text;")
+    exec_sql("ALTER TABLE parcels ADD COLUMN costar_secondary_type text;")
+    exec_sql("ALTER TABLE parcels ADD COLUMN costar_building_name text;")
+    exec_sql("ALTER TABLE parcels ADD COLUMN costar_rent text;")
 
 exec_sql("update parcels set costar_elevators = a.costar_elevators from staging.parcels_costar a where a.gid = parcels.gid;")
 exec_sql("update parcels set costar_property_type = a.costar_property_type from staging.parcels_costar a where a.gid = parcels.gid;")
