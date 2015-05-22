@@ -107,6 +107,14 @@ def property_taxes(buildings, parcels_geography, acct_settings, coffer, year):
     tax_buildings(buildings, acct_settings, coffer["prop_tax_acct"], year)
 
 
+@sim.injectable("add_extra_columns_func", autocall=False)
+def add_extra_columns(df):
+    for col in ["residential_price", "non_residential_price"]:
+        df[col] = 0
+    df["redfin_sale_year"] = 2012
+    return df
+
+
 def run_subsidized_developer(feasibility, parcels, buildings, households,
                              acct_settings, settings, account, year,
                              form_to_btype_func, add_extra_columns_func,
@@ -317,8 +325,6 @@ def travel_model_output(parcels, households, jobs, buildings,
     homesales = homesales.to_frame()
 
     # put this here as a custom bay area indicator
-    zones['residential_sales_price_empirical'] = homesales.groupby('zone_id').\
-        sale_price_flt.quantile()
     zones['residential_sales_price_sqft'] = parcels.\
         residential_sales_price_sqft.groupby(parcels.zone_id).quantile()
     zones['residential_purchase_price_sqft'] = parcels.\

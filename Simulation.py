@@ -1,5 +1,6 @@
 import time
 import models
+import pandas as pd
 import urbansim.sim.simulation as sim
 
 
@@ -10,22 +11,21 @@ sim.run([
     "neighborhood_vars",         # accessibility variables
 
     "rsh_simulate",              # residential sales hedonic
-    "nrh_simulate",              # non-residential rent hedonic
+    #"nrh_simulate",              # non-residential rent hedonic
 
     "households_relocation",
-    "hlcm_simulate",
     "households_transition",
+    "hlcm_simulate",
 
-    "jobs_relocation",
-    "elcm_simulate",
-    "jobs_transition",
-
+    #"jobs_relocation",
+    #"jobs_transition",
+    #"elcm_simulate",
 
     "price_vars",
 
     "feasibility",
     "residential_developer",
-    "non_residential_developer",
+    #"non_residential_developer",
      
     "diagnostic_output",
     "travel_model_output"
