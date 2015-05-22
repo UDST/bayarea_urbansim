@@ -16,27 +16,27 @@ The *estimation* notebook allows the estimation of price models and location cho
 
 ####OVERVIEW
 
-The regional regeneration tools are written in Python and SQL. They depend on soft- ware developed by Synthicity, spandex and urbansim, and third-party open source software, including Python, pandas, PostgreSQL, and PostGIS. Refer to table 1 for the purpose of each dependency.
-Although not required, a visualization tool, like UrbanCanvas or QGIS, is recom- mended.
+The regional regeneration tools are written in Python and SQL. They depend on software developed by Synthicity: spandex and urbansim, and third-party open source software, including Python, pandas, PostgreSQL, and PostGIS.  
+
+Although not required, a visualization tool, like UrbanCanvas or QGIS, is recommended.  Its fun.  
+
 Assumptions. This guide makes several assumptions.
 (1) The operating system is Windows 64-bit. The regeneration tools will run on other platforms, including Linux and OS X, but only Windows installation is documented in this guide.
 (2) The target system has sufficient memory. 16GB+ is recommended.
 (3) Git is installed.
-(4) No other Python builds are installed to the system PATH, as they may interfere
-with the desired Anaconda Python distribution.
+(4) No other Python builds are installed to the system PATH, as they may interfere with the desired Anaconda Python distribution.
 (5) The user has familiarity with Git, Python, and PostgreSQL.
 
 ####INSTALLATION
-￼￼￼￼￼￼￼￼￼PostgreSQL and PostGIS. Installation of PostgreSQL and PostGIS is described in the PostGIS documentation. Be sure to install the 64-bit builds of PostgreSQL and PostGIS.
+PostgreSQL and PostGIS. Installation of PostgreSQL and PostGIS is described in the PostGIS documentation. Be sure to install the 64-bit builds of PostgreSQL and PostGIS.
 
-Or you can use something like: https://github.com/buckleytom/postgis-gdal-vagrant
+PostgreSQL can be configured for better performance, especially on high-end hardware and with large, spatial queries. However, note that on Windows, PostgreSQL has very limited memory usage capability. The third-party web application PgTune may suggest parameters that take advantage of available hardware, like more memory. Specify “Data warehouses” for the DB Type if using PgTune.
 
-PostgreSQL can be configured for better performance, especially on high-end hard- ware and with large, spatial queries. The third-party web application PgTune may suggest parameters that take advantage of available hardware, like more memory. Specify “Data warehouses” for the DB Type if using PgTune.
+Additionally, if the database is stored on a solid-state drive, the random_page_cost parameter can be set to a lower value closer to seq_page_cost.
 
-Additionally, if the database is stored on a solid-state drive, the random_page_cost parameter can be set to a lower value closer to seq_page_cost, for example 1.1.
+Restart PostgreSQL by running services.msc, right-clicking the service, and clicking restart.
 
-Restart PostgreSQL by running services.msc, right-clicking the service, and click- ing restart.
-Create a new database called mtc. This can be done from within pgAdmin III af- ter connecting to the server. The database name will be later used in the spandex configuration file.
+Create a new database called mtc. This can be done from within pgAdmin III after connecting to the server. The database name will be later used in the spandex configuration file. You will need to use encoding UTF8 and template0.
 
 Python. Anaconda Python is developed and distributed by Continuum Analytics. Be sure to install the 64-bit build of the Anaconda Python distribution.
 
@@ -45,13 +45,16 @@ Then, update Anaconda.
      conda update conda
      conda update anaconda
      
-urbansim. urbansim installation is described in its documentation.
+Urbansim. urbansim installation is described in its documentation.
 
      conda config --add channels synthicity
      conda install urbansim
 
 Some dependencies can be installed using conda.
-conda install gdal pandas six sqlalchemy GeoAlchemy2 can be installed using pip.  
+
+`conda install gdal pandas six sqlalchemy GeoAlchemy2`
+
+Some can be installed using pip.  
 
      conda install sqlalchemy pip
      pip install GeoAlchemy2
@@ -74,7 +77,7 @@ Once spandex dependencies are satisfied, spandex itself can be installed from wi
 
 Spandex should be configured with a text file. Refer below for an example file. This file should be placed in ~/.spandex/user.cfg, where ~ represents the home direc- tory, e.g., C:\Users\username. The data directory can be specified with forward slashes or double backslashes.
 
-spandex configuration file, based on config/example.cfg Regeneration. The regeneration tools are distributed with the regional UrbanSim:
+The spandex configuration file, based on config/example.cfg Regeneration. The regeneration tools are distributed with the regional UrbanSim:
 ```
 [database]
 # Database configuration is passed to psycopg2.connect, which also supports
@@ -97,22 +100,23 @@ directory = c:/FIXME/badata
 srid = 2768
 ```
 
-Current development takes place in the spandex branch of the repository and will be
-periodically merged to master.
+~~Current development takes place in the spandex branch of the repository and will be
+periodically merged to master.~~
+
+The spandex branch on bayarea_urbansim has been merged into master. It is unclear if data_regeneration/run.py will complete as merged, with the current version of UrbanSim. Synthicity reports successful runs of Spandex on UrbanSim 1.3 on a Windows OS following the instructions you are using. 
 
      git clone https://github.com/synthicity/bayarea_urbansim
      cd bayarea_urbansim
      git checkout spandex
      
-
-
 ####RUNNING REGENERATION
 The run.py script under the data_regeneration directory in the bayarea_urbansim repository will process all regeneration steps. Other scripts in that directory can be executed individually for debugging purposes.
+
 `python data_regeneration/load.py`  
 
 Currently, run.py executes separate scripts in each regeneration step.  
 
-(1) Preprocessing: import shapefiles by county, fix invalid geometries, and repro- ject.
+(1) Preprocessing: import shapefiles by county, fix invalid geometries, and reproject.
 (a) load.py
 (2) Processing: create regional parcels table from county-specific attributes and
 geometries.
