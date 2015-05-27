@@ -10,7 +10,7 @@ def db_to_df(query):
     return sql.read_frame(query, conn)
 
 ## Export to HDF5-  get path to output file
-h5_path = loader.get_path('out/regeneration/summaries/bayarea_v2.h5')  ## Path to the output file
+h5_path = loader.get_path('out/regeneration/summaries/bayarea_v3.h5')  ## Path to the output file
 
 #Buildings
 buildings = db_to_df('select * from building').set_index('building_id')
