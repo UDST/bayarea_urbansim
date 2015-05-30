@@ -62,10 +62,10 @@ zones = pd.read_csv(zones_path).set_index('zone_id')
 
 #Putting tables in the HDF5 file
 store = pd.HDFStore(h5_path)
-store['parcels'] = parcels
-store['zoning_for_parcels'] = zoning_for_parcels
-store['buildings'] = buildings
-store['households'] = hh
-store['jobs'] = jobs
-store['zones'] = zones
+store['parcels'] = parcels # http://urbansim.org/Documentation/Parcel/ParcelTable
+store['zoning_for_parcels'] = zoning_for_parcels #relationship between zoning_id and parcel_id
+store['buildings'] = buildings # http://urbansim.org/Documentation/Parcel/BuildingsTable
+store['households'] = hh # http://urbansim.org/Documentation/Parcel/HouseholdsTable
+store['jobs'] = jobs # http://urbansim.org/Documentation/Parcel/JobsTable
+store['zones'] = zones # http://urbansim.org/Documentation/Parcel/ZonesTable
 store.close()
