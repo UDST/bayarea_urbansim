@@ -39,9 +39,6 @@ if 'geom' in parcels.columns:
     del parcels['geom']
 if 'centroid' in parcels.columns:
     del parcels['centroid']
-zoning_for_parcels = parcels[['zoning_id']]
-zoning_for_parcels.columns = ['zoning']
-zoning_for_parcels.index.name = 'parcel'
 
 #Jobs
 jobs = db_to_df('select * from jobs').set_index('job_id')
@@ -63,7 +60,6 @@ zones = pd.read_csv(zones_path).set_index('zone_id')
 #Putting tables in the HDF5 file
 store = pd.HDFStore(h5_path)
 store['parcels'] = parcels
-store['zoning_for_parcels'] = zoning_for_parcels
 store['buildings'] = buildings
 store['households'] = hh
 store['jobs'] = jobs
