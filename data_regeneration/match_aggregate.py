@@ -773,10 +773,9 @@ parcels['geom_id'] = parcel_identifier
 
 # EXPORT PROCESSED PARCELS TO DB
 parcels['parcel_acres'] = parcels.calc_area/4046.86
-parcels['zoning_id'] = 0
 parcels['taz_id'] = parcels.taz
 parcels['tax_exempt_status'] = parcels.tax_exempt
-parcels2 = parcels[['development_type_id', 'land_value', 'parcel_acres', 'county_id', 'taz_id', 'zoning_id', 'proportion_undevelopable', 'tax_exempt_status', 'apn', 'parcel_id_local', 'geom_id', 'imputation_flag']]
+parcels2 = parcels[['development_type_id', 'land_value', 'parcel_acres', 'county_id', 'taz_id', 'proportion_undevelopable', 'tax_exempt_status', 'apn', 'parcel_id_local', 'geom_id', 'imputation_flag']]
 devtype_devid_xref = {'SF':1, 'MF':2, 'MFS':3, 'MH':4, 'MR':5, 'GQ':6, 'RT':7, 'BR':8, 'HO':9, 'OF':10, 'OR':11, 'HP':12, 'IW':13, 
                       'IL':14, 'IH':15, 'VY':16, 'SC':17, 'SH':18, 'GV':19, 'VP':20, 'VA':21, 'PG':22, 'PL':23, 'TR':24, 'LD':25, 'other':-1}
 for dev in devtype_devid_xref.keys():
