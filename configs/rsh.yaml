@@ -3,18 +3,19 @@ name: rsh
 model_type: regression
 
 fit_filters:
-- lot_size_per_unit > 0
-- year_built > 1000
-- year_built < 2020
 - sqft_per_unit > 100
-- sqft_per_unit < 20000
-- sale_price_flt > 30
-- sale_price_flt < 3000
+- sqft_per_unit < 4000
+- price_per_sqft > 100
+- price_per_sqft < 1500
+- redfin_sale_year > 2009
 
 predict_filters: null
 
-model_expression: np.log(sale_price_flt) ~ I(year_built < 1940) + sum_residential_units  +
-    ave_income + autoPeakTotal
+model_expression: np.log(price_per_sqft) ~ I(year_built < 1940) + I(year_built > 2000)
+    + I(redfin_sale_year == 2011) + I(redfin_sale_year == 2012) + I(redfin_sale_year
+    > 2012) + np.log1p(sqft_per_unit) + ave_income + stories + poor + renters + sfdu
+    + autoPeakTotal + transitPeakTotal + autoOffPeakRetail + ave_lot_size_per_unit
+    + sum_nonresidential_units + sum_residential_units
 
 ytransform: np.exp
 
@@ -22,24 +23,63 @@ fitted: true
 
 fit_parameters:
     Coefficient:
-        I(year_built < 1940)[T.True]: 0.015094182775710403
-        Intercept: -3.4604262638002288
-        autoPeakTotal: 0.07571549292267017
-        ave_income: 0.1817511403925174
-        sum_residential_units: -0.04102600453191334
+        I(redfin_sale_year == 2011)[T.True]: -0.046481653379732285
+        I(redfin_sale_year == 2012)[T.True]: 0.011968169400203036
+        I(redfin_sale_year > 2012)[T.True]: 0.19778985097935292
+        I(year_built < 1940)[T.True]: 0.09089513559443393
+        I(year_built > 2000)[T.True]: 0.004196782592006076
+        Intercept: -2.7415619434384055
+        autoOffPeakRetail: -0.7562898363609476
+        autoPeakTotal: 0.8431124187011406
+        ave_income: 0.6722693076771976
+        ave_lot_size_per_unit: 0.10771414716742975
+        np.log1p(sqft_per_unit): -0.3396748949837939
+        poor: -0.09326608367715775
+        renters: 0.3061560856564848
+        sfdu: -0.17300575750155417
+        stories: 0.12017913410291553
+        sum_nonresidential_units: 0.02256150648363165
+        sum_residential_units: -0.049241221726865514
+        transitPeakTotal: 0.01849280700057119
     Std. Error:
-        I(year_built < 1940)[T.True]: 0.002658792931544779
-        Intercept: 0.038330047861794316
-        autoPeakTotal: 0.0011903459651063865
-        ave_income: 0.004022748871974102
-        sum_residential_units: 0.001180999001434192
+        I(redfin_sale_year == 2011)[T.True]: 0.0022242798268637346
+        I(redfin_sale_year == 2012)[T.True]: 0.0021494798921033987
+        I(redfin_sale_year > 2012)[T.True]: 0.0021204409444575884
+        I(year_built < 1940)[T.True]: 0.002528172608767696
+        I(year_built > 2000)[T.True]: 0.002541350296419759
+        Intercept: 0.05295132509177408
+        autoOffPeakRetail: 0.004945740650421941
+        autoPeakTotal: 0.004473732452836118
+        ave_income: 0.00464573327529936
+        ave_lot_size_per_unit: 0.0017786917559877726
+        np.log1p(sqft_per_unit): 0.0022304654719097375
+        poor: 0.002566333988106928
+        renters: 0.00218463412229716
+        sfdu: 0.0017453452091351605
+        stories: 0.0018419035915376893
+        sum_nonresidential_units: 0.0005078047012691272
+        sum_residential_units: 0.0036842781182117226
+        transitPeakTotal: 0.00047821002317662643
     T-Score:
-        I(year_built < 1940)[T.True]: 5.677080977848308
-        Intercept: -90.27972718107215
-        autoPeakTotal: 63.60797208726048
-        ave_income: 45.18083185822282
-        sum_residential_units: -34.738390533854655
+        I(redfin_sale_year == 2011)[T.True]: -20.89739466156651
+        I(redfin_sale_year == 2012)[T.True]: 5.56793736204317
+        I(redfin_sale_year > 2012)[T.True]: 93.27769844113618
+        I(year_built < 1940)[T.True]: 35.95289944966963
+        I(year_built > 2000)[T.True]: 1.6513987063957618
+        Intercept: -51.7751338363448
+        autoOffPeakRetail: -152.91740708167248
+        autoPeakTotal: 188.45839074856843
+        ave_income: 144.70682405542928
+        ave_lot_size_per_unit: 60.55807410408339
+        np.log1p(sqft_per_unit): -152.2887931965888
+        poor: -36.3421456869517
+        renters: 140.1406681932438
+        sfdu: -99.12409109443776
+        stories: 65.24724456538225
+        sum_nonresidential_units: 44.42949509377319
+        sum_residential_units: -13.365229265255971
+        transitPeakTotal: 38.67088957635856
 
-fit_rsquared_adj: 0.6643113240538632
+fit_rsquared_adj: 0.5985524382032044
 
-fit_rsquared: 0.6643201153977755
+fit_rsquared: 0.5985819769760978

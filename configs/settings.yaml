@@ -34,7 +34,7 @@ acct_settings:
   receiving_buildings_filter: pda_id > 0 and residential_units > 1
 
 
-enable_supply_correction:
+dont_enable_supply_correction:
   price_col: residential_price
   submarket_col: zone_id
   submarket_table: zones
@@ -55,7 +55,6 @@ table_reprocess:
         how: "mode"
         type: "int"
   buildings:
-    filter: "building_type_id >= 1 and building_type_id <= 14"
     fill_nas:
       building_type_id:
         how: "drop"
@@ -82,7 +81,7 @@ rates:
 
 
 build_networks:
-  name: osm_bayarea.h5
+  name: osm_bayarea4326.h5
   max_distance: 1500
 
 
@@ -195,6 +194,7 @@ empsix_name_to_id:
 # this maps building type ids to general building types
 # basically just reduces dimensionality
 building_type_map:
+  0: Other
   1: Residential
   2: Residential
   3: Residential
@@ -209,6 +209,8 @@ building_type_map:
   12: Residential
   13: Retail
   14: Office
+  15: Parking
+  16: Parking
 
 
 # this maps building "forms" from the developer model
