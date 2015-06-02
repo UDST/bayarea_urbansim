@@ -3,9 +3,8 @@ import models
 import pandas as pd
 import urbansim.sim.simulation as sim
 
-
 print "Started", time.ctime()
-in_year, out_year = 2010, 2012
+in_year, out_year = 2010, 2013
 
 sim.run([
     "neighborhood_vars",         # accessibility variables

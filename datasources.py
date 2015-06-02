@@ -70,6 +70,10 @@ def zoning_baseline(parcels):
     df = pd.read_csv(os.path.join(misc.data_dir(), "zoning_parcels.csv"),
                      index_col="geom_id")
 
+    # a zero zoning limit is actually a nan
+    for s in ["max_far", "max_dua", "max_height"]:
+        df[s].replace(0, np.nan, inplace=True)
+
     # need to reindex from geom id to the id used on parcels
     s = parcels.geom_id # get geom_id
     s = pd.Series(s.index, index=s.values) # invert series
@@ -136,7 +140,7 @@ def parcels(store):
     }
     df = utils.table_reprocess(cfg, df)
     df["zone_id"] = df.zone_id.replace(0, 1)
-    
+
     # Node id
     # import pandana as pdna
     # st = pd.HDFStore(os.path.join(misc.data_dir(), "osm_bayarea.h5"), "r")
@@ -146,7 +150,7 @@ def parcels(store):
                        # edges[["weight"]])
     # net.precompute(3000)
     # sim.add_injectable("net", net)
-    
+
     # p = parcels.to_frame(parcels.local_columns)
     df['_node_id'] = net.get_node_ids(df['x'], df['y'])
     # sim.add_table("parcels", p)

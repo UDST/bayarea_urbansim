@@ -386,9 +386,7 @@ def travel_model_output(parcels, households, jobs, buildings,
         "xy_table": "parcels",
         "foreign_key": "parcel_id",
     	"x_col": "x",
-     	"y_col": "y",
-    	"from_epsg": 3740,
-    	"to_epsg": 4326
+     	"y_col": "y"
     }
     summary.write_parcel_output(add_xy=add_xy_config)
     
