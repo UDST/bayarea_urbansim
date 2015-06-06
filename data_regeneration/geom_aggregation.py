@@ -272,3 +272,8 @@ delete from parcels where gid in (select distinct gid from stacked);
 insert into parcels
 select * from stacked_merged;
 """)
+
+## Update parcel area post-aggregation
+exec_sql("""
+UPDATE parcels SET calc_area = ST_Area(geom);
+""")
