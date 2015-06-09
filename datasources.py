@@ -73,6 +73,7 @@ def zoning_baseline(parcels):
     # a zero zoning limit is actually a nan
     for s in ["max_far", "max_dua", "max_height"]:
         df[s].replace(0, np.nan, inplace=True)
+        
 
     # need to reindex from geom id to the id used on parcels
     s = parcels.geom_id # get geom_id

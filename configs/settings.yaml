@@ -116,7 +116,7 @@ feasibility:
 
 
 residential_developer:
-  target_vacancy: .08
+  target_vacancy: 0.08
   min_unit_size: 1000
   bldg_sqft_per_job: 400
 
@@ -255,3 +255,25 @@ building_sqft_per_job:
   12: 383
   13: 383
   14: 383
+
+county_id_map:
+  85: Santa Clara
+  1: Alameda
+  13: Contra Costa
+  81: San Mateo
+  97: Sonoma
+  75: San Francisco
+  95: Solano
+  41: Marin
+  55: Napa
+
+cost_shifters:
+  "Santa Clara": .8
+  "San Francisco": 1.00
+  "San Mateo": .9
+  "Sonoma": .8
+  "Solano": .75
+  "Alameda": .85
+  "Napa": .9
+  "Marin": 1.0
+  "Contra Costa": .75
