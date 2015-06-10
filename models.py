@@ -21,6 +21,18 @@ def households_relocation(households, settings):
     return utils.simple_relocation(households, rate, "unit_id")
 
 
+# Overriding the urbansim_defaults households_transition in order to do deed
+# restrictions.  This is a rather minor point - we just need to add empty
+# unit ids rather than building ids at the end of the process
+@sim.model('households_transition')
+def households_transition(households, household_controls, year, settings):
+    return utils.full_transition(households,
+                                 household_controls,
+                                 year,
+                                 settings['households_transition'],
+                                 "unit_id")
+
+
 # Overriding the urbansim_defaults hlcm_simulation in order to do deed
 # restrictions.  This is the first unit-based hlcm.
 @sim.model('hlcm_simulate')

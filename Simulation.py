@@ -13,7 +13,7 @@ sim.run([
     #"nrh_simulate",              # non-residential rent hedonic
 
     "households_relocation",
-    #"households_transition",
+    "households_transition",
     "hlcm_simulate",
     "hlcm_li_simulate",
 
