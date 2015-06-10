@@ -8,21 +8,6 @@ from urbansim_defaults import variables
 
 
 #####################
-# LOCAL ZONES VARIABLES
-#####################
-
-
-@sim.column('logsums', 'empirical_price')
-def empirical_price(homesales, logsums):
-    # put this here as a custom bay area indicator
-    s = homesales.sale_price_flt.groupby(homesales.zone_id).quantile()
-    # if price isn't present fill with median price
-    s = s.reindex(logsums.index).fillna(s.quantile())
-    s[s < 200] = 200
-    return s
-
-
-#####################
 # COSTAR VARIABLES
 #####################
 
@@ -73,49 +58,6 @@ def empsix_id(jobs, settings):
 
 
 #####################
-# HOMESALES VARIABLES
-#####################
-
-
-@sim.column('homesales', 'sale_price_flt')
-def sale_price_flt(homesales):
-    col = homesales.Sale_price.str.replace('$', '').\
-        str.replace(',', '').astype('f4') / homesales.sqft_per_unit
-    col[homesales.sqft_per_unit == 0] = 0
-    return col
-
-
-@sim.column('homesales', 'year_built')
-def year_built(homesales):
-    return homesales.Year_built
-
-
-@sim.column('homesales', 'lot_size_per_unit')
-def lot_size_per_unit(homesales):
-    return homesales.Lot_size
-
-
-@sim.column('homesales', 'sqft_per_unit')
-def sqft_per_unit(homesales):
-    return homesales.SQft
-
-
-@sim.column('homesales', 'city')
-def city(homesales):
-    return homesales.City
-
-
-@sim.column('homesales', 'zone_id')
-def zone_id(parcels, homesales):
-    return misc.reindex(parcels.zone_id, homesales.parcel_id)
-
-
-@sim.column('homesales', 'node_id')
-def node_id(parcels, homesales):
-    return misc.reindex(parcels.node_id, homesales.parcel_id)
-
-
-#####################
 # PARCELS VARIABLES
 #####################
 
@@ -133,7 +75,7 @@ def parcel_average_price(use, quantile=.5):
                             residential_price[buildings.general_type ==
                                               "Residential"].
                             groupby(buildings.zone_id).quantile(quantile),
-                            sim.get_table('parcels').zone_id)
+                            sim.get_table('parcels').zone_id).clip(150, 1250)
 
     if 'nodes' not in sim.list_tables():
         return pd.Series(0, sim.get_table('parcels').index)
@@ -156,7 +98,7 @@ def parcel_is_allowed(form):
     # we have zoning by building type but want
     # to know if specific forms are allowed
     allowed = [sim.get_table('zoning_baseline')
-               ['type%d' % typ] == 't' for typ in form_to_btype[form]]
+               ['type%d' % typ] > 0 for typ in form_to_btype[form]]
     return pd.concat(allowed, axis=1).max(axis=1).\
         reindex(sim.get_table('parcels').index).fillna(False)
 

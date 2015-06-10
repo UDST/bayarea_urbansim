@@ -12,6 +12,15 @@ import pandas as pd
 from cStringIO import StringIO
 
 
+# Overriding the urbansim_defaults households_relocation in order to do deed
+# restrictions.  This is a rather minor point - we just need to null out
+# relocating unit ids rather than building ids
+@sim.model('households_relocation')
+def households_relocation(households, settings):
+    rate = settings['rates']['households_relocation']
+    return utils.simple_relocation(households, rate, "unit_id")
+
+
 # Overriding the urbansim_defaults hlcm_simulation in order to do deed
 # restrictions.  This is the first unit-based hlcm.
 @sim.model('hlcm_simulate')
@@ -60,7 +69,8 @@ def rsh_simulate(residential_units):
 @sim.column('buildings', 'residential_price')
 def residential_price(buildings, residential_units):
     return residential_units.unit_residential_price.\
-        groupby(residential_units.building_id).median()
+        groupby(residential_units.building_id).median().\
+        reindex(buildings.index)
 
 
 @sim.injectable("supply_and_demand_multiplier_func", autocall=False)
@@ -156,6 +166,14 @@ def tax_buildings(buildings, acct_settings, account, year):
 def property_taxes(buildings, parcels_geography, acct_settings, coffer, year):
     buildings = sim.merge_tables('buildings', [buildings, parcels_geography])
     tax_buildings(buildings, acct_settings, coffer["prop_tax_acct"], year)
+
+
+@sim.injectable("add_extra_columns_func", autocall=False)
+def add_extra_columns(df):
+    for col in ["residential_price", "non_residential_price"]:
+        df[col] = 0
+    df["redfin_sale_year"] = 2012
+    return df
 
 
 def run_subsidized_developer(feasibility, parcels, buildings, households,
@@ -368,8 +386,6 @@ def travel_model_output(parcels, households, jobs, buildings,
     homesales = homesales.to_frame()
 
     # put this here as a custom bay area indicator
-    zones['residential_sales_price_empirical'] = homesales.groupby('zone_id').\
-        sale_price_flt.quantile()
     zones['residential_sales_price_sqft'] = parcels.\
         residential_sales_price_sqft.groupby(parcels.zone_id).quantile()
     zones['residential_purchase_price_sqft'] = parcels.\
@@ -431,9 +447,7 @@ def travel_model_output(parcels, households, jobs, buildings,
         "xy_table": "parcels",
         "foreign_key": "parcel_id",
     	"x_col": "x",
-     	"y_col": "y",
-    	"from_epsg": 3740,
-    	"to_epsg": 4326
+     	"y_col": "y"
     }
     summary.write_parcel_output(add_xy=add_xy_config)
 
