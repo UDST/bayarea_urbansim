@@ -9,13 +9,13 @@ node_col: node_id
 variable_definitions:
 
 -   aggregation: average
-    dataframe: buildings
+    dataframe: homesales
     decay: flat
     filters:
-    - general_type == "Residential"
-    name: residential
+    - redfin_sale_year == 2009
+    varname: price_per_sqft
     radius: 2000
-    varname: residential_price
+    name: residential_price
 
 -   aggregation: average
     dataframe: buildings
