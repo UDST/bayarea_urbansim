@@ -71,11 +71,13 @@ def parcel_average_price(use, quantile=.5):
     # I also want more spreading in the development and not keep it so localized
     if use == "residential":
         buildings = sim.get_table('buildings')
-        return misc.reindex(buildings.
+        s = misc.reindex(buildings.
                             residential_price[buildings.general_type ==
                                               "Residential"].
                             groupby(buildings.zone_id).quantile(quantile),
                             sim.get_table('parcels').zone_id).clip(150, 1250)
+        shifters = sim.get_table("parcels").cost_shifters
+        return s / shifters
 
     if 'nodes' not in sim.list_tables():
         return pd.Series(0, sim.get_table('parcels').index)
@@ -108,19 +110,19 @@ def parcel_is_allowed(form):
 def max_far(parcels, scenario, scenario_inputs):
     return utils.conditional_upzone(scenario, scenario_inputs,
                                     "max_far", "far_up").\
-        reindex(parcels.index).fillna(0)
+        reindex(parcels.index)
 
 
 @sim.column('parcels', 'max_dua', cache=True)
 def max_dua(parcels, scenario, scenario_inputs):
     return utils.conditional_upzone(scenario, scenario_inputs,
                                     "max_dua", "dua_up").\
-        reindex(parcels.index).fillna(0)
+        reindex(parcels.index)
 
 
 @sim.column('parcels', 'max_height', cache=True)
 def max_height(parcels, zoning_baseline):
-    return zoning_baseline.max_height.reindex(parcels.index).fillna(0)
+    return zoning_baseline.max_height.reindex(parcels.index)
 
 
 @sim.column('parcels', 'residential_purchase_price_sqft')
@@ -136,7 +138,7 @@ def residential_sales_price_sqft(parcel_sales_price_sqft_func):
 # for debugging reasons this is split out into its own function
 @sim.column('parcels', 'building_purchase_price_sqft')
 def building_purchase_price_sqft():
-    return parcel_average_price("residential") * .81
+    return parcel_average_price("residential") * .9
 
 
 @sim.column('parcels', 'building_purchase_price')
@@ -148,6 +150,16 @@ def building_purchase_price(parcels):
 @sim.column('parcels', 'land_cost')
 def land_cost(parcels):
     return parcels.building_purchase_price + parcels.parcel_size * 12.21
+
+
+@sim.column('parcels', 'county')
+def county(parcels, settings):
+    return parcels.county_id.map(settings["county_id_map"])
+
+
+@sim.column('parcels', 'cost_shifters')
+def price_shifters(parcels, settings):
+    return parcels.county.map(settings["cost_shifters"])
 
 
 @sim.column('parcels', 'node_id')
