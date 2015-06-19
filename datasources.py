@@ -158,6 +158,15 @@ def parcels(store):
     return df
 
 
+@sim.column('parcels', cache=True)
+def pda(parcels):
+    df = pd.read_csv(os.path.join(misc.data_dir(), "pdas_parcels.csv"))
+    # we have duplicate geom_ids, we think because a parcel can occur
+    # in multiple pdas
+    s = df.drop_duplicates(subset=["geom_id"]).set_index("geom_id").pda
+    return misc.reindex(s, parcels.geom_id).reindex(parcels.index)
+
+
 @sim.table('parcels_geography', cache=True)
 def parcels_geography():
     return pd.read_csv(os.path.join(misc.data_dir(), "parcels_geography.csv"),
