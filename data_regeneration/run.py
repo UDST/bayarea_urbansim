@@ -84,12 +84,6 @@ print("PROCESSING: Allocating households and jobs to buildings.")
 check_run('demand_agent_allocation.py')
 
 
-print("PROCESSING: Attaching zoning_id's to parcels.")
-
-# Reading the zoning inputs and joining/appending to parcels based on geom_id
-check_run('attach_zoning_id.py')
-
-
 print("SUMMARIZING: Generating data summaries.")
 
 # Output summary CSV files by county and TAZ.
@@ -101,5 +95,5 @@ check_run('summaries.py')
 # Output core tables to HDF5 for UrbanSim.
 check_run('export_to_h5.py')
 
-# # Output buildings, parcels, and zoning tables to UrbanCanvas db.
+# # Output buildings, parcels tables to UrbanCanvas db.
 # check_run('export_to_uc.py')
