@@ -74,7 +74,13 @@ table_reprocess:
 
 
 rates:
-  households_relocation: .05
+  households_relocation: 
+    renter:
+      rate: 0.25
+      filter: hownrent == 2
+    owner:
+      rate: 0.15
+      filter: hownrent == 1
   jobs_relocation: .05
   simple_households_transition: .02
   simple_jobs_transition: .02
