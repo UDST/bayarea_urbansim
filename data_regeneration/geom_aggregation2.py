@@ -1,7 +1,13 @@
+from spandex import TableLoader
+from spandex.spatialtoolz import geom_unfilled
+from spandex.io import exec_sql
+
+loader = TableLoader()
+
 ################
 #### Approach 2:  Merge geometries (and aggregate attributes) based on within-interior-ring status
 ################
-\PRINT 'PARCEL AGGREGATION:  Merge geometries (and aggregate attributes) based on within-interior-ring status'
+print 'PARCEL AGGREGATION:  Merge geometries (and aggregate attributes) based on within-interior-ring status'
 
 
 drop table if exists unfilled;
