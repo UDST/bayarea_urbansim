@@ -3,7 +3,7 @@ ALTER TABLE unfilled
 SELECT UpdateGeometrySRID('unfilled', 'geom', 2768);
 
 
-#Calculate area and delete exterior polygons below certain threshold size 
+--Calculate area and delete exterior polygons below certain threshold size 
 
 ALTER TABLE parcels ADD COLUMN calc_area numeric;
 UPDATE parcels SET calc_area = ST_Area(geom);
@@ -94,13 +94,12 @@ insert into parcels
 select * from b;
 
 
-
-################
+/*################
 #### Approach 3:  Merge geometries (and aggregate attributes) if duplicate stacked parcel geometry
-################
-\PRINT 'PARCEL AGGREGATION:  Merge geometries (and aggregate attributes) if duplicate stacked parcel geometry'
+################*/
+\ECHO 'PARCEL AGGREGATION:  Merge geometries (and aggregate attributes) if duplicate stacked parcel geometry'
 
-\PRINT 'Collapsing and aggregating stacked parcels'
+\ECHO 'Collapsing and aggregating stacked parcels'
 
 drop table if exists stacked;
 drop table if exists stacked_merged;
@@ -139,7 +138,6 @@ delete from parcels where gid in (select distinct gid from stacked);
 insert into parcels
 select * from stacked_merged;
 
-
-## Update parcel area post-aggregation
+-- Update parcel area post-aggregation
 
 UPDATE parcels SET calc_area = ST_Area(geom);
