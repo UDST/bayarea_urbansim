@@ -165,7 +165,7 @@ CREATE INDEX exterior_gidx on unfilled_exterior using gist (geom);
 
 exec_sql("""
 with a as(
-SELECT a.*, b.gid as parent_gid FROM parcels_small a, unfilled_exterior b WHERE ST_Contains(b.geom, a.geom)
+SELECT a.*, b.gid as parent_gid FROM parcels_small a, unfilled_exterior b WHERE a.geom && b.geom AND ST_Contains(b.geom, a.geom)
 )
 select distinct * into aggregation_candidates from a;
 """)
