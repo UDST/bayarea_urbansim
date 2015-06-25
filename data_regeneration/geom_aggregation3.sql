@@ -11,13 +11,13 @@ select * into parcels_small from parcels where (calc_area < 550000) and res_type
 ALTER TABLE parcels_small ADD PRIMARY KEY (gid);
 CREATE INDEX small_parcel_gidx on parcels_small using gist (geom);
 
-
+VACUUM (ANALYZE) parcels;
 
 ALTER TABLE unfilled ADD COLUMN calc_area numeric;
 UPDATE unfilled SET calc_area = ST_Area(geom);
 delete from unfilled where calc_area > 550000;
 
-
+VACUUM (ANALYZE) unfilled;
 
 SELECT gid, ST_Collect(ST_MakePolygon(geom)) As geom
 into unfilled_exterior
@@ -28,15 +28,15 @@ FROM (
 GROUP BY gid;
 ALTER TABLE unfilled_exterior ADD PRIMARY KEY (gid);
 CREATE INDEX exterior_gidx on unfilled_exterior using gist (geom);
-
-
-
+VACUUM (ANALYZE) aggregation_candidates;
+VACUUM (ANALYZE) unfilled_exterior;
+VACUUM (ANALYZE) parcels_small;
 with a as(
 SELECT a.*, b.gid as parent_gid FROM parcels_small a, unfilled_exterior b WHERE ST_Contains(b.geom, a.geom)
 )
 select distinct * into aggregation_candidates from a;
 
-
+VACUUM (ANALYZE) aggregation_candidates;
 
 
 delete from parcels where gid in (select distinct gid from aggregation_candidates);
@@ -93,6 +93,7 @@ GROUP BY parent_gid
 insert into parcels
 select * from b;
 
+VACUUM (ANALYZE) parcels;
 
 /*################
 #### Approach 3:  Merge geometries (and aggregate attributes) if duplicate stacked parcel geometry
@@ -107,7 +108,7 @@ drop table if exists stacked_merged;
 SELECT * into stacked FROM parcels
 where geom in (select geom from parcels
 group by geom having count(*) > 1);
-
+VACUUM (ANALYZE) stacked;
 SELECT 
 max(county_id) as county_id,
 max(apn) as apn,
@@ -132,11 +133,12 @@ max(development_type_id) as development_type_id
 into stacked_merged
 FROM stacked
 GROUP BY geom;
-
+VACUUM (ANALYZE) stacked_merged;
 delete from parcels where gid in (select distinct gid from stacked);
-
+VACUUM (ANALYZE) parcels;
 insert into parcels
 select * from stacked_merged;
+VACUUM (ANALYZE) parcels;
 
 -- Update parcel area post-aggregation
 
