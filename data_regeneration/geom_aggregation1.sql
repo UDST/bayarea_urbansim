@@ -104,3 +104,8 @@ GROUP BY condo_identifier;
 delete from parcels where county_id = '097' AND length(condo_identifier)>3 and res_type = 'multi';
 
 insert into parcels select * from condos_son;
+
+drop table if exists unfilled;
+drop table if exists unfilled_exterior;
+drop table if exists aggregation_candidates;
+drop table if exists parcels_small;

@@ -9,13 +9,6 @@ loader = TableLoader()
 ################
 print 'PARCEL AGGREGATION:  Merge geometries (and aggregate attributes) based on within-interior-ring status'
 
-
-drop table if exists unfilled;
-drop table if exists unfilled_exterior;
-drop table if exists aggregation_candidates;
-drop table if exists parcels_small;
-
-
 loader.database.refresh()
 t = loader.tables
 
