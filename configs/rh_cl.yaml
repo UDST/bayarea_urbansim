@@ -1,0 +1,16 @@
+name: rh_cl
+
+model_type: regression
+
+fit_filters: null
+
+predict_filters: null
+
+model_expression: np.log(price_sqft) ~ bedrooms 
+    + np.log1p(sqft) + ave_income + poor + renters + sfdu + autoPeakTotal
+    + transitPeakTotal + autoOffPeakRetail + ave_lot_size_per_unit + sum_nonresidential_units
+    + sum_residential_units
+
+ytransform: np.exp
+
+fitted: false

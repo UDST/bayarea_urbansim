@@ -158,6 +158,11 @@ def parcels(store):
     return df
 
 
+@sim.column('parcels', 'node_id')
+def node_id(parcels):
+	return parcels._node_id
+
+
 @sim.table('parcels_geography', cache=True)
 def parcels_geography():
     return pd.read_csv(os.path.join(misc.data_dir(), "parcels_geography.csv"),
@@ -184,10 +189,27 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
     return df
 
 
+@sim.table('craigslist', cache=True)
+def craigslist():
+	df = pd.read_csv(os.path.join(misc.data_dir(), "sfbay_craigslist.csv"))
+	net = sim.get_injectable('net')
+	df['node_id'] = net.get_node_ids(df['longitude'], df['latitude'])
+	return df
+
+
+@sim.column('craigslist', 'zone_id', cache=True)
+def zone_id(craigslist, parcels):
+    return misc.reindex(parcels.zone_id, craigslist.node_id)
+
+
 # this specifies the relationships between tables
 sim.broadcast('parcels_geography', 'buildings', cast_index=True,
               onto_on='parcel_id')
+
 sim.broadcast('nodes', 'homesales', cast_index=True, onto_on='node_id')
 sim.broadcast('nodes', 'costar', cast_index=True, onto_on='node_id')
+sim.broadcast('nodes', 'craigslist', cast_index=True, onto_on='node_id')
+
 sim.broadcast('logsums', 'homesales', cast_index=True, onto_on='zone_id')
 sim.broadcast('logsums', 'costar', cast_index=True, onto_on='zone_id')
+sim.broadcast('logsums', 'craigslist', cast_index=True, onto_on='zone_id')

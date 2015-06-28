@@ -12,6 +12,11 @@ import pandas as pd
 from cStringIO import StringIO
 
 
+@sim.model('rh_cl_estimate')
+def rh_cl_estimate(craigslist, aggregations):
+    return utils.hedonic_estimate("rh_cl.yaml", craigslist, aggregations)
+
+
 @sim.injectable("supply_and_demand_multiplier_func", autocall=False)
 def supply_and_demand_multiplier_func(demand, supply):
     s = demand / supply
