@@ -194,6 +194,9 @@ def craigslist():
 	df = pd.read_csv(os.path.join(misc.data_dir(), "sfbay_craigslist.csv"))
 	net = sim.get_injectable('net')
 	df['node_id'] = net.get_node_ids(df['longitude'], df['latitude'])
+	# fill nans -- missing bedrooms are mostly studio apts
+	df['bedrooms'] = df.bedrooms.replace(np.nan, 1)
+	df['neighborhood'] = df.neighborhood.replace(np.nan, '')
 	return df
 
 
