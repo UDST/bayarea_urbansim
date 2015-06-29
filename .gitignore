@@ -5,3 +5,5 @@ runs
 *.pyc
 .ipynb_checkpoints
 dump.rdb
+*.csv
+*.json
