@@ -239,8 +239,8 @@ drop table if exists stacked;
 drop table if exists stacked_merged;
 
 SELECT * into stacked FROM parcels
-where geom in (select geom from parcels
-group by geom having count(*) > 1);
+where gid in (SELECT distinct p2.gid FROM parcels p1, parcels p2
+WHERE p1.geom && p2.geom AND p1.geom=p2.geom AND p1.gid <> p2.gid);
 
 SELECT 
 max(county_id) as county_id,
