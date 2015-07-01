@@ -1,3 +1,7 @@
+drop table if exists unfilled_exterior;
+drop table if exists aggregation_candidates;
+drop table if exists parcels_small;
+
 ALTER TABLE unfilled
     ALTER COLUMN geom TYPE geometry(MultiPolygon) USING ST_Multi(geom);
 SELECT UpdateGeometrySRID('unfilled', 'geom', 2768);
