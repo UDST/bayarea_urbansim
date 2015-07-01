@@ -16,11 +16,13 @@ ALTER TABLE parcels_small ADD PRIMARY KEY (gid);
 CREATE INDEX small_parcel_gidx on parcels_small using gist (geom);
 
 VACUUM (ANALYZE) parcels;
+VACUUM (ANALYZE) parcels_small;
 
 ALTER TABLE unfilled ADD COLUMN calc_area numeric;
 UPDATE unfilled SET calc_area = ST_Area(geom);
+VACUUM (ANALYZE) unfilled;
 delete from unfilled where calc_area > 550000;
-
+CREATE INDEX unfilled_gidx on unfilled using gist (geom);
 VACUUM (ANALYZE) unfilled;
 
 SELECT gid, ST_Collect(ST_MakePolygon(geom)) As geom
@@ -32,7 +34,7 @@ FROM (
 GROUP BY gid;
 ALTER TABLE unfilled_exterior ADD PRIMARY KEY (gid);
 CREATE INDEX exterior_gidx on unfilled_exterior using gist (geom);
-VACUUM (ANALYZE) aggregation_candidates;
+
 VACUUM (ANALYZE) unfilled_exterior;
 VACUUM (ANALYZE) parcels_small;
 with a as(
@@ -40,8 +42,9 @@ SELECT a.*, b.gid as parent_gid FROM parcels_small a, unfilled_exterior b WHERE 
 )
 select distinct * into aggregation_candidates from a;
 
+CREATE INDEX aggregation_candidates_idx on aggregation_candidates using btree (gid);
+CREATE INDEX aggregation_candidates_parent_idx on aggregation_candidates using btree (parent_gid);
 VACUUM (ANALYZE) aggregation_candidates;
-
 
 delete from parcels where gid in (select distinct gid from aggregation_candidates);
 
@@ -111,10 +114,14 @@ VACUUM (ANALYZE) parcels;
 drop table if exists stacked;
 drop table if exists stacked_merged;
 
-SELECT * into stacked FROM parcels
-where geom in (select geom from parcels
-group by geom having count(*) > 1);
+--make a table of parcels that have identical/twin/triplet/etc bounding boxes
+SELECT * into stacked 
+FROM parcels
+where gid in (SELECT distinct p2.gid FROM parcels p1, parcels p2
+WHERE p1.geom && p2.geom AND p1.geom=p2.geom AND p1.gid <> p2.gid);
+
 VACUUM (ANALYZE) stacked;
+
 SELECT 
 max(county_id) as county_id,
 max(apn) as apn,
@@ -139,11 +146,16 @@ max(development_type_id) as development_type_id
 into stacked_merged
 FROM stacked
 GROUP BY geom;
+
 VACUUM (ANALYZE) stacked_merged;
+
 delete from parcels where gid in (select distinct gid from stacked);
+
 VACUUM (ANALYZE) parcels;
+
 insert into parcels
 select * from stacked_merged;
+
 VACUUM (ANALYZE) parcels;
 
 -- Update parcel area post-aggregation
