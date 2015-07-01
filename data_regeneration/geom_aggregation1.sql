@@ -2,7 +2,7 @@
 #### Approach 1:  Merge geometries (and aggregate attributes) based on a common identifier
 ################
 */
-\ECHO 'PARCEL AGGREGATION:  Merge geometries (and aggregate attributes) based on a common identifier'
+\echo 'PARCEL AGGREGATION:  Merge geometries (and aggregate attributes) based on a common identifier'
 
 create table parcel_backup as select * from parcels;
 -- SCL

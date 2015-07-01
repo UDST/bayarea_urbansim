@@ -98,9 +98,11 @@ VACUUM (ANALYZE) parcels;
 /*################
 #### Approach 3:  Merge geometries (and aggregate attributes) if duplicate stacked parcel geometry
 ################*/
-\ECHO 'PARCEL AGGREGATION:  Merge geometries (and aggregate attributes) if duplicate stacked parcel geometry'
 
-\ECHO 'Collapsing and aggregating stacked parcels'
+
+\echo 'PARCEL AGGREGATION:  Merge geometries (and aggregate attributes) if duplicate stacked parcel geometry'
+
+\echo 'Collapsing and aggregating stacked parcels'
 
 drop table if exists stacked;
 drop table if exists stacked_merged;
