@@ -51,7 +51,19 @@ with open(sql_path) as sql:
 print("PROCESSING: Aggregating condos and stacked parcels.")
         
 # Aggregate parcels for multi-geometry representation of buildings
-check_run('geom_aggregation.py')
+import time
+start_time = time.time()
+subprocess.check_call(["psql","mtc","-f","--echo-all","geom_aggregation1.sql"])
+print("---geom_aggregation1 took %s seconds ---" % (time.time() - start_time))
+
+start_time = time.time()
+check_run('geom_aggregation2.py')
+print("---geom_aggregation2 took %s seconds ---" % (time.time() - start_time))
+
+start_time = time.time()
+subprocess.check_call(["psql","mtc","-f","--echo-all","geom_aggregation3.sql"])
+print("---geom_aggregation3 took %s seconds ---" % (time.time() - start_time))
+
 
 
 print("PROCESSING: Imputing attributed based on POINT data sources.")
