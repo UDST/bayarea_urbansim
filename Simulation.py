@@ -1,12 +1,26 @@
+import os
 import time
 import models
 import pandas as pd
 import urbansim.sim.simulation as sim
+from slacker import Slacker
+import socket
+
+#import code
+#code.interact(local=locals())
+
+slack = Slacker('xoxp-7025187590-7026053537-7111663091-9eeeb6')
+host = socket.gethostname()
+run_num = sim.get_injectable("run_number")
 
 print "Started", time.ctime()
-in_year, out_year = 2010, 2025
+in_year, out_year = 2010, 2040
 
-sim.run([
+slack.chat.post_message('#sim_updates', 
+    'Starting simulation %d on host %s' % (run_num, host))
+
+try:
+  sim.run([
     "neighborhood_vars",         # accessibility variables
 
     "rsh_simulate",              # residential sales hedonic
@@ -28,5 +42,25 @@ sim.run([
      
     "diagnostic_output",
     "travel_model_output"
-], years=range(in_year, out_year))
+  ], years=range(in_year, out_year))
+
+except:
+  slack.chat.post_message('#sim_updates', 
+    'DANG!  Simulation fauled for %d on host %s' % (run_num, host))
+
+
 print "Finished", time.ctime()
+
+print os.getcwd()
+os.system('python scripts/explorer.py %d' % run_num)
+os.system('python scripts/compare_to_targets.py %d' % run_num)
+os.system('python scripts/make_pda_result_maps.py %d' % run_num)
+
+slack.chat.post_message('#sim_updates', 
+    'Completed simulation %d on host %s' % (run_num, host))
+
+slack.chat.post_message('#sim_updates', 
+    'UrbanSim explorer is available at http://urbanforecast.com/sim_explorer%d.html' % run_num)
+
+slack.chat.post_message('#sim_updates', 
+    'PDA target comparison is available at http://urbanforecast.com/scratchpad/results_%d.html' % run_num)

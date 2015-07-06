@@ -76,8 +76,9 @@ def parcel_average_price(use, quantile=.5):
                                               "Residential"].
                             groupby(buildings.zone_id).quantile(quantile),
                             sim.get_table('parcels').zone_id).clip(150, 1250)
-        shifters = sim.get_table("parcels").cost_shifters
-        return s / shifters
+        cost_shifters = sim.get_table("parcels").cost_shifters
+        price_shifters = sim.get_table("parcels").price_shifters
+        return s / cost_shifters * price_shifters
 
     if 'nodes' not in sim.list_tables():
         return pd.Series(0, sim.get_table('parcels').index)
@@ -89,7 +90,7 @@ def parcel_average_price(use, quantile=.5):
 @sim.injectable('parcel_sales_price_sqft_func', autocall=False)
 def parcel_sales_price_sqft(use):
     s = parcel_average_price(use)
-    if use == "residential": s *= 1.2
+    if use == "residential": s *= 1.0
     return s
 
 
@@ -101,8 +102,14 @@ def parcel_is_allowed(form):
     # to know if specific forms are allowed
     allowed = [sim.get_table('zoning_baseline')
                ['type%d' % typ] > 0 for typ in form_to_btype[form]]
-    return pd.concat(allowed, axis=1).max(axis=1).\
+    s = pd.concat(allowed, axis=1).max(axis=1).\
         reindex(sim.get_table('parcels').index).fillna(False)
+
+    #if form == "residential":
+    #    # allow multifam in pdas 
+    #    s[sim.get_table('parcels').pda.notnull()] = 1 
+
+    return s
 
 
 # actual columns start here
@@ -113,11 +120,37 @@ def max_far(parcels, scenario, scenario_inputs):
         reindex(parcels.index)
 
 
+@sim.column('parcels', 'zoned_du', cache=True)
+def zoned_du(parcels):
+    GROSS_AVE_UNIT_SIZE = 1000
+    s = parcels.max_dua * parcels.parcel_acres
+    s2 = parcels.max_far * parcels.parcel_size / GROSS_AVE_UNIT_SIZE
+    return s.fillna(s2).reindex(parcels.index).fillna(0).round().astype('int')
+
+
+@sim.column('parcels', 'zoned_du_underbuild')
+def zoned_du_underbuild(parcels):
+    s = (parcels.zoned_du - parcels.total_residential_units).clip(lower=0)
+    ratio = (s / parcels.total_residential_units).replace(np.inf, 1)
+    # if the ratio of additional units to existing units is not at least .5
+    # we don't build it - I mean we're not turning a 10 story building into an
+    # 11 story building
+    s = s[ratio > .5].reindex(parcels.index).fillna(0)
+    return s
+
+
+@sim.column('parcels')
+def nodev(zoning_baseline):
+    return zoning_baseline.nodev
+
+
 @sim.column('parcels', 'max_dua', cache=True)
 def max_dua(parcels, scenario, scenario_inputs):
-    return utils.conditional_upzone(scenario, scenario_inputs,
+    s =  utils.conditional_upzone(scenario, scenario_inputs,
                                     "max_dua", "dua_up").\
         reindex(parcels.index)
+    s[parcels.pda.notnull() & (parcels.county_id != 75)] = s.fillna(16).clip(16)
+    return s
 
 
 @sim.column('parcels', 'max_height', cache=True)
@@ -138,7 +171,7 @@ def residential_sales_price_sqft(parcel_sales_price_sqft_func):
 # for debugging reasons this is split out into its own function
 @sim.column('parcels', 'building_purchase_price_sqft')
 def building_purchase_price_sqft():
-    return parcel_average_price("residential") * .9
+    return parcel_average_price("residential")
 
 
 @sim.column('parcels', 'building_purchase_price')
@@ -158,8 +191,13 @@ def county(parcels, settings):
 
 
 @sim.column('parcels', 'cost_shifters')
-def price_shifters(parcels, settings):
+def cost_shifters(parcels, settings):
     return parcels.county.map(settings["cost_shifters"])
+
+
+@sim.column('parcels', 'price_shifters')
+def price_shifters(parcels, settings):
+    return parcels.pda.map(settings["pda_price_shifters"]).fillna(1.0)
 
 
 @sim.column('parcels', 'node_id')

@@ -34,7 +34,7 @@ acct_settings:
   receiving_buildings_filter: pda_id > 0 and residential_units > 1
 
 
-dont_enable_supply_correction:
+enable_supply_correction:
   price_col: residential_price
   submarket_col: zone_id
   submarket_table: zones
@@ -98,7 +98,7 @@ jobs_transition:
 
 
 feasibility:
-  parcel_filter: oldest_building > 1940 and oldest_building < 2000
+  parcel_filter: nodev != 1 and oldest_building > 1940 and (total_residential_units != 1 or parcel_acres > .5) 
   residential_to_yearly: True
   pass_through:
     - oldest_building
@@ -117,7 +117,7 @@ feasibility:
 
 
 residential_developer:
-  target_vacancy: 0.08
+  target_vacancy: .08
   min_unit_size: 1000
   bldg_sqft_per_job: 400
 
@@ -268,13 +268,24 @@ county_id_map:
   41: Marin
   55: Napa
 
+pda_price_shifters:
+  "ber1": 1.5
+  "ber2": 1.5
+  "ber3": 1.5
+  "ber4": 1.5
+  "ber5": 1.5
+  "ber6": 1.5
+  "sfo3": 1.25
+  "sfo5": 1.25
+  "sfo11": 1.25
+
 cost_shifters:
-  "Santa Clara": .8
-  "San Francisco": 1.00
-  "San Mateo": .9
-  "Sonoma": .8
+  "Santa Clara": 1.2
+  "San Francisco": .8
+  "San Mateo": .8
+  "Sonoma": 1.0
   "Solano": .75
-  "Alameda": .85
+  "Alameda": .8
   "Napa": .9
   "Marin": 1.0
   "Contra Costa": .75

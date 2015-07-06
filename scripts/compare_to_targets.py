@@ -1,31 +1,37 @@
 import pandas as pd
+import sys
+import urbansim.sim.simulation as sim
 
-RUNNUM = 41
+RUNNUM = sys.argv[1]
 
-# reading modeled
-df = pd.read_csv("runs/run%d_parcel_output.csv" % RUNNUM)
-print "Total modeled units = ", df.net_units.sum()
-print "Total modeled units in all pdas = ", \
+if RUNNUM == "zoned":
+    sys.path.append(".")
+    import models
+    parcels = sim.get_table('parcels')
+    modeled = parcels.zoned_du_underbuild.groupby(parcels.pda).sum()
+
+else: 
+    RUNNUM = int(RUNNUM)
+    # reading modeled
+    df = pd.read_csv("runs/run%d_parcel_output.csv" % RUNNUM)
+    print "Total modeled units = ", df.net_units.sum()
+    print "Total modeled units in all pdas = ", \
 	df.dropna(subset=["pda"]).net_units.sum()
-# aggregating net units for modeled
-modeled = df.groupby("pda").net_units.sum()
+    # aggregating net units for modeled
+    modeled = df.groupby("pda").net_units.sum()
 
-targets = pd.read_csv("data/pdatargets.csv").set_index("pda").hu40pr
-print "Warning, halving targets for 15 year simulation"
+targets = pd.read_csv("data/citydata_for_table.csv", sep="\t")
+targets.index = targets.Key.str.lower()
+targets = targets.Households2 - targets.Households1
+#print "Warning, halving targets for 15 year simulation"
 
 # something is wrong with the targets - they're too large
 # see email with mike about this, as this is only a temp solution
-targets = targets/2.0*.6/2.0
 print "Total target units in pdas = ", targets.sum()
-
-print modeled.head()
-print targets.head()
 
 ratio = (modeled / targets).reindex(targets.index).fillna(0)
 
 print ratio.describe()
-
-print ratio
 
 pd.DataFrame({
     "modeled": modeled,
