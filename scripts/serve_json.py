@@ -9,6 +9,7 @@ import pandas as pd
 import urbansim.sim.simulation as sim
 
 app = Flask(__name__)
+app.debug = True
 cors = CORS(app)
 
 MAX_PARCELS_RETURNED = 5000
