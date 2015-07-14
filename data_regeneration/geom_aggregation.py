@@ -165,7 +165,7 @@ CREATE INDEX exterior_gidx on unfilled_exterior using gist (geom);
 
 exec_sql("""
 with a as(
-SELECT a.*, b.gid as parent_gid FROM parcels_small a, unfilled_exterior b WHERE ST_Contains(b.geom, a.geom)
+SELECT a.*, b.gid as parent_gid FROM parcels_small a, unfilled_exterior b WHERE a.geom && b.geom AND ST_Contains(b.geom, a.geom)
 )
 select distinct * into aggregation_candidates from a;
 """)
@@ -239,8 +239,8 @@ drop table if exists stacked;
 drop table if exists stacked_merged;
 
 SELECT * into stacked FROM parcels
-where geom in (select geom from parcels
-group by geom having count(*) > 1);
+where gid in (SELECT distinct p2.gid FROM parcels p1, parcels p2
+WHERE p1.geom && p2.geom AND p1.geom=p2.geom AND p1.gid <> p2.gid);
 
 SELECT 
 max(county_id) as county_id,
@@ -271,4 +271,9 @@ delete from parcels where gid in (select distinct gid from stacked);
 
 insert into parcels
 select * from stacked_merged;
+""")
+
+## Update parcel area post-aggregation
+exec_sql("""
+UPDATE parcels SET calc_area = ST_Area(geom);
 """)

@@ -86,7 +86,7 @@ def localhost_to_urbancanvas_db(table_name, table_schema, localhost_db_config, u
 
 
 ## Export tables from localhost database to UrbanCanvas database
-localhost_to_urbancanvas_db('zoning', 'public', db_config, urbancanvas_db_config, exec_sql, exec_sql2)
+# localhost_to_urbancanvas_db('zoning', 'public', db_config, urbancanvas_db_config, exec_sql, exec_sql2)
 localhost_to_urbancanvas_db('building', 'public', db_config, urbancanvas_db_config, exec_sql, exec_sql2)
 localhost_to_urbancanvas_db('parcel', 'public', db_config, urbancanvas_db_config, exec_sql, exec_sql2)
 

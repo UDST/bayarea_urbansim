@@ -8,21 +8,6 @@ from urbansim_defaults import variables
 
 
 #####################
-# LOCAL ZONES VARIABLES
-#####################
-
-
-@sim.column('logsums', 'empirical_price')
-def empirical_price(homesales, logsums):
-    # put this here as a custom bay area indicator
-    s = homesales.sale_price_flt.groupby(homesales.zone_id).quantile()
-    # if price isn't present fill with median price
-    s = s.reindex(logsums.index).fillna(s.quantile())
-    s[s < 200] = 200
-    return s
-
-
-#####################
 # COSTAR VARIABLES
 #####################
 
@@ -73,49 +58,6 @@ def empsix_id(jobs, settings):
 
 
 #####################
-# HOMESALES VARIABLES
-#####################
-
-
-@sim.column('homesales', 'sale_price_flt')
-def sale_price_flt(homesales):
-    col = homesales.Sale_price.str.replace('$', '').\
-        str.replace(',', '').astype('f4') / homesales.sqft_per_unit
-    col[homesales.sqft_per_unit == 0] = 0
-    return col
-
-
-@sim.column('homesales', 'year_built')
-def year_built(homesales):
-    return homesales.Year_built
-
-
-@sim.column('homesales', 'lot_size_per_unit')
-def lot_size_per_unit(homesales):
-    return homesales.Lot_size
-
-
-@sim.column('homesales', 'sqft_per_unit')
-def sqft_per_unit(homesales):
-    return homesales.SQft
-
-
-@sim.column('homesales', 'city')
-def city(homesales):
-    return homesales.City
-
-
-@sim.column('homesales', 'zone_id')
-def zone_id(parcels, homesales):
-    return misc.reindex(parcels.zone_id, homesales.parcel_id)
-
-
-@sim.column('homesales', 'node_id')
-def node_id(parcels, homesales):
-    return misc.reindex(parcels.node_id, homesales.parcel_id)
-
-
-#####################
 # PARCELS VARIABLES
 #####################
 
@@ -129,11 +71,13 @@ def parcel_average_price(use, quantile=.5):
     # I also want more spreading in the development and not keep it so localized
     if use == "residential":
         buildings = sim.get_table('buildings')
-        return misc.reindex(buildings.
+        s = misc.reindex(buildings.
                             residential_price[buildings.general_type ==
                                               "Residential"].
                             groupby(buildings.zone_id).quantile(quantile),
-                            sim.get_table('parcels').zone_id)
+                            sim.get_table('parcels').zone_id).clip(150, 1250)
+        shifters = sim.get_table("parcels").cost_shifters
+        return s / shifters
 
     if 'nodes' not in sim.list_tables():
         return pd.Series(0, sim.get_table('parcels').index)
@@ -156,7 +100,7 @@ def parcel_is_allowed(form):
     # we have zoning by building type but want
     # to know if specific forms are allowed
     allowed = [sim.get_table('zoning_baseline')
-               ['type%d' % typ] == 't' for typ in form_to_btype[form]]
+               ['type%d' % typ] > 0 for typ in form_to_btype[form]]
     return pd.concat(allowed, axis=1).max(axis=1).\
         reindex(sim.get_table('parcels').index).fillna(False)
 
@@ -166,19 +110,19 @@ def parcel_is_allowed(form):
 def max_far(parcels, scenario, scenario_inputs):
     return utils.conditional_upzone(scenario, scenario_inputs,
                                     "max_far", "far_up").\
-        reindex(parcels.index).fillna(0)
+        reindex(parcels.index)
 
 
 @sim.column('parcels', 'max_dua', cache=True)
 def max_dua(parcels, scenario, scenario_inputs):
     return utils.conditional_upzone(scenario, scenario_inputs,
                                     "max_dua", "dua_up").\
-        reindex(parcels.index).fillna(0)
+        reindex(parcels.index)
 
 
 @sim.column('parcels', 'max_height', cache=True)
 def max_height(parcels, zoning_baseline):
-    return zoning_baseline.max_height.reindex(parcels.index).fillna(0)
+    return zoning_baseline.max_height.reindex(parcels.index)
 
 
 @sim.column('parcels', 'residential_purchase_price_sqft')
@@ -194,7 +138,7 @@ def residential_sales_price_sqft(parcel_sales_price_sqft_func):
 # for debugging reasons this is split out into its own function
 @sim.column('parcels', 'building_purchase_price_sqft')
 def building_purchase_price_sqft():
-    return parcel_average_price("residential") * .81
+    return parcel_average_price("residential") * .9
 
 
 @sim.column('parcels', 'building_purchase_price')
@@ -206,6 +150,16 @@ def building_purchase_price(parcels):
 @sim.column('parcels', 'land_cost')
 def land_cost(parcels):
     return parcels.building_purchase_price + parcels.parcel_size * 12.21
+
+
+@sim.column('parcels', 'county')
+def county(parcels, settings):
+    return parcels.county_id.map(settings["county_id_map"])
+
+
+@sim.column('parcels', 'cost_shifters')
+def price_shifters(parcels, settings):
+    return parcels.county.map(settings["cost_shifters"])
 
 
 @sim.column('parcels', 'node_id')

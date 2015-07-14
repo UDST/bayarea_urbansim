@@ -10,7 +10,7 @@ def db_to_df(query):
     return sql.read_frame(query, conn)
 
 ## Export to HDF5-  get path to output file
-h5_path = loader.get_path('out/regeneration/summaries/bayarea_v2.h5')  ## Path to the output file
+h5_path = loader.get_path('out/regeneration/summaries/bayarea_v3.h5')  ## Path to the output file
 
 #Buildings
 buildings = db_to_df('select * from building').set_index('building_id')
@@ -39,9 +39,6 @@ if 'geom' in parcels.columns:
     del parcels['geom']
 if 'centroid' in parcels.columns:
     del parcels['centroid']
-zoning_for_parcels = parcels[['zoning_id']]
-zoning_for_parcels.columns = ['zoning']
-zoning_for_parcels.index.name = 'parcel'
 
 #Jobs
 jobs = db_to_df('select * from jobs').set_index('job_id')
@@ -62,10 +59,9 @@ zones = pd.read_csv(zones_path).set_index('zone_id')
 
 #Putting tables in the HDF5 file
 store = pd.HDFStore(h5_path)
-store['parcels'] = parcels
-store['zoning_for_parcels'] = zoning_for_parcels
-store['buildings'] = buildings
-store['households'] = hh
-store['jobs'] = jobs
-store['zones'] = zones
+store['parcels'] = parcels # http://urbansim.org/Documentation/Parcel/ParcelTable
+store['buildings'] = buildings # http://urbansim.org/Documentation/Parcel/BuildingsTable
+store['households'] = hh # http://urbansim.org/Documentation/Parcel/HouseholdsTable
+store['jobs'] = jobs # http://urbansim.org/Documentation/Parcel/JobsTable
+store['zones'] = zones # http://urbansim.org/Documentation/Parcel/ZonesTable
 store.close()
