@@ -20,7 +20,7 @@ else:
     # aggregating net units for modeled
     modeled = df.groupby("pda").net_units.sum()
 
-targets = pd.read_csv("data/citydata_for_table.csv", sep="\t")
+targets = pd.read_csv("data/pdatargets.csv", sep="\t")
 targets.index = targets.Key.str.lower()
 targets = targets.Households2 - targets.Households1
 #print "Warning, halving targets for 15 year simulation"

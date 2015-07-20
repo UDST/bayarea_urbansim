@@ -63,12 +63,20 @@ def costar(store):
     return df
 
 
+@sim.table(cache=True)
+def zoning_lookup():
+     return pd.read_csv(os.path.join(misc.data_dir(), "zoning_lookup.csv"),
+                     index_col="id")
+
+
 # zoning for use in the "baseline" scenario
 # comes in the hdf5
 @sim.table('zoning_baseline', cache=True)
-def zoning_baseline(parcels):
+def zoning_baseline(parcels, zoning_lookup):
     df = pd.read_csv(os.path.join(misc.data_dir(), "zoning_parcels.csv"),
                      index_col="geom_id")
+
+    df = pd.merge(df, zoning_lookup.to_frame(), left_on="zoning_id", right_index=True)
 
     # a zero zoning limit is actually a nan
     for s in ["max_far", "max_dua", "max_height"]:
