@@ -90,19 +90,19 @@ def zoning_baseline(parcels, zoning_lookup):
     df = df.set_index("new_index", drop=True)
 
     d = {
-        "hs": "type1",
-        "ht": "type2",
-        "hm": "type3",
-        "of": "type4",
-        "ho": "type5",
-        "il": "type7",
-        "iw": "type8",
-        "ih": "type9",
-        "rs": "type10",
-        "rb": "type11",
-        "mr": "type12",
-        "mt": "type13",
-        "me": "type14"
+        "HS": "type1",
+        "HT": "type2",
+        "HM": "type3",
+        "OF": "type4",
+        "HO": "type5",
+        "IL": "type7",
+        "IW": "type8",
+        "IH": "type9",
+        "RS": "type10",
+        "RB": "type11",
+        "MR": "type12",
+        "MT": "type13",
+        "ME": "type14"
     }
     df.columns = [d.get(x, x) for x in df.columns]
 
