@@ -78,10 +78,6 @@ def zoning_baseline(parcels, zoning_lookup):
 
     df = pd.merge(df, zoning_lookup.to_frame(), left_on="zoning_id", right_index=True)
 
-    # a zero zoning limit is actually a nan
-    for s in ["max_far", "max_dua", "max_height"]:
-        df[s].replace(0, np.nan, inplace=True)
-        
     # need to reindex from geom id to the id used on parcels
     s = parcels.geom_id # get geom_id
     s = pd.Series(s.index, index=s.values) # invert series
