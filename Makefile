@@ -5,13 +5,8 @@ get = aws s3 cp s3://bayarea_urbansim/data
 all:
 
 data/avenodeprice.csv:
-
-
 data/bayarea_v3.h5:
 data/buildings.csv:
-
-
-
 data/nodes.csv:
 data/nodes_prices.csv:
 data/osm_bayarea4326.h5:
