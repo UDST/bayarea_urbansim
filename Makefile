@@ -4,18 +4,77 @@ get = aws s3 cp s3://bayarea_urbansim/data
 
 all:
 
-data/avenodeprice.csv:
+data/avenodeprice.csv: 
+	$(get)$@ \
+	$@.download
+	mv $@.download $@
+
 data/bayarea_v3.h5:
-data/buildings.csv:
-data/nodes.csv:
-data/nodes_prices.csv:
-data/osm_bayarea4326.h5:
-data/parcels.dbf:
-data/parcels.prj:
-data/parcels.shp:
-data/parcels.shx:
-data/parcels_geography.csv:
-data/parcels_to_zoning.csv:
-data/pdatargets.csv:
-data/taz_summary.csv:
-data/zoning_parcels.csv:
+	$(get)$@ \
+	$@.download
+	mv $@.download $@
+
+data/buildings.csv: 
+	$(get)$@ \
+	$@.download
+	mv $@.download $@
+
+data/nodes.csv: 
+	$(get)$@ \
+	$@.download
+	mv $@.download $@
+
+data/nodes_prices.csv: 
+	$(get)$@ \
+	$@.download
+	mv $@.download $@
+
+data/osm_bayarea4326.h5: 
+	$(get)$@ \
+	$@.download
+	mv $@.download $@
+
+data/parcels.dbf: 
+	$(get)$@ \
+	$@.download
+	mv $@.download $@
+
+data/parcels.prj: 
+	$(get)$@ \
+	$@.download
+	mv $@.download $@
+
+data/parcels.shp: 
+	$(get)$@ \
+	$@.download
+	mv $@.download $@
+
+data/parcels.shx: 
+	$(get)$@ \
+	$@.download
+	mv $@.download $@
+
+data/parcels_geography.csv: 
+	$(get)$@ \
+	$@.download
+	mv $@.download $@
+
+data/parcels_to_zoning.csv: 
+	$(get)$@ \
+	$@.download
+	mv $@.download $@
+
+data/pdatargets.csv: 
+	$(get)$@ \
+	$@.download
+	mv $@.download $@
+
+data/taz_summary.csv: 
+	$(get)$@ \
+	$@.download
+	mv $@.download $@
+
+data/zoning_parcels.csv: 
+	$(get)$@ \
+	$@.download
+	mv $@.download $@
