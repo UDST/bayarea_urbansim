@@ -67,7 +67,7 @@ def costar(store):
 # comes in the hdf5
 @sim.table('zoning_baseline', cache=True)
 def zoning_baseline(parcels):
-    df = pd.read_csv(os.path.join(misc.data_dir(), "zoning_parcels.csv"),
+    df = pd.read_csv(os.path.join(misc.data_dir(), "2015_06_01_zoning_parcels.csv"),
                      index_col="geom_id")
 
     # a zero zoning limit is actually a nan
@@ -108,10 +108,10 @@ def zoning_baseline(parcels):
 @sim.table('zoning_test', cache=True)
 def zoning_test():
     parcels_to_zoning = pd.read_csv(os.path.join(misc.data_dir(),
-                                                 'parcels_to_zoning.csv'),
+                                                 '2015_06_01_parcels_to_zoning.csv'),
                                     low_memory=False)
     scenario_zoning = pd.read_excel(os.path.join(misc.data_dir(),
-                                                 'zoning_scenario_test.xls'),
+                                                 '2015_06_01_zoning_scenario_test.xls'),
                                     sheetname='zoning_lookup')
     df = pd.merge(parcels_to_zoning,
                   scenario_zoning,
@@ -160,7 +160,7 @@ def parcels(store):
 
 @sim.table('parcels_geography', cache=True)
 def parcels_geography():
-    return pd.read_csv(os.path.join(misc.data_dir(), "parcels_geography.csv"),
+    return pd.read_csv(os.path.join(misc.data_dir(), "2015_06_01_parcels_geography.csv"),
                       index_col="parcel_id")
 
 
