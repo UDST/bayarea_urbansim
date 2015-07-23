@@ -28,6 +28,7 @@ if SLACK:
 
 try:
   sim.run([
+    #"scheduled_development_events", # scheduled buildings additions
     "neighborhood_vars",         # accessibility variables
 
     "rsh_simulate",              # residential sales hedonic
@@ -51,10 +52,12 @@ try:
     "travel_model_output"
   ], years=range(in_year, out_year))
 
-except:
+except Exception as e:
     if SLACK:
         slack.chat.post_message('#sim_updates', 
             'DANG!  Simulation failed for %d on host %s' % (run_num, host))
+    else:
+        raise e
     sys.exit(0)
 
 print "Finished", time.ctime()

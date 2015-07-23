@@ -173,7 +173,18 @@ def pda(parcels):
 @sim.table('parcels_geography', cache=True)
 def parcels_geography():
     return pd.read_csv(os.path.join(misc.data_dir(), "parcels_geography.csv"),
-                      index_col="parcel_id")
+                       index_col="parcel_id")
+
+
+@sim.table(cache=True)
+def development_projects():
+    df = pd.read_csv(os.path.join(misc.data_dir(), "development_projects.csv"))
+    for fld in ['residential_sqft', 'redfin_sale_year', 'residential_price', 
+                'non_residential_price']:
+        df[fld] = np.nan
+    print df[sim.get_table('buildings').local_columns].describe()
+    print len(df)
+    return df
 
 
 @sim.table('buildings', cache=True)
