@@ -12,6 +12,7 @@ import pandas as pd
 from cStringIO import StringIO
 
 
+<<<<<<< HEAD
 # build out the household relocation model
 # - first, distinguish between owners and renters
 # - then add additional variables
@@ -134,6 +135,12 @@ def residential_price(buildings, residential_units):
     return residential_units.unit_residential_price.\
         groupby(residential_units.building_id).median().\
         reindex(buildings.index)
+
+
+# rental hedonic - need to add simulation stage too
+@sim.model('rh_cl_estimate')
+def rh_cl_estimate(craigslist, aggregations):
+    return utils.hedonic_estimate("rh_cl.yaml", craigslist, aggregations)
 
 
 @sim.injectable("supply_and_demand_multiplier_func", autocall=False)
