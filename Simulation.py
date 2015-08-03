@@ -6,7 +6,7 @@ import pandas as pd
 import urbansim.sim.simulation as sim
 import socket
 
-SLACK = MAPS = False
+SLACK = MAPS = True
 INTERACT = False
 
 if INTERACT:
@@ -63,9 +63,18 @@ except Exception as e:
 print "Finished", time.ctime()
 
 if MAPS:
-    os.system('python scripts/explorer.py %d' % run_num)
-    os.system('python scripts/compare_to_targets.py %d' % run_num)
-    os.system('python scripts/make_pda_result_maps.py %d' % run_num)
+    try:
+        os.system('python scripts/explorer.py %d' % run_num)
+        os.system('python scripts/compare_to_targets.py %d' % run_num)
+        os.system('python scripts/make_pda_result_maps.py %d' % run_num)
+    except Exception as e:
+        if SLACK:
+            slack.chat.post_message('#sim_updates', 
+                'DANG! Output generation failed for %d on host %s' % (run_num, host))
+        else:
+            raise e
+        sys.exit(0)
+
 
 if SLACK:
     slack.chat.post_message('#sim_updates', 
