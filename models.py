@@ -12,6 +12,57 @@ import pandas as pd
 from cStringIO import StringIO
 
 
+# build out the household relocation model
+# - first, distinguish between owners and renters
+# - then add additional variables
+# - this takes the place of urbansim_defaults/@sim.model('households_relocation')
+#   and urbansim_defaults/utils.simple_relocation()
+
+
+def hierarchical_rate_based_relocation(choosers, relocation_rates, fieldname):
+    """
+    Run a hierarchical rate based relocation model
+
+    Parameters
+    ----------
+    choosers : DataFrameWrapper or DataFrame
+        Table of agents that might relocate
+    relocation_rates : dictionary
+        Agent filters and associated rates of relocation, in the format
+        {key: {'rate': real, 'filter': str}, ...}
+    fieldname : str
+        The field name in the resulting dataframe to set to -1 (to unplace
+        new agents)
+
+    Returns
+    -------
+    Nothing
+    """
+    print "Hierarchical rate-based relocation model"
+    df = choosers.to_frame()
+    
+    for key in relocation_rates:
+        rate = relocation_rates[key]['rate']
+        print "Category: %s" % key
+        print "Relocation rate: %s" % rate
+        
+        choosers_subset = df.query(relocation_rates[key]['filter'])
+        
+        print "Total agents: %d" % len(choosers_subset)
+        print "Total currently unplaced: %d" % \
+              choosers_subset[fieldname].value_counts().get(-1, 0)
+        
+        print "Assigning for relocation..."
+        chooser_ids = np.random.choice(choosers_subset.index, size=int(rate *
+                                       len(choosers_subset)), replace=False)
+        choosers.update_col_from_series(fieldname,
+                                        pd.Series(-1, index=chooser_ids))
+        
+        # this count is not strictly correct because some agents that were already 
+        # unplaced will also be assigned for relocation 
+        print "Additional unplaced: %d" % len(chooser_ids)
+
+
 # Overriding the urbansim_defaults households_relocation in order to do deed
 # restrictions.  This is a rather minor point - we just need to null out
 # relocating unit ids rather than building ids
@@ -102,7 +153,7 @@ def supply_and_demand_multiplier_func(demand, supply):
     return s, (s <= 1.0).all()
 
 
-# this if the function for mapping a specific building that we build to a
+# this is the function for mapping a specific building that we build to a
 # specific building type
 @sim.injectable("form_to_btype_func", autocall=False)
 def form_to_btype_func(building):
@@ -458,8 +509,8 @@ def travel_model_output(parcels, households, jobs, buildings,
     add_xy_config = {
         "xy_table": "parcels",
         "foreign_key": "parcel_id",
-    	"x_col": "x",
-     	"y_col": "y"
+        "x_col": "x",
+        "y_col": "y"
     }
     summary.write_parcel_output(add_xy=add_xy_config)
 
