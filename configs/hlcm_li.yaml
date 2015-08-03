@@ -1,4 +1,4 @@
-name: hlcm
+name: hlcm_li
 
 model_type: segmented_discretechoice
 
@@ -15,12 +15,11 @@ segmentation_col: income_quartile
 choosers_fit_filters: null
 
 choosers_predict_filters:
-  - income >= 24000
+  - income < 24000
 
 alts_fit_filters: null
 
-alts_predict_filters:
-  - deed_restricted != 1
+alts_predict_filters: null
 
 interaction_predict_filters: null
 
