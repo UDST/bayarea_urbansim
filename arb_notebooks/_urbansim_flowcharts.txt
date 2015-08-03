@@ -1,0 +1,131 @@
+## URBANSIM MODEL FLOWCHARTS
+
+
+### synthicity/bayarea_urbansim master branch (as of July, 2015)
+
+Where do households come from?
+- MTC population synthesizer
+
+Where does parcel/building/unit data come from?
+- ?
+
+How are households matched to locations?
+- allocated randomly to buildings within a block group (confirm)
+
+What models are run?
+- code location: Simulation.py
+- neighborhood_vars
+- rsh_simulate
+- households_relocation
+- households_transition
+- hlcm_simulate
+- price_vars
+- feasibility
+- residential_developer
+- note that non-residential and employment models are skipped
+
+Neighborhood variables model
+- code location: models.py (urbansim_defaults), neighborhood_vars.yaml
+- calculates location characteristics like density, average unit size, income, poverty, employment, etc, using a network accessibility framework
+- calculations are done at the node level
+- input is from buildings, households, jobs tables
+- output goes into nodes table
+
+Residential sales hedonic model
+- code location: models.py (urbansim_defaults), rsh.yaml
+- hedonic model of home sales (log price per square foot) based on size and neighborhood characteristics
+
+Household relocation model
+- code location: models.py (urbansim_defaults), settings.yaml
+- simple rate-based model reallocating 5% of households annually
+- they lose their building id and are reassigned by the hlcm (?)
+
+Household transition model
+- code location: models.py (urbansim_defaults), settings.yaml
+- generates new households based on control totals (?)
+- does does it take care of aging, household formation, etc as well?
+
+Household location choice model
+- code location: models.py (urbansim_defaults), hlcm.yaml
+- assigns households to buildings using MNL
+- choosers are segmented by income quartile for coefficient estimation
+- 100 alternatives are selected at random, and household is assigned based on a utility equation involving log price, residential density, neighborhood income, and autoPeakTotal
+
+Price variables model
+- code location: models.py (urbansim_defaults), price_vars.yaml
+- calculates additional price-related location characteristics
+
+Feasibility model
+- code location: models.py (urbansim_defaults), settings.yaml
+- calculates development feasibility
+
+Residential developer model
+- code location: models.py (urbansim_defaults), settings.yaml
+- adds new residential buildings
+
+
+### synthicity/bayarea_urbansim add-units branch (as of July, 2015)
+
+Builds a new residential_units table
+- code location: datasources.py
+- based on the existing buildings table
+- adds columns for unit_id, unit_num (within building), unit_residential_price, and deed_restricted
+- data on deed restriction is not in place yet
+- for ease of implementation, a "unit" is a building object with one unit in it
+- households are allocated to units within this table definition
+
+Small changes to household relocation, transition, and location choice models
+- code source: models.py
+- now uses unit_id rather than building_id
+
+Adds a model for low-income household location choice
+- code source: models.py, hlcm_li.yaml
+- this runs for households with income < 24,000
+- idea is to allow choice of deed restricted units
+- for now its specification is identical to the standard model (with different parameter estimates)
+
+Small changes to residential sales hedonic model
+- now puts fitted prices into the unit_residential_price column
+- because every is done at the per-square-foot level, modeling doesn't change
+- median of unit prices is aggregated up as the building price, for instances where that is needed
+
+
+### ual/bayarea_urbansim arb branch
+
+General concept
+- incorporate tenure (and eventually race and income) in to the residential relocation and location choice models
+- this branch merges in changes from add-units, rental-hedonics, & relocation-model
+
+Households data
+- switch to synthpop?
+- to do that, will need to assign households to buildings, either randomly or using more sophisticated criteria
+
+Adds a column for unit tenure
+- assign based on tenure of initial household
+- for empty units, assign based on ratio in remainder of building
+- for empty buildings, assign based on node ratio?
+
+New residential rental hedonic model
+- estimated using craigslist data
+- adds a column for rental price
+
+Household relocation choice models
+- rate-based for arbitrary hierarchy of household characteristics
+- main distinction for now is renter vs owner
+
+Adds a tenure choice model
+- primarily conditioned on prior tenure
+- rate-based for now, try to estimate from data
+
+Household location choice models
+- estimated and simulated separately for renters and owners
+- renter model uses rental price, owner model uses sale price
+
+Residential developer model (to do)
+- separate version of each building using rental hedonic
+- maybe need to capitalize rents into profitability; look at commercial model
+
+-> Supply-demand adjustment for rental prices?
+-> Tenure transition model for units?
+-> Include non-residential models in simulation?
+
