@@ -81,7 +81,7 @@ rates:
 
 
 build_networks:
-  name: osm_bayarea4326.h5
+  name: 2015_06_01_osm_bayarea4326.h5
   max_distance: 1500
 
 
@@ -133,7 +133,7 @@ pusher:
   region: bayarea
 
 
-store: bayarea_v3.h5
+store: 2015_06_01_bayarea_v3.h5
 
 
 scenario: baseline
