@@ -246,7 +246,25 @@ def residential_units(buildings, households):
     # function to compute it from the relationship between households
     # and residential_units
     sim.add_column("households", "building_id", households_building_id)
+    
+    # ASSIGN INITIAL UNIT TENURE BASED ON HOUSEHOLDS TABLE
+    # 0= owner occupied, 1= rented
+    # cf households/hownrent, where 1= owns, 2= rents (confirm)
+    df["unit_tenure"] = np.nan
+    ownership_mask = (households.hownrent == 1) & (households.unit_id != -1)
+    rental_mask = (households.hownrent == 2) & (households.unit_id != -1)
+    
+    df.loc[households[ownership_mask].unit_id.values, "unit_tenure"] = 0
+    df.loc[households[rental_mask].unit_id.values, "unit_tenure"] = 1
+    
+    print "Initial unit tenure assignment: %d%% owner occupied, %d%% unfilled" % \
+    		(round(sum(df.unit_tenure == 0)*100/sum(df.unit_tenure.notnull())), \
+    		 round(sum(df.unit_tenure.isnull())*100/len(df)))
 
+	# fill remaining units with random tenure assignment
+    unfilled = df[df.unit_tenure.isnull()].index
+    df.loc[unfilled, "unit_tenure"] = np.random.randint(0, 2, len(df))
+    
     return df
 
 
