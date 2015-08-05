@@ -199,6 +199,7 @@ def residential_units(buildings, households):
     # build one from the buildings table.
     df = pd.DataFrame({
         "unit_residential_price": 0,
+        "unit_residential_rent": 0,
         # this is going to set all the units as degenerate "buildings" with one
         # unit each - in other words, every unit has one unit in it - duh
         "num_units": 1,

@@ -130,6 +130,7 @@ def rsh_simulate(residential_units):
 
 
 # now that price is on units, override default and aggregate UP to buildings
+# (should these move over to the datasources file?)
 @sim.column('buildings', 'residential_price')
 def residential_price(buildings, residential_units):
     return residential_units.unit_residential_price.\
@@ -137,10 +138,27 @@ def residential_price(buildings, residential_units):
         reindex(buildings.index)
 
 
-# rental hedonic - need to add simulation stage too
-@sim.model('rh_cl_estimate')
+@sim.column('buildings', 'residential_rent')
+def residential_rent(buildings, residential_units):
+    return residential_units.unit_residential_rent.\
+        groupby(residential_units.building_id).median().\
+        reindex(buildings.index)
+
+
+# residential rental hedonic
+@sim.model('rrh_estimate')
 def rh_cl_estimate(craigslist, aggregations):
-    return utils.hedonic_estimate("rh_cl.yaml", craigslist, aggregations)
+    return utils.hedonic_estimate("rrh.yaml", craigslist, aggregations)
+
+
+@sim.model('rrh_simulate')
+def rh_cl_simulate(residential_units):
+    # copying aggregations part from fletcher's code above, but should look into whether
+    # there's a more elegant way to handle it -- change master aggregations list?
+    aggregations = [sim.get_table(tbl) for tbl in \
+        ["buildings", "nodes", "logsums"]]
+    return utils.hedonic_simulate("rrh.yaml", residential_units, aggregations, 
+    								"unit_residential_rent")
 
 
 @sim.injectable("supply_and_demand_multiplier_func", autocall=False)

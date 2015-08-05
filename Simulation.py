@@ -10,7 +10,8 @@ sim.run([
     "neighborhood_vars",         # accessibility variables
 
     "rsh_simulate",              # residential sales hedonic
-    #"nrh_simulate",              # non-residential rent hedonic
+    "rrh_simulate",              # residential rental hedonic
+    #"nrh_simulate",             # non-residential rent hedonic
 
     #"households_relocation",
     "households_relocation_filtered",
