@@ -12,22 +12,15 @@ import pandas as pd
 from cStringIO import StringIO
 
 
-<<<<<<< HEAD
-# build out the household relocation model
-# - first, distinguish between owners and renters
-# - then add additional variables
-# - this takes the place of urbansim_defaults/@sim.model('households_relocation')
-#   and urbansim_defaults/utils.simple_relocation()
-
-
-def hierarchical_rate_based_relocation(choosers, relocation_rates, fieldname):
+# This augments urbansim_defaults/utils.simple_relocation()
+def relocation_with_filters(choosers, relocation_rates, fieldname):
     """
-    Run a hierarchical rate based relocation model
+    Run a rate-based relocation model with filters
 
     Parameters
     ----------
-    choosers : DataFrameWrapper or DataFrame
-        Table of agents that might relocate
+    households : DataFrameWrapper or DataFrame
+        Table of households that might relocate
     relocation_rates : dictionary
         Agent filters and associated rates of relocation, in the format
         {key: {'rate': real, 'filter': str}, ...}
@@ -39,7 +32,7 @@ def hierarchical_rate_based_relocation(choosers, relocation_rates, fieldname):
     -------
     Nothing
     """
-    print "Hierarchical rate-based relocation model"
+    print "Rate-based relocation model with filters"
     df = choosers.to_frame()
     
     for key in relocation_rates:
@@ -62,6 +55,13 @@ def hierarchical_rate_based_relocation(choosers, relocation_rates, fieldname):
         # this count is not strictly correct because some agents that were already 
         # unplaced will also be assigned for relocation 
         print "Additional unplaced: %d" % len(chooser_ids)
+
+
+# This can be run as an alternative to the households_relocation model
+@sim.model('households_relocation_filtered')
+def households_relocation_filtered(households, settings):
+    rate = settings['rates']['households_relocation_filtered']
+    return relocation_with_filters(households, rate, "unit_id")
 
 
 # Overriding the urbansim_defaults households_relocation in order to do deed

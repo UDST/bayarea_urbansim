@@ -12,7 +12,8 @@ sim.run([
     "rsh_simulate",              # residential sales hedonic
     #"nrh_simulate",              # non-residential rent hedonic
 
-    "households_relocation",
+    #"households_relocation",
+    "households_relocation_filtered",
     "households_transition",
     "hlcm_simulate",
     "hlcm_li_simulate",
