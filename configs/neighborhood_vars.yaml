@@ -41,6 +41,8 @@ variable_definitions:
     aggregation: average
 
   - name: population
+    filters:
+    - building_id != -1
     dataframe: households
     varname: persons
     radius: 1500
@@ -49,7 +51,7 @@ variable_definitions:
   - name: poor
     dataframe: households
     filters:
-    - income < 40000
+    - income < 40000 and building_id != -1
     varname: persons
     radius: 1500
     apply: np.log1p
@@ -57,7 +59,7 @@ variable_definitions:
   - name: renters
     dataframe: households
     filters:
-    - tenure == 2
+    - tenure == 2 and building_id != -1
     radius: 1500
     apply: np.log1p
 
@@ -70,6 +72,8 @@ variable_definitions:
 
   - name: ave_hhsize
     dataframe: households
+    filters:
+    - building_id != -1
     varname: persons
     radius: 1500
     aggregation: average
@@ -77,11 +81,15 @@ variable_definitions:
     apply: np.log1p
 
   - name: jobs
+    filters:
+    - building_id != -1
     dataframe: jobs
     radius: 1500
     apply: np.log1p
 
   - name: ave_income
+    filters:
+    - building_id != -1
     dataframe: households
     varname: income
     radius: 1500

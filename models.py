@@ -17,7 +17,7 @@ def supply_and_demand_multiplier_func(demand, supply):
     s = demand / supply
     settings = sim.settings
     print "Number of submarkets where demand exceeds supply:", len(s[s>1.0])
-    print "Raw relationship of supply and demand\n", s.describe()
+    #print "Raw relationship of supply and demand\n", s.describe()
     supply_correction = settings["enable_supply_correction"]
     clip_change_high = supply_correction["kwargs"]["clip_change_high"]
     t = s
@@ -25,7 +25,7 @@ def supply_and_demand_multiplier_func(demand, supply):
     t = t / t.max() * (clip_change_high-1)
     t += 1.0
     s.loc[s > 1.0] = t.loc[s > 1.0]
-    print "Shifters for current iteration\n", s.describe()
+    #print "Shifters for current iteration\n", s.describe()
     return s, (s <= 1.0).all()
 
 

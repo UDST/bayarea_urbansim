@@ -1,38 +1,43 @@
 import os
 import sys
 import time
+import traceback
 import models
 import pandas as pd
 import urbansim.sim.simulation as sim
 import socket
+import warnings
 
-SLACK = MAPS = True
+warnings.filterwarnings("ignore")
+
+SLACK = MAPS = False
 INTERACT = False
 
 if INTERACT:
     import code
     code.interact(local=locals())
 
+run_num = sim.get_injectable("run_number")
+sys.stdout = open("logs/sim_out_%d" % run_num, 'w')
+
 if SLACK:
     from slacker import Slacker
     slack = Slacker('xoxp-7025187590-7026053537-7111663091-9eeeb6')
     host = socket.gethostname()
-    run_num = sim.get_injectable("run_number")
 
 print "Started", time.ctime()
-in_year, out_year = 2010, 2012
+in_year, out_year = 2010, 2025
 
 if SLACK:
     slack.chat.post_message('#sim_updates', 
         'Starting simulation %d on host %s' % (run_num, host))
 
 try:
-  sim.run([
-    #"scheduled_development_events", # scheduled buildings additions
-    "neighborhood_vars",         # accessibility variables
-
-    "rsh_simulate",              # residential sales hedonic
-    #"nrh_simulate",              # non-residential rent hedonic
+  sim.run([ 
+    "neighborhood_vars",            # accessibility variables
+    
+    "rsh_simulate",                 # residential sales hedonic
+    #"nrh_simulate",                 # non-residential rent hedonic
 
     "households_relocation",
     "households_transition",
@@ -45,6 +50,8 @@ try:
     "price_vars",
 
     "feasibility",
+    
+    "scheduled_development_events", # scheduled buildings additions
     "residential_developer",
     #"non_residential_developer",
      
@@ -53,6 +60,7 @@ try:
   ], years=range(in_year, out_year))
 
 except Exception as e:
+    print traceback.print_exc()
     if SLACK:
         slack.chat.post_message('#sim_updates', 
             'DANG!  Simulation failed for %d on host %s' % (run_num, host))

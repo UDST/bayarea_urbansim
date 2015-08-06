@@ -34,7 +34,7 @@ acct_settings:
   receiving_buildings_filter: pda_id > 0 and residential_units > 1
 
 
-enable_supply_correction:
+dont_enable_supply_correction:
   price_col: residential_price
   submarket_col: zone_id
   submarket_table: zones
@@ -123,7 +123,7 @@ residential_developer:
 
 
 non_residential_developer:
-  target_vacancy: 0.0
+  target_vacancy: -.2
   bldg_sqft_per_job: 400
 
 
@@ -137,14 +137,14 @@ pusher:
 store: bayarea_v3.h5
 
 
-scenario: baseline
+scenario: np
 
 
 scenario_inputs:
   baseline:
     zoning_table_name: zoning_baseline
-  test:
-    zoning_table_name: zoning_test
+  np:
+    zoning_table_name: zoning_np
 
 
 # this maps Synthicity's 25 employment categories to

@@ -69,6 +69,17 @@ def zoning_lookup():
                      index_col="id")
 
 
+# need to reindex from geom id to the id used on parcels
+def geom_id_to_parcel_id(df, parcels):
+    s = parcels.geom_id # get geom_id
+    s = pd.Series(s.index, index=s.values) # invert series
+    df["new_index"] = s.loc[df.index] # get right parcel_id for each geom_id
+    df = df.dropna(subset=["new_index"])
+    df = df.set_index("new_index", drop=True)
+    df.index.name = "parcel_id"
+    return df
+
+
 # zoning for use in the "baseline" scenario
 # comes in the hdf5
 @sim.table('zoning_baseline', cache=True)
@@ -77,13 +88,7 @@ def zoning_baseline(parcels, zoning_lookup):
                      index_col="geom_id")
 
     df = pd.merge(df, zoning_lookup.to_frame(), left_on="zoning_id", right_index=True)
-
-    # need to reindex from geom id to the id used on parcels
-    s = parcels.geom_id # get geom_id
-    s = pd.Series(s.index, index=s.values) # invert series
-    df["new_index"] = s.loc[df.index] # get right parcel_id for each geom_id
-    df = df.dropna(subset=["new_index"])
-    df = df.set_index("new_index", drop=True)
+    df = geom_id_to_parcel_id(df, parcels)
 
     d = {
         "HS": "type1",
@@ -105,23 +110,20 @@ def zoning_baseline(parcels, zoning_lookup):
     return df
 
 
-# zoning for use in the "test" scenario - is often
-# specified by the user e.g. in arcgis or excel and
-# so is kept outside of the hdf5
-@sim.table('zoning_test', cache=True)
-def zoning_test():
+@sim.table('zoning_np', cache=True)
+def zoning_np(parcels):
     parcels_to_zoning = pd.read_csv(os.path.join(misc.data_dir(),
-                                                 'parcels_to_zoning.csv'),
+                                                 'parcel_tpp_pda_juris_expansion.csv'),
                                     low_memory=False)
-    scenario_zoning = pd.read_excel(os.path.join(misc.data_dir(),
-                                                 'zoning_scenario_test.xls'),
-                                    sheetname='zoning_lookup')
+    scenario_zoning = pd.read_csv(os.path.join(misc.data_dir(),
+                                                 'zoning_mods_np.csv'))
     df = pd.merge(parcels_to_zoning,
                   scenario_zoning,
-                  on=['jurisdiction', 'pda', 'tpp', 'expansion'],
+                  on=['jurisdiction', 'pda_id', 'tpp_id', 'exp_id'],
                   how='left')
-    df = df.set_index(df.parcel_id)
-    return df
+    df = df.set_index("geom_id")
+
+    return geom_id_to_parcel_id(df, parcels)
 
 
 # this is really bizarre, but the parcel table I have right now has empty
@@ -130,9 +132,18 @@ def zoning_test():
 @sim.table('parcels', cache=True)
 def parcels(store):
     df = store['parcels']
+    df["zone_id"] = df.zone_id.replace(0, 1)
+
+    net = sim.get_injectable('net')
+    df['_node_id'] = net.get_node_ids(df['x'], df['y'])
+    
     cfg = {
         "fill_nas": {
             "zone_id": {
+                "how": "mode",
+                "type": "int"
+            },
+            "_node_id": {
                 "how": "mode",
                 "type": "int"
             },
@@ -143,21 +154,7 @@ def parcels(store):
         }
     }
     df = utils.table_reprocess(cfg, df)
-    df["zone_id"] = df.zone_id.replace(0, 1)
 
-    # Node id
-    # import pandana as pdna
-    # st = pd.HDFStore(os.path.join(misc.data_dir(), "osm_bayarea.h5"), "r")
-    # nodes, edges = st.nodes, st.edges
-    net = sim.get_injectable('net')
-    # net = pdna.Network(nodes["x"], nodes["y"], edges["from"], edges["to"],
-                       # edges[["weight"]])
-    # net.precompute(3000)
-    # sim.add_injectable("net", net)
-
-    # p = parcels.to_frame(parcels.local_columns)
-    df['_node_id'] = net.get_node_ids(df['x'], df['y'])
-    # sim.add_table("parcels", p)
     return df
 
 
@@ -177,13 +174,26 @@ def parcels_geography():
 
 
 @sim.table(cache=True)
-def development_projects():
+def development_projects(parcels):
     df = pd.read_csv(os.path.join(misc.data_dir(), "development_projects.csv"))
-    for fld in ['residential_sqft', 'redfin_sale_year', 'residential_price', 
-                'non_residential_price']:
+
+    for fld in ['residential_sqft', 'residential_price', 'non_residential_price']:
         df[fld] = np.nan
+    df["redfin_sale_year"] = 2012 # hedonic doesn't tolerate nans
+    df["stories"] = df.stories.fillna(1)
+    df["building_sqft"] = df.building_sqft.fillna(0)
+    df["non_residential_sqft"] = df.non_residential_sqft.fillna(0)
+
+    df = df.dropna(subset=["geom_id"]) # need a geom_id to link to parcel_id
+
+    df = df.dropna(subset=["year_built"]) # need a year built to get built
+
+    df = df.set_index("geom_id")
+    df = geom_id_to_parcel_id(df, parcels).reset_index() # use parcel id
+
+    print "Describe of development projects"
     print df[sim.get_table('buildings').local_columns].describe()
-    print len(df)
+    
     return df
 
 

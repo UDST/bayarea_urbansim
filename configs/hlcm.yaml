@@ -26,7 +26,7 @@ choice_column: null
 
 sample_size: 100
 
-estimation_sample_size: 15000
+estimation_sample_size: 2500
 
 default_config:
     model_expression: np.log1p(residential_price) + sum_residential_units + ave_income

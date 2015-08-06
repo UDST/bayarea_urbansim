@@ -1,4 +1,4 @@
-jurisdiction,pda,tpp,expansion,count,add_bldg,drop_bldg,dua_up,far_up,dua_down,far_down,subsidy,place_type,notes
+jurisdiction,pda_id,tpp_id,exp_id,count,add_bldg,drop_bldg,dua_up,far_up,dua_down,far_down,subsidy,place_type,notes
 00001,liv2,,exp1,10,HS RS,,5.5,0.5,,,,,
 41992,liv2,,exp1,3,HS RS,,5.5,0.5,,,,,
 53070,oak1,,exp1,1,HS RS,,5.5,0.5,,,,,
