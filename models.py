@@ -120,9 +120,9 @@ def hlcm_li_simulate(households, residential_units, settings):
 
 
 @sim.model('hlcm_owner_estimate')
-def hlcm_owner_estimate(households, residential_units, unit_aggregations):
-    return utils.lcm_estimate("hlcm_owner.yaml", households, "unit_id",
-                              residential_units, unit_aggregations)
+def hlcm_owner_estimate(households, buildings, aggregations):
+    return utils.lcm_estimate("hlcm_owner.yaml", households, "building_id",
+                              buildings, aggregations)
 
 
 # overriding the urbansim_defaults in order to do a unit-based hedonic
