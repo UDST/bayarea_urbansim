@@ -37,4 +37,4 @@ pd.DataFrame({
     "modeled": modeled,
     "targets": targets,
     "ratio": ratio
-}, index=targets.index).to_csv("pda_model_results.csv", index_label="pda")
+}, index=targets.index).to_csv("runs/pda_model_results.csv", index_label="pda")

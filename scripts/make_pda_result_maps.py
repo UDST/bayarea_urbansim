@@ -14,7 +14,7 @@ htmldir = "/var/www/html/scratchpad/"
 gdf = geopandas.GeoDataFrame.from_file(htmldir+"pdas.json").set_index("id_1")
 centroids = gdf.centroid
 
-results = pd.read_csv('pda_model_results.csv').set_index("pda")
+results = pd.read_csv('runs/pda_model_results.csv').set_index("pda")
 
 def make_map(outname, map_funcs):
     map = folium.Map(location=[37.7792, -122.1191], 
