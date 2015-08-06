@@ -1,0 +1,139 @@
+name: hlcm_owner
+
+model_type: segmented_discretechoice
+
+segmentation_col: income_quartile
+
+choosers_fit_filters:
+- hownrent == 1
+
+choosers_predict_filters:
+- hownrent == 1
+
+alts_fit_filters: null
+
+alts_predict_filters:
+- unit_tenure == 0
+
+interaction_predict_filters: null
+
+choice_column: null
+
+sample_size: 100
+
+estimation_sample_size: 1500
+
+prediction_sample_size: null
+
+default_config:
+    model_expression: np.log1p(unit_residential_price) + poor + jobs - 1
+# THIS IS WHAT'S IN THE MASTER BRANCH
+#    model_expression: np.log1p(unit_residential_price) + sum_residential_units 
+#        + ave_income + autoPeakTotal - 1
+# THIS IS SIMILAR TO THE EARLIER ONE IN THE ESTIMATION NOTEBOOK
+#    model_expression: np.log1p(unit_residential_price) + np.log1p(sqft_per_unit) 
+#        + sum_residential_units + ave_sqft_per_unit + ave_lot_size_per_unit 
+#        + ave_income + poor + population + ave_hhsize 
+#        + autoPeakTotal + transitPeakTotal + nonMotorizedTotal - 1
+
+models:
+    1:
+        fit_parameters:
+            Coefficient:
+                autoPeakTotal: -0.008191658420198577
+                ave_income: -0.24130468290978724
+                np.log1p(unit_residential_price): -0.2661181890456683
+                sum_residential_units: -0.0856767318143821
+            Std. Error:
+                autoPeakTotal: 0.03840361065690857
+                ave_income: 0.0413663252858123
+                np.log1p(unit_residential_price): 0.08571723812798217
+                sum_residential_units: 0.03347716480676726
+            T-Score:
+                autoPeakTotal: -0.21330438154322212
+                ave_income: -5.833360378098395
+                np.log1p(unit_residential_price): -3.10460526794312
+                sum_residential_units: -2.5592588950980377
+        fitted: true
+        log_likelihoods:
+            convergence: -6782.109579494423
+            'null': -6811.046705076327
+            ratio: 0.004248557796606711
+        name: 1
+    2:
+        fit_parameters:
+            Coefficient:
+                autoPeakTotal: -0.09592140603806369
+                ave_income: -0.11848784989942804
+                np.log1p(unit_residential_price): -0.21754194087745227
+                sum_residential_units: -0.10631694440807206
+            Std. Error:
+                autoPeakTotal: 0.0372440482168406
+                ave_income: 0.04242746448595324
+                np.log1p(unit_residential_price): 0.0878232284018372
+                sum_residential_units: 0.032850497377332706
+            T-Score:
+                autoPeakTotal: -2.5754828121689255
+                ave_income: -2.7927157876393167
+                np.log1p(unit_residential_price): -2.477043315716932
+                sum_residential_units: -3.236387662167703
+        fitted: true
+        log_likelihoods:
+            convergence: -6788.044674867593
+            'null': -6829.467385820279
+            ratio: 0.006065291568518205
+        name: 2
+    3:
+        fit_parameters:
+            Coefficient:
+                autoPeakTotal: -0.0906673901742442
+                ave_income: 0.34102633510689684
+                np.log1p(unit_residential_price): -0.4281160566089544
+                sum_residential_units: -0.05258715986670218
+            Std. Error:
+                autoPeakTotal: 0.04071794285548363
+                ave_income: 0.044447467301581264
+                np.log1p(unit_residential_price): 0.09140637569312507
+                sum_residential_units: 0.03358656170228336
+            T-Score:
+                autoPeakTotal: -2.226718341249249
+                ave_income: 7.672570695490775
+                np.log1p(unit_residential_price): -4.683656401017924
+                sum_residential_units: -1.565720252428431
+        fitted: true
+        log_likelihoods:
+            convergence: -6765.244898909783
+            'null': -6815.651875262315
+            ratio: 0.007395767459233982
+        name: 3
+    4:
+        fit_parameters:
+            Coefficient:
+                autoPeakTotal: 0.026395690457354376
+                ave_income: 1.7163395357313775
+                np.log1p(unit_residential_price): -0.2000558890326798
+                sum_residential_units: -0.13145691250388186
+            Std. Error:
+                autoPeakTotal: 0.04336160954269094
+                ave_income: 0.04609835658063166
+                np.log1p(unit_residential_price): 0.09371518765741033
+                sum_residential_units: 0.030646658597102437
+            T-Score:
+                autoPeakTotal: 0.6087341022562122
+                ave_income: 37.23211982035173
+                np.log1p(unit_residential_price): -2.1347221729311747
+                sum_residential_units: -4.289437038865659
+        fitted: true
+        log_likelihoods:
+            convergence: -6520.732950668686
+            'null': -6834.0725560062665
+            ratio: 0.0458496164285227
+        name: 4
+
+fitted: true
+
+choice_mode: aggregate
+
+remove_alts: true
+
+probability_mode: single_chooser

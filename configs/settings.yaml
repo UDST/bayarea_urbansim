@@ -3,6 +3,12 @@ aggregation_tables:
   - logsums
 
 
+unit_aggregation_tables:
+  - buildings
+  - nodes
+  - logsums
+
+
 set_nan_price_to_zero: True
 
 

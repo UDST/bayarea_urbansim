@@ -119,6 +119,12 @@ def hlcm_li_simulate(households, residential_units, settings):
                               "vacant_units")
 
 
+@sim.model('hlcm_owner_estimate')
+def hlcm_owner_estimate(households, residential_units, unit_aggregations):
+    return utils.lcm_estimate("hlcm_owner.yaml", households, "unit_id",
+                              residential_units, unit_aggregations)
+
+
 # overriding the urbansim_defaults in order to do a unit-based hedonic
 @sim.model('rsh_simulate')
 def rsh_simulate(residential_units):
@@ -127,22 +133,6 @@ def rsh_simulate(residential_units):
         ["buildings", "nodes", "logsums"]]
     return utils.hedonic_simulate("rsh.yaml", residential_units, aggregations,
                                   "unit_residential_price")
-
-
-# now that price is on units, override default and aggregate UP to buildings
-# (should these move over to the datasources file?)
-@sim.column('buildings', 'residential_price')
-def residential_price(buildings, residential_units):
-    return residential_units.unit_residential_price.\
-        groupby(residential_units.building_id).median().\
-        reindex(buildings.index)
-
-
-@sim.column('buildings', 'residential_rent')
-def residential_rent(buildings, residential_units):
-    return residential_units.unit_residential_rent.\
-        groupby(residential_units.building_id).median().\
-        reindex(buildings.index)
 
 
 # residential rental hedonic

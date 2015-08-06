@@ -190,7 +190,8 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
 
 
 def households_building_id(residential_units, households):
-    return misc.reindex(residential_units.building_id, households.unit_id)
+    df = misc.reindex(residential_units.building_id, households.unit_id)
+    return df.fillna(-1)
 
 
 @sim.table('residential_units', cache=True)
@@ -258,8 +259,8 @@ def residential_units(buildings, households):
     df.loc[households[rental_mask].unit_id.values, "unit_tenure"] = 1
     
     print "Initial unit tenure assignment: %d%% owner occupied, %d%% unfilled" % \
-    		(round(sum(df.unit_tenure == 0)*100/sum(df.unit_tenure.notnull())), \
-    		 round(sum(df.unit_tenure.isnull())*100/len(df)))
+    		(round(len(df[df.unit_tenure == 0])*100/len(df[df.unit_tenure.notnull()])), \
+    		 round(len(df[df.unit_tenure.isnull()])*100/len(df)))
 
 	# fill remaining units with random tenure assignment
     unfilled = df[df.unit_tenure.isnull()].index
@@ -278,6 +279,15 @@ def vacant_units(residential_units, households):
 @sim.column('residential_units', 'submarket_id')
 def submarket_id(residential_units, buildings):
     return misc.reindex(buildings.zone_id, residential_units.building_id)
+
+
+# setting up a separate aggregations list for unit-based models
+@sim.injectable("unit_aggregations")
+def aggregations(settings):
+    if "unit_aggregation_tables" not in settings or \
+    	settings["unit_aggregation_tables"] is None:
+    	return []
+    return [sim.get_table(tbl) for tbl in settings["unit_aggregation_tables"]]
 
 
 @sim.table('craigslist', cache=True)

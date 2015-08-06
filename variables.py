@@ -8,6 +8,54 @@ from urbansim_defaults import variables
 
 
 #####################
+# HOUSEHOLD VARIABLES
+#####################
+
+
+# overriding these to remove NaNs, in order to fix bug where HLCM won't estimate
+@sim.column('households', 'zone_id', cache=True)
+def zone_id(households, buildings):
+    return misc.reindex(buildings.zone_id, households.building_id).fillna(-1)
+
+
+@sim.column('households', 'node_id', cache=True)
+def node_id(households, buildings):
+    return misc.reindex(buildings.node_id, households.building_id).fillna(-1)
+
+
+#####################
+# BUILDING VARIABLES
+#####################
+
+
+# now that price is on units, override default and aggregate UP to buildings
+@sim.column('buildings', 'residential_price')
+def residential_price(buildings, residential_units):
+    return residential_units.unit_residential_price.\
+        groupby(residential_units.building_id).median().\
+        reindex(buildings.index).fillna(0)
+
+
+@sim.column('buildings', 'residential_rent')
+def residential_rent(buildings, residential_units):
+    return residential_units.unit_residential_rent.\
+        groupby(residential_units.building_id).median().\
+        reindex(buildings.index).fillna(0)
+
+
+# override to remove NaNs, in order for HLCM to estimate
+@sim.column('buildings', 'node_id', cache=True)
+def node_id(buildings, parcels):
+    return misc.reindex(parcels.node_id, buildings.parcel_id).fillna(-1)
+
+
+# a handful were not matching, so filling with zeros for now
+@sim.column('buildings', 'sqft_per_job', cache=True)
+def sqft_per_job(buildings, building_sqft_per_job):
+    return buildings.building_type_id.fillna(-1).map(building_sqft_per_job).fillna(0)
+
+
+#####################
 # COSTAR VARIABLES
 #####################
 
