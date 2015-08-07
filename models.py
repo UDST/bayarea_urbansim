@@ -12,6 +12,79 @@ import pandas as pd
 from cStringIO import StringIO
 
 
+# Overriding the urbansim_defaults households_relocation in order to do deed
+# restrictions.  This is a rather minor point - we just need to null out
+# relocating unit ids rather than building ids
+@sim.model('households_relocation')
+def households_relocation(households, settings):
+    rate = settings['rates']['households_relocation']
+    return utils.simple_relocation(households, rate, "unit_id")
+
+
+# Overriding the urbansim_defaults households_transition in order to do deed
+# restrictions.  This is a rather minor point - we just need to add empty
+# unit ids rather than building ids at the end of the process
+@sim.model('households_transition')
+def households_transition(households, household_controls, year, settings):
+    return utils.full_transition(households,
+                                 household_controls,
+                                 year,
+                                 settings['households_transition'],
+                                 "unit_id")
+
+
+# Overriding the urbansim_defaults hlcm_simulation in order to do deed
+# restrictions.  This is the first unit-based hlcm.
+@sim.model('hlcm_simulate')
+def hlcm_simulate(households, residential_units, settings):
+    # this actually triggers adding the unit_id to households
+    _ = sim.get_table('residential_units')
+    # because the households have been refreshed, need to get them again
+    households = sim.get_table("households")
+    # for this hlcm, we need to add the buildings to the set of merge tables
+    aggregations = [sim.get_table(tbl) for tbl in \
+        ["buildings", "nodes", "logsums"]]
+    return utils.lcm_simulate("hlcm.yaml", households, residential_units,
+                              aggregations,
+                              "unit_id",
+                              "num_units",
+                              "vacant_units",
+                              settings.get("enable_supply_correction", None))
+
+
+# this is the low income hlcm - which allows the choice of
+# deed restricted units
+@sim.model('hlcm_li_simulate')
+def hlcm_li_simulate(households, residential_units, settings):
+    aggregations = [sim.get_table(tbl) for tbl in \
+        ["buildings", "nodes", "logsums"]]
+    # note supply correction is turned off since that's inappropraite
+    # for subsidized housing
+    return utils.lcm_simulate("hlcm_li.yaml", households, residential_units,
+                              aggregations,
+                              "unit_id",
+                              "num_units",
+                              "vacant_units")
+
+
+# overriding the urbansim_defaults in order to do a unit-based hedonic
+@sim.model('rsh_simulate')
+def rsh_simulate(residential_units):
+    # for this rsh, we need to add the buildings to the set of merge tables
+    aggregations = [sim.get_table(tbl) for tbl in \
+        ["buildings", "nodes", "logsums"]]
+    return utils.hedonic_simulate("rsh.yaml", residential_units, aggregations,
+                                  "unit_residential_price")
+
+
+# now that price is on units, override default and aggregate UP to buildings
+@sim.column('buildings', 'residential_price')
+def residential_price(buildings, residential_units):
+    return residential_units.unit_residential_price.\
+        groupby(residential_units.building_id).median().\
+        reindex(buildings.index)
+
+
 @sim.injectable("supply_and_demand_multiplier_func", autocall=False)
 def supply_and_demand_multiplier_func(demand, supply):
     s = demand / supply
@@ -282,7 +355,7 @@ def subsidized_residential_developer(households, buildings,
                           settings, summary, coffer, form_to_btype_func,
                           add_extra_columns_func, parcel_sales_price_sqft_func,
                           parcel_is_allowed_func):
-    
+
     if "disable" in acct_settings and acct_settings["disable"] == True:
         # allow disabling model from settings rather than
         # having to remove the model name from the model list
@@ -389,6 +462,6 @@ def travel_model_output(parcels, households, jobs, buildings,
      	"y_col": "y"
     }
     summary.write_parcel_output(add_xy=add_xy_config)
-    
+
     subsidy_file = "runs/run{}_subsidy_summary.csv".format(run_number)
     coffer["prop_tax_acct"].to_frame().to_csv(subsidy_file)
