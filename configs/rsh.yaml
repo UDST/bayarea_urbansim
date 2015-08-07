@@ -23,54 +23,54 @@ fitted: true
 
 fit_parameters:
     Coefficient:
-        I(year_built < 1940)[T.True]: 0.10522713175694859
-        I(year_built > 2000)[T.True]: -0.007908214442396493
-        Intercept: 3.6384214151509275
-        autoOffPeakRetail: -0.30992387877304184
-        autoPeakTotal: 0.36699595734778623
-        ave_income: 0.3225112317614747
-        ave_lot_size_per_unit: 0.08478989117305552
-        np.log1p(sqft_per_unit): -0.45254822830874786
-        poor: -0.08679690059982333
-        renters: 0.16577914697419194
-        sfdu: -0.08248849231590666
-        stories: 0.08968901401756793
-        sum_nonresidential_units: 0.007764225641015126
-        sum_residential_units: 0.002736020974877541
-        transitPeakTotal: 0.01018288810906148
+        I(year_built < 1940)[T.True]: 0.10495530468088918
+        I(year_built > 2000)[T.True]: -0.0099480901239664
+        Intercept: 3.5888098042874637
+        autoOffPeakRetail: -0.3021139260687614
+        autoPeakTotal: 0.3637418942050953
+        ave_income: 0.32341659169833953
+        ave_lot_size_per_unit: 0.08560987211613927
+        np.log1p(sqft_per_unit): -0.45443358533745526
+        poor: -0.08359395989987817
+        renters: 0.16777195767169223
+        sfdu: -0.08561180702433818
+        stories: 0.08915981342440255
+        sum_nonresidential_units: -0.00052203329652234
+        sum_residential_units: 0.008872959239566158
+        transitPeakTotal: 0.010571511213848545
     Std. Error:
-        I(year_built < 1940)[T.True]: 0.003441529849768448
-        I(year_built > 2000)[T.True]: 0.0030538875164046035
-        Intercept: 0.07204144705313945
-        autoOffPeakRetail: 0.006486578695970805
-        autoPeakTotal: 0.005922402140849039
-        ave_income: 0.006297699021609425
-        ave_lot_size_per_unit: 0.002352721417440163
-        np.log1p(sqft_per_unit): 0.0028540525976719407
-        poor: 0.0034693461696242442
-        renters: 0.002858126690047944
-        sfdu: 0.0021059111612739727
-        stories: 0.0023142717671267754
-        sum_nonresidential_units: 0.0006614609860718815
-        sum_residential_units: 0.004764852009172784
-        transitPeakTotal: 0.0006251760134457632
+        I(year_built < 1940)[T.True]: 0.003446610056574757
+        I(year_built > 2000)[T.True]: 0.0030508982424196497
+        Intercept: 0.07197951417465484
+        autoOffPeakRetail: 0.006458823477228406
+        autoPeakTotal: 0.0059296370124871335
+        ave_income: 0.006301648207822021
+        ave_lot_size_per_unit: 0.0023599936023397596
+        np.log1p(sqft_per_unit): 0.00285138763411298
+        poor: 0.0034611215627438634
+        renters: 0.0028582111170985807
+        sfdu: 0.0020904717629219856
+        stories: 0.002320811754422779
+        sum_nonresidential_units: 0.0007924912130021354
+        sum_residential_units: 0.0047391878433161614
+        transitPeakTotal: 0.0006252721599470613
     T-Score:
-        I(year_built < 1940)[T.True]: 30.57568475369419
-        I(year_built > 2000)[T.True]: -2.5895565569837933
-        Intercept: 50.50455763981453
-        autoOffPeakRetail: -47.779252098730225
-        autoPeakTotal: 61.96741602811414
-        ave_income: 51.210963028692746
-        ave_lot_size_per_unit: 36.03906971073084
-        np.log1p(sqft_per_unit): -158.56338060409007
-        poor: -25.01823005146358
-        renters: 58.0027286933915
-        sfdu: -39.16997726817934
-        stories: 38.75474578723268
-        sum_nonresidential_units: 11.737994839458878
-        sum_residential_units: 0.5742090141751404
-        transitPeakTotal: 16.288033913740183
+        I(year_built < 1940)[T.True]: 30.451749097834934
+        I(year_built > 2000)[T.True]: -3.2607085957991924
+        Intercept: 49.85876669824957
+        autoOffPeakRetail: -46.775380552497126
+        autoPeakTotal: 61.34302882943706
+        ave_income: 51.322539918507914
+        ave_lot_size_per_unit: 36.275467878922804
+        np.log1p(sqft_per_unit): -159.37278393887055
+        poor: -24.152275031220697
+        renters: 58.698238442932244
+        sfdu: -40.95334294526567
+        stories: 38.41751199962271
+        sum_nonresidential_units: -0.6587243971384366
+        sum_residential_units: 1.8722531228805366
+        transitPeakTotal: 16.90705566475818
 
-fit_rsquared_adj: 0.41993054408045116
+fit_rsquared_adj: 0.4191788103496723
 
-fit_rsquared: 0.42000715991862314
+fit_rsquared: 0.41925552547717815
