@@ -1,19 +1,19 @@
-name: hlcm_owner
+name: hlcm_renter
 
 model_type: segmented_discretechoice
 
 segmentation_col: income_quartile
 
 choosers_fit_filters:
-- hownrent == 1 
+- hownrent == 2
 
 choosers_predict_filters:
-- hownrent == 1
+- hownrent == 2
 
 alts_fit_filters: null
 
 alts_predict_filters:
-- unit_tenure == 0
+- unit_tenure == 1
 
 interaction_predict_filters: null
 

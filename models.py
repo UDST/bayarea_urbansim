@@ -119,10 +119,32 @@ def hlcm_li_simulate(households, residential_units, settings):
                               "vacant_units")
 
 
+# for now i'm drawing estimation alternatives from the buildings table instead of units 
+# table in the hope that less multicollinearity will speed up model estimation
 @sim.model('hlcm_owner_estimate')
 def hlcm_owner_estimate(households, buildings, aggregations):
     return utils.lcm_estimate("hlcm_owner.yaml", households, "building_id",
                               buildings, aggregations)
+
+
+@sim.model('hlcm_owner_simulate')
+def hlcm_owner_simulate(households, residential_units, unit_aggregations, settings):
+    return utils.lcm_simulate("hlcm_owner.yaml", households, residential_units,
+                              unit_aggregations, "unit_id", "num_units", "vacant_units",
+                              settings.get("enable_supply_correction", None))
+
+
+@sim.model('hlcm_renter_estimate')
+def hlcm_renter_estimate(households, buildings, aggregations):
+    return utils.lcm_estimate("hlcm_renter.yaml", households, "building_id",
+                              buildings, aggregations)
+
+
+@sim.model('hlcm_renter_simulate')
+def hlcm_renter_simulate(households, residential_units, unit_aggregations, settings):
+    return utils.lcm_simulate("hlcm_renter.yaml", households, residential_units,
+                              unit_aggregations, "unit_id", "num_units", "vacant_units",
+                              settings.get("enable_supply_correction", None))
 
 
 # overriding the urbansim_defaults in order to do a unit-based hedonic
@@ -149,6 +171,37 @@ def rh_cl_simulate(residential_units):
         ["buildings", "nodes", "logsums"]]
     return utils.hedonic_simulate("rrh.yaml", residential_units, aggregations, 
     								"unit_residential_rent")
+
+
+# overriding this to assign random tenure to new units -- looks like integrating
+# tenure choice and assignment into the model itself will be a labyrinth
+@sim.model('residential_developer')
+def residential_developer(feasibility, households, buildings, parcels, year,
+                          settings, summary, form_to_btype_func,
+                          add_extra_columns_func):
+    kwargs = settings['residential_developer']
+    new_buildings = utils.run_developer(
+        "residential",
+        households,
+        buildings,
+        "residential_units",
+        parcels.parcel_size,
+        parcels.ave_sqft_per_unit,
+        parcels.total_residential_units,
+        feasibility,
+        year=year,
+        form_to_btype_callback=form_to_btype_func,
+        add_more_columns_callback=add_extra_columns_func,
+        **kwargs)
+
+    # this is what's new
+    units = sim.get_table("residential_units")
+    df = units.to_frame(units.local_columns)
+    unfilled = df[df.unit_tenure.isnull()].index
+    df.loc[unfilled, "unit_tenure"] = np.random.randint(0, 2, len(unfilled))
+    sim.add_table("residential_units", df)
+		
+    summary.add_parcel_output(new_buildings)
 
 
 @sim.injectable("supply_and_demand_multiplier_func", autocall=False)

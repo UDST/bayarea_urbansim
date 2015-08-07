@@ -16,8 +16,11 @@ sim.run([
     #"households_relocation",
     "households_relocation_filtered",
     "households_transition",
-    "hlcm_simulate",
-    "hlcm_li_simulate",
+    
+    "hlcm_owner_simulate",       # location choice model for owners
+    "hlcm_renter_simulate",      # location choice model for renters
+    #"hlcm_simulate",
+    #"hlcm_li_simulate",
 
     #"jobs_relocation",
     #"jobs_transition",

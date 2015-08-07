@@ -264,7 +264,7 @@ def residential_units(buildings, households):
 
 	# fill remaining units with random tenure assignment
     unfilled = df[df.unit_tenure.isnull()].index
-    df.loc[unfilled, "unit_tenure"] = np.random.randint(0, 2, len(df))
+    df.loc[unfilled, "unit_tenure"] = np.random.randint(0, 2, len(unfilled))
     
     return df
 
@@ -306,6 +306,29 @@ def zone_id(craigslist, parcels):
     return misc.reindex(parcels.zone_id, craigslist.node_id)
 
 
+# adding some extra PUMS columns
+@sim.table('household_extras', cache=True)
+def household_extras():
+	df = pd.read_csv(os.path.join(misc.data_dir(), "household_extras.csv"))
+	df = df.set_index('serialno')
+	return df
+
+
+@sim.column('households', 'ten', cache=True)
+def ten(households, household_extras):
+    return misc.reindex(household_extras.ten, households.serialno)
+
+
+@sim.column('households', 'rac1p', cache=True)
+def rac1p(households, household_extras):
+    return misc.reindex(household_extras.rac1p, households.serialno)
+
+
+@sim.column('households', 'hisp', cache=True)
+def hisp(households, household_extras):
+    return misc.reindex(household_extras.hisp, households.serialno)
+
+
 # this specifies the relationships between tables
 sim.broadcast('parcels_geography', 'buildings', cast_index=True,
               onto_on='parcel_id')
@@ -318,5 +341,6 @@ sim.broadcast('logsums', 'homesales', cast_index=True, onto_on='zone_id')
 sim.broadcast('logsums', 'costar', cast_index=True, onto_on='zone_id')
 sim.broadcast('logsums', 'craigslist', cast_index=True, onto_on='zone_id')
 
-sim.broadcast('buildings', 'residential_units', cast_index=True,
-              onto_on='building_id')
+sim.broadcast('buildings', 'residential_units', cast_index=True, onto_on='building_id')
+
+sim.broadcast('households', 'household_extras', cast_index=True, onto_on='serialno')
