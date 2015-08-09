@@ -33,6 +33,6 @@ sim.run([
     #"non_residential_developer",
      
     "diagnostic_output",
-    "travel_model_output"
+    # "travel_model_output"
 ], years=range(in_year, out_year))
 print "Finished", time.ctime()
