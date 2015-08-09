@@ -7,5 +7,5 @@ runs
 dump.rdb
 *.h5
 zones.json
-zoning_parcels.csv
+*_zoning_parcels.csv
 data/csv*
