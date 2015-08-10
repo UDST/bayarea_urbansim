@@ -23,12 +23,36 @@ def jobs(store):
     return df
 
 
-# a table of home sales data
+# the estimation data is not in the buildings table - they are the same
 @sim.table('homesales', cache=True)
 def homesales(store):
-    df = store['homesales']
-    df = df.reset_index(drop=True)
+    # we need to read directly from the store here.  Why?  The buildings
+    # table itself drops a bunch of columns we need - most notably the
+    # redfin_sales_price column.  Why?  Because the developer model will
+    # append rows (new buildings) to the buildings table and we don't want
+    # the developer model to know about redfin_sales_price (which is
+    # meaningless for forecast buildings)
+    df = store['buildings']
+    df = df.dropna(subset=["redfin_sale_price"])
+    df["price_per_sqft"] = df.eval('redfin_sale_price / sqft_per_unit')
+    df = df.query("sqft_per_unit > 200")
+    df = df.dropna(subset=["price_per_sqft"])
     return df
+
+
+@sim.column('homesales', 'node_id', cache=True)
+def node_id(homesales, parcels):
+    return misc.reindex(parcels.node_id, homesales.parcel_id)
+
+
+@sim.column('homesales', 'zone_id', cache=True)
+def zone_id(homesales, parcels):
+    return misc.reindex(parcels.zone_id, homesales.parcel_id)
+
+
+@sim.column('homesales', 'zone_id', cache=True)
+def zone_id(homesales, parcels):
+    return misc.reindex(parcels.zone_id, homesales.parcel_id)
 
 
 # non-residential rent data
@@ -39,38 +63,42 @@ def costar(store):
     return df
 
 
-# this is the mapping of parcels to zoning attributes
-@sim.table('zoning_for_parcels', cache=True)
-def zoning_for_parcels(store):
-    df = store['zoning_for_parcels']
-    df = df.reset_index().drop_duplicates(subset='parcel').set_index('parcel')
-    return df
-
-
-# this is the actual baseline zoning, now editable in an excel file
-# (the zoning from the h5 file doesn't have all the parameters)
-# instead of creating a new h5 file I'm going to add zoning as a csv file
-# which is easily browsable in excel and is only 170k bytes
-@sim.table('zoning', cache=True)
-def zoning(store):
-    df = store.zoning
-    df2 = pd.read_csv(os.path.join(misc.data_dir(), "baseline_zoning.csv"),
-                      index_col="id")
-    # this function actually overwrites all columns in the h5 zoning that are
-    # available in the csv zoning, but preserves the allowable building types
-    for col in df2.columns:
-        df[col] = df2[col]
-    return df
-
-
 # zoning for use in the "baseline" scenario
 # comes in the hdf5
 @sim.table('zoning_baseline', cache=True)
-def zoning_baseline(zoning, zoning_for_parcels):
-    df = pd.merge(zoning_for_parcels.to_frame(),
-                  zoning.to_frame(),
-                  left_on='zoning',
-                  right_index=True)
+def zoning_baseline(parcels):
+    df = pd.read_csv(os.path.join(misc.data_dir(), "2015_06_01_zoning_parcels.csv"),
+                     index_col="geom_id")
+
+    # a zero zoning limit is actually a nan
+    for s in ["max_far", "max_dua", "max_height"]:
+        df[s].replace(0, np.nan, inplace=True)
+        
+
+    # need to reindex from geom id to the id used on parcels
+    s = parcels.geom_id # get geom_id
+    s = pd.Series(s.index, index=s.values) # invert series
+    df["new_index"] = s.loc[df.index] # get right parcel_id for each geom_id
+    df = df.dropna(subset=["new_index"])
+    df = df.set_index("new_index", drop=True)
+
+    d = {
+        "hs": "type1",
+        "ht": "type2",
+        "hm": "type3",
+        "of": "type4",
+        "ho": "type5",
+        "il": "type7",
+        "iw": "type8",
+        "ih": "type9",
+        "rs": "type10",
+        "rb": "type11",
+        "mr": "type12",
+        "mt": "type13",
+        "me": "type14"
+    }
+    df.columns = [d.get(x, x) for x in df.columns]
+
     return df
 
 
@@ -80,10 +108,10 @@ def zoning_baseline(zoning, zoning_for_parcels):
 @sim.table('zoning_test', cache=True)
 def zoning_test():
     parcels_to_zoning = pd.read_csv(os.path.join(misc.data_dir(),
-                                                 'parcels_to_zoning.csv'),
+                                                 '2015_06_01_parcels_to_zoning.csv'),
                                     low_memory=False)
     scenario_zoning = pd.read_excel(os.path.join(misc.data_dir(),
-                                                 'zoning_scenario_test.xls'),
+                                                 '2015_06_01_zoning_scenario_test.xls'),
                                     sheetname='zoning_lookup')
     df = pd.merge(parcels_to_zoning,
                   scenario_zoning,
@@ -113,7 +141,7 @@ def parcels(store):
     }
     df = utils.table_reprocess(cfg, df)
     df["zone_id"] = df.zone_id.replace(0, 1)
-    
+
     # Node id
     # import pandana as pdna
     # st = pd.HDFStore(os.path.join(misc.data_dir(), "osm_bayarea.h5"), "r")
@@ -123,7 +151,7 @@ def parcels(store):
                        # edges[["weight"]])
     # net.precompute(3000)
     # sim.add_injectable("net", net)
-    
+
     # p = parcels.to_frame(parcels.local_columns)
     df['_node_id'] = net.get_node_ids(df['x'], df['y'])
     # sim.add_table("parcels", p)
@@ -132,7 +160,7 @@ def parcels(store):
 
 @sim.table('parcels_geography', cache=True)
 def parcels_geography():
-    return pd.read_csv(os.path.join(misc.data_dir(), "parcels_geography.csv"),
+    return pd.read_csv(os.path.join(misc.data_dir(), "2015_06_01_parcels_geography.csv"),
                       index_col="parcel_id")
 
 
@@ -142,13 +170,17 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
     df = datasources.buildings(store, households, jobs,
                                building_sqft_per_job, settings)
 
-    df = df.drop(['development_type_id', 'improvement_value', 'sqft_per_unit', 'nonres_rent_per_sqft', 'res_price_per_sqft', 'redfin_sale_price', 'redfin_sale_year', 'redfin_home_type', 'costar_property_type', 'costar_rent'], axis=1)
+    df = df.drop(['development_type_id', 'improvement_value', 'sqft_per_unit', 'nonres_rent_per_sqft', 'res_price_per_sqft', 'redfin_sale_price', 'redfin_home_type', 'costar_property_type', 'costar_rent'], axis=1)
 
     # set the vacancy rate in each building to 5% for testing purposes
     #vacancy = .25
     #df["residential_units"] = (households.building_id.value_counts() *
     #                           (1.0+vacancy)).apply(np.floor).astype('int')
     df["residential_units"] = df.residential_units.fillna(0)
+
+    # we should only be using the "buildings" table during simulation, and in
+    # simulation we want to normalize the prices to 2012 style prices
+    df["redfin_sale_year"] = 2012
     return df
 
 
