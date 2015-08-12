@@ -12,6 +12,32 @@ import pandas as pd
 from cStringIO import StringIO
 
 
+# overriding the urbansim_defaults in order to do a unit-based hedonic
+@sim.model('rsh_simulate')
+def rsh_simulate(residential_units):
+    # for this rsh, we need to add the buildings to the set of merge tables
+    aggregations = [sim.get_table(tbl) for tbl in \
+        ["buildings", "nodes", "logsums"]]
+    return utils.hedonic_simulate("rsh.yaml", residential_units, aggregations,
+                                  "unit_residential_price")
+
+
+# creating a residential rental hedonic
+@sim.model('rrh_estimate')
+def rh_cl_estimate(craigslist, aggregations):
+    return utils.hedonic_estimate("rrh.yaml", craigslist, aggregations)
+
+
+@sim.model('rrh_simulate')
+def rh_cl_simulate(residential_units):
+    # copying aggregations part from fletcher's code above, but should look into whether
+    # there's a more elegant way to handle it -- change master aggregations list?
+    aggregations = [sim.get_table(tbl) for tbl in \
+        ["buildings", "nodes", "logsums"]]
+    return utils.hedonic_simulate("rrh.yaml", residential_units, aggregations, 
+    								"unit_residential_rent")
+
+
 # This augments urbansim_defaults/utils.simple_relocation()
 def relocation_with_filters(choosers, relocation_rates, fieldname):
     """
@@ -119,12 +145,11 @@ def hlcm_li_simulate(households, residential_units, settings):
                               "vacant_units")
 
 
-# for now i'm drawing estimation alternatives from the buildings table instead of units 
-# table in the hope that less multicollinearity will speed up model estimation
+# adding HLCM's for owners vs renters
 @sim.model('hlcm_owner_estimate')
-def hlcm_owner_estimate(households, buildings, aggregations):
-    return utils.lcm_estimate("hlcm_owner.yaml", households, "building_id",
-                              buildings, aggregations)
+def hlcm_owner_estimate(households, residential_units, unit_aggregations):
+    return utils.lcm_estimate("hlcm_owner.yaml", households, "unit_id",
+                              residential_units, unit_aggregations)
 
 
 @sim.model('hlcm_owner_simulate')
@@ -135,9 +160,9 @@ def hlcm_owner_simulate(households, residential_units, unit_aggregations, settin
 
 
 @sim.model('hlcm_renter_estimate')
-def hlcm_renter_estimate(households, buildings, aggregations):
-    return utils.lcm_estimate("hlcm_renter.yaml", households, "building_id",
-                              buildings, aggregations)
+def hlcm_renter_estimate(households, residential_units, unit_aggregations):
+    return utils.lcm_estimate("hlcm_renter.yaml", households, "unit_id",
+                              residential_units, unit_aggregations)
 
 
 @sim.model('hlcm_renter_simulate')
@@ -145,32 +170,6 @@ def hlcm_renter_simulate(households, residential_units, unit_aggregations, setti
     return utils.lcm_simulate("hlcm_renter.yaml", households, residential_units,
                               unit_aggregations, "unit_id", "num_units", "vacant_units",
                               settings.get("enable_supply_correction", None))
-
-
-# overriding the urbansim_defaults in order to do a unit-based hedonic
-@sim.model('rsh_simulate')
-def rsh_simulate(residential_units):
-    # for this rsh, we need to add the buildings to the set of merge tables
-    aggregations = [sim.get_table(tbl) for tbl in \
-        ["buildings", "nodes", "logsums"]]
-    return utils.hedonic_simulate("rsh.yaml", residential_units, aggregations,
-                                  "unit_residential_price")
-
-
-# residential rental hedonic
-@sim.model('rrh_estimate')
-def rh_cl_estimate(craigslist, aggregations):
-    return utils.hedonic_estimate("rrh.yaml", craigslist, aggregations)
-
-
-@sim.model('rrh_simulate')
-def rh_cl_simulate(residential_units):
-    # copying aggregations part from fletcher's code above, but should look into whether
-    # there's a more elegant way to handle it -- change master aggregations list?
-    aggregations = [sim.get_table(tbl) for tbl in \
-        ["buildings", "nodes", "logsums"]]
-    return utils.hedonic_simulate("rrh.yaml", residential_units, aggregations, 
-    								"unit_residential_rent")
 
 
 # overriding this to assign random tenure to new units -- looks like integrating
