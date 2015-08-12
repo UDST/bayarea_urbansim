@@ -314,14 +314,19 @@ def household_extras():
 	return df
 
 
-@sim.column('households', 'ten', cache=True)
-def ten(households, household_extras):
-    return misc.reindex(household_extras.ten, households.serialno)
+@sim.column('households', 'white', cache=True)
+def white(households, household_extras):
+    return misc.reindex(household_extras.white, households.serialno)
 
 
-@sim.column('households', 'rac1p', cache=True)
-def rac1p(households, household_extras):
-    return misc.reindex(household_extras.rac1p, households.serialno)
+@sim.column('households', 'black', cache=True)
+def black(households, household_extras):
+    return misc.reindex(household_extras.black, households.serialno)
+
+
+@sim.column('households', 'asian', cache=True)
+def asian(households, household_extras):
+    return misc.reindex(household_extras.asian, households.serialno)
 
 
 @sim.column('households', 'hisp', cache=True)
