@@ -8,4 +8,4 @@ dump.rdb
 *.h5
 zones.json
 *_zoning_parcels.csv
-data/csv*
+data/PUMS_*
