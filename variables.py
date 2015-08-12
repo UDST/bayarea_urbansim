@@ -8,6 +8,16 @@ from urbansim_defaults import variables
 
 
 #####################
+# NODE VARIABLES
+#####################
+
+
+@sim.column('nodes', 'poverty_rate', cache=True)
+def poverty_rate(nodes):
+    return nodes.poor.divide(nodes.population).fillna(0)
+
+
+#####################
 # HOUSEHOLD VARIABLES
 #####################
 
