@@ -281,6 +281,16 @@ def submarket_id(residential_units, buildings):
     return misc.reindex(buildings.zone_id, residential_units.building_id)
 
 
+@sim.column('residential_units', 'node_id', cache=True)
+def node_id(residential_units, buildings):
+    return misc.reindex(buildings.node_id, residential_units.building_id)
+
+
+@sim.column('residential_units', 'zone_id', cache=True)
+def zone_id(residential_units, buildings):
+    return misc.reindex(buildings.zone_id, residential_units.building_id)
+
+
 # setting up a separate aggregations list for unit-based models
 @sim.injectable("unit_aggregations")
 def aggregations(settings):

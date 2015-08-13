@@ -123,23 +123,9 @@ def empsix_id(jobs, settings):
 # these are actually functions that take parameters, but are parcel-related
 # so are defined here
 @sim.injectable('parcel_average_price', autocall=False)
-def parcel_average_price(use, quantile=.5):
-    # I'm testing out a zone aggregation rather than a network aggregation
-    # because I want to be able to determine the quantile of the distribution
-    # I also want more spreading in the development and not keep it so localized
-    if use == "residential":
-        buildings = sim.get_table('buildings')
-        s = misc.reindex(buildings.
-                            residential_price[buildings.general_type ==
-                                              "Residential"].
-                            groupby(buildings.zone_id).quantile(quantile),
-                            sim.get_table('parcels').zone_id).clip(150, 1250)
-        shifters = sim.get_table("parcels").cost_shifters
-        return s / shifters
-
-    if 'nodes' not in sim.list_tables():
-        return pd.Series(0, sim.get_table('parcels').index)
-
+def parcel_average_price(use):
+    # Fletcher had some code here to switch network aggregation with zone + quantile
+    # aggregation, but I'm rolling it back for simplicity (-Sam)
     return misc.reindex(sim.get_table('nodes')[use],
                         sim.get_table('parcels').node_id)
 
@@ -147,7 +133,8 @@ def parcel_average_price(use, quantile=.5):
 @sim.injectable('parcel_sales_price_sqft_func', autocall=False)
 def parcel_sales_price_sqft(use):
     s = parcel_average_price(use)
-    if use == "residential": s *= 1.2
+    if use in ["residential_ownerocc", "residential_rented"]: 
+        s *= 1.2
     return s
 
 
@@ -188,15 +175,17 @@ def residential_purchase_price_sqft(parcels):
     return parcels.building_purchase_price_sqft
 
 
+# don't know where this is used, but fixed the type code  -Sam 
 @sim.column('parcels', 'residential_sales_price_sqft')
 def residential_sales_price_sqft(parcel_sales_price_sqft_func):
-    return parcel_sales_price_sqft_func("residential")
+    return parcel_sales_price_sqft_func("residential_ownerocc")
 
 
+# don't know where this is used, but fixed the type code  -Sam
 # for debugging reasons this is split out into its own function
 @sim.column('parcels', 'building_purchase_price_sqft')
 def building_purchase_price_sqft():
-    return parcel_average_price("residential") * .9
+    return parcel_average_price("residential_ownerocc") * .9
 
 
 @sim.column('parcels', 'building_purchase_price')

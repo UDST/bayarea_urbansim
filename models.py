@@ -5,8 +5,10 @@ import sys
 import datasources
 import variables
 from urbansim import accounts
+from urbansim.developer import sqftproforma
 from urbansim_defaults import models
 from urbansim_defaults import utils
+import bayarea_utils
 import numpy as np
 import pandas as pd
 from cStringIO import StringIO
@@ -172,8 +174,105 @@ def hlcm_renter_simulate(households, residential_units, unit_aggregations, setti
                               settings.get("enable_supply_correction", None))
 
 
-# overriding this to assign random tenure to new units -- looks like integrating
-# tenure choice and assignment into the model itself will be a labyrinth
+# translate residential rental/ownership income into consistent terms so the two forms 
+# can compete against each other in the developer model
+@sim.model('cap_rate_precompute')
+def cap_rate_precompute(nodes):
+    # this cap rate assumption comes from the empirical ratio of smoothed, fitted 
+    # residential rents and prices in the base year
+    cap_rate = 0.063
+    nodes = sim.get_table('nodes')
+    df = nodes.to_frame(nodes.local_columns)
+    # output requirements:
+    # - needs to be yearly equivalent rent because of how the feasibility model works
+    # - (can no longer use the residential_to_yearly conversion option in 
+    #   utils.run_feasibility() because it assumes a single residential form type)
+    # - thus, need to change settings.feasibility.residential_to_yearly to False
+    #   in the settings.yaml file
+    # - names of the final columns need to match names of the use types, because of
+    #   how the parcel_sales_price_sqft_func() callback is written (see variables.py)
+    df['residential_ownerocc'] = df.residential_price.multiply(cap_rate)
+    df['residential_rented'] = df.residential_rent.multiply(12)
+    sim.add_table('nodes', df)
+
+
+@sim.model('cap_rate_diagnostics')
+def cap_rate_diagnostics(nodes):
+    df = sim.get_table('nodes').to_frame()
+    print df.residential_ownerocc.describe()
+    print df.residential_rented.describe()
+
+
+# override to separate residential use type into owner-occupied vs rented
+# - kwargs settings come from the yaml file and are used by utils.run_feasibility()
+# - pfc settings are used by the eventual SqFtProForma() class, and were not previously
+#   customized in the baseline version of bayarea_urbansim
+@sim.model('feasibility')
+def feasibility(parcels, settings,
+                parcel_sales_price_sqft_func,
+                parcel_is_allowed_func):
+    
+    # options are documented in urbansim.developer.sqftproforma.SqFtProFormaConfig()
+    # - all we're doing is splitting residential use type in two, extending building
+    #   form types as necessary, and re-applying standard residential characteristics
+    # - also requires amendments to settings.form_to_btype in the yaml file
+    
+    pfc = sqftproforma.SqFtProFormaConfig()
+    pfc.uses = ['retail', 'industrial', 'office', \
+    			'residential_ownerocc', 'residential_rented']
+    pfc.residential_uses = [False, False, False, True, True]
+    pfc.forms = {
+            'retail': {
+            	"retail": 1.0 
+            },
+            'industrial': {
+            	"industrial": 1.0 
+            },
+            'office': {
+            	"office": 1.0 
+            },
+            'residential_ownerocc': {
+            	"residential_ownerocc": 1.0 
+            },
+            'residential_rented': {
+            	"residential_rented": 1.0 
+            },
+            'mixedresidential_ownerocc': {
+            	"retail": 0.1, 
+            	"residential_ownerocc": 0.9 
+            },
+            'mixedresidential_rented': {
+            	"retail": 0.1, 
+            	"residential_rented": 0.9
+            },
+            'mixedoffice_ownerocc': {
+            	"office": 0.7, 
+            	"residential_ownerocc": 0.3
+            },
+            'mixedoffice_rented': {
+            	"office": 0.7, 
+            	"residential_rented": 0.3
+            }
+        }
+            
+    pfc.parking_rates = {"retail": 2.0, "industrial": .6, "office": 1.0, \
+            "residential_ownerocc": 1.0, "residential_rented": 1.0}
+            
+    pfc.costs['residential_ownerocc'] = pfc.costs['residential']
+    pfc.costs['residential_rented'] = pfc.costs['residential']
+    del pfc.costs['residential']
+    pfc.heights_for_costs = [15, 55, 120, np.inf, np.inf]
+
+    # the price and permissibility callbacks are defined in variables.py
+    kwargs = settings['feasibility']
+    bayarea_utils.run_feasibility(parcels,
+                          parcel_sales_price_sqft_func,
+                          parcel_is_allowed_func,
+                          config=pfc,
+                          **kwargs)
+
+
+# override to assign tenure to new units
 @sim.model('residential_developer')
 def residential_developer(feasibility, households, buildings, parcels, year,
                           settings, summary, form_to_btype_func,

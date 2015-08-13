@@ -7,7 +7,7 @@ print "Started", time.ctime()
 in_year, out_year = 2010, 2012
 
 sim.run([
-    "neighborhood_vars",         # accessibility variables
+    "neighborhood_vars",         # node-level variables for hedonics
 
     "rsh_simulate",              # residential sales hedonic
     "rrh_simulate",              # residential rental hedonic
@@ -26,7 +26,9 @@ sim.run([
     #"jobs_transition",
     #"elcm_simulate",
 
-    "price_vars",
+    "price_vars",				# node-level variables for feasibility
+    "cap_rate_precompute",		# translate rental/ownership income into consistent terms
+    "cap_rate_diagnostics",
 
     "feasibility",
     "residential_developer",

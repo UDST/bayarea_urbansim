@@ -9,13 +9,20 @@ node_col: node_id
 variable_definitions:
 
 -   aggregation: average
-    dataframe: homesales
+    dataframe: residential_units
     decay: flat
     filters:
-    - redfin_sale_year == 2009
-    varname: price_per_sqft
-    radius: 2000
     name: residential_price
+    radius: 2000
+    varname: unit_residential_price
+
+-   aggregation: average
+    dataframe: residential_units
+    decay: flat
+    filters:
+    name: residential_rent
+    radius: 2000
+    varname: unit_residential_rent
 
 -   aggregation: average
     dataframe: buildings

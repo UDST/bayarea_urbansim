@@ -112,14 +112,13 @@ jobs_transition:
 
 feasibility:
   parcel_filter: oldest_building > 1940 and oldest_building < 2000
-  residential_to_yearly: True
+  residential_to_yearly: False
   pass_through:
     - oldest_building
     - total_sqft
     - max_far
     - max_dua
     - land_cost
-    - residential
     - min_max_fars
     - max_far_from_dua
     - max_height
@@ -233,7 +232,11 @@ building_type_map:
 # forms and the building types should be the same and the
 # developer model should account for the differences
 form_to_btype:
-  residential:
+  residential_ownerocc:
+    - 1
+    - 2
+    - 3
+  residential_rented:
     - 1
     - 2
     - 3
@@ -246,9 +249,13 @@ form_to_btype:
     - 11
   office:
     - 4
-  mixedresidential:
+  mixedresidential_ownerocc:
     - 12
-  mixedoffice:
+  mixedresidential_rented:
+    - 12
+  mixedoffice_ownerocc:
+    - 14
+  mixedoffice_rented:
     - 14
 
 
