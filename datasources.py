@@ -50,9 +50,16 @@ def zone_id(homesales, parcels):
     return misc.reindex(parcels.zone_id, homesales.parcel_id)
 
 
-@sim.column('homesales', 'zone_id', cache=True)
-def zone_id(homesales, parcels):
-    return misc.reindex(parcels.zone_id, homesales.parcel_id)
+@sim.column('homesales', cache=True)
+def base_price_per_sqft(homesales):
+    s = homesales.price_per_sqft.groupby(homesales.zone_id).quantile()
+    return misc.reindex(s, homesales.zone_id)
+
+
+@sim.column('buildings', cache=True)
+def base_price_per_sqft(homesales, buildings):
+    s = homesales.price_per_sqft.groupby(homesales.zone_id).quantile()
+    return misc.reindex(s, buildings.zone_id).reindex(buildings.index).fillna(s.quantile())
 
 
 # non-residential rent data
@@ -174,22 +181,29 @@ def parcels_geography():
 
 
 @sim.table(cache=True)
-def development_projects(parcels):
+def development_projects(parcels, settings):
     df = pd.read_csv(os.path.join(misc.data_dir(), "development_projects.csv"))
 
     for fld in ['residential_sqft', 'residential_price', 'non_residential_price']:
-        df[fld] = np.nan
+        df[fld] = 0
     df["redfin_sale_year"] = 2012 # hedonic doesn't tolerate nans
     df["stories"] = df.stories.fillna(1)
     df["building_sqft"] = df.building_sqft.fillna(0)
     df["non_residential_sqft"] = df.non_residential_sqft.fillna(0)
+    df["building_type_id"] = df.building_type.map(settings["building_type_map2"])
 
     df = df.dropna(subset=["geom_id"]) # need a geom_id to link to parcel_id
 
     df = df.dropna(subset=["year_built"]) # need a year built to get built
 
+    df["geom_id"] = df.geom_id.astype("int")
+    df = df.query('residential_units != "rent"')
+    df["residential_units"] = df.residential_units.astype("int")
     df = df.set_index("geom_id")
     df = geom_id_to_parcel_id(df, parcels).reset_index() # use parcel id
+
+    # we don't predict prices for schools and hotels right now
+    df = df.query("building_type_id <= 4 or building_type_id >= 7")
 
     print "Describe of development projects"
     print df[sim.get_table('buildings').local_columns].describe()
@@ -210,6 +224,10 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
     #df["residential_units"] = (households.building_id.value_counts() *
     #                           (1.0+vacancy)).apply(np.floor).astype('int')
     df["residential_units"] = df.residential_units.fillna(0)
+    
+    # BRUTE FORCE INCREASE THE CAPACITY FOR MORE JOBS
+    print "WARNING: this has the hard-coded version which unrealistically increases non-residential square footage to house all the base year jobs" 
+    df["non_residential_sqft"] = (df.non_residential_sqft * 1.33).astype('int')
 
     # we should only be using the "buildings" table during simulation, and in
     # simulation we want to normalize the prices to 2012 style prices

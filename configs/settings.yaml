@@ -34,7 +34,7 @@ acct_settings:
   receiving_buildings_filter: pda_id > 0 and residential_units > 1
 
 
-dont_enable_supply_correction:
+enable_supply_correction:
   price_col: residential_price
   submarket_col: zone_id
   submarket_table: zones
@@ -44,8 +44,8 @@ dont_enable_supply_correction:
   clip_final_price_high: 2000
   kwargs:
     clip_change_low: 1.0
-    clip_change_high: 1.3
-    iterations: 20
+    clip_change_high: 1.2
+    iterations: 8
 
 
 table_reprocess:
@@ -97,6 +97,11 @@ jobs_transition:
   total_column: number_of_jobs
 
 
+rsh_simulate:
+  low: 200
+  high: 2000
+
+
 feasibility:
   parcel_filter: nodev != 1 and oldest_building > 1940 and (total_residential_units != 1 or parcel_acres > .5) 
   residential_to_yearly: True
@@ -114,16 +119,17 @@ feasibility:
     - building_purchase_price
     - building_purchase_price_sqft
     - pda
+    - geom_id
 
 
 residential_developer:
-  target_vacancy: .08
+  target_vacancy: .05
   min_unit_size: 1000
   bldg_sqft_per_job: 400
-
+  max_parcel_size: 150000000
 
 non_residential_developer:
-  target_vacancy: -.2
+  target_vacancy: .08
   bldg_sqft_per_job: 400
 
 
@@ -213,6 +219,25 @@ building_type_map:
   15: Parking
   16: Parking
 
+
+building_type_map2:
+  O: 0
+  HS: 1
+  HT: 2
+  HM: 3
+  OF: 4
+  HO: 5
+  SC: 6
+  IL: 7
+  IW: 8
+  IH: 9
+  RS: 10
+  RB: 11
+  MR: 12
+  MR: 13
+  ME: 14
+  PA: 15
+  PA2: 16
 
 # this maps building "forms" from the developer model
 # to building types so that when the developer builds a

@@ -10,15 +10,16 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-SLACK = MAPS = False
+SLACK = MAPS = True
 INTERACT = False
 
 if INTERACT:
     import code
     code.interact(local=locals())
+    sys.exit()
 
 run_num = sim.get_injectable("run_number")
-sys.stdout = open("logs/sim_out_%d" % run_num, 'w')
+sys.stdout = sys.stderr = open("logs/sim_out_%d" % run_num, 'w')
 
 if SLACK:
     from slacker import Slacker
@@ -26,7 +27,7 @@ if SLACK:
     host = socket.gethostname()
 
 print "Started", time.ctime()
-in_year, out_year = 2010, 2025
+in_year, out_year = 2010, 2040
 
 if SLACK:
     slack.chat.post_message('#sim_updates', 
@@ -37,15 +38,15 @@ try:
     "neighborhood_vars",            # accessibility variables
     
     "rsh_simulate",                 # residential sales hedonic
-    #"nrh_simulate",                 # non-residential rent hedonic
+    "nrh_simulate",                 # non-residential rent hedonic
 
     "households_relocation",
     "households_transition",
     "hlcm_simulate",
 
-    #"jobs_relocation",
-    #"jobs_transition",
-    #"elcm_simulate",
+    "jobs_relocation",
+    "jobs_transition",
+    "elcm_simulate",
 
     "price_vars",
 
@@ -53,7 +54,7 @@ try:
     
     "scheduled_development_events", # scheduled buildings additions
     "residential_developer",
-    #"non_residential_developer",
+    "non_residential_developer",
      
     "diagnostic_output",
     "travel_model_output"

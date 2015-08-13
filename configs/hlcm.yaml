@@ -37,7 +37,7 @@ models:
         fit_parameters:
             Coefficient:
                 autoPeakTotal: -0.03172683451212808
-                ave_income: -2.4808734060559246
+                ave_income: -3.4808734060559246
                 np.log1p(residential_price): -1.3187340340756076
                 sum_residential_units: 0.5737292436764879
             Std. Error:
@@ -83,7 +83,7 @@ models:
         fit_parameters:
             Coefficient:
                 autoPeakTotal: 0.05242066954548329
-                ave_income: 0.99616837778679767
+                ave_income: 1.99616837778679767
                 np.log1p(residential_price): -0.414507449861351055
                 sum_residential_units: 0.20167752480311513
             Std. Error:
@@ -106,7 +106,7 @@ models:
         fit_parameters:
             Coefficient:
                 autoPeakTotal: 0.0039409609269164605
-                ave_income: 2.2792993302680151
+                ave_income: 4.2792993302680151
                 np.log1p(residential_price): -0.01
                 sum_residential_units: 0.19705090067327294
             Std. Error:

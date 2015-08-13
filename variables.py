@@ -58,9 +58,17 @@ def empsix_id(jobs, settings):
 
 
 #####################
-# PARCELS VARIABLES
+# BUILDINGS VARIABLES
 #####################
 
+@sim.column('buildings', 'sqft_per_unit', cache=True)
+def unit_sqft(buildings):
+    return (buildings.building_sqft / buildings.residential_units.replace(0, 1)).clip(400, 6000)
+
+
+#####################
+# PARCELS VARIABLES
+#####################
 
 # these are actually functions that take parameters, but are parcel-related
 # so are defined here
@@ -74,7 +82,7 @@ def parcel_average_price(use, quantile=.5):
         s = misc.reindex(buildings.
                             residential_price[buildings.general_type ==
                                               "Residential"].
-                            groupby(buildings.zone_id).quantile(quantile),
+                            groupby(buildings.zone_id).quantile(.8),
                             sim.get_table('parcels').zone_id).clip(150, 1250)
         cost_shifters = sim.get_table("parcels").cost_shifters
         price_shifters = sim.get_table("parcels").price_shifters

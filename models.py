@@ -12,6 +12,18 @@ import pandas as pd
 from cStringIO import StringIO
 
 
+@sim.model('rsh_simulate')
+def rsh_simulate(buildings, aggregations, settings):
+    utils.hedonic_simulate("rsh.yaml", buildings, aggregations,
+                           "residential_price")
+    if "rsh_simulate" in settings:
+        low = float(settings["rsh_simulate"]["low"])
+        high = float(settings["rsh_simulate"]["high"])
+        buildings.update_col("residential_price",
+                             buildings.residential_price.clip(low, high))
+        print "Clipped rsh_simulate produces\n", buildings.residential_price.describe()
+
+
 @sim.injectable("supply_and_demand_multiplier_func", autocall=False)
 def supply_and_demand_multiplier_func(demand, supply):
     s = demand / supply

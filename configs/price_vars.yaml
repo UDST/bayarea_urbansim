@@ -13,7 +13,7 @@ variable_definitions:
     decay: flat
     varname: residential_price
     radius: 2000
-    name: residential_price
+    name: residential
 
 -   aggregation: average
     dataframe: buildings
