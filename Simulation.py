@@ -4,7 +4,7 @@ import time
 import traceback
 import models
 import pandas as pd
-import urbansim.sim.simulation as sim
+import orca
 import socket
 import warnings
 
@@ -18,8 +18,9 @@ if INTERACT:
     code.interact(local=locals())
     sys.exit()
 
-run_num = sim.get_injectable("run_number")
-sys.stdout = sys.stderr = open("logs/sim_out_%d" % run_num, 'w')
+run_num = orca.get_injectable("run_number")
+if SLACK:
+     sys.stdout = sys.stderr = open("logs/sim_out_%d" % run_num, 'w')
 
 if SLACK:
     from slacker import Slacker
@@ -27,14 +28,14 @@ if SLACK:
     host = socket.gethostname()
 
 print "Started", time.ctime()
-in_year, out_year = 2010, 2040
+in_year, out_year = 2010, 2012
 
 if SLACK:
     slack.chat.post_message('#sim_updates', 
         'Starting simulation %d on host %s' % (run_num, host))
 
 try:
-  sim.run([ 
+  orca.run([ 
     "neighborhood_vars",            # accessibility variables
     
     "rsh_simulate",                 # residential sales hedonic
@@ -58,7 +59,7 @@ try:
      
     "diagnostic_output",
     "travel_model_output"
-  ], years=range(in_year, out_year))
+  ], iter_vars=range(in_year, out_year))
 
 except Exception as e:
     print traceback.print_exc()
