@@ -393,7 +393,10 @@ def travel_model_output(parcels, households, jobs, buildings,
     orca.add_table("travel_model_output", zones, year)
 
     summary.add_zone_output(zones, "travel_model_outputs", year)
-    summary.write_zone_output()
+    if sys.platform != 'win32':
+        summary.write_zone_output()
+    travel_model_csv = "runs/run{}_taz_summaries_{}.csv".format(run_number, year)
+    zones.to_csv(travel_model_csv)
     add_xy_config = {
         "xy_table": "parcels",
         "foreign_key": "parcel_id",
