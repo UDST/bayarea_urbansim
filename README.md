@@ -38,6 +38,8 @@ Optional Tools
 --------------
 ####Make
 
+Because the hdf5 file used here contains proprietary data, you will need to enter credentials to download it. You can request them from Tom Buckley(tbuckl@mtc.ca.gov). Or if you already have access to Box, you can download the hdf5 file at the link above. 
+
 For fetching data, alternatively, with [AWS CLI](https://aws.amazon.com/cli/) and Make, you can 
 `make data`.
 
