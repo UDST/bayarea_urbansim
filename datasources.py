@@ -91,7 +91,7 @@ def geom_id_to_parcel_id(df, parcels):
 # comes in the hdf5
 @orca.table('zoning_baseline', cache=True)
 def zoning_baseline(parcels, zoning_lookup):
-    df = pd.read_csv(os.path.join(misc.data_dir(), "zoning_parcels.csv"),
+    df = pd.read_csv(os.path.join(misc.data_dir(), "2015_08_13_zoning_parcels.csv"),
                      index_col="geom_id")
 
     df = pd.merge(df, zoning_lookup.to_frame(), left_on="zoning_id", right_index=True)
@@ -165,7 +165,7 @@ def pda(parcels, parcels_geography):
 
 @orca.table(cache=True)
 def parcels_geography(parcels):
-    df = pd.read_csv(os.path.join(misc.data_dir(), "parcels_geography.csv"),
+    df = pd.read_csv(os.path.join(misc.data_dir(), "2015_08_13_parcels_geography.csv"),
                      index_col="geom_id")
     return geom_id_to_parcel_id(df, parcels)
 
