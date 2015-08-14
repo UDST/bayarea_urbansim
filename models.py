@@ -1,7 +1,7 @@
-import urbansim.sim.simulation as sim
 from urbansim.utils import misc
 import os
 import sys
+import orca
 import datasources
 import variables
 from urbansim import accounts
@@ -12,12 +12,24 @@ import pandas as pd
 from cStringIO import StringIO
 
 
-@sim.injectable("supply_and_demand_multiplier_func", autocall=False)
+@orca.step('rsh_simulate')
+def rsh_simulate(buildings, aggregations, settings):
+    utils.hedonic_simulate("rsh.yaml", buildings, aggregations,
+                           "residential_price")
+    if "rsh_simulate" in settings:
+        low = float(settings["rsh_simulate"]["low"])
+        high = float(settings["rsh_simulate"]["high"])
+        buildings.update_col("residential_price",
+                             buildings.residential_price.clip(low, high))
+        print "Clipped rsh_simulate produces\n", buildings.residential_price.describe()
+
+
+@orca.injectable("supply_and_demand_multiplier_func", autocall=False)
 def supply_and_demand_multiplier_func(demand, supply):
     s = demand / supply
-    settings = sim.settings
+    settings = orca.get_injectable('settings')
     print "Number of submarkets where demand exceeds supply:", len(s[s>1.0])
-    print "Raw relationship of supply and demand\n", s.describe()
+    #print "Raw relationship of supply and demand\n", s.describe()
     supply_correction = settings["enable_supply_correction"]
     clip_change_high = supply_correction["kwargs"]["clip_change_high"]
     t = s
@@ -25,15 +37,15 @@ def supply_and_demand_multiplier_func(demand, supply):
     t = t / t.max() * (clip_change_high-1)
     t += 1.0
     s.loc[s > 1.0] = t.loc[s > 1.0]
-    print "Shifters for current iteration\n", s.describe()
+    #print "Shifters for current iteration\n", s.describe()
     return s, (s <= 1.0).all()
 
 
 # this if the function for mapping a specific building that we build to a
 # specific building type
-@sim.injectable("form_to_btype_func", autocall=False)
+@orca.injectable("form_to_btype_func", autocall=False)
 def form_to_btype_func(building):
-    settings = sim.settings
+    settings = orca.get_injectable('settings')
     form = building.form
     dua = building.residential_units / (building.parcel_size / 43560.0)
     # precise mapping of form to building type for residential
@@ -46,14 +58,14 @@ def form_to_btype_func(building):
     return settings["form_to_btype"][form][0]
 
 
-@sim.injectable("coffer", cache=True)
+@orca.injectable("coffer", cache=True)
 def coffer():
     return {
         "prop_tax_acct": accounts.Account("prop_tax_act")
     }
 
 
-@sim.injectable("acct_settings", cache=True)
+@orca.injectable("acct_settings", cache=True)
 def acct_settings(settings):
     return settings["acct_settings"]
 
@@ -101,13 +113,13 @@ def tax_buildings(buildings, acct_settings, account, year):
         sort(columns=["amount"], ascending=False).head(7)
 
 
-@sim.model("calc_prop_taxes")
+@orca.step("calc_prop_taxes")
 def property_taxes(buildings, parcels_geography, acct_settings, coffer, year):
-    buildings = sim.merge_tables('buildings', [buildings, parcels_geography])
+    buildings = orca.merge_tables('buildings', [buildings, parcels_geography])
     tax_buildings(buildings, acct_settings, coffer["prop_tax_acct"], year)
 
 
-@sim.injectable("add_extra_columns_func", autocall=False)
+@orca.injectable("add_extra_columns_func", autocall=False)
 def add_extra_columns(df):
     for col in ["residential_price", "non_residential_price"]:
         df[col] = 0
@@ -240,13 +252,13 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
             parcels.parcel_size,
             parcels.ave_sqft_per_unit,
             parcels.total_residential_units,
-            sim.DataFrameWrapper("feasibility", df),
+            orca.DataFrameWrapper("feasibility", df),
             year=year,
             form_to_btype_callback=form_to_btype_func,
             add_more_columns_callback=add_extra_columns_func,
             **kwargs)
         sys.stdout = old_stdout
-        buildings = sim.get_table("buildings")
+        buildings = orca.get_table("buildings")
 
         if new_buildings is None:
             continue
@@ -276,7 +288,7 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
     summary.add_parcel_output(new_buildings)
 
 
-@sim.model('subsidized_residential_developer')
+@orca.step('subsidized_residential_developer')
 def subsidized_residential_developer(households, buildings,
                           parcels, parcels_geography, year, acct_settings,
                           settings, summary, coffer, form_to_btype_func,
@@ -296,7 +308,7 @@ def subsidized_residential_developer(households, buildings,
                           parcel_sales_price_sqft_func,
                           parcel_is_allowed_func,
                           **kwargs)
-    feasibility = sim.get_table("feasibility").to_frame()
+    feasibility = orca.get_table("feasibility").to_frame()
     # get rid of the multiindex that comes back from feasibility
     feasibility = feasibility.stack(level=0).reset_index(level=1, drop=True)
     # join to parcels_geography for filtering
@@ -315,7 +327,7 @@ def subsidized_residential_developer(households, buildings,
                              summary)
 
 
-@sim.model("travel_model_output")
+@orca.step("travel_model_output")
 def travel_model_output(parcels, households, jobs, buildings,
                         zones, homesales, year, summary, coffer, run_number):
     households = households.to_frame()
@@ -378,7 +390,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     zones['othempn'] = jobs.query("empsix == 'OTHEMPN'").\
         groupby('zone_id').size()
 
-    sim.add_table("travel_model_output", zones, year)
+    orca.add_table("travel_model_output", zones, year)
 
     summary.add_zone_output(zones, "travel_model_outputs", year)
     summary.write_zone_output()

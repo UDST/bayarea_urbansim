@@ -13,9 +13,8 @@ fit_filters:
 predict_filters: null
 
 model_expression: np.log(price_per_sqft) ~ I(year_built < 1940) + I(year_built > 2000)
-    + np.log1p(sqft_per_unit) + ave_income + stories + poor + renters + sfdu + autoPeakTotal
-    + transitPeakTotal + autoOffPeakRetail + ave_lot_size_per_unit + sum_nonresidential_units
-    + sum_residential_units
+    + np.log1p(sqft_per_unit) + poor + renters + sfdu + autoPeakTotal + sum_residential_units
+    + ave_lot_size_per_unit
 
 ytransform: np.exp
 
@@ -23,54 +22,39 @@ fitted: true
 
 fit_parameters:
     Coefficient:
-        I(year_built < 1940)[T.True]: 0.1033682688375832
-        I(year_built > 2000)[T.True]: -0.006005524050255999
-        Intercept: 2.57048634107115
-        autoOffPeakRetail: -0.281197051832964
-        autoPeakTotal: 0.3307628135825661
-        ave_income: 0.4389761139847244
-        ave_lot_size_per_unit: 0.0776791124037567
-        np.log1p(sqft_per_unit): -0.45907905026951035
-        poor: -0.04725225454921351
-        renters: 0.16895038525397293
-        sfdu: -0.08556828228865788
-        stories: 0.08567483620381938
-        sum_nonresidential_units: 0.0053824618073246115
-        sum_residential_units: -0.03159639166738088
-        transitPeakTotal: 0.012124801890625493
+        I(year_built < 1940)[T.True]: 0.0965640338338562
+        I(year_built > 2000)[T.True]: 0.01318797545295766
+        Intercept: 6.389884139534503
+        autoPeakTotal: 0.16482939639091498
+        ave_lot_size_per_unit: 0.11276049992864445
+        np.log1p(sqft_per_unit): -0.44368207688201716
+        poor: -0.21487258504091653
+        renters: 0.19898587044116214
+        sfdu: -0.10478296071548339
+        sum_residential_units: 0.14070310450395163
     Std. Error:
-        I(year_built < 1940)[T.True]: 0.0034036129435696277
-        I(year_built > 2000)[T.True]: 0.003021599319226435
-        Intercept: 0.07618741846347434
-        autoOffPeakRetail: 0.006451111877540295
-        autoPeakTotal: 0.005917066584420406
-        ave_income: 0.006842975851891974
-        ave_lot_size_per_unit: 0.0023316856046417317
-        np.log1p(sqft_per_unit): 0.002830858023948057
-        poor: 0.0034470438392718438
-        renters: 0.002817347797031103
-        sfdu: 0.002086529040226728
-        stories: 0.002289187516125695
-        sum_nonresidential_units: 0.0006560064829642081
-        sum_residential_units: 0.004685978174688102
-        transitPeakTotal: 0.0006197148131551462
+        I(year_built < 1940)[T.True]: 0.00344848362877182
+        I(year_built > 2000)[T.True]: 0.003101818040718546
+        Intercept: 0.041239912184670484
+        autoPeakTotal: 0.0014167664055312374
+        ave_lot_size_per_unit: 0.0023379294691604543
+        np.log1p(sqft_per_unit): 0.002909992091404565
+        poor: 0.0020521682497888043
+        renters: 0.0028907184752100727
+        sfdu: 0.002051901084681738
+        sum_residential_units: 0.004283595248246465
     T-Score:
-        I(year_built < 1940)[T.True]: 30.370159754173763
-        I(year_built > 2000)[T.True]: -1.9875315737738133
-        Intercept: 33.73898726209615
-        autoOffPeakRetail: -43.58892810586009
-        autoPeakTotal: 55.89979576255948
-        ave_income: 64.14988500410308
-        ave_lot_size_per_unit: 33.31457390701362
-        np.log1p(sqft_per_unit): -162.16957769901
-        poor: -13.708051522546087
-        renters: 59.967883777789666
-        sfdu: -41.009868848678856
-        stories: 37.42587079490046
-        sum_nonresidential_units: 8.20489118187309
-        sum_residential_units: -6.742752631254825
-        transitPeakTotal: 19.565131627069945
+        I(year_built < 1940)[T.True]: 28.001882632758086
+        I(year_built > 2000)[T.True]: 4.251692162414087
+        Intercept: 154.94417424850198
+        autoPeakTotal: 116.34197122927246
+        ave_lot_size_per_unit: 48.23092459206501
+        np.log1p(sqft_per_unit): -152.4684820252777
+        poor: -104.70515030287103
+        renters: 68.83612920026796
+        sfdu: -51.06628262820762
+        sum_residential_units: 32.8469653059658
 
-fit_rsquared_adj: 0.4312429389096931
+fit_rsquared_adj: 0.38428969923583534
 
-fit_rsquared: 0.4313180584754934
+fit_rsquared: 0.3843419755391775
