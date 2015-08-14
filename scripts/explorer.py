@@ -12,5 +12,5 @@ se.start(
 	parcel_output,
 	port=8080,
 	host='0.0.0.0', 
-	#write_static_file=outfile
+	write_static_file=outfile
 )

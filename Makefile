@@ -6,7 +6,8 @@ database_get = aws s3 cp s3://landuse/spandex/outputs/
 #the data necessary for simulation.py to run:
 data: data/2015_06_01_bayarea_v3.h5 \
 data/2015_06_01_osm_bayarea4326.h5 \
-data/2015_06_01_zoning_parcels.csv
+data/2015_08_13_zoning_parcels.csv \
+data/2015_08_13_parcels_geography.csv
 
 #the database that the h5 file above was exported from:
 database_backup: 2015/06/23/full.dump \
@@ -23,7 +24,12 @@ data/2015_06_01_osm_bayarea4326.h5:
 	$@.download
 	mv $@.download $@
 
-data/2015_06_01_zoning_parcels.csv: 
+data/2015_08_13_zoning_parcels.csv: 
+	$(get)$@ \
+	$@.download
+	mv $@.download $@
+
+data/2015_08_13_parcels_geography.csv: 
 	$(get)$@ \
 	$@.download
 	mv $@.download $@
