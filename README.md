@@ -41,7 +41,7 @@ filename |description
 run#_parcel_output.csv 		|csv of parcels that are built for review in Explorer
 run#_subsidy_summary.csv 	|currently empty
 run#_simulation_output.json |summary by TAZ for review in Explorer (unix only)
-run#_taz_summaries 			|A CSV for [input to the MTC travel model](http://analytics.mtc.ca.gov/foswiki/UrbanSimTwo/OutputToTravelModel) (Windows only)
+run#_taz_summaries 			|A CSV for [input to the MTC travel model](http://analytics.mtc.ca.gov/foswiki/UrbanSimTwo/OutputToTravelModel)
 
 #####Open A Browser with a Map of whats built in a Simulation
 After running a simulation, you should have a run_parcel_output.csv and run#_simulation_output.json in the runs/ directory
