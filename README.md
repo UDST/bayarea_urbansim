@@ -26,13 +26,29 @@ In the repository directory type `python Simulation.py`
 ####Estimate Regressions used in the Simulation
 In the repository directory type `python Estimation.py`  
 
-####Open A Browser with a Map of whats built in a Simulation
-Uncomment the line `#travel_model_output` in Simulation.py  
+####Review Outputs from Simulation
 
-Type `mkdir runs` to make a folder where the outputs will be written.  
-Type `python Simulation.py`
+#####Runs Directory
 
-When that completes, run, for example `python scripts/explorer.py 2`. NOTE: The `2` passed to this script is a requirement. It will correspond to the number in the filename written in the `runs` directory, which is just a count of how many times you've run the Simulation, which is written to the file RUNNUM in the repository's directory. This script will start a server and open a web-browser pointed at it.  
+First, some vocabulary.
+
+`#` = a number that is updated in the RUNNUM file in the bayarea_urbansim directory each time you run Simulation.py.
+
+Several files are output to the `runs/` directory. They are described below.
+
+filename |description
+----------------------------|-----------
+run#_parcel_output.csv 		|csv of parcels that are built for review in Explorer
+run#_subsidy_summary.csv 	|currently empty
+run#_simulation_output.json |summary by TAZ for review in Explorer (unix only)
+run#_taz_summaries 			|A CSV for [input to the MTC travel model](http://analytics.mtc.ca.gov/foswiki/UrbanSimTwo/OutputToTravelModel) (Windows only)
+
+#####Open A Browser with a Map of whats built in a Simulation
+After running a simulation, you should have a run_parcel_output.csv and run#_simulation_output.json in the runs/ directory
+
+To put these results on a map, run, `python scripts/explorer.py #`
+
+This script will start a server and open a web-browser pointed at it.
 
 Optional Tools
 --------------
