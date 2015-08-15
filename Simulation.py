@@ -4,7 +4,7 @@ import pandas as pd
 import urbansim.sim.simulation as sim
 
 print "Started", time.ctime()
-in_year, out_year = 2010, 2012
+in_year, out_year = 2010, 2011
 
 sim.run([
     "neighborhood_vars",         # node-level variables for hedonics
@@ -28,13 +28,12 @@ sim.run([
 
     "price_vars",				# node-level variables for feasibility
     "cap_rate_precompute",		# translate rental/ownership income into consistent terms
-    "cap_rate_diagnostics",
 
-    "feasibility",
-    "residential_developer",
+    "feasibility",				# calculate feasibility of all new building types
+    "residential_developer",	# choose new buildings and create them
     #"non_residential_developer",
      
     "diagnostic_output",
-    # "travel_model_output"
+    #"travel_model_output"
 ], years=range(in_year, out_year))
 print "Finished", time.ctime()

@@ -250,7 +250,7 @@ def residential_units(buildings, households):
     
     # ASSIGN INITIAL UNIT TENURE BASED ON HOUSEHOLDS TABLE
     # 0= owner occupied, 1= rented
-    # cf households/hownrent, where 1= owns, 2= rents (confirm)
+    # cf households -> hownrent, where 1= owns, 2= rents
     df["unit_tenure"] = np.nan
     ownership_mask = (households.hownrent == 1) & (households.unit_id != -1)
     rental_mask = (households.hownrent == 2) & (households.unit_id != -1)

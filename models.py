@@ -196,13 +196,6 @@ def cap_rate_precompute(nodes):
     sim.add_table('nodes', df)
 
 
-@sim.model('cap_rate_diagnostics')
-def cap_rate_diagnostics(nodes):
-    df = sim.get_table('nodes').to_frame()
-    print df.residential_ownerocc.describe()
-    print df.residential_rented.describe()
-
-
 # override to separate residential use type into owner-occupied vs rented
 # - kwargs settings come from the yaml file and are used by utils.run_feasibility()
 # - pfc settings are used by the eventual SqFtProForma() class, and were not previously
@@ -279,10 +272,10 @@ def residential_developer(feasibility, households, buildings, parcels, year,
                           add_extra_columns_func):
     kwargs = settings['residential_developer']
     new_buildings = utils.run_developer(
-        "residential",
+        ['residential_ownerocc', 'residential_rented'],
         households,
         buildings,
-        "residential_units",
+        'residential_units',
         parcels.parcel_size,
         parcels.ave_sqft_per_unit,
         parcels.total_residential_units,
@@ -291,15 +284,40 @@ def residential_developer(feasibility, households, buildings, parcels, year,
         form_to_btype_callback=form_to_btype_func,
         add_more_columns_callback=add_extra_columns_func,
         **kwargs)
-
-    # this is what's new
-    units = sim.get_table("residential_units")
-    df = units.to_frame(units.local_columns)
-    unfilled = df[df.unit_tenure.isnull()].index
-    df.loc[unfilled, "unit_tenure"] = np.random.randint(0, 2, len(unfilled))
-    sim.add_table("residential_units", df)
-		
+    
     summary.add_parcel_output(new_buildings)
+    # for testing only
+    sim.add_table("new_buildings", new_buildings)
+    
+@sim.model('add_tenure')
+def add_tenure():
+    # this is an orphan model with code that i'm working on in a notebook
+    
+    # assign tenure status to new units --
+    # will need to do the same thing in the other developer model too, for 
+    # residential portion of mixed-use buildings
+
+    units = sim.get_table("residential_units")
+    u = units.to_frame(units.local_columns)
+    f = u[['building_id']].merge(\
+    				new_buildings[['form']], left_index=True, right_index=True)
+    				
+    o_forms = ['residential_ownerocc']  # owner-occupied building form names
+    r_forms = ['residential_rented']  # rented building form names
+    
+    ownerocc = u[u.unit_tenure.isnull() & f.form.isin(o_forms)].index
+    u.loc[ownerocc, 'unit_tenure'] = 0
+    print "Assigned ownership tenure to %d units" % len(ownerocc)
+    
+    rented = u[u.unit_tenure.isnull() & f.form.isin(r_forms)].index
+    u.loc[rented, 'unit_tenure'] = 1
+    print "Assigned rental tenure to %d units" % len(rented)
+    
+    unassigned = u[u.unit_tenure.isnull()].index
+    u.loc[unassigned, 'unit_tenure'] = np.random.randint(0, 2, len(unassigned))
+    print "Assigned random tenure to %d units" % len(unassigned)
+
+    sim.add_table("residential_units", u)		
 
 
 @sim.injectable("supply_and_demand_multiplier_func", autocall=False)
@@ -319,6 +337,7 @@ def supply_and_demand_multiplier_func(demand, supply):
     return s, (s <= 1.0).all()
 
 
+# FIX THIS
 # this is the function for mapping a specific building that we build to a
 # specific building type
 @sim.injectable("form_to_btype_func", autocall=False)
