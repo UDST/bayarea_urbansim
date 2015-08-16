@@ -5,7 +5,4 @@ runs
 *.pyc
 .ipynb_checkpoints
 dump.rdb
-*.h5
-zones.json
-*_zoning_parcels.csv
-data/PUMS_*
+logs

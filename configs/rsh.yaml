@@ -13,9 +13,8 @@ fit_filters:
 predict_filters: null
 
 model_expression: np.log(price_per_sqft) ~ I(year_built < 1940) + I(year_built > 2000)
-    + np.log1p(sqft_per_unit) + ave_income + stories + poor + renters + sfdu + autoPeakTotal
-    + transitPeakTotal + autoOffPeakRetail + ave_lot_size_per_unit + sum_nonresidential_units
-    + sum_residential_units
+    + np.log1p(sqft_per_unit) + poor + renters + sfdu + autoPeakTotal + sum_residential_units
+    + ave_lot_size_per_unit
 
 ytransform: np.exp
 

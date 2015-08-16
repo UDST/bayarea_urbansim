@@ -18,7 +18,8 @@ choosers_predict_filters: null
 
 alts_fit_filters: null
 
-alts_predict_filters: null
+alts_predict_filters:
+- general_type == 'Office' or general_type == 'Industrial' or general_type == 'Retail'
 
 interaction_predict_filters: null
 

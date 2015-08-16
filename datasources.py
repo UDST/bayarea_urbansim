@@ -4,15 +4,15 @@ import os
 from urbansim_defaults import datasources
 from urbansim_defaults import utils
 from urbansim.utils import misc
-import urbansim.sim.simulation as sim
+import orca
 
 
-@sim.injectable('building_sqft_per_job', cache=True)
+@orca.injectable('building_sqft_per_job', cache=True)
 def building_sqft_per_job(settings):
     return settings['building_sqft_per_job']
 
 
-@sim.table('jobs', cache=True)
+@orca.table('jobs', cache=True)
 def jobs(store):
     # nets = store['nets']
     ###go from establishments to jobs
@@ -24,7 +24,7 @@ def jobs(store):
 
 
 # the estimation data is not in the buildings table - they are the same
-@sim.table('homesales', cache=True)
+@orca.table('homesales', cache=True)
 def homesales(store):
     # we need to read directly from the store here.  Why?  The buildings
     # table itself drops a bunch of columns we need - most notably the
@@ -40,96 +40,110 @@ def homesales(store):
     return df
 
 
-@sim.column('homesales', 'node_id', cache=True)
+@orca.column('homesales', 'node_id', cache=True)
 def node_id(homesales, parcels):
     return misc.reindex(parcels.node_id, homesales.parcel_id)
 
 
-@sim.column('homesales', 'zone_id', cache=True)
+@orca.column('homesales', 'zone_id', cache=True)
 def zone_id(homesales, parcels):
     return misc.reindex(parcels.zone_id, homesales.parcel_id)
 
 
-@sim.column('homesales', 'zone_id', cache=True)
-def zone_id(homesales, parcels):
-    return misc.reindex(parcels.zone_id, homesales.parcel_id)
+@orca.column('homesales', cache=True)
+def base_price_per_sqft(homesales):
+    s = homesales.price_per_sqft.groupby(homesales.zone_id).quantile()
+    return misc.reindex(s, homesales.zone_id)
+
+
+@orca.column('buildings', cache=True)
+def base_price_per_sqft(homesales, buildings):
+    s = homesales.price_per_sqft.groupby(homesales.zone_id).quantile()
+    return misc.reindex(s, buildings.zone_id).reindex(buildings.index).fillna(s.quantile())
 
 
 # non-residential rent data
-@sim.table('costar', cache=True)
+@orca.table('costar', cache=True)
 def costar(store):
     df = store['costar']
     df = df[df.PropertyType.isin(["Office", "Retail", "Industrial"])]
     return df
 
 
-# zoning for use in the "baseline" scenario
-# comes in the hdf5
-@sim.table('zoning_baseline', cache=True)
-def zoning_baseline(parcels):
-    df = pd.read_csv(os.path.join(misc.data_dir(), "2015_06_01_zoning_parcels.csv"),
-                     index_col="geom_id")
+@orca.table(cache=True)
+def zoning_lookup():
+     return pd.read_csv(os.path.join(misc.data_dir(), "zoning_lookup.csv"),
+                     index_col="id")
 
-    # a zero zoning limit is actually a nan
-    for s in ["max_far", "max_dua", "max_height"]:
-        df[s].replace(0, np.nan, inplace=True)
-        
 
-    # need to reindex from geom id to the id used on parcels
+# need to reindex from geom id to the id used on parcels
+def geom_id_to_parcel_id(df, parcels):
     s = parcels.geom_id # get geom_id
     s = pd.Series(s.index, index=s.values) # invert series
     df["new_index"] = s.loc[df.index] # get right parcel_id for each geom_id
     df = df.dropna(subset=["new_index"])
     df = df.set_index("new_index", drop=True)
+    df.index.name = "parcel_id"
+    return df
+
+
+# zoning for use in the "baseline" scenario
+# comes in the hdf5
+@orca.table('zoning_baseline', cache=True)
+def zoning_baseline(parcels, zoning_lookup):
+    df = pd.read_csv(os.path.join(misc.data_dir(), "2015_08_13_zoning_parcels.csv"),
+                     index_col="geom_id")
+
+    df = pd.merge(df, zoning_lookup.to_frame(), left_on="zoning_id", right_index=True)
+    df = geom_id_to_parcel_id(df, parcels)
 
     d = {
-        "hs": "type1",
-        "ht": "type2",
-        "hm": "type3",
-        "of": "type4",
-        "ho": "type5",
-        "il": "type7",
-        "iw": "type8",
-        "ih": "type9",
-        "rs": "type10",
-        "rb": "type11",
-        "mr": "type12",
-        "mt": "type13",
-        "me": "type14"
+        "HS": "type1",
+        "HT": "type2",
+        "HM": "type3",
+        "OF": "type4",
+        "HO": "type5",
+        "IL": "type7",
+        "IW": "type8",
+        "IH": "type9",
+        "RS": "type10",
+        "RB": "type11",
+        "MR": "type12",
+        "MT": "type13",
+        "ME": "type14"
     }
     df.columns = [d.get(x, x) for x in df.columns]
 
     return df
 
 
-# zoning for use in the "test" scenario - is often
-# specified by the user e.g. in arcgis or excel and
-# so is kept outside of the hdf5
-@sim.table('zoning_test', cache=True)
-def zoning_test():
-    parcels_to_zoning = pd.read_csv(os.path.join(misc.data_dir(),
-                                                 '2015_06_01_parcels_to_zoning.csv'),
-                                    low_memory=False)
-    scenario_zoning = pd.read_excel(os.path.join(misc.data_dir(),
-                                                 '2015_06_01_zoning_scenario_test.xls'),
-                                    sheetname='zoning_lookup')
-    df = pd.merge(parcels_to_zoning,
-                  scenario_zoning,
-                  on=['jurisdiction', 'pda', 'tpp', 'expansion'],
-                  how='left')
-    df = df.set_index(df.parcel_id)
-    return df
+@orca.table('zoning_np', cache=True)
+def zoning_np(parcels_geography):
+    scenario_zoning = pd.read_csv(os.path.join(misc.data_dir(),
+                                                 'zoning_mods_np.csv'))
+    return pd.merge(parcels_geography.to_frame(),
+                    scenario_zoning,
+                    on=['jurisdiction', 'pda_id', 'tpp_id', 'exp_id'],
+                    how='left')
 
 
 # this is really bizarre, but the parcel table I have right now has empty
 # zone_ids for a few parcels.  Not enough to worry about so just filling with
 # the mode
-@sim.table('parcels', cache=True)
-def parcels(store):
+@orca.table('parcels', cache=True)
+def parcels(store, net):
     df = store['parcels']
+    df["zone_id"] = df.zone_id.replace(0, 1)
+
+    df['_node_id'] = net.get_node_ids(df['x'], df['y'])
+    
     cfg = {
         "fill_nas": {
             "zone_id": {
+                "how": "mode",
+                "type": "int"
+            },
+            "_node_id": {
                 "how": "mode",
                 "type": "int"
             },
@@ -140,36 +154,54 @@ def parcels(store):
         }
     }
     df = utils.table_reprocess(cfg, df)
-    df["zone_id"] = df.zone_id.replace(0, 1)
 
-    # Node id
-    # import pandana as pdna
-    # st = pd.HDFStore(os.path.join(misc.data_dir(), "osm_bayarea.h5"), "r")
-    # nodes, edges = st.nodes, st.edges
-    net = sim.get_injectable('net')
-    # net = pdna.Network(nodes["x"], nodes["y"], edges["from"], edges["to"],
-                       # edges[["weight"]])
-    # net.precompute(3000)
-    # sim.add_injectable("net", net)
-
-    # p = parcels.to_frame(parcels.local_columns)
-    df['_node_id'] = net.get_node_ids(df['x'], df['y'])
-    # sim.add_table("parcels", p)
     return df
 
 
-@sim.column('parcels', 'node_id')
-def node_id(parcels):
-	return parcels._node_id
+@orca.column('parcels', cache=True)
+def pda(parcels, parcels_geography):
+    return parcels_geography.pda_id.reindex(parcels.index)
 
 
-@sim.table('parcels_geography', cache=True)
-def parcels_geography():
-    return pd.read_csv(os.path.join(misc.data_dir(), "2015_06_01_parcels_geography.csv"),
-                      index_col="parcel_id")
+@orca.table(cache=True)
+def parcels_geography(parcels):
+    df = pd.read_csv(os.path.join(misc.data_dir(), "2015_08_13_parcels_geography.csv"),
+                     index_col="geom_id")
+    return geom_id_to_parcel_id(df, parcels)
 
 
-@sim.table('buildings', cache=True)
+@orca.table(cache=True)
+def development_projects(parcels, settings):
+    df = pd.read_csv(os.path.join(misc.data_dir(), "development_projects.csv"))
+
+    for fld in ['residential_sqft', 'residential_price', 'non_residential_price']:
+        df[fld] = 0
+    df["redfin_sale_year"] = 2012 # hedonic doesn't tolerate nans
+    df["stories"] = df.stories.fillna(1)
+    df["building_sqft"] = df.building_sqft.fillna(0)
+    df["non_residential_sqft"] = df.non_residential_sqft.fillna(0)
+    df["building_type_id"] = df.building_type.map(settings["building_type_map2"])
+
+    df = df.dropna(subset=["geom_id"]) # need a geom_id to link to parcel_id
+
+    df = df.dropna(subset=["year_built"]) # need a year built to get built
+
+    df["geom_id"] = df.geom_id.astype("int")
+    df = df.query('residential_units != "rent"')
+    df["residential_units"] = df.residential_units.astype("int")
+    df = df.set_index("geom_id")
+    df = geom_id_to_parcel_id(df, parcels).reset_index() # use parcel id
+
+    # we don't predict prices for schools and hotels right now
+    df = df.query("building_type_id <= 4 or building_type_id >= 7")
+
+    print "Describe of development projects"
+    print df[orca.get_table('buildings').local_columns].describe()
+    
+    return df
+
+
+@orca.table('buildings', cache=True)
 def buildings(store, households, jobs, building_sqft_per_job, settings):
     # start with buildings from urbansim_defaults
     df = datasources.buildings(store, households, jobs,
@@ -182,6 +214,10 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
     #df["residential_units"] = (households.building_id.value_counts() *
     #                           (1.0+vacancy)).apply(np.floor).astype('int')
     df["residential_units"] = df.residential_units.fillna(0)
+    
+    # BRUTE FORCE INCREASE THE CAPACITY FOR MORE JOBS
+    print "WARNING: this has the hard-coded version which unrealistically increases non-residential square footage to house all the base year jobs" 
+    df["non_residential_sqft"] = (df.non_residential_sqft * 1.33).astype('int')
 
     # we should only be using the "buildings" table during simulation, and in
     # simulation we want to normalize the prices to 2012 style prices
@@ -345,15 +381,15 @@ def hisp(households, household_extras):
 
 
 # this specifies the relationships between tables
-sim.broadcast('parcels_geography', 'buildings', cast_index=True,
+orca.broadcast('parcels_geography', 'buildings', cast_index=True,
               onto_on='parcel_id')
 
-sim.broadcast('nodes', 'homesales', cast_index=True, onto_on='node_id')
-sim.broadcast('nodes', 'costar', cast_index=True, onto_on='node_id')
+orca.broadcast('nodes', 'homesales', cast_index=True, onto_on='node_id')
+orca.broadcast('nodes', 'costar', cast_index=True, onto_on='node_id')
 sim.broadcast('nodes', 'craigslist', cast_index=True, onto_on='node_id')
 
-sim.broadcast('logsums', 'homesales', cast_index=True, onto_on='zone_id')
-sim.broadcast('logsums', 'costar', cast_index=True, onto_on='zone_id')
+orca.broadcast('logsums', 'homesales', cast_index=True, onto_on='zone_id')
+orca.broadcast('logsums', 'costar', cast_index=True, onto_on='zone_id')
 sim.broadcast('logsums', 'craigslist', cast_index=True, onto_on='zone_id')
 
 sim.broadcast('buildings', 'residential_units', cast_index=True, onto_on='building_id')
