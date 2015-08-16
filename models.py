@@ -37,16 +37,16 @@ def rsh_simulate(residential_units):
 '''
 
 # creating a residential rental hedonic
-@sim.model('rrh_estimate')
+@orca.step('rrh_estimate')
 def rh_cl_estimate(craigslist, aggregations):
     return utils.hedonic_estimate("rrh.yaml", craigslist, aggregations)
 
 
-@sim.model('rrh_simulate')
+@orca.step('rrh_simulate')
 def rh_cl_simulate(residential_units):
     # copying aggregations part from fletcher's code above, but should look into whether
     # there's a more elegant way to handle it -- change master aggregations list?
-    aggregations = [sim.get_table(tbl) for tbl in \
+    aggregations = [orca.get_table(tbl) for tbl in \
         ["buildings", "nodes", "logsums"]]
     return utils.hedonic_simulate("rrh.yaml", residential_units, aggregations, 
     								"unit_residential_rent")
@@ -98,7 +98,7 @@ def relocation_with_filters(choosers, relocation_rates, fieldname):
 
 
 # This can be run as an alternative to the households_relocation model
-@sim.model('households_relocation_filtered')
+@orca.step('households_relocation_filtered')
 def households_relocation_filtered(households, settings):
     rate = settings['rates']['households_relocation_filtered']
     return relocation_with_filters(households, rate, "unit_id")
@@ -107,7 +107,7 @@ def households_relocation_filtered(households, settings):
 # Overriding the urbansim_defaults households_relocation in order to do deed
 # restrictions.  This is a rather minor point - we just need to null out
 # relocating unit ids rather than building ids
-@sim.model('households_relocation')
+@orca.step('households_relocation')
 def households_relocation(households, settings):
     rate = settings['rates']['households_relocation']
     return utils.simple_relocation(households, rate, "unit_id")
@@ -116,7 +116,7 @@ def households_relocation(households, settings):
 # Overriding the urbansim_defaults households_transition in order to do deed
 # restrictions.  This is a rather minor point - we just need to add empty
 # unit ids rather than building ids at the end of the process
-@sim.model('households_transition')
+@orca.step('households_transition')
 def households_transition(households, household_controls, year, settings):
     return utils.full_transition(households,
                                  household_controls,
@@ -127,14 +127,14 @@ def households_transition(households, household_controls, year, settings):
 
 # Overriding the urbansim_defaults hlcm_simulation in order to do deed
 # restrictions.  This is the first unit-based hlcm.
-@sim.model('hlcm_simulate')
+@orca.step('hlcm_simulate')
 def hlcm_simulate(households, residential_units, settings):
     # this actually triggers adding the unit_id to households
-    _ = sim.get_table('residential_units')
+    _ = orca.get_table('residential_units')
     # because the households have been refreshed, need to get them again
-    households = sim.get_table("households")
+    households = orca.get_table("households")
     # for this hlcm, we need to add the buildings to the set of merge tables
-    aggregations = [sim.get_table(tbl) for tbl in \
+    aggregations = [orca.get_table(tbl) for tbl in \
         ["buildings", "nodes", "logsums"]]
     return utils.lcm_simulate("hlcm.yaml", households, residential_units,
                               aggregations,
@@ -146,9 +146,9 @@ def hlcm_simulate(households, residential_units, settings):
 
 # this is the low income hlcm - which allows the choice of
 # deed restricted units
-@sim.model('hlcm_li_simulate')
+@orca.step('hlcm_li_simulate')
 def hlcm_li_simulate(households, residential_units, settings):
-    aggregations = [sim.get_table(tbl) for tbl in \
+    aggregations = [orca.get_table(tbl) for tbl in \
         ["buildings", "nodes", "logsums"]]
     # note supply correction is turned off since that's inappropraite
     # for subsidized housing
@@ -160,26 +160,26 @@ def hlcm_li_simulate(households, residential_units, settings):
 
 
 # adding HLCM's for owners vs renters
-@sim.model('hlcm_owner_estimate')
+@orca.step('hlcm_owner_estimate')
 def hlcm_owner_estimate(households, residential_units, unit_aggregations):
     return utils.lcm_estimate("hlcm_owner.yaml", households, "unit_id",
                               residential_units, unit_aggregations)
 
 
-@sim.model('hlcm_owner_simulate')
+@orca.step('hlcm_owner_simulate')
 def hlcm_owner_simulate(households, residential_units, unit_aggregations, settings):
     return utils.lcm_simulate("hlcm_owner.yaml", households, residential_units,
                               unit_aggregations, "unit_id", "num_units", "vacant_units",
                               settings.get("enable_supply_correction", None))
 
 
-@sim.model('hlcm_renter_estimate')
+@orca.step('hlcm_renter_estimate')
 def hlcm_renter_estimate(households, residential_units, unit_aggregations):
     return utils.lcm_estimate("hlcm_renter.yaml", households, "unit_id",
                               residential_units, unit_aggregations)
 
 
-@sim.model('hlcm_renter_simulate')
+@orca.step('hlcm_renter_simulate')
 def hlcm_renter_simulate(households, residential_units, unit_aggregations, settings):
     return utils.lcm_simulate("hlcm_renter.yaml", households, residential_units,
                               unit_aggregations, "unit_id", "num_units", "vacant_units",
@@ -188,12 +188,12 @@ def hlcm_renter_simulate(households, residential_units, unit_aggregations, setti
 
 # translate residential rental/ownership income into consistent terms so the two forms 
 # can compete against each other in the developer model
-@sim.model('cap_rate_precompute')
+@orca.step('cap_rate_precompute')
 def cap_rate_precompute(nodes):
     # this cap rate assumption comes from the empirical ratio of smoothed, fitted 
     # residential rents and prices in the base year
     cap_rate = 0.063
-    nodes = sim.get_table('nodes')
+    nodes = orca.get_table('nodes')
     df = nodes.to_frame(nodes.local_columns)
     # output requirements:
     # - needs to be yearly equivalent rent because of how the feasibility model works
@@ -205,14 +205,14 @@ def cap_rate_precompute(nodes):
     #   how the parcel_sales_price_sqft_func() callback is written (see variables.py)
     df['residential_ownerocc'] = df.residential_price.multiply(cap_rate)
     df['residential_rented'] = df.residential_rent.multiply(12)
-    sim.add_table('nodes', df)
+    orca.add_table('nodes', df)
 
 
 # override to separate residential use type into owner-occupied vs rented
 # - kwargs settings come from the yaml file and are used by utils.run_feasibility()
 # - pfc settings are used by the eventual SqFtProForma() class, and were not previously
 #   customized in the baseline version of bayarea_urbansim
-@sim.model('feasibility')
+@orca.step('feasibility')
 def feasibility(parcels, settings,
                 parcel_sales_price_sqft_func,
                 parcel_is_allowed_func):
@@ -278,7 +278,7 @@ def feasibility(parcels, settings,
 
 
 # override to assign tenure to new units
-@sim.model('residential_developer')
+@orca.step('residential_developer')
 def residential_developer(feasibility, households, buildings, parcels, year,
                           settings, summary, form_to_btype_func,
                           add_extra_columns_func):
@@ -299,9 +299,9 @@ def residential_developer(feasibility, households, buildings, parcels, year,
     
     summary.add_parcel_output(new_buildings)
     # for testing only
-    sim.add_table("new_buildings", new_buildings)
+    orca.add_table("new_buildings", new_buildings)
     
-@sim.model('add_tenure')
+@orca.step('add_tenure')
 def add_tenure():
     # this is an orphan model with code that i'm working on in a notebook
     
@@ -329,7 +329,7 @@ def add_tenure():
     u.loc[unassigned, 'unit_tenure'] = np.random.randint(0, 2, len(unassigned))
     print "Assigned random tenure to %d units" % len(unassigned)
 
-    sim.add_table("residential_units", u)		
+    orca.add_table("residential_units", u)		
 
 
 @orca.injectable("supply_and_demand_multiplier_func", autocall=False)

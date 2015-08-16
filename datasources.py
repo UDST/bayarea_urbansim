@@ -230,7 +230,7 @@ def households_building_id(residential_units, households):
     return df.fillna(-1)
 
 
-@sim.table('residential_units', cache=True)
+@orca.table('residential_units', cache=True)
 def residential_units(buildings, households):
     # in lieu of having a real units table in the base year, we're going to
     # build one from the buildings table.
@@ -277,12 +277,12 @@ def residential_units(buildings, households):
     # buildings) - this line protects against that and we can move on
     households["unit_id"] = households.unit_id.fillna(-1)
     households.drop(["unit_num", "building_id"], axis=1, inplace=True)
-    sim.add_table("households", households)
+    orca.add_table("households", households)
 
     # now that building_id is dropped from households, we can add the
     # function to compute it from the relationship between households
     # and residential_units
-    sim.add_column("households", "building_id", households_building_id)
+    orca.add_column("households", "building_id", households_building_id)
     
     # ASSIGN INITIAL UNIT TENURE BASED ON HOUSEHOLDS TABLE
     # 0= owner occupied, 1= rented
@@ -305,30 +305,30 @@ def residential_units(buildings, households):
     return df
 
 
-@sim.column('residential_units', 'vacant_units')
+@orca.column('residential_units', 'vacant_units')
 def vacant_units(residential_units, households):
     return residential_units.num_units.sub(
         households.unit_id[households.unit_id != -1].value_counts(),
         fill_value=0)
 
 
-@sim.column('residential_units', 'submarket_id')
+@orca.column('residential_units', 'submarket_id')
 def submarket_id(residential_units, buildings):
     return misc.reindex(buildings.zone_id, residential_units.building_id)
 
 
-@sim.column('residential_units', 'node_id', cache=True)
+@orca.column('residential_units', 'node_id', cache=True)
 def node_id(residential_units, buildings):
     return misc.reindex(buildings.node_id, residential_units.building_id)
 
 
-@sim.column('residential_units', 'zone_id', cache=True)
+@orca.column('residential_units', 'zone_id', cache=True)
 def zone_id(residential_units, buildings):
     return misc.reindex(buildings.zone_id, residential_units.building_id)
 
 
 # setting up a separate aggregations list for unit-based models
-@sim.injectable("unit_aggregations")
+@orca.injectable("unit_aggregations")
 def aggregations(settings):
     if "unit_aggregation_tables" not in settings or \
     	settings["unit_aggregation_tables"] is None:
@@ -336,10 +336,10 @@ def aggregations(settings):
     return [sim.get_table(tbl) for tbl in settings["unit_aggregation_tables"]]
 
 
-@sim.table('craigslist', cache=True)
+@orca.table('craigslist', cache=True)
 def craigslist():
 	df = pd.read_csv(os.path.join(misc.data_dir(), "sfbay_craigslist.csv"))
-	net = sim.get_injectable('net')
+	net = orca.get_injectable('net')
 	df['node_id'] = net.get_node_ids(df['longitude'], df['latitude'])
 	# fill nans -- missing bedrooms are mostly studio apts
 	df['bedrooms'] = df.bedrooms.replace(np.nan, 1)
@@ -347,51 +347,50 @@ def craigslist():
 	return df
 
 
-@sim.column('craigslist', 'zone_id', cache=True)
+@orca.column('craigslist', 'zone_id', cache=True)
 def zone_id(craigslist, parcels):
     return misc.reindex(parcels.zone_id, craigslist.node_id)
 
 
 # adding some extra PUMS columns
-@sim.table('household_extras', cache=True)
+@orca.table('household_extras', cache=True)
 def household_extras():
 	df = pd.read_csv(os.path.join(misc.data_dir(), "household_extras.csv"))
 	df = df.set_index('serialno')
 	return df
 
 
-@sim.column('households', 'white', cache=True)
+@orca.column('households', 'white', cache=True)
 def white(households, household_extras):
     return misc.reindex(household_extras.white, households.serialno)
 
 
-@sim.column('households', 'black', cache=True)
+@orca.column('households', 'black', cache=True)
 def black(households, household_extras):
     return misc.reindex(household_extras.black, households.serialno)
 
 
-@sim.column('households', 'asian', cache=True)
+@orca.column('households', 'asian', cache=True)
 def asian(households, household_extras):
     return misc.reindex(household_extras.asian, households.serialno)
 
 
-@sim.column('households', 'hisp', cache=True)
+@orca.column('households', 'hisp', cache=True)
 def hisp(households, household_extras):
     return misc.reindex(household_extras.hisp, households.serialno)
 
 
 # this specifies the relationships between tables
-orca.broadcast('parcels_geography', 'buildings', cast_index=True,
-              onto_on='parcel_id')
+orca.broadcast('parcels_geography', 'buildings', cast_index=True, onto_on='parcel_id')
 
 orca.broadcast('nodes', 'homesales', cast_index=True, onto_on='node_id')
 orca.broadcast('nodes', 'costar', cast_index=True, onto_on='node_id')
-sim.broadcast('nodes', 'craigslist', cast_index=True, onto_on='node_id')
+orca.broadcast('nodes', 'craigslist', cast_index=True, onto_on='node_id')
 
 orca.broadcast('logsums', 'homesales', cast_index=True, onto_on='zone_id')
 orca.broadcast('logsums', 'costar', cast_index=True, onto_on='zone_id')
-sim.broadcast('logsums', 'craigslist', cast_index=True, onto_on='zone_id')
+orca.broadcast('logsums', 'craigslist', cast_index=True, onto_on='zone_id')
 
-sim.broadcast('buildings', 'residential_units', cast_index=True, onto_on='building_id')
+orca.broadcast('buildings', 'residential_units', cast_index=True, onto_on='building_id')
 
-sim.broadcast('households', 'household_extras', cast_index=True, onto_on='serialno')
+orca.broadcast('households', 'household_extras', cast_index=True, onto_on='serialno')
