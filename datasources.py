@@ -312,28 +312,28 @@ def vacant_units(residential_units, households):
         fill_value=0)
 
 
+@orca.column('residential_units', 'node_id')
+def node_id(residential_units, buildings):
+    return misc.reindex(buildings.node_id, residential_units.building_id)
+
+
+@orca.column('residential_units', 'zone_id')
+def zone_id(residential_units, buildings):
+    return misc.reindex(buildings.zone_id, residential_units.building_id)
+
+
 @orca.column('residential_units', 'submarket_id')
 def submarket_id(residential_units, buildings):
     return misc.reindex(buildings.zone_id, residential_units.building_id)
 
 
-@orca.column('residential_units', 'node_id', cache=True)
-def node_id(residential_units, buildings):
-    return misc.reindex(buildings.node_id, residential_units.building_id)
-
-
-@orca.column('residential_units', 'zone_id', cache=True)
-def zone_id(residential_units, buildings):
-    return misc.reindex(buildings.zone_id, residential_units.building_id)
-
-
 # setting up a separate aggregations list for unit-based models
 @orca.injectable("unit_aggregations")
-def aggregations(settings):
+def unit_aggregations(settings):
     if "unit_aggregation_tables" not in settings or \
     	settings["unit_aggregation_tables"] is None:
     	return []
-    return [sim.get_table(tbl) for tbl in settings["unit_aggregation_tables"]]
+    return [orca.get_table(tbl) for tbl in settings["unit_aggregation_tables"]]
 
 
 @orca.table('craigslist', cache=True)

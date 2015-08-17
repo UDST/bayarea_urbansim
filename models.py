@@ -8,33 +8,15 @@ from urbansim import accounts
 from urbansim.developer import sqftproforma
 from urbansim_defaults import models
 from urbansim_defaults import utils
-import bayarea_utils
 import numpy as np
 import pandas as pd
 from cStringIO import StringIO
 
 
 @orca.step('rsh_simulate')
-def rsh_simulate(buildings, aggregations, settings):
-    utils.hedonic_simulate("rsh.yaml", buildings, aggregations,
-                           "residential_price")
-    if "rsh_simulate" in settings:
-        low = float(settings["rsh_simulate"]["low"])
-        high = float(settings["rsh_simulate"]["high"])
-        buildings.update_col("residential_price",
-                             buildings.residential_price.clip(low, high))
-        print "Clipped rsh_simulate produces\n", buildings.residential_price.describe()
-
-'''
-# overriding the urbansim_defaults in order to do a unit-based hedonic
-@sim.model('rsh_simulate')
-def rsh_simulate(residential_units):
-    # for this rsh, we need to add the buildings to the set of merge tables
-    aggregations = [sim.get_table(tbl) for tbl in \
-        ["buildings", "nodes", "logsums"]]
-    return utils.hedonic_simulate("rsh.yaml", residential_units, aggregations,
-                                  "unit_residential_price")
-'''
+def rsh_simulate(residential_units, unit_aggregations):
+    return utils.hedonic_simulate("rsh.yaml", residential_units, 
+    								unit_aggregations, "unit_residential_price")
 
 # creating a residential rental hedonic
 @orca.step('rrh_estimate')
@@ -43,13 +25,9 @@ def rh_cl_estimate(craigslist, aggregations):
 
 
 @orca.step('rrh_simulate')
-def rh_cl_simulate(residential_units):
-    # copying aggregations part from fletcher's code above, but should look into whether
-    # there's a more elegant way to handle it -- change master aggregations list?
-    aggregations = [orca.get_table(tbl) for tbl in \
-        ["buildings", "nodes", "logsums"]]
-    return utils.hedonic_simulate("rrh.yaml", residential_units, aggregations, 
-    								"unit_residential_rent")
+def rh_cl_simulate(residential_units, unit_aggregations):
+    return utils.hedonic_simulate("rrh.yaml", residential_units, 
+    								unit_aggregations, "unit_residential_rent")
 
 
 # This augments urbansim_defaults/utils.simple_relocation()
@@ -208,6 +186,88 @@ def cap_rate_precompute(nodes):
     orca.add_table('nodes', df)
 
 
+# OVERRIDE ONLY TO COMMENT OUT LINES THAT ASSUME A BUILDING FORM OR 
+# USE TYPE CALLED 'RESIDENTIAL'
+
+def run_feasibility(parcels, parcel_price_callback,
+                    parcel_use_allowed_callback, residential_to_yearly=True,
+                    parcel_filter=None, only_built=True, forms_to_test=None,
+                    config=None, pass_through=[]):
+    """
+    Execute development feasibility on all parcels
+
+    Parameters
+    ----------
+    parcels : DataFrame Wrapper
+        The data frame wrapper for the parcel data
+    parcel_price_callback : function
+        A callback which takes each use of the pro forma and returns a series
+        with index as parcel_id and value as yearly_rent
+    parcel_use_allowed_callback : function
+        A callback which takes each form of the pro forma and returns a series
+        with index as parcel_id and value and boolean whether the form
+        is allowed on the parcel
+    residential_to_yearly : boolean (default true)
+        Whether to use the cap rate to convert the residential price from total
+        sales price per sqft to rent per sqft
+    parcel_filter : string
+        A filter to apply to the parcels data frame to remove parcels from
+        consideration - is typically used to remove parcels with buildings
+        older than a certain date for historical preservation, but is
+        generally useful
+    only_built : boolean
+        Only return those buildings that are profitable - only those buildings
+        that "will be built"
+    forms_to_test : list of strings (optional)
+        Pass the list of the names of forms to test for feasibility - if set to
+        None will use all the forms available in ProFormaConfig
+    config : SqFtProFormaConfig configuration object.  Optional.  Defaults to
+        None
+    pass_through : list of strings
+        Will be passed to the feasibility lookup function - is used to pass
+        variables from the parcel dataframe to the output dataframe, usually
+        for debugging
+
+    Returns
+    -------
+    Adds a table called feasibility to the sim object (returns nothing)
+    """
+
+    pf = sqftproforma.SqFtProForma(config) if config \
+        else sqftproforma.SqFtProForma()
+
+    df = parcels.to_frame()
+
+    if parcel_filter:
+        df = df.query(parcel_filter)
+
+    # add prices for each use
+    for use in pf.config.uses:
+        # assume we can get the 80th percentile price for new development
+        df[use] = parcel_price_callback(use)
+
+    # convert from cost to yearly rent
+#    if residential_to_yearly:
+#        df["residential"] *= pf.config.cap_rate
+
+    print "Describe of the yearly rent by use"
+    print df[pf.config.uses].describe()
+
+    d = {}
+    forms = forms_to_test or pf.config.forms
+    for form in forms:
+        print "Computing feasibility for form %s" % form
+        allowed = parcel_use_allowed_callback(form).loc[df.index]
+        d[form] = pf.lookup(form, df[allowed], only_built=only_built,
+                            pass_through=pass_through)
+#        if residential_to_yearly and "residential" in pass_through:
+#            d[form]["residential"] /= pf.config.cap_rate
+
+    far_predictions = pd.concat(d.values(), keys=d.keys(), axis=1)
+
+    orca.add_table("feasibility", far_predictions)
+
+
 # override to separate residential use type into owner-occupied vs rented
 # - kwargs settings come from the yaml file and are used by utils.run_feasibility()
 # - pfc settings are used by the eventual SqFtProForma() class, and were not previously
@@ -270,7 +330,7 @@ def feasibility(parcels, settings,
 
     # the price and permissibility callbacks are defined in variables.py
     kwargs = settings['feasibility']
-    bayarea_utils.run_feasibility(parcels,
+    run_feasibility(parcels,
                           parcel_sales_price_sqft_func,
                           parcel_is_allowed_func,
                           config=pfc,

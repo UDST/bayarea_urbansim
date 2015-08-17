@@ -66,7 +66,7 @@ try:
      
     "diagnostic_output",
     "travel_model_output"
-], years=range(in_year, out_year))
+], iter_vars=range(in_year, out_year))
 
 except Exception as e:
     print traceback.print_exc()

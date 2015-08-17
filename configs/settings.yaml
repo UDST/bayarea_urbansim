@@ -40,7 +40,7 @@ acct_settings:
   receiving_buildings_filter: pda_id > 0 and residential_units > 1
 
 
-enable_supply_correction:
+dont_enable_supply_correction:
   price_col: unit_residential_price
   submarket_col: zone_id
   submarket_table: zones
@@ -108,11 +108,6 @@ jobs_transition:
   add_columns:
     - empsix_id
   total_column: number_of_jobs
-
-
-rsh_simulate:
-  low: 200
-  high: 2000
 
 
 feasibility:
