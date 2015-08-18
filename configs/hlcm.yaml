@@ -2,14 +2,6 @@ name: hlcm
 
 model_type: segmented_discretechoice
 
-probability_mode: single_chooser
-
-choice_mode: aggregate
-
-remove_alts: True
-
-prediction_sample_size: null
-
 segmentation_col: income_quartile
 
 choosers_fit_filters: null
@@ -24,106 +16,138 @@ interaction_predict_filters: null
 
 choice_column: null
 
-sample_size: 100
+sample_size: 50
 
-estimation_sample_size: 2500
+estimation_sample_size: 10000
+
+prediction_sample_size: null
 
 default_config:
-    model_expression: np.log1p(residential_price) + sum_residential_units + ave_income
-        +  autoPeakTotal - 1
+    model_expression: transitPeakTotal + autoPeakTotal + population + ave_lot_size_per_unit
+        + ave_income + residential_price
 
 models:
     1:
         fit_parameters:
             Coefficient:
-                autoPeakTotal: -0.03172683451212808
-                ave_income: -3.4808734060559246
-                np.log1p(residential_price): -1.3187340340756076
-                sum_residential_units: 0.5737292436764879
+                autoPeakTotal: -0.20930182626582328
+                ave_income: -4.0
+                ave_lot_size_per_unit: 0.24156421978515305
+                population: 0.5483063036363159
+                residential_price: -3.0
+                transitPeakTotal: 0.06707360876976828
             Std. Error:
-                autoPeakTotal: 0.012657310742085114
-                ave_income: 0.011506345242403598
-                np.log1p(residential_price): 0.021517707082255807
-                sum_residential_units: 0.009563841895734795
+                autoPeakTotal: 0.016472531214566485
+                ave_income: 0.0176738595721477
+                ave_lot_size_per_unit: 0.013775573594150723
+                population: 0.015612229216862778
+                residential_price: 9.963976287095561e-05
+                transitPeakTotal: 0.006599014825176569
             T-Score:
-                autoPeakTotal: -2.5066015331864664
-                ave_income: -41.7920196139946
-                np.log1p(residential_price): -14.8126393233806
-                sum_residential_units: 59.98941115205543
+                autoPeakTotal: -12.706111983611837
+                ave_income: -37.73100905109339
+                ave_lot_size_per_unit: 17.535692298702116
+                population: 35.12030831856414
+                residential_price: 26.46147253731503
+                transitPeakTotal: 10.164185192290972
         fitted: true
         log_likelihoods:
-            convergence: -65664.09232682174
-            'null': -68690.71849420968
-            ratio: 0.04406164666399681
+            convergence: -36825.55168793065
+            'null': -39077.19780121935
+            ratio: 0.057620460012064556
         name: 1
     2:
         fit_parameters:
             Coefficient:
-                autoPeakTotal: -0.03462001203730808
-                ave_income: -1.34042982330463095
-                np.log1p(residential_price): -0.97466351930242808
-                sum_residential_units: 0.37924072884537574
+                autoPeakTotal: -0.15827356680892232
+                ave_income: -2.0
+                ave_lot_size_per_unit: 0.15450280049247805
+                population: 0.4382570240652942
+                residential_price: -2.0
+                transitPeakTotal: 0.007746343818090398
             Std. Error:
-                autoPeakTotal: 0.013210084171794657
-                ave_income: 0.011632189773303528
-                np.log1p(residential_price): 0.02194214233290554
-                sum_residential_units: 0.009720813484447538
+                autoPeakTotal: 0.018444030441888914
+                ave_income: 0.023345937537372723
+                ave_lot_size_per_unit: 0.015949646564554658
+                population: 0.015573428097099669
+                residential_price: 0.00010165413530537598
+                transitPeakTotal: 0.00645585041815266
             T-Score:
-                autoPeakTotal: -2.620726074647318
-                ave_income: -29.2661854680135
-                np.log1p(residential_price): -3.4027451909496964
-                sum_residential_units: 39.01327079797675
+                autoPeakTotal: -8.581289610619022
+                ave_income: -21.59072213302909
+                ave_lot_size_per_unit: 9.686910607526183
+                population: 28.141332873711562
+                residential_price: 27.026031276827982
+                transitPeakTotal: 1.1998951828730586
         fitted: true
         log_likelihoods:
-            convergence: -67365.07990241774
-            'null': -68709.13917495361
-            ratio: 0.019561579269877116
+            convergence: -37834.87644730006
+            'null': -39053.7256631868
+            ratio: 0.031209550310219436
         name: 2
     3:
         fit_parameters:
             Coefficient:
-                autoPeakTotal: 0.05242066954548329
-                ave_income: 1.99616837778679767
-                np.log1p(residential_price): -0.414507449861351055
-                sum_residential_units: 0.20167752480311513
+                autoPeakTotal: -0.08088097748077604
+                ave_income: 2.0
+                ave_lot_size_per_unit: -0.06773469078830172
+                population: 0.2622959665074417
+                residential_price: -1.0
+                transitPeakTotal: -0.048723501129629594
             Std. Error:
-                autoPeakTotal: 0.013861405402813528
-                ave_income: 0.011965389363557458
-                np.log1p(residential_price): 0.022694791253598155
-                sum_residential_units: 0.00977074089225903
+                autoPeakTotal: 0.019040819200438413
+                ave_income: 0.027205303516597685
+                ave_lot_size_per_unit: 0.017740578914201065
+                population: 0.015426514359090782
+                residential_price: 0.00010059845313386946
+                transitPeakTotal: 0.006237649588702011
             T-Score:
-                autoPeakTotal: 3.7817716185433237
-                ave_income: 2.475208861057432
-                np.log1p(residential_price): -0.6392413880013532
-                sum_residential_units: 20.640965411629757
+                autoPeakTotal: -4.247767736742848
+                ave_income: -5.631656926961309
+                ave_lot_size_per_unit: -3.818065414656853
+                population: 17.0029314725184
+                residential_price: 23.568881479215538
+                transitPeakTotal: -7.8111956173172015
         fitted: true
         log_likelihoods:
-            convergence: -68279.33292683754
-            'null': -68718.34951532558
-            ratio: 0.006388636973740591
+            convergence: -38496.31384009608
+            'null': -39034.165548159675
+            ratio: 0.013778998487876004
         name: 3
     4:
         fit_parameters:
             Coefficient:
-                autoPeakTotal: 0.0039409609269164605
-                ave_income: 4.2792993302680151
-                np.log1p(residential_price): -0.01
-                sum_residential_units: 0.19705090067327294
+                autoPeakTotal: 0.07962231426627753
+                ave_income: 5.0
+                ave_lot_size_per_unit: -0.09718814167269077
+                population: 0.1651245949804263
+                residential_price: -0.5
+                transitPeakTotal: -0.06388204630553299
             Std. Error:
-                autoPeakTotal: 0.014826185523650401
-                ave_income: 0.012571372922172658
-                np.log1p(residential_price): 0.022107266480099176
-                sum_residential_units: 0.009312120026421752
+                autoPeakTotal: 0.019903001223181036
+                ave_income: 0.028337756187613444
+                ave_lot_size_per_unit: 0.01861243736396765
+                population: 0.01467293535134389
+                residential_price: 9.53437792769249e-05
+                transitPeakTotal: 0.005991169881890906
             T-Score:
-                autoPeakTotal: 0.265810846669221
-                ave_income: 101.7628971941212
-                np.log1p(residential_price): 13.066396081045502
-                sum_residential_units: 21.16069167001396
+                autoPeakTotal: 4.000517980853128
+                ave_income: 39.33344126775373
+                ave_lot_size_per_unit: -5.221677299548101
+                population: 11.253685171133982
+                residential_price: 26.608027553938307
+                transitPeakTotal: -10.662699867454071
         fitted: true
         log_likelihoods:
-            convergence: -66932.73716533386
-            'null': -68769.0063873714
-            ratio: 0.02670198856289918
+            convergence: -37550.85881870148
+            'null': -39030.25352515425
+            ratio: 0.037903794437290195
         name: 4
 
 fitted: true
+
+choice_mode: aggregate
+
+remove_alts: true
+
+probability_mode: single_chooser

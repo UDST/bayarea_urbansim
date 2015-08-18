@@ -51,6 +51,12 @@ def zone_id(homesales, parcels):
 
 
 @orca.column('homesales', cache=True)
+def modern_condo(homesales):
+    # this is to try and differentiate between new construction in the city vs in the burbs
+    return ((homesales.year_built > 2000) * (homesales.building_type_id == 3)).astype('int')
+
+
+@orca.column('homesales', cache=True)
 def base_price_per_sqft(homesales):
     s = homesales.price_per_sqft.groupby(homesales.zone_id).quantile()
     return misc.reindex(s, homesales.zone_id)
@@ -86,6 +92,13 @@ def geom_id_to_parcel_id(df, parcels):
     df.index.name = "parcel_id"
     return df
 
+
+@orca.injectable(autocall=False)
+def parcel_id_to_geom_id(s):
+    parcels = orca.get_table("parcels")
+    g = parcels.geom_id # get geom_id
+    return pd.Series(g.loc[s.values].values, index=s.index)
+ 
 
 # zoning for use in the "baseline" scenario
 # comes in the hdf5
@@ -155,6 +168,11 @@ def parcels(store, net):
     }
     df = utils.table_reprocess(cfg, df)
 
+    # have to do it this way because otherwise it's a circular reference
+    sdem = pd.read_csv(os.path.join(misc.data_dir(), "development_projects.csv"))
+    # mark parcels that are going to be developed by the sdem
+    df["sdem"] = df.geom_id.isin(sdem.geom_id).astype('int')
+
     return df
 
 
@@ -171,8 +189,17 @@ def parcels_geography(parcels):
 
 
 @orca.table(cache=True)
+def development_events(parcels, settings):
+    df = pd.read_csv(os.path.join(misc.data_dir(), "development_projects.csv"))
+    df = df.query("action != 'build'")
+    return df
+
+
+@orca.table(cache=True)
 def development_projects(parcels, settings):
     df = pd.read_csv(os.path.join(misc.data_dir(), "development_projects.csv"))
+
+    df = df.query("action == 'build'")
 
     for fld in ['residential_sqft', 'residential_price', 'non_residential_price']:
         df[fld] = 0
@@ -180,6 +207,10 @@ def development_projects(parcels, settings):
     df["stories"] = df.stories.fillna(1)
     df["building_sqft"] = df.building_sqft.fillna(0)
     df["non_residential_sqft"] = df.non_residential_sqft.fillna(0)
+
+    df["building_type"] = df.building_type.replace("HP", "OF")
+    df["building_type"] = df.building_type.replace("GV", "OF")
+    df["building_type"] = df.building_type.replace("SC", "OF")
     df["building_type_id"] = df.building_type.map(settings["building_type_map2"])
 
     df = df.dropna(subset=["geom_id"]) # need a geom_id to link to parcel_id
@@ -189,8 +220,10 @@ def development_projects(parcels, settings):
     df["geom_id"] = df.geom_id.astype("int")
     df = df.query('residential_units != "rent"')
     df["residential_units"] = df.residential_units.astype("int")
+    geom_id = df.geom_id
     df = df.set_index("geom_id")
     df = geom_id_to_parcel_id(df, parcels).reset_index() # use parcel id
+    df["geom_id"] = geom_id  # add it back again cause it goes away above
 
     # we don't predict prices for schools and hotels right now
     df = df.query("building_type_id <= 4 or building_type_id >= 7")

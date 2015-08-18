@@ -10,7 +10,8 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-SLACK = MAPS = False
+SLACK = MAPS = True
+LOGS = True
 INTERACT = False
 
 if INTERACT:
@@ -19,7 +20,7 @@ if INTERACT:
     sys.exit()
 
 run_num = orca.get_injectable("run_number")
-if SLACK:
+if LOGS:
      sys.stdout = sys.stderr = open("logs/sim_out_%d" % run_num, 'w')
 
 if SLACK:
@@ -28,7 +29,7 @@ if SLACK:
     host = socket.gethostname()
 
 print "Started", time.ctime()
-in_year, out_year = 2010, 2012
+in_year, out_year = 2010, 2025
 
 if SLACK:
     slack.chat.post_message('#sim_updates', 
