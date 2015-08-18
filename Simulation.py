@@ -10,8 +10,8 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-SLACK = MAPS = True
-LOGS = True
+SLACK = MAPS = False
+LOGS = False
 INTERACT = False
 
 if INTERACT:
@@ -29,7 +29,7 @@ if SLACK:
     host = socket.gethostname()
 
 print "Started", time.ctime()
-in_year, out_year = 2010, 2025
+in_year, out_year = 2010, 2012
 
 if SLACK:
     slack.chat.post_message('#sim_updates', 
