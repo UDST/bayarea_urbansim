@@ -10,6 +10,8 @@ In words, this calculation first takes the `max_dua` (max dwelling units per acr
 
 The result is then grouped by jurisdiction, summed and writted to a csv.  We call this calculation `zoned_du`.  `zoned_du` in concept is the amount of capacity that could be built if there were no buildings currently in existance.  It is thus a metric of *total* capacity and not change in capacity.
 
+The second calaculation (described below) is defined [here](https://github.com/MetropolitanTransportationCommission/bayarea_urbansim/blob/11041451fdcf1ba8b473428b10e8a8a59c7aba89/variables.py#L156).
+
 The second calculation is `zoned_du_underbuild`, which takes into account the most basic concept of real estate feasibility, often called "soft site analysis" in planning practice.  This calculation removes parcels which do not have enough capacity to build at least 50% more units that are currently on the parcel, assuming that the cost of acquistion of the building and land, demolition, and construction, will not be financial feasible unless selling at the end roughly 150% as many units as are in existance now.  This is probably conservative (i.e. you would need more than 50% more capacity to justify teardown).  The result is thus a metric of *change* in capacity or the number of units that could be built in each jurisdiction in addition to the units that are built now.
 
 
