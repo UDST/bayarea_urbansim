@@ -11,8 +11,6 @@ Put the following in the data directory:
 * https://s3.amazonaws.com/bayarea_urbansim/data/2015_08_13_zoning_parcels.csv
 * https://mtcdrive.box.com/2015-06-01-bayarea-v3-h5  
 * https://s3.amazonaws.com/bayarea_urbansim/data/2015_08_19_parcels_geography.csv
-* data/2015_08_13_zoning_parcels.csv \
-data/2015_08_19_parcels_geography.csv
 
 ####Data Description  
 [The MTC Analytics Wiki](http://analytics.mtc.ca.gov/foswiki/UrbanSimTwo/InputFiles?validation_key=0301bd909f2a02c80cb5e315fec942d8) contains a draft table with descriptions for the data inputs. 
