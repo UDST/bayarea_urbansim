@@ -148,7 +148,8 @@ def zoned_du(parcels):
     GROSS_AVE_UNIT_SIZE = 1000
     s = parcels.max_dua * parcels.parcel_acres
     s2 = parcels.max_far * parcels.parcel_size / GROSS_AVE_UNIT_SIZE
-    return s.fillna(s2).reindex(parcels.index).fillna(0).round().astype('int')
+    s3 = parcel_is_allowed('residential')
+    return (s.fillna(s2)*s3).reindex(parcels.index).fillna(0).astype('int')
 
 
 @orca.column('parcels', 'zoned_du_underbuild')
@@ -159,7 +160,7 @@ def zoned_du_underbuild(parcels):
     # we don't build it - I mean we're not turning a 10 story building into an
     # 11 story building
     s = s[ratio > .5].reindex(parcels.index).fillna(0)
-    return s
+    return s.astype('int')
 
 
 @orca.column('parcels')
