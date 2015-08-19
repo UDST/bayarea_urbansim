@@ -1,5 +1,6 @@
 juris_name,zoned_du,zoned_du_underbuild
-Alameda,214764,159467
+Alameda,50251,33211
+Alameda County,164513,126256
 Albany,7750,3786
 American Canyon,4125,2884
 Antioch,78529,66175
@@ -17,7 +18,7 @@ Clayton,3490,2235
 Cloverdale,5588,3281
 Colma,674,322
 Concord,119558,77826
-Contra Costa,80810,46145
+Contra Costa County,80810,46145
 Corte Madera,4667,3079
 Cotati,8315,6676
 Cupertino,23751,13893
@@ -39,13 +40,13 @@ Healdsburg,6825,4316
 Hercules,16054,10467
 Hillsborough,3994,1279
 Lafayette,22965,14866
-Lake,22,21
+Lake County,22,21
 Larkspur,5089,2379
 Livermore,35744,27008
 Los Altos,19191,13175
 Los Altos Hills,5,4
 Los Gatos,28,19
-Marin,44049,27896
+Marin County,44049,27896
 Martinez,22619,12299
 Menlo Park,15295,7752
 Mill Valley,5075,1895
@@ -55,7 +56,8 @@ Monte Sereno,805,172
 Moraga,4344,2734
 Morgan Hill,16716,12236
 Mountain View,56958,41312
-Napa,393564,380487
+Napa,68957,60806
+Napa County,324607,319681
 Newark,5825,2338
 Novato,78192,70630
 Oakland,429653,298748
@@ -75,30 +77,34 @@ Richmond,94503,66331
 Rio Vista,35171,31766
 Rohnert Park,27444,20180
 Ross,1301,686
-Sacramento,0,0
+Sacramento County,0,0
 San Anselmo,4621,2737
-San Benito,0,0
+San Benito County,0,0
 San Bruno,14571,7256
 San Carlos,19384,12332
 San Francisco,768209,557402
-San Joaquin,0,0
+San Francisco County,0,0
+San Joaquin County,0,0
 San Jose,1421188,1173473
 San Leandro,28855,8491
-San Mateo,112341,66186
+San Mateo,71801,41228
+San Mateo County,40540,24958
 San Pablo,17870,10942
 San Rafael,50852,35917
 San Ramon,48494,32714
-Santa Clara,110138,74796
-Santa Cruz,0,0
+Santa Clara,46105,22484
+Santa Clara County,64033,52312
+Santa Cruz County,0,0
 Santa Rosa,125993,77829
 Saratoga,8313,3487
 Sausalito,3065,757
 Sebastopol,6772,4580
-Solano,27125,24216
-Sonoma,43628,35392
+Solano County,27125,24216
+Sonoma,12986,10419
+Sonoma County,30642,24973
 South San Francisco,25435,12612
 St. Helena,10591,8281
-Stanislaus,0,0
+Stanislaus County,0,0
 Suisun City,11404,3425
 Sunnyvale,64406,36580
 Tiburon,2572,780
@@ -108,5 +114,5 @@ Vallejo,65034,36946
 Walnut Creek,52345,29926
 Windsor,14010,9833
 Woodside,1264,419
-Yolo,0,0
+Yolo County,0,0
 Yountville,1760,1295
