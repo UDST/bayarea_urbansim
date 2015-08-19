@@ -527,6 +527,17 @@ parcels.county_id = parcels.county_id.astype('int')
 parcels.development_type_id[(parcels.county_id == 75) & (parcels.res_type == 'single') & (parcels.development_type_id == 'RT')] = 'SF'
 parcels.development_type_id[(parcels.county_id == 75) & (parcels.res_type == 'multi') & (parcels.development_type_id == 'RT')] = 'MF'
 
+# Assign development type id based on gov_type status
+parcels.gov_type = parcels.gov_type.fillna(0).astype('int')
+parcels.development_type_id[(parcels.residential_units == 0) & (~parcels.res_type.isin(['single', 'multi'])) & (parcels.gov_type == 12)] = 'HP'
+parcels.development_type_id[(parcels.residential_units == 0) & (~parcels.res_type.isin(['single', 'multi'])) & (parcels.gov_type == 17)] = 'SC'
+parcels.development_type_id[(parcels.residential_units == 0) & (~parcels.res_type.isin(['single', 'multi'])) & (parcels.gov_type == 18)] = 'SH'
+parcels.development_type_id[(parcels.residential_units == 0) & (~parcels.res_type.isin(['single', 'multi'])) & (parcels.gov_type == 19)] = 'GV'
+
+# Set SCL common areas as undevelopable
+scl_parcels = parcels[parcels.county_id == 85]
+scl_parcels = scl_parcels[scl_parcels.apn.str.startswith('-')]
+parcels.proportion_undevelopable.loc[scl_parcels.index.values] = 1.0
 
 ##############
 ###BUILDINGS##
@@ -536,10 +547,7 @@ idx = (parcels.improvement_value > 0) | (parcels.year_built > 0) | (parcels.buil
 buildings = parcels[idx]
 print len(buildings)
 
-buildings = buildings[['county_id', 'land_use_type_id', 'res_type', 'improvement_value', 'year_assessed', 'year_built', 'building_sqft', 
-                     'non_residential_sqft', 'residential_units', 'sqft_per_unit', 'stories', 'development_type_id', 'taz', 'redfin_sale_price',
-                     'redfin_sale_year', 'redfin_home_type', 'costar_elevators', 'costar_property_type', 'costar_secondary_type', 
-                     'costar_building_name', 'costar_rent']].copy(deep=True)
+buildings = buildings[['county_id', 'land_use_type_id', 'res_type', 'improvement_value', 'year_assessed', 'year_built', 'building_sqft', 'non_residential_sqft', 'residential_units', 'sqft_per_unit', 'stories', 'development_type_id', 'taz', 'redfin_sale_price', 'redfin_sale_year', 'redfin_home_type', 'costar_elevators', 'costar_property_type', 'costar_secondary_type', 'costar_building_name', 'costar_rent']].copy(deep=True)
 
 buildings['building_id'] = np.arange(len(buildings)) + 1
 buildings.index.name = 'parcel_id'
