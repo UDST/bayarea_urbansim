@@ -165,7 +165,7 @@ def pda(parcels, parcels_geography):
 
 @orca.table(cache=True)
 def parcels_geography(parcels):
-    df = pd.read_csv(os.path.join(misc.data_dir(), "2015_08_13_parcels_geography.csv"),
+    df = pd.read_csv(os.path.join(misc.data_dir(), "2015_08_19_parcels_geography.csv"),
                      index_col="geom_id")
     return geom_id_to_parcel_id(df, parcels)
 
