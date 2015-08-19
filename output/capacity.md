@@ -2,7 +2,7 @@ This document describes the zoning capacity calculations.  The purpose of the zo
 
 The script to compute capacity is [here](https://github.com/MetropolitanTransportationCommission/bayarea_urbansim/blob/capacity-calculator/scripts/capacity_calculator.py) and runs in about 15 seconds.
 
-The current results for this calculation are available [here])(https://github.com/MetropolitanTransportationCommission/bayarea_urbansim/blob/capacity-calculator/output/city_capacity.csv).
+The current results for this calculation are available [here](https://github.com/MetropolitanTransportationCommission/bayarea_urbansim/blob/capacity-calculator/output/city_capacity.csv).
 
 The simplest calculation is computed on each parcel and is defined [here](https://github.com/MetropolitanTransportationCommission/bayarea_urbansim/blob/11041451fdcf1ba8b473428b10e8a8a59c7aba89/variables.py#L146).
 
