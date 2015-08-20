@@ -224,6 +224,33 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
     df["redfin_sale_year"] = 2012
     return df
 
+@orca.table('household_controls_unstacked', cache=True)
+def household_controls_unstacked():
+    df = pd.read_csv(os.path.join(misc.data_dir(), "household_controls.csv"))
+    return df.set_index('year')
+
+#the following overrides household_controls table defined in urbansim_defaults
+@orca.table('household_controls', cache=True)
+def household_controls(household_controls_unstacked):
+    df = household_controls_unstacked.to_frame()
+    df.columns=[1,2,3,4] #rename to match legacy table
+    df = df.stack().reset_index().set_index('year') #stack and fill in columns
+    df.columns=['income_quartile','total_number_of_households'] #rename to match legacy table
+    return df
+
+@orca.table('employment_controls_unstacked', cache=True)
+def employment_controls_unstacked():
+    df = pd.read_csv(os.path.join(misc.data_dir(), "employment_controls.csv"))
+    return df.set_index('year')
+
+#the following overrides employment_controls table defined in urbansim_defaults
+@orca.table('employment_controls', cache=True)
+def employment_controls(employment_controls_unstacked):
+    df = employment_controls_unstacked.to_frame()
+    df.columns=[1,2,3,4,5,6] #rename to match legacy table
+    df = df.stack().reset_index().set_index('year') #stack and fill in columns
+    df.columns=['empsix_id','number_of_jobs'] #rename to match legacy table
+    return df
 
 # this specifies the relationships between tables
 orca.broadcast('parcels_geography', 'buildings', cast_index=True,
