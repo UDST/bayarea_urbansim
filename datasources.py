@@ -133,7 +133,8 @@ def zoning_baseline(parcels, zoning_lookup):
 @orca.table('zoning_np', cache=True)
 def zoning_np(parcels_geography):
     scenario_zoning = pd.read_csv(os.path.join(misc.data_dir(),
-                                                 'zoning_mods_np.csv'))
+                                               'zoning_mods_np.csv'),
+                                  dtype={'jurisdiction': 'str'})
     return pd.merge(parcels_geography.to_frame(),
                     scenario_zoning,
                     on=['jurisdiction', 'pda_id', 'tpp_id', 'exp_id'],
@@ -184,7 +185,7 @@ def pda(parcels, parcels_geography):
 @orca.table(cache=True)
 def parcels_geography(parcels):
     df = pd.read_csv(os.path.join(misc.data_dir(), "2015_08_19_parcels_geography.csv"),
-                     index_col="geom_id")
+                     index_col="geom_id", dtype={'jurisdiction': 'str'})
     return geom_id_to_parcel_id(df, parcels)
 
 

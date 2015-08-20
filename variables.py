@@ -143,6 +143,15 @@ def max_far(parcels, scenario, scenario_inputs):
         reindex(parcels.index)
 
 
+@orca.column('parcels')
+def parcel_nodev_rules(parcels):
+    # removes no dev parcels, parcels with buildings < 1940,
+    # and single family homes on less then half an acre
+    s = (parcels.nodev == 1) | (parcels.oldest_building < 1940) | \
+        ((parcels.total_residential_units == 1) & (parcels.parcel_acres < .5))
+    return s.reindex(parcels.index).fillna(0).astype('int')
+
+
 @orca.column('parcels', 'zoned_du', cache=True)
 def zoned_du(parcels):
     GROSS_AVE_UNIT_SIZE = 1000
@@ -161,6 +170,11 @@ def zoned_du_underbuild(parcels):
     # 11 story building
     s = s[ratio > .5].reindex(parcels.index).fillna(0)
     return s.astype('int')
+
+
+@orca.column('parcels')
+def zoned_du_underbuild_nodev(parcels):
+    return (parcels.zoned_du_underbuild * parcels.parcel_nodev_rules).astype('int')
 
 
 @orca.column('parcels')
