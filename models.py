@@ -395,15 +395,23 @@ def travel_model_output(parcels, households, jobs, buildings,
     summary.add_zone_output(zones, "travel_model_outputs", year)
     if sys.platform != 'win32':
         summary.write_zone_output()
-    travel_model_csv = "runs/run{}_taz_summaries_{}.csv".format(run_number, year)
-    zones.to_csv(travel_model_csv)
     add_xy_config = {
         "xy_table": "parcels",
         "foreign_key": "parcel_id",
-    	"x_col": "x",
-     	"y_col": "y"
+        "x_col": "x",
+        "y_col": "y"
     }
     summary.write_parcel_output(add_xy=add_xy_config)
     
     subsidy_file = "runs/run{}_subsidy_summary.csv".format(run_number)
     coffer["prop_tax_acct"].to_frame().to_csv(subsidy_file)
+
+    #travel model csv stuff
+    travel_model_csv = "runs/run{}_taz_summaries_{}.csv".format(run_number, year)
+    travel_model_output = zones
+    #list of columns that we need to fill eventually for valid travel model file:
+    template_columns = ['age0519','age2044','age4564','age65p','areatype','ciacre','collfte','collpte','county','district','empres','gqpop','hhlds','hsenroll','oprkcst','prkcst','resacre','sd','sftaz','shpop62p','terminal','topology','totacre','totpop','zero','zone']
+    for x in template_columns: #fill those columns with NaN until we have values for them
+        travel_model_output[x] = np.nan
+    travel_model_output.columns = [x.upper() for x in travel_model_output.columns] #uppercase columns to match travel model template
+    travel_model_output.to_csv(travel_model_csv)
