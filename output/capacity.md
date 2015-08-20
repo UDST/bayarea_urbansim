@@ -6,7 +6,7 @@ The script to compute capacity is [here](https://github.com/MetropolitanTranspor
 
 The current results for this calculation are available [here](https://github.com/MetropolitanTransportationCommission/bayarea_urbansim/blob/capacity-calculator/output/city_capacity.csv).
 
-## Calculation 1 - The Earthquake
+## Calculation 1 - The Big One
 
 The simplest calculation is computed on each parcel and is defined [here](https://github.com/MetropolitanTransportationCommission/bayarea_urbansim/blob/11041451fdcf1ba8b473428b10e8a8a59c7aba89/variables.py#L146).
 
