@@ -740,6 +740,11 @@ targets_non_residential_sqft = pd.DataFrame(
 
 buildings2 = scl.scale_to_targets_from_table(buildings2, targets_residential_year_built)
 
+targets_non_residential_sqft['taz'] = targetunits.index.values
+targets_non_residential_sqft = targets_non_residential_sqft.set_index('taz')
+targets_non_residential_sqft['existing_nrsqft'] = buildings2.groupby('taz').non_residential_sqft.sum()
+targets_non_residential_sqft.target_value[targets_non_residential_sqft.target_value < targets_non_residential_sqft.existing_nrsqft] = targets_non_residential_sqft.existing_nrsqft[targets_non_residential_sqft.target_value < targets_non_residential_sqft.existing_nrsqft]
+del targets_non_residential_sqft['existing_nrsqft']
 buildings2 = scl.scale_to_targets_from_table(buildings2, targets_non_residential_sqft)
 
 print buildings[buildings.building_sqft == 0].res_type.value_counts()  
