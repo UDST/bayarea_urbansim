@@ -24,6 +24,47 @@ def rsh_simulate(buildings, aggregations, settings):
         print "Clipped rsh_simulate produces\n", buildings.residential_price.describe()
 
 
+# this deviates from the step in urbansim_defaults only in how it deals with
+# demolished buildings - this version only demolishes when there is a row to
+# demolish in the csv file - this also allows building multiple buildings and
+# just adding capacity on an existing parcel, by adding one building at a time
+@orca.step("scheduled_development_events")
+def scheduled_development_events(buildings, development_projects, development_events,
+                                 summary, year, parcels, settings, parcel_id_to_geom_id,
+                                 building_sqft_per_job):
+    
+    # first demolish
+    '''
+    dem = development_events.to_frame()\
+        .query("year_built == %d and action == 'demolish'" % year).set_index('geom_id')
+    dem = geom_id_to_parcel_id(dem, parcels).reset_index()
+    old_buildings = buildings.to_frame(buildings.local_columns)
+    new_buildings = pd.DataFrame({parcel_id: dem.parcel_ids})
+    orca.add_table("buildings",
+        utils._remove_developed_buildings(old_buildings, new_buildings, 
+                                          unplace_agents=["households", "jobs"]))
+    '''
+
+    # then build
+    dps = development_projects.to_frame().query("year_built == %d" % year)
+
+    if len(dps) == 0:
+        return
+
+    new_buildings = utils.scheduled_development_events(buildings, dps,
+                                       remove_developed_buildings=False,
+                                       unplace_agents=['households', 'jobs'])
+    new_buildings["form"] = new_buildings.building_type_id.map(settings['building_type_map'])\
+        .str.lower()
+    new_buildings["job_spaces"] = new_buildings.building_sqft / \
+        new_buildings.building_type_id.fillna(-1).map(building_sqft_per_job)
+    new_buildings["job_spaces"] = new_buildings.job_spaces.astype('int')
+    new_buildings["geom_id"] = parcel_id_to_geom_id(new_buildings.parcel_id)
+    new_buildings["SDEM"] = True
+
+    summary.add_parcel_output(new_buildings)
+
+
 @orca.injectable("supply_and_demand_multiplier_func", autocall=False)
 def supply_and_demand_multiplier_func(demand, supply):
     s = demand / supply
@@ -336,6 +377,9 @@ def travel_model_output(parcels, households, jobs, buildings,
     zones = zones.to_frame()
     homesales = homesales.to_frame()
 
+    print households.income.describe()
+    print households.groupby('zone_id').income.quantile().describe()
+
     # put this here as a custom bay area indicator
     zones['residential_sales_price_sqft'] = parcels.\
         residential_sales_price_sqft.groupby(parcels.zone_id).quantile()
@@ -401,6 +445,8 @@ def travel_model_output(parcels, households, jobs, buildings,
         "x_col": "x",
         "y_col": "y"
     }
+    # otherwise it loses precision
+    summary.parcel_output["geom_id"] = summary.parcel_output.geom_id.astype('str')
     summary.write_parcel_output(add_xy=add_xy_config)
     
     subsidy_file = "runs/run{}_subsidy_summary.csv".format(run_number)

@@ -12,49 +12,58 @@ fit_filters:
 
 predict_filters: null
 
-model_expression: np.log(price_per_sqft) ~ I(year_built < 1940) + I(year_built > 2000)
-    + np.log1p(sqft_per_unit) + poor + renters + sfdu + autoPeakTotal + sum_residential_units
-    + ave_lot_size_per_unit
+model_expression: price_per_sqft ~ I(year_built < 1940) + modern_condo + sfdu + ave_income
+    + autoPeakTotal + transitPeakTotal + ave_lot_size_per_unit + sqft_per_unit + population
+    + jobs + I(year_built < 1970) + I(building_type_id == 1)
 
-ytransform: np.exp
+ytransform: null
 
 fitted: true
 
 fit_parameters:
     Coefficient:
-        I(year_built < 1940)[T.True]: 0.0965640338338562
-        I(year_built > 2000)[T.True]: 0.01318797545295766
-        Intercept: 6.389884139534503
-        autoPeakTotal: 0.16482939639091498
-        ave_lot_size_per_unit: 0.11276049992864445
-        np.log1p(sqft_per_unit): -0.44368207688201716
-        poor: -0.21487258504091653
-        renters: 0.19898587044116214
-        sfdu: -0.10478296071548339
-        sum_residential_units: 0.14070310450395163
+        I(building_type_id == 1)[T.True]: -66.1475779402914
+        I(year_built < 1940)[T.True]: 55.67540341119196
+        I(year_built < 1970)[T.True]: 49.92348650596712
+        Intercept: -2586.2459992150793
+        autoPeakTotal: 19.520802107781307
+        ave_income: 249.87847290071056
+        ave_lot_size_per_unit: 22.31146358201416
+        jobs: 3.035272468770014
+        modern_condo: 105.7234940025707
+        population: 9.148157985831991
+        sfdu: -28.342050902395915
+        sqft_per_unit: -0.09806594792205411
+        transitPeakTotal: 11.50784680685022
     Std. Error:
-        I(year_built < 1940)[T.True]: 0.00344848362877182
-        I(year_built > 2000)[T.True]: 0.003101818040718546
-        Intercept: 0.041239912184670484
-        autoPeakTotal: 0.0014167664055312374
-        ave_lot_size_per_unit: 0.0023379294691604543
-        np.log1p(sqft_per_unit): 0.002909992091404565
-        poor: 0.0020521682497888043
-        renters: 0.0028907184752100727
-        sfdu: 0.002051901084681738
-        sum_residential_units: 0.004283595248246465
+        I(building_type_id == 1)[T.True]: 1.6810058221657047
+        I(year_built < 1940)[T.True]: 1.6675211438732136
+        I(year_built < 1970)[T.True]: 1.165826031897613
+        Intercept: 24.33719492507344
+        autoPeakTotal: 0.8524142111217465
+        ave_income: 1.961776902561628
+        ave_lot_size_per_unit: 1.0909400536473597
+        jobs: 0.3547544733558957
+        modern_condo: 3.7353026366496356
+        population: 1.3192426429379658
+        sfdu: 1.1193865412451407
+        sqft_per_unit: 0.0007638182564467554
+        transitPeakTotal: 0.2879796916677299
     T-Score:
-        I(year_built < 1940)[T.True]: 28.001882632758086
-        I(year_built > 2000)[T.True]: 4.251692162414087
-        Intercept: 154.94417424850198
-        autoPeakTotal: 116.34197122927246
-        ave_lot_size_per_unit: 48.23092459206501
-        np.log1p(sqft_per_unit): -152.4684820252777
-        poor: -104.70515030287103
-        renters: 68.83612920026796
-        sfdu: -51.06628262820762
-        sum_residential_units: 32.8469653059658
+        I(building_type_id == 1)[T.True]: -39.34999930878938
+        I(year_built < 1940)[T.True]: 33.38812441194756
+        I(year_built < 1970)[T.True]: 42.82241530042587
+        Intercept: -106.26721802481002
+        autoPeakTotal: 22.900606129140705
+        ave_income: 127.37354210584645
+        ave_lot_size_per_unit: 20.451594482593098
+        jobs: 8.555980816977542
+        modern_condo: 28.303862976253768
+        population: 6.934401366422599
+        sfdu: -25.31927074169559
+        sqft_per_unit: -128.38911232398664
+        transitPeakTotal: 39.9606192374424
 
-fit_rsquared_adj: 0.38428969923583534
+fit_rsquared_adj: 0.36006244746308946
 
-fit_rsquared: 0.3843419755391775
+fit_rsquared: 0.360134893907211
