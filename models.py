@@ -24,6 +24,47 @@ def rsh_simulate(buildings, aggregations, settings):
         print "Clipped rsh_simulate produces\n", buildings.residential_price.describe()
 
 
+# this deviates from the step in urbansim_defaults only in how it deals with
+# demolished buildings - this version only demolishes when there is a row to
+# demolish in the csv file - this also allows building multiple buildings and
+# just adding capacity on an existing parcel, by adding one building at a time
+@orca.step("scheduled_development_events")
+def scheduled_development_events(buildings, development_projects, development_events,
+                                 summary, year, parcels, settings, parcel_id_to_geom_id,
+                                 building_sqft_per_job):
+    
+    # first demolish
+    '''
+    dem = development_events.to_frame()\
+        .query("year_built == %d and action == 'demolish'" % year).set_index('geom_id')
+    dem = geom_id_to_parcel_id(dem, parcels).reset_index()
+    old_buildings = buildings.to_frame(buildings.local_columns)
+    new_buildings = pd.DataFrame({parcel_id: dem.parcel_ids})
+    orca.add_table("buildings",
+        utils._remove_developed_buildings(old_buildings, new_buildings, 
+                                          unplace_agents=["households", "jobs"]))
+    '''
+
+    # then build
+    dps = development_projects.to_frame().query("year_built == %d" % year)
+
+    if len(dps) == 0:
+        return
+
+    new_buildings = utils.scheduled_development_events(buildings, dps,
+                                       remove_developed_buildings=False,
+                                       unplace_agents=['households', 'jobs'])
+    new_buildings["form"] = new_buildings.building_type_id.map(settings['building_type_map'])\
+        .str.lower()
+    new_buildings["job_spaces"] = new_buildings.building_sqft / \
+        new_buildings.building_type_id.fillna(-1).map(building_sqft_per_job)
+    new_buildings["job_spaces"] = new_buildings.job_spaces.astype('int')
+    new_buildings["geom_id"] = parcel_id_to_geom_id(new_buildings.parcel_id)
+    new_buildings["SDEM"] = True
+
+    summary.add_parcel_output(new_buildings)
+
+
 @orca.injectable("supply_and_demand_multiplier_func", autocall=False)
 def supply_and_demand_multiplier_func(demand, supply):
     s = demand / supply
@@ -336,6 +377,9 @@ def travel_model_output(parcels, households, jobs, buildings,
     zones = zones.to_frame()
     homesales = homesales.to_frame()
 
+    print households.income.describe()
+    print households.groupby('zone_id').income.quantile().describe()
+
     # put this here as a custom bay area indicator
     zones['residential_sales_price_sqft'] = parcels.\
         residential_sales_price_sqft.groupby(parcels.zone_id).quantile()
@@ -393,14 +437,27 @@ def travel_model_output(parcels, households, jobs, buildings,
     orca.add_table("travel_model_output", zones, year)
 
     summary.add_zone_output(zones, "travel_model_outputs", year)
-    summary.write_zone_output()
+    if sys.platform != 'win32':
+        summary.write_zone_output()
     add_xy_config = {
         "xy_table": "parcels",
         "foreign_key": "parcel_id",
-    	"x_col": "x",
-     	"y_col": "y"
+        "x_col": "x",
+        "y_col": "y"
     }
+    # otherwise it loses precision
+    summary.parcel_output["geom_id"] = summary.parcel_output.geom_id.astype('str')
     summary.write_parcel_output(add_xy=add_xy_config)
     
     subsidy_file = "runs/run{}_subsidy_summary.csv".format(run_number)
     coffer["prop_tax_acct"].to_frame().to_csv(subsidy_file)
+
+    #travel model csv stuff
+    travel_model_csv = "runs/run{}_taz_summaries_{}.csv".format(run_number, year)
+    travel_model_output = zones
+    #list of columns that we need to fill eventually for valid travel model file:
+    template_columns = ['age0519','age2044','age4564','age65p','areatype','ciacre','collfte','collpte','county','district','empres','gqpop','hhlds','hsenroll','oprkcst','prkcst','resacre','sd','sftaz','shpop62p','terminal','topology','totacre','totpop','zero','zone']
+    for x in template_columns: #fill those columns with NaN until we have values for them
+        travel_model_output[x] = np.nan
+    travel_model_output.columns = [x.upper() for x in travel_model_output.columns] #uppercase columns to match travel model template
+    travel_model_output.to_csv(travel_model_csv)

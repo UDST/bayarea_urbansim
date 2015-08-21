@@ -11,7 +11,9 @@ import warnings
 warnings.filterwarnings("ignore")
 
 SLACK = MAPS = False
+LOGS = False
 INTERACT = False
+S3=False
 
 if INTERACT:
     import code
@@ -19,7 +21,7 @@ if INTERACT:
     sys.exit()
 
 run_num = orca.get_injectable("run_number")
-if SLACK:
+if LOGS:
      sys.stdout = sys.stderr = open("logs/sim_out_%d" % run_num, 'w')
 
 if SLACK:

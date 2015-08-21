@@ -66,6 +66,21 @@ def unit_sqft(buildings):
     return (buildings.building_sqft / buildings.residential_units.replace(0, 1)).clip(400, 6000)
 
 
+@orca.column('households', 'income_decile', cache=True)
+def income_decile(households):
+    s = pd.Series(pd.qcut(households.income, 10, labels=False),
+                  index=households.index)
+    # convert income quartile from 0-9 to 1-10
+    s = s.add(1)
+    return s
+
+
+@orca.column('buildings', cache=True)
+def modern_condo(buildings):
+    # this is to try and differentiate between new construction in the city vs in the burbs
+    return ((buildings.year_built > 2000) * (buildings.building_type_id == 3)).astype('int')
+
+
 #####################
 # PARCELS VARIABLES
 #####################

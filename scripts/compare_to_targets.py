@@ -1,13 +1,13 @@
 import pandas as pd
 import sys
-import urbansim.sim.simulation as sim
+import orca
 
 RUNNUM = sys.argv[1]
 
 if RUNNUM == "zoned":
     sys.path.append(".")
     import models
-    parcels = sim.get_table('parcels')
+    parcels = orca.get_table('parcels')
     modeled = parcels.zoned_du_underbuild.groupby(parcels.pda).sum()
 
 else: 
