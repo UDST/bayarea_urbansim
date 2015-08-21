@@ -377,9 +377,6 @@ def travel_model_output(parcels, households, jobs, buildings,
     zones = zones.to_frame()
     homesales = homesales.to_frame()
 
-    print households.income.describe()
-    print households.groupby('zone_id').income.quantile().describe()
-
     # put this here as a custom bay area indicator
     zones['residential_sales_price_sqft'] = parcels.\
         residential_sales_price_sqft.groupby(parcels.zone_id).quantile()

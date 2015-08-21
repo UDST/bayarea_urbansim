@@ -29,7 +29,7 @@ if SLACK:
     host = socket.gethostname()
 
 print "Started", time.ctime()
-in_year, out_year = 2010, 2012
+in_year, out_year = 2010, 2020
 
 if SLACK:
     slack.chat.post_message('#sim_updates', 
