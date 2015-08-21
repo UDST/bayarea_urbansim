@@ -87,7 +87,7 @@ build_networks:
 
 households_transition:
   add_columns:
-    - income_quartile
+    - base_income_quartile
   total_column: total_number_of_households
 
 
