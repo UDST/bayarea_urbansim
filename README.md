@@ -8,8 +8,9 @@ This is the full UrbanSim implementation for the Bay Area.
 Put the following in the data directory:
 
 * https://s3.amazonaws.com/bayarea_urbansim/data/2015_06_01_osm_bayarea4326.h5  
-* https://s3.amazonaws.com/bayarea_urbansim/data/2015_06_01_zoning_parcels.csv  
+* https://s3.amazonaws.com/bayarea_urbansim/data/2015_08_13_zoning_parcels.csv
 * https://mtcdrive.box.com/2015-06-01-bayarea-v3-h5  
+* https://s3.amazonaws.com/bayarea_urbansim/data/2015_08_19_parcels_geography.csv
 
 ####Data Description  
 [The MTC Analytics Wiki](http://analytics.mtc.ca.gov/foswiki/UrbanSimTwo/InputFiles?validation_key=0301bd909f2a02c80cb5e315fec942d8) contains a draft table with descriptions for the data inputs. 
@@ -42,13 +43,6 @@ run#_parcel_output.csv 		|csv of parcels that are built for review in Explorer
 run#_subsidy_summary.csv 	|currently empty
 run#_simulation_output.json |summary by TAZ for review in Explorer (unix only)
 run#_taz_summaries 			|A CSV for [input to the MTC travel model](http://analytics.mtc.ca.gov/foswiki/UrbanSimTwo/OutputToTravelModel)
-
-#####Open A Browser with a Map of whats built in a Simulation
-After running a simulation, you should have a run_parcel_output.csv and run#_simulation_output.json in the runs/ directory
-
-To put these results on a map, run, `python scripts/explorer.py #`
-
-This script will start a server and open a web-browser pointed at it.
 
 Optional Tools
 --------------
