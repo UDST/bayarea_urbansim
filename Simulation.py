@@ -11,7 +11,9 @@ import warnings
 warnings.filterwarnings("ignore")
 
 SLACK = MAPS = False
+LOGS = False
 INTERACT = False
+S3=False
 
 if INTERACT:
     import code
@@ -19,7 +21,7 @@ if INTERACT:
     sys.exit()
 
 run_num = orca.get_injectable("run_number")
-if SLACK:
+if LOGS:
      sys.stdout = sys.stderr = open("logs/sim_out_%d" % run_num, 'w')
 
 if SLACK:
@@ -28,7 +30,7 @@ if SLACK:
     host = socket.gethostname()
 
 print "Started", time.ctime()
-in_year, out_year = 2010, 2012
+in_year, out_year = 2010, 2020
 
 if SLACK:
     slack.chat.post_message('#sim_updates', 
@@ -85,6 +87,12 @@ if MAPS:
             raise e
         sys.exit(0)
 
+if S3:
+    try:
+        os.system('ls runs/run%d_* | xargs -I {} aws s3 cp {} s3://bayarea-urbansim-results' % run_num)
+    except Exception as e:
+        raise e
+    sys.exit(0)
 
 if SLACK:
     slack.chat.post_message('#sim_updates', 

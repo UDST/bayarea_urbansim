@@ -8,8 +8,9 @@ This is the full UrbanSim implementation for the Bay Area.
 Put the following in the data directory:
 
 * https://s3.amazonaws.com/bayarea_urbansim/data/2015_06_01_osm_bayarea4326.h5  
-* https://s3.amazonaws.com/bayarea_urbansim/data/2015_06_01_zoning_parcels.csv  
+* https://s3.amazonaws.com/bayarea_urbansim/data/2015_08_13_zoning_parcels.csv
 * https://mtcdrive.box.com/2015-06-01-bayarea-v3-h5  
+* https://s3.amazonaws.com/bayarea_urbansim/data/2015_08_19_parcels_geography.csv
 
 ####Data Description  
 [The MTC Analytics Wiki](http://analytics.mtc.ca.gov/foswiki/UrbanSimTwo/InputFiles?validation_key=0301bd909f2a02c80cb5e315fec942d8) contains a draft table with descriptions for the data inputs. 
@@ -26,17 +27,34 @@ In the repository directory type `python Simulation.py`
 ####Estimate Regressions used in the Simulation
 In the repository directory type `python Estimation.py`  
 
-####Open A Browser with a Map of whats built in a Simulation
-Uncomment the line `#travel_model_output` in Simulation.py  
+####Review Outputs from Simulation
 
-Type `mkdir runs` to make a folder where the outputs will be written.  
-Type `python Simulation.py`
+#####Runs Directory
 
-When that completes, run, for example `python scripts/explorer.py 2`. NOTE: The `2` passed to this script is a requirement. It will correspond to the number in the filename written in the `runs` directory, which is just a count of how many times you've run the Simulation, which is written to the file RUNNUM in the repository's directory. This script will start a server and open a web-browser pointed at it.  
+First, some vocabulary.
+
+`#` = a number that is updated in the RUNNUM file in the bayarea_urbansim directory each time you run Simulation.py.
+
+Several files are output to the `runs/` directory. They are described below.
+
+filename |description
+----------------------------|-----------
+run#_parcel_output.csv 		|csv of parcels that are built for review in Explorer
+run#_subsidy_summary.csv 	|currently empty
+run#_simulation_output.json |summary by TAZ for review in Explorer (unix only)
+run#_taz_summaries 			|A CSV for [input to the MTC travel model](http://analytics.mtc.ca.gov/foswiki/UrbanSimTwo/OutputToTravelModel)
+
+#####Results on S3:
+
+Results can be pushed to S3 with the S3 flag in `Simulation.py`.   
+
+Browse results [here](http://bayarea-urbansim-results.s3-us-west-1.amazonaws.com/index.html)   
 
 Optional Tools
 --------------
 ####Make
+
+Because the hdf5 file used here contains proprietary data, you will need to enter credentials to download it. You can request them from Tom Buckley(tbuckl@mtc.ca.gov). Or if you already have access to Box, you can download the hdf5 file at the link above. 
 
 For fetching data, alternatively, with [AWS CLI](https://aws.amazon.com/cli/) and Make, you can 
 `make data`.

@@ -87,7 +87,7 @@ build_networks:
 
 households_transition:
   add_columns:
-    - income_quartile
+    - base_income_quartile
   total_column: total_number_of_households
 
 
@@ -103,7 +103,7 @@ rsh_simulate:
 
 
 feasibility:
-  parcel_filter: nodev != 1 and oldest_building > 1940 and (total_residential_units != 1 or parcel_acres > .5) 
+  parcel_filter: nodev != 1 and sdem != 1 and oldest_building > 1940 and (total_residential_units != 1 or parcel_acres > .5) 
   residential_to_yearly: True
   pass_through:
     - oldest_building
@@ -234,7 +234,7 @@ building_type_map2:
   RS: 10
   RB: 11
   MR: 12
-  MR: 13
+  MT: 13
   ME: 14
   PA: 15
   PA2: 16

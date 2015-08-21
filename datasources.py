@@ -51,6 +51,12 @@ def zone_id(homesales, parcels):
 
 
 @orca.column('homesales', cache=True)
+def modern_condo(homesales):
+    # this is to try and differentiate between new construction in the city vs in the burbs
+    return ((homesales.year_built > 2000) * (homesales.building_type_id == 3)).astype('int')
+
+
+@orca.column('homesales', cache=True)
 def base_price_per_sqft(homesales):
     s = homesales.price_per_sqft.groupby(homesales.zone_id).quantile()
     return misc.reindex(s, homesales.zone_id)
@@ -86,6 +92,13 @@ def geom_id_to_parcel_id(df, parcels):
     df.index.name = "parcel_id"
     return df
 
+
+@orca.injectable(autocall=False)
+def parcel_id_to_geom_id(s):
+    parcels = orca.get_table("parcels")
+    g = parcels.geom_id # get geom_id
+    return pd.Series(g.loc[s.values].values, index=s.index)
+ 
 
 # zoning for use in the "baseline" scenario
 # comes in the hdf5
@@ -155,6 +168,11 @@ def parcels(store, net):
     }
     df = utils.table_reprocess(cfg, df)
 
+    # have to do it this way because otherwise it's a circular reference
+    sdem = pd.read_csv(os.path.join(misc.data_dir(), "development_projects.csv"))
+    # mark parcels that are going to be developed by the sdem
+    df["sdem"] = df.geom_id.isin(sdem.geom_id).astype('int')
+
     return df
 
 
@@ -165,14 +183,23 @@ def pda(parcels, parcels_geography):
 
 @orca.table(cache=True)
 def parcels_geography(parcels):
-    df = pd.read_csv(os.path.join(misc.data_dir(), "2015_08_13_parcels_geography.csv"),
+    df = pd.read_csv(os.path.join(misc.data_dir(), "2015_08_19_parcels_geography.csv"),
                      index_col="geom_id")
     return geom_id_to_parcel_id(df, parcels)
 
 
 @orca.table(cache=True)
+def development_events(parcels, settings):
+    df = pd.read_csv(os.path.join(misc.data_dir(), "development_projects.csv"))
+    df = df.query("action != 'build'")
+    return df
+
+
+@orca.table(cache=True)
 def development_projects(parcels, settings):
     df = pd.read_csv(os.path.join(misc.data_dir(), "development_projects.csv"))
+
+    df = df.query("action == 'build'")
 
     for fld in ['residential_sqft', 'residential_price', 'non_residential_price']:
         df[fld] = 0
@@ -180,6 +207,10 @@ def development_projects(parcels, settings):
     df["stories"] = df.stories.fillna(1)
     df["building_sqft"] = df.building_sqft.fillna(0)
     df["non_residential_sqft"] = df.non_residential_sqft.fillna(0)
+
+    df["building_type"] = df.building_type.replace("HP", "OF")
+    df["building_type"] = df.building_type.replace("GV", "OF")
+    df["building_type"] = df.building_type.replace("SC", "OF")
     df["building_type_id"] = df.building_type.map(settings["building_type_map2"])
 
     df = df.dropna(subset=["geom_id"]) # need a geom_id to link to parcel_id
@@ -189,8 +220,10 @@ def development_projects(parcels, settings):
     df["geom_id"] = df.geom_id.astype("int")
     df = df.query('residential_units != "rent"')
     df["residential_units"] = df.residential_units.astype("int")
+    geom_id = df.geom_id
     df = df.set_index("geom_id")
     df = geom_id_to_parcel_id(df, parcels).reset_index() # use parcel id
+    df["geom_id"] = geom_id  # add it back again cause it goes away above
 
     # we don't predict prices for schools and hotels right now
     df = df.query("building_type_id <= 4 or building_type_id >= 7")
@@ -198,6 +231,20 @@ def development_projects(parcels, settings):
     print "Describe of development projects"
     print df[orca.get_table('buildings').local_columns].describe()
     
+    return df
+
+
+@orca.table('households', cache=True)
+def households(store, settings):
+    # start with households from urbansim_defaults
+    df = datasources.households(store, settings)
+        
+    # need to keep track of base year income quartiles for use in the
+    # transition model - even caching doesn't work because when you add
+    # rows via the transitioning, you automatically clear the cache!
+    # this is pretty nasty and unfortunate
+    df["base_income_quartile"] = pd.Series(pd.qcut(df.income, 4, labels=False),
+                                           index=df.index).add(1)
     return df
 
 
@@ -224,6 +271,36 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
     df["redfin_sale_year"] = 2012
     return df
 
+@orca.table('household_controls_unstacked', cache=True)
+def household_controls_unstacked():
+    df = pd.read_csv(os.path.join(misc.data_dir(), "household_controls.csv"))
+    return df.set_index('year')
+
+#the following overrides household_controls table defined in urbansim_defaults
+@orca.table('household_controls', cache=True)
+def household_controls(household_controls_unstacked):
+    df = household_controls_unstacked.to_frame()
+    # rename to match legacy table
+    df.columns=[1,2,3,4] 
+    # stack and fill in columns
+    df = df.stack().reset_index().set_index('year') 
+    # rename to match legacy table
+    df.columns=['base_income_quartile','total_number_of_households'] 
+    return df
+
+@orca.table('employment_controls_unstacked', cache=True)
+def employment_controls_unstacked():
+    df = pd.read_csv(os.path.join(misc.data_dir(), "employment_controls.csv"))
+    return df.set_index('year')
+
+#the following overrides employment_controls table defined in urbansim_defaults
+@orca.table('employment_controls', cache=True)
+def employment_controls(employment_controls_unstacked):
+    df = employment_controls_unstacked.to_frame()
+    df.columns=[1,2,3,4,5,6] #rename to match legacy table
+    df = df.stack().reset_index().set_index('year') #stack and fill in columns
+    df.columns=['empsix_id','number_of_jobs'] #rename to match legacy table
+    return df
 
 # this specifies the relationships between tables
 orca.broadcast('parcels_geography', 'buildings', cast_index=True,
