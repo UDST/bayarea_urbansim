@@ -13,6 +13,7 @@ warnings.filterwarnings("ignore")
 SLACK = MAPS = False
 LOGS = False
 INTERACT = False
+S3=False
 
 if INTERACT:
     import code
