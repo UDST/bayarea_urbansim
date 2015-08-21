@@ -10,8 +10,8 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-SLACK = MAPS = True
-LOGS = True
+SLACK = MAPS = False
+LOGS = False
 INTERACT = False
 
 if INTERACT:
