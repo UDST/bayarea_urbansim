@@ -44,6 +44,12 @@ run#_subsidy_summary.csv 	|currently empty
 run#_simulation_output.json |summary by TAZ for review in Explorer (unix only)
 run#_taz_summaries 			|A CSV for [input to the MTC travel model](http://analytics.mtc.ca.gov/foswiki/UrbanSimTwo/OutputToTravelModel)
 
+#####Results on S3:
+
+Results can be pushed to S3 with the S3 flag in `Simulation.py`.   
+
+Browse results [here](http://bayarea-urbansim-results.s3-us-west-1.amazonaws.com/index.html)   
+
 Optional Tools
 --------------
 ####Make
