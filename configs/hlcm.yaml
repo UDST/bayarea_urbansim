@@ -2,7 +2,7 @@ name: hlcm
 
 model_type: segmented_discretechoice
 
-segmentation_col: income_quartile
+segmentation_col: base_income_quartile
 
 choosers_fit_filters: null
 

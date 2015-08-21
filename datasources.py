@@ -235,6 +235,20 @@ def development_projects(parcels, settings):
     return df
 
 
+@orca.table('households', cache=True)
+def households(store, settings):
+    # start with households from urbansim_defaults
+    df = datasources.households(store, settings)
+        
+    # need to keep track of base year income quartiles for use in the
+    # transition model - even caching doesn't work because when you add
+    # rows via the transitioning, you automatically clear the cache!
+    # this is pretty nasty and unfortunate
+    df["base_income_quartile"] = pd.Series(pd.qcut(df.income, 4, labels=False),
+                                           index=df.index).add(1)
+    return df
+
+
 @orca.table('buildings', cache=True)
 def buildings(store, households, jobs, building_sqft_per_job, settings):
     # start with buildings from urbansim_defaults
@@ -267,9 +281,12 @@ def household_controls_unstacked():
 @orca.table('household_controls', cache=True)
 def household_controls(household_controls_unstacked):
     df = household_controls_unstacked.to_frame()
-    df.columns=[1,2,3,4] #rename to match legacy table
-    df = df.stack().reset_index().set_index('year') #stack and fill in columns
-    df.columns=['income_quartile','total_number_of_households'] #rename to match legacy table
+    # rename to match legacy table
+    df.columns=[1,2,3,4] 
+    # stack and fill in columns
+    df = df.stack().reset_index().set_index('year') 
+    # rename to match legacy table
+    df.columns=['base_income_quartile','total_number_of_households'] 
     return df
 
 @orca.table('employment_controls_unstacked', cache=True)
