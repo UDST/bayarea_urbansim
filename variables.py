@@ -138,16 +138,17 @@ def parcel_is_allowed(form):
 # actual columns start here
 @orca.column('parcels', 'max_far', cache=True)
 def max_far(parcels, scenario, scenario_inputs):
-    return utils.conditional_upzone(scenario, scenario_inputs,
-                                    "max_far", "far_up").\
+    s =  utils.conditional_upzone(scenario, scenario_inputs,
+                                  "max_far", "far_up").\
         reindex(parcels.index)
+    return s * ~parcels.nodev
 
 
 @orca.column('parcels')
-def parcel_nodev_rules(parcels):
-    # removes no dev parcels, parcels with buildings < 1940,
+def parcel_rules(parcels):
+    # removes parcels with buildings < 1940,
     # and single family homes on less then half an acre
-    s = (parcels.nodev == 1) | (parcels.oldest_building < 1940) | \
+    s = (parcels.oldest_building < 1940) | \
         ((parcels.total_residential_units == 1) & (parcels.parcel_acres < .5))
     return s.reindex(parcels.index).fillna(0).astype('int')
 
@@ -174,12 +175,12 @@ def zoned_du_underbuild(parcels):
 
 @orca.column('parcels')
 def zoned_du_underbuild_nodev(parcels):
-    return (parcels.zoned_du_underbuild * parcels.parcel_nodev_rules).astype('int')
+    return (parcels.zoned_du_underbuild * parcels.parcel_rules).astype('int')
 
 
 @orca.column('parcels')
-def nodev(zoning_baseline):
-    return zoning_baseline.nodev
+def nodev(zoning_baseline, parcels):
+    return zoning_baseline.nodev.reindex(parcels.index).fillna(0).astype('bool')
 
 
 @orca.column('parcels', 'max_dua', cache=True)
@@ -187,8 +188,7 @@ def max_dua(parcels, scenario, scenario_inputs):
     s =  utils.conditional_upzone(scenario, scenario_inputs,
                                     "max_dua", "dua_up").\
         reindex(parcels.index)
-    s[parcels.pda.notnull() & (parcels.county_id != 75)] = s.fillna(16).clip(16)
-    return s
+    return s * ~parcels.nodev
 
 
 @orca.column('parcels', 'max_height', cache=True)

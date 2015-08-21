@@ -26,8 +26,6 @@ Calculation 3 is defined [here](https://github.com/MetropolitanTransportationCom
 
 This calculation removes certain parcels from consideration based on simple rules that align with typical conditions in planning practice.  As of now, these rules include:
 
-* Include "nodev" parcels which are a list of parcels that contain schools, churches, parks, etc that do not usually under the rubric of traditional zoning.
-
 * No redevelopment of buildings before the year 1940.
 
 * No redevelopment of single family homes on logs small than or equal to a half acre.
