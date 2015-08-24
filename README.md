@@ -82,16 +82,14 @@ configs/
 
 The YAML files in this directory allow you to configure UrbanSim by changing the keys and values of arguments taken by urbansim functions. See the [UrbanSim Defaults](https://udst.github.io/urbansim_defaults/) docs for more details.
 
-Note that even the values taken by data can and are configured (e.g. in `settings.yaml`)
+Note that even the values taken by data can be and are configured with these config files (e.g. columns in `settings.yaml`).
 
 data_regeneration/
 
 The scripts in here can be used to re-create the data in the `data/` folder from source (various local, state, and federal sources). Use these to re-create the data here when source data change fundamentally.
 
-logs/
-
 notebooks/
-Contains iPython notebook--interactive examples of how to use simulation, estimation, and others.
+Contains iPython notebooks--interactive examples of how to use simulation, estimation, and others.
 
 scripts/
 This is a good place to put scripts that can exist independently of the analysis environment here.  
