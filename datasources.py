@@ -303,6 +303,11 @@ def employment_controls(employment_controls_unstacked):
     df.columns=['empsix_id','number_of_jobs'] #rename to match legacy table
     return df
 
+@orca.table('taz_to_superdistrict', cache=True)
+def taz_to_superdistrict():
+    df = pd.read_csv(os.path.join(misc.data_dir(), "taz_to_superdistrict.csv"))
+    return df.set_index('ZONE')
+
 # this specifies the relationships between tables
 orca.broadcast('parcels_geography', 'buildings', cast_index=True,
               onto_on='parcel_id')
