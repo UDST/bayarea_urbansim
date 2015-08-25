@@ -315,5 +315,4 @@ orca.broadcast('nodes', 'homesales', cast_index=True, onto_on='node_id')
 orca.broadcast('nodes', 'costar', cast_index=True, onto_on='node_id')
 orca.broadcast('logsums', 'homesales', cast_index=True, onto_on='zone_id')
 orca.broadcast('logsums', 'costar', cast_index=True, onto_on='zone_id')
-orca.broadcast('taz_to_superdistrict', 'parcels', cast_index=True,
-              onto_on='zone_id')
+orca.broadcast('taz_to_superdistrict', 'parcels', cast_index=True, onto_on='zone_id')

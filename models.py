@@ -366,7 +366,9 @@ def subsidized_residential_developer(households, buildings,
                              form_to_btype_func,
                              add_extra_columns_func,
                              summary)
-
+@orca.step("pda_output")
+def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict):
+    parcels = orca.merge_tables('households',[parcels, taz_to_superdistrict, buildings, households])
 
 @orca.step("travel_model_output")
 def travel_model_output(parcels, households, jobs, buildings,
