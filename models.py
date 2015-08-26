@@ -366,9 +366,49 @@ def subsidized_residential_developer(households, buildings,
                              form_to_btype_func,
                              add_extra_columns_func,
                              summary)
-@orca.step("pda_output")
-def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict):
-    parcels = orca.merge_tables('households',[parcels, taz_to_superdistrict, buildings, households])
+@orca.step("geographic_summary")
+def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict, run_number, year):
+    households_df = orca.merge_tables('households',[parcels, taz_to_superdistrict, buildings, households],columns=['pda','zone_id','DISTRICT','puma5','persons','income'])
+    jobs_df = orca.merge_tables('jobs',[parcels, taz_to_superdistrict, buildings, jobs],columns=['pda','DISTRICT','zone_id','empsix'])
+    buildings_df = orca.merge_tables('buildings',[parcels, taz_to_superdistrict, buildings],columns=['pda','DISTRICT','building_type_id','zone_id','residential_units','building_sqft'])
+    buildings_df = buildings_df.rename(columns = {'zone_id_x':'zone_id'}) #because merge_tables returns multiple zone_id_'s, but not the one we need
+    geographies = ['DISTRICT','pda']
+    for geography in geographies:
+        summary_table = pd.pivot_table(households_df,
+         values=['persons'],
+         index=[geography],
+         aggfunc=[np.size, np.sum])
+        summary_table.columns = ['tothh','hhpop']
+        summary_table['hhincq1'] = households_df.query("income < 25000").\
+            groupby(geography).size()
+        summary_table['hhincq2'] = households_df.query("income >= 25000 and income < 45000").\
+            groupby(geography).size()
+        summary_table['hhincq3'] = households_df.query("income >= 45000 and income < 75000").\
+            groupby(geography).size()
+        summary_table['hhincq4'] = households_df.query("income >= 75000").\
+            groupby(geography).size()
+        summary_table['sfdu'] = \
+            buildings_df.query("building_type_id == 1 or building_type_id == 2").\
+            groupby(geography).residential_units.sum()
+        summary_table['mfdu'] = \
+            buildings_df.query("building_type_id == 3 or building_type_id == 12").\
+            groupby(geography).residential_units.sum()
+        summary_table['totemp'] = jobs_df.\
+            groupby(geography).size()
+        summary_table['agrempn'] = jobs_df.query("empsix == 'AGREMPN'").\
+            groupby(geography).size()
+        summary_table['mwtempn'] = jobs_df.query("empsix == 'MWTEMPN'").\
+            groupby(geography).size()
+        summary_table['retempn'] = jobs_df.query("empsix == 'RETEMPN'").\
+            groupby(geography).size()
+        summary_table['fpsempn'] = jobs_df.query("empsix == 'FPSEMPN'").\
+            groupby(geography).size()
+        summary_table['herempn'] = jobs_df.query("empsix == 'HEREMPN'").\
+            groupby(geography).size()
+        summary_table['othempn'] = jobs_df.query("empsix == 'OTHEMPN'").\
+            groupby(geography).size()
+        summary_csv = "runs/run{}_{}_summaries_{}.csv".format(run_number, geography, year)
+        summary_table.to_csv(summary_csv)
 
 @orca.step("travel_model_output")
 def travel_model_output(parcels, households, jobs, buildings,
