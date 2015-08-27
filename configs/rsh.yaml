@@ -13,8 +13,9 @@ fit_filters:
 predict_filters: null
 
 model_expression: np.log(price_per_sqft) ~ I(year_built < 1940) + I(year_built > 2000)
-    + np.log1p(sqft_per_unit) + poor + renters + sfdu + autoPeakTotal + sum_residential_units
-    + ave_lot_size_per_unit
+    + np.log1p(sqft_per_unit) + ave_lot_size_per_unit + ave_income + pct_black + pct_hisp
+    + pct_asian + pct_renters + autoPeakTotal + transitPeakTotal + autoOffPeakRetail
+    + sum_residential_units
 
 ytransform: np.exp
 
@@ -22,39 +23,51 @@ fitted: true
 
 fit_parameters:
     Coefficient:
-        I(year_built < 1940)[T.True]: 0.10396255149236391
-        I(year_built > 2000)[T.True]: 0.008507073224193192
-        Intercept: 6.555776633797013
-        autoPeakTotal: 0.1621274355309244
-        ave_lot_size_per_unit: 0.09901499638318062
-        np.log1p(sqft_per_unit): -0.4404007119692329
-        poor: -0.21889747982646207
-        renters: 0.19272632022911756
-        sfdu: -0.10200378576326796
-        sum_residential_units: 0.1414010373101962
+        I(year_built < 1940)[T.True]: 0.09820615358876916
+        I(year_built > 2000)[T.True]: 0.04899495412528024
+        Intercept: 2.670864712442417
+        autoOffPeakRetail: -0.2455712957781372
+        autoPeakTotal: 0.35377350479517167
+        ave_income: 0.3966116187512282
+        ave_lot_size_per_unit: 0.05401503194440238
+        np.log1p(sqft_per_unit): -0.4639973175599418
+        pct_asian: -0.22414419690872572
+        pct_black: -0.3976909582857589
+        pct_hisp: -0.3125712631934602
+        pct_renters: 0.5112047250348355
+        sum_residential_units: 0.03302526721822101
+        transitPeakTotal: 0.013789152196276298
     Std. Error:
-        I(year_built < 1940)[T.True]: 0.0034720140364238004
-        I(year_built > 2000)[T.True]: 0.003126550370405466
-        Intercept: 0.04234565011802721
-        autoPeakTotal: 0.0014265310610159887
-        ave_lot_size_per_unit: 0.002385433306290455
-        np.log1p(sqft_per_unit): 0.002925040408861413
-        poor: 0.002136818919948668
-        renters: 0.0028880135986264566
-        sfdu: 0.0020815956248426714
-        sum_residential_units: 0.00436068807360313
+        I(year_built < 1940)[T.True]: 0.0035275777964744875
+        I(year_built > 2000)[T.True]: 0.0029614432429514244
+        Intercept: 0.061035272845873324
+        autoOffPeakRetail: 0.00657494494562551
+        autoPeakTotal: 0.005951224582905011
+        ave_income: 0.00466822756959462
+        ave_lot_size_per_unit: 0.0023781632909149132
+        np.log1p(sqft_per_unit): 0.002804531124925984
+        pct_asian: 0.012500396632309433
+        pct_black: 0.0094244347718334
+        pct_hisp: 0.013676087510083203
+        pct_renters: 0.019115110753052802
+        sum_residential_units: 0.0023239558780218704
+        transitPeakTotal: 0.0006152354512563027
     T-Score:
-        I(year_built < 1940)[T.True]: 29.94301013812896
-        I(year_built > 2000)[T.True]: 2.720913536118708
-        Intercept: 154.8158220625857
-        autoPeakTotal: 113.65152849560509
-        ave_lot_size_per_unit: 41.508180556578665
-        np.log1p(sqft_per_unit): -150.56226595538254
-        poor: -102.440818818527
-        renters: 66.7331761598278
-        sfdu: -49.00269031406015
-        sum_residential_units: 32.42631321560223
+        I(year_built < 1940)[T.True]: 27.839542954068317
+        I(year_built > 2000)[T.True]: 16.54428267092198
+        Intercept: 43.759363854846725
+        autoOffPeakRetail: -37.349559244830246
+        autoPeakTotal: 59.445497286624295
+        ave_income: 84.9597867367184
+        ave_lot_size_per_unit: 22.712919735474525
+        np.log1p(sqft_per_unit): -165.44559389483953
+        pct_asian: -17.93096679263651
+        pct_black: -42.19785779348052
+        pct_hisp: -22.855313185368654
+        pct_renters: 26.743487476429763
+        sum_residential_units: 14.210797860040186
+        transitPeakTotal: 22.412804997044677
 
-fit_rsquared_adj: 0.37597106942540226
+fit_rsquared_adj: 0.433482439396073
 
-fit_rsquared: 0.3760240550133035
+fit_rsquared: 0.43355191862029074

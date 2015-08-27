@@ -16,6 +16,21 @@ from urbansim_defaults import variables
 def poverty_rate(nodes):
     return nodes.poor.divide(nodes.population).fillna(0)
 
+@orca.column('nodes', 'pct_black', cache=True)
+def pct_black(nodes):
+    return nodes.blacks.divide(nodes.population).fillna(0)
+
+@orca.column('nodes', 'pct_hisp', cache=True)
+def pct_hisp(nodes):
+    return nodes.hispanics.divide(nodes.population).fillna(0)
+
+@orca.column('nodes', 'pct_asian', cache=True)
+def pct_asian(nodes):
+    return nodes.asians.divide(nodes.population).fillna(0)
+
+@orca.column('nodes', 'pct_renters', cache=True)
+def pct_renters(nodes):
+    return nodes.renters.divide(nodes.population).fillna(0)
 
 #####################
 # HOUSEHOLD VARIABLES
