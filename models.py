@@ -370,7 +370,7 @@ def subsidized_residential_developer(households, buildings,
 def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict, run_number, year):
     households_df = orca.merge_tables('households',[parcels, taz_to_superdistrict, buildings, households],columns=['pda','zone_id','DISTRICT','puma5','persons','income'])
     jobs_df = orca.merge_tables('jobs',[parcels, taz_to_superdistrict, buildings, jobs],columns=['pda','DISTRICT','zone_id','empsix'])
-    buildings_df = orca.merge_tables('buildings',[parcels, taz_to_superdistrict, buildings],columns=['pda','DISTRICT','building_type_id','zone_id','residential_units','building_sqft'])
+    buildings_df = orca.merge_tables('buildings',[parcels, taz_to_superdistrict, buildings],columns=['pda','DISTRICT','building_type_id','zone_id','residential_units','building_sqft','non_residential_sqft'])
     buildings_df = buildings_df.rename(columns = {'zone_id_x':'zone_id'}) #because merge_tables returns multiple zone_id_'s, but not the one we need
     geographies = ['DISTRICT','pda']
     for geography in geographies:
@@ -407,8 +407,13 @@ def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict, run_n
             groupby(geography).size()
         summary_table['othempn'] = jobs_df.query("empsix == 'OTHEMPN'").\
             groupby(geography).size()
-        summary_csv = "runs/run{}_{}_summaries_{}.csv".format(run_number, geography, year)
-        summary_table.to_csv(summary_csv)
+        summary_table['occupancy_rate'] = summary_table['tothh']/(summary_table['sfdu'] + summary_table['sfdu'])
+        summary_table['non_residential_sqft'] = buildings_df.groupby(geography)['non_residential_sqft'].sum()
+        summary_table['sq_ft_per_employee'] = summary_table['non_residential_sqft']/(summary_table['totemp'])
+        if year in [2010,2015,2020,2025,2030,2035,2040]:
+            summary_csv = "runs/run{}_{}_summaries_{}.csv".format(run_number, geography, year)
+            summary_table.to_csv(summary_csv)
+
 
 @orca.step("travel_model_output")
 def travel_model_output(parcels, households, jobs, buildings,
