@@ -375,11 +375,13 @@ def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict, run_n
     geographies = ['DISTRICT','pda']
     if year in [2010,2015,2020,2025,2030,2035,2040]:
         for geography in geographies:
+            #create table with household/population summaries
             summary_table = pd.pivot_table(households_df,
              values=['persons'],
              index=[geography],
              aggfunc=[np.size, np.sum])
             summary_table.columns = ['tothh','hhpop']
+            #income quartile counts
             summary_table['hhincq1'] = households_df.query("income < 25000").\
                 groupby(geography).size()
             summary_table['hhincq2'] = households_df.query("income >= 25000 and income < 45000").\
@@ -388,12 +390,14 @@ def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict, run_n
                 groupby(geography).size()
             summary_table['hhincq4'] = households_df.query("income >= 75000").\
                 groupby(geography).size()
+            #residential buildings by type
             summary_table['sfdu'] = \
                 buildings_df.query("building_type_id == 1 or building_type_id == 2").\
                 groupby(geography).residential_units.sum()
             summary_table['mfdu'] = \
                 buildings_df.query("building_type_id == 3 or building_type_id == 12").\
                 groupby(geography).residential_units.sum()
+            #employees by sector
             summary_table['totemp'] = jobs_df.\
                 groupby(geography).size()
             summary_table['agrempn'] = jobs_df.query("empsix == 'AGREMPN'").\
@@ -408,9 +412,11 @@ def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict, run_n
                 groupby(geography).size()
             summary_table['othempn'] = jobs_df.query("empsix == 'OTHEMPN'").\
                 groupby(geography).size()
+            #summary columns
             summary_table['occupancy_rate'] = summary_table['tothh']/(summary_table['sfdu'] + summary_table['sfdu'])
             summary_table['non_residential_sqft'] = buildings_df.groupby(geography)['non_residential_sqft'].sum()
             summary_table['sq_ft_per_employee'] = summary_table['non_residential_sqft']/(summary_table['totemp'])
+
             summary_csv = "runs/run{}_{}_summaries_{}.csv".format(run_number, geography, year)
             summary_table.to_csv(summary_csv)
 
@@ -496,12 +502,13 @@ def travel_model_output(parcels, households, jobs, buildings,
     subsidy_file = "runs/run{}_subsidy_summary.csv".format(run_number)
     coffer["prop_tax_acct"].to_frame().to_csv(subsidy_file)
 
-    #travel model csv stuff
-    travel_model_csv = "runs/run{}_taz_summaries_{}.csv".format(run_number, year)
-    travel_model_output = zones
-    #list of columns that we need to fill eventually for valid travel model file:
-    template_columns = ['age0519','age2044','age4564','age65p','areatype','ciacre','collfte','collpte','county','district','empres','gqpop','hhlds','hsenroll','oprkcst','prkcst','resacre','sd','sftaz','shpop62p','terminal','topology','totacre','totpop','zero','zone']
-    for x in template_columns: #fill those columns with NaN until we have values for them
-        travel_model_output[x] = np.nan
-    travel_model_output.columns = [x.upper() for x in travel_model_output.columns] #uppercase columns to match travel model template
-    travel_model_output.to_csv(travel_model_csv)
+    if year in [2010,2015,2020,2025,2030,2035,2040]:
+        #travel model csv
+        travel_model_csv = "runs/run{}_taz_summaries_{}.csv".format(run_number, year)
+        travel_model_output = zones
+        #list of columns that we need to fill eventually for valid travel model file:
+        template_columns = ['age0519','age2044','age4564','age65p','areatype','ciacre','collfte','collpte','county','district','empres','gqpop','hhlds','hsenroll','oprkcst','prkcst','resacre','sd','sftaz','shpop62p','terminal','topology','totacre','totpop','zero','zone']
+        for x in template_columns: #fill those columns with NaN until we have values for them
+            travel_model_output[x] = np.nan
+        travel_model_output.columns = [x.upper() for x in travel_model_output.columns] #uppercase columns to match travel model template
+        travel_model_output.to_csv(travel_model_csv)
