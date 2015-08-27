@@ -159,7 +159,7 @@ concept	County	city	Key	KeyName	Households1	Households2	Jobs1	Jobs2
 156	Santa Clara	San Jose	SJO19	Westgate/El Paseo Urban Village	795	3274	3443	5236
 157	Santa Clara	San Jose	SJO2	Cottle Transit Village (Hitachi)	0	3511	2546	3039
 158	Santa Clara	San Jose	SJO3	North San Jose	10416	42826	84655	130762
-159	Santa Clara	San Jose	SJO4	"Downtown ""Frame"""	16975	27414	26931	31318
+159	Santa Clara	San Jose	SJO4	Downtown Frame	16975	27414	26931	31318
 160	Santa Clara	San Jose	SJO5	Berryessa Station	1846	7849	6153	12218
 161	Santa Clara	San Jose	SJO6	Communications Hill	6543	9908	3942	5657
 162	Santa Clara	San Jose	SJO7	West San Carlos and Southwest Expressway Corridors	10316	20416	8972	15655
@@ -197,7 +197,7 @@ concept	County	city	Key	KeyName	Households1	Households2	Jobs1	Jobs2
 194	Solano	Vallejo	VAL1	Waterfront - Downtown	977	1924	3643	5943
 195	Sonoma	Cloverdale	CLO1	Downtown/SMART Transit Area	1039	1799	880	1387
 196	Sonoma	Cotati	COT1	Downtown and Cotati Depot	832	1246	646	1193
-197	Sonoma	Petaluma	PET1	Central, Turning Basin/Lower Reach	749	2502	3111	8334
+197	Sonoma	Petaluma	PET1	Central Turning Basin/Lower Reach	749	2502	3111	8334
 198	Sonoma	Rohnert Park	ROH1	Sonoma Mountain Village	195	2171	139	1188
 199	Sonoma	Rohnert Park	ROH2	Central Rohnert Park	1299	2273	3350	5166
 200	Sonoma	Santa Rosa	SRO1	Downtown Station Area	895	1433	686	1055
