@@ -56,6 +56,30 @@ variable_definitions:
     radius: 1500
     apply: np.log1p
 
+  - name: blacks
+    dataframe: households
+    filters:
+    - black == 1
+    varname: persons
+    radius: 1500
+    apply: np.log1p
+
+  - name: hispanics
+    dataframe: households
+    filters:
+    - hisp == 1
+    varname: persons
+    radius: 1500
+    apply: np.log1p
+
+  - name: asians
+    dataframe: households
+    filters:
+    - asian == 1
+    varname: persons
+    radius: 1500
+    apply: np.log1p
+
   - name: renters
     dataframe: households
     filters:
