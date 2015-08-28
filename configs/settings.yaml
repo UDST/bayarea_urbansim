@@ -130,7 +130,7 @@ feasibility:
 
 
 residential_developer:
-  target_vacancy: .05
+  target_vacancy: .10
   min_unit_size: 1000
   bldg_sqft_per_job: 400
   max_parcel_size: 150000000

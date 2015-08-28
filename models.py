@@ -337,7 +337,7 @@ def feasibility(parcels, settings,
                           **kwargs)
 
 
-# override to assign tenure to new units
+# override to divide building forms by tenure
 @orca.step('residential_developer')
 def residential_developer(feasibility, households, buildings, parcels, year,
                           settings, summary, form_to_btype_func,
@@ -358,40 +358,8 @@ def residential_developer(feasibility, households, buildings, parcels, year,
         **kwargs)
     
     summary.add_parcel_output(new_buildings)
-    # for testing only
-    orca.add_table("new_buildings", new_buildings)
     
-@orca.step('add_tenure')
-def add_tenure():
-    # this is an orphan model with code that i'm working on in a notebook
     
-    # assign tenure status to new units --
-    # will need to do the same thing in the other developer model too, for 
-    # residential portion of mixed-use buildings
-
-    units = sim.get_table("residential_units")
-    u = units.to_frame(units.local_columns)
-    f = u[['building_id']].merge(\
-    				new_buildings[['form']], left_index=True, right_index=True)
-    				
-    o_forms = ['residential_ownerocc']  # owner-occupied building form names
-    r_forms = ['residential_rented']  # rented building form names
-    
-    ownerocc = u[u.unit_tenure.isnull() & f.form.isin(o_forms)].index
-    u.loc[ownerocc, 'unit_tenure'] = 0
-    print "Assigned ownership tenure to %d units" % len(ownerocc)
-    
-    rented = u[u.unit_tenure.isnull() & f.form.isin(r_forms)].index
-    u.loc[rented, 'unit_tenure'] = 1
-    print "Assigned rental tenure to %d units" % len(rented)
-    
-    unassigned = u[u.unit_tenure.isnull()].index
-    u.loc[unassigned, 'unit_tenure'] = np.random.randint(0, 2, len(unassigned))
-    print "Assigned random tenure to %d units" % len(unassigned)
-
-    orca.add_table("residential_units", u)		
-
-
 @orca.injectable("supply_and_demand_multiplier_func", autocall=False)
 def supply_and_demand_multiplier_func(demand, supply):
     s = demand / supply
