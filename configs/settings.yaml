@@ -34,14 +34,14 @@ acct_settings:
   receiving_buildings_filter: pda_id > 0 and residential_units > 1
 
 
-enable_supply_correction:
+dont_enable_supply_correction:
   price_col: residential_price
   submarket_col: zone_id
   submarket_table: zones
   warm_start: False
   multiplier_func: supply_and_demand_multiplier_func
-  clip_final_price_low: 200
-  clip_final_price_high: 2000
+  clip_final_price_low: null
+  clip_final_price_high: null
   kwargs:
     clip_change_low: 1.0
     clip_change_high: 1.2
@@ -82,7 +82,7 @@ rates:
 
 build_networks:
   name: 2015_06_01_osm_bayarea4326.h5
-  max_distance: 1500
+  max_distance: 10000
 
 
 households_transition:
@@ -97,7 +97,7 @@ jobs_transition:
   total_column: number_of_jobs
 
 
-rsh_simulate:
+hide_rsh_simulate:
   low: 200
   high: 2000
 

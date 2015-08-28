@@ -8,16 +8,22 @@ node_col: node_id
 
 variable_definitions:
     
-  - name: sum_residential_units
+  - name: residential_units_500
+    dataframe: buildings
+    varname: residential_units
+    radius: 500
+    apply: np.log1p
+
+  - name: residential_units_1500
     dataframe: buildings
     varname: residential_units
     radius: 1500
     apply: np.log1p
 
-  - name: sum_nonresidential_units
+  - name: residential_units_10000
     dataframe: buildings
-    varname: job_spaces
-    radius: 1500
+    varname: residential_units
+    radius: 10000
     apply: np.log1p
 
   - name: ave_sqft_per_unit
@@ -80,14 +86,28 @@ variable_definitions:
     decay: flat
     apply: np.log1p
 
-  - name: jobs
+  - name: jobs_500
+    filters:
+    - building_id != -1
+    dataframe: jobs
+    radius: 500
+    apply: np.log1p
+
+  - name: jobs_1500
     filters:
     - building_id != -1
     dataframe: jobs
     radius: 1500
     apply: np.log1p
+  
+  - name: jobs_10000
+    filters:
+    - building_id != -1
+    dataframe: jobs
+    radius: 10000
+    apply: np.log1p
 
-  - name: ave_income
+  - name: ave_income_1500
     filters:
     - building_id != -1
     dataframe: households
@@ -95,4 +115,12 @@ variable_definitions:
     radius: 1500
     aggregation: average
     decay: flat
-    apply: np.log1p
+  
+  - name: ave_income_500
+    filters:
+    - building_id != -1
+    dataframe: households
+    varname: income
+    radius: 500
+    aggregation: average
+    decay: flat
