@@ -28,8 +28,9 @@ if INTERACT:
 
 run_num = orca.get_injectable("run_number")
 if LOGS:
+     print '***The Standard stream is being written to /logs/sim_out{0}***'.format(run_num)
      sys.stdout = sys.stderr = open("logs/sim_out_%d" % run_num, 'w')
-
+     
 if SLACK:
     from slacker import Slacker
     slack = Slacker('xoxp-7025187590-7026053537-7111663091-9eeeb6')
