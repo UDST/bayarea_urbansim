@@ -10,10 +10,16 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
+args = sys.argv[1:]
+    
 SLACK = MAPS = False
-LOGS = False
+LOGS = True
 INTERACT = False
 S3=False
+
+if len(args) and args[0] == "-i":
+    SLACK = MAPS = LOGS = False
+    INTERACT = True
 
 if INTERACT:
     import code
@@ -22,22 +28,24 @@ if INTERACT:
 
 run_num = orca.get_injectable("run_number")
 if LOGS:
+     print '***The Standard stream is being written to /logs/sim_out{0}***'.format(run_num)
      sys.stdout = sys.stderr = open("logs/sim_out_%d" % run_num, 'w')
-
+     
 if SLACK:
     from slacker import Slacker
     slack = Slacker('xoxp-7025187590-7026053537-7111663091-9eeeb6')
     host = socket.gethostname()
 
 print "Started", time.ctime()
-in_year, out_year = 2010, 2020
+in_year, out_year = 2010, 2030
 
 if SLACK:
     slack.chat.post_message('#sim_updates', 
         'Starting simulation %d on host %s' % (run_num, host))
 
 try:
-  orca.run([ 
+  orca.run([
+    #"mls_appreciation"
     "neighborhood_vars",            # accessibility variables
     
     "rsh_simulate",                 # residential sales hedonic

@@ -458,3 +458,36 @@ def travel_model_output(parcels, households, jobs, buildings,
         travel_model_output[x] = np.nan
     travel_model_output.columns = [x.upper() for x in travel_model_output.columns] #uppercase columns to match travel model template
     travel_model_output.to_csv(travel_model_csv)
+
+
+@orca.step("mls_appreciation")
+def mls_appreciation(homesales, year, summary):
+    buildings = homesales
+
+    years = buildings.redfin_sale_year
+    zone_ids = buildings.zone_id
+    price = buildings.redfin_sale_price
+
+    min_obs = 10 # minimum observations
+
+    def aggregate_year(year):
+        mask = years == year
+        s = price[mask].groupby(zone_ids[mask]).median()
+        size = price[mask].groupby(zone_ids[mask]).size()
+        return s, size
+
+    current, current_size = aggregate_year(2013)
+
+    zones = pd.DataFrame(index=zone_ids.unique())
+
+    past, past_size = aggregate_year(year)
+    appreciation = (current / past).pow(1.0/(2013-year))
+    # zero out the zones with too few observations
+    appreciation = appreciation * (current_size > min_obs).astype('int')
+    appreciation = appreciation * (past_size > min_obs).astype('int')
+    zones["appreciation"] = appreciation 
+
+    print zones.describe()
+
+    summary.add_zone_output(zones, "appreciation", year)
+    summary.write_zone_output()

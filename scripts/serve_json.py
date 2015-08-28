@@ -6,10 +6,10 @@ import json
 from flask import Flask, jsonify
 from flask.ext.cors import CORS 
 import pandas as pd
-import urbansim.sim.simulation as sim
+import orca
 
 app = Flask(__name__)
-app.debug = True
+app.debug = False
 cors = CORS(app)
 
 MAX_PARCELS_RETURNED = 5000
@@ -18,11 +18,11 @@ print "Loading"
 
 store = pd.HDFStore('data/bayarea_v3.h5')
 
-parcels = sim.get_table('parcels').to_frame()
-buildings = sim.get_table('buildings').to_frame()
-#households = sim.get_table('households').to_frame()
-#jobs = sim.get_table('jobs').to_frame()
-zoning = sim.get_table('zoning_baseline').to_frame()
+parcels = orca.get_table('parcels').to_frame()
+buildings = orca.get_table('buildings').to_frame()
+#households = orca.get_table('households').to_frame()
+#jobs = orca.get_table('jobs').to_frame()
+zoning = orca.get_table('zoning_baseline').to_frame()
 
 print "Ready"
 
@@ -73,4 +73,4 @@ if __name__ == '__main__':
     #http_server = HTTPServer(WSGIContainer(app))
     #http_server.listen(5000)
     #IOLoop.instance().start()    
-    app.run('0.0.0.0', 5000)
+    app.run('0.0.0.0', 1984)
