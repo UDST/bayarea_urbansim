@@ -190,19 +190,28 @@ def parcel_rules(parcels):
     s = (~s.reindex(parcels.index).fillna(False)).astype('int')
     return s
 
+GROSS_AVE_UNIT_SIZE = 1000
 
 @orca.column('parcels', 'zoned_du', cache=True)
 def zoned_du(parcels):
-    GROSS_AVE_UNIT_SIZE = 1000
     s = parcels.max_dua * parcels.parcel_acres
     s2 = parcels.max_far * parcels.parcel_size / GROSS_AVE_UNIT_SIZE
     s3 = parcel_is_allowed('residential')
     return (s.fillna(s2)*s3).reindex(parcels.index).fillna(0).astype('int')
 
 
+@orca.column('parcels', 'total_non_residential_sqft', cache=True)
+def total_non_residential_sqft(parcels, buildings):
+    return buildings.non_residential_sqft.groupby(buildings.parcel_id).sum().\
+        reindex(parcels.index).fillna(0)
+
+
 @orca.column('parcels', 'zoned_du_underbuild')
 def zoned_du_underbuild(parcels):
-    s = (parcels.zoned_du - parcels.total_residential_units).clip(lower=0)
+    # subtract from zoned du, the total res units, but also the equivalent
+    # of non-res sqft in res units
+    s = (parcels.zoned_du - parcels.total_residential_units - 
+         parcels.total_non_residential_sqft / GROSS_AVE_UNIT_SIZE).clip(lower=0)
     ratio = (s / parcels.total_residential_units).replace(np.inf, 1)
     # if the ratio of additional units to existing units is not at least .5
     # we don't build it - I mean we're not turning a 10 story building into an

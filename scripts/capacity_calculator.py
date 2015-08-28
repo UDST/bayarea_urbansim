@@ -12,7 +12,8 @@ parcels_geography = orca.get_table("parcels_geography")
 
 df = parcels.to_frame(["geom_id", "total_residential_units", "zoned_du", "zoned_du_underbuild", "zoned_du_underbuild_nodev"])
 
-print "Number of parcels with value > 0 = %d" % len(df.query("zoned_du_underbuild_nodev > 0"))
+df = df.query("zoned_du_underbuild_nodev > 0")
+print "Number of parcels with value > 0 = %d" % len(df)
 
 df["juris_name"] = parcels_geography.juris_name
 df["juris_id"] = parcels_geography.jurisdiction
