@@ -60,6 +60,7 @@ try:
     "non_residential_developer",
      
     "diagnostic_output",
+    "geographic_summary",
     "travel_model_output"
   ], iter_vars=range(in_year, out_year))
 
