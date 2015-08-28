@@ -76,7 +76,7 @@ def nearest_neighbor(df1, df2):
 # non-residential rent data
 @orca.table('costar', cache=True)
 def costar(store, parcels):
-    df = pd.read_csv(os.path.join(misc.data_dir(), 'costar.csv'))
+    df = pd.read_csv(os.path.join(misc.data_dir(), '2015_08_29_costar.csv'))
     df["PropertyType"] = df.PropertyType.replace("General Retail", "Retail")
     df = df[df.PropertyType.isin(["Office", "Retail", "Industrial"])]
     df["costar_rent"] = df["Average Weighted Rent"].astype('float')
