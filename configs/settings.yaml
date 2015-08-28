@@ -82,7 +82,7 @@ rates:
 
 build_networks:
   name: 2015_06_01_osm_bayarea4326.h5
-  max_distance: 10000
+  max_distance: 2000
 
 
 households_transition:

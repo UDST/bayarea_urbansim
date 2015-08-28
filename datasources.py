@@ -162,19 +162,13 @@ def zoning_np(parcels_geography):
 # zone_ids for a few parcels.  Not enough to worry about so just filling with
 # the mode
 @orca.table('parcels', cache=True)
-def parcels(store, net):
+def parcels(store):
     df = store['parcels']
     df["zone_id"] = df.zone_id.replace(0, 1)
 
-    df['_node_id'] = net.get_node_ids(df['x'], df['y'])
-    
     cfg = {
         "fill_nas": {
             "zone_id": {
-                "how": "mode",
-                "type": "int"
-            },
-            "_node_id": {
                 "how": "mode",
                 "type": "int"
             },

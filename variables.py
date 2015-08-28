@@ -286,5 +286,7 @@ def price_shifters(parcels, settings):
 
 
 @orca.column('parcels', 'node_id')
-def node_id(parcels):
-    return parcels._node_id
+def node_id(parcels, net):
+    s = net.get_node_ids(parcels.x, parcels.y)
+    s = s.reindex(parcels.index).fillna(s.value_counts().iloc[0]).astype('int')
+    return s

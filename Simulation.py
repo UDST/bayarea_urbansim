@@ -10,10 +10,16 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
+args = sys.argv[1:]
+    
 SLACK = MAPS = True
 LOGS = True
 INTERACT = False
 S3=False
+
+if len(args) and args[0] == "-i":
+    SLACK = MAPS = LOGS = False
+    INTERACT = True
 
 if INTERACT:
     import code
