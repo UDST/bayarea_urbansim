@@ -10,8 +10,8 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-SLACK = MAPS = False
-LOGS = False
+SLACK = MAPS = True
+LOGS = True
 INTERACT = False
 S3=False
 
@@ -30,14 +30,15 @@ if SLACK:
     host = socket.gethostname()
 
 print "Started", time.ctime()
-in_year, out_year = 2010, 2020
+in_year, out_year = 2010, 2030
 
 if SLACK:
     slack.chat.post_message('#sim_updates', 
         'Starting simulation %d on host %s' % (run_num, host))
 
 try:
-  orca.run([ 
+  orca.run([
+    #"mls_appreciation"
     "neighborhood_vars",            # accessibility variables
     
     "rsh_simulate",                 # residential sales hedonic
