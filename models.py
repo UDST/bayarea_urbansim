@@ -166,7 +166,7 @@ def hlcm_renter_simulate(households, residential_units, unit_aggregations, setti
 
 # translate residential rental/ownership income into consistent terms so the two forms 
 # can compete against each other in the developer model
-@orca.step('cap_rate_precompute')
+@orca.step('price_to_rent_precompute')
 def cap_rate_precompute(nodes):
     # this cap rate assumption comes from the empirical ratio of smoothed, fitted 
     # residential rents and prices in the base year
