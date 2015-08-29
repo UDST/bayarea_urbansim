@@ -166,7 +166,7 @@ def hlcm_renter_simulate(households, residential_units, unit_aggregations, setti
 
 # translate residential rental/ownership income into consistent terms so the two forms 
 # can compete against each other in the developer model
-@orca.step('cap_rate_precompute')
+@orca.step('price_to_rent_precompute')
 def cap_rate_precompute(nodes):
     # this cap rate assumption comes from the empirical ratio of smoothed, fitted 
     # residential rents and prices in the base year
@@ -184,88 +184,6 @@ def cap_rate_precompute(nodes):
     df['residential_ownerocc'] = df.residential_price.multiply(cap_rate)
     df['residential_rented'] = df.residential_rent.multiply(12)
     orca.add_table('nodes', df)
-
-
-# OVERRIDE ONLY TO COMMENT OUT LINES THAT ASSUME A BUILDING FORM OR 
-# USE TYPE CALLED 'RESIDENTIAL'
-
-def run_feasibility(parcels, parcel_price_callback,
-                    parcel_use_allowed_callback, residential_to_yearly=True,
-                    parcel_filter=None, only_built=True, forms_to_test=None,
-                    config=None, pass_through=[]):
-    """
-    Execute development feasibility on all parcels
-
-    Parameters
-    ----------
-    parcels : DataFrame Wrapper
-        The data frame wrapper for the parcel data
-    parcel_price_callback : function
-        A callback which takes each use of the pro forma and returns a series
-        with index as parcel_id and value as yearly_rent
-    parcel_use_allowed_callback : function
-        A callback which takes each form of the pro forma and returns a series
-        with index as parcel_id and value and boolean whether the form
-        is allowed on the parcel
-    residential_to_yearly : boolean (default true)
-        Whether to use the cap rate to convert the residential price from total
-        sales price per sqft to rent per sqft
-    parcel_filter : string
-        A filter to apply to the parcels data frame to remove parcels from
-        consideration - is typically used to remove parcels with buildings
-        older than a certain date for historical preservation, but is
-        generally useful
-    only_built : boolean
-        Only return those buildings that are profitable - only those buildings
-        that "will be built"
-    forms_to_test : list of strings (optional)
-        Pass the list of the names of forms to test for feasibility - if set to
-        None will use all the forms available in ProFormaConfig
-    config : SqFtProFormaConfig configuration object.  Optional.  Defaults to
-        None
-    pass_through : list of strings
-        Will be passed to the feasibility lookup function - is used to pass
-        variables from the parcel dataframe to the output dataframe, usually
-        for debugging
-
-    Returns
-    -------
-    Adds a table called feasibility to the sim object (returns nothing)
-    """
-
-    pf = sqftproforma.SqFtProForma(config) if config \
-        else sqftproforma.SqFtProForma()
-
-    df = parcels.to_frame()
-
-    if parcel_filter:
-        df = df.query(parcel_filter)
-
-    # add prices for each use
-    for use in pf.config.uses:
-        # assume we can get the 80th percentile price for new development
-        df[use] = parcel_price_callback(use)
-
-    # convert from cost to yearly rent
-#    if residential_to_yearly:
-#        df["residential"] *= pf.config.cap_rate
-
-    print "Describe of the yearly rent by use"
-    print df[pf.config.uses].describe()
-
-    d = {}
-    forms = forms_to_test or pf.config.forms
-    for form in forms:
-        print "Computing feasibility for form %s" % form
-        allowed = parcel_use_allowed_callback(form).loc[df.index]
-        d[form] = pf.lookup(form, df[allowed], only_built=only_built,
-                            pass_through=pass_through)
-#        if residential_to_yearly and "residential" in pass_through:
-#            d[form]["residential"] /= pf.config.cap_rate
-
-    far_predictions = pd.concat(d.values(), keys=d.keys(), axis=1)
-
-    orca.add_table("feasibility", far_predictions)
 
 
 # override to separate residential use type into owner-occupied vs rented
@@ -330,14 +248,14 @@ def feasibility(parcels, settings,
 
     # the price and permissibility callbacks are defined in variables.py
     kwargs = settings['feasibility']
-    run_feasibility(parcels,
+    utils.run_feasibility(parcels,
                           parcel_sales_price_sqft_func,
                           parcel_is_allowed_func,
                           config=pfc,
                           **kwargs)
 
 
-# override to assign tenure to new units
+# override to divide building forms by tenure
 @orca.step('residential_developer')
 def residential_developer(feasibility, households, buildings, parcels, year,
                           settings, summary, form_to_btype_func,
@@ -358,40 +276,8 @@ def residential_developer(feasibility, households, buildings, parcels, year,
         **kwargs)
     
     summary.add_parcel_output(new_buildings)
-    # for testing only
-    orca.add_table("new_buildings", new_buildings)
     
-@orca.step('add_tenure')
-def add_tenure():
-    # this is an orphan model with code that i'm working on in a notebook
     
-    # assign tenure status to new units --
-    # will need to do the same thing in the other developer model too, for 
-    # residential portion of mixed-use buildings
-
-    units = sim.get_table("residential_units")
-    u = units.to_frame(units.local_columns)
-    f = u[['building_id']].merge(\
-    				new_buildings[['form']], left_index=True, right_index=True)
-    				
-    o_forms = ['residential_ownerocc']  # owner-occupied building form names
-    r_forms = ['residential_rented']  # rented building form names
-    
-    ownerocc = u[u.unit_tenure.isnull() & f.form.isin(o_forms)].index
-    u.loc[ownerocc, 'unit_tenure'] = 0
-    print "Assigned ownership tenure to %d units" % len(ownerocc)
-    
-    rented = u[u.unit_tenure.isnull() & f.form.isin(r_forms)].index
-    u.loc[rented, 'unit_tenure'] = 1
-    print "Assigned rental tenure to %d units" % len(rented)
-    
-    unassigned = u[u.unit_tenure.isnull()].index
-    u.loc[unassigned, 'unit_tenure'] = np.random.randint(0, 2, len(unassigned))
-    print "Assigned random tenure to %d units" % len(unassigned)
-
-    orca.add_table("residential_units", u)		
-
-
 @orca.injectable("supply_and_demand_multiplier_func", autocall=False)
 def supply_and_demand_multiplier_func(demand, supply):
     s = demand / supply

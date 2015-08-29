@@ -56,7 +56,7 @@ try:
     "elcm_simulate",
 
     "price_vars",				# node-level variables for feasibility
-    "cap_rate_precompute",		# translate rental/ownership income into consistent terms
+    "price_to_rent_precompute",	# translate rental/ownership income into consistent terms
 
     "feasibility",				# calculate feasibility of all new building types
     
