@@ -14,11 +14,6 @@ def building_sqft_per_job(settings):
 
 @orca.table('jobs', cache=True)
 def jobs(store):
-    # nets = store['nets']
-    ###go from establishments to jobs
-    # df = nets.loc[np.repeat(nets.index.values, nets.emp11.values)]\
-        # .reset_index()
-    # df.index.name = 'job_id'
     df = store['jobs']
     return df
 
@@ -68,11 +63,32 @@ def base_price_per_sqft(homesales, buildings):
     return misc.reindex(s, buildings.zone_id).reindex(buildings.index).fillna(s.quantile())
 
 
+# assume df1 and df2 each have 2 float columns specifying x and y
+# in the same order and coordinate system and no nans.  returns the indexes from
+# df1 that are closest to each row in df2 
+def nearest_neighbor(df1, df2):
+    from sklearn.neighbors import KDTree
+    kdt = KDTree(df1.as_matrix())
+    indexes = kdt.query(df2.as_matrix(), k=1, return_distance=False)
+    return df1.index.values[indexes]
+
+
 # non-residential rent data
 @orca.table('costar', cache=True)
-def costar(store):
-    df = store['costar']
+def costar(store, parcels):
+    df = pd.read_csv(os.path.join(misc.data_dir(), '2015_08_29_costar.csv'))
+    df["PropertyType"] = df.PropertyType.replace("General Retail", "Retail")
     df = df[df.PropertyType.isin(["Office", "Retail", "Industrial"])]
+    df["costar_rent"] = df["Average Weighted Rent"].astype('float')
+    df["year_built"] = df["Year Built"].fillna(1980)
+    df = df.dropna(subset=["costar_rent", "Latitude", "Longitude"])
+
+    # now assign parcel id
+    df["parcel_id"] = nearest_neighbor(
+        parcels.to_frame(['x', 'y']).dropna(subset=['x', 'y']),
+        df[['Longitude', 'Latitude']]
+    )
+
     return df
 
 
@@ -88,6 +104,7 @@ def geom_id_to_parcel_id(df, parcels):
     s = pd.Series(s.index, index=s.values) # invert series
     df["new_index"] = s.loc[df.index] # get right parcel_id for each geom_id
     df = df.dropna(subset=["new_index"])
+    df["new_index"] = df.new_index.astype('int')
     df = df.set_index("new_index", drop=True)
     df.index.name = "parcel_id"
     return df
@@ -145,19 +162,13 @@ def zoning_np(parcels_geography):
 # zone_ids for a few parcels.  Not enough to worry about so just filling with
 # the mode
 @orca.table('parcels', cache=True)
-def parcels(store, net):
+def parcels(store):
     df = store['parcels']
     df["zone_id"] = df.zone_id.replace(0, 1)
 
-    df['_node_id'] = net.get_node_ids(df['x'], df['y'])
-    
     cfg = {
         "fill_nas": {
             "zone_id": {
-                "how": "mode",
-                "type": "int"
-            },
-            "_node_id": {
                 "how": "mode",
                 "type": "int"
             },
@@ -311,6 +322,7 @@ def taz_to_superdistrict():
 # this specifies the relationships between tables
 orca.broadcast('parcels_geography', 'buildings', cast_index=True,
               onto_on='parcel_id')
+orca.broadcast('parcels', 'homesales', cast_index=True, onto_on='parcel_id')
 orca.broadcast('nodes', 'homesales', cast_index=True, onto_on='node_id')
 orca.broadcast('nodes', 'costar', cast_index=True, onto_on='node_id')
 orca.broadcast('logsums', 'homesales', cast_index=True, onto_on='zone_id')
