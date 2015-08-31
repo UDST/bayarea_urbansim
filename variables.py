@@ -11,7 +11,6 @@ from urbansim_defaults import variables
 # NODE VARIABLES
 #####################
 
-
 @orca.column('nodes', 'poverty_rate', cache=True)
 def poverty_rate(nodes):
     return nodes.poor.divide(nodes.population).fillna(0)
@@ -32,26 +31,28 @@ def pct_asian(nodes):
 def pct_renters(nodes):
     return nodes.renters.divide(nodes.population).fillna(0)
 
+
 #####################
 # HOUSEHOLD VARIABLES
 #####################
 
-'''
-# overriding these to remove NaNs, in order to fix bug where HLCM won't estimate
-@sim.column('households', 'zone_id', cache=True)
-def zone_id(households, buildings):
-    return misc.reindex(buildings.zone_id, households.building_id).fillna(-1)
+@orca.column('households', 'monthly_rent')
+def monthly_rent(households, buildings, residential_units):
+    rent = misc.reindex(residential_units.unit_residential_rent, households.unit_id)
+    sqft = misc.reindex(buildings.sqft_per_unit, households.unit_id)
+    return rent.multiply(sqft).fillna(0)
 
+@orca.column('households', 'rent_burden')
+def rent_burden(households):
+    income = households.income
+    income[income < 0] = 0  # filter households with negative income
+    rb = households.monthly_rent.multiply(12).divide(income)
+    return rb.replace([np.inf, -np.inf], np.nan).fillna(0)
 
-@sim.column('households', 'node_id', cache=True)
-def node_id(households, buildings):
-    return misc.reindex(buildings.node_id, households.building_id).fillna(-1)
-'''
 
 #####################
 # BUILDING VARIABLES
 #####################
-
 
 # now that price is on units, override default and aggregate UP to buildings
 @orca.column('buildings', 'residential_price')
@@ -67,23 +68,10 @@ def residential_rent(buildings, residential_units):
         groupby(residential_units.building_id).median().\
         reindex(buildings.index).fillna(0)
 
-'''
-# override to remove NaNs, in order for HLCM to estimate
-@sim.column('buildings', 'node_id', cache=True)
-def node_id(buildings, parcels):
-    return misc.reindex(parcels.node_id, buildings.parcel_id).fillna(-1)
-
-
-# a handful were not matching, so filling with zeros for now
-@sim.column('buildings', 'sqft_per_job', cache=True)
-def sqft_per_job(buildings, building_sqft_per_job):
-    return buildings.building_type_id.fillna(-1).map(building_sqft_per_job).fillna(0)
-'''
 
 #####################
 # COSTAR VARIABLES
 #####################
-
 
 @orca.column('costar', 'general_type')
 def general_type(costar):
@@ -113,7 +101,6 @@ def node_id(parcels, costar):
 #####################
 # JOBS VARIABLES
 #####################
-
 
 @orca.column('jobs', 'naics', cache=True)
 def naics(jobs):

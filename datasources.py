@@ -352,7 +352,10 @@ def zone_id(craigslist, parcels):
     return misc.reindex(parcels.zone_id, craigslist.node_id)
 
 
-# adding some extra PUMS columns
+#######################
+# EXTRA PUMS VARIABLES
+#######################
+
 @orca.table('household_extras', cache=True)
 def household_extras():
 	df = pd.read_csv(os.path.join(misc.data_dir(), "household_extras.csv"))
