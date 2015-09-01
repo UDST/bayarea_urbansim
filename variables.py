@@ -40,6 +40,15 @@ def pct_nonwhite(nodes):
 def pct_renters(nodes):
     return nodes.renters.divide(nodes.population).fillna(0)*100
 
+#####################
+# REDSIDENTIAL UNIT VARIABLES
+#####################
+
+@orca.column('residential_units', 'annual_rent')
+def monthly_rent(buildings, residential_units):
+    return residential_units.unit_residential_rent.multiply(buildings.sqft_per_unit).\
+    reindex(residential_units.index).fillna(0)
+
 
 #####################
 # HOUSEHOLD VARIABLES
