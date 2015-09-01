@@ -18,19 +18,28 @@ def poverty_rate(nodes):
 
 @orca.column('nodes', 'pct_black', cache=True)
 def pct_black(nodes):
-    return nodes.blacks.divide(nodes.population).fillna(0)
+    return nodes.blacks.divide(nodes.population).fillna(0)*100
 
 @orca.column('nodes', 'pct_hisp', cache=True)
 def pct_hisp(nodes):
-    return nodes.hispanics.divide(nodes.population).fillna(0)
+    return nodes.hispanics.divide(nodes.population).fillna(0)*100
 
 @orca.column('nodes', 'pct_asian', cache=True)
 def pct_asian(nodes):
-    return nodes.asians.divide(nodes.population).fillna(0)
+    return nodes.asians.divide(nodes.population).fillna(0)*100
+
+@orca.column('nodes', 'pct_white', cache=True)
+def pct_white(nodes):
+    return nodes.whites.divide(nodes.population).fillna(0)*100
+
+@orca.column('nodes', 'pct_nonwhite', cache=True)
+def pct_nonwhite(nodes):
+    return nodes.nonwhites.divide(nodes.population).fillna(0)*100
+
 
 @orca.column('nodes', 'pct_renters', cache=True)
 def pct_renters(nodes):
-    return nodes.renters.divide(nodes.population).fillna(0)
+    return nodes.renters.divide(nodes.population).fillna(0)*100
 
 #####################
 # HOUSEHOLD VARIABLES
@@ -138,6 +147,9 @@ def empsix_id(jobs, settings):
 def unit_sqft(buildings):
     return (buildings.building_sqft / buildings.residential_units.replace(0, 1)).clip(400, 6000)
 
+#@orca.column('buildings', 'sqft_per_unit', cache=True)
+#def annual_rent_per_unit(buildings):
+#    return (unit_sqft * residential_rent * 12)
 
 #####################
 # PARCELS VARIABLES

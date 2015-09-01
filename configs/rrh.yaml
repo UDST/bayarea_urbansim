@@ -19,54 +19,54 @@ fitted: true
 
 fit_parameters:
     Coefficient:
-        Intercept: 6.603075626289762
-        autoOffPeakRetail: 0.2102853282985208
-        autoPeakTotal: -0.506079577379807
-        ave_income: 0.047265550563015526
-        ave_lot_size_per_unit: -0.04058742660238256
-        np.log1p(sqft_per_unit): -0.3265539750065099
-        pct_asian: 0.5739994666290652
-        pct_black: -0.6770469236141325
-        pct_hisp: -0.27896627787142747
-        pct_renters: 0.08873115240873401
-        poverty_rate: -0.524469443681256
-        sfdu: -0.07182576022757815
-        sum_nonresidential_units: 0.027929259377204904
-        sum_residential_units: 0.14665016173962991
-        transitPeakTotal: 0.016649919728993004
+        Intercept: 6.603075719216716
+        autoOffPeakRetail: 0.21028534078843017
+        autoPeakTotal: -0.506079594540697
+        ave_income: 0.04726555096695732
+        ave_lot_size_per_unit: -0.040587427883055596
+        np.log1p(sqft_per_unit): -0.32655397530521835
+        pct_asian: 0.005739994682386973
+        pct_black: -0.006770469104020062
+        pct_hisp: -0.00278966307565768
+        pct_renters: 0.0008873116209314274
+        poverty_rate: -0.524469428509844
+        sfdu: -0.07182575977118714
+        sum_nonresidential_units: 0.027929258580362826
+        sum_residential_units: 0.1466501609733026
+        transitPeakTotal: 0.016649919830253476
     Std. Error:
-        Intercept: 0.07859672242273408
-        autoOffPeakRetail: 0.014971209288903109
-        autoPeakTotal: 0.013852562296828888
-        ave_income: 0.0014351151851623822
-        ave_lot_size_per_unit: 0.0011601484506780526
-        np.log1p(sqft_per_unit): 0.002199469261701138
-        pct_asian: 0.009774466014622325
-        pct_black: 0.009464109192569787
-        pct_hisp: 0.010052498402452403
-        pct_renters: 0.01720075331083582
-        poverty_rate: 0.01337141637868901
-        sfdu: 0.000898847723515869
-        sum_nonresidential_units: 0.000668537946046549
-        sum_residential_units: 0.0017708976065522264
-        transitPeakTotal: 0.0005434964465391136
+        Intercept: 0.07859672232627403
+        autoOffPeakRetail: 0.014971209263655031
+        autoPeakTotal: 0.013852562267503797
+        ave_income: 0.0014351151815773543
+        ave_lot_size_per_unit: 0.0011601484489106803
+        np.log1p(sqft_per_unit): 0.0021994692600614462
+        pct_asian: 9.77446593906669e-05
+        pct_black: 9.464109257993702e-05
+        pct_hisp: 0.00010052498413886979
+        pct_renters: 0.00017200753106590472
+        poverty_rate: 0.013371416402512305
+        sfdu: 0.0008988477179283829
+        sum_nonresidential_units: 0.0006685379460849794
+        sum_residential_units: 0.0017708976047044267
+        transitPeakTotal: 0.0005434964457306681
     T-Score:
-        Intercept: 84.01209901317493
-        autoOffPeakRetail: 14.045981472878584
-        autoPeakTotal: -36.53328290721047
-        ave_income: 32.93502225583897
-        ave_lot_size_per_unit: -34.98468370893493
-        np.log1p(sqft_per_unit): -148.46944246628973
-        pct_asian: 58.724381032209656
-        pct_black: -71.53836772568917
-        pct_hisp: -27.750939786607773
-        pct_renters: 5.158562000469872
-        poverty_rate: -39.223177921311375
-        sfdu: -79.90870794735909
-        sum_nonresidential_units: 41.77662545913324
-        sum_residential_units: 82.81120331126552
-        transitPeakTotal: 30.634827210033592
+        Intercept: 84.01210029860724
+        autoOffPeakRetail: 14.04598233082821
+        autoPeakTotal: -36.533284223373606
+        ave_income: 32.93502261958314
+        ave_lot_size_per_unit: -34.98468486611787
+        np.log1p(sqft_per_unit): -148.4694427127822
+        pct_asian: 58.72438165082045
+        pct_black: -71.53836583513127
+        pct_hisp: -27.750942708967877
+        pct_renters: 5.158562624746086
+        poverty_rate: -39.22317671681389
+        sfdu: -79.90870793634254
+        sum_nonresidential_units: 41.77662426481424
+        sum_residential_units: 82.811202964939
+        transitPeakTotal: 30.634827441915625
 
-fit_rsquared_adj: 0.5619866938104414
+fit_rsquared_adj: 0.5619866944229996
 
-fit_rsquared: 0.5620705435948979
+fit_rsquared: 0.5620705442073388
