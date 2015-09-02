@@ -17,16 +17,6 @@ def general_type(costar):
     return costar.PropertyType
 
 
-@orca.column('costar', 'rent')
-def rent(costar):
-    return costar.averageweightedrent
-
-
-@orca.column('costar', 'stories')
-def stories(costar):
-    return costar.number_of_stories
-
-
 @orca.column('costar', 'node_id')
 def node_id(parcels, costar):
     return misc.reindex(parcels.node_id, costar.parcel_id)
@@ -61,18 +51,45 @@ def empsix_id(jobs, settings):
 # BUILDINGS VARIABLES
 #####################
 
+
+@orca.column('buildings', 'juris_ave_income', cache=True)
+def juris_ave_income(parcels, buildings):
+    return  misc.reindex(parcels.juris_ave_income, buildings.parcel_id)
+
+
+@orca.column('homesales', 'juris_ave_income', cache=True)
+def juris_ave_income(parcels, homesales):
+    return  misc.reindex(parcels.juris_ave_income, homesales.parcel_id)
+
+
+@orca.column('costar', 'juris_ave_income', cache=True)
+def juris_ave_income(parcels, costar):
+    return  misc.reindex(parcels.juris_ave_income, costar.parcel_id)
+
+
+@orca.column('buildings', 'is_sanfran', cache=True)
+def is_sanfran(parcels, buildings):
+    return  misc.reindex(parcels.is_sanfran, buildings.parcel_id)
+
+
+@orca.column('homesales', 'is_sanfran', cache=True)
+def is_sanfran(parcels, homesales):
+    return  misc.reindex(parcels.is_sanfran, homesales.parcel_id)
+
+
+@orca.column('costar', 'is_sanfran', cache=True)
+def is_sanfran(parcels, costar):
+    return  misc.reindex(parcels.is_sanfran, costar.parcel_id)
+
+
 @orca.column('buildings', 'sqft_per_unit', cache=True)
 def unit_sqft(buildings):
     return (buildings.building_sqft / buildings.residential_units.replace(0, 1)).clip(400, 6000)
 
 
-@orca.column('households', 'income_decile', cache=True)
+@orca.column('households', 'ones', cache=True)
 def income_decile(households):
-    s = pd.Series(pd.qcut(households.income, 10, labels=False),
-                  index=households.index)
-    # convert income quartile from 0-9 to 1-10
-    s = s.add(1)
-    return s
+     return pd.Series(1, households.index)
 
 
 @orca.column('buildings', cache=True)
@@ -94,11 +111,15 @@ def parcel_average_price(use, quantile=.5):
     # I also want more spreading in the development and not keep it so localized
     if use == "residential":
         buildings = orca.get_table('buildings')
-        s = misc.reindex(buildings.
-                            residential_price[buildings.general_type ==
-                                              "Residential"].
-                            groupby(buildings.zone_id).quantile(.8),
-                            orca.get_table('parcels').zone_id).clip(150, 1250)
+        # get price per sqft
+        s = buildings.residential_price / buildings.sqft_per_unit
+        # limit to res
+        s = s[buildings.general_type == "Residential"]
+        # group by zoneid and get 80th percentile
+        s = s.groupby(buildings.zone_id).quantile(.8).clip(150, 1250)
+        # broadcast back to parcel's index
+        s = misc.reindex(s, orca.get_table('parcels').zone_id)
+        # shifters
         cost_shifters = orca.get_table("parcels").cost_shifters
         price_shifters = orca.get_table("parcels").price_shifters
         return s / cost_shifters * price_shifters
@@ -135,6 +156,21 @@ def parcel_is_allowed(form):
     return s
 
 
+@orca.column('parcels', 'juris_ave_income', cache=True)
+def juris_ave_income(households, buildings, parcels_geography, parcels):
+    h = orca.merge_tables("households", [households, buildings, parcels_geography],
+                          columns=["jurisdiction", "income"])
+    s = h.groupby(h.jurisdiction).income.quantile(.5)
+    return misc.reindex(s, parcels_geography.jurisdiction).\
+        reindex(parcels.index).fillna(s.median())
+
+
+@orca.column('parcels', 'is_sanfran', cache=True)
+def is_sanfran(parcels_geography, buildings, parcels):
+    return (parcels_geography.juris_name == "San Francisco").\
+        reindex(parcels.index).fillna(False).astype('int')
+
+
 # actual columns start here
 @orca.column('parcels', 'max_far', cache=True)
 def max_far(parcels, scenario, scenario_inputs):
@@ -144,27 +180,38 @@ def max_far(parcels, scenario, scenario_inputs):
     return s * ~parcels.nodev
 
 
+# returns a vector where parcels are ALLOWED to be built
 @orca.column('parcels')
 def parcel_rules(parcels):
     # removes parcels with buildings < 1940,
     # and single family homes on less then half an acre
     s = (parcels.oldest_building < 1940) | \
         ((parcels.total_residential_units == 1) & (parcels.parcel_acres < .5))
-    return s.reindex(parcels.index).fillna(0).astype('int')
+    s = (~s.reindex(parcels.index).fillna(False)).astype('int')
+    return s
 
+GROSS_AVE_UNIT_SIZE = 1000
 
 @orca.column('parcels', 'zoned_du', cache=True)
 def zoned_du(parcels):
-    GROSS_AVE_UNIT_SIZE = 1000
     s = parcels.max_dua * parcels.parcel_acres
     s2 = parcels.max_far * parcels.parcel_size / GROSS_AVE_UNIT_SIZE
     s3 = parcel_is_allowed('residential')
     return (s.fillna(s2)*s3).reindex(parcels.index).fillna(0).astype('int')
 
 
+@orca.column('parcels', 'total_non_residential_sqft', cache=True)
+def total_non_residential_sqft(parcels, buildings):
+    return buildings.non_residential_sqft.groupby(buildings.parcel_id).sum().\
+        reindex(parcels.index).fillna(0)
+
+
 @orca.column('parcels', 'zoned_du_underbuild')
 def zoned_du_underbuild(parcels):
-    s = (parcels.zoned_du - parcels.total_residential_units).clip(lower=0)
+    # subtract from zoned du, the total res units, but also the equivalent
+    # of non-res sqft in res units
+    s = (parcels.zoned_du - parcels.total_residential_units - 
+         parcels.total_non_residential_sqft / GROSS_AVE_UNIT_SIZE).clip(lower=0)
     ratio = (s / parcels.total_residential_units).replace(np.inf, 1)
     # if the ratio of additional units to existing units is not at least .5
     # we don't build it - I mean we're not turning a 10 story building into an
@@ -239,5 +286,7 @@ def price_shifters(parcels, settings):
 
 
 @orca.column('parcels', 'node_id')
-def node_id(parcels):
-    return parcels._node_id
+def node_id(parcels, net):
+    s = net.get_node_ids(parcels.x, parcels.y)
+    s = s.reindex(parcels.index).fillna(s.value_counts().iloc[0]).astype('int')
+    return s
