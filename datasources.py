@@ -363,24 +363,24 @@ def household_extras():
 	return df
 
 
-@orca.column('households', 'white', cache=True)
+@orca.column('households', 'white')
 def white(households, household_extras):
-    return misc.reindex(household_extras.white, households.serialno)
+    return misc.reindex(household_extras.white, households.serialno).fillna(0)
 
 
-@orca.column('households', 'black', cache=True)
+@orca.column('households', 'black')
 def black(households, household_extras):
-    return misc.reindex(household_extras.black, households.serialno)
+    return misc.reindex(household_extras.black, households.serialno).fillna(0)
 
 
-@orca.column('households', 'asian', cache=True)
+@orca.column('households', 'asian')
 def asian(households, household_extras):
-    return misc.reindex(household_extras.asian, households.serialno)
+    return misc.reindex(household_extras.asian, households.serialno).fillna(0)
 
 
-@orca.column('households', 'hisp', cache=True)
+@orca.column('households', 'hisp')
 def hisp(households, household_extras):
-    return misc.reindex(household_extras.hisp, households.serialno)
+    return misc.reindex(household_extras.hisp, households.serialno).fillna(0)
 
 
 # this specifies the relationships between tables

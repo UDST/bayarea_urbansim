@@ -35,36 +35,40 @@ def pct_white(nodes):
 def pct_nonwhite(nodes):
     return nodes.nonwhites.divide(nodes.population).fillna(0)*100
 
-
 @orca.column('nodes', 'pct_renters', cache=True)
 def pct_renters(nodes):
     return nodes.renters.divide(nodes.population).fillna(0)*100
+
 
 #####################
 # REDSIDENTIAL UNIT VARIABLES
 #####################
 
-@orca.column('residential_units', 'annual_rent')
-def monthly_rent(buildings, residential_units):
-    return residential_units.unit_residential_rent.multiply(buildings.sqft_per_unit).\
-    reindex(residential_units.index).fillna(0)
+@orca.column('residential_units', 'unit_annual_rent')
+def unit_annual_rent(buildings, residential_units):
+    sqft = misc.reindex(buildings.sqft_per_unit, residential_units.index)
+    return residential_units.unit_residential_rent.multiply(sqft).multiply(12).fillna(0)
 
 
 #####################
 # HOUSEHOLD VARIABLES
 #####################
 
-@orca.column('households', 'monthly_rent')
-def monthly_rent(households, buildings, residential_units):
+@orca.column('households', 'positive_income')
+def positive_income(households):
+    inc = households.income
+    inc[inc < 0] = 0 
+    return inc.fillna(0)
+
+@orca.column('households', 'hh_monthly_rent')
+def hh_monthly_rent(households, buildings, residential_units):
     rent = misc.reindex(residential_units.unit_residential_rent, households.unit_id)
     sqft = misc.reindex(buildings.sqft_per_unit, households.unit_id)
     return rent.multiply(sqft).fillna(0)
 
 @orca.column('households', 'rent_burden')
 def rent_burden(households):
-    income = households.income
-    income[income < 0] = 0  # filter households with negative income
-    rb = households.monthly_rent.multiply(12).divide(income)
+    rb = households.hh_monthly_rent.multiply(12).divide(households.positive_income)
     return rb.replace([np.inf, -np.inf], np.nan).fillna(0)
 
 
