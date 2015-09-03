@@ -57,8 +57,8 @@ def unit_annual_rent(buildings, residential_units):
 @orca.column('households', 'positive_income')
 def positive_income(households):
     inc = households.income
-    inc[inc < 0] = 0 
-    return inc.fillna(0)
+    inc[inc < 1] = 1
+    return inc.fillna(1)
 
 @orca.column('households', 'hh_monthly_rent')
 def hh_monthly_rent(households, buildings, residential_units):
