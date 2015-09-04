@@ -39,6 +39,18 @@ def pct_nonwhite(nodes):
 def pct_renters(nodes):
     return nodes.renters.divide(nodes.population).fillna(0)*100
 
+@orca.column('nodes', 'pct_singles', cache=True)
+def pct_singles(nodes):
+    return nodes.singles.divide(nodes.population).fillna(0)*100
+
+@orca.column('nodes', 'pct_two_persons', cache=True)
+def pct_two_persons(nodes):
+    return nodes.two_persons.divide(nodes.population).fillna(0)*100
+
+@orca.column('nodes', 'pct_three_plus', cache=True)
+def pct_three_plus(nodes):
+    return nodes.three_plus.divide(nodes.population).fillna(0)*100
+
 
 #####################
 # REDSIDENTIAL UNIT VARIABLES
@@ -60,11 +72,31 @@ def positive_income(households):
     inc[inc < 1] = 1
     return inc.fillna(1)
 
+@orca.column('households', 'hhs1')
+def hhs1(households):
+    hhs1 = households.persons == 1
+    return hhs1.fillna(1)
+
+@orca.column('households', 'hhs2')
+def hhs2(households):
+    hhs2 = households.persons == 2
+    return hhs2.fillna(1)
+
+@orca.column('households', 'hhs3p')
+def hhs3p(households):
+    hhs3p = households.persons > 2
+    return hhs3p.fillna(1)
+
 @orca.column('households', 'hhsize_cat')
 def hhsize_cat(households):
     hhs = households.persons
     hhs[hhs > 3] = 3
     return hhs.fillna(1)
+
+@orca.column('households', 'hhsize_incq')
+def hhsize_incq(households):
+    hhsq = households.hhsize_cat*10+households.income_quartile
+    return hhsq.fillna(1)
 
 @orca.column('households', 'hh_monthly_rent')
 def hh_monthly_rent(households, buildings, residential_units):

@@ -2,10 +2,10 @@ name: hlcm_renter
 
 model_type: segmented_discretechoice
 
-segmentation_col: hhsize_cat
+segmentation_col: income_quartile
 
 choosers_fit_filters:
-- hownrent == 2
+- (hownrent == 2 & income > 0)
 
 choosers_predict_filters:
 - hownrent == 2
@@ -26,8 +26,8 @@ estimation_sample_size: 15000
 prediction_sample_size: null
 
 default_config:
-    model_expression: np.log1p(unit_annual_rent / positive_income) + np.log1p(residential_units)
-        + np.log1p(pct_renters) + ave_income + np.log1p(white * pct_white) + ave_hhsize
+    model_expression: np.log1p(residential_rent) + np.log1p(sqft_per_unit) + np.log1p(ave_lot_size_per_unit)
+        + ave_income + np.log1p(persons * ave_hhsize) + np.log1p(white * pct_white)
         + np.log1p(black * pct_black) + np.log1p(hisp * pct_hisp) + np.log1p(asian
         * pct_asian) + jobs + autoPeakTotal + transitPeakTotal + autoOffPeakRetail
         - 1
@@ -36,153 +36,203 @@ models:
     1:
         fit_parameters:
             Coefficient:
-                autoOffPeakRetail: -0.25126966521856614
-                autoPeakTotal: 0.33013451391056436
-                ave_hhsize: -3.0210766212695517
-                ave_income: -0.3599240449510911
-                jobs: -8.536937693637285e-05
-                np.log1p(asian * pct_asian): 4.461017554451222
-                np.log1p(black * pct_black): 4.81672273978824
-                np.log1p(hisp * pct_hisp): 4.027429774125427
-                np.log1p(pct_renters): -0.22915694038610096
-                np.log1p(residential_units): 0.045596925408347914
-                np.log1p(unit_annual_rent / positive_income): -0.003553770661809168
-                np.log1p(white * pct_white): 7.513222490564794
-                transitPeakTotal: 0.03232050132119541
+                autoOffPeakRetail: -0.4370486333386249
+                autoPeakTotal: 0.4633836265280806
+                ave_income: -1.453622487149824
+                jobs: 0.022007363283250203
+                np.log1p(asian * pct_asian): 5.374121381165815
+                np.log1p(ave_lot_size_per_unit): 1.06348157511151
+                np.log1p(black * pct_black): 5.3855565630005255
+                np.log1p(hisp * pct_hisp): 6.266623291820644
+                np.log1p(persons * ave_hhsize): 0.19849203202798069
+                np.log1p(residential_rent): 0.488015369449071
+                np.log1p(sqft_per_unit): 0.08359203988839745
+                np.log1p(white * pct_white): 9.169322249439753
+                transitPeakTotal: 0.04766776653525389
             Std. Error:
-                autoOffPeakRetail: 0.06465487941709397
-                autoPeakTotal: 0.05842437530134553
-                ave_hhsize: 0.07145944387148563
-                ave_income: 0.027692591374240554
-                jobs: 0.00682437795175551
-                np.log1p(asian * pct_asian): 0.010161261315351323
-                np.log1p(black * pct_black): 0.01084677851271876
-                np.log1p(hisp * pct_hisp): 0.007848229333318059
-                np.log1p(pct_renters): 0.06286926447477395
-                np.log1p(residential_units): 0.005678059316554741
-                np.log1p(unit_annual_rent / positive_income): 0.004895135645737584
-                np.log1p(white * pct_white): 0.009095627376292431
-                transitPeakTotal: 0.005455175105537113
+                autoOffPeakRetail: 0.05886099919640143
+                autoPeakTotal: 0.05367171489604826
+                ave_income: 0.031553141547230476
+                jobs: 0.008194893790652245
+                np.log1p(asian * pct_asian): 0.008379637443672374
+                np.log1p(ave_lot_size_per_unit): 0.11739195851735773
+                np.log1p(black * pct_black): 0.008695683694158443
+                np.log1p(hisp * pct_hisp): 0.006256309787586399
+                np.log1p(persons * ave_hhsize): 0.019919025700956744
+                np.log1p(residential_rent): 0.07630220086348928
+                np.log1p(sqft_per_unit): 0.02351917829633912
+                np.log1p(white * pct_white): 0.006956586949270785
+                transitPeakTotal: 0.005856665408842454
             T-Score:
-                autoOffPeakRetail: -3.8863217669559753
-                autoPeakTotal: 5.650629762111659
-                ave_hhsize: -42.27680006442155
-                ave_income: -12.997124035343612
-                jobs: -0.012509473763013425
-                np.log1p(asian * pct_asian): 439.0220284672389
-                np.log1p(black * pct_black): 444.06942892216597
-                np.log1p(hisp * pct_hisp): 513.1641295225401
-                np.log1p(pct_renters): -3.6449756856635296
-                np.log1p(residential_units): 8.030371446703136
-                np.log1p(unit_annual_rent / positive_income): -0.7259800175105662
-                np.log1p(white * pct_white): 826.0257571839252
-                transitPeakTotal: 5.924741313691186
+                autoOffPeakRetail: -7.425097081351359
+                autoPeakTotal: 8.633665375245885
+                ave_income: -46.06902564595548
+                jobs: 2.685497072378604
+                np.log1p(asian * pct_asian): 641.3310142939321
+                np.log1p(ave_lot_size_per_unit): 9.059237008591712
+                np.log1p(black * pct_black): 619.3367597556954
+                np.log1p(hisp * pct_hisp): 1001.6484964115283
+                np.log1p(persons * ave_hhsize): 9.964946830629712
+                np.log1p(residential_rent): 6.395822976615961
+                np.log1p(sqft_per_unit): 3.5542074997326316
+                np.log1p(white * pct_white): 1318.0777177522255
+                transitPeakTotal: 8.139062624831633
         fitted: true
         log_likelihoods:
-            convergence: -64075.683776368794
-            'null': -68851.8994507191
-            ratio: 0.0693694104658491
+            convergence: -63703.55613967475
+            'null': -68985.44938611261
+            ratio: 0.0765653234622713
         name: 1
     2:
         fit_parameters:
             Coefficient:
-                autoOffPeakRetail: -0.3732217083894081
-                autoPeakTotal: 0.47456187617208745
-                ave_hhsize: -0.9444354076419611
-                ave_income: -0.5571191718635806
-                jobs: 0.018381086254059036
-                np.log1p(asian * pct_asian): 4.891518007548088
-                np.log1p(black * pct_black): 5.6371769066675474
-                np.log1p(hisp * pct_hisp): 4.109450595407895
-                np.log1p(pct_renters): -0.48374984156989653
-                np.log1p(residential_units): 0.04709961481169406
-                np.log1p(unit_annual_rent / positive_income): 0.000546028920817637
-                np.log1p(white * pct_white): 7.261189102373137
-                transitPeakTotal: 0.02016393119463069
+                autoOffPeakRetail: -0.35936859404551835
+                autoPeakTotal: 0.45890360207827613
+                ave_income: -0.8391899197921967
+                jobs: -0.00028212927717853825
+                np.log1p(asian * pct_asian): 4.598153729846043
+                np.log1p(ave_lot_size_per_unit): 0.20181311021374368
+                np.log1p(black * pct_black): 3.9242438094994396
+                np.log1p(hisp * pct_hisp): 5.820359719574501
+                np.log1p(persons * ave_hhsize): 0.4736698748094673
+                np.log1p(residential_rent): 0.17391570472970927
+                np.log1p(sqft_per_unit): -0.01698340113931254
+                np.log1p(white * pct_white): 9.243973950344554
+                transitPeakTotal: 0.015470659369659105
             Std. Error:
-                autoOffPeakRetail: 0.06260453634903149
-                autoPeakTotal: 0.05505175788840306
-                ave_hhsize: 0.06929171070603296
-                ave_income: 0.02655917637281624
-                jobs: 0.007203645730872612
-                np.log1p(asian * pct_asian): 0.008477168545987849
-                np.log1p(black * pct_black): 0.009470930340260385
-                np.log1p(hisp * pct_hisp): 0.006711380685461389
-                np.log1p(pct_renters): 0.06081510576832742
-                np.log1p(residential_units): 0.005664936121283454
-                np.log1p(unit_annual_rent / positive_income): 0.006760800768287153
-                np.log1p(white * pct_white): 0.007508890843147245
-                transitPeakTotal: 0.005356866224485192
+                autoOffPeakRetail: 0.059230842614131675
+                autoPeakTotal: 0.0544915400023861
+                ave_income: 0.032015591740933345
+                jobs: 0.0077040292354456155
+                np.log1p(asian * pct_asian): 0.007822460322076247
+                np.log1p(ave_lot_size_per_unit): 0.10579900190074609
+                np.log1p(black * pct_black): 0.008743093645562606
+                np.log1p(hisp * pct_hisp): 0.0060265768503630635
+                np.log1p(persons * ave_hhsize): 0.019356463515713393
+                np.log1p(residential_rent): 0.07639877543377971
+                np.log1p(sqft_per_unit): 0.023544476840790213
+                np.log1p(white * pct_white): 0.0063107493618595
+                transitPeakTotal: 0.005536975830788619
             T-Score:
-                autoOffPeakRetail: -5.961576111811296
-                autoPeakTotal: 8.620285607120575
-                ave_hhsize: -13.629846889603964
-                ave_income: -20.976522917849266
-                jobs: 2.551636621340684
-                np.log1p(asian * pct_asian): 577.0226203492426
-                np.log1p(black * pct_black): 595.2083590673484
-                np.log1p(hisp * pct_hisp): 612.3107580993048
-                np.log1p(pct_renters): -7.95443558731479
-                np.log1p(residential_units): 8.314235818959794
-                np.log1p(unit_annual_rent / positive_income): 0.0807639419547595
-                np.log1p(white * pct_white): 967.0122064698589
-                transitPeakTotal: 3.7641281954112067
+                autoOffPeakRetail: -6.067254460428322
+                autoPeakTotal: 8.421556851910983
+                ave_income: -26.211913450884477
+                jobs: -0.03662100292668728
+                np.log1p(asian * pct_asian): 587.8142605427233
+                np.log1p(ave_lot_size_per_unit): 1.9075143109863355
+                np.log1p(black * pct_black): 448.8392745845879
+                np.log1p(hisp * pct_hisp): 965.7820457767598
+                np.log1p(persons * ave_hhsize): 24.470889241980935
+                np.log1p(residential_rent): 2.2764200570263653
+                np.log1p(sqft_per_unit): -0.7213327038080211
+                np.log1p(white * pct_white): 1464.7981436582932
+                transitPeakTotal: 2.794063012454157
         fitted: true
         log_likelihoods:
-            convergence: -65435.710725180965
-            'null': -68930.18734388081
-            ratio: 0.05069588163552352
+            convergence: -66125.00039350888
+            'null': -68925.58217369483
+            ratio: 0.04063196409612313
         name: 2
     3:
         fit_parameters:
             Coefficient:
-                autoOffPeakRetail: -0.3673885080854482
-                autoPeakTotal: 0.40435413240959195
-                ave_hhsize: 1.5626156463629837
-                ave_income: -0.6538044852144079
-                jobs: -0.007410794777021006
-                np.log1p(asian * pct_asian): 5.453564274968591
-                np.log1p(black * pct_black): 4.660115644565578
-                np.log1p(hisp * pct_hisp): 6.43918780321987
-                np.log1p(pct_renters): -0.3440691975567818
-                np.log1p(residential_units): 0.033719052073327004
-                np.log1p(unit_annual_rent / positive_income): 0.0032845414544339212
-                np.log1p(white * pct_white): 8.900958934116042
-                transitPeakTotal: -0.01257479441300971
+                autoOffPeakRetail: -0.6169756423430859
+                autoPeakTotal: 0.9341280830671342
+                ave_income: -0.15527329526891917
+                jobs: -0.02679163283170869
+                np.log1p(asian * pct_asian): 4.854260255143065
+                np.log1p(ave_lot_size_per_unit): -0.7583243881097076
+                np.log1p(black * pct_black): 3.635729894930138
+                np.log1p(hisp * pct_hisp): 5.09353921718173
+                np.log1p(persons * ave_hhsize): 0.93951660672599
+                np.log1p(residential_rent): 0.7678156256088061
+                np.log1p(sqft_per_unit): 0.12975980676252338
+                np.log1p(white * pct_white): 8.908126729899813
+                transitPeakTotal: -0.01919767064402979
             Std. Error:
-                autoOffPeakRetail: 0.062017849202538895
-                autoPeakTotal: 0.053939363853347466
-                ave_hhsize: 0.06117083820436084
-                ave_income: 0.025238218170883706
-                jobs: 0.006982385006760543
-                np.log1p(asian * pct_asian): 0.007255963321459782
-                np.log1p(black * pct_black): 0.008327238336574325
-                np.log1p(hisp * pct_hisp): 0.00547585131006547
-                np.log1p(pct_renters): 0.056686651403304616
-                np.log1p(residential_units): 0.005915591122750119
-                np.log1p(unit_annual_rent / positive_income): 0.006372849976189887
-                np.log1p(white * pct_white): 0.005685589794578426
-                transitPeakTotal: 0.005357551785926527
+                autoOffPeakRetail: 0.06320040526670495
+                autoPeakTotal: 0.05765728439204708
+                ave_income: 0.03876544945910723
+                jobs: 0.007640877162110768
+                np.log1p(asian * pct_asian): 0.008583379143135424
+                np.log1p(ave_lot_size_per_unit): 0.11077148787408828
+                np.log1p(black * pct_black): 0.01039462866113612
+                np.log1p(hisp * pct_hisp): 0.006676308674584887
+                np.log1p(persons * ave_hhsize): 0.019885869532014905
+                np.log1p(residential_rent): 0.08164691697047455
+                np.log1p(sqft_per_unit): 0.024850324759503866
+                np.log1p(white * pct_white): 0.007533782265588792
+                transitPeakTotal: 0.005249838509342522
             T-Score:
-                autoOffPeakRetail: -5.9239156599195315
-                autoPeakTotal: 7.496457197918878
-                ave_hhsize: 25.545107640058227
-                ave_income: -25.90533455205151
-                jobs: -1.061355793163176
-                np.log1p(asian * pct_asian): 751.5975527108126
-                np.log1p(black * pct_black): 559.6231855281166
-                np.log1p(hisp * pct_hisp): 1175.924516318337
-                np.log1p(pct_renters): -6.069668767499713
-                np.log1p(residential_units): 5.700030880033379
-                np.log1p(unit_annual_rent / positive_income): 0.515396010686829
-                np.log1p(white * pct_white): 1565.529567856562
-                transitPeakTotal: -2.3471157938298943
+                autoOffPeakRetail: -9.762210222220192
+                autoPeakTotal: 16.201388825658647
+                ave_income: -4.005455823044522
+                jobs: -3.506355653060595
+                np.log1p(asian * pct_asian): 565.5418657610237
+                np.log1p(ave_lot_size_per_unit): -6.845844564006215
+                np.log1p(black * pct_black): 349.7700604278015
+                np.log1p(hisp * pct_hisp): 762.9274596861613
+                np.log1p(persons * ave_hhsize): 47.24543753107863
+                np.log1p(residential_rent): 9.404098208465928
+                np.log1p(sqft_per_unit): 5.2216543654182015
+                np.log1p(white * pct_white): 1182.424234715205
+                transitPeakTotal: -3.656811654275831
         fitted: true
         log_likelihoods:
-            convergence: -65072.63154072459
-            'null': -68930.18734388081
-            ratio: 0.05596322818493926
+            convergence: -66697.22012779933
+            'null': -68879.530471835
+            ratio: 0.031683002614659506
         name: 3
+    4:
+        fit_parameters:
+            Coefficient:
+                autoOffPeakRetail: -1.2683676551120846
+                autoPeakTotal: 1.6217391498627314
+                ave_income: 1.1966382373484865
+                jobs: -0.028209138867776044
+                np.log1p(asian * pct_asian): 4.30996743591243
+                np.log1p(ave_lot_size_per_unit): -1.1315082771034148
+                np.log1p(black * pct_black): 3.2533773006291757
+                np.log1p(hisp * pct_hisp): 3.7924341080848865
+                np.log1p(persons * ave_hhsize): 0.029578940068214356
+                np.log1p(residential_rent): 1.0113325906168118
+                np.log1p(sqft_per_unit): 0.17541481734372635
+                np.log1p(white * pct_white): 8.031966280354624
+                transitPeakTotal: -0.008492209488852247
+            Std. Error:
+                autoOffPeakRetail: 0.0689691633421197
+                autoPeakTotal: 0.060976770020073415
+                ave_income: 0.03557041243391236
+                jobs: 0.00720166354119309
+                np.log1p(asian * pct_asian): 0.009591432753660924
+                np.log1p(ave_lot_size_per_unit): 0.10891442826427097
+                np.log1p(black * pct_black): 0.012603995679249308
+                np.log1p(hisp * pct_hisp): 0.007799596893226129
+                np.log1p(persons * ave_hhsize): 0.020428428459533736
+                np.log1p(residential_rent): 0.07481977555684347
+                np.log1p(sqft_per_unit): 0.023543703854274723
+                np.log1p(white * pct_white): 0.00865194439110783
+                transitPeakTotal: 0.005075448460660302
+            T-Score:
+                autoOffPeakRetail: -18.39035872916684
+                autoPeakTotal: 26.596015980001212
+                ave_income: 33.64139337916778
+                jobs: -3.917030934092024
+                np.log1p(asian * pct_asian): 449.3559561544517
+                np.log1p(ave_lot_size_per_unit): -10.38896586187748
+                np.log1p(black * pct_black): 258.12269247167393
+                np.log1p(hisp * pct_hisp): 486.23462981510966
+                np.log1p(persons * ave_hhsize): 1.4479302765167024
+                np.log1p(residential_rent): 13.51691558936131
+                np.log1p(sqft_per_unit): 7.450604137287306
+                np.log1p(white * pct_white): 928.3423375454888
+                transitPeakTotal: -1.6731939166903556
+        fitted: true
+        log_likelihoods:
+            convergence: -64676.461609892074
+            'null': -68773.61155755738
+            ratio: 0.05957444803136969
+        name: 4
 
 fitted: true
 
