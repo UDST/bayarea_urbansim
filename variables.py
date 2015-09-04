@@ -60,6 +60,12 @@ def positive_income(households):
     inc[inc < 1] = 1
     return inc.fillna(1)
 
+@orca.column('households', 'hhsize_cat')
+def hhsize_cat(households):
+    hhs = households.persons
+    hhs[hhs > 3] = 3
+    return hhs.fillna(1)
+
 @orca.column('households', 'hh_monthly_rent')
 def hh_monthly_rent(households, buildings, residential_units):
     rent = misc.reindex(residential_units.unit_residential_rent, households.unit_id)
