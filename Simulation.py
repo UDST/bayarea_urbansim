@@ -12,7 +12,7 @@ warnings.filterwarnings("ignore")
 
 args = sys.argv[1:]
     
-SLACK = MAPS = True
+SLACK = MAPS = False
 LOGS = True
 INTERACT = False
 S3=False
@@ -28,8 +28,9 @@ if INTERACT:
 
 run_num = orca.get_injectable("run_number")
 if LOGS:
+     print '***The Standard stream is being written to /logs/sim_out{0}***'.format(run_num)
      sys.stdout = sys.stderr = open("logs/sim_out_%d" % run_num, 'w')
-
+     
 if SLACK:
     from slacker import Slacker
     slack = Slacker('xoxp-7025187590-7026053537-7111663091-9eeeb6')
@@ -68,6 +69,7 @@ try:
     "non_residential_developer",
      
     "diagnostic_output",
+    "geographic_summary",
     "travel_model_output"
   ], iter_vars=range(in_year, out_year))
 
