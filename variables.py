@@ -22,14 +22,24 @@ def node_id(parcels, costar):
     return misc.reindex(parcels.node_id, costar.parcel_id)
 
 
+@orca.column('costar', 'tmnode_id')
+def tmnode_id(parcels, costar):
+    return misc.reindex(parcels.tmnode_id, costar.parcel_id)
+
+
 @orca.column('costar', 'zone_id')
-def node_id(parcels, costar):
+def zone_id(parcels, costar):
     return misc.reindex(parcels.zone_id, costar.parcel_id)
 
 
 #####################
 # JOBS VARIABLES
 #####################
+
+
+@orca.column('jobs', 'tmnode_id', cache=True)
+def tmnode_id(jobs, buildings):
+    return misc.reindex(buildings.tmnode_id, jobs.building_id)
 
 
 @orca.column('jobs', 'naics', cache=True)
@@ -50,6 +60,11 @@ def empsix_id(jobs, settings):
 #####################
 # BUILDINGS VARIABLES
 #####################
+
+
+@orca.column('buildings', 'tmnode_id', cache=True)
+def tmnode_id(buildings, parcels):
+    return misc.reindex(parcels.tmnode_id, buildings.parcel_id)
 
 
 @orca.column('buildings', 'juris_ave_income', cache=True)
@@ -90,6 +105,11 @@ def unit_sqft(buildings):
 @orca.column('households', 'ones', cache=True)
 def income_decile(households):
      return pd.Series(1, households.index)
+
+
+@orca.column('households', 'tmnode_id', cache=True)
+def node_id(households, buildings):
+    return misc.reindex(buildings.tmnode_id, households.building_id)
 
 
 @orca.column('buildings', cache=True)
@@ -285,8 +305,15 @@ def price_shifters(parcels, settings):
     return parcels.pda.map(settings["pda_price_shifters"]).fillna(1.0)
 
 
-@orca.column('parcels', 'node_id')
+@orca.column('parcels', 'node_id', cache=True)
 def node_id(parcels, net):
-    s = net.get_node_ids(parcels.x, parcels.y)
+    s = net["walk"].get_node_ids(parcels.x, parcels.y)
+    s = s.reindex(parcels.index).fillna(s.value_counts().iloc[0]).astype('int')
+    return s
+
+
+@orca.column('parcels', 'tmnode_id', cache=True)
+def node_id(parcels, net):
+    s = net["drive"].get_node_ids(parcels.x, parcels.y)
     s = s.reindex(parcels.index).fillna(s.value_counts().iloc[0]).astype('int')
     return s

@@ -12,9 +12,9 @@ fit_filters:
 
 predict_filters: null
 
-model_expression: redfin_sale_price ~ I(year_built < 1940) + modern_condo + + sqft_per_unit
-    + residential_units_1500 + residential_units_10000 + jobs_10000 + I(building_type_id
-    == 1) + ave_income_500 + juris_ave_income
+model_expression: redfin_sale_price ~ I(year_built < 1940) + modern_condo + sqft_per_unit
+    + residential_units_1500 + jobs_45 + I(building_type_id == 1) + ave_income_500
+    + juris_ave_income
 
 ytransform: null
 
@@ -22,39 +22,36 @@ fitted: true
 
 fit_parameters:
     Coefficient:
-        I(building_type_id == 1)[T.True]: -60286.94051309248
-        I(year_built < 1940)[T.True]: 146959.49865703756
-        Intercept: -1392181.9929902398
-        ave_income_500: 6.260912187542512
-        jobs_10000: 24105.10265213408
-        juris_ave_income: 3.9213177154951073
-        modern_condo: 75180.24852112446
-        residential_units_10000: 31701.135154774878
-        residential_units_1500: 44387.58710790608
-        sqft_per_unit: 231.72496702649306
+        I(building_type_id == 1)[T.True]: -58345.99845057375
+        I(year_built < 1940)[T.True]: 147888.5743605658
+        Intercept: -1792468.858521509
+        ave_income_500: 6.113791348871345
+        jobs_45: 61987.555013728466
+        juris_ave_income: 3.4922231282016227
+        modern_condo: 60585.99088346965
+        residential_units_1500: 68873.6630082333
+        sqft_per_unit: 238.44798997197884
     Std. Error:
-        I(building_type_id == 1)[T.True]: 2449.0946592842647
-        I(year_built < 1940)[T.True]: 2390.7428951826164
-        Intercept: 10046.860824876489
-        ave_income_500: 0.0352876387745479
-        jobs_10000: 1438.9719984637643
-        juris_ave_income: 0.059603918189941714
-        modern_condo: 7030.688973849227
-        residential_units_10000: 2025.5331133421655
-        residential_units_1500: 1236.662932863587
-        sqft_per_unit: 1.2026938658621218
+        I(building_type_id == 1)[T.True]: 2452.8933979806147
+        I(year_built < 1940)[T.True]: 2396.320107836518
+        Intercept: 13102.256177483318
+        ave_income_500: 0.0358510341798105
+        jobs_45: 1066.5892041028717
+        juris_ave_income: 0.059033683024837115
+        modern_condo: 7041.271837013887
+        residential_units_1500: 1028.061644626649
+        sqft_per_unit: 1.2085134539249112
     T-Score:
-        I(building_type_id == 1)[T.True]: -24.616010771388897
-        I(year_built < 1940)[T.True]: 61.47022289731079
-        Intercept: -138.56885421793973
-        ave_income_500: 177.42508155740794
-        jobs_10000: 16.751613428105973
-        juris_ave_income: 65.78959629799704
-        modern_condo: 10.693155222874847
-        residential_units_10000: 15.650761246982254
-        residential_units_1500: 35.89303595048592
-        sqft_per_unit: 192.67161295479517
+        I(building_type_id == 1)[T.True]: -23.786601773484353
+        I(year_built < 1940)[T.True]: 61.7148660051452
+        Intercept: -136.80612210910127
+        ave_income_500: 170.53319349750657
+        jobs_45: 58.117553389139516
+        juris_ave_income: 59.156450169852135
+        modern_condo: 8.604410152862865
+        residential_units_1500: 66.99370934439001
+        sqft_per_unit: 197.3068559539548
 
-fit_rsquared_adj: 0.5153701364209518
+fit_rsquared_adj: 0.5130856606024536
 
-fit_rsquared: 0.5153946003211829
+fit_rsquared: 0.5131075087976142

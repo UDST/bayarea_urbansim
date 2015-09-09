@@ -40,6 +40,11 @@ def node_id(homesales, parcels):
     return misc.reindex(parcels.node_id, homesales.parcel_id)
 
 
+@orca.column('homesales', 'tmnode_id', cache=True)
+def tmnode_id(homesales, parcels):
+    return misc.reindex(parcels.tmnode_id, homesales.parcel_id)
+
+
 @orca.column('homesales', 'zone_id', cache=True)
 def zone_id(homesales, parcels):
     return misc.reindex(parcels.zone_id, homesales.parcel_id)
@@ -76,7 +81,7 @@ def nearest_neighbor(df1, df2):
 # non-residential rent data
 @orca.table('costar', cache=True)
 def costar(store, parcels):
-    df = pd.read_csv(os.path.join(misc.data_dir(), 'costar.csv'))
+    df = pd.read_csv(os.path.join(misc.data_dir(), '2015_08_29_costar.csv'))
     df["PropertyType"] = df.PropertyType.replace("General Retail", "Retail")
     df = df[df.PropertyType.isin(["Office", "Retail", "Industrial"])]
     df["costar_rent"] = df["Average Weighted Rent"].astype('float')
@@ -317,8 +322,11 @@ def employment_controls(employment_controls_unstacked):
 # this specifies the relationships between tables
 orca.broadcast('parcels_geography', 'buildings', cast_index=True,
               onto_on='parcel_id')
+orca.broadcast('tmnodes', 'buildings', cast_index=True, onto_on='tmnode_id')
 orca.broadcast('parcels', 'homesales', cast_index=True, onto_on='parcel_id')
 orca.broadcast('nodes', 'homesales', cast_index=True, onto_on='node_id')
+orca.broadcast('tmnodes', 'homesales', cast_index=True, onto_on='tmnode_id')
 orca.broadcast('nodes', 'costar', cast_index=True, onto_on='node_id')
+orca.broadcast('tmnodes', 'costar', cast_index=True, onto_on='tmnode_id')
 orca.broadcast('logsums', 'homesales', cast_index=True, onto_on='zone_id')
 orca.broadcast('logsums', 'costar', cast_index=True, onto_on='zone_id')

@@ -9,7 +9,7 @@ import pandas as pd
 import orca
 
 app = Flask(__name__)
-app.debug = False
+app.debug = True
 cors = CORS(app)
 
 MAX_PARCELS_RETURNED = 5000

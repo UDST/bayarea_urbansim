@@ -4,6 +4,8 @@ import sys
 import orca
 import datasources
 import variables
+from urbansim.utils import networks
+import pandana.network as pdna
 from urbansim import accounts
 from urbansim_defaults import models
 from urbansim_defaults import utils
@@ -371,6 +373,7 @@ def subsidized_residential_developer(households, buildings,
 @orca.step("travel_model_output")
 def travel_model_output(parcels, households, jobs, buildings,
                         zones, homesales, year, summary, coffer, run_number):
+    '''
     households = households.to_frame()
     jobs = jobs.to_frame()
     buildings = buildings.to_frame()
@@ -435,7 +438,8 @@ def travel_model_output(parcels, households, jobs, buildings,
 
     summary.add_zone_output(zones, "travel_model_outputs", year)
     if sys.platform != 'win32':
-        summary.write_zone_output()
+    '''
+    summary.write_zone_output()
     add_xy_config = {
         "xy_table": "parcels",
         "foreign_key": "parcel_id",
@@ -445,7 +449,8 @@ def travel_model_output(parcels, households, jobs, buildings,
     # otherwise it loses precision
     summary.parcel_output["geom_id"] = summary.parcel_output.geom_id.astype('str')
     summary.write_parcel_output(add_xy=add_xy_config)
-    
+   
+    ''' 
     subsidy_file = "runs/run{}_subsidy_summary.csv".format(run_number)
     coffer["prop_tax_acct"].to_frame().to_csv(subsidy_file)
 
@@ -458,6 +463,7 @@ def travel_model_output(parcels, households, jobs, buildings,
         travel_model_output[x] = np.nan
     travel_model_output.columns = [x.upper() for x in travel_model_output.columns] #uppercase columns to match travel model template
     travel_model_output.to_csv(travel_model_csv)
+    '''
 
 
 @orca.step("mls_appreciation")
@@ -491,3 +497,49 @@ def mls_appreciation(homesales, year, summary):
 
     summary.add_zone_output(zones, "appreciation", year)
     summary.write_zone_output()
+
+
+@orca.injectable('net', cache=True)
+def build_networks(settings):
+    nets = {}
+    net_settings = settings['build_networks']
+
+    pdna.reserve_num_graphs(2)
+
+    for key, value in net_settings.items():
+        name = value["name"]
+        st = pd.HDFStore(os.path.join(misc.data_dir(), name), "r")
+        nodes, edges = st.nodes, st.edges
+        weight_col = value.get("weight_col", "weight")
+        net = pdna.Network(nodes["x"], nodes["y"], edges["from"], edges["to"],
+                           edges[[weight_col]])
+        net.precompute(value['max_distance'])
+        nets[key] = net
+    
+    return nets
+
+
+@orca.step('neighborhood_vars')
+def neighborhood_vars(net):
+    nodes = networks.from_yaml(net["walk"], "neighborhood_vars.yaml")
+    nodes = nodes.fillna(0)
+    print nodes.describe()
+    orca.add_table("nodes", nodes)
+
+
+@orca.step('regional_vars')
+def regional_vars(net):
+    nodes = networks.from_yaml(net["drive"], "regional_vars.yaml")
+    nodes = nodes.fillna(0)
+    print nodes.describe()
+    orca.add_table("tmnodes", nodes)
+
+
+@orca.step('price_vars')
+def price_vars(net):
+    nodes2 = networks.from_yaml(net["walk"], "price_vars.yaml")
+    nodes2 = nodes2.fillna(0)
+    print nodes2.describe()
+    nodes = orca.get_table('nodes')
+    nodes = nodes.to_frame().join(nodes2)
+    orca.add_table("nodes", nodes)

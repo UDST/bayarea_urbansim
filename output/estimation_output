@@ -2,12 +2,15 @@
 
 Running step 'neighborhood_vars'
 Generating contraction hierarchies with 4 threads.
+Setting CH node vector of size 12016
+Setting CH edge vector of size 32824
+[info src/contraction_hierarchies/src/libch.cpp:205] Range graph removed 26938 edges of 65648
+. 10% . 20% . 30% . 40% . 50% . 60% . 70% . 80% . 90% . 100%
+Generating contraction hierarchies with 4 threads.
 Setting CH node vector of size 226060
 Setting CH edge vector of size 287161
 [info src/contraction_hierarchies/src/libch.cpp:205] Range graph removed 8884 edges of 574322
 . 10% . 20% . 30% . 40% . 50% . 60% . 70% . 80% . 90% . 100%
-/home/ubuntu/anaconda/lib/python2.7/site-packages/pandas/io/parsers.py:1170: DtypeWarning: Columns (38,121) have mixed types. Specify dtype option on import or set low_memory=False.
-  data = self._reader.read(nrows)
 Computing accessibility variables
 Computing residential_units_500
 Filling column building_type_id with value 1 (0 values)
@@ -15,63 +18,167 @@ Filling column residential_units with value 0 (0 values)
 Filling column year_built with value 1966.0 (0 values)
 Filling column non_residential_sqft with value 0 (0 values)
 WARNING: this has the hard-coded version which unrealistically increases non-residential square footage to house all the base year jobs
-Filling column _node_id with value 91839.0 (4 values)
 Filling column shape_area with value 604.350724409 (0 values)
 Filling column zone_id with value 1178 (0 values)
+Removed 4 rows because they contain missing values
 Computing residential_units_1500
-Computing residential_units_10000
+Removed 4 rows because they contain missing values
 Computing ave_sqft_per_unit
+Removed 2 rows because they contain missing values
 Computing ave_lot_size_per_unit
+Removed 2 rows because they contain missing values
 Computing population
+Removed 1806 rows because they contain missing values
 Computing poor
+Removed 1223 rows because they contain missing values
 Computing renters
+Removed 74 rows because they contain missing values
 Computing sfdu
+Removed 1 rows because they contain missing values
 Computing ave_hhsize
+Removed 1806 rows because they contain missing values
 Computing jobs_500
+Removed 1354 rows because they contain missing values
 Computing jobs_1500
-Computing jobs_10000
+Removed 1354 rows because they contain missing values
 Computing ave_income_1500
+Removed 1806 rows because they contain missing values
 Computing ave_income_500
-       residential_units_500  residential_units_1500  residential_units_10000  \
-count          226060.000000           226060.000000            226060.000000   
-mean                3.967639                5.959113                 9.561616   
-std                 1.689588                1.830448                 1.672198   
-min                 0.000000                0.000000                 0.000000   
-25%                 3.390107                5.516645                 9.164699   
-50%                 4.419345                6.443528                 9.915132   
-75%                 5.047719                7.027218                10.489314   
-max                 8.622496               10.149066                12.265029   
+Removed 1806 rows because they contain missing values
+       residential_units_500  residential_units_1500  ave_sqft_per_unit  \
+count          226060.000000           226060.000000      226060.000000   
+mean                3.967630                5.959100           7.248205   
+std                 1.689574                1.830441           1.272647   
+min                 0.000000                0.000000           0.000000   
+25%                 3.390107                5.516645           7.277434   
+50%                 4.419345                6.443516           7.434229   
+75%                 5.047719                7.027184           7.606843   
+max                 8.622496               10.149066           8.699681   
 
-       ave_sqft_per_unit  ave_lot_size_per_unit     population           poor  \
-count      226060.000000          226060.000000  226060.000000  226060.000000   
-mean            7.248205               8.930509       6.826316       5.326169   
-std             1.272647               1.933848       1.973822       1.972985   
-min             0.000000               0.000000       0.000000       0.000000   
-25%             7.277434               8.561868       6.400792       4.465402   
-50%             7.434229               8.892474       7.388660       5.743272   
-75%             7.606843               9.366894       7.993246       6.629524   
-max             8.699681              17.866968      10.527623       9.984963   
+       ave_lot_size_per_unit     population           poor        renters  \
+count          226060.000000  226060.000000  226060.000000  226060.000000   
+mean                8.930509       6.826306       5.326141       4.068645   
+std                 1.933848       1.973817       1.972974       1.515326   
+min                 0.000000       0.000000       0.000000       0.000000   
+25%                 8.561868       6.400792       4.465402       3.522807   
+50%                 8.892474       7.388638       5.743241       4.440861   
+75%                 9.366894       7.993188       6.629485       5.054782   
+max                17.866968      10.527623       9.984963       7.264837   
 
-             renters           sfdu     ave_hhsize       jobs_500  \
+                sfdu     ave_hhsize       jobs_500      jobs_1500  \
 count  226060.000000  226060.000000  226060.000000  226060.000000   
-mean        4.068650       5.344066       1.261950       2.630442   
-std         1.515328       1.748304       0.254778       2.357367   
+mean        5.344066       1.261954       2.630409       5.301098   
+std         1.748304       0.254778       2.357348       2.242754   
 min         0.000000       0.000000       0.000000       0.000000   
-25%         3.522807       4.961243       1.213495       0.000000   
-50%         4.440861       5.906381       1.291396       2.548746   
-75%         5.054786       6.438365       1.376142       4.660652   
-max         7.264837       8.095656       2.302585      10.467457   
+25%         4.961243       1.213506       0.000000       4.193422   
+50%         5.906381       1.291402       2.548713       5.799800   
+75%         6.438365       1.376142       4.660626       6.825851   
+max         8.095656       2.302585      10.467457      11.713332   
 
-           jobs_1500     jobs_10000  ave_income_1500  ave_income_500  
-count  226060.000000  226060.000000    226060.000000   226060.000000  
-mean        5.301139       9.450829     83750.437500    81024.054688  
-std         2.242750       1.885325     33453.949244    40779.656104  
-min         0.000000       0.000000         0.000000        0.000000  
-25%         4.193550       9.025207     64264.003906    60042.554688  
-50%         5.799830       9.833065     79702.089844    78590.097656  
-75%         6.825866      10.539819     99501.951172   101048.697266  
-max        11.713332      12.792556    433000.000000   576000.000000  
-Time to execute step 'neighborhood_vars': 209.64 s
+       ave_income_1500  ave_income_500  
+count    226060.000000   226060.000000  
+mean      83751.171875    81024.398438  
+std       33453.752196    40779.549384  
+min           0.000000        0.000000  
+25%       64265.093750    60043.037109  
+50%       79702.898438    78590.949219  
+75%       99501.951172   101048.697266  
+max      433000.000000   576000.000000  
+Time to execute step 'neighborhood_vars': 43.39 s
+
+
+Running step 'regional_vars'
+Computing accessibility variables
+Computing residential_units_45
+Computing population_45
+Computing jobs_15
+Computing jobs_45
+       residential_units_45  /home/ubuntu/anaconda/lib/python2.7/site-packages/pandas/computation/expressions.py:190: UserWarning: evaluating in Python space because the '*' operator is not supported by numexpr for the bool dtype, use '&' instead
+  unsupported[op_str]))
+population_45       jobs_15       jobs_45
+count          12016.000000   12016.000000  12016.000000  12016.000000
+mean              13.162168      14.066381     11.303640     13.310465
+std                0.765150       0.781194      1.347629      0.866524
+min                0.000000       0.000000      0.273583      4.083668
+25%               13.119985      14.022341     10.852223     13.259804
+50%               13.418561      14.356556     11.555190     13.622100
+75%               13.591198      14.476564     12.166400     13.800610
+max               13.823503      14.695969     12.989374     14.010111
+Time to execute step 'regional_vars': 62.49 s
+
+
+Running step 'rsh_estimate'
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:      redfin_sale_price   R-squared:                       0.513
+Model:                            OLS   Adj. R-squared:                  0.513
+Method:                 Least Squares   F-statistic:                 2.349e+04
+Date:                Tue, 08 Sep 2015   Prob (F-statistic):               0.00
+Time:                        22:04:24   Log-Likelihood:            -2.5077e+06
+No. Observations:              178291   AIC:                         5.015e+06
+Df Residuals:                  178282   BIC:                         5.015e+06
+Df Model:                           8                                         
+Covariance Type:            nonrobust                                         
+====================================================================================================
+                                       coef    std err          t      P>|t|      [95.0% Conf. Int.]
+----------------------------------------------------------------------------------------------------
+Intercept                        -1.792e+06   1.31e+04   -136.806      0.000     -1.82e+06 -1.77e+06
+I(year_built < 1940)[T.True]      1.479e+05   2396.320     61.715      0.000      1.43e+05  1.53e+05
+I(building_type_id == 1)[T.True] -5.835e+04   2452.893    -23.787      0.000     -6.32e+04 -5.35e+04
+modern_condo                      6.059e+04   7041.272      8.604      0.000      4.68e+04  7.44e+04
+sqft_per_unit                      238.4480      1.209    197.307      0.000       236.079   240.817
+residential_units_1500            6.887e+04   1028.062     66.994      0.000      6.69e+04  7.09e+04
+jobs_45                           6.199e+04   1066.589     58.118      0.000      5.99e+04  6.41e+04
+ave_income_500                       6.1138      0.036    170.533      0.000         6.044     6.184
+juris_ave_income                     3.4922      0.059     59.156      0.000         3.377     3.608
+==============================================================================
+Omnibus:                    80688.789   Durbin-Watson:                   0.862
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):           826646.750
+Skew:                           1.918   Prob(JB):                         0.00
+Kurtosis:                      12.827   Cond. No.                     2.00e+06
+==============================================================================
+
+Warnings:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[2] The condition number is large,  2e+06. This might indicate that there are
+strong multicollinearity or other numerical problems.
+Time to execute step 'rsh_estimate': 9.75 s
+
+
+Running step 'rsh_simulate'
+count    1841191.000000
+mean      639380.206954
+std       376834.520217
+min     -1222668.364386
+25%       390921.401628
+50%       578196.231227
+75%       815101.614269
+max      4594711.900111
+dtype: float64
+Time to execute step 'rsh_simulate': 4.46 s
+
+
+Running step 'hlcm_estimate'
+LCM RESULTS FOR SEGMENT 1
+
+Null Log-liklihood: -39081.110
+Log-liklihood at convergence: -37812.042
+Log-liklihood Ratio: 0.032
+
++----------------------------------------------+-------------+------------+---------+
+| Component                                    | Co/home/ubuntu/anaconda/lib/python2.7/site-packages/pandas/io/parsers.py:1170: DtypeWarning: Columns (38,121) have mixed types. Specify dtype option on import or set low_memory=False.
+  data = self._reader.read(nrows)
+efficient | Std. Error | T-Score |
++----------------------------------------------+-------------+------------+---------+
+| residential_units_1500                       |    0.369    |   0.012    |  30.683 |
+| jobs_45                                      |    0.082    |   0.009    |  9.390  |
+| I(ave_income_500 / 100000)                   |    -1.076   |   0.065    | -16.623 |
+| I(juris_ave_income / 100000)                 |    0.585    |   0.084    |  6.948  |
+| I(income / 100000 * ave_income_500 / 100000) |    1.195    |   0.028    |  42.648 |
+| I(residential_price / 1000000)               |    -0.550   |   0.045    | -12.321 |
+| I(jobs_45 * income / 100000)                 |    -0.048   |   0.002    | -19.962 |
++----------------------------------------------+-------------+------------+---------+
+Time to execute step 'hlcm_estimate': 5.14 s
 
 
 Running step 'nrh_estimate'
@@ -79,307 +186,217 @@ REGRESSION RESULTS FOR SEGMENT Retail
 
                               OLS Regression Results                             
 =================================================================================
-Dep. Variable:     np.log1p(costar_rent)   R-squared:                       0.328
-Model:                               OLS   Adj. R-squared:                  0.324
-Method:                    Least Squares   F-statistic:                     73.49
-Date:                   Thu, 27 Aug 2015   Prob (F-statistic):           1.28e-86
-Time:                           19:37:46   Log-Likelihood:                -689.24
-No. Observations:                   1062   AIC:                             1394.
-Df Residuals:                       1054   BIC:                             1434.
-Df Model:                              7                                         
+Dep. Variable:     np.log1p(costar_rent)   R-squared:                       0.240
+Model:                               OLS   Adj. R-squared:                  0.238
+Method:                    Least Squares   F-statistic:                     83.66
+Date:                   Tue, 08 Sep 2015   Prob (F-statistic):           9.45e-62
+Time:                           22:04:38   Log-Likelihood:                -754.25
+No. Observations:                   1062   AIC:                             1518.
+Df Residuals:                       1057   BIC:                             1543.
+Df Model:                              4                                         
 Covariance Type:               nonrobust                                         
-================================================================================================
-                                   coef    std err          t      P>|t|      [95.0% Conf. Int.]
-------------------------------------------------------------------------------------------------
-Intercept                        0.7543      0.191      3.947      0.000         0.379     1.129
-I(year_built < 1940)[T.True]     0.0150      0.034      0.435      0.663        -0.052     0.082
-jobs_500                         0.0534      0.015      3.684      0.000         0.025     0.082
-residential_units_1500           0.0190      0.018      1.056      0.291        -0.016     0.054
-residential_units_10000         -0.1671      0.044     -3.806      0.000        -0.253    -0.081
-jobs_10000                       0.3024      0.037      8.177      0.000         0.230     0.375
-ave_income_500                6.619e-06   6.51e-07     10.160      0.000      5.34e-06   7.9e-06
-juris_ave_income              2.279e-06   1.35e-06      1.683      0.093     -3.78e-07  4.94e-06
+==========================================================================================
+                             coef    std err          t      P>|t|      [95.0% Conf. Int.]
+------------------------------------------------------------------------------------------
+Intercept                 -0.6316      0.292     -2.164      0.031        -1.204    -0.059
+jobs_1500                  0.1130      0.015      7.593      0.000         0.084     0.142
+residential_units_1500     0.0636      0.016      4.054      0.000         0.033     0.094
+jobs_45                    0.1503      0.023      6.443      0.000         0.105     0.196
+juris_ave_income        8.974e-06    1.1e-06      8.173      0.000      6.82e-06  1.11e-05
 ==============================================================================
-Omnibus:                      116.199   Durbin-Watson:                   1.443
-Prob(Omnibus):                  0.000   Jarque-Bera (JB):              610.530
-Skew:                          -0.347   Prob(JB):                    2.66e-133
-Kurtosis:                       6.649   Cond. No.                     1.26e+06
+Omnibus:                       68.217   Durbin-Watson:                   1.250
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):              224.756
+Skew:                          -0.236   Prob(JB):                     1.57e-49
+Kurtosis:                       5.204   Cond. No.                     1.17e+06
 ==============================================================================
 
 Warnings:
 [1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
-[2] The condition number is large, 1.26e+06. This might indicate that there are
+[2] The condition number is large, 1.17e+06. This might indicate that there are
 strong multicollinearity or other numerical problems.
 REGRESSION RESULTS FOR SEGMENT Office
 
                               OLS Regression Results                             
 =================================================================================
-Dep. Variable:     np.log1p(costar_rent)   R-squared:                       0.323
-Model:                               OLS   Adj. R-squared:                  0.321
-Method:                    Least Squares   F-statistic:                     163.4
-Date:                   Thu, 27 Aug 2015   Prob (F-statistic):          7.62e-198
-Time:                           19:37:46   Log-Likelihood:                -1273.6
-No. Observations:                   2402   AIC:                             2563.
-Df Residuals:                       2394   BIC:                             2610.
-Df Model:                              7                                         
+Dep. Variable:     np.log1p(costar_rent)   R-squared:                       0.325
+Model:                               OLS   Adj. R-squared:                  0.324
+Method:                    Least Squares   F-statistic:                     289.0
+Date:                   Tue, 08 Sep 2015   Prob (F-statistic):          5.57e-203
+Time:                           22:04:38   Log-Likelihood:                -1270.1
+No. Observations:                   2402   AIC:                             2550.
+Df Residuals:                       2397   BIC:                             2579.
+Df Model:                              4                                         
 Covariance Type:               nonrobust                                         
-================================================================================================
-                                   coef    std err          t      P>|t|      [95.0% Conf. Int.]
-------------------------------------------------------------------------------------------------
-Intercept                        0.6996      0.104      6.702      0.000         0.495     0.904
-I(year_built < 1940)[T.True]     0.1008      0.029      3.454      0.001         0.044     0.158
-jobs_500                         0.0764      0.008      9.650      0.000         0.061     0.092
-residential_units_1500          -0.0029      0.006     -0.477      0.634        -0.015     0.009
-residential_units_10000         -0.0796      0.013     -5.965      0.000        -0.106    -0.053
-jobs_10000                       0.2161      0.016     13.921      0.000         0.186     0.247
-ave_income_500                2.186e-06   2.54e-07      8.617      0.000      1.69e-06  2.68e-06
-juris_ave_income              8.775e-06   6.59e-07     13.310      0.000      7.48e-06  1.01e-05
+==========================================================================================
+                             coef    std err          t      P>|t|      [95.0% Conf. Int.]
+------------------------------------------------------------------------------------------
+Intercept                 -0.9857      0.172     -5.726      0.000        -1.323    -0.648
+jobs_1500                  0.1262      0.007     17.331      0.000         0.112     0.141
+residential_units_1500     0.0196      0.004      4.431      0.000         0.011     0.028
+jobs_45                    0.1948      0.014     14.161      0.000         0.168     0.222
+juris_ave_income         9.42e-06   5.73e-07     16.449      0.000       8.3e-06  1.05e-05
 ==============================================================================
-Omnibus:                      267.146   Durbin-Watson:                   0.966
-Prob(Omnibus):                  0.000   Jarque-Bera (JB):             2110.093
-Skew:                          -0.192   Prob(JB):                         0.00
-Kurtosis:                       7.576   Cond. No.                     1.21e+06
+Omnibus:                      227.542   Durbin-Watson:                   1.070
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             1461.921
+Skew:                          -0.166   Prob(JB):                         0.00
+Kurtosis:                       6.808   Cond. No.                     1.33e+06
 ==============================================================================
 
 Warnings:
 [1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
-[2] The condition number is large, 1.21e+06. This might indicate that there are
+[2] The condition number is large, 1.33e+06. This might indicate that there are
 strong multicollinearity or other numerical problems.
 REGRESSION RESULTS FOR SEGMENT Industrial
 
                               OLS Regression Results                             
 =================================================================================
-Dep. Variable:     np.log1p(costar_rent)   R-squared:                       0.270
-Model:                               OLS   Adj. R-squared:                  0.264
-Method:                    Least Squares   F-statistic:                     44.00
-Date:                   Thu, 27 Aug 2015   Prob (F-statistic):           5.09e-53
-Time:                           19:37:46   Log-Likelihood:                -388.27
-No. Observations:                    841   AIC:                             792.5
-Df Residuals:                        833   BIC:                             830.4
-Df Model:                              7                                         
+Dep. Variable:     np.log1p(costar_rent)   R-squared:                       0.213
+Model:                               OLS   Adj. R-squared:                  0.209
+Method:                    Least Squares   F-statistic:                     56.60
+Date:                   Tue, 08 Sep 2015   Prob (F-statistic):           2.82e-42
+Time:                           22:04:38   Log-Likelihood:                -419.79
+No. Observations:                    841   AIC:                             849.6
+Df Residuals:                        836   BIC:                             873.3
+Df Model:                              4                                         
 Covariance Type:               nonrobust                                         
-================================================================================================
-                                   coef    std err          t      P>|t|      [95.0% Conf. Int.]
-------------------------------------------------------------------------------------------------
-Intercept                        0.0359      0.169      0.212      0.832        -0.297     0.368
-I(year_built < 1940)[T.True]     0.2736      0.059      4.626      0.000         0.158     0.390
-jobs_500                         0.0359      0.016      2.275      0.023         0.005     0.067
-residential_units_1500           0.0054      0.008      0.661      0.509        -0.011     0.021
-residential_units_10000         -0.0708      0.014     -5.172      0.000        -0.098    -0.044
-jobs_10000                       0.2272      0.023      9.803      0.000         0.182     0.273
-ave_income_500                1.234e-06   4.32e-07      2.856      0.004      3.86e-07  2.08e-06
-juris_ave_income              8.957e-06   1.24e-06      7.202      0.000      6.52e-06  1.14e-05
+==========================================================================================
+                             coef    std err          t      P>|t|      [95.0% Conf. Int.]
+------------------------------------------------------------------------------------------
+Intercept                 -0.0810      0.265     -0.306      0.760        -0.601     0.439
+jobs_1500                  0.1553      0.017      9.344      0.000         0.123     0.188
+residential_units_1500     0.0265      0.006      4.528      0.000         0.015     0.038
+jobs_45                    0.0600      0.021      2.879      0.004         0.019     0.101
+juris_ave_income        8.846e-06    1.2e-06      7.377      0.000      6.49e-06  1.12e-05
 ==============================================================================
-Omnibus:                       41.856   Durbin-Watson:                   1.052
-Prob(Omnibus):                  0.000   Jarque-Bera (JB):              135.755
-Skew:                          -0.043   Prob(JB):                     3.32e-30
-Kurtosis:                       4.966   Cond. No.                     1.00e+06
+Omnibus:                       32.635   Durbin-Watson:                   1.101
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):               86.720
+Skew:                           0.069   Prob(JB):                     1.48e-19
+Kurtosis:                       4.567   Cond. No.                     1.17e+06
 ==============================================================================
 
 Warnings:
 [1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
-[2] The condition number is large,  1e+06. This might indicate that there are
+[2] The condition number is large, 1.17e+06. This might indicate that there are
 strong multicollinearity or other numerical problems.
-Time to execute step 'nrh_estimate': 10.40 s
+Time to execute step 'nrh_estimate': 4.35 s
 
 
 Running step 'nrh_simulate'
-count    70125.000000
-mean        20.337015
-std          9.865633
-min          0.521909
-25%         12.213154
-50%         19.446651
-75%         25.675931
-max        535.089646
+count    70123.000000
+mean        20.210762
+std          8.788231
+min          1.621542
+25%         12.294430
+50%         20.249182
+75%         26.013961
+max         67.028471
 dtype: float64
-Time to execute step 'nrh_simulate': 3.43 s
+Time to execute step 'nrh_simulate': 2.05 s
 
 
 Running step 'elcm_estimate'
 LCM RESULTS FOR SEGMENT FPSEMPN
 
 Null Log-liklihood: -19560.115
-Log-liklihood at convergence: -6629.625
-Log-liklihood Ratio: 0.661
+Log-liklihood at convergence: -7998.141
+Log-liklihood Ratio: 0.591
 
 +---------------------------------+-------------+------------+---------+
 | Component                       | Coefficient | Std. Error | T-Score |
 +---------------------------------+-------------+------------+---------+
-| np.log1p(non_residential_price) |    0.753    |   0.013    |  59.099 |
-| jobs_500                        |    1.495    |   0.031    |  47.793 |
-| jobs_1500                       |    -0.518   |   0.036    | -14.396 |
-| jobs_10000                      |    0.037    |   0.032    |  1.157  |
-| residential_units_1500          |    -0.224   |   0.013    | -17.523 |
-| residential_units_10000         |    0.069    |   0.026    |  2.627  |
-| ave_income_1500                 |    0.000    |   0.000    |  5.071  |
-| juris_ave_income                |    0.000    |   0.000    |  0.332  |
+| np.log1p(non_residential_price) |    0.960    |   0.012    |  79.309 |
+| jobs_1500                       |    1.043    |   0.014    |  72.585 |
+| jobs_45                         |    -0.846   |   0.212    |  -3.993 |
+| residential_units_1500          |    -0.409   |   0.010    | -41.221 |
+| residential_units_45            |    0.817    |   0.213    |  3.830  |
+| ave_income_1500                 |    0.000    |   0.000    |  13.639 |
+| juris_ave_income                |    -0.000   |   0.000    |  -3.497 |
 +---------------------------------+-------------+------------+---------+
 LCM RESULTS FOR SEGMENT OTHEMPN
 
-Null Log-liklihood: -19560.115
-Log-liklihood at convergence: -7642.360
-Log-liklihood Ratio: 0.609
+Null Log-liklihood: -19509.259
+Log-liklihood at convergence: -9356.784
+Log-liklihood Ratio: 0.520
 
 +---------------------------------+-------------+------------+---------+
 | Component                       | Coefficient | Std. Error | T-Score |
 +---------------------------------+-------------+------------+---------+
-| np.log1p(non_residential_price) |    0.681    |   0.012    |  57.304 |
-| jobs_500                        |    1.517    |   0.030    |  50.787 |
-| jobs_1500                       |    -0.571   |   0.034    | -16.609 |
-| jobs_10000                      |    0.041    |   0.031    |  1.301  |
-| residential_units_1500          |    -0.190   |   0.012    | -15.958 |
-| residential_units_10000         |    0.066    |   0.026    |  2.574  |
-| ave_income_1500                 |    -0.000   |   0.000    |  -4.626 |
-| juris_ave_income                |    -0.000   |   0.000    |  -2.668 |
+| np.log1p(non_residential_price) |    0.885    |   0.011    |  78.326 |
+| jobs_1500                       |    0.963    |   0.015    |  65.019 |
+| jobs_45                         |    -1.986   |   0.170    | -11.663 |
+| residential_units_1500          |    -0.379   |   0.009    | -41.063 |
+| residential_units_45            |    2.163    |   0.172    |  12.589 |
+| ave_income_1500                 |    0.000    |   0.000    |  1.303  |
+| juris_ave_income                |    -0.000   |   0.000    |  -1.991 |
 +---------------------------------+-------------+------------+---------+
 LCM RESULTS FOR SEGMENT AGREMPN
 
 Null Log-liklihood: -19560.115
-Log-liklihood at convergence: -7391.801
-Log-liklihood Ratio: 0.622
+Log-liklihood at convergence: -8631.784
+Log-liklihood Ratio: 0.559
 
 +---------------------------------+-------------+------------+---------+
 | Component                       | Coefficient | Std. Error | T-Score |
 +---------------------------------+-------------+------------+---------+
-| np.log1p(non_residential_price) |    0.764    |   0.014    |  53.888 |
-| jobs_500                        |    1.490    |   0.029    |  51.227 |
-| jobs_1500                       |    -0.868   |   0.031    | -27.588 |
-| jobs_10000                      |    -0.337   |   0.024    | -14.005 |
-| residential_units_1500          |    -0.331   |   0.012    | -28.559 |
-| residential_units_10000         |    -0.040   |   0.020    |  -1.977 |
-| ave_income_1500                 |    0.000    |   0.000    |  9.993  |
-| juris_ave_income                |    -0.000   |   0.000    |  -8.735 |
+| np.log1p(non_residential_price) |    1.078    |   0.014    |  77.637 |
+| jobs_1500                       |    0.476    |   0.013    |  36.887 |
+| jobs_45                         |    0.444    |   0.064    |  6.907  |
+| residential_units_1500          |    -0.612   |   0.009    | -66.128 |
+| residential_units_45            |    -1.569   |   0.063    | -24.824 |
+| ave_income_1500                 |    0.000    |   0.000    |  24.365 |
+| juris_ave_income                |    -0.000   |   0.000    |  -8.833 |
 +---------------------------------+-------------+------------+---------+
 LCM RESULTS FOR SEGMENT HEREMPN
 
 Null Log-liklihood: -19560.115
-Log-liklihood at convergence: -8194.843
-Log-liklihood Ratio: 0.581
+Log-liklihood at convergence: -10479.024
+Log-liklihood Ratio: 0.464
 
 +---------------------------------+-------------+------------+---------+
 | Component                       | Coefficient | Std. Error | T-Score |
 +---------------------------------+-------------+------------+---------+
-| np.log1p(non_residential_price) |    0.724    |   0.011    |  63.918 |
-| jobs_500                        |    1.624    |   0.028    |  57.302 |
-| jobs_1500                       |    -0.869   |   0.034    | -25.923 |
-| jobs_10000                      |    0.116    |   0.035    |  3.288  |
-| residential_units_1500          |    -0.083   |   0.013    |  -6.175 |
-| residential_units_10000         |    0.046    |   0.030    |  1.559  |
-| ave_income_1500                 |    0.000    |   0.000    |  0.945  |
-| juris_ave_income                |    -0.000   |   0.000    |  -4.597 |
+| np.log1p(non_residential_price) |    0.970    |   0.011    |  91.907 |
+| jobs_1500                       |    0.780    |   0.014    |  56.911 |
+| jobs_45                         |    -0.166   |   0.164    |  -1.011 |
+| residential_units_1500          |    -0.248   |   0.010    | -24.200 |
+| residential_units_45            |    -0.123   |   0.166    |  -0.740 |
+| ave_income_1500                 |    0.000    |   0.000    |  10.675 |
+| juris_ave_income                |    -0.000   |   0.000    |  -8.261 |
 +---------------------------------+-------------+------------+---------+
 LCM RESULTS FOR SEGMENT RETEMPN
 
 Null Log-liklihood: -19560.115
-Log-liklihood at convergence: -7850.366
-Log-liklihood Ratio: 0/home/ubuntu/anaconda/lib/python2.7/site-packages/pandas/computation/expressions.py:190: UserWarning: evaluating in Python space because the '*' operator is not supported by numexpr for the bool dtype, use '&' instead
-  unsupported[op_str]))
-.599
+Log-liklihood at convergence: -9343.155
+Log-liklihood Ratio: 0.522
 
-+---------------------------------+-------------+------------+---------+
++---------------------------------+------------Closing remaining open files:./data/tmnet.h5...done./data/2015_06_01_bayarea_v3.h5...done./data/2015_06_01_osm_bayarea4326.h5...done
+-+------------+---------+
 | Component                       | Coefficient | Std. Error | T-Score |
 +---------------------------------+-------------+------------+---------+
-| np.log1p(non_residential_price) |    0.889    |   0.012    |  72.925 |
-| jobs_500                        |    1.399    |   0.029    |  47.556 |
-| jobs_1500                       |    -0.720   |   0.034    | -21.209 |
-| jobs_10000                      |    -0.079   |   0.035    |  -2.294 |
-| residential_units_1500          |    -0.160   |   0.012    | -13.109 |
-| residential_units_10000         |    0.205    |   0.029    |  7.171  |
-| ave_income_1500                 |    -0.000   |   0.000    |  -0.523 |
-| juris_ave_income                |    -0.000   |   0.000    |  -2.276 |
+| np.log1p(non_residential_price) |    1.170    |   0.012    | 100.168 |
+| jobs_1500                       |    0.613    |   0.015    |  41.278 |
+| jobs_45                         |    -1.156   |   0.169    |  -6.838 |
+| residential_units_1500          |    -0.291   |   0.010    | -30.053 |
+| residential_units_45            |    0.978    |   0.170    |  5.744  |
+| ave_income_1500                 |    0.000    |   0.000    |  8.169  |
+| juris_ave_income                |    -0.000   |   0.000    |  -6.558 |
 +---------------------------------+-------------+------------+---------+
 LCM RESULTS FOR SEGMENT MWTEMPN
 
 Null Log-liklihood: -19560.115
-Log-liklihood at convergence: -6035.032
-Log-liklihood Ratio: 0.691
+Log-liklihood at convergence: -7127.465
+Log-liklihood Ratio: 0.636
 
 +---------------------------------+-------------+------------+---------+
 | Component                       | Coefficient | Std. Error | T-Score |
 +---------------------------------+-------------+------------+---------+
-| np.log1p(non_residential_price) |    0.812    |   0.015    |  53.571 |
-| jobs_500                        |    1.362    |   0.035    |  39.165 |
-| jobs_1500                       |    -0.567   |   0.039    | -14.417 |
-| jobs_10000                      |    0.208    |   0.029    |  7.229  |
-| residential_units_1500          |    -0.432   |   0.011    | -38.806 |
-| residential_units_10000         |    -0.097   |   0.020    |  -4.752 |
-| ave_income_1500                 |    0.000    |   0.000    |  1.675  |
-| juris_ave_income                |    -0.000   |   0.000    | -10.325 |
+| np.log1p(non_residential_price) |    1.076    |   0.015    |  73.903 |
+| jobs_1500                       |    0.773    |   0.017    |  45.799 |
+| jobs_45                         |    0.903    |   0.192    |  4.709  |
+| residential_units_1500          |    -0.618   |   0.009    | -69.154 |
+| residential_units_45            |    -0.979   |   0.194    |  -5.047 |
+| ave_income_1500                 |    0.000    |   0.000    |  11.731 |
+| juris_ave_income                |    -0.000   |   0.000    | -16.708 |
 +---------------------------------+-------------+------------+---------+
-Time to execute step 'elcm_estimate': 120.16 s
-
-
-Running step 'rsh_estimate'
-                            OLS Regression Results                            
-==============================================================================
-Dep. Variable:      redfin_sale_price   R-squared:                       0.515
-Model:                            OLS   Adj. R-squared:                  0.515
-Method:                 Least Squares   F-statistic:                 2.107e+04
-Date:                Thu, 27 Aug 2015   Prob (F-statistic):               0.00
-Time:                        19:39:54   Log-Likelihood:            -2.5073e+06
-No. Observations:              178291   AIC:                         5.015e+06
-Df Residuals:                  178281   BIC:                         5.015e+06
-Df Model:                           9                                         
-Covariance Type:            nonrobust                                         
-====================================================================================================
-                                       coef    std err          t      P>|t|      [95.0% Conf. Int.]
-----------------------------------------------------------------------------------------------------
-Intercept                        -1.392e+06      1e+04   -138.569      0.000     -1.41e+06 -1.37e+06
-I(year_built < 1940)[T.True]       1.47e+05   2390.743     61.470      0.000      1.42e+05  1.52e+05
-I(building_type_id == 1)[T.True] -6.029e+04   2449.095    -24.616      0.000     -6.51e+04 -5.55e+04
-modern_condo                      7.518e+04   7030.689     10.693      0.000      6.14e+04   8.9e+04
-sqft_per_unit                      231.7250      1.203    192.672      0.000       229.368   234.082
-residential_units_1500            4.439e+04   1236.663     35.893      0.000       4.2e+04  4.68e+04
-residential_units_10000            3.17e+04   2025.533     15.651      0.000      2.77e+04  3.57e+04
-jobs_10000                        2.411e+04   1438.972     16.752      0.000      2.13e+04  2.69e+04
-ave_income_500                       6.2609      0.035    177.425      0.000         6.192     6.330
-juris_ave_income                     3.9213     Closing remaining open files:./data/2015_06_01_osm_bayarea4326.h5...done./data/2015_06_01_bayarea_v3.h5...done
- 0.060     65.790      0.000         3.804     4.038
-==============================================================================
-Omnibus:                    79142.561   Durbin-Watson:                   0.897
-Prob(Omnibus):                  0.000   Jarque-Bera (JB):           812168.727
-Skew:                           1.871   Prob(JB):                         0.00
-Kurtosis:                      12.764   Cond. No.                     1.56e+06
-==============================================================================
-
-Warnings:
-[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
-[2] The condition number is large, 1.56e+06. This might indicate that there are
-strong multicollinearity or other numerical problems.
-Time to execute step 'rsh_estimate': 4.07 s
-
-
-Running step 'rsh_simulate'
-count    1841195.000000
-mean      639012.971252
-std       375843.230980
-min     -1090485.771944
-25%       390335.941023
-50%       573081.669354
-75%       814976.542922
-max      4615817.640814
-dtype: float64
-Time to execute step 'rsh_simulate': 2.63 s
-
-
-Running step 'hlcm_estimate'
-LCM RESULTS FOR SEGMENT 1
-
-Null Log-liklihood: -19560.115
-Log-liklihood at convergence: -18949.060
-Log-liklihood Ratio: 0.031
-
-+----------------------------------------------+-------------+------------+---------+
-| Component                                    | Coefficient | Std. Error | T-Score |
-+----------------------------------------------+-------------+------------+---------+
-| residential_units_1500                       |    0.346    |   0.019    |  18.481 |
-| jobs_10000                                   |    0.066    |   0.014    |  4.630  |
-| I(ave_income_500 / 100000)                   |    -0.993   |   0.087    | -11.356 |
-| I(juris_ave_income / 100000)                 |    0.818    |   0.106    |  7.708  |
-| I(income / 100000 * ave_income_500 / 100000) |    1.128    |   0.031    |  36.164 |
-| I(residential_price / 1000000)               |    -0.664   |   0.064    | -10.307 |
-| I(jobs_10000 * income / 100000)              |    -0.015   |   0.004    |  -4.119 |
-+----------------------------------------------+-------------+------------+---------+
-Time to execute step 'hlcm_estimate': 3.90 s
-Total time to execute iteration 1 with iteration value None: 354.22 s
+Time to execute step 'elcm_estimate': 49.27 s
+Total time to execute iteration 1 with iteration value None: 180.89 s

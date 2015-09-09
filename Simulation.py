@@ -36,7 +36,7 @@ if SLACK:
     host = socket.gethostname()
 
 print "Started", time.ctime()
-in_year, out_year = 2010, 2030
+in_year, out_year = 2010, 2025
 
 if SLACK:
     slack.chat.post_message('#sim_updates', 
@@ -45,8 +45,9 @@ if SLACK:
 try:
   orca.run([
     #"mls_appreciation"
-    "neighborhood_vars",            # accessibility variables
-    
+    "neighborhood_vars",            # local accessibility vars
+    "regional_vars",                # regional accessibility vars   
+ 
     "rsh_simulate",                 # residential sales hedonic
     "nrh_simulate",                 # non-residential rent hedonic
 
