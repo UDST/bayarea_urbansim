@@ -8,8 +8,48 @@ from urbansim_defaults import variables
 
 
 #####################
+# HOUSEHOLDS VARIABLES
+#####################
+
+
+@orca.column('households', 'ones', cache=True)
+def income_decile(households):
+    return pd.Series(1, households.index)
+
+
+@orca.column('households', 'tmnode_id', cache=True)
+def node_id(households, buildings):
+    return misc.reindex(buildings.tmnode_id, households.building_id)
+
+
+#####################
+# HOMESALES VARIABLES
+#####################
+
+
+@orca.column('homesales', 'juris_ave_income', cache=True)
+def juris_ave_income(parcels, homesales):
+    return misc.reindex(parcels.juris_ave_income, homesales.parcel_id)
+
+
+@orca.column('homesales', 'is_sanfran', cache=True)
+def is_sanfran(parcels, homesales):
+    return misc.reindex(parcels.is_sanfran, homesales.parcel_id)
+
+
+#####################
 # COSTAR VARIABLES
 #####################
+
+
+@orca.column('costar', 'juris_ave_income', cache=True)
+def juris_ave_income(parcels, costar):
+    return misc.reindex(parcels.juris_ave_income, costar.parcel_id)
+
+
+@orca.column('costar', 'is_sanfran', cache=True)
+def is_sanfran(parcels, costar):
+    return misc.reindex(parcels.is_sanfran, costar.parcel_id)
 
 
 @orca.column('costar', 'general_type')
@@ -59,11 +99,12 @@ def empsix_id(jobs, settings):
 
 @orca.column('jobs', 'preferred_general_type')
 def preferred_general_type(jobs, buildings, settings):
-    # this column is the preferred general type for this job - this is used in the
-    # non-res developer to determine how much of a building type to use.  basically
-    # each job has a certain pdf by sector of the building types is prefers and so we
-    # give each job a preferred type based on that pdf.  note that if a job is assigned
-    # a building, the building's type is it's preferred type by definition
+    # this column is the preferred general type for this job - this is used
+    # in the non-res developer to determine how much of a building type to
+    #  use.  basically each job has a certain pdf by sector of the building
+    # types is prefers and so we give each job a preferred type based on that
+    # pdf.  note that if a job is assigned a building, the building's type is
+    # it's preferred type by definition
 
     s = misc.reindex(buildings.general_type, jobs.building_id)
 
@@ -76,7 +117,7 @@ def preferred_general_type(jobs, buildings, settings):
 
         sector_pdf = sector_pdfs[sector]
         s[mask] = np.random.choice(sector_pdf.index,
-                                   size=mask.value_counts()[True], 
+                                   size=mask.value_counts()[True],
                                    p=sector_pdf.values)
 
     return s
@@ -94,53 +135,26 @@ def tmnode_id(buildings, parcels):
 
 @orca.column('buildings', 'juris_ave_income', cache=True)
 def juris_ave_income(parcels, buildings):
-    return  misc.reindex(parcels.juris_ave_income, buildings.parcel_id)
-
-
-@orca.column('homesales', 'juris_ave_income', cache=True)
-def juris_ave_income(parcels, homesales):
-    return  misc.reindex(parcels.juris_ave_income, homesales.parcel_id)
-
-
-@orca.column('costar', 'juris_ave_income', cache=True)
-def juris_ave_income(parcels, costar):
-    return  misc.reindex(parcels.juris_ave_income, costar.parcel_id)
+    return misc.reindex(parcels.juris_ave_income, buildings.parcel_id)
 
 
 @orca.column('buildings', 'is_sanfran', cache=True)
 def is_sanfran(parcels, buildings):
-    return  misc.reindex(parcels.is_sanfran, buildings.parcel_id)
-
-
-@orca.column('homesales', 'is_sanfran', cache=True)
-def is_sanfran(parcels, homesales):
-    return  misc.reindex(parcels.is_sanfran, homesales.parcel_id)
-
-
-@orca.column('costar', 'is_sanfran', cache=True)
-def is_sanfran(parcels, costar):
-    return  misc.reindex(parcels.is_sanfran, costar.parcel_id)
+    return misc.reindex(parcels.is_sanfran, buildings.parcel_id)
 
 
 @orca.column('buildings', 'sqft_per_unit', cache=True)
 def unit_sqft(buildings):
-    return (buildings.building_sqft / buildings.residential_units.replace(0, 1)).clip(400, 6000)
-
-
-@orca.column('households', 'ones', cache=True)
-def income_decile(households):
-     return pd.Series(1, households.index)
-
-
-@orca.column('households', 'tmnode_id', cache=True)
-def node_id(households, buildings):
-    return misc.reindex(buildings.tmnode_id, households.building_id)
+    return (buildings.building_sqft /
+            buildings.residential_units.replace(0, 1)).clip(400, 6000)
 
 
 @orca.column('buildings', cache=True)
 def modern_condo(buildings):
-    # this is to try and differentiate between new construction in the city vs in the burbs
-    return ((buildings.year_built > 2000) * (buildings.building_type_id == 3)).astype('int')
+    # this is to try and differentiate between new construction
+    # in the city vs in the burbs
+    return ((buildings.year_built > 2000) * (buildings.building_type_id == 3))\
+        .astype('int')
 
 
 #####################
@@ -153,7 +167,7 @@ def modern_condo(buildings):
 def parcel_average_price(use, quantile=.5):
     # I'm testing out a zone aggregation rather than a network aggregation
     # because I want to be able to determine the quantile of the distribution
-    # I also want more spreading in the development and not keep it so localized
+    # I also want more spreading in the development and not keep it localized
     if use == "residential":
         buildings = orca.get_table('buildings')
         # get price per sqft
@@ -179,7 +193,8 @@ def parcel_average_price(use, quantile=.5):
 @orca.injectable('parcel_sales_price_sqft_func', autocall=False)
 def parcel_sales_price_sqft(use):
     s = parcel_average_price(use)
-    if use == "residential": s *= 1.0
+    if use == "residential":
+        s *= 1.0
     return s
 
 
@@ -194,16 +209,13 @@ def parcel_is_allowed(form):
     s = pd.concat(allowed, axis=1).max(axis=1).\
         reindex(orca.get_table('parcels').index).fillna(False)
 
-    #if form == "residential":
-    #    # allow multifam in pdas 
-    #    s[orca.get_table('parcels').pda.notnull()] = 1 
-
     return s
 
 
 @orca.column('parcels', 'juris_ave_income', cache=True)
 def juris_ave_income(households, buildings, parcels_geography, parcels):
-    h = orca.merge_tables("households", [households, buildings, parcels_geography],
+    h = orca.merge_tables("households",
+                          [households, buildings, parcels_geography],
                           columns=["jurisdiction", "income"])
     s = h.groupby(h.jurisdiction).income.quantile(.5)
     return misc.reindex(s, parcels_geography.jurisdiction).\
@@ -224,8 +236,8 @@ def is_sanfran(parcels_geography, buildings, parcels):
 # actual columns start here
 @orca.column('parcels', 'max_far', cache=True)
 def max_far(parcels, scenario, scenario_inputs):
-    s =  utils.conditional_upzone(scenario, scenario_inputs,
-                                  "max_far", "far_up").\
+    s = utils.conditional_upzone(scenario, scenario_inputs,
+                                 "max_far", "far_up").\
         reindex(parcels.index)
     return s * ~parcels.nodev
 
@@ -241,6 +253,7 @@ def parcel_rules(parcels):
     return s
 
 GROSS_AVE_UNIT_SIZE = 1000
+
 
 @orca.column('parcels', 'zoned_du', cache=True)
 def zoned_du(parcels):
@@ -260,8 +273,9 @@ def total_non_residential_sqft(parcels, buildings):
 def zoned_du_underbuild(parcels):
     # subtract from zoned du, the total res units, but also the equivalent
     # of non-res sqft in res units
-    s = (parcels.zoned_du - parcels.total_residential_units - 
-         parcels.total_non_residential_sqft / GROSS_AVE_UNIT_SIZE).clip(lower=0)
+    s = (parcels.zoned_du - parcels.total_residential_units -
+         parcels.total_non_residential_sqft / GROSS_AVE_UNIT_SIZE)\
+         .clip(lower=0)
     ratio = (s / parcels.total_residential_units).replace(np.inf, 1)
     # if the ratio of additional units to existing units is not at least .5
     # we don't build it - I mean we're not turning a 10 story building into an
@@ -277,13 +291,14 @@ def zoned_du_underbuild_nodev(parcels):
 
 @orca.column('parcels')
 def nodev(zoning_baseline, parcels):
-    return zoning_baseline.nodev.reindex(parcels.index).fillna(0).astype('bool')
+    return zoning_baseline.nodev.reindex(parcels.index).\
+        fillna(0).astype('bool')
 
 
 @orca.column('parcels', 'max_dua', cache=True)
 def max_dua(parcels, scenario, scenario_inputs):
-    s =  utils.conditional_upzone(scenario, scenario_inputs,
-                                    "max_dua", "dua_up").\
+    s = utils.conditional_upzone(scenario, scenario_inputs,
+                                 "max_dua", "dua_up").\
         reindex(parcels.index)
     return s * ~parcels.nodev
 
@@ -338,12 +353,14 @@ def price_shifters(parcels, settings):
 @orca.column('parcels', 'node_id', cache=True)
 def node_id(parcels, net):
     s = net["walk"].get_node_ids(parcels.x, parcels.y)
-    s = s.reindex(parcels.index).fillna(s.value_counts().index[0]).astype('int')
+    fill_val = s.value_counts().index[0]
+    s = s.reindex(parcels.index).fillna(fill_val).astype('int')
     return s
 
 
 @orca.column('parcels', 'tmnode_id', cache=True)
 def node_id(parcels, net):
     s = net["drive"].get_node_ids(parcels.x, parcels.y)
-    s = s.reindex(parcels.index).fillna(s.value_counts().index[0]).astype('int')
+    fill_val = s.value_counts().index[0]
+    s = s.reindex(parcels.index).fillna(fill_val).astype('int')
     return s
