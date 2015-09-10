@@ -23,7 +23,8 @@ def rsh_simulate(buildings, aggregations, settings):
         high = float(settings["rsh_simulate"]["high"])
         buildings.update_col("residential_price",
                              buildings.residential_price.clip(low, high))
-        print "Clipped rsh_simulate produces\n", buildings.residential_price.describe()
+        print "Clipped rsh_simulate produces\n", \
+            buildings.residential_price.describe()
 
 
 # this deviates from the step in urbansim_defaults only in how it deals with
@@ -31,21 +32,10 @@ def rsh_simulate(buildings, aggregations, settings):
 # demolish in the csv file - this also allows building multiple buildings and
 # just adding capacity on an existing parcel, by adding one building at a time
 @orca.step("scheduled_development_events")
-def scheduled_development_events(buildings, development_projects, development_events,
-                                 summary, year, parcels, settings, parcel_id_to_geom_id,
+def scheduled_development_events(buildings, development_projects,
+                                 development_events, summary, year, parcels,
+                                 settings, parcel_id_to_geom_id,
                                  building_sqft_per_job):
-    
-    # first demolish
-    '''
-    dem = development_events.to_frame()\
-        .query("year_built == %d and action == 'demolish'" % year).set_index('geom_id')
-    dem = geom_id_to_parcel_id(dem, parcels).reset_index()
-    old_buildings = buildings.to_frame(buildings.local_columns)
-    new_buildings = pd.DataFrame({parcel_id: dem.parcel_ids})
-    orca.add_table("buildings",
-        utils._remove_developed_buildings(old_buildings, new_buildings, 
-                                          unplace_agents=["households", "jobs"]))
-    '''
 
     # then build
     dps = development_projects.to_frame().query("year_built == %d" % year)
@@ -53,11 +43,12 @@ def scheduled_development_events(buildings, development_projects, development_ev
     if len(dps) == 0:
         return
 
-    new_buildings = utils.scheduled_development_events(buildings, dps,
-                                       remove_developed_buildings=False,
-                                       unplace_agents=['households', 'jobs'])
-    new_buildings["form"] = new_buildings.building_type_id.map(settings['building_type_map'])\
-        .str.lower()
+    new_buildings = utils.scheduled_development_events(
+        buildings, dps,
+        remove_developed_buildings=False,
+        unplace_agents=['households', 'jobs'])
+    new_buildings["form"] = new_buildings.building_type_id.map(
+        settings['building_type_map']).str.lower()
     new_buildings["job_spaces"] = new_buildings.building_sqft / \
         new_buildings.building_type_id.fillna(-1).map(building_sqft_per_job)
     new_buildings["job_spaces"] = new_buildings.job_spaces.astype('int')
@@ -71,8 +62,8 @@ def scheduled_development_events(buildings, development_projects, development_ev
 def supply_and_demand_multiplier_func(demand, supply):
     s = demand / supply
     settings = orca.get_injectable('settings')
-    print "Number of submarkets where demand exceeds supply:", len(s[s>1.0])
-    #print "Raw relationship of supply and demand\n", s.describe()
+    print "Number of submarkets where demand exceeds supply:", len(s[s > 1.0])
+    # print "Raw relationship of supply and demand\n", s.describe()
     supply_correction = settings["enable_supply_correction"]
     clip_change_high = supply_correction["kwargs"]["clip_change_high"]
     t = s
@@ -80,7 +71,7 @@ def supply_and_demand_multiplier_func(demand, supply):
     t = t / t.max() * (clip_change_high-1)
     t += 1.0
     s.loc[s > 1.0] = t.loc[s > 1.0]
-    #print "Shifters for current iteration\n", s.describe()
+    # print "Shifters for current iteration\n", s.describe()
     return s, (s <= 1.0).all()
 
 
@@ -144,12 +135,12 @@ def tax_buildings(buildings, acct_settings, account, year):
     tot_tax_by_subaccount = tax.groupby(subaccounts).sum()
 
     for subacct, amt in tot_tax_by_subaccount.iteritems():
-        metadata={
+        metadata = {
             "description": "Collecting property tax",
             "year": year
         }
         account.add_transaction(amt, subaccount=subacct,
-                                                metadata=metadata)
+                                metadata=metadata)
 
     print "Sample rows from property tax accts:"
     print account.to_frame().\
@@ -233,9 +224,9 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
         filter to only those buildings (these will likely be built)
     9 pass the results as "feasible" to run_developer - this is sort of a
         boundary case of developer but should run OK
-    10 for those developments that get built, make sure to subtract from account
-        and keep a record (on the off chance that demand is less than the
-        subsidized units, run through the standard code path, although it's
+    10 for those developments that get built, make sure to subtract from
+        account and keep a record (on the off chance that demand is less than
+        the subsidized units, run through the standard code path, although it's
         very unlikely that there would be more subsidized housing than demand)
     """
     # step 2
@@ -244,8 +235,9 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
 
     # step 3
     feasibility['ave_sqft_per_unit'] = parcels.ave_sqft_per_unit
-    feasibility['residential_units'] = np.floor(feasibility.residential_sqft /
-        feasibility.ave_sqft_per_unit).replace(0, 1)
+    feasibility['residential_units'] = \
+        np.floor(feasibility.residential_sqft /
+                 feasibility.ave_sqft_per_unit).replace(0, 1)
 
     # step 4
     feasibility['subsidy_per_unit'] = \
@@ -309,7 +301,7 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
         # step 10
         for index, new_building in new_buildings.iterrows():
             amt = new_building.max_profit
-            metadata={
+            metadata = {
                 "description": "Developing subsidized building",
                 "year": year,
                 "residential_units": new_building.residential_units,
@@ -324,7 +316,8 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
 
     new_buildings = pd.concat(new_buildings_list)
     print "Built {} total subsidized buildings".format(len(new_buildings))
-    print "    Total subsidy: ${:,.2f}".format(-1*new_buildings.max_profit.sum())
+    print "    Total subsidy: ${:,.2f}".format(
+        -1*new_buildings.max_profit.sum())
     print "    Total subsidzed units: {:.0f}".\
         format(new_buildings.residential_units.sum())
     new_buildings["subsidized"] = True
@@ -332,12 +325,13 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
 
 
 @orca.step('subsidized_residential_developer')
-def subsidized_residential_developer(households, buildings,
-                          parcels, parcels_geography, year, acct_settings,
-                          settings, summary, coffer, form_to_btype_func,
-                          add_extra_columns_func, parcel_sales_price_sqft_func,
-                          parcel_is_allowed_func):
-    
+def subsidized_residential_developer(
+        households, buildings,
+        parcels, parcels_geography, year, acct_settings,
+        settings, summary, coffer, form_to_btype_func,
+        add_extra_columns_func, parcel_sales_price_sqft_func,
+        parcel_is_allowed_func):
+
     if "disable" in acct_settings and acct_settings["disable"] == True:
         # allow disabling model from settings rather than
         # having to remove the model name from the model list
@@ -377,16 +371,17 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year,
 
     kwargs = settings['non_residential_developer']
 
-    for typ in ["Office"]: #, "Retail", "Industrial"]:
+    for typ in ["Office"]:
+        # , "Retail", "Industrial"]:
 
         print "Running developer for type %s" % typ
 
         num_jobs_of_this_type = \
             (jobs.preferred_general_type == typ).value_counts()[True]
-      
+
         num_job_spaces_of_this_type = \
             (buildings.job_spaces * (buildings.general_type == typ)).sum()
- 
+
         from urbansim.developer.developer import Developer as dev
         num_units = dev.compute_units_to_build(num_jobs_of_this_type,
                                                num_job_spaces_of_this_type,
@@ -415,21 +410,24 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year,
 def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict,
                run_number, year):
 
-    households_df = orca.merge_tables('households',
+    households_df = orca.merge_tables(
+        'households',
         [parcels, taz_to_superdistrict, buildings, households],
         columns=['pda', 'zone_id', 'DISTRICT', 'puma5', 'persons', 'income'])
 
-    jobs_df = orca.merge_tables('jobs',
+    jobs_df = orca.merge_tables(
+        'jobs',
         [parcels, taz_to_superdistrict, buildings, jobs],
         columns=['pda', 'DISTRICT', 'zone_id', 'empsix'])
 
-    buildings_df = orca.merge_tables('buildings',
-        [parcels, taz_to_superdistrict, buildings],
-        columns=['pda', 'DISTRICT', 'building_type_id', 'zone_id',
-                 'residential_units', 'building_sqft', 'non_residential_sqft'])
+    buildings_df = orca.merge_tables(
+       'buildings',
+       [parcels, taz_to_superdistrict, buildings],
+       columns=['pda', 'DISTRICT', 'building_type_id', 'zone_id',
+                'residential_units', 'building_sqft', 'non_residential_sqft'])
 
     # because merge_tables returns multiple zone_id_'s, but not the one we need
-    buildings_df = buildings_df.rename(columns = {'zone_id_x':'zone_id'}) 
+    buildings_df = buildings_df.rename(columns={'zone_id_x': 'zone_id'})
 
     geographies = ['DISTRICT', 'pda']
 
@@ -444,7 +442,7 @@ def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict,
                                            index=[geography],
                                            aggfunc=[np.size, np.sum])
 
-            summary_table.columns = ['tothh','hhpop']
+            summary_table.columns = ['tothh', 'hhpop']
 
             # income quartile counts
             summary_table['hhincq1'] = households_df.query("income < 25000").\
@@ -458,15 +456,16 @@ def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict,
             summary_table['hhincq4'] = \
                 households_df.query("income >= 75000").\
                 groupby(geography).size()
-            
+
             # residential buildings by type
-            summary_table['sfdu'] = \
-                buildings_df.query("building_type_id == 1 or building_type_id == 2").\
+            summary_table['sfdu'] = buildings_df.\
+                query("building_type_id == 1 or building_type_id == 2").\
                 groupby(geography).residential_units.sum()
-            summary_table['mfdu'] = \
-                buildings_df.query("building_type_id == 3 or building_type_id == 12").\
+            summary_table['mfdu'] = buildings_df.\
+                query("building_type_id == 3 or building_type_id == 12").\
                 groupby(geography).residential_units.sum()
-            #employees by sector
+
+            # employees by sector
             summary_table['totemp'] = jobs_df.\
                 groupby(geography).size()
             summary_table['agrempn'] = jobs_df.query("empsix == 'AGREMPN'").\
@@ -481,19 +480,24 @@ def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict,
                 groupby(geography).size()
             summary_table['othempn'] = jobs_df.query("empsix == 'OTHEMPN'").\
                 groupby(geography).size()
-            #summary columns
-            summary_table['occupancy_rate'] = summary_table['tothh']/(summary_table['sfdu'] + summary_table['sfdu'])
-            summary_table['non_residential_sqft'] = buildings_df.groupby(geography)['non_residential_sqft'].sum()
-            summary_table['sq_ft_per_employee'] = summary_table['non_residential_sqft']/(summary_table['totemp'])
 
-            summary_csv = "runs/run{}_{}_summaries_{}.csv".format(run_number, geography, year)
+            # summary columns
+            summary_table['occupancy_rate'] = summary_table['tothh'] / \
+                (summary_table['sfdu'] + summary_table['sfdu'])
+            summary_table['non_residential_sqft'] = buildings_df.\
+                groupby(geography)['non_residential_sqft'].sum()
+            summary_table['sq_ft_per_employee'] = \
+                summary_table['non_residential_sqft'] / summary_table['totemp']
+
+            summary_csv = "runs/run{}_{}_summaries_{}.csv".\
+                format(run_number, geography, year)
             summary_table.to_csv(summary_csv)
 
 
 @orca.step("travel_model_output")
 def travel_model_output(parcels, households, jobs, buildings,
                         zones, homesales, year, summary, coffer, run_number):
-    
+
     households = households.to_frame()
     jobs = jobs.to_frame()
     buildings = buildings.to_frame()
@@ -557,7 +561,7 @@ def travel_model_output(parcels, households, jobs, buildings,
 
     summary.add_zone_output(zones, "travel_model_output", year)
     if sys.platform != 'win32':
-       summary.write_zone_output()
+        summary.write_zone_output()
 
     add_xy_config = {
         "xy_table": "parcels",
@@ -566,21 +570,35 @@ def travel_model_output(parcels, households, jobs, buildings,
         "y_col": "y"
     }
     # otherwise it loses precision
-    summary.parcel_output["geom_id"] = summary.parcel_output.geom_id.astype('str')
+    summary.parcel_output["geom_id"] = \
+        summary.parcel_output.geom_id.astype('str')
     summary.write_parcel_output(add_xy=add_xy_config)
-   
-    ''' 
-    if year in [2010,2015,2020,2025,2030,2035,2040]:
-        #travel model csv
-        travel_model_csv = "runs/run{}_taz_summaries_{}.csv".format(run_number, year)
+
+    if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
+
+        # travel model csv
+        travel_model_csv = \
+            "runs/run{}_taz_summaries_{}.csv".format(run_number, year)
         travel_model_output = zones
-        #list of columns that we need to fill eventually for valid travel model file:
-        template_columns = ['age0519','age2044','age4564','age65p','areatype','ciacre','collfte','collpte','county','district','empres','gqpop','hhlds','hsenroll','oprkcst','prkcst','resacre','sd','sftaz','shpop62p','terminal','topology','totacre','totpop','zero','zone']
-        for x in template_columns: #fill those columns with NaN until we have values for them
+
+        # list of columns that we need to fill eventually for valid travel
+        # model file:
+        template_columns = \
+            ['age0519', 'age2044', 'age4564', 'age65p',
+             'areatype', 'ciacre', 'collfte', 'collpte', 'county', 'district',
+             'empres', 'gqpop', 'hhlds', 'hsenroll', 'oprkcst', 'prkcst',
+             'resacre', 'sd', 'sftaz', 'shpop62p', 'terminal', 'topology',
+             'totacre', 'totpop', 'zero', 'zone']
+
+        # fill those columns with NaN until we have values for them
+        for x in template_columns:
             travel_model_output[x] = np.nan
-        travel_model_output.columns = [x.upper() for x in travel_model_output.columns] #uppercase columns to match travel model template
+
+        # uppercase columns to match travel model template
+        travel_model_output.columns = \
+            [x.upper() for x in travel_model_output.columns]
+
         travel_model_output.to_csv(travel_model_csv)
-    '''
 
 
 @orca.step("mls_appreciation")
@@ -591,7 +609,8 @@ def mls_appreciation(homesales, year, summary):
     zone_ids = buildings.zone_id
     price = buildings.redfin_sale_price
 
-    min_obs = 10 # minimum observations
+    # minimum observations
+    min_obs = 10
 
     def aggregate_year(year):
         mask = years == year
@@ -608,7 +627,7 @@ def mls_appreciation(homesales, year, summary):
     # zero out the zones with too few observations
     appreciation = appreciation * (current_size > min_obs).astype('int')
     appreciation = appreciation * (past_size > min_obs).astype('int')
-    zones["appreciation"] = appreciation 
+    zones["appreciation"] = appreciation
 
     print zones.describe()
 
@@ -632,7 +651,7 @@ def build_networks(settings):
                            edges[[weight_col]])
         net.precompute(value['max_distance'])
         nets[key] = net
-    
+
     return nets
 
 
