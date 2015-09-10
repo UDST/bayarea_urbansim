@@ -368,31 +368,98 @@ def subsidized_residential_developer(households, buildings,
                              form_to_btype_func,
                              add_extra_columns_func,
                              summary)
+
+
+@orca.step('non_residential_developer')
+def non_residential_developer(feasibility, jobs, buildings, parcels, year,
+                              settings, summary, form_to_btype_func,
+                              add_extra_columns_func):
+
+    kwargs = settings['non_residential_developer']
+
+    for typ in ["Office"]: #, "Retail", "Industrial"]:
+
+        print "Running developer for type %s" % typ
+
+        num_jobs_of_this_type = \
+            (jobs.preferred_general_type == typ).value_counts()[True]
+      
+        num_job_spaces_of_this_type = \
+            (buildings.job_spaces * (buildings.general_type == typ)).sum()
+ 
+        from urbansim.developer.developer import Developer as dev
+        num_units = dev.compute_units_to_build(num_jobs_of_this_type,
+                                               num_job_spaces_of_this_type,
+                                               kwargs['target_vacancy'])
+
+        new_buildings = utils.run_developer(
+            typ.lower(),
+            jobs,
+            buildings,
+            "job_spaces",
+            parcels.parcel_size,
+            parcels.ave_sqft_per_unit,
+            parcels.total_job_spaces,
+            feasibility,
+            year=year,
+            form_to_btype_callback=form_to_btype_func,
+            add_more_columns_callback=add_extra_columns_func,
+            residential=False,
+            num_units_to_build=num_units,
+            **kwargs)
+
+        summary.add_parcel_output(new_buildings)
+
+
 @orca.step("geographic_summary")
-def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict, run_number, year):
-    households_df = orca.merge_tables('households',[parcels, taz_to_superdistrict, buildings, households],columns=['pda','zone_id','DISTRICT','puma5','persons','income'])
-    jobs_df = orca.merge_tables('jobs',[parcels, taz_to_superdistrict, buildings, jobs],columns=['pda','DISTRICT','zone_id','empsix'])
-    buildings_df = orca.merge_tables('buildings',[parcels, taz_to_superdistrict, buildings],columns=['pda','DISTRICT','building_type_id','zone_id','residential_units','building_sqft','non_residential_sqft'])
-    buildings_df = buildings_df.rename(columns = {'zone_id_x':'zone_id'}) #because merge_tables returns multiple zone_id_'s, but not the one we need
-    geographies = ['DISTRICT','pda']
-    if year in [2010,2015,2020,2025,2030,2035,2040]:
+def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict,
+               run_number, year):
+
+    households_df = orca.merge_tables('households',
+        [parcels, taz_to_superdistrict, buildings, households],
+        columns=['pda', 'zone_id', 'DISTRICT', 'puma5', 'persons', 'income'])
+
+    jobs_df = orca.merge_tables('jobs',
+        [parcels, taz_to_superdistrict, buildings, jobs],
+        columns=['pda', 'DISTRICT', 'zone_id', 'empsix'])
+
+    buildings_df = orca.merge_tables('buildings',
+        [parcels, taz_to_superdistrict, buildings],
+        columns=['pda', 'DISTRICT', 'building_type_id', 'zone_id',
+                 'residential_units', 'building_sqft', 'non_residential_sqft'])
+
+    # because merge_tables returns multiple zone_id_'s, but not the one we need
+    buildings_df = buildings_df.rename(columns = {'zone_id_x':'zone_id'}) 
+
+    geographies = ['DISTRICT', 'pda']
+
+    if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
+
         for geography in geographies:
-            #create table with household/population summaries
+
+            # create table with household/population summaries
+
             summary_table = pd.pivot_table(households_df,
-             values=['persons'],
-             index=[geography],
-             aggfunc=[np.size, np.sum])
+                                           values=['persons'],
+                                           index=[geography],
+                                           aggfunc=[np.size, np.sum])
+
             summary_table.columns = ['tothh','hhpop']
-            #income quartile counts
+
+            # income quartile counts
             summary_table['hhincq1'] = households_df.query("income < 25000").\
                 groupby(geography).size()
-            summary_table['hhincq2'] = households_df.query("income >= 25000 and income < 45000").\
+            summary_table['hhincq2'] = \
+                households_df.query("income >= 25000 and income < 45000").\
                 groupby(geography).size()
-            summary_table['hhincq3'] = households_df.query("income >= 45000 and income < 75000").\
+            summary_table['hhincq3'] = \
+                households_df.query("income >= 45000 and income < 75000").\
                 groupby(geography).size()
-            summary_table['hhincq4'] = households_df.query("income >= 75000").\
+            summary_table['hhincq4'] = \
+                households_df.query("income >= 75000").\
                 groupby(geography).size()
-            #residential buildings by type
+            
+            # residential buildings by type
             summary_table['sfdu'] = \
                 buildings_df.query("building_type_id == 1 or building_type_id == 2").\
                 groupby(geography).residential_units.sum()
@@ -426,12 +493,11 @@ def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict, run_n
 @orca.step("travel_model_output")
 def travel_model_output(parcels, households, jobs, buildings,
                         zones, homesales, year, summary, coffer, run_number):
-    '''
+    
     households = households.to_frame()
     jobs = jobs.to_frame()
     buildings = buildings.to_frame()
     zones = zones.to_frame()
-    homesales = homesales.to_frame()
 
     # put this here as a custom bay area indicator
     zones['residential_sales_price_sqft'] = parcels.\
@@ -489,10 +555,10 @@ def travel_model_output(parcels, households, jobs, buildings,
 
     orca.add_table("travel_model_output", zones, year)
 
-    summary.add_zone_output(zones, "travel_model_outputs", year)
+    summary.add_zone_output(zones, "travel_model_output", year)
     if sys.platform != 'win32':
-    '''
-    summary.write_zone_output()
+       summary.write_zone_output()
+
     add_xy_config = {
         "xy_table": "parcels",
         "foreign_key": "parcel_id",
@@ -504,9 +570,6 @@ def travel_model_output(parcels, households, jobs, buildings,
     summary.write_parcel_output(add_xy=add_xy_config)
    
     ''' 
-    subsidy_file = "runs/run{}_subsidy_summary.csv".format(run_number)
-    coffer["prop_tax_acct"].to_frame().to_csv(subsidy_file)
-
     if year in [2010,2015,2020,2025,2030,2035,2040]:
         #travel model csv
         travel_model_csv = "runs/run{}_taz_summaries_{}.csv".format(run_number, year)

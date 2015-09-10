@@ -9,7 +9,7 @@ import pandas as pd
 import orca
 
 app = Flask(__name__)
-app.debug = True
+#app.debug = True
 cors = CORS(app)
 
 MAX_PARCELS_RETURNED = 5000
@@ -18,11 +18,14 @@ print "Loading"
 
 store = pd.HDFStore('data/bayarea_v3.h5')
 
-parcels = orca.get_table('parcels').to_frame()
-buildings = orca.get_table('buildings').to_frame()
+flds = ['parcel_id', 'parcel_acres', 'total_residential_units', 'total_job_spaces', 'x', 'y', 'pda']
+parcels = orca.get_table('parcels').to_frame(flds)
+flds = ['building_id', 'residential_units', 'job_spaces', 'building_type_id', 'parcel_id']
+buildings = orca.get_table('buildings').to_frame(flds)
 #households = orca.get_table('households').to_frame()
 #jobs = orca.get_table('jobs').to_frame()
-zoning = orca.get_table('zoning_baseline').to_frame()
+flds = ['parcel_id', 'max_dua', 'max_far', 'max_height', 'type1', 'type2', 'type3', 'type4']
+zoning = orca.get_table('zoning_baseline').to_frame(flds)
 
 print "Ready"
 

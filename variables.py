@@ -57,6 +57,31 @@ def empsix_id(jobs, settings):
     return jobs.empsix.map(settings['empsix_name_to_id'])
 
 
+@orca.column('jobs', 'preferred_general_type')
+def preferred_general_type(jobs, buildings, settings):
+    # this column is the preferred general type for this job - this is used in the
+    # non-res developer to determine how much of a building type to use.  basically
+    # each job has a certain pdf by sector of the building types is prefers and so we
+    # give each job a preferred type based on that pdf.  note that if a job is assigned
+    # a building, the building's type is it's preferred type by definition
+
+    s = misc.reindex(buildings.general_type, jobs.building_id)
+
+    sector_pdfs = pd.DataFrame(settings['job_sector_to_type'])
+    # normalize (to be safe)
+    sector_pdfs = sector_pdfs / sector_pdfs.sum()
+
+    for sector in sector_pdfs.columns:
+        mask = ((s == "Other") & (jobs.empsix == sector))
+
+        sector_pdf = sector_pdfs[sector]
+        s[mask] = np.random.choice(sector_pdf.index,
+                                   size=mask.value_counts()[True], 
+                                   p=sector_pdf.values)
+
+    return s
+
+
 #####################
 # BUILDINGS VARIABLES
 #####################
@@ -185,6 +210,11 @@ def juris_ave_income(households, buildings, parcels_geography, parcels):
         reindex(parcels.index).fillna(s.median())
 
 
+@orca.column('parcels', 'oldest_building_age')
+def oldest_building_age(parcels, year):
+    return year - parcels.oldest_building
+
+
 @orca.column('parcels', 'is_sanfran', cache=True)
 def is_sanfran(parcels_geography, buildings, parcels):
     return (parcels_geography.juris_name == "San Francisco").\
@@ -308,12 +338,12 @@ def price_shifters(parcels, settings):
 @orca.column('parcels', 'node_id', cache=True)
 def node_id(parcels, net):
     s = net["walk"].get_node_ids(parcels.x, parcels.y)
-    s = s.reindex(parcels.index).fillna(s.value_counts().iloc[0]).astype('int')
+    s = s.reindex(parcels.index).fillna(s.value_counts().index[0]).astype('int')
     return s
 
 
 @orca.column('parcels', 'tmnode_id', cache=True)
 def node_id(parcels, net):
     s = net["drive"].get_node_ids(parcels.x, parcels.y)
-    s = s.reindex(parcels.index).fillna(s.value_counts().iloc[0]).astype('int')
+    s = s.reindex(parcels.index).fillna(s.value_counts().index[0]).astype('int')
     return s

@@ -14,14 +14,6 @@ variable_definitions:
     radius: 45
     apply: np.log1p
 
-  - name: population_45
-    filters:
-    - building_id != -1
-    dataframe: households
-    varname: persons
-    radius: 45
-    apply: np.log1p
-  
   - name: jobs_15
     filters:
     - building_id != -1
