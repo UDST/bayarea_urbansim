@@ -18,7 +18,8 @@ Sam's intro to UrbanSim
 
 * UrbanSim runs by looping through a sequence of (totally customizable) model steps... here are some typical steps for a residential-only simulation: 
 
-	* **Home Price Hedonic** - predicts a market value for each housing unit based on building and neighborhood characteristics
+	* **Home Price Hedonic**  
+	predicts a market value for each housing unit based on building and neighborhood characteristics
 	
 	* **Household Relocation** - predicts which households will choose to move out within the model cycle, using a random draw informed by household characteristics
 	
