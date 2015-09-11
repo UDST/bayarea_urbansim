@@ -7,6 +7,44 @@ from urbansim.utils import misc
 import orca
 
 
+#####################
+# UTILITY FUNCTIONS
+#####################
+
+
+# assume df1 and df2 each have 2 float columns specifying x and y
+# in the same order and coordinate system and no nans.  returns the indexes
+# from df1 that are closest to each row in df2
+def nearest_neighbor(df1, df2):
+    from sklearn.neighbors import KDTree
+    kdt = KDTree(df1.as_matrix())
+    indexes = kdt.query(df2.as_matrix(), k=1, return_distance=False)
+    return df1.index.values[indexes]
+
+
+# need to reindex from geom id to the id used on parcels
+def geom_id_to_parcel_id(df, parcels):
+    s = parcels.geom_id  # get geom_id
+    s = pd.Series(s.index, index=s.values)  # invert series
+    df["new_index"] = s.loc[df.index]  # get right parcel_id for each geom_id
+    df = df.dropna(subset=["new_index"])
+    df["new_index"] = df.new_index.astype('int')
+    df = df.set_index("new_index", drop=True)
+    df.index.name = "parcel_id"
+    return df
+
+
+def parcel_id_to_geom_id(s):
+    parcels = orca.get_table("parcels")
+    g = parcels.geom_id  # get geom_id
+    return pd.Series(g.loc[s.values].values, index=s.index)
+
+
+#####################
+# TABLES AND INJECTABLES
+#####################
+
+
 @orca.injectable('building_sqft_per_job', cache=True)
 def building_sqft_per_job(settings):
     return settings['building_sqft_per_job']
@@ -35,52 +73,6 @@ def homesales(store):
     return df
 
 
-@orca.column('homesales', 'node_id', cache=True)
-def node_id(homesales, parcels):
-    return misc.reindex(parcels.node_id, homesales.parcel_id)
-
-
-@orca.column('homesales', 'tmnode_id', cache=True)
-def tmnode_id(homesales, parcels):
-    return misc.reindex(parcels.tmnode_id, homesales.parcel_id)
-
-
-@orca.column('homesales', 'zone_id', cache=True)
-def zone_id(homesales, parcels):
-    return misc.reindex(parcels.zone_id, homesales.parcel_id)
-
-
-@orca.column('homesales', cache=True)
-def modern_condo(homesales):
-    # this is to try and differentiate between new
-    # construction in the city vs in the burbs
-    return ((homesales.year_built > 2000) *
-            (homesales.building_type_id == 3)).astype('int')
-
-
-@orca.column('homesales', cache=True)
-def base_price_per_sqft(homesales):
-    s = homesales.price_per_sqft.groupby(homesales.zone_id).quantile()
-    return misc.reindex(s, homesales.zone_id)
-
-
-@orca.column('buildings', cache=True)
-def base_price_per_sqft(homesales, buildings):
-    s = homesales.price_per_sqft.groupby(homesales.zone_id).quantile()
-    return misc.reindex(s, buildings.zone_id).reindex(buildings.index)\
-        .fillna(s.quantile())
-
-
-# assume df1 and df2 each have 2 float columns specifying x and y
-# in the same order and coordinate system and no nans.  returns the indexes
-# from df1 that are closest to each row in df2
-def nearest_neighbor(df1, df2):
-    from sklearn.neighbors import KDTree
-    kdt = KDTree(df1.as_matrix())
-    indexes = kdt.query(df2.as_matrix(), k=1, return_distance=False)
-    return df1.index.values[indexes]
-
-
 # non-residential rent data
 @orca.table('costar', cache=True)
 def costar(store, parcels):
@@ -104,25 +96,6 @@ def costar(store, parcels):
 def zoning_lookup():
     return pd.read_csv(os.path.join(misc.data_dir(), "zoning_lookup.csv"),
                        index_col="id")
-
-
-# need to reindex from geom id to the id used on parcels
-def geom_id_to_parcel_id(df, parcels):
-    s = parcels.geom_id  # get geom_id
-    s = pd.Series(s.index, index=s.values)  # invert series
-    df["new_index"] = s.loc[df.index]  # get right parcel_id for each geom_id
-    df = df.dropna(subset=["new_index"])
-    df["new_index"] = df.new_index.astype('int')
-    df = df.set_index("new_index", drop=True)
-    df.index.name = "parcel_id"
-    return df
-
-
-@orca.injectable(autocall=False)
-def parcel_id_to_geom_id(s):
-    parcels = orca.get_table("parcels")
-    g = parcels.geom_id  # get geom_id
-    return pd.Series(g.loc[s.values].values, index=s.index)
 
 
 # zoning for use in the "baseline" scenario
@@ -197,11 +170,6 @@ def parcels(store):
     df["sdem"] = df.geom_id.isin(sdem.geom_id).astype('int')
 
     return df
-
-
-@orca.column('parcels', cache=True)
-def pda(parcels, parcels_geography):
-    return parcels_geography.pda_id.reindex(parcels.index)
 
 
 @orca.table(cache=True)

@@ -12,6 +12,7 @@ from urbansim_defaults import variables
 #####################
 
 
+# used to pretent a segmented choice model isn't actually segmented
 @orca.column('households', 'ones', cache=True)
 def income_decile(households):
     return pd.Series(1, households.index)
@@ -35,6 +36,35 @@ def juris_ave_income(parcels, homesales):
 @orca.column('homesales', 'is_sanfran', cache=True)
 def is_sanfran(parcels, homesales):
     return misc.reindex(parcels.is_sanfran, homesales.parcel_id)
+
+
+@orca.column('homesales', 'node_id', cache=True)
+def node_id(homesales, parcels):
+    return misc.reindex(parcels.node_id, homesales.parcel_id)
+
+
+@orca.column('homesales', 'tmnode_id', cache=True)
+def tmnode_id(homesales, parcels):
+    return misc.reindex(parcels.tmnode_id, homesales.parcel_id)
+
+
+@orca.column('homesales', 'zone_id', cache=True)
+def zone_id(homesales, parcels):
+    return misc.reindex(parcels.zone_id, homesales.parcel_id)
+
+
+@orca.column('homesales', cache=True)
+def modern_condo(homesales):
+    # this is to try and differentiate between new
+    # construction in the city vs in the burbs
+    return ((homesales.year_built > 2000) *
+            (homesales.building_type_id == 3)).astype('int')
+
+
+@orca.column('homesales', cache=True)
+def base_price_per_sqft(homesales):
+    s = homesales.price_per_sqft.groupby(homesales.zone_id).quantile()
+    return misc.reindex(s, homesales.zone_id)
 
 
 #####################
@@ -82,11 +112,6 @@ def tmnode_id(jobs, buildings):
     return misc.reindex(buildings.tmnode_id, jobs.building_id)
 
 
-@orca.column('jobs', 'naics', cache=True)
-def naics(jobs):
-    return jobs.sector_id
-
-
 @orca.column('jobs', 'empsix', cache=True)
 def empsix(jobs, settings):
     return jobs.naics.map(settings['naics_to_empsix'])
@@ -128,6 +153,13 @@ def preferred_general_type(jobs, buildings, settings):
 #####################
 
 
+@orca.column('buildings', cache=True)
+def base_price_per_sqft(homesales, buildings):
+    s = homesales.price_per_sqft.groupby(homesales.zone_id).quantile()
+    return misc.reindex(s, buildings.zone_id).reindex(buildings.index)\
+        .fillna(s.quantile())
+
+
 @orca.column('buildings', 'tmnode_id', cache=True)
 def tmnode_id(buildings, parcels):
     return misc.reindex(parcels.tmnode_id, buildings.parcel_id)
@@ -160,6 +192,12 @@ def modern_condo(buildings):
 #####################
 # PARCELS VARIABLES
 #####################
+
+
+@orca.column('parcels', cache=True)
+def pda(parcels, parcels_geography):
+    return parcels_geography.pda_id.reindex(parcels.index)
+
 
 # these are actually functions that take parameters, but are parcel-related
 # so are defined here
@@ -269,6 +307,7 @@ def total_non_residential_sqft(parcels, buildings):
         reindex(parcels.index).fillna(0)
 
 
+# there are a number of variables here that try to get at zoned capacity
 @orca.column('parcels', 'zoned_du_underbuild')
 def zoned_du_underbuild(parcels):
     # subtract from zoned du, the total res units, but also the equivalent

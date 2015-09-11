@@ -4,6 +4,7 @@ import sys
 import orca
 import datasources
 import variables
+from utils import parcel_id_to_geom_id
 from urbansim.utils import networks
 import pandana.network as pdna
 from urbansim import accounts
@@ -34,7 +35,7 @@ def rsh_simulate(buildings, aggregations, settings):
 @orca.step("scheduled_development_events")
 def scheduled_development_events(buildings, development_projects,
                                  development_events, summary, year, parcels,
-                                 settings, parcel_id_to_geom_id,
+                                 settings,
                                  building_sqft_per_job):
 
     # then build
@@ -601,6 +602,8 @@ def travel_model_output(parcels, households, jobs, buildings,
         travel_model_output.to_csv(travel_model_csv)
 
 
+# this is not really simulation - just writing a method to get average
+# appreciation per zone over the past X number of years
 @orca.step("mls_appreciation")
 def mls_appreciation(homesales, year, summary):
     buildings = homesales
