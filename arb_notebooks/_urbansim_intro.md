@@ -19,17 +19,22 @@ Sam's intro to UrbanSim
 * UrbanSim runs by looping through a sequence of (totally customizable) model steps... here are some typical steps for a residential-only simulation: 
 
 	* **Home Price Hedonic**  
-	predicts a market value for each housing unit based on building and neighborhood characteristics
+	Predicts a market value for each housing unit based on building and neighborhood characteristics
 	
-	* **Household Relocation** - predicts which households will choose to move out within the model cycle, using a random draw informed by household characteristics
+	* **Household Relocation**  
+	Predicts which households will choose to move out within the model cycle, using a random draw informed by household characteristics
 	
-	* **Household Transition** - adds and removes households based on assumptions about in-migration and demographic transition
+	* **Household Transition**  
+	Adds and removes households based on assumptions about in-migration and demographic transition
 	
-	* **Household Location Choice** - allocates the unplaced households to empty housing units using multinomial logit
+	* **Household Location Choice**  
+	Allocates the unplaced households to empty housing units using multinomial logit
 	
-	* **Development Feasibility** - calculates the profitability of potential development on each empty or underutilized parcel based on zoning and development pro-formas
+	* **Development Feasibility**  
+	Calculates the profitability of potential development on each empty or underutilized parcel based on zoning and development pro-formas
 	
-	* **Residential Development** - creates or replaces buildings based on feasibility and probabilistic selection criteria
+	* **Residential Development**  
+	Creates or replaces buildings based on feasibility and probabilistic selection criteria
 	
 	* Then repeat from the beginning for the next model iteration
 
@@ -40,6 +45,7 @@ Sam's intro to UrbanSim
 #### Calibration and validation
 
 * Each model step is calibrated from empirical data, generally by estimating an OLS or logit model and using the parameters for the simulation stage
+
 * The simulation as a whole is calibrated in a variety of more ad-hoc ways which I'm not familiar with yet
 
 #### Difficulty of making changes
