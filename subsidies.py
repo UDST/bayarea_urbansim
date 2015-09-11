@@ -1,5 +1,6 @@
 import orca
 
+
 @orca.injectable("coffer", cache=True)
 def coffer():
     return {
@@ -262,5 +263,3 @@ def subsidized_residential_developer(
                              form_to_btype_func,
                              add_extra_columns_func,
                              summary)
-
-

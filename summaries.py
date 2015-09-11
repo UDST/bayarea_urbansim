@@ -1,5 +1,6 @@
 import orca
 
+
 @orca.step("geographic_summary")
 def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict,
                run_number, year):
@@ -193,5 +194,3 @@ def travel_model_output(parcels, households, jobs, buildings,
             [x.upper() for x in travel_model_output.columns]
 
         travel_model_output.to_csv(travel_model_csv)
-
-
