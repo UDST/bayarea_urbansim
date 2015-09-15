@@ -9,7 +9,6 @@ import summaries
 from datasources import parcel_id_to_geom_id
 from urbansim.utils import networks
 import pandana.network as pdna
-from urbansim import accounts
 from urbansim_defaults import models
 from urbansim_defaults import utils
 import numpy as np
@@ -110,8 +109,12 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year,
 
     kwargs = settings['non_residential_developer']
 
-    for typ in ["Office"]:
-        # , "Retail", "Industrial"]:
+    for typ in ["Office", "Retail", "Industrial"]:
+
+        # this was a fairly heinous bug - have to get the building wrapper
+        # again because the buildings df gets modified by the run_developer
+        # method below
+        buildings = orca.get_table('buildings')
 
         print "Running developer for type %s" % typ
 
@@ -125,6 +128,9 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year,
         num_units = dev.compute_units_to_build(num_jobs_of_this_type,
                                                num_job_spaces_of_this_type,
                                                kwargs['target_vacancy'])
+
+        if num_units == 0:
+            continue
 
         new_buildings = utils.run_developer(
             typ.lower(),

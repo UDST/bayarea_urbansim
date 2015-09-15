@@ -1,4 +1,7 @@
+import sys
 import orca
+import pandas as pd
+import numpy as np
 
 
 @orca.step("geographic_summary")
@@ -165,8 +168,9 @@ def travel_model_output(parcels, households, jobs, buildings,
         "y_col": "y"
     }
     # otherwise it loses precision
-    summary.parcel_output["geom_id"] = \
-        summary.parcel_output.geom_id.astype('str')
+    if summary.parcel_output is not None and "geom_id" in summary.parcel_output:
+        summary.parcel_output["geom_id"] = \
+            summary.parcel_output.geom_id.astype('str')
     summary.write_parcel_output(add_xy=add_xy_config)
 
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:

@@ -19,6 +19,30 @@ variable_definitions:
     varname: residential_units
     radius: 1500
     apply: np.log1p
+  
+  - name: office_1500
+    dataframe: buildings
+    varname: job_spaces
+    filters:
+    - general_type == "Office"
+    radius: 1500
+    apply: np.log1p
+  
+  - name: retail_1500
+    dataframe: buildings
+    varname: job_spaces
+    filters:
+    - general_type == "Retail"
+    radius: 1500
+    apply: np.log1p
+
+  - name: industrial_1500
+    dataframe: buildings
+    varname: job_spaces
+    filters:
+    - general_type == "Industrial"
+    radius: 1500
+    apply: np.log1p
 
   - name: ave_sqft_per_unit
     dataframe: buildings

@@ -13,81 +13,99 @@ predict_filters:
 min_segment_size: 10
 
 default_config:
-    model_expression: np.log1p(costar_rent) ~ jobs_1500 + residential_units_1500 +
-        jobs_45 + juris_ave_income
+    model_expression: np.log1p(costar_rent) ~ office_1500 + retail_1500 + industrial_1500
+        + residential_units_1500 + jobs_45 + juris_ave_income
     ytransform: np.expm1
 
 models:
     Industrial:
         fit_parameters:
             Coefficient:
-                Intercept: -0.08104053975336684
-                jobs_1500: 0.155273995959299
-                jobs_45: 0.06001610337067013
-                juris_ave_income: 8.846277503507738e-06
-                residential_units_1500: 0.026514837791112578
+                Intercept: 0.45570934435339994
+                industrial_1500: 0.01552527533538059
+                jobs_45: 0.07932303163389427
+                juris_ave_income: 8.072184123280118e-06
+                office_1500: 0.05417141030135613
+                residential_units_1500: 0.012659919363759374
+                retail_1500: 0.01896455930976893
             Std. Error:
-                Intercept: 0.2649166188922296
-                jobs_1500: 0.016617302358417928
-                jobs_45: 0.020842667899689762
-                juris_ave_income: 1.1992453996703293e-06
-                residential_units_1500: 0.005855947793136179
+                Intercept: 0.2664858876365904
+                industrial_1500: 0.012793207641040093
+                jobs_45: 0.020896037509197288
+                juris_ave_income: 1.1998933182351586e-06
+                office_1500: 0.007172994377851547
+                residential_units_1500: 0.006854028388482662
+                retail_1500: 0.008544473866584683
             T-Score:
-                Intercept: -0.30590961070031936
-                jobs_1500: 9.344115706039428
-                jobs_45: 2.8794827830828438
-                juris_ave_income: 7.37653653367323
-                residential_units_1500: 4.527847366090064
-        fit_rsquared: 0.21309167649846517
-        fit_rsquared_adj: 0.20932656490276413
+                Intercept: 1.7100693338585176
+                industrial_1500: 1.21355611282163
+                jobs_45: 3.7960800749415116
+                juris_ave_income: 6.7274181801036645
+                office_1500: 7.552133383601164
+                residential_units_1500: 1.847077170709241
+                retail_1500: 2.2195116523130367
+        fit_rsquared: 0.2301490025546512
+        fit_rsquared_adj: 0.22461050617015232
         fitted: true
         name: Industrial
     Office:
         fit_parameters:
             Coefficient:
-                Intercept: -0.9857347128015435
-                jobs_1500: 0.1262326697248101
-                jobs_45: 0.19481868003207958
-                juris_ave_income: 9.419875963105188e-06
-                residential_units_1500: 0.019635575678947435
+                Intercept: -0.454237314486615
+                industrial_1500: -0.012340120393349682
+                jobs_45: 0.19634861704195228
+                juris_ave_income: 7.6935579968846e-06
+                office_1500: 0.08702519678625566
+                residential_units_1500: 0.016899893226500422
+                retail_1500: 0.00039000961765043446
             Std. Error:
-                Intercept: 0.17215579737678674
-                jobs_1500: 0.007283685162986539
-                jobs_45: 0.013757694336907796
-                juris_ave_income: 5.726762053418259e-07
-                residential_units_1500: 0.004431098470696858
+                Intercept: 0.17864647464894876
+                industrial_1500: 0.003838464581005359
+                jobs_45: 0.014124819752295145
+                juris_ave_income: 5.785986463224363e-07
+                office_1500: 0.005254034539293106
+                residential_units_1500: 0.00516875222815677
+                retail_1500: 0.006059732155364368
             T-Score:
-                Intercept: -5.725829323331626
-                jobs_1500: 17.330879479289678
-                jobs_45: 14.160707111324541
-                juris_ave_income: 16.448869143222982
-                residential_units_1500: 4.431311064016919
-        fit_rsquared: 0.3253459694335473
-        fit_rsquared_adj: 0.32422013876092914
+                Intercept: -2.542660387669105
+                industrial_1500: -3.2148584760726373
+                jobs_45: 13.900964436027408
+                juris_ave_income: 13.296882123359136
+                office_1500: 16.563499180567682
+                residential_units_1500: 3.269627267958073
+                retail_1500: 0.06436086738671759
+        fit_rsquared: 0.3293883081511648
+        fit_rsquared_adj: 0.32770827886052056
         fitted: true
         name: Office
     Retail:
         fit_parameters:
             Coefficient:
-                Intercept: -0.6316084105326398
-                jobs_1500: 0.1129932213093123
-                jobs_45: 0.15033378582610077
-                juris_ave_income: 8.973729418088493e-06
-                residential_units_1500: 0.06357224573082615
+                Intercept: -0.14567422258953353
+                industrial_1500: -0.027148472755030933
+                jobs_45: 0.14878121818940587
+                juris_ave_income: 8.533758001402573e-06
+                office_1500: 0.06186204660018541
+                residential_units_1500: 0.08472238312871301
+                retail_1500: -0.001901049125710784
             Std. Error:
-                Intercept: 0.29180989027365906
-                jobs_1500: 0.014882171227406529
-                jobs_45: 0.023331555427749555
-                juris_ave_income: 1.0979547256150773e-06
-                residential_units_1500: 0.015682788966925786
+                Intercept: 0.3273193940999048
+                industrial_1500: 0.008580853065673258
+                jobs_45: 0.02475922597856776
+                juris_ave_income: 1.142298491185697e-06
+                office_1500: 0.012386529277919757
+                residential_units_1500: 0.015689544108123846
+                retail_1500: 0.01993512029046701
             T-Score:
-                Intercept: -2.164451691271732
-                jobs_1500: 7.592522595172646
-                jobs_45: 6.443367493934853
-                juris_ave_income: 8.173132469611973
-                residential_units_1500: 4.05363139585037
-        fit_rsquared: 0.24047079657538617
-        fit_rsquared_adj: 0.2375965138755769
+                Intercept: -0.445052218766697
+                industrial_1500: -3.1638430989612627
+                jobs_45: 6.009122349712984
+                juris_ave_income: 7.47069007553761
+                office_1500: 4.994300276709536
+                residential_units_1500: 5.399926380578823
+                retail_1500: -0.09536180860768957
+        fit_rsquared: 0.22693553144826983
+        fit_rsquared_adj: 0.2225389562716723
         fitted: true
         name: Retail
 

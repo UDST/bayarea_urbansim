@@ -31,34 +31,34 @@ models:
     1:
         fit_parameters:
             Coefficient:
-                I(ave_income_500 / 100000): -1.0758082040603754
-                I(income / 100000 * ave_income_500 / 100000): 1.1948398677963306
-                I(jobs_45 * income / 100000): -0.047892767516372066
-                I(juris_ave_income / 100000): 0.585238582944336
-                I(residential_price / 1000000): -0.5500508957669564
-                jobs_45: 0.0815189338362082
-                residential_units_1500: 0.36930463184853335
+                I(ave_income_500 / 100000): -1.1610042908787155
+                I(income / 100000 * ave_income_500 / 100000): 1.2578406507111424
+                I(jobs_45 * income / 100000): -0.060357068997886384
+                I(juris_ave_income / 100000): 0.6194278578977828
+                I(residential_price / 1000000): -0.5386272005981011
+                jobs_45: 0.09535560263456862
+                residential_units_1500: 0.3619583344287982
             Std. Error:
-                I(ave_income_500 / 100000): 0.06471868562333959
-                I(income / 100000 * ave_income_500 / 100000): 0.02801630381016706
-                I(jobs_45 * income / 100000): 0.002399209299557491
-                I(juris_ave_income / 100000): 0.08422764440749692
-                I(residential_price / 1000000): 0.04464455146359094
-                jobs_45: 0.008681421431297989
-                residential_units_1500: 0.01203620057756922
+                I(ave_income_500 / 100000): 0.06492872059572513
+                I(income / 100000 * ave_income_500 / 100000): 0.02886949689670348
+                I(jobs_45 * income / 100000): 0.0024323520071921623
+                I(juris_ave_income / 100000): 0.08347590085656206
+                I(residential_price / 1000000): 0.04497022335769101
+                jobs_45: 0.008422037928112048
+                residential_units_1500: 0.011601771846505857
             T-Score:
-                I(ave_income_500 / 100000): -16.622837650343214
-                I(income / 100000 * ave_income_500 / 100000): 42.64801937801394
-                I(jobs_45 * income / 100000): -19.961896415292063
-                I(juris_ave_income / 100000): 6.948295741394914
-                I(residential_price / 1000000): -12.320672461353778
-                jobs_45: 9.39004453145411
-                residential_units_1500: 30.682824656210286
+                I(ave_income_500 / 100000): -17.881213124583812
+                I(income / 100000 * ave_income_500 / 100000): 43.5698846852704
+                I(jobs_45 * income / 100000): -24.814282151357222
+                I(juris_ave_income / 100000): 7.420439330893299
+                I(residential_price / 1000000): -11.977418842550236
+                jobs_45: 11.32215307607197
+                residential_units_1500: 31.198539259140006
         fitted: true
         log_likelihoods:
-            convergence: -37812.04205481551
-            'null': -39081.109824224775
-            ratio: 0.0324726645460468
+            convergence: -37824.46070837711
+            'null': -39120.230054279025
+            ratio: 0.03312274350391198
         name: 1
 
 fitted: true

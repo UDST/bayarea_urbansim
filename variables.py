@@ -112,6 +112,11 @@ def tmnode_id(jobs, buildings):
     return misc.reindex(buildings.tmnode_id, jobs.building_id)
 
 
+@orca.column('jobs', 'naics', cache=True)
+def naics(jobs):
+    return jobs.sector_id
+
+
 @orca.column('jobs', 'empsix', cache=True)
 def empsix(jobs, settings):
     return jobs.naics.map(settings['naics_to_empsix'])
@@ -131,7 +136,7 @@ def preferred_general_type(jobs, buildings, settings):
     # pdf.  note that if a job is assigned a building, the building's type is
     # it's preferred type by definition
 
-    s = misc.reindex(buildings.general_type, jobs.building_id)
+    s = misc.reindex(buildings.general_type, jobs.building_id).fillna("Other")
 
     sector_pdfs = pd.DataFrame(settings['job_sector_to_type'])
     # normalize (to be safe)
@@ -219,7 +224,10 @@ def parcel_average_price(use, quantile=.5):
         # shifters
         cost_shifters = orca.get_table("parcels").cost_shifters
         price_shifters = orca.get_table("parcels").price_shifters
-        return s / cost_shifters * price_shifters
+        s = s / cost_shifters * price_shifters
+        # just to make sure
+        s = s.fillna(0).clip(150, 1250)
+        return s
 
     if 'nodes' not in orca.list_tables():
         return pd.Series(0, orca.get_table('parcels').index)
