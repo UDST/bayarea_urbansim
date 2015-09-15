@@ -38,7 +38,7 @@ if SLACK:
     host = socket.gethostname()
 
 print "Started", time.ctime()
-in_year, out_year = 2010, 2025
+in_year, out_year = 2010, 2040
 
 if SLACK:
     slack.chat.post_message(
@@ -72,7 +72,7 @@ try:
         "diagnostic_output",
         "geographic_summary",
         "travel_model_output"
-    ], iter_vars=range(in_year, out_year))
+    ], iter_vars=range(in_year, out_year+1))
 
 except Exception as e:
     print traceback.print_exc()
