@@ -9,9 +9,8 @@ fit_filters:
 predict_filters: null
 
 model_expression: np.log(price_sqft) ~ np.log1p(sqft_per_unit) + ave_lot_size_per_unit
-    + ave_income + poverty_rate + pct_black + pct_hisp + pct_asian + pct_renters +
-    sfdu + autoPeakTotal + transitPeakTotal + autoOffPeakRetail + sum_nonresidential_units
-    + sum_residential_units
+    + ave_income  + pct_black + pct_hisp + pct_asian + pct_renters + population +
+    autoPeakTotal + transitPeakTotal + autoOffPeakRetail + jobs
 
 ytransform: np.exp
 
@@ -19,54 +18,48 @@ fitted: true
 
 fit_parameters:
     Coefficient:
-        Intercept: 6.603075719216716
-        autoOffPeakRetail: 0.21028534078843017
-        autoPeakTotal: -0.506079594540697
-        ave_income: 0.04726555096695732
-        ave_lot_size_per_unit: -0.040587427883055596
-        np.log1p(sqft_per_unit): -0.32655397530521835
-        pct_asian: 0.005739994682386973
-        pct_black: -0.006770469104020062
-        pct_hisp: -0.00278966307565768
-        pct_renters: 0.0008873116209314274
-        poverty_rate: -0.524469428509844
-        sfdu: -0.07182575977118714
-        sum_nonresidential_units: 0.027929258580362826
-        sum_residential_units: 0.1466501609733026
-        transitPeakTotal: 0.016649919830253476
+        Intercept: 7.620251804263649
+        autoOffPeakRetail: 0.08140205189437923
+        autoPeakTotal: -0.48120914894831124
+        ave_income: 0.059493882004347416
+        ave_lot_size_per_unit: -0.06167076226192403
+        jobs: 0.0669453878824466
+        np.log1p(sqft_per_unit): -0.33704381972222475
+        pct_asian: 0.006476988932208119
+        pct_black: -0.006704023586900009
+        pct_hisp: -0.003734889591785621
+        pct_renters: -0.003257107385792336
+        population: 0.03478918414768923
+        transitPeakTotal: 0.019871584039771732
     Std. Error:
-        Intercept: 0.07859672232627403
-        autoOffPeakRetail: 0.014971209263655031
-        autoPeakTotal: 0.013852562267503797
-        ave_income: 0.0014351151815773543
-        ave_lot_size_per_unit: 0.0011601484489106803
-        np.log1p(sqft_per_unit): 0.0021994692600614462
-        pct_asian: 9.77446593906669e-05
-        pct_black: 9.464109257993702e-05
-        pct_hisp: 0.00010052498413886979
-        pct_renters: 0.00017200753106590472
-        poverty_rate: 0.013371416402512305
-        sfdu: 0.0008988477179283829
-        sum_nonresidential_units: 0.0006685379460849794
-        sum_residential_units: 0.0017708976047044267
-        transitPeakTotal: 0.0005434964457306681
+        Intercept: 0.08265322866974854
+        autoOffPeakRetail: 0.015757387349983224
+        autoPeakTotal: 0.014672946831235696
+        ave_income: 0.0015285898394168107
+        ave_lot_size_per_unit: 0.0012169584995340682
+        jobs: 0.000663444616437205
+        np.log1p(sqft_per_unit): 0.002316180776515508
+        pct_asian: 0.0001056805342225485
+        pct_black: 9.858162526150225e-05
+        pct_hisp: 0.00010218248181675959
+        pct_renters: 0.00015664817844610745
+        population: 0.0019387269062023677
+        transitPeakTotal: 0.000575052230342078
     T-Score:
-        Intercept: 84.01210029860724
-        autoOffPeakRetail: 14.04598233082821
-        autoPeakTotal: -36.533284223373606
-        ave_income: 32.93502261958314
-        ave_lot_size_per_unit: -34.98468486611787
-        np.log1p(sqft_per_unit): -148.4694427127822
-        pct_asian: 58.72438165082045
-        pct_black: -71.53836583513127
-        pct_hisp: -27.750942708967877
-        pct_renters: 5.158562624746086
-        poverty_rate: -39.22317671681389
-        sfdu: -79.90870793634254
-        sum_nonresidential_units: 41.77662426481424
-        sum_residential_units: 82.811202964939
-        transitPeakTotal: 30.634827441915625
+        Intercept: 92.19545233630656
+        autoOffPeakRetail: 5.165961214659478
+        autoPeakTotal: -32.79567182264408
+        ave_income: 38.920762437519265
+        ave_lot_size_per_unit: -50.67614243668593
+        jobs: 100.9057669982359
+        np.log1p(sqft_per_unit): -145.51706116362723
+        pct_asian: 61.288381818438594
+        pct_black: -68.00479875551454
+        pct_hisp: -36.55117320876266
+        pct_renters: -20.79250086468702
+        population: 17.944344835980665
+        transitPeakTotal: 34.55613767109613
 
-fit_rsquared_adj: 0.5619866944229996
+fit_rsquared_adj: 0.5065130570872128
 
-fit_rsquared: 0.5620705442073388
+fit_rsquared: 0.5065940307012442
