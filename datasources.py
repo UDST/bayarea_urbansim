@@ -50,6 +50,11 @@ def building_sqft_per_job(settings):
     return settings['building_sqft_per_job']
 
 
+@orca.table('locations', cache=True)
+def locations():
+    return pd.read_csv(os.path.join(misc.data_dir(), 'locations.csv'), 
+                       index_col="name")
+
 @orca.table('jobs', cache=True)
 def jobs(store):
     df = store['jobs']
@@ -239,6 +244,8 @@ def households(store, settings):
     # this is pretty nasty and unfortunate
     df["base_income_quartile"] = pd.Series(pd.qcut(df.income, 4, labels=False),
                                            index=df.index).add(1)
+    df["base_income_octile"] = pd.Series(pd.qcut(df.income, 8, labels=False),
+                                         index=df.index).add(1)
     return df
 
 

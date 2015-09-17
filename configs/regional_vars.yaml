@@ -7,7 +7,7 @@ model_type: networks
 node_col: tmnode_id
 
 variable_definitions:
-    
+
   - name: residential_units_45
     dataframe: buildings
     varname: residential_units
