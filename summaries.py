@@ -11,23 +11,23 @@ def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict,
     households_df = orca.merge_tables(
         'households',
         [parcels, taz_to_superdistrict, buildings, households],
-        columns=['pda', 'zone_id', 'DISTRICT', 'puma5', 'persons', 'income'])
+        columns=['pda', 'zone_id', 'juris', 'DISTRICT', 'puma5', 'persons', 'income'])
 
     jobs_df = orca.merge_tables(
         'jobs',
         [parcels, taz_to_superdistrict, buildings, jobs],
-        columns=['pda', 'DISTRICT', 'zone_id', 'empsix'])
+        columns=['pda', 'DISTRICT', 'juris', 'zone_id', 'empsix'])
 
     buildings_df = orca.merge_tables(
        'buildings',
        [parcels, taz_to_superdistrict, buildings],
-       columns=['pda', 'DISTRICT', 'building_type_id', 'zone_id',
+       columns=['pda', 'DISTRICT', 'juris', 'building_type_id', 'zone_id',
                 'residential_units', 'building_sqft', 'non_residential_sqft'])
 
     # because merge_tables returns multiple zone_id_'s, but not the one we need
     buildings_df = buildings_df.rename(columns={'zone_id_x': 'zone_id'})
 
-    geographies = ['DISTRICT', 'pda']
+    geographies = ['DISTRICT', 'pda', 'juris']
 
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
 
