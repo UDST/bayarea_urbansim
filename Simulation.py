@@ -12,7 +12,7 @@ warnings.filterwarnings("ignore")
 
 args = sys.argv[1:]
 
-SLACK = MAPS = True
+SLACK = MAPS = False
 LOGS = True
 INTERACT = False
 S3 = False
@@ -38,7 +38,7 @@ if SLACK:
     host = socket.gethostname()
 
 print "Started", time.ctime()
-in_year, out_year = 2010, 2040
+in_year, out_year = 2010, 2025
 
 if SLACK:
     slack.chat.post_message(
@@ -63,7 +63,7 @@ try:
 
         "price_vars",
 
-        "feasibility",
+        "alt_feasibility",
 
         "scheduled_development_events",  # scheduled buildings additions
         "residential_developer",

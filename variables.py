@@ -214,7 +214,7 @@ def parcel_average_price(use, quantile=.5):
     if use == "residential":
         buildings = orca.get_table('buildings')
         # get price per sqft
-        s = buildings.residential_price / buildings.sqft_per_unit
+        s = buildings.residential_price * 1.3 #/ buildings.sqft_per_unit
         # limit to res
         s = s[buildings.general_type == "Residential"]
         # group by zoneid and get 80th percentile
@@ -270,7 +270,7 @@ def juris_ave_income(households, buildings, parcels_geography, parcels):
 
 @orca.column('parcels', 'oldest_building_age')
 def oldest_building_age(parcels, year):
-    return year - parcels.oldest_building
+    return year - parcels.oldest_building.replace(9999, 0)
 
 
 @orca.column('parcels', 'is_sanfran', cache=True)
@@ -355,6 +355,7 @@ def max_height(parcels, zoning_baseline):
     return zoning_baseline.max_height.reindex(parcels.index)
 
 
+# these next two are just indicators put into the output
 @orca.column('parcels', 'residential_purchase_price_sqft')
 def residential_purchase_price_sqft(parcels):
     return parcels.building_purchase_price_sqft
@@ -365,15 +366,39 @@ def residential_sales_price_sqft(parcel_sales_price_sqft_func):
     return parcel_sales_price_sqft_func("residential")
 
 
+@orca.column('parcels', 'general_type')
+def general_type(parcels, buildings):
+    s = buildings.general_type.groupby(buildings.parcel_id).first()
+    return s.reindex(parcels.index).fillna("Vacant")
+
+
 # for debugging reasons this is split out into its own function
 @orca.column('parcels', 'building_purchase_price_sqft')
-def building_purchase_price_sqft():
-    return parcel_average_price("residential")
+def building_purchase_price_sqft(parcels):
+    price = pd.Series(0, parcels.index)
+    gentype = parcels.general_type
+    for form in ["Office", "Retail", "Industrial", "Residential"]:
+        # convert to yearly
+        factor = 1.0 if form == "Residential" else 20.0
+        # raise cost to convert from industrial
+        if form == "Industrial":
+            factor *= 6.0
+        tmp = parcel_average_price(form.lower())
+        print form, tmp.describe(), factor
+        price += tmp * (gentype == form) * factor
+
+    print "Building purchase price sqft = \n", price.describe()
+    return price.clip(150, 2500)
 
 
 @orca.column('parcels', 'building_purchase_price')
 def building_purchase_price(parcels):
-    return (parcels.total_sqft * parcels.building_purchase_price_sqft).\
+    # the .8 is because we assume the building only charges for 80% of the
+    # space - when a good portion of the building is parking, this probably
+    # overestimates the part of the building that you can charge for
+    # the second .85 is because the price is likely to be lower for existing buildings
+    # than for one that is newly built
+    return (parcels.total_sqft * parcels.building_purchase_price_sqft * .8 * .85).\
         reindex(parcels.index).fillna(0)
 
 

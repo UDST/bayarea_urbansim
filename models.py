@@ -11,6 +11,7 @@ from urbansim.utils import networks
 import pandana.network as pdna
 from urbansim_defaults import models
 from urbansim_defaults import utils
+from urbansim.developer import sqftproforma, developer
 import numpy as np
 import pandas as pd
 from cStringIO import StringIO
@@ -100,6 +101,22 @@ def add_extra_columns(df):
         df[col] = 0
     df["redfin_sale_year"] = 2012
     return df
+
+
+@orca.step('alt_feasibility')
+def alt_feasibility(parcels, settings,
+                parcel_sales_price_sqft_func,
+                parcel_is_allowed_func):
+    kwargs = settings['feasibility']
+    config = sqftproforma.SqFtProFormaConfig()
+    config.parking_rates["office"] = 1.5
+    config.parking_rates["retail"] = 1.5
+
+    utils.run_feasibility(parcels,
+                          parcel_sales_price_sqft_func,
+                          parcel_is_allowed_func,
+                          config=config,
+                          **kwargs)
 
 
 @orca.step('non_residential_developer')

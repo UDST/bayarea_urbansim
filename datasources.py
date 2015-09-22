@@ -263,6 +263,9 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
     # set the vacancy rate in each building to 5% for testing purposes
     df["residential_units"] = df.residential_units.fillna(0)
 
+    # keeps parking lots from getting redeveloped
+    df["building_sqft"][df.building_type_id.isin([15, 16])] = 0
+
     # BRUTE FORCE INCREASE THE CAPACITY FOR MORE JOBS
     print "WARNING: this has the hard-coded version which unrealistically" +\
         " increases non-residential square footage to house all the base" +\

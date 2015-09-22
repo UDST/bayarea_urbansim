@@ -22,7 +22,7 @@ flds = ['parcel_id', 'parcel_acres', 'total_residential_units',
         'total_job_spaces', 'x', 'y', 'pda']
 parcels = orca.get_table('parcels').to_frame(flds)
 flds = ['building_id', 'residential_units', 'job_spaces',
-        'building_type_id', 'parcel_id']
+        'building_type_id', 'parcel_id', 'building_sqft']
 buildings = orca.get_table('buildings').to_frame(flds)
 # households = orca.get_table('households').to_frame()
 # jobs = orca.get_table('jobs').to_frame()

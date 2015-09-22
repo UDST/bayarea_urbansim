@@ -12,9 +12,9 @@ fit_filters:
 
 predict_filters: null
 
-model_expression: np.log1p(redfin_sale_price) ~ I(year_built < 1940) + modern_condo
-    + sqft_per_unit + residential_units_1500 + jobs_45 + I(building_type_id == 1)
-    + ave_income_500 + juris_ave_income + embarcadero + pacheights + stanford
+model_expression: np.log1p(price_per_sqft) ~ I(year_built < 1940) + modern_condo +
+    sqft_per_unit + residential_units_1500 + jobs_45 + I(building_type_id == 1) +
+    ave_income_500 + juris_ave_income + embarcadero + pacheights + stanford
 
 ytransform: np.expm1
 
@@ -22,45 +22,45 @@ fitted: true
 
 fit_parameters:
     Coefficient:
-        I(building_type_id == 1)[T.True]: -0.051499733964785105
-        I(year_built < 1940)[T.True]: 0.16618577604541546
-        Intercept: 12.163292256775698
-        ave_income_500: 8.347950380058566e-06
-        embarcadero: -0.004458643285607914
-        jobs_45: 0.02193680541394677
-        juris_ave_income: 8.998348155597861e-07
-        modern_condo: 0.09054295629692743
-        pacheights: -0.006772360230582784
-        residential_units_1500: 0.05891714658542224
-        sqft_per_unit: 0.00038205931442248894
-        stanford: -0.008904812441464753
+        I(building_type_id == 1)[T.True]: -0.12053133157609378
+        I(year_built < 1940)[T.True]: 0.20428579086982615
+        Intercept: 5.744831894321711
+        ave_income_500: 8.209661285100448e-06
+        embarcadero: -0.004201553662585187
+        jobs_45: 0.030676852337774785
+        juris_ave_income: 9.18971346791816e-07
+        modern_condo: 0.12961544738434772
+        pacheights: -0.00663489564713114
+        residential_units_1500: 0.05005858993142655
+        sqft_per_unit: -0.00017464377648553347
+        stanford: -0.008898423150510572
     Std. Error:
-        I(building_type_id == 1)[T.True]: 0.003300388109299507
-        I(year_built < 1940)[T.True]: 0.003326970713060136
-        Intercept: 0.041748758202616656
-        ave_income_500: 4.9190766962157746e-08
-        embarcadero: 0.00012238230080349733
-        jobs_45: 0.002583573954737611
-        juris_ave_income: 8.016829113043958e-08
-        modern_condo: 0.009456283267214514
-        pacheights: 6.630393529228286e-05
-        residential_units_1500: 0.0014136790524615968
-        sqft_per_unit: 1.6253882881674385e-06
-        stanford: 6.69367265884698e-05
+        I(building_type_id == 1)[T.True]: 0.0033185436205246444
+        I(year_built < 1940)[T.True]: 0.0033452724558025934
+        Intercept: 0.04197841908584654
+        ave_income_500: 4.946136650747731e-08
+        embarcadero: 0.0001230555286671341
+        jobs_45: 0.002597786254740766
+        juris_ave_income: 8.060929875176072e-08
+        modern_condo: 0.009508302499898764
+        pacheights: 6.666867477188464e-05
+        residential_units_1500: 0.0014214557335838528
+        sqft_per_unit: 1.6343295866855977e-06
+        stanford: 6.730494706760879e-05
     T-Score:
-        I(building_type_id == 1)[T.True]: -15.604144803356384
-        I(year_built < 1940)[T.True]: 49.951078737497625
-        Intercept: 291.34500714355016
-        ave_income_500: 169.70563574421618
-        embarcadero: -36.43209235596018
-        jobs_45: 8.49087573967848
-        juris_ave_income: 11.224323268855638
-        modern_condo: 9.574898904609293
-        pacheights: -102.14115045703812
-        residential_units_1500: 41.67646573161821
-        sqft_per_unit: 235.05725813568264
-        stanford: -133.03328225492663
+        I(building_type_id == 1)[T.True]: -36.320550626674724
+        I(year_built < 1940)[T.True]: 61.067011302914686
+        Intercept: 136.8520306249132
+        ave_income_500: 165.98128731156982
+        embarcadero: -34.143558668951904
+        jobs_45: 11.808843888442253
+        juris_ave_income: 11.400314368467859
+        modern_condo: 13.631817812456823
+        pacheights: -99.52043699433476
+        residential_units_1500: 35.21642549164444
+        sqft_per_unit: -106.8595820012713
+        stanford: -132.2105363454484
 
-fit_rsquared_adj: 0.5945122655883444
+fit_rsquared_adj: 0.46319734727465
 
-fit_rsquared: 0.5945372830603199
+fit_rsquared: 0.46323046651397903
