@@ -86,7 +86,7 @@ build_networks:
       name: 2015_06_01_osm_bayarea4326.h5
       max_distance: 2000
   drive:
-      name: tmnet.h5
+      name: 2015_08_03_tmnet.h5
       max_distance: 45
       weight_col: "CTIMEA"
 
