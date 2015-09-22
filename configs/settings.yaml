@@ -1,5 +1,6 @@
 aggregation_tables:
   - nodes
+  - tmnodes
   - logsums
 
 
@@ -81,8 +82,13 @@ rates:
 
 
 build_networks:
-  name: 2015_06_01_osm_bayarea4326.h5
-  max_distance: 2000
+  walk:
+      name: 2015_06_01_osm_bayarea4326.h5
+      max_distance: 2000
+  drive:
+      name: tmnet.h5
+      max_distance: 45
+      weight_col: "CTIMEA"
 
 
 households_transition:
@@ -103,7 +109,7 @@ hide_rsh_simulate:
 
 
 feasibility:
-  parcel_filter: nodev != 1 and sdem != 1 and oldest_building > 1940 and (total_residential_units != 1 or parcel_acres > .5) 
+  parcel_filter: nodev != 1 and sdem != 1 and oldest_building > 1940 and oldest_building_age > 20  and (total_residential_units != 1 or parcel_acres > .5) 
   residential_to_yearly: True
   pass_through:
     - oldest_building
@@ -129,7 +135,7 @@ residential_developer:
   max_parcel_size: 150000000
 
 non_residential_developer:
-  target_vacancy: .08
+  target_vacancy: 0.0
   bldg_sqft_per_job: 400
 
 
@@ -314,3 +320,30 @@ cost_shifters:
   "Napa": .9
   "Marin": 1.0
   "Contra Costa": .75
+
+
+job_sector_to_type:
+  AGREMPN:
+    Industrial: 0.8
+    Retail: 0.1
+    Office: 0.1
+  MWTEMPN:
+    Industrial: 0.8
+    Retail: 0.1
+    Office: 0.1
+  RETEMPN:
+    Industrial: 0.0
+    Retail: 0.9
+    Office: 0.1
+  FPSEMPN:
+    Industrial: 0.1
+    Retail: 0.0
+    Office: 0.9
+  HEREMPN:
+    Industrial: 0.1
+    Retail: 0.2
+    Office: 0.7
+  OTHEMPN:
+    Industrial: 0.1
+    Retail: 0.3
+    Office: 0.6
