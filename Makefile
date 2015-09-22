@@ -4,9 +4,9 @@ get = aws s3 cp s3://bayarea_urbansim/
 database_get = aws s3 cp s3://landuse/spandex/outputs/
 
 #the data necessary for simulation.py to run:
-data: data/2015_06_01_bayarea_v3.h5 \
+data: data/2015_09_01_bayarea_v3.h5 \
 data/2015_06_01_osm_bayarea4326.h5 \
-data/2015_08_13_zoning_parcels.csv \
+data/2015_09_22_zoning_parcels.csv \
 data/2015_08_19_parcels_geography.csv \
 data/2015_08_29_costar.csv \
 data/2015_08_03_tmnet.h5
