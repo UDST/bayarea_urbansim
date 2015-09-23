@@ -67,6 +67,12 @@ def base_price_per_sqft(homesales):
     return misc.reindex(s, homesales.zone_id)
 
 
+@orca.column('homesales', cache=True)
+def transit_type(homesales, parcels_geography):
+    return misc.reindex(parcels_geography.tpp_id, homesales.parcel_id).\
+        reindex(homesales.index).fillna('none')
+
+
 #####################
 # COSTAR VARIABLES
 #####################
@@ -100,6 +106,12 @@ def tmnode_id(parcels, costar):
 @orca.column('costar', 'zone_id')
 def zone_id(parcels, costar):
     return misc.reindex(parcels.zone_id, costar.parcel_id)
+
+
+@orca.column('costar', cache=True)
+def transit_type(costar, parcels_geography):
+    return misc.reindex(parcels_geography.tpp_id, costar.parcel_id).\
+        reindex(costar.index).fillna('none')
 
 
 #####################
@@ -156,6 +168,12 @@ def preferred_general_type(jobs, buildings, settings):
 #####################
 # BUILDINGS VARIABLES
 #####################
+
+
+@orca.column('buildings', cache=True)
+def transit_type(buildings, parcels_geography):
+    return misc.reindex(parcels_geography.tpp_id, buildings.parcel_id).\
+        reindex(buildings.index).fillna('none')
 
 
 @orca.column('buildings', cache=True)
@@ -265,7 +283,7 @@ def juris_ave_income(households, buildings, parcels_geography, parcels):
                           columns=["jurisdiction", "income"])
     s = h.groupby(h.jurisdiction).income.quantile(.5)
     return misc.reindex(s, parcels_geography.jurisdiction).\
-        reindex(parcels.index).fillna(s.median())
+        reindex(parcels.index).fillna(s.median()).apply(np.log1p)
 
 
 @orca.column('parcels', 'oldest_building_age')
@@ -382,7 +400,7 @@ def building_purchase_price_sqft(parcels):
         factor = 1.0 if form == "Residential" else 20.0
         # raise cost to convert from industrial
         if form == "Industrial":
-            factor *= 6.0
+            factor *= 3.0
         tmp = parcel_average_price(form.lower())
         print form, tmp.describe(), factor
         price += tmp * (gentype == form) * factor
@@ -404,7 +422,9 @@ def building_purchase_price(parcels):
 
 @orca.column('parcels', 'land_cost')
 def land_cost(parcels):
-    return parcels.building_purchase_price + parcels.parcel_size * 12.21
+    s = pd.Series(20, parcels.index)
+    s[parcels.general_type == "Industrial"] = 150.0
+    return parcels.building_purchase_price + parcels.parcel_size * s
 
 
 @orca.column('parcels', 'county')
