@@ -221,6 +221,9 @@ def modern_condo(buildings):
 def pda(parcels, parcels_geography):
     return parcels_geography.pda_id.reindex(parcels.index)
 
+@orca.column('parcels', cache=True)
+def juris(parcels, parcels_geography):
+    return parcels_geography.juris_name.reindex(parcels.index)
 
 # these are actually functions that take parameters, but are parcel-related
 # so are defined here
