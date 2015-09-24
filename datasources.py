@@ -310,7 +310,7 @@ def employment_controls(employment_controls_unstacked):
 @orca.table('taz_to_superdistrict', cache=True)
 def taz_to_superdistrict():
     df = pd.read_csv(os.path.join(misc.data_dir(), "taz_to_superdistrict.csv"))
-    return df.set_index('ZONE')
+    return df.set_index('zone')
 
 # this specifies the relationships between tables
 orca.broadcast('parcels_geography', 'buildings', cast_index=True,
