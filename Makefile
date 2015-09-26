@@ -16,7 +16,7 @@ database_backup: 2015/06/23/full.dump \
 2015/06/23/db-schema.sql \
 2015/06/23/globals.sql
 
-data/2015_06_01_bayarea_v3.h5:
+data/2015_09_01_bayarea_v3.h5:
 	$(get)$@ \
 	$@.download
 	mv $@.download $@
@@ -26,12 +26,12 @@ data/2015_06_01_osm_bayarea4326.h5:
 	$@.download
 	mv $@.download $@
 
-data/2015_08_13_zoning_parcels.csv: 
+data/2015_09_25_zoning_parcels.csv: 
 	$(get)$@ \
 	$@.download
 	mv $@.download $@
 
-data/2015_08_19_parcels_geography.csv: 
+data/2015_09_25_parcels_geography.csv: 
 	$(get)$@ \
 	$@.download
 	mv $@.download $@
