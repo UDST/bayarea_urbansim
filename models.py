@@ -105,8 +105,8 @@ def add_extra_columns(df):
 
 @orca.step('alt_feasibility')
 def alt_feasibility(parcels, settings,
-                parcel_sales_price_sqft_func,
-                parcel_is_allowed_func):
+                    parcel_sales_price_sqft_func,
+                    parcel_is_allowed_func):
     kwargs = settings['feasibility']
     config = sqftproforma.SqFtProFormaConfig()
     config.parking_rates["office"] = 1.5
@@ -119,21 +119,88 @@ def alt_feasibility(parcels, settings,
                           **kwargs)
 
 
-@orca.step('non_residential_developer')
-def non_residential_developer(feasibility, jobs, buildings, parcels, year,
-                              settings, summary, form_to_btype_func,
-                              add_extra_columns_func):
+@orca.step('residential_developer')
+def residential_developer(feasibility, households, buildings, parcels, year,
+                          settings, summary, form_to_btype_func,
+                          add_extra_columns_func, parcels_geography):
 
-    kwargs = settings['non_residential_developer']
+    kwargs = settings['residential_developer']
 
-    for typ in ["Office", "Retail", "Industrial"]:
+    from urbansim.developer.developer import Developer as dev
+    num_units = dev.compute_units_to_build(
+        len(households),
+        buildings["residential_units"].sum(),
+        kwargs['target_vacancy'])
+
+    targets = []
+    typ = "Residential"
+    # now apply limits - limits are assumed to be yearly, apply to an
+    # entire jurisdiction and be in terms of residential_units or job_spaces
+    if typ in settings['development_limits']:
+
+        juris_name = parcels_geography.juris_name.\
+            reindex(parcels.index).fillna('Other')
+
+        juris_list = settings['development_limits'][typ].keys()
+        for juris, limit in settings['development_limits'][typ].items():
+
+            # the actual target is the limit times the number of years run
+            # so far in the simulation (plus this year), minus the amount
+            # built in previous years - in other words, you get rollover
+            # and development is lumpy
+
+            current_total = parcels.total_residential_units[
+                (juris_name == juris) & (parcels.newest_building >= 2010)]\
+                .sum()
+
+            target = (year - 2010 + 1) * limit - current_total
+
+            if target <= 0:
+                    continue
+
+            targets.append((juris_name == juris, target))
+            num_units -= target
+
+        # other cities not in the targets get the remaining target
+        targets.append((~juris_name.isin(juris_list), num_units))
+
+    else:
+        # otherwise use all parcels with total number of units
+        targets.append((parcels.index == parcels.index, num_units))
+
+    for parcel_mask, target in targets:
 
         # this was a fairly heinous bug - have to get the building wrapper
         # again because the buildings df gets modified by the run_developer
         # method below
         buildings = orca.get_table('buildings')
 
-        print "Running developer for type %s" % typ
+        new_buildings = utils.run_developer(
+            "residential",
+            households,
+            buildings,
+            "residential_units",
+            parcels.parcel_size[parcel_mask],
+            parcels.ave_sqft_per_unit[parcel_mask],
+            parcels.total_residential_units[parcel_mask],
+            feasibility,
+            year=year,
+            form_to_btype_callback=form_to_btype_func,
+            add_more_columns_callback=add_extra_columns_func,
+            num_units_to_build=target,
+            **kwargs)
+
+        summary.add_parcel_output(new_buildings)
+
+
+@orca.step('non_residential_developer')
+def non_residential_developer(feasibility, jobs, buildings, parcels, year,
+                              settings, summary, form_to_btype_func,
+                              add_extra_columns_func, parcels_geography):
+
+    kwargs = settings['non_residential_developer']
+
+    for typ in ["Office", "Retail", "Industrial"]:
 
         num_jobs_of_this_type = \
             (jobs.preferred_general_type == typ).value_counts()[True]
@@ -149,23 +216,66 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year,
         if num_units == 0:
             continue
 
-        new_buildings = utils.run_developer(
-            typ.lower(),
-            jobs,
-            buildings,
-            "job_spaces",
-            parcels.parcel_size,
-            parcels.ave_sqft_per_unit,
-            parcels.total_job_spaces,
-            feasibility,
-            year=year,
-            form_to_btype_callback=form_to_btype_func,
-            add_more_columns_callback=add_extra_columns_func,
-            residential=False,
-            num_units_to_build=num_units,
-            **kwargs)
+        targets = []
+        # now apply limits - limits are assumed to be yearly, apply to an
+        # entire jurisdiction and be in terms of residential_units or
+        # job_spaces
+        if year > 2015 and typ in settings['development_limits']:
 
-        summary.add_parcel_output(new_buildings)
+            juris_name = parcels_geography.juris_name.\
+                reindex(parcels.index).fillna('Other')
+
+            juris_list = settings['development_limits'][typ].keys()
+            for juris, limit in settings['development_limits'][typ].items():
+
+                # the actual target is the limit times the number of years run
+                # so far in the simulation (plus this year), minus the amount
+                # built in previous years - in other words, you get rollover
+                # and development is lumpy
+
+                current_total = parcels.total_job_spaces[
+                    (juris_name == juris) & (parcels.newest_building > 2015)]\
+                    .sum()
+
+                target = (year - 2015 + 1) * limit - current_total
+
+                if target <= 0:
+                    continue
+
+                targets.append((juris_name == juris, target))
+                num_units -= target
+
+            # other cities not in the targets get the remaining target
+            targets.append((~juris_name.isin(juris_list), num_units))
+
+        else:
+            # otherwise use all parcels with total number of units
+            targets.append((parcels.index == parcels.index, num_units))
+
+        for parcel_mask, target in targets:
+
+            # this was a fairly heinous bug - have to get the building wrapper
+            # again because the buildings df gets modified by the run_developer
+            # method below
+            buildings = orca.get_table('buildings')
+
+            new_buildings = utils.run_developer(
+                typ.lower(),
+                jobs,
+                buildings,
+                "job_spaces",
+                parcels.parcel_size[parcel_mask],
+                parcels.ave_sqft_per_unit[parcel_mask],
+                parcels.total_job_spaces[parcel_mask],
+                feasibility,
+                year=year,
+                form_to_btype_callback=form_to_btype_func,
+                add_more_columns_callback=add_extra_columns_func,
+                residential=False,
+                num_units_to_build=target,
+                **kwargs)
+
+            summary.add_parcel_output(new_buildings)
 
 
 def make_network(name, weight_col, max_distance):
@@ -203,8 +313,9 @@ def build_networks(settings):
 
 @orca.step('local_pois')
 def local_pois(settings):
-    # because of the aforementioned limit of one netowrk at a time for the POIS,
-    # as well as the large amount of memory used, this is now a preprocessing step
+    # because of the aforementioned limit of one netowrk at a time for the
+    # POIS, as well as the large amount of memory used, this is now a
+    # preprocessing step
     n = make_network(
         settings['build_networks']['walk']['name'],
         "weight", 3000)
@@ -226,7 +337,6 @@ def local_pois(settings):
     cols["pacheights"] = n.nearest_pois(3000, "tmp", num_pois=1)[1]
 
     df = pd.DataFrame(cols)
-    print df.describe()
     df.index.name = "node_id"
     df.to_csv('local_poi_distances.csv')
 
@@ -236,19 +346,20 @@ def neighborhood_vars(net):
     nodes = networks.from_yaml(net["walk"], "neighborhood_vars.yaml")
     nodes = nodes.fillna(0)
 
-    #nodes2 = pd.read_csv('data/local_poi_distances.csv', index_col="node_id")
-    #nodes = pd.concat([nodes, nodes2], axis=1)
+    # nodes2 = pd.read_csv('data/local_poi_distances.csv', index_col="node_id")
+    # nodes = pd.concat([nodes, nodes2], axis=1)
 
     print nodes.describe()
     orca.add_table("nodes", nodes)
 
 
-@orca.step('regional_vars') 
+@orca.step('regional_vars')
 def regional_vars(net):
     nodes = networks.from_yaml(net["drive"], "regional_vars.yaml")
     nodes = nodes.fillna(0)
 
-    nodes2 = pd.read_csv('data/regional_poi_distances.csv', index_col="tmnode_id")
+    nodes2 = pd.read_csv('data/regional_poi_distances.csv',
+                         index_col="tmnode_id")
     nodes = pd.concat([nodes, nodes2], axis=1)
 
     print nodes.describe()
@@ -257,8 +368,9 @@ def regional_vars(net):
 
 @orca.step('regional_pois')
 def regional_pois(settings, locations):
-    # because of the aforementioned limit of one netowrk at a time for the POIS,
-    # as well as the large amount of memory used, this is now a preprocessing step
+    # because of the aforementioned limit of one netowrk at a time for the
+    # POIS, as well as the large amount of memory used, this is now a
+    # preprocessing step
     n = make_network(
         settings['build_networks']['drive']['name'],
         "CTIMEV", 75)

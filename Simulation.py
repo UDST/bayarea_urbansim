@@ -12,7 +12,7 @@ warnings.filterwarnings("ignore")
 
 args = sys.argv[1:]
 
-SLACK = MAPS = True
+SLACK = MAPS = False
 LOGS = True
 INTERACT = False
 S3 = False

@@ -52,8 +52,9 @@ def building_sqft_per_job(settings):
 
 @orca.table('locations', cache=True)
 def locations():
-    return pd.read_csv(os.path.join(misc.data_dir(), 'locations.csv'), 
+    return pd.read_csv(os.path.join(misc.data_dir(), 'locations.csv'),
                        index_col="name")
+
 
 @orca.table('jobs', cache=True)
 def jobs(store):
@@ -175,6 +176,12 @@ def parcels(store):
     df["sdem"] = df.geom_id.isin(sdem.geom_id).astype('int')
 
     return df
+
+
+@orca.table(cache=True)
+def parcel_rejections():
+    url = "https://forecast-feedback.firebaseio.com/parcelResults.json"
+    return pd.read_json(url, orient="index").set_index("geomId")
 
 
 @orca.table(cache=True)

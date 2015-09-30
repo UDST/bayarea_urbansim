@@ -109,7 +109,7 @@ rsh_simulate:
 
 
 feasibility:
-  parcel_filter: nodev != 1 and sdem != 1 and oldest_building > 1940 and oldest_building_age > 20  and (total_residential_units != 1 or parcel_acres > .5) 
+  parcel_filter: nodev != 1 and manual_nodev != 1 and sdem != 1 and oldest_building > 1940 and oldest_building_age > 20  and (total_residential_units != 1 or parcel_acres > .5) 
   residential_to_yearly: True
   pass_through:
     - oldest_building
@@ -347,3 +347,10 @@ job_sector_to_type:
     Industrial: 0.1
     Retail: 0.3
     Office: 0.6
+
+
+development_limits:
+  Office:
+    'San Francisco': 2000
+  Residential:
+    'Half Moon Bay': 150

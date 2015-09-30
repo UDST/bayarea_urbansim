@@ -11,7 +11,8 @@ def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict,
     households_df = orca.merge_tables(
         'households',
         [parcels, taz_to_superdistrict, buildings, households],
-        columns=['pda', 'zone_id', 'juris', 'DISTRICT', 'puma5', 'persons', 'income'])
+        columns=['pda', 'zone_id', 'juris', 'DISTRICT', 'puma5',
+                 'persons', 'income'])
 
     jobs_df = orca.merge_tables(
         'jobs',
@@ -168,7 +169,8 @@ def travel_model_output(parcels, households, jobs, buildings,
         "y_col": "y"
     }
     # otherwise it loses precision
-    if summary.parcel_output is not None and "geom_id" in summary.parcel_output:
+    if summary.parcel_output is not None and \
+            "geom_id" in summary.parcel_output:
         summary.parcel_output["geom_id"] = \
             summary.parcel_output.geom_id.astype('str')
     summary.write_parcel_output(add_xy=add_xy_config)
