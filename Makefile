@@ -31,7 +31,7 @@ data/2015_09_25_zoning_parcels.csv:
 	$@.download
 	mv $@.download $@
 
-data/2015_09_25_parcels_geography.csv: 
+data/2015_09_30_parcels_geography.csv: 
 	$(get)$@ \
 	$@.download
 	mv $@.download $@
