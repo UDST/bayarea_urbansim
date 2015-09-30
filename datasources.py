@@ -175,7 +175,7 @@ def parcels(store):
 @orca.table(cache=True)
 def parcels_geography(parcels):
     df = pd.read_csv(os.path.join(misc.data_dir(), 
-                                    "2015_09_25_parcels_geography.csv"),
+                                    "2015_09_30_parcels_geography.csv"),
                      index_col="geom_id", dtype={'jurisdiction': 'str'})
     return geom_id_to_parcel_id(df, parcels)
 
