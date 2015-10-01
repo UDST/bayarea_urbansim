@@ -102,23 +102,14 @@ def travel_model_output(parcels, households, jobs, buildings,
     buildings = buildings.to_frame()
     zones = zones.to_frame()
 
-    # put this here as a custom bay area indicator
-    zones['residential_sales_price_sqft'] = parcels.\
-        residential_sales_price_sqft.groupby(parcels.zone_id).quantile()
-    zones['residential_purchase_price_sqft'] = parcels.\
-        residential_purchase_price_sqft.groupby(parcels.zone_id).quantile()
-    if 'residential_price_hedonic' in buildings.columns:
-        zones['residential_sales_price_hedonic'] = buildings.\
-            residential_price_hedonic.\
-            groupby(buildings.zone_id).quantile().\
-            reindex(zones.index).fillna(0)
-    else:
-        zones['residential_sales_price_hedonic'] = 0
-
     zones['tothh'] = households.\
         groupby('zone_id').size()
     zones['hhpop'] = households.\
         groupby('zone_id').persons.sum()
+
+    zones['resunits'] = buildings.groupby('zone_id').residential_units.sum()
+    zones['resvacancy'] = (zones.resunits - zones.tothh) / \
+        zones.resunits.replace(0, 1)
 
     zones['sfdu'] = \
         buildings.query("building_type_id == 1 or building_type_id == 2").\
