@@ -108,8 +108,8 @@ def zoning_lookup():
 # comes in the hdf5
 @orca.table('zoning_baseline', cache=True)
 def zoning_baseline(parcels, zoning_lookup):
-    df = pd.read_csv(os.path.join(misc.data_dir(),
-                     "2015_08_13_zoning_parcels.csv"),
+    df = pd.read_csv(os.path.join(misc.data_dir(), 
+                     "2015_09_25_zoning_parcels.csv"),
                      index_col="geom_id")
 
     df = pd.merge(df, zoning_lookup.to_frame(),
@@ -186,8 +186,8 @@ def parcel_rejections():
 
 @orca.table(cache=True)
 def parcels_geography(parcels):
-    df = pd.read_csv(os.path.join(misc.data_dir(),
-                                  "2015_08_19_parcels_geography.csv"),
+    df = pd.read_csv(os.path.join(misc.data_dir(), 
+                                    "2015_09_30_2_parcels_geography.csv"),
                      index_col="geom_id", dtype={'jurisdiction': 'str'})
     return geom_id_to_parcel_id(df, parcels)
 
@@ -327,7 +327,7 @@ def employment_controls(employment_controls_unstacked):
 @orca.table('taz_to_superdistrict', cache=True)
 def taz_to_superdistrict():
     df = pd.read_csv(os.path.join(misc.data_dir(), "taz_to_superdistrict.csv"))
-    return df.set_index('ZONE')
+    return df.set_index('zone')
 
 # this specifies the relationships between tables
 orca.broadcast('parcels_geography', 'buildings', cast_index=True,

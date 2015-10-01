@@ -11,24 +11,24 @@ def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict,
     households_df = orca.merge_tables(
         'households',
         [parcels, taz_to_superdistrict, buildings, households],
-        columns=['pda', 'zone_id', 'juris', 'DISTRICT', 'puma5',
+        columns=['pda', 'zone_id', 'juris', 'superdistrict', 'puma5',
                  'persons', 'income'])
 
     jobs_df = orca.merge_tables(
         'jobs',
         [parcels, taz_to_superdistrict, buildings, jobs],
-        columns=['pda', 'DISTRICT', 'juris', 'zone_id', 'empsix'])
+        columns=['pda', 'superdistrict', 'juris', 'zone_id', 'empsix'])
 
     buildings_df = orca.merge_tables(
        'buildings',
        [parcels, taz_to_superdistrict, buildings],
-       columns=['pda', 'DISTRICT', 'juris', 'building_type_id', 'zone_id',
+       columns=['pda', 'superdistrict', 'juris', 'building_type_id', 'zone_id',
                 'residential_units', 'building_sqft', 'non_residential_sqft'])
 
     # because merge_tables returns multiple zone_id_'s, but not the one we need
     buildings_df = buildings_df.rename(columns={'zone_id_x': 'zone_id'})
 
-    geographies = ['DISTRICT', 'pda', 'juris']
+    geographies = ['superdistrict', 'pda', 'juris']
 
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
 
@@ -88,7 +88,15 @@ def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict,
             summary_table['sq_ft_per_employee'] = \
                 summary_table['non_residential_sqft'] / summary_table['totemp']
 
-            summary_csv = "runs/run{}_{}_summaries_{}.csv".\
+            #fill in 0 values where there are NA's so that summary table outputs are the same over the years
+            #otherwise a PDA or summary geography would be dropped if it had no employment or housing
+            if geography=='superdistrict':
+                all_summary_geographies = buildings_df[geography].unique()
+            else:
+                all_summary_geographies = parcels[geography].unique()
+            summary_table=summary_table.reindex(all_summary_geographies).fillna(0)
+
+            summary_csv="runs/run{}_{}_summaries_{}.csv".\
                 format(run_number, geography, year)
             summary_table.to_csv(summary_csv)
 

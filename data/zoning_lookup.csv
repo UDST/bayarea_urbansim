@@ -2186,7 +2186,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 12526,105,Unincorporated Napa,PD:AH:AC,,35,20,,0,1,1,0,0,0,0,0,0,0,0,0,0,0,
 12527,105,Unincorporated Napa,PL,1,35,,,0,0,0,1,0,1,1,1,0,0,0,0,0,0,
 12528,105,Unincorporated Napa,PL:AC,1,35,,,0,0,0,1,0,1,1,1,0,0,0,0,0,0,
-12529,105,Unincorporated Napa,RC,,35,20,,1,0,0,0,0,1,0,1,0,0,0,0,0,0,
+12529,105,Unincorporated Napa,RC,,30,6,,1,0,0,0,0,1,0,1,0,0,0,0,0,0,
 12530,105,Unincorporated Napa,RC:AH,,35,20,,1,1,1,0,0,1,0,1,0,0,0,0,0,0,
 12531,105,Unincorporated Napa,RC:UR,,35,0.25,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 12532,105,Unincorporated Napa,RS:AC,,35,0.25,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
