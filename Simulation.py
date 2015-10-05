@@ -63,7 +63,7 @@ try:
 
         "price_vars",
 
-        "feasibility",
+        "alt_feasibility",
 
         "scheduled_development_events",  # scheduled buildings additions
         "residential_developer",

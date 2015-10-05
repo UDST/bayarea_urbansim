@@ -11,7 +11,8 @@ def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict,
     households_df = orca.merge_tables(
         'households',
         [parcels, taz_to_superdistrict, buildings, households],
-        columns=['pda', 'zone_id', 'juris', 'superdistrict', 'puma5', 'persons', 'income'])
+        columns=['pda', 'zone_id', 'juris', 'superdistrict', 'puma5',
+                 'persons', 'income'])
 
     jobs_df = orca.merge_tables(
         'jobs',
@@ -109,23 +110,14 @@ def travel_model_output(parcels, households, jobs, buildings,
     buildings = buildings.to_frame()
     zones = zones.to_frame()
 
-    # put this here as a custom bay area indicator
-    zones['residential_sales_price_sqft'] = parcels.\
-        residential_sales_price_sqft.groupby(parcels.zone_id).quantile()
-    zones['residential_purchase_price_sqft'] = parcels.\
-        residential_purchase_price_sqft.groupby(parcels.zone_id).quantile()
-    if 'residential_price_hedonic' in buildings.columns:
-        zones['residential_sales_price_hedonic'] = buildings.\
-            residential_price_hedonic.\
-            groupby(buildings.zone_id).quantile().\
-            reindex(zones.index).fillna(0)
-    else:
-        zones['residential_sales_price_hedonic'] = 0
-
     zones['tothh'] = households.\
         groupby('zone_id').size()
     zones['hhpop'] = households.\
         groupby('zone_id').persons.sum()
+
+    zones['resunits'] = buildings.groupby('zone_id').residential_units.sum()
+    zones['resvacancy'] = (zones.resunits - zones.tothh) / \
+        zones.resunits.replace(0, 1)
 
     zones['sfdu'] = \
         buildings.query("building_type_id == 1 or building_type_id == 2").\
@@ -176,7 +168,8 @@ def travel_model_output(parcels, households, jobs, buildings,
         "y_col": "y"
     }
     # otherwise it loses precision
-    if summary.parcel_output is not None and "geom_id" in summary.parcel_output:
+    if summary.parcel_output is not None and \
+            "geom_id" in summary.parcel_output:
         summary.parcel_output["geom_id"] = \
             summary.parcel_output.geom_id.astype('str')
     summary.write_parcel_output(add_xy=add_xy_config)

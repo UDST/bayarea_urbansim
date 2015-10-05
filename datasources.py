@@ -50,6 +50,12 @@ def building_sqft_per_job(settings):
     return settings['building_sqft_per_job']
 
 
+@orca.table('locations', cache=True)
+def locations():
+    return pd.read_csv(os.path.join(misc.data_dir(), 'locations.csv'),
+                       index_col="name")
+
+
 @orca.table('jobs', cache=True)
 def jobs(store):
     df = store['jobs']
@@ -173,6 +179,12 @@ def parcels(store):
 
 
 @orca.table(cache=True)
+def parcel_rejections():
+    url = "https://forecast-feedback.firebaseio.com/parcelResults.json"
+    return pd.read_json(url, orient="index").set_index("geomId")
+
+
+@orca.table(cache=True)
 def parcels_geography(parcels):
     df = pd.read_csv(os.path.join(misc.data_dir(), 
                                     "2015_09_30_2_parcels_geography.csv"),
@@ -239,6 +251,8 @@ def households(store, settings):
     # this is pretty nasty and unfortunate
     df["base_income_quartile"] = pd.Series(pd.qcut(df.income, 4, labels=False),
                                            index=df.index).add(1)
+    df["base_income_octile"] = pd.Series(pd.qcut(df.income, 8, labels=False),
+                                         index=df.index).add(1)
     return df
 
 
@@ -255,6 +269,9 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
 
     # set the vacancy rate in each building to 5% for testing purposes
     df["residential_units"] = df.residential_units.fillna(0)
+
+    # keeps parking lots from getting redeveloped
+    df["building_sqft"][df.building_type_id.isin([15, 16])] = 0
 
     # BRUTE FORCE INCREASE THE CAPACITY FOR MORE JOBS
     print "WARNING: this has the hard-coded version which unrealistically" +\

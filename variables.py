@@ -67,6 +67,12 @@ def base_price_per_sqft(homesales):
     return misc.reindex(s, homesales.zone_id)
 
 
+@orca.column('homesales', cache=True)
+def transit_type(homesales, parcels_geography):
+    return misc.reindex(parcels_geography.tpp_id, homesales.parcel_id).\
+        reindex(homesales.index).fillna('none')
+
+
 #####################
 # COSTAR VARIABLES
 #####################
@@ -100,6 +106,12 @@ def tmnode_id(parcels, costar):
 @orca.column('costar', 'zone_id')
 def zone_id(parcels, costar):
     return misc.reindex(parcels.zone_id, costar.parcel_id)
+
+
+@orca.column('costar', cache=True)
+def transit_type(costar, parcels_geography):
+    return misc.reindex(parcels_geography.tpp_id, costar.parcel_id).\
+        reindex(costar.index).fillna('none')
 
 
 #####################
@@ -159,6 +171,12 @@ def preferred_general_type(jobs, buildings, settings):
 
 
 @orca.column('buildings', cache=True)
+def transit_type(buildings, parcels_geography):
+    return misc.reindex(parcels_geography.tpp_id, buildings.parcel_id).\
+        reindex(buildings.index).fillna('none')
+
+
+@orca.column('buildings', cache=True)
 def base_price_per_sqft(homesales, buildings):
     s = homesales.price_per_sqft.groupby(homesales.zone_id).quantile()
     return misc.reindex(s, buildings.zone_id).reindex(buildings.index)\
@@ -203,9 +221,11 @@ def modern_condo(buildings):
 def pda(parcels, parcels_geography):
     return parcels_geography.pda_id.reindex(parcels.index)
 
+
 @orca.column('parcels', cache=True)
 def juris(parcels, parcels_geography):
     return parcels_geography.juris_name.reindex(parcels.index)
+
 
 # these are actually functions that take parameters, but are parcel-related
 # so are defined here
@@ -217,7 +237,7 @@ def parcel_average_price(use, quantile=.5):
     if use == "residential":
         buildings = orca.get_table('buildings')
         # get price per sqft
-        s = buildings.residential_price / buildings.sqft_per_unit
+        s = buildings.residential_price * 1.3  # / buildings.sqft_per_unit
         # limit to res
         s = s[buildings.general_type == "Residential"]
         # group by zoneid and get 80th percentile
@@ -268,12 +288,33 @@ def juris_ave_income(households, buildings, parcels_geography, parcels):
                           columns=["jurisdiction", "income"])
     s = h.groupby(h.jurisdiction).income.quantile(.5)
     return misc.reindex(s, parcels_geography.jurisdiction).\
-        reindex(parcels.index).fillna(s.median())
+        reindex(parcels.index).fillna(s.median()).apply(np.log1p)
+
+
+# returns the newest building on the land and fills missing values with 1800 -
+# for use with development limits
+@orca.column('parcels', 'newest_building')
+def newest_building(parcels, buildings):
+    return buildings.year_built.groupby(buildings.parcel_id).max().\
+        reindex(parcels.index).fillna(1800)
+
+
+@orca.column('parcels', cache=True)
+def manual_nodev(parcel_rejections, parcels):
+    df1 = parcels.to_frame(['x', 'y']).dropna(subset=['x', 'y'])
+    df2 = parcel_rejections.to_frame(['lng', 'lat'])
+    df2 = df2[parcel_rejections.state == "denied"]
+    df2 = df2[["lng", "lat"]]  # need to change the order
+    ind = datasources.nearest_neighbor(df1, df2)
+
+    s = pd.Series(False, parcels.index)
+    s.loc[ind.flatten()] = True
+    return s.astype('int')
 
 
 @orca.column('parcels', 'oldest_building_age')
 def oldest_building_age(parcels, year):
-    return year - parcels.oldest_building
+    return year - parcels.oldest_building.replace(9999, 0)
 
 
 @orca.column('parcels', 'is_sanfran', cache=True)
@@ -358,6 +399,7 @@ def max_height(parcels, zoning_baseline):
     return zoning_baseline.max_height.reindex(parcels.index)
 
 
+# these next two are just indicators put into the output
 @orca.column('parcels', 'residential_purchase_price_sqft')
 def residential_purchase_price_sqft(parcels):
     return parcels.building_purchase_price_sqft
@@ -368,21 +410,45 @@ def residential_sales_price_sqft(parcel_sales_price_sqft_func):
     return parcel_sales_price_sqft_func("residential")
 
 
+@orca.column('parcels', 'general_type')
+def general_type(parcels, buildings):
+    s = buildings.general_type.groupby(buildings.parcel_id).first()
+    return s.reindex(parcels.index).fillna("Vacant")
+
+
 # for debugging reasons this is split out into its own function
 @orca.column('parcels', 'building_purchase_price_sqft')
-def building_purchase_price_sqft():
-    return parcel_average_price("residential")
+def building_purchase_price_sqft(parcels):
+    price = pd.Series(0, parcels.index)
+    gentype = parcels.general_type
+    for form in ["Office", "Retail", "Industrial", "Residential"]:
+        # convert to yearly
+        factor = 1.0 if form == "Residential" else 20.0
+        # raise cost to convert from industrial
+        if form == "Industrial":
+            factor *= 3.0
+        tmp = parcel_average_price(form.lower())
+        price += tmp * (gentype == form) * factor
+
+    return price.clip(150, 2500)
 
 
 @orca.column('parcels', 'building_purchase_price')
 def building_purchase_price(parcels):
-    return (parcels.total_sqft * parcels.building_purchase_price_sqft).\
-        reindex(parcels.index).fillna(0)
+    # the .8 is because we assume the building only charges for 80% of the
+    # space - when a good portion of the building is parking, this probably
+    # overestimates the part of the building that you can charge for
+    # the second .85 is because the price is likely to be lower for existing
+    # buildings than for one that is newly built
+    return (parcels.total_sqft * parcels.building_purchase_price_sqft *
+            .8 * .85).reindex(parcels.index).fillna(0)
 
 
 @orca.column('parcels', 'land_cost')
 def land_cost(parcels):
-    return parcels.building_purchase_price + parcels.parcel_size * 12.21
+    s = pd.Series(20, parcels.index)
+    s[parcels.general_type == "Industrial"] = 150.0
+    return parcels.building_purchase_price + parcels.parcel_size * s
 
 
 @orca.column('parcels', 'county')

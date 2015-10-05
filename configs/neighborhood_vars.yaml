@@ -126,6 +126,7 @@ variable_definitions:
     radius: 1500
     aggregation: average
     decay: flat
+    apply: np.log1p
   
   - name: ave_income_500
     filters:
@@ -135,3 +136,4 @@ variable_definitions:
     radius: 500
     aggregation: average
     decay: flat
+    apply: np.log1p
