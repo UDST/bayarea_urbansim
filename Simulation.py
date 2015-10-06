@@ -38,7 +38,7 @@ if SLACK:
     host = socket.gethostname()
 
 print "Started", time.ctime()
-in_year, out_year = 2010, 2040
+in_year, out_year = 2010, 2012
 
 if SLACK:
     slack.chat.post_message(
@@ -68,6 +68,8 @@ try:
         "scheduled_development_events",  # scheduled buildings additions
         "residential_developer",
         "non_residential_developer",
+
+        "calculate_vmt_fees",
 
         "diagnostic_output",
         "geographic_summary",

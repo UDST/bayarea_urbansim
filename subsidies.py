@@ -1,11 +1,13 @@
 import orca
+import pandas as pd
 from urbansim import accounts
 
 
 @orca.injectable("coffer", cache=True)
 def coffer():
     return {
-        "prop_tax_acct": accounts.Account("prop_tax_act")
+        "prop_tax_acct": accounts.Account("prop_tax_act"),
+        "vmt_fee_acct":  accounts.Account("vmt_fee_acct")
     }
 
 
@@ -55,6 +57,30 @@ def tax_buildings(buildings, acct_settings, account, year):
     print "Sample rows from property tax accts:"
     print account.to_frame().\
         sort(columns=["amount"], ascending=False).head(7)
+
+
+@orca.step("calculate_vmt_fees")
+def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer):
+
+    if not 'enable_vmt_fees' in settings:
+        return
+
+    vmt_settings = settings["enable_vmt_fees"]
+
+    # get dataframe of new buildings
+    df = buildings.to_frame(["year_built", "residential_units", "zone_id"]).\
+        query("year_built == %d" % year)
+
+    df = pd.merge(df, vmt_fee_categories.to_frame(), 
+        left_on="zone_id", right_index=True)
+
+    df["res_fees"] = df.res_cat.map(vmt_settings["fee_amounts"])
+
+    total_vmt_fees = (df.res_fees * df.residential_units).sum()
+
+    print "Adding total vmt fees amount of $%f" % total_vmt_fees
+
+    coffer["vmt_fee_acct"].add_transaction(total_vmt_fees)
 
 
 @orca.step("calc_prop_taxes")

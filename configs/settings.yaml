@@ -49,6 +49,13 @@ enable_supply_correction:
     iterations: 8
 
 
+enable_vmt_fees:
+  fee_amounts:
+    VH: 25000
+    H: 15000
+    MH: 5000
+
+
 table_reprocess:
   jobs:
     fill_nas:

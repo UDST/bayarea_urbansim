@@ -324,6 +324,14 @@ def employment_controls(employment_controls_unstacked):
     return df
 
 
+# this is the set of categories by zone of sending and receiving zones
+# in terms of vmt fees
+@orca.table("vmt_fee_categories", cache=True)
+def vmt_fee_categories():
+    return pd.read_csv(os.path.join(misc.data_dir(), "vmt_fee_zonecats.csv"),
+        index_col="taz")
+
+
 @orca.table('taz_to_superdistrict', cache=True)
 def taz_to_superdistrict():
     df = pd.read_csv(os.path.join(misc.data_dir(), "taz_to_superdistrict.csv"))
