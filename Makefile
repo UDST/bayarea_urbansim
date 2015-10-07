@@ -7,8 +7,8 @@ database_get = aws s3 cp s3://landuse/spandex/outputs/
 data: data/2015_09_01_bayarea_v3.h5 \
 data/2015_06_01_osm_bayarea4326.h5 \
 data/2015_08_03_tmnet.h5 \
-data/2015_09_25_zoning_parcels.csv \
-data/2015_09_30_2_parcels_geography.csv \
+data/2015_10_06_zoning_parcels.csv \
+data/2015_10_07_parcels_geography.csv  \
 data/2015_08_29_costar.csv
 
 #the database that the h5 file above was exported from:
@@ -26,12 +26,12 @@ data/2015_06_01_osm_bayarea4326.h5:
 	$@.download
 	mv $@.download $@
 
-data/2015_09_25_zoning_parcels.csv: 
+data/2015_10_06_zoning_parcels.csv: 
 	$(get)$@ \
 	$@.download
 	mv $@.download $@
 
-data/2015_09_30_2_parcels_geography.csv: 
+data/2015_10_07_parcels_geography.csv: 
 	$(get)$@ \
 	$@.download
 	mv $@.download $@
