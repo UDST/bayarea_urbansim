@@ -273,12 +273,6 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
     # keeps parking lots from getting redeveloped
     df["building_sqft"][df.building_type_id.isin([15, 16])] = 0
 
-    # BRUTE FORCE INCREASE THE CAPACITY FOR MORE JOBS
-    print "WARNING: this has the hard-coded version which unrealistically" +\
-        " increases non-residential square footage to house all the base" +\
-        " year jobs"
-    df["non_residential_sqft"] = (df.non_residential_sqft * 1.33).astype('int')
-
     # we should only be using the "buildings" table during simulation, and in
     # simulation we want to normalize the prices to 2012 style prices
     df["redfin_sale_year"] = 2012
