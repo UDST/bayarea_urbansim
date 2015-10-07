@@ -68,19 +68,21 @@ def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer):
     vmt_settings = settings["enable_vmt_fees"]
 
     # get dataframe of new buildings
-    df = buildings.to_frame(["year_built", "residential_units", "zone_id"]).\
-        query("year_built == %d" % year)
+    df = buildings.to_frame(["year_built", "residential_units", "zone_id", 
+        "vmt_res_cat"]).query("year_built == %d" % year)
 
-    df = pd.merge(df, vmt_fee_categories.to_frame(), 
-        left_on="zone_id", right_index=True)
-
-    df["res_fees"] = df.res_cat.map(vmt_settings["fee_amounts"])
+    df["res_fees"] = df.vmt_res_cat.map(vmt_settings["fee_amounts"])
 
     total_vmt_fees = (df.res_fees * df.residential_units).sum()
 
     print "Adding total vmt fees amount of $%f" % total_vmt_fees
 
-    coffer["vmt_fee_acct"].add_transaction(total_vmt_fees)
+    metadata = {
+        "description": "VMT development fees",
+        "year": year
+    }
+    coffer["vmt_fee_acct"].add_transaction(total_vmt_fees, subaccount="bayarea",
+                                           metadata=metadata)
 
 
 @orca.step("calc_prop_taxes")
@@ -181,6 +183,7 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
 
     new_buildings_list = []
     sending_bldgs = acct_settings["sending_buildings_subaccount_def"]
+    feasibility["regional"] = "regional"
     feasibility["subaccount"] = feasibility.eval(sending_bldgs)
     # step 6
     for subacct, amount in account.iter_subaccounts():
@@ -283,9 +286,9 @@ def subsidized_residential_developer(
                              parcels,
                              buildings,
                              households,
-                             acct_settings,
+                             acct_settings["vmt_settings"],
                              settings,
-                             coffer["prop_tax_acct"],
+                             coffer["vmt_fee_acct"],
                              year,
                              form_to_btype_func,
                              add_extra_columns_func,
