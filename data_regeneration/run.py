@@ -54,7 +54,7 @@ print("PROCESSING: Aggregating condos and stacked parcels.")
 check_run('geom_aggregation.py')
 
 
-print("PROCESSING: Imputing attributed based on POINT data sources.")
+print("PROCESSING: Imputing attributes based on POINT data sources.")
         
 # Applying information based on Redfin, Costar, employment points etc.
 check_run('point_based_imputation.py')
