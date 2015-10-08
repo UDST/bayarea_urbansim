@@ -427,6 +427,8 @@ def building_purchase_price_sqft(parcels):
         # raise cost to convert from industrial
         if form == "Industrial":
             factor *= 3.0
+        if form == "Retail":
+            factor *= 2.0
         tmp = parcel_average_price(form.lower())
         price += tmp * (gentype == form) * factor
 
