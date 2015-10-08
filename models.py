@@ -202,6 +202,8 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year,
 
     for typ in ["Office", "Retail", "Industrial"]:
 
+        print "\nRunning for type: ", typ
+
         num_jobs_of_this_type = \
             (jobs.preferred_general_type == typ).value_counts()[True]
 

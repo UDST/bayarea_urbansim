@@ -146,7 +146,7 @@ residential_developer:
   max_parcel_size: 150000000
 
 non_residential_developer:
-  target_vacancy: 0.0
+  target_vacancy: 0.05
   bldg_sqft_per_job: 400
 
 
@@ -335,29 +335,29 @@ cost_shifters:
 
 job_sector_to_type:
   AGREMPN:
-    Industrial: 0.8
-    Retail: 0.1
-    Office: 0.1
+    Industrial: 0.265
+    Retail: 0.214
+    Office: 0.279
   MWTEMPN:
-    Industrial: 0.8
-    Retail: 0.1
-    Office: 0.1
+    Industrial: 0.214
+    Retail: 0.191
+    Office: 0.237
+  FPSEMPN:  
+    Industrial: 0.196
+    Retail: 0.188
+    Office: 0.27
   RETEMPN:
-    Industrial: 0.0
-    Retail: 0.9
-    Office: 0.1
-  FPSEMPN:
-    Industrial: 0.1
-    Retail: 0.0
-    Office: 0.9
+    Industrial: 0.194
+    Retail: 0.183
+    Office: 0.252
   HEREMPN:
-    Industrial: 0.1
-    Retail: 0.2
-    Office: 0.7
+    Industrial: 0.204
+    Retail: 0.199
+    Office: 0.257
   OTHEMPN:
-    Industrial: 0.1
-    Retail: 0.3
-    Office: 0.6
+    Industrial: 0.194
+    Retail: 0.205
+    Office: 0.278
 
 
 development_limits:
