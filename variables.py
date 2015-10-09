@@ -235,19 +235,16 @@ def parcel_average_price(use, quantile=.5):
     # because I want to be able to determine the quantile of the distribution
     # I also want more spreading in the development and not keep it localized
     if use == "residential":
-        buildings = orca.get_table('buildings')
-        # get price per sqft
-        s = buildings.residential_price * 1.3  # / buildings.sqft_per_unit
-        # limit to res
-        s = s[buildings.general_type == "Residential"]
-        # group by zoneid and get 80th percentile
-        s = s.groupby(buildings.zone_id).quantile(.8).clip(150, 1250)
-        # broadcast back to parcel's index
-        s = misc.reindex(s, orca.get_table('parcels').zone_id)
-        # shifters
+
+        # get node price average and put it on parcels
+        s = misc.reindex(orca.get_table('nodes')[use],
+                         orca.get_table('parcels').node_id) * 1.3
+
+        # apply shifters
         cost_shifters = orca.get_table("parcels").cost_shifters
         price_shifters = orca.get_table("parcels").price_shifters
         s = s / cost_shifters * price_shifters
+
         # just to make sure
         s = s.fillna(0).clip(150, 1250)
         return s
