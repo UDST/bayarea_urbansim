@@ -11,7 +11,7 @@ parcels = orca.get_table("parcels")
 parcels_geography = orca.get_table("parcels_geography")
 
 df = parcels.to_frame(["geom_id", "total_residential_units", "zoned_du",
-                       "zoned_du_underbuild", "zoned_du_underbuild_nodev"])
+                       "zoned_du_underbuild", "zoned_du_underbuild_nodev", "effective_max_dua"])
 df.to_csv("output/parcel_zoning_capacity.csv")
 df["juris_name"] = parcels_geography.juris_name
 df["juris_id"] = parcels_geography.jurisdiction

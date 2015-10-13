@@ -352,6 +352,12 @@ def zoned_du(parcels):
     s3 = parcel_is_allowed('residential')
     return (s.fillna(s2)*s3).reindex(parcels.index).fillna(0).astype('int')
 
+@orca.column('parcels', 'effective_max_dua', cache=True)
+def effective_max_dua(parcels):
+    s = parcels.max_dua
+    s2 = parcels.max_far * parcels.parcel_size / GROSS_AVE_UNIT_SIZE / parcels.parcel_acres # not elegant, b/c GROSS_AVE_UNIT_SIZE is actually Area/DU already
+    s3 = parcel_is_allowed('residential')
+    return (s.fillna(s2)*s3).reindex(parcels.index).fillna(0).astype('float')
 
 @orca.column('parcels', 'total_non_residential_sqft', cache=True)
 def total_non_residential_sqft(parcels, buildings):
