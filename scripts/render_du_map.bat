@@ -1,5 +1,4 @@
-CALL qgis.bat --project ^
-"D:\temp\bayarea_urbansim\scripts\zoned_du_by_parcel.qgs" --snapshot zoned_du_by_parcel.png --width 15000 --height 10000
-ECHO "image rendered"
-gdal2tiles zoned_du_by_parcel.png -z 10-13 --s_srs epsg:26910
+REM this is more of a rough guide than an actual how to, since QGIS/batch files together just doesn't play well
+qgis --project effective_max_dua.qgs --snapshot effective_max_dua.png --width 1500 --height 1000
+gdal2tiles effective_max_dua.png -z 9-14 --s_srs epsg:26910
 

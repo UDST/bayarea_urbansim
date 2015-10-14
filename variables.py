@@ -359,6 +359,13 @@ def effective_max_dua(parcels):
     s3 = parcel_is_allowed('residential')
     return (s.fillna(s2)*s3).reindex(parcels.index).fillna(0).astype('float')
 
+@orca.column('parcels', 'effective_max_office_far', cache=True)
+def effective_max_office_far(parcels):
+    s = parcels.max_far
+    s2 = parcels.max_height / 12 # assuming 12ft floor to floor ratio for office building height
+    s3 = parcel_is_allowed('office')
+    return (s.fillna(s2)*s3).reindex(parcels.index).fillna(0).astype('float')
+
 @orca.column('parcels', 'total_non_residential_sqft', cache=True)
 def total_non_residential_sqft(parcels, buildings):
     return buildings.non_residential_sqft.groupby(buildings.parcel_id).sum().\

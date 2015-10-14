@@ -16,6 +16,8 @@ database_backup: 2015/06/23/full.dump \
 2015/06/23/db-schema.sql \
 2015/06/23/globals.sql
 
+cartography: data/simple_parcels.shp
+
 data/2015_09_01_bayarea_v3.h5:
 	$(get)$@ \
 	$@.download
@@ -49,6 +51,15 @@ data/2015_08_03_tmnet.h5:
 #####################
 ####EXTRAS/SOURCE####
 #####################
+simple_parcels.shp: simple_parcels.zip
+	unzip -o $<
+	touch $@
+
+data/simple_parcels.zip: 
+	$(get)$@ \
+	$@.download
+	mv $@.download $@
+
 parcels_06_12_2015.shp: parcels_06_12_2015.zip
 	unzip -o $<
 	touch $@
