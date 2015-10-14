@@ -12,9 +12,9 @@ data/2015_10_07_2_parcels_geography.csv  \
 data/2015_08_29_costar.csv
 
 #the database that the h5 file above was exported from:
-database_backup: 2015/06/23/full.dump \
-2015/06/23/db-schema.sql \
-2015/06/23/globals.sql
+database_backup: 2015/10/14/18/14/full.dump \
+2015/10/14/18/14/db-schema.sql \
+2015/10/14/18/14/globals.sql
 
 data/2015_09_01_bayarea_v3.h5:
 	$(get)$@ \
@@ -46,32 +46,21 @@ data/2015_08_03_tmnet.h5:
 	$@.download
 	mv $@.download $@
 
-#####################
-####EXTRAS/SOURCE####
-#####################
-parcels_06_12_2015.shp: parcels_06_12_2015.zip
-	unzip -o $<
-	touch $@
+#a parcels shapefile is available on the land use server in d:/badata/out/summaries/ or box/badata/out/regeneration
 
-#the database was updated on 6/23, with some changes to the zoning_parcels table--it is based on the 6/1/2015 parcel database
-data/parcels_06_12_2015.zip: 
-	$(get)$@ \
-	$@.download
-	mv $@.download $@
-
-2015/06/23/full.dump:
+2015/10/14/18/14/full.dump:
 	mkdir -p $(dir $@)
 	$(database_get)$@ \
 	$@.download
 	mv $@.download $@
 
-2015/06/23/db-schema.sql:
+2015/10/14/18/14/db-schema.sql:
 	mkdir -p $(dir $@)
 	$(database_get)$@ \
 	$@.download
 	mv $@.download $@
 
-2015/06/23/globals.sql:
+2015/10/14/18/14/globals.sql:
 	mkdir -p $(dir $@)
 	$(database_get)$@ \
 	$@.download
