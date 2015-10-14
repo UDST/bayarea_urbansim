@@ -61,19 +61,13 @@ For fetching data, alternatively, with [AWS CLI](https://aws.amazon.com/cli/) an
 
 ####Parcel geometries
 
-The parcel geometry for these data are here:
-
-https://mtcdrive.box.com/shared/static/4s4l4g2q88ddpe1altcklpgtqhqaawcp.zip
+The parcel geometry for these data are on box::badata/out/summaries
 
 #####Using Make to get source data:
 
 To get the full dump of the database that the h5 file came from type:
 
 `make database_backup`
-
-To get the shapefile for parcels associated with the h5 file type:
-
-`make parcel_shapefile`
 
 ######Other Directories
 Below is an explanation of the directories in this repository not described above.
