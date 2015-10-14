@@ -5,7 +5,12 @@ This is the full UrbanSim implementation for the Bay Area.
 
 ###Data
 
-See the Makefile in this repository
+We track the data for this project in the Makefile in this repository. 
+
+To fetch data with [AWS CLI](https://aws.amazon.com/cli/) and Make, you can:
+`make data`.
+
+Because the hdf5 file used here contains one table with  proprietary data, you will need to enter credentials to download it. You can request them from Tom Buckley(tbuckl@mtc.ca.gov). Or if you already have access to Box, you can download the hdf5 file from there. 
 
 ####Data Description  
 [The MTC Analytics Wiki](http://analytics.mtc.ca.gov/foswiki/UrbanSimTwo/InputFiles?validation_key=0301bd909f2a02c80cb5e315fec942d8) contains a draft table with descriptions for the data inputs. 
@@ -47,12 +52,7 @@ Browse results [here](http://bayarea-urbansim-results.s3-us-west-1.amazonaws.com
 
 Optional Tools
 --------------
-####Make
 
-Because the hdf5 file used here contains proprietary data, you will need to enter credentials to download it. You can request them from Tom Buckley(tbuckl@mtc.ca.gov). Or if you already have access to Box, you can download the hdf5 file at the link above. 
-
-For fetching data, alternatively, with [AWS CLI](https://aws.amazon.com/cli/) and Make, you can 
-`make data`.
 
 ####Parcel geometries
 
