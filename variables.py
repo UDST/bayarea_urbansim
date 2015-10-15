@@ -543,21 +543,21 @@ def office_high(parcels_zoning_calculations):
     return s3
 
 @orca.column('parcels_zoning_calculations','office_medium')
-def office_high(parcels_zoning_calculations):
+def office_medium(parcels_zoning_calculations):
     s = parcels_zoning_calculations.effective_max_office_far > 1
     s2 = parcels_zoning_calculations.effective_max_office_far <= 4
     s3 = pd.Series(index=parcels_zoning_calculations.index).fillna('OM')
     return (s&s2)*s3
 
 @orca.column('parcels_zoning_calculations','office_low')
-def office_high(parcels_zoning_calculations):
+def office_low(parcels_zoning_calculations):
     s = parcels_zoning_calculations.effective_max_office_far < 1
     s2 = parcels_zoning_calculations.office_allowed
     s3 = pd.Series(index=parcels_zoning_calculations.index).fillna('OL')
     return (s&s2)*s3
 
 @orca.column('parcels_zoning_calculations','non_res_categories')
-def office_high(parcels_zoning_calculations):
+def non_res_categories(parcels_zoning_calculations):
     pzc = parcels_zoning_calculations
     s = pzc.office_high+pzc.office_medium+pzc.office_low+pzc.cat_r+pzc.cat_ind
     return s
