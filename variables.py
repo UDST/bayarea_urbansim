@@ -342,56 +342,10 @@ def parcel_rules(parcels):
     s = (~s.reindex(parcels.index).fillna(False)).astype('int')
     return s
 
-GROSS_AVE_UNIT_SIZE = 1000
-
-
-@orca.column('parcels', 'zoned_du', cache=True)
-def zoned_du(parcels):
-    s = parcels.max_dua * parcels.parcel_acres
-    s2 = parcels.max_far * parcels.parcel_size / GROSS_AVE_UNIT_SIZE
-    s3 = parcel_is_allowed('residential')
-    return (s.fillna(s2)*s3).reindex(parcels.index).fillna(0).astype('int')
-
-@orca.column('parcels', 'effective_max_dua', cache=True)
-def effective_max_dua(parcels):
-    s = parcels.max_dua
-    s2 = parcels.max_far * parcels.parcel_size / GROSS_AVE_UNIT_SIZE / parcels.parcel_acres # not elegant, b/c GROSS_AVE_UNIT_SIZE is actually Area/DU already
-    s3 = parcel_is_allowed('residential')
-    return (s.fillna(s2)*s3).reindex(parcels.index).fillna(0).astype('float')
-
-@orca.column('parcels', 'effective_max_office_far', cache=True)
-def effective_max_office_far(parcels):
-    s = parcels.max_far
-    s2 = parcels.max_height / 12 # assuming 12ft floor to floor ratio for office building height
-    s3 = parcel_is_allowed('office')
-    return (s.fillna(s2)*s3).reindex(parcels.index).fillna(0).astype('float')
-
 @orca.column('parcels', 'total_non_residential_sqft', cache=True)
 def total_non_residential_sqft(parcels, buildings):
     return buildings.non_residential_sqft.groupby(buildings.parcel_id).sum().\
         reindex(parcels.index).fillna(0)
-
-
-# there are a number of variables here that try to get at zoned capacity
-@orca.column('parcels', 'zoned_du_underbuild')
-def zoned_du_underbuild(parcels):
-    # subtract from zoned du, the total res units, but also the equivalent
-    # of non-res sqft in res units
-    s = (parcels.zoned_du - parcels.total_residential_units -
-         parcels.total_non_residential_sqft / GROSS_AVE_UNIT_SIZE)\
-         .clip(lower=0)
-    ratio = (s / parcels.total_residential_units).replace(np.inf, 1)
-    # if the ratio of additional units to existing units is not at least .5
-    # we don't build it - I mean we're not turning a 10 story building into an
-    # 11 story building
-    s = s[ratio > .5].reindex(parcels.index).fillna(0)
-    return s.astype('int')
-
-
-@orca.column('parcels')
-def zoned_du_underbuild_nodev(parcels):
-    return (parcels.zoned_du_underbuild * parcels.parcel_rules).astype('int')
-
 
 @orca.column('parcels')
 def nodev(zoning_baseline, parcels):
@@ -494,4 +448,91 @@ def node_id(parcels, net):
     s = net["drive"].get_node_ids(parcels.x, parcels.y)
     fill_val = s.value_counts().index[0]
     s = s.reindex(parcels.index).fillna(fill_val).astype('int')
+    return s
+
+GROSS_AVE_UNIT_SIZE = 1000
+
+####################################
+#####Zoning Capacity Variables######
+####################################
+
+@orca.column('parcels_zoning_calculations', 'zoned_du', cache=True)
+def zoned_du(parcels):
+    s = parcels.max_dua * parcels.parcel_acres
+    s2 = parcels.max_far * parcels.parcel_size / GROSS_AVE_UNIT_SIZE
+    s3 = parcel_is_allowed('residential')
+    return (s.fillna(s2)*s3).reindex(parcels.index).fillna(0).astype('int')
+
+@orca.column('parcels_zoning_calculations', 'effective_max_dua', cache=True)
+def effective_max_dua(parcels):
+    s = parcels.max_dua
+    s2 = parcels.max_far * parcels.parcel_size / GROSS_AVE_UNIT_SIZE / parcels.parcel_acres # not elegant, b/c GROSS_AVE_UNIT_SIZE is actually Area/DU already
+    s3 = parcel_is_allowed('residential')
+    return (s.fillna(s2)*s3).reindex(parcels.index).fillna(0).astype('float')
+
+@orca.column('parcels_zoning_calculations', 'effective_max_office_far', cache=True)
+def effective_max_office_far(parcels):
+    s = parcels.max_far
+    s2 = parcels.max_height / 11 # assuming 12ft floor to floor ratio for office building height
+    s3 = parcel_is_allowed('office')
+    return (s.fillna(s2)*s3).reindex(parcels.index).fillna(0).astype('float')
+
+# there are a number of variables here that try to get at zoned capacity
+@orca.column('parcels_zoning_calculations', 'zoned_du_underbuild')
+def zoned_du_underbuild(parcels, parcels_zoning_calculations):
+    # subtract from zoned du, the total res units, but also the equivalent
+    # of non-res sqft in res units
+    s = (parcels_zoning_calculations.zoned_du - parcels.total_residential_units -
+         parcels.total_non_residential_sqft / GROSS_AVE_UNIT_SIZE)\
+         .clip(lower=0)
+    ratio = (s / parcels.total_residential_units).replace(np.inf, 1)
+    # if the ratio of additional units to existing units is not at least .5
+    # we don't build it - I mean we're not turning a 10 story building into an
+    # 11 story building
+    s = s[ratio > .5].reindex(parcels.index).fillna(0)
+    return s.astype('int')
+
+@orca.column('parcels_zoning_calculations')
+def zoned_du_underbuild_nodev(parcels, parcels_zoning_calculations):
+    return (parcels_zoning_calculations.zoned_du_underbuild * parcels.parcel_rules).astype('int')
+
+@orca.column('parcels_zoning_calculations','office_allowed')
+def office_allowed(parcels):
+    office_allowed = parcel_is_allowed('office')
+    return office_allowed
+
+@orca.column('parcels_zoning_calculations','retail_allowed')
+def retail_allowed(parcels):
+    retail_allowed = parcel_is_allowed('retail')
+    return retail_allowed
+
+@orca.column('parcels_zoning_calculations','industrial_allowed')
+def industrial_allowed(parcels):
+    industrial_allowed = parcel_is_allowed('industrial')
+    return industrial_allowed
+
+@orca.column('parcels_zoning_calculations','cat_r')
+def cat_r(parcels_zoning_calculations):
+    s = ~parcels_zoning_calculations.office_allowed&parcels_zoning_calculations.retail_allowed
+    return s
+
+@orca.column('parcels_zoning_calculations','cat_ind')
+def cat_ind(parcels_zoning_calculations):
+    s = ~parcels_zoning_calculations.office_allowed&~parcels_zoning_calculations.retail_allowed&parcels_zoning_calculations.industrial_allowed
+    return s
+
+@orca.column('parcels_zoning_calculations','office_high')
+def office_high(parcels_zoning_calculations):
+    s = parcels_zoning_calculations.effective_max_office_far > 4
+    return s
+
+@orca.column('parcels_zoning_calculations','office_medium')
+def office_high(parcels_zoning_calculations):
+    s = parcels_zoning_calculations.effective_max_office_far > 1
+    s2 = parcels_zoning_calculations.effective_max_office_far < 4
+    return s&s2
+
+@orca.column('parcels_zoning_calculations','office_low')
+def office_high(parcels_zoning_calculations):
+    s = parcels_zoning_calculations.effective_max_office_far < 1
     return s
