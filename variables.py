@@ -511,28 +511,53 @@ def industrial_allowed(parcels):
     industrial_allowed = parcel_is_allowed('industrial')
     return industrial_allowed
 
+###per: https://www.pivotaltracker.com/n/projects/1391722/stories/105696918
+#We want to build a map that shows one value per parcel representing its non-residential zoning situation. Follow these rules in order to classify every parcel:
+#1) If a parcel allows office development with an FAR > 4 it is tagged OH
+#2) If a parcel allows office development with an FAR >1 and <=4 it is tagged OM
+#3) If a parcel allows office development with an FAR <=1 it is tagged OL
+#4) If a parcel disallows office development and allows retail development it is tagged R
+#5) If a parcel disallows office and retail development and allows industrial development it is tagged I
+#6) remaining untagged parcels are left with no value
+
 @orca.column('parcels_zoning_calculations','cat_r')
 def cat_r(parcels_zoning_calculations):
-    s = ~parcels_zoning_calculations.office_allowed&parcels_zoning_calculations.retail_allowed
-    return s
+    s = ~parcels_zoning_calculations.office_allowed&\
+        parcels_zoning_calculations.retail_allowed
+    s2 = pd.Series(index=parcels_zoning_calculations.index).fillna('R')
+    return s*s2
 
 @orca.column('parcels_zoning_calculations','cat_ind')
 def cat_ind(parcels_zoning_calculations):
-    s = ~parcels_zoning_calculations.office_allowed&~parcels_zoning_calculations.retail_allowed&parcels_zoning_calculations.industrial_allowed
-    return s
+    s = ~parcels_zoning_calculations.office_allowed&\
+        ~parcels_zoning_calculations.retail_allowed&\
+        parcels_zoning_calculations.industrial_allowed
+    s2 = pd.Series(index=parcels_zoning_calculations.index).fillna('I')
+    return s*s2
 
 @orca.column('parcels_zoning_calculations','office_high')
 def office_high(parcels_zoning_calculations):
     s = parcels_zoning_calculations.effective_max_office_far > 4
-    return s
+    s2 = pd.Series(index=parcels_zoning_calculations.index).fillna('OH')
+    s3 = s*s2
+    return s3
 
 @orca.column('parcels_zoning_calculations','office_medium')
 def office_high(parcels_zoning_calculations):
     s = parcels_zoning_calculations.effective_max_office_far > 1
-    s2 = parcels_zoning_calculations.effective_max_office_far < 4
-    return s&s2
+    s2 = parcels_zoning_calculations.effective_max_office_far <= 4
+    s3 = pd.Series(index=parcels_zoning_calculations.index).fillna('OM')
+    return (s&s2)*s3
 
 @orca.column('parcels_zoning_calculations','office_low')
 def office_high(parcels_zoning_calculations):
     s = parcels_zoning_calculations.effective_max_office_far < 1
+    s2 = parcels_zoning_calculations.office_allowed
+    s3 = pd.Series(index=parcels_zoning_calculations.index).fillna('OL')
+    return (s&s2)*s3
+
+@orca.column('parcels_zoning_calculations','non_res_categories')
+def office_high(parcels_zoning_calculations):
+    pzc = parcels_zoning_calculations
+    s = pzc.office_high+pzc.office_medium+pzc.office_low+pzc.cat_r+pzc.cat_ind
     return s
