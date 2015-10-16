@@ -212,14 +212,19 @@ def modern_condo(buildings):
         .astype('int')
 
 
-@orca.column('buildings', 'vmt_res_cat', cache=True)
-def vmt_code(buildings, vmt_fee_categories):
+@orca.column('buildings', cache=True)
+def vmt_res_cat(buildings, vmt_fee_categories):
     return misc.reindex(vmt_fee_categories.res_cat, buildings.zone_id)
 
 
 #####################
 # PARCELS VARIABLES
 #####################
+
+
+@orca.column('parcels', cache=True)
+def vmt_res_cat(parcels, vmt_fee_categories):
+    return misc.reindex(vmt_fee_categories.res_cat, parcels.zone_id)
 
 
 @orca.column('parcels', cache=True)

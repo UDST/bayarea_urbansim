@@ -14,7 +14,6 @@ from urbansim_defaults import utils
 from urbansim.developer import sqftproforma, developer
 import numpy as np
 import pandas as pd
-from cStringIO import StringIO
 
 
 @orca.step('rsh_simulate')
@@ -190,6 +189,9 @@ def residential_developer(feasibility, households, buildings, parcels, year,
             num_units_to_build=target,
             **kwargs)
 
+        if new_buildings is not None:
+            new_buildings["subsidized"] = False
+
         summary.add_parcel_output(new_buildings)
 
 
@@ -276,6 +278,9 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year,
                 residential=False,
                 num_units_to_build=target,
                 **kwargs)
+
+            if new_buildings is not None:
+                 new_buildings["subsidized"] = False
 
             summary.add_parcel_output(new_buildings)
 

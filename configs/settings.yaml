@@ -36,10 +36,10 @@ acct_settings:
     receiving_buildings_filter: pda_id > 0 and residential_units > 1
   vmt_settings:
     sending_buildings_subaccount_def: regional
-    receiving_buildings_filter: vmt_rest_cat == 'S'
+    receiving_buildings_filter: vmt_res_cat == 'S'
 
 
-enable_supply_correction:
+dont_enable_supply_correction:
   price_col: residential_price
   submarket_col: zone_id
   submarket_table: zones
@@ -137,6 +137,7 @@ feasibility:
     - building_purchase_price_sqft
     - pda
     - geom_id
+    - vmt_res_cat
 
 
 residential_developer:
