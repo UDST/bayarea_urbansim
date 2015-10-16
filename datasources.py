@@ -177,6 +177,12 @@ def parcels(store):
 
     return df
 
+@orca.table('parcels_zoning_calculations', cache=True)
+def parcels_zoning_calculations(parcels):
+    return pd.DataFrame(data=parcels.to_frame(
+                            columns=['geom_id',
+                            'total_residential_units'])
+                        , index=parcels.index)
 
 @orca.table(cache=True)
 def parcel_rejections():
