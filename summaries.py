@@ -1,7 +1,10 @@
 import sys
+import os
 import orca
 import pandas as pd
 import numpy as np
+from utils import random_indexes, round_series_match_target,\
+    scale_by_target, simple_ipf
 
 
 @orca.step("geographic_summary")
@@ -88,15 +91,17 @@ def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict,
             summary_table['sq_ft_per_employee'] = \
                 summary_table['non_residential_sqft'] / summary_table['totemp']
 
-            #fill in 0 values where there are NA's so that summary table outputs are the same over the years
-            #otherwise a PDA or summary geography would be dropped if it had no employment or housing
-            if geography=='superdistrict':
+            # fill in 0 values where there are NA's so that summary table
+            # outputs are the same over the years otherwise a PDA or summary
+            # geography would be dropped if it had no employment or housing
+            if geography == 'superdistrict':
                 all_summary_geographies = buildings_df[geography].unique()
             else:
                 all_summary_geographies = parcels[geography].unique()
-            summary_table=summary_table.reindex(all_summary_geographies).fillna(0)
+            summary_table = \
+                summary_table.reindex(all_summary_geographies).fillna(0)
 
-            summary_csv="runs/run{}_{}_summaries_{}.csv".\
+            summary_csv = "runs/run{}_{}_summaries_{}.csv".\
                 format(run_number, geography, year)
             summary_table.to_csv(summary_csv)
 
@@ -155,6 +160,11 @@ def travel_model_output(parcels, households, jobs, buildings,
     zones['othempn'] = jobs.query("empsix == 'OTHEMPN'").\
         groupby('zone_id').size()
 
+    zones = zones.sort_index()
+    zones = add_population(zones, 2035)
+    zones = add_employment(zones, 2035)
+    zones = add_age_categories(zones, 2035)
+
     orca.add_table("travel_model_output", zones, year)
 
     summary.add_zone_output(zones, "travel_model_output", year)
@@ -184,11 +194,10 @@ def travel_model_output(parcels, households, jobs, buildings,
         # list of columns that we need to fill eventually for valid travel
         # model file:
         template_columns = \
-            ['age0519', 'age2044', 'age4564', 'age65p',
-             'areatype', 'ciacre', 'collfte', 'collpte', 'county', 'district',
-             'empres', 'gqpop', 'hhlds', 'hsenroll', 'oprkcst', 'prkcst',
+            ['areatype', 'ciacre', 'collfte', 'collpte', 'county', 'district',
+             'gqpop', 'hhlds', 'hsenroll', 'oprkcst', 'prkcst',
              'resacre', 'sd', 'sftaz', 'shpop62p', 'terminal', 'topology',
-             'totacre', 'totpop', 'zero', 'zone']
+             'totacre', 'zero', 'zone']
 
         # fill those columns with NaN until we have values for them
         for x in template_columns:
@@ -199,3 +208,107 @@ def travel_model_output(parcels, households, jobs, buildings,
             [x.upper() for x in travel_model_output.columns]
 
         travel_model_output.to_csv(travel_model_csv)
+
+
+def zone_forecast_inputs():
+    return pd.read_csv(os.path.join('data', 'zone_forecast_inputs.csv'),
+                       index_col="zone_id")
+
+
+def regional_controls():
+    return pd.read_csv(os.path.join('data', 'regional_controls.csv'),
+                       index_col="year")
+
+
+def add_population(df, year):
+    rc = regional_controls()
+    target = rc.totpop.loc[year]
+
+    zfi = zone_forecast_inputs()
+    s = df.TOTHH * zfi.meanhhsize
+
+    s = scale_by_target(s, target, .1)
+
+    df["TOTPOP"] = round_series_match_target(s, target, 0)
+    return df
+
+
+# add employemnt to the dataframe - this uses a regression with
+# estimated coefficients done by @mkreilly
+def add_employment(df, year):
+
+    hhs_by_inc = df[["HHINCQ1", "HHINCQ2", "HHINCQ3", "HHINCQ4"]]
+    hh_shares = hhs_by_inc.divide(hhs_by_inc.sum(axis=1), axis="index")
+
+    zfi = zone_forecast_inputs()
+
+    empshare = 0.46381 * hh_shares.HHINCQ1 + 0.49361 * hh_shares.HHINCQ2 +\
+        0.56938 * hh_shares.HHINCQ3 + 0.29818 * hh_shares.HHINCQ4 +\
+        zfi.zonal_emp_sh_resid10
+
+    # I really don't think more than 70% of people should be employed
+    # in a given zone - this also makes sure that the employed residents
+    # is less then the total population (after scaling) - if the
+    # assertion below is triggered you can fix it by reducing this
+    # .7 even a little bit more
+    empshare = empshare.fillna(0).clip(.3, .7)
+
+    empres = empshare*df.TOTPOP
+
+    rc = regional_controls()
+    target = rc.empres.loc[year]
+
+    empres = scale_by_target(empres, target)
+
+    df["EMPRES"] = round_series_match_target(empres, target, 0)
+
+    # make sure employed residents is less than total residentss
+    assert (df.EMPRES <= df.TOTPOP).all()
+
+    return df
+
+
+# add age categories necessary for the TM
+def add_age_categories(df, year):
+    zfi = zone_forecast_inputs()
+    rc = regional_controls()
+
+    seed_matrix = zfi[["sh_age0004", "sh_age0519", "sh_age2044",
+                       "sh_age4564", "sh_age65up"]].\
+        mul(df.TOTPOP, axis='index').as_matrix()
+
+    row_marginals = df.TOTPOP.values
+    agecols = ["age0004", "age0519", "age2044", "age4564", "age65up"]
+    col_marginals = rc[agecols].loc[year].values
+
+    target = df.TOTPOP.sum()
+    col_marginals = scale_by_target(pd.Series(col_marginals),
+                                    target).round().astype('int')
+
+    seed_matrix[seed_matrix == 0] = .1
+    seed_matrix[row_marginals == 0, :] = 0
+
+    mat = simple_ipf(seed_matrix, col_marginals, row_marginals)
+    agedf = pd.DataFrame(mat)
+    agedf.columns = [col.upper() for col in agecols]
+    agedf.index = zfi.index
+
+    print "Diff in row marginals before rounding"
+    print np.absolute(row_marginals - mat.sum(axis=1)).sum()
+    print "Diff in col marginals before rounding"
+    print np.absolute(col_marginals - mat.sum(axis=0)).sum()
+
+    for ind, row in agedf.iterrows():
+        target = df.TOTPOP.loc[ind]
+        row = row.round()
+        agedf.loc[ind] = round_series_match_target(row, target, 0)
+
+    print "Diff in row marginals after rounding"
+    print np.absolute(row_marginals - mat.sum(axis=1)).sum()
+    print "Diff in col marginals after rounding"
+    print np.absolute(col_marginals - mat.sum(axis=0)).sum()
+
+    for col in agedf.columns:
+        df[col] = agedf[col]
+
+    return df

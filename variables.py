@@ -3,6 +3,7 @@ import pandas as pd
 from urbansim.utils import misc
 import orca
 import datasources
+from utils import nearest_neighbor
 from urbansim_defaults import utils
 from urbansim_defaults import variables
 
@@ -305,7 +306,7 @@ def manual_nodev(parcel_rejections, parcels):
     df2 = parcel_rejections.to_frame(['lng', 'lat'])
     df2 = df2[parcel_rejections.state == "denied"]
     df2 = df2[["lng", "lat"]]  # need to change the order
-    ind = datasources.nearest_neighbor(df1, df2)
+    ind = nearest_neighbor(df1, df2)
 
     s = pd.Series(False, parcels.index)
     s.loc[ind.flatten()] = True

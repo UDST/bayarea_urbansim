@@ -13,7 +13,7 @@ warnings.filterwarnings("ignore")
 args = sys.argv[1:]
 
 SLACK = MAPS = False
-LOGS = True
+LOGS = False
 INTERACT = False
 S3 = False
 
@@ -38,7 +38,7 @@ if SLACK:
     host = socket.gethostname()
 
 print "Started", time.ctime()
-in_year, out_year = 2010, 2040
+in_year, out_year = 2010, 2010
 
 if SLACK:
     slack.chat.post_message(
