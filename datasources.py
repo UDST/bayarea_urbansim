@@ -330,6 +330,10 @@ def employment_controls(employment_controls_unstacked):
     df.columns = ['empsix_id', 'number_of_jobs']
     return df
 
+@orca.table(cache=True)
+def zone_forecast_inputs():
+    return pd.read_csv(os.path.join(misc.data_dir(), "zone_forecast_inputs.csv"),
+                       index_col="zone_id")
 
 @orca.table('taz_to_superdistrict', cache=True)
 def taz_to_superdistrict():
