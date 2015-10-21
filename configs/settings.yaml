@@ -270,7 +270,7 @@ form_to_btype:
     - 12
   mixedoffice:
     - 14
-  travel_model_ciacre:
+  select_non_residential:
     - 4
     - 5
     - 6 
@@ -281,11 +281,6 @@ form_to_btype:
     - 11
     - 13
     - 14
-  travel_model_resacre:
-    - 1
-    - 2
-    - 3
-    - 12
 
 building_sqft_per_job:
   -1: 400
