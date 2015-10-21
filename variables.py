@@ -460,14 +460,14 @@ GROSS_AVE_UNIT_SIZE = 1000
 def zoned_du(parcels):
     s = parcels.max_dua * parcels.parcel_acres
     s2 = parcels.max_far * parcels.parcel_size / GROSS_AVE_UNIT_SIZE
-    s3 = parcel_is_allowed('residential')
+    s3 = parcel_is_allowed('residential') # consider including: | parcel_is_allowed('mixedresidential')
     return (s.fillna(s2)*s3).reindex(parcels.index).fillna(0).astype('int')
 
 @orca.column('parcels_zoning_calculations', 'effective_max_dua', cache=True)
 def effective_max_dua(parcels):
     s = parcels.max_dua
     s2 = parcels.max_far * parcels.parcel_size / GROSS_AVE_UNIT_SIZE / parcels.parcel_acres # not elegant, b/c GROSS_AVE_UNIT_SIZE is actually Area/DU already
-    s3 = parcel_is_allowed('residential')
+    s3 = parcel_is_allowed('residential') # consider including: | parcel_is_allowed('mixedresidential')
     return (s.fillna(s2)*s3).reindex(parcels.index).fillna(0).astype('float')
 
 @orca.column('parcels_zoning_calculations', 'effective_max_office_far', cache=True)

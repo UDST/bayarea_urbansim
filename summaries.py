@@ -104,7 +104,7 @@ def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict,
 @orca.step("travel_model_output")
 def travel_model_output(parcels, households, jobs, buildings,
                         zones, homesales, year, summary, coffer, run_number):
-
+    parcel_acres_df = parcels.to_frame()
     households = households.to_frame()
     jobs = jobs.to_frame()
     buildings = buildings.to_frame()
@@ -174,6 +174,15 @@ def travel_model_output(parcels, households, jobs, buildings,
             summary.parcel_output.geom_id.astype('str')
     summary.write_parcel_output(add_xy=add_xy_config)
 
+    parcel_is_allowed = orca.get_injectable('parcel_is_allowed_func')
+    s_r = parcel_is_allowed('travel_model_resacre')
+    #s_ci = parcel_is_allowed('travel_model_ciacre')
+    s_zid = parcel_acres_df.zone_id
+    s1 = parcel_acres_df.parcel_acres*s_r
+    #s2 = parcel_acres_df.parcel_acres*sci
+    df1 = pd.DataFrame(data={'zone_id':s_zid,'residential_acres':s1}) #'commercial_industrial_acres':s2
+    zones['resacre'] = df1.groupby('zone_id').residential_acres.sum()
+
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
 
         # travel model csv
@@ -187,7 +196,7 @@ def travel_model_output(parcels, households, jobs, buildings,
             ['age0519', 'age2044', 'age4564', 'age65p',
              'areatype', 'ciacre', 'collfte', 'collpte', 'county', 'district',
              'empres', 'gqpop', 'hhlds', 'hsenroll', 'oprkcst', 'prkcst',
-             'resacre', 'sd', 'sftaz', 'shpop62p', 'terminal', 'topology',
+             'sd', 'sftaz', 'shpop62p', 'terminal', 'topology',
              'totacre', 'totpop', 'zero', 'zone']
 
         # fill those columns with NaN until we have values for them
