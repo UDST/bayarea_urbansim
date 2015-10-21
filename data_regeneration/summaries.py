@@ -53,6 +53,9 @@ if 'parcel_acres' in db_to_df("SELECT column_name FROM information_schema.column
 ##  Export parcel shapefile to output directory
 os.system('pgsql2shp -f "%s" -h %s -u %s -P %s %s parcel' % (parcel_output_dir, db_config['host'], db_config['user'], db_config['password'], db_config['database']))
 
+# Export simplified parcel shapefile
+os.system('pgsql2shp -f "%s" -h %s -u %s -P %s %s "select geom_id, parcel_id, st_simplifypreservetopology(geom, 100) from parcel"' % (parcel_output_dir, db_config['host'], db_config['user'], db_config['password'], db_config['database'])) 
+ 
 ##  Export buildings as csv
 building_output_path = loader.get_path('out/regeneration/summaries/buildings.csv')
     
