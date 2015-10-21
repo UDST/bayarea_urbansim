@@ -80,7 +80,7 @@ def simple_ipf(seed_matrix, col_marginals, row_marginals, tolerance=1, cnt=0):
     seed_matrix *= ratios
     closeness = np.absolute(row_marginals - seed_matrix.sum(axis=1)).sum()
     assert np.absolute(col_marginals - seed_matrix.sum(axis=0)).sum() < .01
-    print "row closeness", closeness
+    # print "row closeness", closeness
     if closeness < tolerance:
         return seed_matrix
 
@@ -90,7 +90,7 @@ def simple_ipf(seed_matrix, col_marginals, row_marginals, tolerance=1, cnt=0):
     seed_matrix = seed_matrix * ratios.reshape((ratios.size, 1))
     assert np.absolute(row_marginals - seed_matrix.sum(axis=1)).sum() < .01
     closeness = np.absolute(col_marginals - seed_matrix.sum(axis=0)).sum()
-    print "col closeness", closeness
+    # print "col closeness", closeness
     if closeness < tolerance:
         return seed_matrix
 

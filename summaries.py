@@ -160,10 +160,9 @@ def travel_model_output(parcels, households, jobs, buildings,
     zones['othempn'] = jobs.query("empsix == 'OTHEMPN'").\
         groupby('zone_id').size()
 
-    zones = zones.sort_index()
-    zones = add_population(zones, 2035)
-    zones = add_employment(zones, 2035)
-    zones = add_age_categories(zones, 2035)
+    zones = add_population(zones, year)
+    zones = add_employment(zones, year)
+    zones = add_age_categories(zones, year)
 
     orca.add_table("travel_model_output", zones, year)
 
@@ -225,11 +224,11 @@ def add_population(df, year):
     target = rc.totpop.loc[year]
 
     zfi = zone_forecast_inputs()
-    s = df.TOTHH * zfi.meanhhsize
+    s = df.tothh * zfi.meanhhsize
 
     s = scale_by_target(s, target, .1)
 
-    df["TOTPOP"] = round_series_match_target(s, target, 0)
+    df["totpop"] = round_series_match_target(s, target, 0)
     return df
 
 
@@ -237,13 +236,13 @@ def add_population(df, year):
 # estimated coefficients done by @mkreilly
 def add_employment(df, year):
 
-    hhs_by_inc = df[["HHINCQ1", "HHINCQ2", "HHINCQ3", "HHINCQ4"]]
+    hhs_by_inc = df[["hhincq1", "hhincq2", "hhincq3", "hhincq4"]]
     hh_shares = hhs_by_inc.divide(hhs_by_inc.sum(axis=1), axis="index")
 
     zfi = zone_forecast_inputs()
 
-    empshare = 0.46381 * hh_shares.HHINCQ1 + 0.49361 * hh_shares.HHINCQ2 +\
-        0.56938 * hh_shares.HHINCQ3 + 0.29818 * hh_shares.HHINCQ4 +\
+    empshare = 0.46381 * hh_shares.hhincq1 + 0.49361 * hh_shares.hhincq2 +\
+        0.56938 * hh_shares.hhincq3 + 0.29818 * hh_shares.hhincq4 +\
         zfi.zonal_emp_sh_resid10
 
     # I really don't think more than 70% of people should be employed
@@ -253,17 +252,17 @@ def add_employment(df, year):
     # .7 even a little bit more
     empshare = empshare.fillna(0).clip(.3, .7)
 
-    empres = empshare*df.TOTPOP
+    empres = empshare*df.totpop
 
     rc = regional_controls()
     target = rc.empres.loc[year]
 
     empres = scale_by_target(empres, target)
 
-    df["EMPRES"] = round_series_match_target(empres, target, 0)
+    df["empres"] = round_series_match_target(empres, target, 0)
 
     # make sure employed residents is less than total residentss
-    assert (df.EMPRES <= df.TOTPOP).all()
+    assert (df.empres <= df.totpop).all()
 
     return df
 
@@ -275,13 +274,13 @@ def add_age_categories(df, year):
 
     seed_matrix = zfi[["sh_age0004", "sh_age0519", "sh_age2044",
                        "sh_age4564", "sh_age65up"]].\
-        mul(df.TOTPOP, axis='index').as_matrix()
+        mul(df.totpop, axis='index').as_matrix()
 
-    row_marginals = df.TOTPOP.values
+    row_marginals = df.totpop.values
     agecols = ["age0004", "age0519", "age2044", "age4564", "age65up"]
     col_marginals = rc[agecols].loc[year].values
 
-    target = df.TOTPOP.sum()
+    target = df.totpop.sum()
     col_marginals = scale_by_target(pd.Series(col_marginals),
                                     target).round().astype('int')
 
@@ -293,20 +292,10 @@ def add_age_categories(df, year):
     agedf.columns = [col.upper() for col in agecols]
     agedf.index = zfi.index
 
-    print "Diff in row marginals before rounding"
-    print np.absolute(row_marginals - mat.sum(axis=1)).sum()
-    print "Diff in col marginals before rounding"
-    print np.absolute(col_marginals - mat.sum(axis=0)).sum()
-
     for ind, row in agedf.iterrows():
-        target = df.TOTPOP.loc[ind]
+        target = df.totpop.loc[ind]
         row = row.round()
         agedf.loc[ind] = round_series_match_target(row, target, 0)
-
-    print "Diff in row marginals after rounding"
-    print np.absolute(row_marginals - mat.sum(axis=1)).sum()
-    print "Diff in col marginals after rounding"
-    print np.absolute(col_marginals - mat.sum(axis=0)).sum()
 
     for col in agedf.columns:
         df[col] = agedf[col]

@@ -297,6 +297,15 @@ def taz_to_superdistrict():
     df = pd.read_csv(os.path.join(misc.data_dir(), "taz_to_superdistrict.csv"))
     return df.set_index('zone')
 
+
+# these are shapes - "zones" in the bay area
+@orca.table('zones', cache=True)
+def zones(store):
+    df = store['zones']
+    df = df.sort_index()
+    return df
+
+
 # this specifies the relationships between tables
 orca.broadcast('parcels_geography', 'buildings', cast_index=True,
                onto_on='parcel_id')
