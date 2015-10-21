@@ -122,6 +122,7 @@ def zoning_baseline(parcels, zoning_lookup):
         "HM": "type3",
         "OF": "type4",
         "HO": "type5",
+        "SC": "type6",
         "IL": "type7",
         "IW": "type8",
         "IH": "type9",
