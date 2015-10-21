@@ -280,6 +280,25 @@ def parcel_is_allowed(form):
 
     return s
 
+@orca.column('zones','resacre')
+def resacre(parcels, zones):
+    f = orca.get_injectable('parcel_is_allowed_func')
+    s = f('residential') | f('mixedresidential')
+    s1 = parcels.get_column('zone_id')
+    s2 = parcels.parcel_acres*s
+    df = pd.DataFrame(data={'zone_id':s1,'residential_acres':s2}) #'commercial_industrial_acres':s2
+    s3 = df.groupby('zone_id').residential_acres.sum()
+    return s3
+
+@orca.column('zones','ciacre')
+def resacre(parcels, zones):
+    f = orca.get_injectable('parcel_is_allowed_func')
+    s = parcel_is_allowed('select_nonresidential')
+    s1 = parcels.get_column('zone_id')
+    s2 = parcels.parcel_acres*s
+    df = pd.DataFrame(data={'zone_id':s1,'residential_acres':s2}) #'commercial_industrial_acres':s2
+    s3 = df.groupby('zone_id').residential_acres.sum()
+    return s3
 
 @orca.column('parcels', 'juris_ave_income', cache=True)
 def juris_ave_income(households, buildings, parcels_geography, parcels):
