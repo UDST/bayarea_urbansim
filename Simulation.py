@@ -16,7 +16,7 @@ SLACK = MAPS = True
 LOGS = True
 INTERACT = False
 S3 = False
-EVERY_NTH_YEAR = 6
+EVERY_NTH_YEAR = 10
 
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 
