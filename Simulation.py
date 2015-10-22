@@ -12,10 +12,13 @@ warnings.filterwarnings("ignore")
 
 args = sys.argv[1:]
 
-SLACK = MAPS = False
+SLACK = MAPS = True
 LOGS = True
 INTERACT = False
 S3 = False
+EVERY_NTH_YEAR = 6
+
+orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 
 if len(args) and args[0] == "-i":
     SLACK = MAPS = LOGS = False
@@ -72,7 +75,7 @@ try:
         "diagnostic_output",
         "geographic_summary",
         "travel_model_output"
-    ], iter_vars=range(in_year, out_year+1))
+    ], iter_vars=range(in_year, out_year+1, EVERY_NTH_YEAR))
 
 except Exception as e:
     print traceback.print_exc()
