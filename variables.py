@@ -280,9 +280,25 @@ def parcel_is_allowed(form):
 
     return s
 
+@orca.column('parcels','first_building_type_id')
+def first_building_type_id(buildings, parcels):
+    df = buildings.to_frame(columns=['building_type_id','parcel_id','general_type']).groupby('parcel_id').first() #hack
+    df1 = parcels.to_frame(columns=['parcel_acres','zone_id'])
+    df1['first_building_type_id'] = df['building_type_id']
+    s = df1['first_building_type_id']
+    return s
+
+@orca.injectable('parcel_first_building_type_is', autocall=False)
+def parcel_first_building_type_is(form):
+    settings = orca.get_injectable('settings')
+    form_to_btype = settings["form_to_btype"]
+    parcels = orca.get_table('parcels')
+    s = parcels.first_building_type_id.isin(form_to_btype[form])
+    return s
+
 @orca.column('zones','resacre')
 def resacre(parcels, zones):
-    f = orca.get_injectable('parcel_is_allowed_func')
+    f = orca.get_injectable('parcel_first_building_type_is')
     s = f('residential') | f('mixedresidential')
     s1 = parcels.get_column('zone_id')
     s2 = parcels.parcel_acres*s
@@ -292,8 +308,8 @@ def resacre(parcels, zones):
 
 @orca.column('zones','ciacre')
 def resacre(parcels, zones):
-    f = orca.get_injectable('parcel_is_allowed_func')
-    s = parcel_is_allowed('select_nonresidential')
+    f = orca.get_injectable('parcel_first_building_type_is')
+    s = parcel_is_allowed('select_non_residential')
     s1 = parcels.get_column('zone_id')
     s2 = parcels.parcel_acres*s
     df = pd.DataFrame(data={'zone_id':s1,'residential_acres':s2}) #'commercial_industrial_acres':s2
