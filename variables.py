@@ -307,13 +307,13 @@ def resacre(parcels, zones):
     return s3
 
 @orca.column('zones','ciacre')
-def resacre(parcels, zones):
+def ciacre(parcels, zones):
     f = orca.get_injectable('parcel_first_building_type_is')
-    s = parcel_is_allowed('select_non_residential')
+    s = f('select_non_residential')
     s1 = parcels.get_column('zone_id')
     s2 = parcels.parcel_acres*s
-    df = pd.DataFrame(data={'zone_id':s1,'residential_acres':s2}) #'commercial_industrial_acres':s2
-    s3 = df.groupby('zone_id').residential_acres.sum()
+    df = pd.DataFrame(data={'zone_id':s1,'ciacre':s2}) #'commercial_industrial_acres':s2
+    s3 = df.groupby('zone_id').ciacre.sum()
     return s3
 
 @orca.column('parcels', 'juris_ave_income', cache=True)
