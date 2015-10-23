@@ -306,10 +306,6 @@ def gqpop(zones, zone_forecast_inputs):
 
 @orca.table('buildings_subset')
 def buildings_subset(buildings):
-    # s = buildings.zone_id
-    # s1 = buildings.building_type_id
-    # s2 = buildings.residential_units
-    # s3 = buildings.building_sqft
     df = buildings.to_frame(columns=['zone_id',
                         'building_type_id',
                         'residential_units',
@@ -451,6 +447,11 @@ def hhpop(jobs_subset):
     df = jobs_subset.to_frame()
     s = df.query("empsix == 'OTHEMPN'").\
         groupby('zone_id').size()
+    return s
+
+@orca.column('taz','sd')
+def sd(taz_to_superdistrict):
+    s = taz_to_superdistrict.superdistrict
     return s
 
 # @orca.column('taz','hhpop')

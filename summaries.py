@@ -103,15 +103,47 @@ def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict,
 
 @orca.step("travel_model_output")
 def travel_model_output(parcels, households, jobs, buildings,
-                        zones, homesales, summary, coffer, 
-                        zone_forecast_inputs, 
-                        zones_tm_output):
-    year=2010
-    run_number=150
-
+                        zones, homesales, year, summary, coffer, 
+                        zone_forecast_inputs, run_number, 
+                        taz):
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
-        orca.add_table("travel_model_output", zones_tm_output, year)
-        summary.add_zone_output(zones, "travel_model_output", year)
+        
+        df = taz
+
+        taz_df = pd.DataFrame(index=zones.index)
+        taz_df["acres"] = df.acres
+        taz_df["agrempn"] = df.agrempn
+        taz_df["area"] = df.area
+        taz_df["ciacre"] = df.ciacre
+        taz_df["district"] = df.sd #intentionally identical to sd
+        taz_df["fsempn"] = df.fsempn
+        taz_df["gid"] = df.gid
+        taz_df["gqpop"] = df.gqpop
+        taz_df["herempn"] = df.herempn
+        taz_df["hhinq1"] = df.hhinq1
+        taz_df["hhinq2"] = df.hhinq2
+        taz_df["hhinq3"] = df.hhinq3
+        taz_df["hhinq4"] = df.hhinq4
+        taz_df["hhlds"] = df.tothh #intentionally identical to tothh
+        taz_df["hhpop"] = df.hhpop
+        taz_df["mfdu"] = df.mfdu
+        taz_df["mwtempn"] = df.mwtempn
+        taz_df["newdevacres"] = df.newdevacres
+        taz_df["othempn"] = df.othempn
+        taz_df["resacre"] = df.resacre
+        taz_df["resunits"] = df.resunits
+        taz_df["resvacancy"] = df.resvacancy
+        taz_df["retempn"] = df.retempn
+        taz_df["sd"] = df.sd #intentionally identical to district
+        taz_df["sfdu"] = df.sfdu
+        taz_df["totemp"] = df.totemp
+        taz_df["tothh"] = df.tothh #intentionally identical to hhlds
+        taz_df["totpop"] = df.gqpop+df.hhpop
+        taz_df["tract"] = df.tract
+        taz_df["zero"] = pd.Series(index=df.index).fillna(0) #intentionally set to 0
+
+        orca.add_table("travel_model_output", taz_df, year)
+        summary.add_zone_output(taz_df, "travel_model_output", year)
         if sys.platform != 'win32':
             summary.write_zone_output()
 
@@ -132,23 +164,20 @@ def travel_model_output(parcels, households, jobs, buildings,
         travel_model_csv = \
             "runs/run{}_taz_summaries_{}.csv".format(run_number, year)
 
-        df = zones_tm_output.to_frame()
-
         # list of columns that we need to fill eventually for valid travel
         # model file:
         template_columns = \
             ['age0519', 'age2044', 'age4564', 'age65p',
-             'areatype', 'collfte', 'collpte', 'county', 'district',
-             'empres', 'hhlds', 'hsenroll', 'oprkcst', 'prkcst',
-             'sd', 'sftaz', 'shpop62p', 'terminal', 'topology',
-             'totpop', 'zero', 'zone']
+             'areatype', 'collfte', 'collpte', 'county', 
+             'empres', 'hsenroll', 'oprkcst', 'prkcst',
+             'terminal', 'topology','totpop']
 
         # fill those columns with NaN until we have values for them
         for x in template_columns:
-            df[x] = np.nan
+            taz_df[x] = np.nan
 
         # uppercase columns to match travel model template
-        df.columns = \
-            [x.upper() for x in zones_tm_output.columns]
+        taz_df.columns = \
+            [x.upper() for x in taz_df.columns]
 
-        df.to_csv(travel_model_csv)
+        taz_df.to_csv(travel_model_csv)
