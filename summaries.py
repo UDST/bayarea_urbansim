@@ -103,78 +103,78 @@ def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict,
 
 @orca.step("travel_model_output")
 def travel_model_output(parcels, households, jobs, buildings,
-                        zones, homesales, year, summary, coffer, run_number):
-    parcel_acres_df = parcels.to_frame()
-    households = households.to_frame()
-    jobs = jobs.to_frame()
-    buildings = buildings.to_frame()
-    zones = zones.to_frame()
-
-    zones['tothh'] = households.\
-        groupby('zone_id').size()
-    zones['hhpop'] = households.\
-        groupby('zone_id').persons.sum()
-
-    zones['resunits'] = buildings.groupby('zone_id').residential_units.sum()
-    zones['resvacancy'] = (zones.resunits - zones.tothh) / \
-        zones.resunits.replace(0, 1)
-
-    zones['sfdu'] = \
-        buildings.query("building_type_id == 1 or building_type_id == 2").\
-        groupby('zone_id').residential_units.sum()
-    zones['mfdu'] = \
-        buildings.query("building_type_id == 3 or building_type_id == 12").\
-        groupby('zone_id').residential_units.sum()
-
-    zones['hhincq1'] = households.query("income < 25000").\
-        groupby('zone_id').size()
-    zones['hhincq2'] = households.query("income >= 25000 and income < 45000").\
-        groupby('zone_id').size()
-    zones['hhincq3'] = households.query("income >= 45000 and income < 75000").\
-        groupby('zone_id').size()
-    zones['hhincq4'] = households.query("income >= 75000").\
-        groupby('zone_id').size()
-
-    # attempting to get at total zonal developed acres
-    zones['NEWdevacres'] = \
-        (buildings.query("building_sqft > 0").
-         groupby('zone_id').lot_size_per_unit.sum()) / 43560
-
-    zones['totemp'] = jobs.\
-        groupby('zone_id').size()
-    zones['agrempn'] = jobs.query("empsix == 'AGREMPN'").\
-        groupby('zone_id').size()
-    zones['mwtempn'] = jobs.query("empsix == 'MWTEMPN'").\
-        groupby('zone_id').size()
-    zones['retempn'] = jobs.query("empsix == 'RETEMPN'").\
-        groupby('zone_id').size()
-    zones['fpsempn'] = jobs.query("empsix == 'FPSEMPN'").\
-        groupby('zone_id').size()
-    zones['herempn'] = jobs.query("empsix == 'HEREMPN'").\
-        groupby('zone_id').size()
-    zones['othempn'] = jobs.query("empsix == 'OTHEMPN'").\
-        groupby('zone_id').size()
-
-    orca.add_table("travel_model_output", zones, year)
-
-    summary.add_zone_output(zones, "travel_model_output", year)
-    if sys.platform != 'win32':
-        summary.write_zone_output()
-
-    add_xy_config = {
-        "xy_table": "parcels",
-        "foreign_key": "parcel_id",
-        "x_col": "x",
-        "y_col": "y"
-    }
-    # otherwise it loses precision
-    if summary.parcel_output is not None and \
-            "geom_id" in summary.parcel_output:
-        summary.parcel_output["geom_id"] = \
-            summary.parcel_output.geom_id.astype('str')
-    summary.write_parcel_output(add_xy=add_xy_config)
-
+                        zones, homesales, year, summary, coffer, 
+                        zone_forecast_inputs, run_number):
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
+        parcel_acres_df = parcels.to_frame()
+        households = households.to_frame()
+        jobs = jobs.to_frame()
+        buildings = buildings.to_frame()
+        zones = zones.to_frame()
+
+        zones['tothh'] = households.\
+            groupby('zone_id').size()
+        zones['hhpop'] = households.\
+            groupby('zone_id').persons.sum()
+
+        zones['resunits'] = buildings.groupby('zone_id').residential_units.sum()
+        zones['resvacancy'] = (zones.resunits - zones.tothh) / \
+            zones.resunits.replace(0, 1)
+
+        zones['sfdu'] = \
+            buildings.query("building_type_id == 1 or building_type_id == 2").\
+            groupby('zone_id').residential_units.sum()
+        zones['mfdu'] = \
+            buildings.query("building_type_id == 3 or building_type_id == 12").\
+            groupby('zone_id').residential_units.sum()
+
+        zones['hhincq1'] = households.query("income < 25000").\
+            groupby('zone_id').size()
+        zones['hhincq2'] = households.query("income >= 25000 and income < 45000").\
+            groupby('zone_id').size()
+        zones['hhincq3'] = households.query("income >= 45000 and income < 75000").\
+            groupby('zone_id').size()
+        zones['hhincq4'] = households.query("income >= 75000").\
+            groupby('zone_id').size()
+
+        # attempting to get at total zonal developed acres
+        zones['NEWdevacres'] = \
+            (buildings.query("building_sqft > 0").
+             groupby('zone_id').lot_size_per_unit.sum()) / 43560
+        zones["totacre"] = zone_forecast_inputs["totacre"]
+        zones['totemp'] = jobs.\
+            groupby('zone_id').size()
+        zones['agrempn'] = jobs.query("empsix == 'AGREMPN'").\
+            groupby('zone_id').size()
+        zones['mwtempn'] = jobs.query("empsix == 'MWTEMPN'").\
+            groupby('zone_id').size()
+        zones['retempn'] = jobs.query("empsix == 'RETEMPN'").\
+            groupby('zone_id').size()
+        zones['fpsempn'] = jobs.query("empsix == 'FPSEMPN'").\
+            groupby('zone_id').size()
+        zones['herempn'] = jobs.query("empsix == 'HEREMPN'").\
+            groupby('zone_id').size()
+        zones['othempn'] = jobs.query("empsix == 'OTHEMPN'").\
+            groupby('zone_id').size()
+
+        orca.add_table("travel_model_output", zones, year)
+
+        summary.add_zone_output(zones, "travel_model_output", year)
+        if sys.platform != 'win32':
+            summary.write_zone_output()
+
+        add_xy_config = {
+            "xy_table": "parcels",
+            "foreign_key": "parcel_id",
+            "x_col": "x",
+            "y_col": "y"
+        }
+        # otherwise it loses precision
+        if summary.parcel_output is not None and \
+                "geom_id" in summary.parcel_output:
+            summary.parcel_output["geom_id"] = \
+                summary.parcel_output.geom_id.astype('str')
+        summary.write_parcel_output(add_xy=add_xy_config)
 
         # travel model csv
         travel_model_csv = \
@@ -185,10 +185,10 @@ def travel_model_output(parcels, households, jobs, buildings,
         # model file:
         template_columns = \
             ['age0519', 'age2044', 'age4564', 'age65p',
-             'areatype', 'ciacre', 'collfte', 'collpte', 'county', 'district',
-             'empres', 'gqpop', 'hhlds', 'hsenroll', 'oprkcst', 'prkcst',
+             'areatype', 'collfte', 'collpte', 'county', 'district',
+             'empres', 'hhlds', 'hsenroll', 'oprkcst', 'prkcst',
              'sd', 'sftaz', 'shpop62p', 'terminal', 'topology',
-             'totacre', 'totpop', 'zero', 'zone']
+             'totpop', 'zero', 'zone']
 
         # fill those columns with NaN until we have values for them
         for x in template_columns:

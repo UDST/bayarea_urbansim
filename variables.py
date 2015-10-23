@@ -296,24 +296,155 @@ def parcel_first_building_type_is(form):
     s = parcels.first_building_type_id.isin(form_to_btype[form])
     return s
 
-@orca.column('zones','resacre')
-def resacre(parcels, zones):
-    f = orca.get_injectable('parcel_first_building_type_is')
-    s = f('residential') | f('mixedresidential')
-    s1 = parcels.get_column('zone_id')
-    s2 = parcels.parcel_acres*s
-    df = pd.DataFrame(data={'zone_id':s1,'residential_acres':s2}) #'commercial_industrial_acres':s2
-    s3 = df.groupby('zone_id').residential_acres.sum()
-    return s3
+@orca.column('zones_tm_output','gqpop')
+def gqpop(year, zones, zone_forecast_inputs):
+    str1 = "gqpop" + str(year)[-2:]
+    s = zone_forecast_inputs[str1]
+    return s
 
-@orca.column('zones','ciacre')
-def ciacre(parcels, zones):
+@orca.column('zones_tm_output','totemp')
+def totemp(jobs):
+    s = jobs.groupby('zone_id').size()
+    return s
+
+@orca.column('zones_tm_output','tothh')
+def tothh(households):
+    s = households.groupby('zone_id').size()
+    return s
+
+@orca.column('zones_tm_output','hhpop')
+def hhpop(households):
+    s = zones['hhpop'] = households.groupby('zone_id').persons.sum()
+    return s
+
+@orca.column('zones_tm_output','resunits')
+def resunits(buildings):
+    s = buildings.groupby('zone_id').residential_units.sum()
+    return s
+
+@orca.column('zones_tm_output','resvacancy')
+def resvacancy(households):
+    s = (zones.resunits - zones.tothh) / \
+    zones.resunits.replace(0, 1)
+    return s
+
+@orca.column('zones_tm_output','mfdu')
+def mfdu(buildings):
+    s = \
+    buildings.query("building_type_id == 3 or building_type_id == 12").\
+    groupby('zone_id').residential_units.sum()
+    return s
+
+@orca.column('zones_tm_output','sfdu')
+def hhpop(buildings):
+    s = \
+    buildings.query("building_type_id == 1 or building_type_id == 2").\
+    groupby('zone_id').residential_units.sum()
+    return s
+
+@orca.column('zones_tm_output','hhinq1')
+def hhinq1(households):
+    s = households.query("income < 25000").\
+        groupby('zone_id').size()
+    return s
+
+@orca.column('zones_tm_output','hhinq2')
+def hhinq2(households):
+    s = households.query("income >= 25000 and income < 45000").\
+        groupby('zone_id').size()
+    return s
+
+@orca.column('zones_tm_output','hhinq3')
+def hhinq3(households):
+    s = households.query("income >= 45000 and income < 75000").\
+        groupby('zone_id').size()
+    return s
+
+@orca.column('zones_tm_output','hhinq4')
+def hhinq4(households):
+    s = households.query("income >= 75000").\
+        groupby('zone_id').size()
+    return s
+
+@orca.column('zones_tm_output','newdevacres')
+def newdevacres(buildings):
+    s = (buildings.query("building_sqft > 0").
+    groupby('zone_id').lot_size_per_unit.sum()) / 43560
+    return s
+
+@orca.column('zones_tm_output','agrempn')
+def agrempn(jobs):
+    s = jobs.query("empsix == 'AGREMPN'").\
+        groupby('zone_id').size()
+    return s
+
+@orca.column('zones_tm_output','mwtempn')
+def hhpop(jobs):
+    s = jobs.query("empsix == 'MWTEMPN'").\
+        groupby('zone_id').size()
+    return s
+
+@orca.column('zones_tm_output','retempn')
+def hhpop(jobs):
+    s = jobs.query("empsix == 'RETEMPN'").\
+        groupby('zone_id').size()
+    return s
+
+@orca.column('zones_tm_output','fsempn')
+def fsempn(jobs):
+    s = jobs.query("empsix == 'FPSEMPN'").\
+        groupby('zone_id').size()
+    return s
+
+@orca.column('zones_tm_output','herempn')
+def herempn(jobs):
+    s = jobs.query("empsix == 'HEREMPN'").\
+        groupby('zone_id').size()
+    return s
+
+@orca.column('zones_tm_output','othempn')
+def hhpop(jobs):
+    s = jobs.query("empsix == 'OTHEMPN'").\
+        groupby('zone_id').size()
+    return s
+
+# @orca.column('zones_tm_output','hhpop')
+# def hhpop(households):
+#     return s
+
+# @orca.column('zones_tm_output','hhpop')
+# def hhpop(households):
+#     return s
+
+# @orca.column('zones_tm_output','hhpop')
+# def hhpop(households):
+#     return s
+
+# @orca.column('zones_tm_output','hhpop')
+# def hhpop(households):
+#     return s
+
+# @orca.column('zones','density')
+#Density = (Total Population + 2.5 * Total Employment) / (Total Acres) 
+
+@orca.column('zones_tm_output','ciacre')
+def ciacre(parcels, zones_tm_output):
     f = orca.get_injectable('parcel_first_building_type_is')
     s = f('select_non_residential')
     s1 = parcels.get_column('zone_id')
     s2 = parcels.parcel_acres*s
     df = pd.DataFrame(data={'zone_id':s1,'ciacre':s2}) #'commercial_industrial_acres':s2
     s3 = df.groupby('zone_id').ciacre.sum()
+    return s3
+
+@orca.column('zones_tm_output','resacre')
+def resacre(parcels):
+    f = orca.get_injectable('parcel_first_building_type_is')
+    s = f('residential') | f('mixedresidential')
+    s1 = parcels.get_column('zone_id')
+    s2 = parcels.parcel_acres*s
+    df = pd.DataFrame(data={'zone_id':s1,'residential_acres':s2}) #'commercial_industrial_acres':s2
+    s3 = df.groupby('zone_id').residential_acres.sum()
     return s3
 
 @orca.column('parcels', 'juris_ave_income', cache=True)
