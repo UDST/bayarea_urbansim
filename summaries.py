@@ -103,13 +103,14 @@ def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict,
 
 @orca.step("travel_model_output")
 def travel_model_output(parcels, households, jobs, buildings,
-                        zones, homesales, year, summary, coffer, 
-                        zone_forecast_inputs, run_number,
+                        zones, homesales, summary, coffer, 
+                        zone_forecast_inputs, 
                         zones_tm_output):
+    year=2010
+    run_number=150
+
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
-
         orca.add_table("travel_model_output", zones_tm_output, year)
-
         summary.add_zone_output(zones, "travel_model_output", year)
         if sys.platform != 'win32':
             summary.write_zone_output()
@@ -130,7 +131,8 @@ def travel_model_output(parcels, households, jobs, buildings,
         # travel model csv
         travel_model_csv = \
             "runs/run{}_taz_summaries_{}.csv".format(run_number, year)
-        travel_model_output = zones
+
+        df = zones_tm_output.to_frame()
 
         # list of columns that we need to fill eventually for valid travel
         # model file:
@@ -143,10 +145,10 @@ def travel_model_output(parcels, households, jobs, buildings,
 
         # fill those columns with NaN until we have values for them
         for x in template_columns:
-            travel_model_output[x] = np.nan
+            df[x] = np.nan
 
         # uppercase columns to match travel model template
-        travel_model_output.columns = \
-            [x.upper() for x in travel_model_output.columns]
+        df.columns = \
+            [x.upper() for x in zones_tm_output.columns]
 
-        travel_model_output.to_csv(travel_model_csv)
+        df.to_csv(travel_model_csv)

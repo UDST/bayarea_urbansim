@@ -185,8 +185,8 @@ def parcels_zoning_calculations(parcels):
                             'total_residential_units'])
                         , index=parcels.index)
 
-@orca.table('zones_tm_output', cache=True)
-def zones_travel_model(zones):
+@orca.table('taz')
+def taz(zones):
     return zones
 
 @orca.table(cache=True)
