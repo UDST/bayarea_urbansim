@@ -90,6 +90,7 @@ def zoning_baseline(parcels, zoning_lookup):
         "HM": "type3",
         "OF": "type4",
         "HO": "type5",
+        "SC": "type6",
         "IL": "type7",
         "IW": "type8",
         "IH": "type9",
@@ -151,6 +152,10 @@ def parcels_zoning_calculations(parcels):
                             columns=['geom_id',
                             'total_residential_units'])
                         , index=parcels.index)
+
+@orca.table('taz')
+def taz(zones):
+    return zones
 
 @orca.table(cache=True)
 def parcel_rejections():
@@ -291,6 +296,10 @@ def employment_controls(employment_controls_unstacked):
     df.columns = ['empsix_id', 'number_of_jobs']
     return df
 
+@orca.table('zone_forecast_inputs', cache=True)
+def zone_forecast_inputs():
+    return pd.read_csv(os.path.join(misc.data_dir(), "zone_forecast_inputs.csv"),
+                       index_col="zone_id")
 
 @orca.table('taz_to_superdistrict', cache=True)
 def taz_to_superdistrict():
