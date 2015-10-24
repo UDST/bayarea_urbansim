@@ -298,11 +298,14 @@ def parcel_first_building_type_is(form):
     return s
 
 @orca.column('taz','gqpop')
-def gqpop(zones, zone_forecast_inputs):
-    year=2010
-    import pdb; pdb.set_trace
+def gqpop(zones, zone_forecast_inputs, year):
     str1 = "gqpop" + str(year)[-2:]
     s = zone_forecast_inputs[str1]
+    return s
+
+@orca.column('taz','totacre')
+def totacre(zone_forecast_inputs):
+    s = zone_forecast_inputs.totacre
     return s
 
 @orca.table('buildings_subset')
@@ -335,7 +338,7 @@ def mfdu(buildings_subset):
     return s
 
 @orca.column('taz','sfdu')
-def hhpop(buildings_subset):
+def sfdu(buildings_subset):
     df = buildings_subset.to_frame()
     s = df.query("building_type_id == 1 or building_type_id == 2").\
         groupby('zone_id').residential_units.sum()
@@ -416,14 +419,14 @@ def agrempn(jobs_subset):
     return s
 
 @orca.column('taz','mwtempn')
-def hhpop(jobs_subset):
+def mwtempn(jobs_subset):
     df = jobs_subset.to_frame()
     s = df.query("empsix == 'MWTEMPN'").\
         groupby('zone_id').size()
     return s
 
 @orca.column('taz','retempn')
-def hhpop(jobs_subset):
+def retempn(jobs_subset):
     df = jobs_subset.to_frame()
     s = df.query("empsix == 'RETEMPN'").\
         groupby('zone_id').size()
@@ -444,7 +447,7 @@ def herempn(jobs_subset):
     return s
 
 @orca.column('taz','othempn')
-def hhpop(jobs_subset):
+def othempn(jobs_subset):
     df = jobs_subset.to_frame()
     s = df.query("empsix == 'OTHEMPN'").\
         groupby('zone_id').size()
@@ -471,8 +474,25 @@ def sd(taz_to_superdistrict):
 # def hhpop(households):
 #     return s
 
-# @orca.column('zones','density')
-#Density = (Total Population + 2.5 * Total Employment) / (Total Acres) 
+@orca.column('taz','totpop')
+def totpop(taz):
+    s = taz.gqpop
+    s1 = taz.hhpop
+    s2 = s1+s
+    return s2
+
+@orca.column('taz','density')
+def density(taz):
+    #(Total Population + 2.5 * Total Employment) / (Total Acres) 
+    #from: http://analytics.mtc.ca.gov/foswiki/Main/MasterNetworkLookupTables
+    s = (taz.totpop + (2.5 * taz.totemp)) / taz.totacre 
+    return s
+
+@orca.column('taz','areatype')
+def density(taz):
+    import numpy as np
+    s = pd.cut(taz.density,bins=[0,6,30,55,100,300,np.inf],labels=[5,4,3,2,1,0])
+    return s
 
 @orca.column('taz','ciacre')
 def ciacre(parcels, taz):

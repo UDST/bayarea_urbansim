@@ -119,6 +119,7 @@ def travel_model_output(parcels, households, jobs, buildings,
         taz_df = pd.DataFrame(index=zones.index)
         taz_df["acres"] = df.totacre
         taz_df["agrempn"] = df.agrempn
+        taz_df["areatype"] = df.areatype
         taz_df["area"] = df.area
         taz_df["ciacre"] = df.ciacre
         taz_df["district"] = df.sd #intentionally identical to sd
@@ -144,9 +145,10 @@ def travel_model_output(parcels, households, jobs, buildings,
         taz_df["sfdu"] = df.sfdu
         taz_df["totemp"] = df.totemp
         taz_df["tothh"] = df.tothh #intentionally identical to hhlds
-        taz_df["totpop"] = df.gqpop+df.hhpop
+        taz_df["totpop"] = df.totpop
         taz_df["tract"] = df.tract
         taz_df["zero"] = pd.Series(index=df.index).fillna(0) #intentionally set to 0
+        taz_df["density"] = df.density 
 
         taz_df = add_population(taz_df, year)
         taz_df = add_employment(taz_df, year)
@@ -177,7 +179,7 @@ def travel_model_output(parcels, households, jobs, buildings,
         # list of columns that we need to fill eventually for valid travel
         # model file:
         template_columns = \
-            ['areatype', 'collfte', 'collpte', 'county', 
+            ['collfte', 'collpte', 'county', 
              'hsenroll', 'oprkcst', 'prkcst',
              'terminal', 'topology']
 
