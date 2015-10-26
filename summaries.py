@@ -186,7 +186,7 @@ def travel_model_output(parcels, households, jobs, buildings,
         taz_df.columns = \
             [x.upper() for x in taz_df.columns]
 
-        taz_df.to_csv(travel_model_csv)
+        taz_df.fillna(0).to_csv(travel_model_csv)
 
 
 def zone_forecast_inputs():
@@ -250,11 +250,11 @@ def add_age_categories(df, year):
     rc = regional_controls()
 
     seed_matrix = zfi[["sh_age0004", "sh_age0519", "sh_age2044",
-                       "sh_age4564", "sh_age65up"]].\
+                       "sh_age4564", "sh_age65p"]].\
         mul(df.totpop, axis='index').as_matrix()
 
     row_marginals = df.totpop.values
-    agecols = ["age0004", "age0519", "age2044", "age4564", "age65up"]
+    agecols = ["age0004", "age0519", "age2044", "age4564", "age65p"]
     col_marginals = rc[agecols].loc[year].values
 
     target = df.totpop.sum()
