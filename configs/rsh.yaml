@@ -14,8 +14,8 @@ predict_filters: null
 
 model_expression: np.log(price_per_sqft) ~ I(year_built < 1940) + I(year_built > 2000)
     + np.log1p(sqft_per_unit) + ave_lot_size_per_unit + ave_income + pct_black + pct_hisp
-    + pct_asian + pct_renters + autoPeakTotal + transitPeakTotal + autoOffPeakRetail
-    + sum_residential_units
+    + pct_asian + pct_renters + poverty_rate + population + autoPeakTotal + transitPeakTotal
+    + autoOffPeakRetail + jobs
 
 ytransform: np.exp
 
@@ -23,51 +23,57 @@ fitted: true
 
 fit_parameters:
     Coefficient:
-        I(year_built < 1940)[T.True]: 0.09820615358876916
-        I(year_built > 2000)[T.True]: 0.04899495412528024
-        Intercept: 2.670864712442417
-        autoOffPeakRetail: -0.2455712957781372
-        autoPeakTotal: 0.35377350479517167
-        ave_income: 0.3966116187512282
-        ave_lot_size_per_unit: 0.05401503194440238
-        np.log1p(sqft_per_unit): -0.4639973175599418
-        pct_asian: -0.22414419690872572
-        pct_black: -0.3976909582857589
-        pct_hisp: -0.3125712631934602
-        pct_renters: 0.5112047250348355
-        sum_residential_units: 0.03302526721822101
-        transitPeakTotal: 0.013789152196276298
+        I(year_built < 1940)[T.True]: 0.1073975137110629
+        I(year_built > 2000)[T.True]: 0.04671444602705678
+        Intercept: 2.59566214844675
+        autoOffPeakRetail: -0.2538226608986328
+        autoPeakTotal: 0.35757132689592114
+        ave_income: 0.4174973090680207
+        ave_lot_size_per_unit: 0.04214046774032961
+        jobs: 0.006166693967200024
+        np.log1p(sqft_per_unit): -0.46421843416593805
+        pct_asian: -0.0018327541020321172
+        pct_black: -0.0035836449192106477
+        pct_hisp: -0.0027084451944632427
+        pct_renters: 0.006296127476277881
+        population: -0.008037576880751185
+        poverty_rate: 0.089062576718765
+        transitPeakTotal: 0.014120621490547316
     Std. Error:
-        I(year_built < 1940)[T.True]: 0.0035275777964744875
-        I(year_built > 2000)[T.True]: 0.0029614432429514244
-        Intercept: 0.061035272845873324
-        autoOffPeakRetail: 0.00657494494562551
-        autoPeakTotal: 0.005951224582905011
-        ave_income: 0.00466822756959462
-        ave_lot_size_per_unit: 0.0023781632909149132
-        np.log1p(sqft_per_unit): 0.002804531124925984
-        pct_asian: 0.012500396632309433
-        pct_black: 0.0094244347718334
-        pct_hisp: 0.013676087510083203
-        pct_renters: 0.019115110753052802
-        sum_residential_units: 0.0023239558780218704
-        transitPeakTotal: 0.0006152354512563027
+        I(year_built < 1940)[T.True]: 0.0035125186894176654
+        I(year_built > 2000)[T.True]: 0.002971613191929305
+        Intercept: 0.08690126471492711
+        autoOffPeakRetail: 0.006602085017576795
+        autoPeakTotal: 0.005965240401973733
+        ave_income: 0.006598012257848804
+        ave_lot_size_per_unit: 0.002357378558029346
+        jobs: 0.0007580812531890952
+        np.log1p(sqft_per_unit): 0.002812825243817091
+        pct_asian: 0.00012837543113421426
+        pct_black: 9.570671547879165e-05
+        pct_hisp: 0.0001488224647109306
+        pct_renters: 0.0001908223155613058
+        population: 0.0025395180235376134
+        poverty_rate: 0.023495224496838666
+        transitPeakTotal: 0.0006182123126315284
     T-Score:
-        I(year_built < 1940)[T.True]: 27.839542954068317
-        I(year_built > 2000)[T.True]: 16.54428267092198
-        Intercept: 43.759363854846725
-        autoOffPeakRetail: -37.349559244830246
-        autoPeakTotal: 59.445497286624295
-        ave_income: 84.9597867367184
-        ave_lot_size_per_unit: 22.712919735474525
-        np.log1p(sqft_per_unit): -165.44559389483953
-        pct_asian: -17.93096679263651
-        pct_black: -42.19785779348052
-        pct_hisp: -22.855313185368654
-        pct_renters: 26.743487476429763
-        sum_residential_units: 14.210797860040186
-        transitPeakTotal: 22.412804997044677
+        I(year_built < 1940)[T.True]: 30.57564192743645
+        I(year_built > 2000)[T.True]: 15.720231069753618
+        Intercept: 29.869095196273832
+        autoOffPeakRetail: -38.44583343335905
+        autoPeakTotal: 59.942483923633766
+        ave_income: 63.27622513452866
+        ave_lot_size_per_unit: 17.87598669581393
+        jobs: 8.134608185148998
+        np.log1p(sqft_per_unit): -165.03635808386704
+        pct_asian: -14.276517600287589
+        pct_black: -37.44402784363417
+        pct_hisp: -18.19916905504868
+        pct_renters: 32.99471268733826
+        population: -3.165000919959857
+        poverty_rate: 3.7906671941248553
+        transitPeakTotal: 22.841055090670114
 
-fit_rsquared_adj: 0.433482439396073
+fit_rsquared_adj: 0.43286422026358296
 
-fit_rsquared: 0.43355191862029074
+fit_rsquared: 0.43294447608388364
