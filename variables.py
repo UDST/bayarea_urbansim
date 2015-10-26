@@ -308,6 +308,11 @@ def totacre(zone_forecast_inputs):
     s = zone_forecast_inputs.totacre
     return s
 
+@orca.column('taz','shpop62p')
+def shpop62p(zone_forecast_inputs):
+    s = zone_forecast_inputs.sh_62plus
+    return s
+
 @orca.table('buildings_subset')
 def buildings_subset(buildings):
     df = buildings.to_frame(columns=['zone_id',
