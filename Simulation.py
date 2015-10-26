@@ -16,7 +16,7 @@ SLACK = MAPS = True
 LOGS = True
 INTERACT = False
 S3 = False
-EVERY_NTH_YEAR = 10
+EVERY_NTH_YEAR = 1
 
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 
@@ -58,11 +58,9 @@ try:
 
         "households_relocation",
         "households_transition",
-        "hlcm_simulate",
 
         "jobs_relocation",
         "jobs_transition",
-        "elcm_simulate",
 
         "price_vars",
 
@@ -71,6 +69,9 @@ try:
         "scheduled_development_events",  # scheduled buildings additions
         "residential_developer",
         "non_residential_developer",
+        
+        "hlcm_simulate",                 # put these last so they don't get
+        "elcm_simulate",                 # displaced by new dev
 
         "diagnostic_output",
         "geographic_summary",
