@@ -267,6 +267,11 @@ def parcel_sales_price_sqft(use):
         s *= 1.0
     return s
 
+#############################
+# Functions for Checking  
+# Allowed Uses and Building
+# Types on Parcels
+#############################
 
 @orca.injectable('parcel_is_allowed_func', autocall=False)
 def parcel_is_allowed(form):
@@ -296,6 +301,11 @@ def parcel_first_building_type_is(form):
     parcels = orca.get_table('parcels')
     s = parcels.first_building_type_id.isin(form_to_btype[form])
     return s
+
+#############################
+# Summary by TAZ for 
+# Output to Travel Model
+#############################
 
 @orca.column('taz','gqpop')
 def gqpop(zones, zone_forecast_inputs, year):
@@ -467,22 +477,6 @@ def sd(taz_geography):
 def sd(taz_geography):
     s = taz_geography.county
     return s
-
-# @orca.column('taz','hhpop')
-# def hhpop(households):
-#     return s
-
-# @orca.column('taz','hhpop')
-# def hhpop(households):
-#     return s
-
-# @orca.column('taz','hhpop')
-# def hhpop(households):
-#     return s
-
-# @orca.column('taz','hhpop')
-# def hhpop(households):
-#     return s
 
 @orca.column('taz','totpop')
 def totpop(taz):
