@@ -8,23 +8,23 @@ from utils import random_indexes, round_series_match_target,\
 
 
 @orca.step("geographic_summary")
-def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict,
+def pda_output(parcels, households, jobs, buildings, taz_geography,
                run_number, year):
 
     households_df = orca.merge_tables(
         'households',
-        [parcels, taz_to_superdistrict, buildings, households],
+        [parcels, taz_geography, buildings, households],
         columns=['pda', 'zone_id', 'juris', 'superdistrict', 'puma5',
                  'persons', 'income'])
 
     jobs_df = orca.merge_tables(
         'jobs',
-        [parcels, taz_to_superdistrict, buildings, jobs],
+        [parcels, taz_geography, buildings, jobs],
         columns=['pda', 'superdistrict', 'juris', 'zone_id', 'empsix'])
 
     buildings_df = orca.merge_tables(
        'buildings',
-       [parcels, taz_to_superdistrict, buildings],
+       [parcels, taz_geography, buildings],
        columns=['pda', 'superdistrict', 'juris', 'building_type_id', 'zone_id',
                 'residential_units', 'building_sqft', 'non_residential_sqft'])
 
@@ -179,7 +179,7 @@ def travel_model_output(parcels, households, jobs, buildings,
         # list of columns that we need to fill eventually for valid travel
         # model file:
         template_columns = \
-            ['collfte', 'collpte', 'county', 
+            ['collfte', 'collpte',
              'hsenroll', 'oprkcst', 'prkcst',
              'terminal', 'topology']
 

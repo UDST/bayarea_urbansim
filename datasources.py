@@ -301,11 +301,10 @@ def zone_forecast_inputs():
     return pd.read_csv(os.path.join(misc.data_dir(), "zone_forecast_inputs.csv"),
                        index_col="zone_id")
 
-@orca.table('taz_to_superdistrict', cache=True)
-def taz_to_superdistrict():
-    df = pd.read_csv(os.path.join(misc.data_dir(), "taz_to_superdistrict.csv"))
+@orca.table('taz_geography', cache=True)
+def taz_geography():
+    df = pd.read_csv(os.path.join(misc.data_dir(), "taz_geography.csv"))
     return df.set_index('zone')
-
 
 # these are shapes - "zones" in the bay area
 @orca.table('zones', cache=True)
@@ -326,5 +325,5 @@ orca.broadcast('nodes', 'costar', cast_index=True, onto_on='node_id')
 orca.broadcast('tmnodes', 'costar', cast_index=True, onto_on='tmnode_id')
 orca.broadcast('logsums', 'homesales', cast_index=True, onto_on='zone_id')
 orca.broadcast('logsums', 'costar', cast_index=True, onto_on='zone_id')
-orca.broadcast('taz_to_superdistrict', 'parcels', cast_index=True,
+orca.broadcast('taz_geography', 'parcels', cast_index=True,
                onto_on='zone_id')

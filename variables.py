@@ -454,8 +454,13 @@ def othempn(jobs_subset):
     return s
 
 @orca.column('taz','sd')
-def sd(taz_to_superdistrict):
-    s = taz_to_superdistrict.superdistrict
+def sd(taz_geography):
+    s = taz_geography.superdistrict
+    return s
+
+@orca.column('taz','county')
+def sd(taz_geography):
+    s = taz_geography.county
     return s
 
 # @orca.column('taz','hhpop')
