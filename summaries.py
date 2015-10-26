@@ -149,6 +149,7 @@ def travel_model_output(parcels, households, jobs, buildings,
         taz_df["tract"] = df.tract
         taz_df["zero"] = pd.Series(index=df.index).fillna(0) #intentionally set to 0
         taz_df["density"] = df.density 
+        taz_df["county"] = df.county
 
         taz_df = add_population(taz_df, year)
         taz_df = add_employment(taz_df, year)
@@ -191,7 +192,7 @@ def travel_model_output(parcels, households, jobs, buildings,
         taz_df.columns = \
             [x.upper() for x in taz_df.columns]
 
-    taz_df.to_csv(travel_model_csv)
+        taz_df.to_csv(travel_model_csv)
 
 
 def zone_forecast_inputs():
