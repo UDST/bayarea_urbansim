@@ -80,8 +80,6 @@ variable_definitions:
     radius: 1500
     apply: np.log1p
 
-
-
   - name: hispanics
     dataframe: households
     filters:
@@ -102,6 +100,27 @@ variable_definitions:
     dataframe: households
     filters:
     - tenure == 2 and building_id != -1
+    radius: 1500
+    apply: np.log1p
+
+  - name: singles
+    dataframe: households
+    filters:
+    - hhs1 == 1
+    radius: 1500
+    apply: np.log1p
+
+  - name: two_persons
+    dataframe: households
+    filters:
+    - hhs2 == 1
+    radius: 1500
+    apply: np.log1p
+
+  - name: three_plus
+    dataframe: households
+    filters:
+    - hhs3p == 1
     radius: 1500
     apply: np.log1p
 

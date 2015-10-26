@@ -66,6 +66,11 @@ def unit_annual_rent(buildings, residential_units):
 # HOUSEHOLD VARIABLES
 #####################
 
+# overriding to remove NaNs so we can use zone_id in regressions
+@orca.column('households', 'zone')
+def zone(households):
+    return households.zone_id.fillna(-1)
+
 @orca.column('households', 'positive_income')
 def positive_income(households):
     inc = households.income
