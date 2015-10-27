@@ -135,7 +135,6 @@ def travel_model_output(parcels, households, jobs, buildings,
         taz_df["hhincq3"] = df.hhinq3
         taz_df["hhincq4"] = df.hhinq4
         #taz_df["hhlds"] = df.tothh #intentionally identical to tothh
-        taz_df["hhpop"] = df.hhpop
         taz_df["mfdu"] = df.mfdu
         taz_df["mwtempn"] = df.mwtempn
         #taz_df["newdevacres"] = df.newdevacres
@@ -150,13 +149,13 @@ def travel_model_output(parcels, households, jobs, buildings,
         taz_df["totacre"] = df.totacre
         taz_df["totemp"] = df.totemp
         taz_df["tothh"] = df.tothh #intentionally identical to hhlds
-        taz_df["totpop"] = df.totpop
         #taz_df["tract"] = df.tract
         #taz_df["zero"] = pd.Series(index=df.index).fillna(0) #intentionally set to 0
         taz_df["zone"] = df.index 
 
 
         taz_df = add_population(taz_df, year)
+        taz_df["totpop"] = df.hhpop+df.gqpop #putting this here because otherwise total population is not equal to group quarters+household population
         taz_df = add_employment(taz_df, year)
         taz_df = add_age_categories(taz_df, year)
 
@@ -183,8 +182,12 @@ def travel_model_output(parcels, households, jobs, buildings,
             "runs/run{}_taz_summaries_{}.csv".format(run_number, year)
 
         # uppercase columns to match travel model template
+
+        taz_df["totpop"] = df.gqpop+df.hhpop #putting this here because otherwise total population is not equal to group quarters+household population
+
         taz_df.columns = \
             [x.upper() for x in taz_df.columns]
+
 
         taz_df.fillna(0).to_csv(travel_model_csv)
 
@@ -199,14 +202,14 @@ def regional_controls():
 
 def add_population(df, year):
     rc = regional_controls()
-    target = rc.totpop.loc[year]
+    target = rc.totpop.loc[year] - df.gqpop.sum()
 
     zfi = zone_forecast_inputs()
     s = df.tothh * zfi.meanhhsize
 
     s = scale_by_target(s, target, .1)
 
-    df["totpop"] = round_series_match_target(s, target, 0)
+    df["hhpop"] = round_series_match_target(s, target, 0)
     return df
 
 # add employemnt to the dataframe - this uses a regression with

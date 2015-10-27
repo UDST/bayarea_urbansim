@@ -478,12 +478,12 @@ def sd(taz_geography):
     s = taz_geography.county
     return s
 
-@orca.column('taz','totpop')
-def totpop(taz):
-    s = taz.gqpop
-    s1 = taz.hhpop
-    s2 = s1+s
-    return s2
+# @orca.column('taz','totpop')
+# def totpop(taz):
+#     s = taz.gqpop
+#     s1 = taz.hhpop
+#     s2 = s1+s
+#     return s2
 
 @orca.column('taz','density')
 def density(taz):
