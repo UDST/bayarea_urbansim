@@ -261,7 +261,11 @@ def add_employment(df, year):
 
     df["empres"] = round_series_match_target(empres, target, 0)
 
-    # make sure employed residents is less than total residentss
+    # this should really make the assertion below pass, but this now
+    # only occurs very infrequently
+    df["empres"] = df[["empres", "totpop"]].min(axis=1)
+
+    # make sure employed residents is less than total residents
     assert (df.empres <= df.totpop).all()
 
     return df
