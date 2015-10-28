@@ -37,11 +37,12 @@ def rsh_simulate(buildings, aggregations, settings):
 @orca.step("scheduled_development_events")
 def scheduled_development_events(buildings, development_projects,
                                  development_events, summary, year, parcels,
-                                 settings,
+                                 settings, years_per_iter,
                                  building_sqft_per_job):
 
     # then build
-    dps = development_projects.to_frame().query("year_built == %d" % year)
+    dps = development_projects.to_frame().query("%d <= year_built < %d" %
+        (year, year + years_per_iter))
 
     if len(dps) == 0:
         return

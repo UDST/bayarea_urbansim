@@ -8,23 +8,23 @@ from utils import random_indexes, round_series_match_target,\
 
 
 @orca.step("geographic_summary")
-def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict,
+def pda_output(parcels, households, jobs, buildings, taz_geography,
                run_number, year):
 
     households_df = orca.merge_tables(
         'households',
-        [parcels, taz_to_superdistrict, buildings, households],
+        [parcels, taz_geography, buildings, households],
         columns=['pda', 'zone_id', 'juris', 'superdistrict', 'puma5',
                  'persons', 'income'])
 
     jobs_df = orca.merge_tables(
         'jobs',
-        [parcels, taz_to_superdistrict, buildings, jobs],
+        [parcels, taz_geography, buildings, jobs],
         columns=['pda', 'superdistrict', 'juris', 'zone_id', 'empsix'])
 
     buildings_df = orca.merge_tables(
        'buildings',
-       [parcels, taz_to_superdistrict, buildings],
+       [parcels, taz_geography, buildings],
        columns=['pda', 'superdistrict', 'juris', 'building_type_id', 'zone_id',
                 'residential_units', 'building_sqft', 'non_residential_sqft'])
 
@@ -108,129 +108,109 @@ def pda_output(parcels, households, jobs, buildings, taz_to_superdistrict,
 
 @orca.step("travel_model_output")
 def travel_model_output(parcels, households, jobs, buildings,
-                        zones, homesales, year, summary, coffer, run_number):
-
-    households = households.to_frame()
-    jobs = jobs.to_frame()
-    buildings = buildings.to_frame()
-    zones = zones.to_frame()
-
-    zones['tothh'] = households.\
-        groupby('zone_id').size()
-    zones['hhpop'] = households.\
-        groupby('zone_id').persons.sum()
-
-    zones['resunits'] = buildings.groupby('zone_id').residential_units.sum()
-    zones['resvacancy'] = (zones.resunits - zones.tothh) / \
-        zones.resunits.replace(0, 1)
-
-    zones['sfdu'] = \
-        buildings.query("building_type_id == 1 or building_type_id == 2").\
-        groupby('zone_id').residential_units.sum()
-    zones['mfdu'] = \
-        buildings.query("building_type_id == 3 or building_type_id == 12").\
-        groupby('zone_id').residential_units.sum()
-
-    zones['hhincq1'] = households.query("income < 25000").\
-        groupby('zone_id').size()
-    zones['hhincq2'] = households.query("income >= 25000 and income < 45000").\
-        groupby('zone_id').size()
-    zones['hhincq3'] = households.query("income >= 45000 and income < 75000").\
-        groupby('zone_id').size()
-    zones['hhincq4'] = households.query("income >= 75000").\
-        groupby('zone_id').size()
-
-    # attempting to get at total zonal developed acres
-    zones['NEWdevacres'] = \
-        (buildings.query("building_sqft > 0").
-         groupby('zone_id').lot_size_per_unit.sum()) / 43560
-
-    zones['totemp'] = jobs.\
-        groupby('zone_id').size()
-    zones['agrempn'] = jobs.query("empsix == 'AGREMPN'").\
-        groupby('zone_id').size()
-    zones['mwtempn'] = jobs.query("empsix == 'MWTEMPN'").\
-        groupby('zone_id').size()
-    zones['retempn'] = jobs.query("empsix == 'RETEMPN'").\
-        groupby('zone_id').size()
-    zones['fpsempn'] = jobs.query("empsix == 'FPSEMPN'").\
-        groupby('zone_id').size()
-    zones['herempn'] = jobs.query("empsix == 'HEREMPN'").\
-        groupby('zone_id').size()
-    zones['othempn'] = jobs.query("empsix == 'OTHEMPN'").\
-        groupby('zone_id').size()
-
-    zones = add_population(zones, year)
-    zones = add_employment(zones, year)
-    zones = add_age_categories(zones, year)
-
-    orca.add_table("travel_model_output", zones, year)
-
-    summary.add_zone_output(zones, "travel_model_output", year)
-    if sys.platform != 'win32':
-        summary.write_zone_output()
-
-    add_xy_config = {
-        "xy_table": "parcels",
-        "foreign_key": "parcel_id",
-        "x_col": "x",
-        "y_col": "y"
-    }
-    # otherwise it loses precision
-    if summary.parcel_output is not None and \
-            "geom_id" in summary.parcel_output:
-        summary.parcel_output["geom_id"] = \
-            summary.parcel_output.geom_id.astype('str')
-    summary.write_parcel_output(add_xy=add_xy_config)
+                        zones, homesales, year, summary, coffer, 
+                        zone_forecast_inputs, run_number, 
+                        taz):
 
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
+      
+        df = taz
+        #the commented out variables below are either:
+        #-provided in MtcProcessAbag.java, or
+        #-summary variables used to review outputs
+        taz_df = pd.DataFrame(index=zones.index)
+        taz_df["agrempn"] = df.agrempn
+        #taz_df["area"] = df.area
+        #taz_df["areatype"] = df.areatype
+        taz_df["ciacre"] = df.ciacre
+        taz_df["county"] = df.county
+        #taz_df["density"] = df.density 
+        #taz_df["district"] = df.sd #intentionally identical to sd
+        taz_df["fpsempn"] = df.fsempn
+        #taz_df["gid"] = df.gid
+        #taz_df["gqpop"] = df.gqpop
+        taz_df["herempn"] = df.herempn
+        taz_df["hhincq1"] = df.hhinq1 
+        taz_df["hhincq2"] = df.hhinq2
+        taz_df["hhincq3"] = df.hhinq3
+        taz_df["hhincq4"] = df.hhinq4
+        #taz_df["hhlds"] = df.tothh #intentionally identical to tothh
+        taz_df["mfdu"] = df.mfdu
+        taz_df["mwtempn"] = df.mwtempn
+        #taz_df["newdevacres"] = df.newdevacres
+        taz_df["othempn"] = df.othempn
+        taz_df["resacre"] = df.resacre
+        #taz_df["resunits"] = df.resunits
+        #taz_df["resvacancy"] = df.resvacancy
+        taz_df["retempn"] = df.retempn
+        taz_df["sd"] = df.sd #intentionally identical to district
+        taz_df["shpop62p"] = df.shpop62p # need to update for changes over time
+        taz_df["sfdu"] = df.sfdu
+        taz_df["totacre"] = df.totacre
+        taz_df["totemp"] = df.totemp
+        taz_df["tothh"] = df.tothh #intentionally identical to hhlds
+        #taz_df["tract"] = df.tract
+        #taz_df["zero"] = pd.Series(index=df.index).fillna(0) #intentionally set to 0
+        taz_df["zone"] = df.index 
+
+
+        taz_df = add_population(taz_df, year)
+        taz_df["totpop"] = df.hhpop+df.gqpop #putting this here because otherwise total population is not equal to group quarters+household population
+        taz_df = add_employment(taz_df, year)
+        taz_df = add_age_categories(taz_df, year)
+
+        orca.add_table("travel_model_output", taz_df, year)
+        summary.add_zone_output(taz_df, "travel_model_output", year)
+        if sys.platform != 'win32':
+            summary.write_zone_output()
+
+        add_xy_config = {
+            "xy_table": "parcels",
+            "foreign_key": "parcel_id",
+            "x_col": "x",
+            "y_col": "y"
+        }
+        # otherwise it loses precision
+        if summary.parcel_output is not None and \
+                "geom_id" in summary.parcel_output:
+            summary.parcel_output["geom_id"] = \
+                summary.parcel_output.geom_id.astype('str')
+        summary.write_parcel_output(add_xy=add_xy_config)
 
         # travel model csv
         travel_model_csv = \
             "runs/run{}_taz_summaries_{}.csv".format(run_number, year)
-        travel_model_output = zones
-
-        # list of columns that we need to fill eventually for valid travel
-        # model file:
-        template_columns = \
-            ['areatype', 'ciacre', 'collfte', 'collpte', 'county', 'district',
-             'gqpop', 'hhlds', 'hsenroll', 'oprkcst', 'prkcst',
-             'resacre', 'sd', 'sftaz', 'shpop62p', 'terminal', 'topology',
-             'totacre', 'zero', 'zone']
-
-        # fill those columns with NaN until we have values for them
-        for x in template_columns:
-            travel_model_output[x] = np.nan
 
         # uppercase columns to match travel model template
-        travel_model_output.columns = \
-            [x.upper() for x in travel_model_output.columns]
 
-        travel_model_output.to_csv(travel_model_csv)
+        taz_df["totpop"] = df.gqpop+df.hhpop #putting this here because otherwise total population is not equal to group quarters+household population
+
+        taz_df.columns = \
+            [x.upper() for x in taz_df.columns]
+
+
+        taz_df.fillna(0).to_csv(travel_model_csv)
 
 
 def zone_forecast_inputs():
     return pd.read_csv(os.path.join('data', 'zone_forecast_inputs.csv'),
                        index_col="zone_id")
 
-
 def regional_controls():
     return pd.read_csv(os.path.join('data', 'regional_controls.csv'),
                        index_col="year")
 
-
 def add_population(df, year):
     rc = regional_controls()
-    target = rc.totpop.loc[year]
+    target = rc.totpop.loc[year] - df.gqpop.sum()
 
     zfi = zone_forecast_inputs()
     s = df.tothh * zfi.meanhhsize
 
     s = scale_by_target(s, target, .1)
 
-    df["totpop"] = round_series_match_target(s, target, 0)
+    df["hhpop"] = round_series_match_target(s, target, 0)
     return df
-
 
 # add employemnt to the dataframe - this uses a regression with
 # estimated coefficients done by @mkreilly
@@ -277,11 +257,11 @@ def add_age_categories(df, year):
     rc = regional_controls()
 
     seed_matrix = zfi[["sh_age0004", "sh_age0519", "sh_age2044",
-                       "sh_age4564", "sh_age65up"]].\
+                       "sh_age4564", "sh_age65p"]].\
         mul(df.totpop, axis='index').as_matrix()
 
     row_marginals = df.totpop.values
-    agecols = ["age0004", "age0519", "age2044", "age4564", "age65up"]
+    agecols = ["age0004", "age0519", "age2044", "age4564", "age65p"]
     col_marginals = rc[agecols].loc[year].values
 
     target = df.totpop.sum()
