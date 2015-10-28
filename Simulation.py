@@ -13,7 +13,7 @@ warnings.filterwarnings("ignore")
 args = sys.argv[1:]
 
 SLACK = MAPS = False
-LOGS = True
+LOGS = False
 INTERACT = False
 S3 = False
 EVERY_NTH_YEAR = 5
