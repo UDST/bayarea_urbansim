@@ -5,39 +5,7 @@ from urbansim_defaults import datasources
 from urbansim_defaults import utils
 from urbansim.utils import misc
 import orca
-
-
-#####################
-# UTILITY FUNCTIONS
-#####################
-
-
-# assume df1 and df2 each have 2 float columns specifying x and y
-# in the same order and coordinate system and no nans.  returns the indexes
-# from df1 that are closest to each row in df2
-def nearest_neighbor(df1, df2):
-    from sklearn.neighbors import KDTree
-    kdt = KDTree(df1.as_matrix())
-    indexes = kdt.query(df2.as_matrix(), k=1, return_distance=False)
-    return df1.index.values[indexes]
-
-
-# need to reindex from geom id to the id used on parcels
-def geom_id_to_parcel_id(df, parcels):
-    s = parcels.geom_id  # get geom_id
-    s = pd.Series(s.index, index=s.values)  # invert series
-    df["new_index"] = s.loc[df.index]  # get right parcel_id for each geom_id
-    df = df.dropna(subset=["new_index"])
-    df["new_index"] = df.new_index.astype('int')
-    df = df.set_index("new_index", drop=True)
-    df.index.name = "parcel_id"
-    return df
-
-
-def parcel_id_to_geom_id(s):
-    parcels = orca.get_table("parcels")
-    g = parcels.geom_id  # get geom_id
-    return pd.Series(g.loc[s.values].values, index=s.index)
+from utils import geom_id_to_parcel_id, parcel_id_to_geom_id
 
 
 #####################
@@ -108,7 +76,7 @@ def zoning_lookup():
 # comes in the hdf5
 @orca.table('zoning_baseline', cache=True)
 def zoning_baseline(parcels, zoning_lookup):
-    df = pd.read_csv(os.path.join(misc.data_dir(), 
+    df = pd.read_csv(os.path.join(misc.data_dir(),
                      "2015_10_06_zoning_parcels.csv"),
                      index_col="geom_id")
 
@@ -122,6 +90,7 @@ def zoning_baseline(parcels, zoning_lookup):
         "HM": "type3",
         "OF": "type4",
         "HO": "type5",
+        "SC": "type6",
         "IL": "type7",
         "IW": "type8",
         "IH": "type9",
@@ -184,6 +153,10 @@ def parcels_zoning_calculations(parcels):
                             'total_residential_units'])
                         , index=parcels.index)
 
+@orca.table('taz')
+def taz(zones):
+    return zones
+
 @orca.table(cache=True)
 def parcel_rejections():
     url = "https://forecast-feedback.firebaseio.com/parcelResults.json"
@@ -192,8 +165,8 @@ def parcel_rejections():
 
 @orca.table(cache=True)
 def parcels_geography(parcels):
-    df = pd.read_csv(os.path.join(misc.data_dir(), 
-                                    "2015_10_07_2_parcels_geography.csv"),
+    df = pd.read_csv(os.path.join(misc.data_dir(),
+                                  "2015_10_07_2_parcels_geography.csv"),
                      index_col="geom_id", dtype={'jurisdiction': 'str'})
     return geom_id_to_parcel_id(df, parcels)
 
@@ -279,12 +252,6 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
     # keeps parking lots from getting redeveloped
     df["building_sqft"][df.building_type_id.isin([15, 16])] = 0
 
-    # BRUTE FORCE INCREASE THE CAPACITY FOR MORE JOBS
-    #print "WARNING: this has the hard-coded version which unrealistically" +\
-    #    " increases non-residential square footage to house all the base" +\
-    #    " year jobs"
-    #df["non_residential_sqft"] = (df.non_residential_sqft * 1.15).astype('int')
-
     # we should only be using the "buildings" table during simulation, and in
     # simulation we want to normalize the prices to 2012 style prices
     df["redfin_sale_year"] = 2012
@@ -329,11 +296,23 @@ def employment_controls(employment_controls_unstacked):
     df.columns = ['empsix_id', 'number_of_jobs']
     return df
 
+@orca.table('zone_forecast_inputs', cache=True)
+def zone_forecast_inputs():
+    return pd.read_csv(os.path.join(misc.data_dir(), "zone_forecast_inputs.csv"),
+                       index_col="zone_id")
 
-@orca.table('taz_to_superdistrict', cache=True)
-def taz_to_superdistrict():
-    df = pd.read_csv(os.path.join(misc.data_dir(), "taz_to_superdistrict.csv"))
+@orca.table('taz_geography', cache=True)
+def taz_geography():
+    df = pd.read_csv(os.path.join(misc.data_dir(), "taz_geography.csv"))
     return df.set_index('zone')
+
+# these are shapes - "zones" in the bay area
+@orca.table('zones', cache=True)
+def zones(store):
+    df = store['zones']
+    df = df.sort_index()
+    return df
+
 
 # this specifies the relationships between tables
 orca.broadcast('parcels_geography', 'buildings', cast_index=True,
@@ -346,5 +325,5 @@ orca.broadcast('nodes', 'costar', cast_index=True, onto_on='node_id')
 orca.broadcast('tmnodes', 'costar', cast_index=True, onto_on='tmnode_id')
 orca.broadcast('logsums', 'homesales', cast_index=True, onto_on='zone_id')
 orca.broadcast('logsums', 'costar', cast_index=True, onto_on='zone_id')
-orca.broadcast('taz_to_superdistrict', 'parcels', cast_index=True,
+orca.broadcast('taz_geography', 'parcels', cast_index=True,
                onto_on='zone_id')

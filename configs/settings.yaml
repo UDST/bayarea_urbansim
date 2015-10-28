@@ -250,7 +250,8 @@ building_type_map2:
 # "form" this can be converted for storing as a type
 # in the building table - in the long run, the developer
 # forms and the building types should be the same and the
-# developer model should account for the differences
+# developer model should account for the differences.
+# travel_model_ variables are for the travel_model_summary step.
 form_to_btype:
   residential:
     - 1
@@ -269,7 +270,17 @@ form_to_btype:
     - 12
   mixedoffice:
     - 14
-
+  select_non_residential:
+    - 4
+    - 5
+    - 6 
+    - 7
+    - 8
+    - 9
+    - 10
+    - 11
+    - 13
+    - 14
 
 building_sqft_per_job:
   -1: 400

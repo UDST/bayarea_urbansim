@@ -6,7 +6,7 @@ import datasources
 import variables
 import subsidies
 import summaries
-from datasources import parcel_id_to_geom_id
+from utils import parcel_id_to_geom_id
 from urbansim.utils import networks
 import pandana.network as pdna
 from urbansim_defaults import models

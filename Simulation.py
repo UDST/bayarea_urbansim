@@ -12,8 +12,8 @@ warnings.filterwarnings("ignore")
 
 args = sys.argv[1:]
 
-SLACK = MAPS = True
-LOGS = True
+SLACK = MAPS = False
+LOGS = False
 INTERACT = False
 S3 = False
 EVERY_NTH_YEAR = 1
