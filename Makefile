@@ -16,6 +16,8 @@ database_backup: 2015/10/14/18/14/full.dump \
 2015/10/14/18/14/db-schema.sql \
 2015/10/14/18/14/globals.sql
 
+cartography: data/simple_parcels.shp
+
 data/2015_09_01_bayarea_v3.h5:
 	$(get)$@ \
 	$@.download
@@ -47,6 +49,10 @@ data/2015_08_03_tmnet.h5:
 	mv $@.download $@
 
 #a parcels shapefile is available on the land use server in d:/badata/out/summaries/ or box/badata/out/regeneration
+data/simple_parcels.zip: 
+	$(get)$@ \
+	$@.download
+	mv $@.download $@
 
 2015/10/14/18/14/full.dump:
 	mkdir -p $(dir $@)

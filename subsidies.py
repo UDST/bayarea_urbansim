@@ -313,3 +313,6 @@ def subsidized_residential_developer(
                              form_to_btype_func,
                              add_extra_columns_func,
                              summary)
+
+    # set to an empty dataframe to save memory
+    orca.add_table("feasibility", pd.DataFrame())

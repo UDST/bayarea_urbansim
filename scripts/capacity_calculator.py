@@ -7,11 +7,12 @@ import models
 # make sure to use the baseline zoning, even if set differently for urbansim
 orca.get_injectable("settings").update(scenario="baseline")
 
-parcels = orca.get_table("parcels")
+parcels = orca.get_table("parcels_zoning_calculations")
 parcels_geography = orca.get_table("parcels_geography")
 
 df = parcels.to_frame(["geom_id", "total_residential_units", "zoned_du",
-                       "zoned_du_underbuild", "zoned_du_underbuild_nodev"])
+                       "zoned_du_underbuild", "zoned_du_underbuild_nodev"
+                       ])
 
 df["juris_name"] = parcels_geography.juris_name
 df["juris_id"] = parcels_geography.jurisdiction

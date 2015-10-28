@@ -352,43 +352,10 @@ def parcel_rules(parcels):
     s = (~s.reindex(parcels.index).fillna(False)).astype('int')
     return s
 
-GROSS_AVE_UNIT_SIZE = 1000
-
-
-@orca.column('parcels', 'zoned_du', cache=True)
-def zoned_du(parcels):
-    s = parcels.max_dua * parcels.parcel_acres
-    s2 = parcels.max_far * parcels.parcel_size / GROSS_AVE_UNIT_SIZE
-    s3 = parcel_is_allowed('residential')
-    return (s.fillna(s2)*s3).reindex(parcels.index).fillna(0).astype('int')
-
-
 @orca.column('parcels', 'total_non_residential_sqft', cache=True)
 def total_non_residential_sqft(parcels, buildings):
     return buildings.non_residential_sqft.groupby(buildings.parcel_id).sum().\
         reindex(parcels.index).fillna(0)
-
-
-# there are a number of variables here that try to get at zoned capacity
-@orca.column('parcels', 'zoned_du_underbuild')
-def zoned_du_underbuild(parcels):
-    # subtract from zoned du, the total res units, but also the equivalent
-    # of non-res sqft in res units
-    s = (parcels.zoned_du - parcels.total_residential_units -
-         parcels.total_non_residential_sqft / GROSS_AVE_UNIT_SIZE)\
-         .clip(lower=0)
-    ratio = (s / parcels.total_residential_units).replace(np.inf, 1)
-    # if the ratio of additional units to existing units is not at least .5
-    # we don't build it - I mean we're not turning a 10 story building into an
-    # 11 story building
-    s = s[ratio > .5].reindex(parcels.index).fillna(0)
-    return s.astype('int')
-
-
-@orca.column('parcels')
-def zoned_du_underbuild_nodev(parcels):
-    return (parcels.zoned_du_underbuild * parcels.parcel_rules).astype('int')
-
 
 @orca.column('parcels')
 def nodev(zoning_baseline, parcels):
@@ -497,3 +464,115 @@ def node_id(parcels, net):
 @orca.column('parcels', 'vmt_res_cat', cache=True)
 def vmt_code(parcels, vmt_fee_categories):
     return misc.reindex(vmt_fee_categories.res_cat, parcels.zone_id)
+
+GROSS_AVE_UNIT_SIZE = 1000
+
+####################################
+#####Zoning Capacity Variables######
+####################################
+
+@orca.column('parcels_zoning_calculations', 'zoned_du', cache=True)
+def zoned_du(parcels):
+    s = parcels.max_dua * parcels.parcel_acres
+    s2 = parcels.max_far * parcels.parcel_size / GROSS_AVE_UNIT_SIZE
+    s3 = parcel_is_allowed('residential')
+    return (s.fillna(s2)*s3).reindex(parcels.index).fillna(0).astype('int')
+
+@orca.column('parcels_zoning_calculations', 'effective_max_dua', cache=True)
+def effective_max_dua(parcels):
+    s = parcels.max_dua
+    s2 = parcels.max_far * parcels.parcel_size / GROSS_AVE_UNIT_SIZE / parcels.parcel_acres # not elegant, b/c GROSS_AVE_UNIT_SIZE is actually Area/DU already
+    s3 = parcel_is_allowed('residential')
+    return (s.fillna(s2)*s3).reindex(parcels.index).fillna(0).astype('float')
+
+@orca.column('parcels_zoning_calculations', 'effective_max_office_far', cache=True)
+def effective_max_office_far(parcels):
+    s = parcels.max_far
+    s2 = parcels.max_height / 11 # assuming 12ft floor to floor ratio for office building height
+    s3 = parcel_is_allowed('office')
+    return (s.fillna(s2)*s3).reindex(parcels.index).fillna(0).astype('float')
+
+# there are a number of variables here that try to get at zoned capacity
+@orca.column('parcels_zoning_calculations', 'zoned_du_underbuild')
+def zoned_du_underbuild(parcels, parcels_zoning_calculations):
+    # subtract from zoned du, the total res units, but also the equivalent
+    # of non-res sqft in res units
+    s = (parcels_zoning_calculations.zoned_du - parcels.total_residential_units -
+         parcels.total_non_residential_sqft / GROSS_AVE_UNIT_SIZE)\
+         .clip(lower=0)
+    ratio = (s / parcels.total_residential_units).replace(np.inf, 1)
+    # if the ratio of additional units to existing units is not at least .5
+    # we don't build it - I mean we're not turning a 10 story building into an
+    # 11 story building
+    s = s[ratio > .5].reindex(parcels.index).fillna(0)
+    return s.astype('int')
+
+@orca.column('parcels_zoning_calculations')
+def zoned_du_underbuild_nodev(parcels, parcels_zoning_calculations):
+    return (parcels_zoning_calculations.zoned_du_underbuild * parcels.parcel_rules).astype('int')
+
+@orca.column('parcels_zoning_calculations','office_allowed')
+def office_allowed(parcels):
+    office_allowed = parcel_is_allowed('office')
+    return office_allowed
+
+@orca.column('parcels_zoning_calculations','retail_allowed')
+def retail_allowed(parcels):
+    retail_allowed = parcel_is_allowed('retail')
+    return retail_allowed
+
+@orca.column('parcels_zoning_calculations','industrial_allowed')
+def industrial_allowed(parcels):
+    industrial_allowed = parcel_is_allowed('industrial')
+    return industrial_allowed
+
+###per: https://www.pivotaltracker.com/n/projects/1391722/stories/105696918
+#We want to build a map that shows one value per parcel representing its non-residential zoning situation. Follow these rules in order to classify every parcel:
+#1) If a parcel allows office development with an FAR > 4 it is tagged OH
+#2) If a parcel allows office development with an FAR >1 and <=4 it is tagged OM
+#3) If a parcel allows office development with an FAR <=1 it is tagged OL
+#4) If a parcel disallows office development and allows retail development it is tagged R
+#5) If a parcel disallows office and retail development and allows industrial development it is tagged I
+#6) remaining untagged parcels are left with no value
+
+@orca.column('parcels_zoning_calculations','cat_r')
+def cat_r(parcels_zoning_calculations):
+    s = ~parcels_zoning_calculations.office_allowed&\
+        parcels_zoning_calculations.retail_allowed
+    s2 = pd.Series(index=parcels_zoning_calculations.index).fillna('R')
+    return s*s2
+
+@orca.column('parcels_zoning_calculations','cat_ind')
+def cat_ind(parcels_zoning_calculations):
+    s = ~parcels_zoning_calculations.office_allowed&\
+        ~parcels_zoning_calculations.retail_allowed&\
+        parcels_zoning_calculations.industrial_allowed
+    s2 = pd.Series(index=parcels_zoning_calculations.index).fillna('I')
+    return s*s2
+
+@orca.column('parcels_zoning_calculations','office_high')
+def office_high(parcels_zoning_calculations):
+    s = parcels_zoning_calculations.effective_max_office_far > 4
+    s2 = pd.Series(index=parcels_zoning_calculations.index).fillna('OH')
+    s3 = s*s2
+    return s3
+
+@orca.column('parcels_zoning_calculations','office_medium')
+def office_medium(parcels_zoning_calculations):
+    s = parcels_zoning_calculations.effective_max_office_far > 1
+    s2 = parcels_zoning_calculations.effective_max_office_far <= 4
+    s3 = pd.Series(index=parcels_zoning_calculations.index).fillna('OM')
+    return (s&s2)*s3
+
+@orca.column('parcels_zoning_calculations','office_low')
+def office_low(parcels_zoning_calculations):
+    s = parcels_zoning_calculations.effective_max_office_far < 1
+    s2 = parcels_zoning_calculations.office_allowed
+    s3 = pd.Series(index=parcels_zoning_calculations.index).fillna('OL')
+    return (s&s2)*s3
+
+@orca.column('parcels_zoning_calculations','non_res_categories')
+def non_res_categories(parcels_zoning_calculations):
+    pzc = parcels_zoning_calculations
+    s = pzc.office_high+pzc.office_medium+pzc.office_low+pzc.cat_r+pzc.cat_ind
+    return s
