@@ -16,6 +16,9 @@ SLACK = MAPS = False
 LOGS = False
 INTERACT = False
 S3 = False
+EVERY_NTH_YEAR = 1
+
+orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 
 if len(args) and args[0] == "-i":
     SLACK = MAPS = LOGS = False
@@ -55,11 +58,9 @@ try:
 
         "households_relocation",
         "households_transition",
-        "hlcm_simulate",
 
         "jobs_relocation",
         "jobs_transition",
-        "elcm_simulate",
 
         "price_vars",
 
@@ -68,11 +69,14 @@ try:
         "scheduled_development_events",  # scheduled buildings additions
         "residential_developer",
         "non_residential_developer",
+        
+        "hlcm_simulate",                 # put these last so they don't get
+        "elcm_simulate",                 # displaced by new dev
 
         "diagnostic_output",
         "geographic_summary",
         "travel_model_output"
-    ], iter_vars=range(in_year, out_year+1))
+    ], iter_vars=range(in_year, out_year+1, EVERY_NTH_YEAR))
 
 except Exception as e:
     print traceback.print_exc()
