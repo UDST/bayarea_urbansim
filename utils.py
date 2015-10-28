@@ -73,7 +73,7 @@ def scale_by_target(s, target, check_close=None):
 # seed_matrix is your best bet at the totals, col_marginals are
 # observed column marginals and row_marginals is the same for rows
 def simple_ipf(seed_matrix, col_marginals, row_marginals, tolerance=1, cnt=0):
-    assert np.absolute(row_marginals.sum() - col_marginals.sum()) < 1.0
+    assert np.absolute(row_marginals.sum() - col_marginals.sum()) < 5.0
 
     # first normalize on columns
     ratios = col_marginals / seed_matrix.sum(axis=0)
@@ -94,7 +94,7 @@ def simple_ipf(seed_matrix, col_marginals, row_marginals, tolerance=1, cnt=0):
     if closeness < tolerance:
         return seed_matrix
 
-    if cnt == 10000:
+    if cnt >= 50:
         return seed_matrix
 
     return simple_ipf(seed_matrix, col_marginals, row_marginals,
