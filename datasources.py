@@ -301,7 +301,6 @@ def zone_forecast_inputs():
     return pd.read_csv(os.path.join(misc.data_dir(), "zone_forecast_inputs.csv"),
                        index_col="zone_id")
 
-<<<<<<< HEAD
 # this is the set of categories by zone of sending and receiving zones
 # in terms of vmt fees
 @orca.table("vmt_fee_categories", cache=True)
@@ -310,15 +309,11 @@ def vmt_fee_categories():
         index_col="taz")
 
 
-@orca.table('taz_to_superdistrict', cache=True)
-def taz_to_superdistrict():
-    df = pd.read_csv(os.path.join(misc.data_dir(), "taz_to_superdistrict.csv"))
-=======
 @orca.table('taz_geography', cache=True)
 def taz_geography():
     df = pd.read_csv(os.path.join(misc.data_dir(), "taz_geography.csv"))
->>>>>>> master
     return df.set_index('zone')
+
 
 # these are shapes - "zones" in the bay area
 @orca.table('zones', cache=True)
