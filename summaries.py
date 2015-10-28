@@ -128,7 +128,7 @@ def travel_model_output(parcels, households, jobs, buildings,
         #taz_df["district"] = df.sd #intentionally identical to sd
         taz_df["fpsempn"] = df.fsempn
         #taz_df["gid"] = df.gid
-        #taz_df["gqpop"] = df.gqpop
+        taz_df["gqpop"] = df.gqpop
         taz_df["herempn"] = df.herempn
         taz_df["hhincq1"] = df.hhinq1 
         taz_df["hhincq2"] = df.hhinq2
@@ -210,6 +210,7 @@ def add_population(df, year):
     s = scale_by_target(s, target, .1)
 
     df["hhpop"] = round_series_match_target(s, target, 0)
+    df["hhpop"] = df.hhpop.fillna(0)
     return df
 
 # add employemnt to the dataframe - this uses a regression with
@@ -244,6 +245,7 @@ def add_employment(df, year):
     # this should really make the assertion below pass, but this now
     # only occurs very infrequently
     df["empres"] = df[["empres", "totpop"]].min(axis=1)
+    df["empres"] = df.empres.fillna(0)
 
     # make sure employed residents is less than total residents
     assert (df.empres <= df.totpop).all()
