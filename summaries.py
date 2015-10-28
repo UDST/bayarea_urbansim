@@ -128,7 +128,7 @@ def travel_model_output(parcels, households, jobs, buildings,
         #taz_df["district"] = df.sd #intentionally identical to sd
         taz_df["fpsempn"] = df.fsempn
         #taz_df["gid"] = df.gid
-        #taz_df["gqpop"] = df.gqpop
+        taz_df["gqpop"] = df.gqpop
         taz_df["herempn"] = df.herempn
         taz_df["hhincq1"] = df.hhinq1 
         taz_df["hhincq2"] = df.hhinq2
