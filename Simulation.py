@@ -13,7 +13,7 @@ warnings.filterwarnings("ignore")
 args = sys.argv[1:]
 
 SLACK = MAPS = False
-LOGS = False
+LOGS = True
 INTERACT = False
 S3 = False
 EVERY_NTH_YEAR = 5
@@ -66,7 +66,7 @@ try:
 
         "scheduled_development_events",  # scheduled buildings additions
 
-        "subsidized_residential_developer",
+        #"subsidized_residential_developer",
 
         "alt_feasibility",
 
@@ -78,9 +78,9 @@ try:
 
         "calculate_vmt_fees",
 
-        #"diagnostic_output",
+        "diagnostic_output",
         "geographic_summary",
-        #"travel_model_output"
+        "travel_model_output"
     ], iter_vars=range(in_year, out_year+1, EVERY_NTH_YEAR))
 
 except Exception as e:

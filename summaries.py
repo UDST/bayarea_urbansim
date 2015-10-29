@@ -128,7 +128,7 @@ def travel_model_output(parcels, households, jobs, buildings,
         #taz_df["district"] = df.sd #intentionally identical to sd
         taz_df["fpsempn"] = df.fsempn
         #taz_df["gid"] = df.gid
-        taz_df["gqpop"] = df.gqpop
+        taz_df["gqpop"] = df.gqpop.fillna(0)
         taz_df["herempn"] = df.herempn
         taz_df["hhincq1"] = df.hhinq1 
         taz_df["hhincq2"] = df.hhinq2
@@ -153,9 +153,10 @@ def travel_model_output(parcels, households, jobs, buildings,
         #taz_df["zero"] = pd.Series(index=df.index).fillna(0) #intentionally set to 0
         taz_df["zone"] = df.index 
 
-
         taz_df = add_population(taz_df, year)
-        taz_df["totpop"] = df.hhpop+df.gqpop #putting this here because otherwise total population is not equal to group quarters+household population
+        # total population = group quarters plus households population
+        taz_df["totpop"] = df.hhpop + df.gqpop
+        taz_df["totpop"] = taz_df.totpop.fillna(0)
         taz_df = add_employment(taz_df, year)
         taz_df = add_age_categories(taz_df, year)
 
@@ -182,8 +183,6 @@ def travel_model_output(parcels, households, jobs, buildings,
             "runs/run{}_taz_summaries_{}.csv".format(run_number, year)
 
         # uppercase columns to match travel model template
-
-        taz_df["totpop"] = df.gqpop+df.hhpop #putting this here because otherwise total population is not equal to group quarters+household population
 
         taz_df.columns = \
             [x.upper() for x in taz_df.columns]
@@ -245,7 +244,6 @@ def add_employment(df, year):
     # this should really make the assertion below pass, but this now
     # only occurs very infrequently
     df["empres"] = df[["empres", "totpop"]].min(axis=1)
-    df["empres"] = df.empres.fillna(0)
 
     # make sure employed residents is less than total residents
     assert (df.empres <= df.totpop).all()
