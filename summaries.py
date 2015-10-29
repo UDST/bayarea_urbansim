@@ -13,42 +13,20 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
 
     households_df = orca.merge_tables(
         'households',
-        [parcels,
-         taz_geography,
-         buildings,
-         households],
-        columns=['pda',
-                 'zone_id',
-                 'juris',
-                 'superdistrict',
-                 'puma5',
-                 'persons',
-                 'income'])
+        [parcels, taz_geography, buildings, households],
+        columns=['pda', 'zone_id', 'juris', 'superdistrict', 'puma5',
+                 'persons', 'income'])
 
     jobs_df = orca.merge_tables(
         'jobs',
-        [parcels,
-         taz_geography,
-         buildings,
-         jobs],
-        columns=['pda',
-                 'superdistrict',
-                 'juris',
-                 'zone_id',
-                 'empsix'])
+        [parcels, taz_geography, buildings, jobs],
+        columns=['pda', 'superdistrict', 'juris', 'zone_id', 'empsix'])
 
     buildings_df = orca.merge_tables(
         'buildings',
-        [parcels,
-         taz_geography,
-         buildings],
-        columns=['pda',
-                 'superdistrict',
-                 'juris',
-                 'building_type_id',
-                 'zone_id',
-                 'residential_units',
-                 'building_sqft',
+        [parcels, taz_geography, buildings],
+        columns=['pda', 'superdistrict', 'juris', 'building_type_id',
+                 'zone_id', 'residential_units', 'building_sqft',
                  'non_residential_sqft'])
 
     # because merge_tables returns multiple zone_id_'s, but not the one we need

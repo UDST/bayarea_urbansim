@@ -378,8 +378,8 @@ def households_subset(households):
     zone_id = households.zone_id
     income = households.income
     persons = households.persons
-    df = pd.DataFrame(
-        data={'zone_id': zone_id, 'income': income, 'persons': persons})
+    df = pd.DataFrame(data={'zone_id': zone_id, 'income': income,
+                            'persons': persons})
     return df
 
 
@@ -768,11 +768,10 @@ def effective_max_office_far(parcels):
 def zoned_du_underbuild(parcels, parcels_zoning_calculations):
     # subtract from zoned du, the total res units, but also the equivalent
     # of non-res sqft in res units
-    s = (
-        parcels_zoning_calculations.zoned_du -
-        parcels.total_residential_units -
-        parcels.total_non_residential_sqft /
-        GROSS_AVE_UNIT_SIZE).clip(lower=0)
+    s = (parcels_zoning_calculations.zoned_du -
+         parcels.total_residential_units -
+         parcels.total_non_residential_sqft /
+         GROSS_AVE_UNIT_SIZE).clip(lower=0)
     ratio = (s / parcels.total_residential_units).replace(np.inf, 1)
     # if the ratio of additional units to existing units is not at least .5
     # we don't build it - I mean we're not turning a 10 story building into an
@@ -783,9 +782,8 @@ def zoned_du_underbuild(parcels, parcels_zoning_calculations):
 
 @orca.column('parcels_zoning_calculations')
 def zoned_du_underbuild_nodev(parcels, parcels_zoning_calculations):
-    return (
-        parcels_zoning_calculations.zoned_du_underbuild *
-        parcels.parcel_rules).astype('int')
+    return (parcels_zoning_calculations.zoned_du_underbuild *
+            parcels.parcel_rules).astype('int')
 
 
 @orca.column('parcels_zoning_calculations', 'office_allowed')
