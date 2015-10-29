@@ -76,11 +76,9 @@ def zoning_lookup():
 # comes in the hdf5
 @orca.table('zoning_baseline', cache=True)
 def zoning_baseline(parcels, zoning_lookup):
-    df = pd.read_csv(
-        os.path.join(
-            misc.data_dir(),
-            "2015_10_06_zoning_parcels.csv"),
-        index_col="geom_id")
+    df = pd.read_csv(os.path.join(misc.data_dir(),
+                     "2015_10_06_zoning_parcels.csv"),
+                     index_col="geom_id")
 
     df = pd.merge(df, zoning_lookup.to_frame(),
                   left_on="zoning_id", right_index=True)
@@ -151,11 +149,10 @@ def parcels(store):
 
 @orca.table('parcels_zoning_calculations', cache=True)
 def parcels_zoning_calculations(parcels):
-    return pd.DataFrame(
-        data=parcels.to_frame(
-            columns=['geom_id',
-                     'total_residential_units']),
-        index=parcels.index)
+    return pd.DataFrame(data=parcels.to_frame(
+                        columns=['geom_id',
+                                 'total_residential_units']),
+                        index=parcels.index)
 
 
 @orca.table('taz')
@@ -171,12 +168,9 @@ def parcel_rejections():
 
 @orca.table(cache=True)
 def parcels_geography(parcels):
-    df = pd.read_csv(
-        os.path.join(
-            misc.data_dir(),
-            "2015_10_07_2_parcels_geography.csv"),
-        index_col="geom_id",
-        dtype={'jurisdiction': 'str'})
+    df = pd.read_csv(os.path.join(misc.data_dir(),
+                                  "2015_10_07_2_parcels_geography.csv"),
+                     index_col="geom_id", dtype={'jurisdiction': 'str'})
     return geom_id_to_parcel_id(df, parcels)
 
 
@@ -250,18 +244,11 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
     df = datasources.buildings(store, households, jobs,
                                building_sqft_per_job, settings)
 
-    df = df.drop([
-                'development_type_id',
-                'improvement_value',
-                'sqft_per_unit',
-                'nonres_rent_per_sqft',
-                'res_price_per_sqft',
-                'redfin_sale_price',
-                'redfin_home_type',
-                'costar_property_type',
-                'costar_rent'
-                ],
-        axis=1)
+    df = df.drop(['development_type_id', 'improvement_value',
+                  'sqft_per_unit', 'nonres_rent_per_sqft',
+                  'res_price_per_sqft', 'redfin_sale_price',
+                  'redfin_home_type', 'costar_property_type',
+                  'costar_rent'], axis=1)
 
     # set the vacancy rate in each building to 5% for testing purposes
     df["residential_units"] = df.residential_units.fillna(0)
@@ -316,11 +303,9 @@ def employment_controls(employment_controls_unstacked):
 
 @orca.table('zone_forecast_inputs', cache=True)
 def zone_forecast_inputs():
-    return pd.read_csv(
-        os.path.join(
-            misc.data_dir(),
-            "zone_forecast_inputs.csv"),
-        index_col="zone_id")
+    return pd.read_csv(os.path.join(misc.data_dir(),
+                                    "zone_forecast_inputs.csv"),
+                       index_col="zone_id")
 
 
 @orca.table('taz_geography', cache=True)
