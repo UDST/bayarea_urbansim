@@ -217,13 +217,15 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
         # print "Building {:d} subsidized buildings".format(num_bldgs)
         df = df.iloc[:int(num_bldgs)]
 
+        df.columns = pd.MultiIndex.from_tuples(
+            [("residential", col) for col in df.columns])
         # disable stdout since developer is a bit verbose for this use case
         sys.stdout, old_stdout = StringIO(), sys.stdout
 
         kwargs = settings['residential_developer']
         # step 9
         new_buildings = utils.run_developer(
-            None,
+            "residential",
             households,
             buildings,
             "residential_units",

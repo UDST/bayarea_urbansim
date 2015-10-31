@@ -4,7 +4,7 @@ import pandas as pd
 # vmt fees on and off - presumably we want there to be more units built
 # in low-vmt areas
 
-RUN1 = 539  # vmt on
+RUN1 = 547  # vmt on
 RUN2 = 540  # vmt off
 vmt_order = ["S", "M", "MH", "H", "VH"]
 
@@ -14,7 +14,7 @@ for runnum in [RUN1, RUN2]:
     df = pd.read_csv('runs/run%d_parcel_output.csv' % runnum,
     	             low_memory=False)
 
-    df = df[(df.form == "residential") | (df.subsidized == True)]
+    df = df[df.form == "residential"]
 
     total_units = df.net_units.sum()
     print "Total units =", total_units
