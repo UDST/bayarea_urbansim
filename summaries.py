@@ -116,6 +116,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
 
         df = taz
+        taz_df = pd.DataFrame(index=zones.index)
         taz_df["sd"] = df.sd
         taz_df["zone"] = df.index
         taz_df["county"] = df.county
