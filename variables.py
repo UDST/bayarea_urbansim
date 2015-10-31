@@ -213,9 +213,19 @@ def modern_condo(buildings):
         .astype('int')
 
 
+@orca.column('buildings', cache=True)
+def vmt_res_cat(buildings, vmt_fee_categories):
+    return misc.reindex(vmt_fee_categories.res_cat, buildings.zone_id)
+
+
 #####################
 # PARCELS VARIABLES
 #####################
+
+
+@orca.column('parcels', cache=True)
+def vmt_res_cat(parcels, vmt_fee_categories):
+    return misc.reindex(vmt_fee_categories.res_cat, parcels.zone_id)
 
 
 @orca.column('parcels', cache=True)
@@ -724,6 +734,11 @@ def node_id(parcels, net):
     fill_val = s.value_counts().index[0]
     s = s.reindex(parcels.index).fillna(fill_val).astype('int')
     return s
+
+
+@orca.column('parcels', 'vmt_res_cat', cache=True)
+def vmt_code(parcels, vmt_fee_categories):
+    return misc.reindex(vmt_fee_categories.res_cat, parcels.zone_id)
 
 GROSS_AVE_UNIT_SIZE = 1000
 

@@ -1,11 +1,18 @@
+import sys
+import time
 import orca
+import pandas as pd
+import numpy as np
 from urbansim import accounts
+from urbansim_defaults import utils
+from cStringIO import StringIO
 
 
 @orca.injectable("coffer", cache=True)
 def coffer():
     return {
-        "prop_tax_acct": accounts.Account("prop_tax_act")
+        "prop_tax_acct": accounts.Account("prop_tax_act"),
+        "vmt_fee_acct":  accounts.Account("vmt_fee_acct")
     }
 
 
@@ -55,6 +62,38 @@ def tax_buildings(buildings, acct_settings, account, year):
     print "Sample rows from property tax accts:"
     print account.to_frame().\
         sort(columns=["amount"], ascending=False).head(7)
+
+
+@orca.step("calculate_vmt_fees")
+def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
+                       summary):
+
+    if 'enable_vmt_fees' not in settings:
+        return
+
+    vmt_settings = settings["enable_vmt_fees"]
+
+    # this is the frame that knows which devs are subsidized
+    df = summary.parcel_output
+
+    df = df.query("year_built == %d and subsidized != True" % year)
+
+    df["res_fees"] = df.vmt_res_cat.map(vmt_settings["fee_amounts"])
+
+    total_vmt_fees = (df.res_fees * df.residential_units).sum()
+
+    print "Applying vmt fees to %d units" % df.residential_units.sum()
+
+    print "Adding total vmt fees amount of $%.2f" % total_vmt_fees
+
+    metadata = {
+        "description": "VMT development fees",
+        "year": year
+    }
+    # the subaccount is meaningless here (it's a regional account) -
+    # but the subaccount number is referred to below
+    coffer["vmt_fee_acct"].add_transaction(total_vmt_fees, subaccount=1,
+                                           metadata=metadata)
 
 
 @orca.step("calc_prop_taxes")
@@ -132,7 +171,7 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
         very unlikely that there would be more subsidized housing than demand)
     """
     # step 2
-    # feasibility = feasibility.replace([np.inf, -np.inf], np.nan)
+    feasibility = feasibility.replace([np.inf, -np.inf], np.nan)
     feasibility = feasibility[feasibility.max_profit < 0]
 
     # step 3
@@ -155,6 +194,7 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
 
     new_buildings_list = []
     sending_bldgs = acct_settings["sending_buildings_subaccount_def"]
+    feasibility["regional"] = 1
     feasibility["subaccount"] = feasibility.eval(sending_bldgs)
     # step 6
     for subacct, amount in account.iter_subaccounts():
@@ -173,16 +213,19 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
         if num_bldgs == 0:
             continue
 
-        print "Building {:d} subsidized buildings".format(num_bldgs)
+        # technically we only build these buildings if there's demand
+        # print "Building {:d} subsidized buildings".format(num_bldgs)
         df = df.iloc[:int(num_bldgs)]
 
+        df.columns = pd.MultiIndex.from_tuples(
+            [("residential", col) for col in df.columns])
         # disable stdout since developer is a bit verbose for this use case
         sys.stdout, old_stdout = StringIO(), sys.stdout
 
         kwargs = settings['residential_developer']
         # step 9
         new_buildings = utils.run_developer(
-            None,
+            "residential",
             households,
             buildings,
             "residential_units",
@@ -216,13 +259,20 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
 
         new_buildings_list.append(new_buildings)
 
+    total_len = reduce(lambda x, y: x+len(y), new_buildings_list, 0)
+    if total_len == 0:
+        print "No subsidized buildings"
+        return
+
     new_buildings = pd.concat(new_buildings_list)
     print "Built {} total subsidized buildings".format(len(new_buildings))
     print "    Total subsidy: ${:,.2f}".format(
         -1*new_buildings.max_profit.sum())
     print "    Total subsidzed units: {:.0f}".\
         format(new_buildings.residential_units.sum())
+
     new_buildings["subsidized"] = True
+
     summary.add_parcel_output(new_buildings)
 
 
@@ -247,6 +297,7 @@ def subsidized_residential_developer(
                           parcel_sales_price_sqft_func,
                           parcel_is_allowed_func,
                           **kwargs)
+
     feasibility = orca.get_table("feasibility").to_frame()
     # get rid of the multiindex that comes back from feasibility
     feasibility = feasibility.stack(level=0).reset_index(level=1, drop=True)
@@ -257,10 +308,13 @@ def subsidized_residential_developer(
                              parcels,
                              buildings,
                              households,
-                             acct_settings,
+                             acct_settings["vmt_settings"],
                              settings,
-                             coffer["prop_tax_acct"],
+                             coffer["vmt_fee_acct"],
                              year,
                              form_to_btype_func,
                              add_extra_columns_func,
                              summary)
+
+    # set to an empty dataframe to save memory
+    orca.add_table("feasibility", pd.DataFrame())

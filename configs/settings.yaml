@@ -29,13 +29,17 @@ ave_sqft_per_unit_clip:
 
 acct_settings:
   disable: False
-  sending_buildings_filter: general_type != 'Residential'
-  sending_buildings_tax: non_residential_price * non_residential_sqft * 20 * .01 * .01
-  sending_buildings_subaccount_def: city_id
-  receiving_buildings_filter: pda_id > 0 and residential_units > 1
+  sales_tax_settings:
+    sending_buildings_filter: general_type != 'Residential'
+    sending_buildings_tax: non_residential_price * non_residential_sqft * 20 * .01 * .01
+    sending_buildings_subaccount_def: city_id
+    receiving_buildings_filter: pda_id > 0 and residential_units > 1
+  vmt_settings:
+    sending_buildings_subaccount_def: regional
+    receiving_buildings_filter: vmt_res_cat == 'S'
 
 
-enable_supply_correction:
+dont_enable_supply_correction:
   price_col: residential_price
   submarket_col: zone_id
   submarket_table: zones
@@ -47,6 +51,13 @@ enable_supply_correction:
     clip_change_low: 1.0
     clip_change_high: 1.2
     iterations: 8
+
+
+enable_vmt_fees:
+  fee_amounts:
+    VH: 25000
+    H: 15000
+    MH: 5000
 
 
 table_reprocess:
@@ -126,6 +137,7 @@ feasibility:
     - building_purchase_price_sqft
     - pda
     - geom_id
+    - vmt_res_cat
 
 
 residential_developer:

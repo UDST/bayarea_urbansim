@@ -132,15 +132,20 @@ def travel_model_output(parcels, households, jobs, buildings,
         taz_df["hhincq4"] = df.hhinq4
         taz_df["shpop62p"] = df.shpop62p
         taz_df["tothh"] = df.tothh
-        taz_df["gqpop"] = df.gqpop
+        taz_df["gqpop"] = df.gqpop.fillna(0)
         taz_df["mfdu"] = df.mfdu
         taz_df["sfdu"] = df.sfdu
         taz_df["ciacre"] = df.ciacre
         taz_df["resacre"] = df.resacre
         taz_df["totacre"] = df.totacre
+        taz_df["totemp"] = df.totemp
+        taz_df["tothh"] = df.tothh
+        taz_df["zone"] = df.index
 
         taz_df = add_population(taz_df, year)
+        # total population = group quarters plus households population
         taz_df["totpop"] = df.hhpop + df.gqpop
+        taz_df["totpop"] = taz_df.totpop.fillna(0)
         taz_df = add_employment(taz_df, year)
         taz_df = add_age_categories(taz_df, year)
 
@@ -166,6 +171,7 @@ def travel_model_output(parcels, households, jobs, buildings,
         travel_model_csv = \
             "runs/run{}_taz_summaries_{}.csv".format(run_number, year)
 
+        # uppercase columns to match travel model template
         taz_df.columns = \
             [x.upper() for x in taz_df.columns]
 
@@ -229,7 +235,6 @@ def add_employment(df, year):
     # this should really make the assertion below pass, but this now
     # only occurs very infrequently
     df["empres"] = df[["empres", "totpop"]].min(axis=1)
-    df["empres"] = df.empres.fillna(0)
 
     # make sure employed residents is less than total residents
     assert (df.empres <= df.totpop).all()
