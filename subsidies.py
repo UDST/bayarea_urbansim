@@ -68,14 +68,14 @@ def tax_buildings(buildings, acct_settings, account, year):
 def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
                        summary):
 
-    if not 'enable_vmt_fees' in settings:
+    if 'enable_vmt_fees' not in settings:
         return
 
     vmt_settings = settings["enable_vmt_fees"]
 
     # this is the frame that knows which devs are subsidized
-    df = summary.parcel_output  
-    
+    df = summary.parcel_output
+
     df = df.query("year_built == %d and subsidized != True" % year)
 
     df["res_fees"] = df.vmt_res_cat.map(vmt_settings["fee_amounts"])
@@ -90,7 +90,7 @@ def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
         "description": "VMT development fees",
         "year": year
     }
-    # the subaccount is meaningless here (it's a regional account) - 
+    # the subaccount is meaningless here (it's a regional account) -
     # but the subaccount number is referred to below
     coffer["vmt_fee_acct"].add_transaction(total_vmt_fees, subaccount=1,
                                            metadata=metadata)
@@ -272,7 +272,7 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
         format(new_buildings.residential_units.sum())
 
     new_buildings["subsidized"] = True
-    
+
     summary.add_parcel_output(new_buildings)
 
 

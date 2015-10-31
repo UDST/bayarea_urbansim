@@ -40,8 +40,8 @@ def scheduled_development_events(buildings, development_projects,
                                  building_sqft_per_job):
 
     # then build
-    dps = development_projects.to_frame().query("%d <= year_built < %d" %
-        (year, year + years_per_iter))
+    dps = development_projects.to_frame().\
+        query("%d <= year_built < %d" % (year, year + years_per_iter))
 
     if len(dps) == 0:
         return
@@ -287,7 +287,7 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year,
                 **kwargs)
 
             if new_buildings is not None:
-                 new_buildings["subsidized"] = False
+                new_buildings["subsidized"] = False
 
             summary.add_parcel_output(new_buildings)
 

@@ -140,22 +140,25 @@ def parcels(store):
 
     # have to do it this way because otherwise it's a circular reference
     sdem = pd.read_csv(os.path.join(misc.data_dir(),
-                       "development_projects.csv"))
+                                    "development_projects.csv"))
     # mark parcels that are going to be developed by the sdem
     df["sdem"] = df.geom_id.isin(sdem.geom_id).astype('int')
 
     return df
 
+
 @orca.table('parcels_zoning_calculations', cache=True)
 def parcels_zoning_calculations(parcels):
     return pd.DataFrame(data=parcels.to_frame(
-                            columns=['geom_id',
-                            'total_residential_units'])
-                        , index=parcels.index)
+                        columns=['geom_id',
+                                 'total_residential_units']),
+                        index=parcels.index)
+
 
 @orca.table('taz')
 def taz(zones):
     return zones
+
 
 @orca.table(cache=True)
 def parcel_rejections():
@@ -241,10 +244,11 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
     df = datasources.buildings(store, households, jobs,
                                building_sqft_per_job, settings)
 
-    df = df.drop([
-       'development_type_id', 'improvement_value', 'sqft_per_unit',
-       'nonres_rent_per_sqft', 'res_price_per_sqft', 'redfin_sale_price',
-       'redfin_home_type', 'costar_property_type', 'costar_rent'], axis=1)
+    df = df.drop(['development_type_id', 'improvement_value',
+                  'sqft_per_unit', 'nonres_rent_per_sqft',
+                  'res_price_per_sqft', 'redfin_sale_price',
+                  'redfin_home_type', 'costar_property_type',
+                  'costar_rent'], axis=1)
 
     # set the vacancy rate in each building to 5% for testing purposes
     df["residential_units"] = df.residential_units.fillna(0)
@@ -296,17 +300,20 @@ def employment_controls(employment_controls_unstacked):
     df.columns = ['empsix_id', 'number_of_jobs']
     return df
 
+
 @orca.table('zone_forecast_inputs', cache=True)
 def zone_forecast_inputs():
-    return pd.read_csv(os.path.join(misc.data_dir(), "zone_forecast_inputs.csv"),
+    return pd.read_csv(os.path.join(misc.data_dir(),
+                                    "zone_forecast_inputs.csv"),
                        index_col="zone_id")
+
 
 # this is the set of categories by zone of sending and receiving zones
 # in terms of vmt fees
 @orca.table("vmt_fee_categories", cache=True)
 def vmt_fee_categories():
     return pd.read_csv(os.path.join(misc.data_dir(), "vmt_fee_zonecats.csv"),
-        index_col="taz")
+                       index_col="taz")
 
 
 @orca.table('taz_geography', cache=True)
@@ -316,6 +323,8 @@ def taz_geography():
 
 
 # these are shapes - "zones" in the bay area
+
+
 @orca.table('zones', cache=True)
 def zones(store):
     df = store['zones']

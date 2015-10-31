@@ -17,6 +17,7 @@ LOGS = True
 INTERACT = False
 S3 = False
 EVERY_NTH_YEAR = 5
+CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
 
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 
@@ -41,6 +42,7 @@ if SLACK:
     host = socket.gethostname()
 
 print "Started", time.ctime()
+print "Current Commit : ", CURRENT_COMMIT
 in_year, out_year = 2010, 2040
 
 if SLACK:
@@ -72,7 +74,7 @@ try:
 
         "residential_developer",
         "non_residential_developer",
-        
+
         "hlcm_simulate",                 # put these last so they don't get
         "elcm_simulate",                 # displaced by new dev
 

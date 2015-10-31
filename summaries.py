@@ -23,10 +23,11 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
         columns=['pda', 'superdistrict', 'juris', 'zone_id', 'empsix'])
 
     buildings_df = orca.merge_tables(
-       'buildings',
-       [parcels, taz_geography, buildings],
-       columns=['pda', 'superdistrict', 'juris', 'building_type_id', 'zone_id',
-                'residential_units', 'building_sqft', 'non_residential_sqft'])
+        'buildings',
+        [parcels, taz_geography, buildings],
+        columns=['pda', 'superdistrict', 'juris', 'building_type_id',
+                 'zone_id', 'residential_units', 'building_sqft',
+                 'non_residential_sqft'])
 
     # because merge_tables returns multiple zone_id_'s, but not the one we need
     buildings_df = buildings_df.rename(columns={'zone_id_x': 'zone_id'})
@@ -108,50 +109,38 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
 
 @orca.step("travel_model_output")
 def travel_model_output(parcels, households, jobs, buildings,
-                        zones, homesales, year, summary, coffer, 
-                        zone_forecast_inputs, run_number, 
+                        zones, homesales, year, summary, coffer,
+                        zone_forecast_inputs, run_number,
                         taz):
 
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
-      
+
         df = taz
-        #the commented out variables below are either:
-        #-provided in MtcProcessAbag.java, or
-        #-summary variables used to review outputs
-        taz_df = pd.DataFrame(index=zones.index)
-        taz_df["agrempn"] = df.agrempn
-        #taz_df["area"] = df.area
-        #taz_df["areatype"] = df.areatype
-        taz_df["ciacre"] = df.ciacre
+        taz_df["sd"] = df.sd
+        taz_df["zone"] = df.index
         taz_df["county"] = df.county
-        #taz_df["density"] = df.density 
-        #taz_df["district"] = df.sd #intentionally identical to sd
+        taz_df["agrempn"] = df.agrempn
         taz_df["fpsempn"] = df.fsempn
-        #taz_df["gid"] = df.gid
-        taz_df["gqpop"] = df.gqpop.fillna(0)
         taz_df["herempn"] = df.herempn
-        taz_df["hhincq1"] = df.hhinq1 
+        taz_df["retempn"] = df.retempn
+        taz_df["totemp"] = df.totemp
+        taz_df["mwtempn"] = df.mwtempn
+        taz_df["othempn"] = df.othempn
+        taz_df["hhincq1"] = df.hhinq1
         taz_df["hhincq2"] = df.hhinq2
         taz_df["hhincq3"] = df.hhinq3
         taz_df["hhincq4"] = df.hhinq4
-        #taz_df["hhlds"] = df.tothh #intentionally identical to tothh
+        taz_df["shpop62p"] = df.shpop62p
+        taz_df["tothh"] = df.tothh
+        taz_df["gqpop"] = df.gqpop.fillna(0)
         taz_df["mfdu"] = df.mfdu
-        taz_df["mwtempn"] = df.mwtempn
-        #taz_df["newdevacres"] = df.newdevacres
-        taz_df["othempn"] = df.othempn
-        taz_df["resacre"] = df.resacre
-        #taz_df["resunits"] = df.resunits
-        #taz_df["resvacancy"] = df.resvacancy
-        taz_df["retempn"] = df.retempn
-        taz_df["sd"] = df.sd #intentionally identical to district
-        taz_df["shpop62p"] = df.shpop62p # need to update for changes over time
         taz_df["sfdu"] = df.sfdu
+        taz_df["ciacre"] = df.ciacre
+        taz_df["resacre"] = df.resacre
         taz_df["totacre"] = df.totacre
         taz_df["totemp"] = df.totemp
-        taz_df["tothh"] = df.tothh #intentionally identical to hhlds
-        #taz_df["tract"] = df.tract
-        #taz_df["zero"] = pd.Series(index=df.index).fillna(0) #intentionally set to 0
-        taz_df["zone"] = df.index 
+        taz_df["tothh"] = df.tothh
+        taz_df["zone"] = df.index
 
         taz_df = add_population(taz_df, year)
         # total population = group quarters plus households population
@@ -183,10 +172,8 @@ def travel_model_output(parcels, households, jobs, buildings,
             "runs/run{}_taz_summaries_{}.csv".format(run_number, year)
 
         # uppercase columns to match travel model template
-
         taz_df.columns = \
             [x.upper() for x in taz_df.columns]
-
 
         taz_df.fillna(0).to_csv(travel_model_csv)
 
@@ -195,9 +182,11 @@ def zone_forecast_inputs():
     return pd.read_csv(os.path.join('data', 'zone_forecast_inputs.csv'),
                        index_col="zone_id")
 
+
 def regional_controls():
     return pd.read_csv(os.path.join('data', 'regional_controls.csv'),
                        index_col="year")
+
 
 def add_population(df, year):
     rc = regional_controls()
@@ -214,6 +203,8 @@ def add_population(df, year):
 
 # add employemnt to the dataframe - this uses a regression with
 # estimated coefficients done by @mkreilly
+
+
 def add_employment(df, year):
 
     hhs_by_inc = df[["hhincq1", "hhincq2", "hhincq3", "hhincq4"]]
@@ -232,7 +223,7 @@ def add_employment(df, year):
     # .7 even a little bit more
     empshare = empshare.fillna(0).clip(.3, .7)
 
-    empres = empshare*df.totpop
+    empres = empshare * df.totpop
 
     rc = regional_controls()
     target = rc.empres.loc[year]
