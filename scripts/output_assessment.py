@@ -7,11 +7,11 @@ import numpy as np
 
 BASE_RUN = 540
 YEARS = [2010,2040]
-comp_runs = [547]
+COMP_RUN = 547
 
 def construct_panel(base_run,comparison_runs,years):
     d2={}
-    all_runs = np.concatenate([[base_run],comparison_runs])
+    all_runs = np.concatenate([[base_run],[comparison_runs]])
     for run in all_runs:
         d = {}
         for year in years:
@@ -27,26 +27,26 @@ def construct_panel(base_run,comparison_runs,years):
     p4d = pd.Panel4D(d2)
     return p4d
 
-def compare_variable_across_years(run,variable,p4d):
+def compare_variable_across_year(run,year,variable,p4d):
     d = {
-        'hh10' : p4d[run,variable,:,2010],
-        'shr10' : p4d[run,variable,:,2010]/p4d[run,variable,:,2010].sum(),
-        'hh40' : p4d[run,variable,:,2040],
-        'shr40' : p4d[run,variable,:,2040]/p4d[run,variable,:,2040].sum(),
+        'count_10' : p4d[run,variable,:,year],
+        'shr_10' : p4d[run,variable,:,year]/p4d[run,variable,:,year].sum(),
+        'count_40' : p4d[run,variable,:,2040],
+        'shr_40' : p4d[run,variable,:,2040]/p4d[run,variable,:,2040].sum(),
         'prct_chng_10_40' : p4d[run,variable,:,:].pct_change(axis=1)[2040]
     }
     df = pd.DataFrame(d,p4d.major_axis)
     return df
 
 
-
-def compare_variable_across_runs(comparison_run,variable,p4d,base_run,year=2040):
+def compare_variable_across_run(comparison_run,variable,p4d,base_run,year=2040):
     run = comparison_run
     run_string = str(run)
-    cname1 = run_string + '_' + variable
+    cname1 = run_string + 'count'
     cname2 = run_string + '_shr_of_ttl'
     cname3 = run_string + '_prct_dffrnc_frm_base'
     cname4 = run_string + '_shr_dffrnc_frm_base'
+    cname5 = run_string + '_div_by_base'
 
     df = p4d[:, variable, :, year]
     d = {
@@ -54,29 +54,41 @@ def compare_variable_across_runs(comparison_run,variable,p4d,base_run,year=2040)
         cname2 : df[run]/df[run].sum(),
         cname3 : (df[run] - df[base_run])/df[base_run],
         cname4 : (df[run]/df[run].sum()) -
-                 (df[base_run]/df[base_run].sum())
+                 (df[base_run]/df[base_run].sum()),
+        cname5 : (df[run]/df[base_run])
     }
     df = pd.DataFrame(d, index=p4d.major_axis)
     return df
 
-p4d1 = construct_panel(BASE_RUN,comp_runs,YEARS)
-
 sd_names = pd.read_csv('data/superdistrict_names.csv',
                                    index_col='number')
 
-dct1 = {
-    'tothh' : compare_variable_across_runs(547,'tothh',p4d1,BASE_RUN),
-    'totemp' : compare_variable_across_runs(547,'totemp',p4d1,BASE_RUN)
-}
+def compare_across_runs(comparison_run,p4d,base_run):
+    d1 = {
+        'tothh' : compare_variable_across_run(comparison_run,'tothh',p4d1,base_run),
+        'totemp' : compare_variable_across_run(comparison_run,'totemp',p4d1,base_run)
+    }
+    p1 = pd.Panel(d1)
+    p1.items.name='source variable'
+    p1.minor_axis.name='summary'
+    df = p1.to_frame().unstack()
+    return df
 
-dfA = compare_variable_across_years(540,'tothh',p4d1)
-dfB = pd.concat([sd_names,dfA],axis=1)
+def compare_across_years(run,p4d):
+    d2 = {
+        'tothh' : compare_variable_across_year(540,2010,'tothh',p4d),
+        'totemp' : compare_variable_across_year(540,2010,'totemp',p4d)
+    }
+    p2 = pd.Panel(d2)
+    p2.items.name='source variable'
+    p2.minor_axis.name='summary'
+    df = p2.to_frame().unstack()
+    return df 
 
-panel_comparison = pd.Panel(dct1)
+def add_names(sd_names, df):
+    df = pd.concat([df,sd_names], axis=1)
+    return df
 
-out_file1 = 'runs/scenario_comparison.csv'
-out_file2 = 'runs/single_scenario_summary.csv'
-
-panel_comparison.to_frame().unstack().to_csv(out_file1, index_label='superdistrict')
-
-dfB.to_csv(out_file2, index_label='superdistrict')
+p4d1 = construct_panel(BASE_RUN,COMP_RUN,YEARS)
+df1 = compare_across_years(BASE_RUN,p4d1)
+df2 = compare_across_runs(COMP_RUN,p4d1,BASE_RUN)
