@@ -6,6 +6,7 @@ from urbansim_defaults import utils
 from urbansim.utils import misc
 import orca
 from utils import geom_id_to_parcel_id, parcel_id_to_geom_id
+from utils import nearest_neighbor
 
 
 #####################

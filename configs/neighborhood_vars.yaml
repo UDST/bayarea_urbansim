@@ -119,21 +119,21 @@ variable_definitions:
     apply: np.log1p
   
   - name: ave_income_1500
+    aggregation: median
     filters:
     - building_id != -1
     dataframe: households
     varname: income
     radius: 1500
-    aggregation: average
     decay: flat
     apply: np.log1p
   
   - name: ave_income_500
+    aggregation: median
     filters:
     - building_id != -1
     dataframe: households
     varname: income
     radius: 500
-    aggregation: average
     decay: flat
     apply: np.log1p

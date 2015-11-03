@@ -68,7 +68,7 @@ try:
 
         "scheduled_development_events",  # scheduled buildings additions
 
-        "subsidized_residential_developer",
+        #"subsidized_residential_developer",
 
         "alt_feasibility",
 

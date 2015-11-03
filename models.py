@@ -358,6 +358,8 @@ def local_pois(settings):
 @orca.step('neighborhood_vars')
 def neighborhood_vars(net):
     nodes = networks.from_yaml(net["walk"], "neighborhood_vars.yaml")
+    nodes = nodes.replace(-np.inf, np.nan)
+    nodes = nodes.replace(np.inf, np.nan)
     nodes = nodes.fillna(0)
 
     # nodes2 = pd.read_csv('data/local_poi_distances.csv', index_col="node_id")

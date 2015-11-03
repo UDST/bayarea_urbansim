@@ -34,6 +34,12 @@ def juris_ave_income(parcels, homesales):
     return misc.reindex(parcels.juris_ave_income, homesales.parcel_id)
 
 
+@orca.column('homesales', cache=True)
+def zonal_veryhighinc(homesales, taz):
+    return misc.reindex(taz.veryhighinc, homesales.zone_id).\
+        reindex(homesales.index).fillna(0)
+
+
 @orca.column('homesales', 'is_sanfran', cache=True)
 def is_sanfran(parcels, homesales):
     return misc.reindex(parcels.is_sanfran, homesales.parcel_id)
@@ -172,9 +178,20 @@ def preferred_general_type(jobs, buildings, settings):
 
 
 @orca.column('buildings', cache=True)
+def zonal_veryhighinc(buildings, taz):
+    return misc.reindex(taz.veryhighinc, buildings.zone_id).\
+        reindex(buildings.index).fillna(0)
+
+
+@orca.column('buildings', cache=True)
 def transit_type(buildings, parcels_geography):
     return misc.reindex(parcels_geography.tpp_id, buildings.parcel_id).\
         reindex(buildings.index).fillna('none')
+
+
+@orca.column('buildings', cache=False)
+def unit_price(buildings):
+    return buildings.residential_price * buildings.sqft_per_unit
 
 
 @orca.column('buildings', cache=True)
@@ -420,6 +437,14 @@ def hhinq4(households_subset):
     s = df.query("income >= 75000").\
         groupby('zone_id').size()
     return s
+
+
+@orca.column('taz', 'veryhighinc')
+def hhinq4(households_subset, taz):
+    df = households_subset.to_frame()
+    s = df.query("income >= 75000").\
+        groupby('zone_id').size()
+    return s / taz.tothh.replace(0, 1)
 
 
 @orca.column('taz', 'tothh')

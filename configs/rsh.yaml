@@ -12,11 +12,11 @@ fit_filters:
 
 predict_filters: null
 
-model_expression: np.log1p(price_per_sqft) ~ I(year_built < 1940) + modern_condo +
-    sqft_per_unit + residential_units_1500 + jobs_45 + I(building_type_id == 1) +
-    ave_income_500 + juris_ave_income + embarcadero + pacheights + stanford + I(transit_type
-    == "bart1") + I(transit_type == "bart2") + I(transit_type == "bart3a") + I(transit_type
-    == "lrt1")
+model_expression: np.log1p(price_per_sqft) ~ I(year_built < 1940) + zonal_veryhighinc
+    + sqft_per_unit + residential_units_1500 + jobs_45 + I(building_type_id == 1)
+    + ave_income_500 + is_sanfran + juris_ave_income + embarcadero + pacheights +
+    stanford + I(transit_type == "bart1") + I(transit_type == "bart2") + I(transit_type
+    == "bart3a") + I(transit_type == "lrt1")
 
 ytransform: np.expm1
 
@@ -24,57 +24,60 @@ fitted: true
 
 fit_parameters:
     Coefficient:
-        I(building_type_id == 1)[T.True]: -0.11662731226081584
-        I(transit_type == "bart1")[T.True]: 0.26810270240385237
-        I(transit_type == "bart2")[T.True]: 0.047010850665585115
-        I(transit_type == "bart3a")[T.True]: 0.04794282080184498
-        I(transit_type == "lrt1")[T.True]: 0.2927685374467044
-        I(year_built < 1940)[T.True]: 0.23817392420334715
-        Intercept: -1.4427656192666687
-        ave_income_500: 0.44570331164635224
-        embarcadero: -0.005017399497578035
-        jobs_45: 0.043963016773469074
-        juris_ave_income: 0.27593491378885826
-        modern_condo: 0.11181933376103262
-        pacheights: -0.006995892170868919
-        residential_units_1500: 0.007196989862077709
-        sqft_per_unit: -0.00014509584189184414
-        stanford: -0.009382290516557814
+        I(building_type_id == 1)[T.True]: -0.0909136548669407
+        I(transit_type == "bart1")[T.True]: 0.15239253774416872
+        I(transit_type == "bart2")[T.True]: 0.10017677164254014
+        I(transit_type == "bart3a")[T.True]: 3.915301169127906e-14
+        I(transit_type == "lrt1")[T.True]: 0.04336606290004377
+        I(year_built < 1940)[T.True]: 0.22838438303185155
+        Intercept: 3.0703008638990044
+        ave_income_500: 0.024899366998635104
+        embarcadero: -0.003364510012850719
+        is_sanfran: 0.3547888288995248
+        jobs_45: 0.05681200969524358
+        juris_ave_income: 0.2354008207417509
+        pacheights: -0.006291466154976727
+        residential_units_1500: -0.0033462400276791796
+        sqft_per_unit: -0.00015455942563773146
+        stanford: -0.009039297671317136
+        zonal_veryhighinc: 1.0023940274162153
     Std. Error:
-        I(building_type_id == 1)[T.True]: 0.0034180927353032148
-        I(transit_type == "bart1")[T.True]: 0.009739691484825112
-        I(transit_type == "bart2")[T.True]: 0.009004477526506472
-        I(transit_type == "bart3a")[T.True]: 0.012519573148784865
-        I(transit_type == "lrt1")[T.True]: 0.01282908912580283
-        I(year_built < 1940)[T.True]: 0.003466114473280497
-        Intercept: 0.07366928034790013
-        ave_income_500: 0.0034060666119651003
-        embarcadero: 0.0001263712003757398
-        jobs_45: 0.0026691002375133243
-        juris_ave_income: 0.005480793056749326
-        modern_condo: 0.009771048104631797
-        pacheights: 6.968080043870971e-05
-        residential_units_1500: 0.0014312991824272103
-        sqft_per_unit: 1.6527251012391792e-06
-        stanford: 6.929973118784263e-05
+        I(building_type_id == 1)[T.True]: 0.003428214406035119
+        I(transit_type == "bart1")[T.True]: 0.009804303914936996
+        I(transit_type == "bart2")[T.True]: 0.009082338559323165
+        I(transit_type == "bart3a")[T.True]: 1.1324605370058005e-15
+        I(transit_type == "lrt1")[T.True]: 0.013084386624210399
+        I(year_built < 1940)[T.True]: 0.0034407357567000896
+        Intercept: 0.08984650474624188
+        ave_income_500: 0.00459854822063817
+        embarcadero: 0.00012912108490337868
+        is_sanfran: 0.005796862869870938
+        jobs_45: 0.0026992844714850413
+        juris_ave_income: 0.00570524429991999
+        pacheights: 7.188161533579771e-05
+        residential_units_1500: 0.0015199308891064032
+        sqft_per_unit: 1.697500050333082e-06
+        stanford: 6.94151771700231e-05
+        zonal_veryhighinc: 0.0122298529255029
     T-Score:
-        I(building_type_id == 1)[T.True]: -34.12058164959939
-        I(transit_type == "bart1")[T.True]: 27.526816719150574
-        I(transit_type == "bart2")[T.True]: 5.220830473195065
-        I(transit_type == "bart3a")[T.True]: 3.8294293449212566
-        I(transit_type == "lrt1")[T.True]: 22.820679985601338
-        I(year_built < 1940)[T.True]: 68.71496196659885
-        Intercept: -19.584358805369995
-        ave_income_500: 130.85572374910413
-        embarcadero: -39.70366256441174
-        jobs_45: 16.47109994431208
-        juris_ave_income: 50.345800494886056
-        modern_condo: 11.443944658099328
-        pacheights: -100.39913615835127
-        residential_units_1500: 5.028291743919666
-        sqft_per_unit: -87.79187886905952
-        stanford: -135.38711270215958
+        I(building_type_id == 1)[T.True]: -26.51924416013593
+        I(transit_type == "bart1")[T.True]: 15.543432666545202
+        I(transit_type == "bart2")[T.True]: 11.029843358977969
+        I(transit_type == "bart3a")[T.True]: 34.573400495525185
+        I(transit_type == "lrt1")[T.True]: 3.3143367087458544
+        I(year_built < 1940)[T.True]: 66.37661220775885
+        Intercept: 34.17273574047887
+        ave_income_500: 5.414614744472476
+        embarcadero: -26.05701474215758
+        is_sanfran: 61.20359181576152
+        jobs_45: 21.047062766225533
+        juris_ave_income: 41.2604278391816
+        pacheights: -87.52538636737506
+        residential_units_1500: -2.2015738029026433
+        sqft_per_unit: -91.05120533422308
+        stanford: -130.22076784701704
+        zonal_veryhighinc: 81.96288487868273
 
-fit_rsquared_adj: 0.43400381328039894
+fit_rsquared_adj: 0.4385511073281596
 
-fit_rsquared: 0.43405143200719687
+fit_rsquared: 0.4385994752935054

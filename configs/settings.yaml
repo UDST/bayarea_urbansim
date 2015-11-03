@@ -345,29 +345,58 @@ cost_shifters:
   "Contra Costa": .75
 
 
+#base_year_job_sector_to_type:
+#  AGREMPN:
+#    Industrial: 0.265
+#    Retail: 0.214
+#    Office: 0.279
+#  MWTEMPN:
+#    Industrial: 0.214
+#    Retail: 0.191
+#    Office: 0.237
+#  FPSEMPN:  
+#    Industrial: 0.196
+#    Retail: 0.188
+#    Office: 0.27
+#  RETEMPN:
+#    Industrial: 0.194
+#    Retail: 0.183
+#    Office: 0.252
+#  HEREMPN:
+#    Industrial: 0.204
+#    Retail: 0.199
+#    Office: 0.257
+#  OTHEMPN:
+#    Industrial: 0.194
+#    Retail: 0.205
+#    Office: 0.278
+
+
+# this is edited because there's too much office and industrial in
+# the base year compared to reasonable assumptions about future years
 job_sector_to_type:
   AGREMPN:
-    Industrial: 0.265
+    Industrial: 0.125
     Retail: 0.214
     Office: 0.279
   MWTEMPN:
-    Industrial: 0.214
+    Industrial: 0.124
     Retail: 0.191
     Office: 0.237
   FPSEMPN:  
-    Industrial: 0.196
-    Retail: 0.188
+    Industrial: 0.056
+    Retail: 0.088
     Office: 0.27
   RETEMPN:
-    Industrial: 0.194
-    Retail: 0.183
-    Office: 0.252
+    Industrial: 0.094
+    Retail: 0.283
+    Office: 0.152
   HEREMPN:
-    Industrial: 0.204
-    Retail: 0.199
+    Industrial: 0.104
+    Retail: 0.099
     Office: 0.257
   OTHEMPN:
-    Industrial: 0.194
+    Industrial: 0.114
     Retail: 0.205
     Office: 0.278
 
