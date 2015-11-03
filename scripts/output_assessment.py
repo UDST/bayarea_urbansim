@@ -1,73 +1,82 @@
 import pandas as pd
+import numpy as np
 
 # this script template is borrowed from vmt_compare.py
 
-NP_RUN = 540  # vmt off
-PR_RUN = 547  # vmt on
+#PR_RUN = 547  # vmt on
 
-np_df_2010 = pd.read_csv(
-    'runs/run%d_superdistrict_summaries_2010.csv'
-    % NP_RUN, index_col='superdistrict')
-np_df_2040 = pd.read_csv(
-    'runs/run%d_superdistrict_summaries_2040.csv'
-    % NP_RUN, index_col='superdistrict')
+BASE_RUN = 540
+YEARS = [2010,2040]
+comp_runs = [547]
 
-superdistrict_names = pd.read_csv('data/superdistrict_names.csv',
-                                  index_col='number')
+def construct_panel(base_run,comparison_runs,years):
+    d2={}
+    all_runs = np.concatenate([[base_run],comparison_runs])
+    for run in all_runs:
+        d = {}
+        for year in years:
+            df = pd.read_csv(
+                'runs/run%(run)d_superdistrict_summaries_%(year)d.csv' \
+                % {"run": run, "year": year},
+                index_col='superdistrict',
+                usecols=['tothh','totemp','superdistrict'])
+            df = df.fillna(0)
+            d[year] = df
+        p = pd.Panel.from_dict(d,orient='minor')
+        d2[run]=p
+    p4d = pd.Panel4D(d2)
+    return p4d
 
-########################
-# Compare Outcomes w/in
-# No Project Simulation
-########################
+def compare_variable_across_years(run,variable,p4d):
+    d = {
+        'hh10' : p4d[run,variable,:,2010],
+        'shr10' : p4d[run,variable,:,2010]/p4d[run,variable,:,2010].sum(),
+        'hh40' : p4d[run,variable,:,2040],
+        'shr40' : p4d[run,variable,:,2040]/p4d[run,variable,:,2040].sum(),
+        'prct_chng_10_40' : p4d[run,variable,:,:].pct_change(axis=1)[2040]
+    }
+    df = pd.DataFrame(d,p4d.major_axis)
+    return df
 
-hh10 = np_df_2010["tothh"]
-shr10 = hh10/hh10.sum()
 
-hh40 = np_df_2040["tothh"]
-shr40 = hh40/hh40.sum()
 
-prct_chng_10_40 = (hh40-hh10)/hh10
-shr_chng_10_40 = shr40-shr10
+def compare_variable_across_runs(comparison_run,variable,p4d,base_run,year=2040):
+    run = comparison_run
+    run_string = str(run)
+    cname1 = run_string + '_' + variable
+    cname2 = run_string + '_shr_of_ttl'
+    cname3 = run_string + '_prct_dffrnc_frm_base'
+    cname4 = run_string + '_shr_dffrnc_frm_base'
 
-########################
-# Compare Outcomes of
-# No Project & Project
-# Simulation
-########################
+    df = p4d[:, variable, :, year]
+    d = {
+        cname1 : df[run],
+        cname2 : df[run]/df[run].sum(),
+        cname3 : (df[run] - df[base_run])/df[base_run],
+        cname4 : (df[run]/df[run].sum()) -
+                 (df[base_run]/df[base_run].sum())
+    }
+    df = pd.DataFrame(d, index=p4d.major_axis)
+    return df
 
-pr_df_2040 = pd.read_csv(
-    'runs/run%d_superdistrict_summaries_2040.csv'
-    % PR_RUN, index_col='superdistrict')
+p4d1 = construct_panel(BASE_RUN,comp_runs,YEARS)
 
-hh40_pr = pr_df_2040["tothh"]
-shr40_pr = hh40_pr/hh40_pr.sum()
+sd_names = pd.read_csv('data/superdistrict_names.csv',
+                                   index_col='number')
 
-prct_chng_np_pr_40 = (hh40_pr-hh40)/hh40
-shr_chng_np_pr_40 = shr40_pr-shr40
-
-d = {
-    'hh10': hh10,
-    'shr10': shr10,
-    'hh40': hh40,
-    'shr40': shr40,
-    'prct_chng_10_40': prct_chng_10_40,
-    'shr_chng_10_40': shr_chng_10_40,
-    'hh40_pr': hh40_pr,
-    'shr40_pr': shr40_pr,
-    'prct_chng_np_pr_40': prct_chng_np_pr_40,
-    'shr_chng_np_pr_40': shr_chng_np_pr_40,
-    'sd_name': superdistrict_names['name']
+dct1 = {
+    'tothh' : compare_variable_across_runs(547,'tothh',p4d1,BASE_RUN),
+    'totemp' : compare_variable_across_runs(547,'totemp',p4d1,BASE_RUN)
 }
 
-summary_df = pd.DataFrame(data=d, index=np_df_2010.index)
+dfA = compare_variable_across_years(540,'tothh',p4d1)
+dfB = pd.concat([sd_names,dfA],axis=1)
 
-# pandas doesn't seem to order the columns as specified...
-summary_df = summary_df.loc[:, ['sd_name', 'hh10', 'shr10', 'hh40', 'shr40',
-                                'prct_chng_10_40', 'shr_chng_10_40',
-                                'hh40_pr', 'shr40_pr', 'prct_chng_np_pr_40',
-                                'shr_chng_np_pr_40']]
+panel_comparison = pd.Panel(dct1)
 
-out_file = 'runs/SD_output_assessment_%(np_run)d_%(pr_run)d.csv' \
-    % {"np_run": NP_RUN, "pr_run": PR_RUN}
+out_file1 = 'runs/scenario_comparison.csv'
+out_file2 = 'runs/single_scenario_summary.csv'
 
-summary_df.to_csv(out_file, index_label='superdistrict')
+panel_comparison.to_frame().unstack().to_csv(out_file1, index_label='superdistrict')
+
+dfB.to_csv(out_file2, index_label='superdistrict')
