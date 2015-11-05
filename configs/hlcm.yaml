@@ -25,336 +25,433 @@ prediction_sample_size: null
 default_config:
     model_expression: residential_units_1500 + jobs_45 + ave_income_500 + juris_ave_income
         + is_sanfran + np.log1p(unit_price) + jobs_45 + embarcadero + pacheights +
-        stanford + zonal_veryhighinc
+        stanford + building_age_recent + building_age_old + I(year_built < 1940) +
+        I(year_built > 2005)
 
 models:
     1:
         fit_parameters:
             Coefficient:
-                ave_income_500: -0.06951045080199382
-                embarcadero: -0.01150446032469538
-                is_sanfran: 0.3603345409118611
-                jobs_45: -0.13530566649933007
-                juris_ave_income: 0.680350648640645
-                np.log1p(unit_price): -0.6511214485499668
-                pacheights: -0.0030114418715270286
-                residential_units_1500: 0.4826436923159686
-                stanford: -0.01170967120003923
-                zonal_veryhighinc: -3.0
+                I(year_built < 1940)[False]: -0.05334324382199061
+                I(year_built < 1940)[True]: 0.053343243822003165
+                I(year_built > 2005)[T.True]: 0.2609393685565164
+                ave_income_500: -0.2317600515879612
+                building_age_old: -0.014564052505111317
+                building_age_recent: -0.011197222449274551
+                embarcadero: -0.010512022675730254
+                is_sanfran: -0.013106871780067203
+                jobs_45: -0.14957544213997076
+                juris_ave_income: -0.7448073483462261
+                np.log1p(unit_price): -0.41239482714043046
+                pacheights: -0.0004680684806262734
+                residential_units_1500: 0.7537447199781447
+                stanford: -0.009337353267654322
             Std. Error:
-                ave_income_500: 0.06589470542874719
-                embarcadero: 0.0017137873641268014
-                is_sanfran: 0.05820549410158098
-                jobs_45: 0.034971715132981855
-                juris_ave_income: 0.06687193666407126
-                np.log1p(unit_price): 0.03161389360983763
-                pacheights: 0.0008484775880196081
-                residential_units_1500: 0.019976949204900896
-                stanford: 0.0009271908590057613
-                zonal_veryhighinc: 0.17232343859737959
+                I(year_built < 1940)[False]: 1.146275010970208
+                I(year_built < 1940)[True]: 1.1479317730392733
+                I(year_built > 2005)[T.True]: 0.07408466358940434
+                ave_income_500: 0.027315363687883593
+                building_age_old: 0.0010787170697050318
+                building_age_recent: 0.0021750703868227274
+                embarcadero: 0.001830281275068604
+                is_sanfran: 0.05873536759295795
+                jobs_45: 0.038570942806611955
+                juris_ave_income: 0.08344361276805291
+                np.log1p(unit_price): 0.031568730385277834
+                pacheights: 0.0008414971484336933
+                residential_units_1500: 0.01805368182195075
+                stanford: 0.001078556049567936
             T-Score:
-                ave_income_500: -1.0548715613753883
-                embarcadero: -6.7128866541486385
-                is_sanfran: 6.190730728666277
-                jobs_45: -3.8690028780350887
-                juris_ave_income: 10.173933679509862
-                np.log1p(unit_price): -20.59605363976269
-                pacheights: -3.5492297192621134
-                residential_units_1500: 24.160030010866866
-                stanford: -12.629191806955108
-                zonal_veryhighinc: -17.409123357904136
+                I(year_built < 1940)[False]: -0.04653616567706632
+                I(year_built < 1940)[True]: 0.04646900196931667
+                I(year_built > 2005)[T.True]: 3.52217795038805
+                ave_income_500: -8.484604277510101
+                building_age_old: -13.501271940652392
+                building_age_recent: -5.147981654805706
+                embarcadero: -5.743391914085027
+                is_sanfran: -0.22315126842993735
+                jobs_45: -3.8779306715398736
+                juris_ave_income: -8.925876093315338
+                np.log1p(unit_price): -13.063396028519156
+                pacheights: -0.5562329967457464
+                residential_units_1500: 41.750194082943054
+                stanford: -8.657272166240055
         fitted: true
         log_likelihoods:
-            convergence: -20915.938827397644
+            convergence: -21360.702351779688
             'null': -23472.138032570383
-            ratio: 0.10890355201668078
+            ratio: 0.08995497887158077
         name: 1
     2:
         fit_parameters:
             Coefficient:
-                ave_income_500: 0.01707520012047904
-                embarcadero: -0.0038423235050164175
-                is_sanfran: 0.24172173786059
-                jobs_45: 0.01674100882650031
-                juris_ave_income: 0.5927238582018568
-                np.log1p(unit_price): -0.5467628956680737
-                pacheights: -0.0054635963719291665
-                residential_units_1500: 0.26863211642262474
-                stanford: -0.00872142549067089
-                zonal_veryhighinc: -3.0
+                I(year_built < 1940)[False]: -0.04072227034176491
+                I(year_built < 1940)[True]: 0.04072227034175948
+                I(year_built > 2005)[T.True]: 0.2796578103530799
+                ave_income_500: -0.18870579268063623
+                building_age_old: -0.010843292620878067
+                building_age_recent: -0.006818389658678334
+                embarcadero: -0.005327767439980417
+                is_sanfran: -0.19557231106897585
+                jobs_45: -0.10750594086657649
+                juris_ave_income: -0.4743422613179155
+                np.log1p(unit_price): -0.4613178188074778
+                pacheights: -0.004224852029603014
+                residential_units_1500: 0.6278978481746118
+                stanford: -0.006191830343818768
             Std. Error:
-                ave_income_500: 0.07113356588043795
-                embarcadero: 0.001577445778135964
-                is_sanfran: 0.059433200732338404
-                jobs_45: 0.03172897325238244
-                juris_ave_income: 0.06951488142997567
-                np.log1p(unit_price): 0.03204364122952937
-                pacheights: 0.0008737225935248938
-                residential_units_1500: 0.018527155144797577
-                stanford: 0.0008802491214929029
-                zonal_veryhighinc: 0.16876581140100597
+                I(year_built < 1940)[False]: 1.1001050149199658
+                I(year_built < 1940)[True]: 1.1025024360218016
+                I(year_built > 2005)[T.True]: 0.07548298865329349
+                ave_income_500: 0.03499978380199554
+                building_age_old: 0.0010786612425892064
+                building_age_recent: 0.0021404228135732933
+                embarcadero: 0.001800346695666037
+                is_sanfran: 0.06096614310132623
+                jobs_45: 0.037013867677586715
+                juris_ave_income: 0.08129617449829296
+                np.log1p(unit_price): 0.03269742903011821
+                pacheights: 0.0008448555729207273
+                residential_units_1500: 0.018452284721112537
+                stanford: 0.001064282689039251
             T-Score:
-                ave_income_500: 0.2400442028898033
-                embarcadero: -2.4357880050601888
-                is_sanfran: 4.067116273094577
-                jobs_45: 0.5276252935554187
-                juris_ave_income: 8.5265751161343
-                np.log1p(unit_price): -17.063070072205523
-                pacheights: -6.253239200198729
-                residential_units_1500: 14.499372101283267
-                stanford: -9.907905929947818
-                zonal_veryhighinc: -17.776112205994572
+                I(year_built < 1940)[False]: -0.03701671184975692
+                I(year_built < 1940)[True]: 0.03693621801753027
+                I(year_built > 2005)[T.True]: 3.7049117336569295
+                ave_income_500: -5.391627381134766
+                building_age_old: -10.05254679852031
+                building_age_recent: -3.185534005449833
+                embarcadero: -2.9593008128967146
+                is_sanfran: -3.2078839355793436
+                jobs_45: -2.9044773651599605
+                juris_ave_income: -5.834742707701156
+                np.log1p(unit_price): -14.108687823209262
+                pacheights: -5.000679601363571
+                residential_units_1500: 34.028189878090835
+                stanford: -5.817843705987792
         fitted: true
         log_likelihoods:
-            convergence: -21925.60822192511
+            convergence: -22170.19744413077
             'null': -23472.138032570383
-            ratio: 0.06588789689713304
+            ratio: 0.05546749029138365
         name: 2
     3:
         fit_parameters:
             Coefficient:
-                ave_income_500: 0.1421017788930081
-                embarcadero: -0.010509482531781869
-                is_sanfran: 0.303118702315782
-                jobs_45: -0.0819975075665297
-                juris_ave_income: 0.5467750078470962
-                np.log1p(unit_price): -0.533530846434103
-                pacheights: -0.0045075304696249215
-                residential_units_1500: 0.23920052196652994
-                stanford: -0.008637364933819894
-                zonal_veryhighinc: -2.719854964897151
+                I(year_built < 1940)[False]: -0.020586035506699577
+                I(year_built < 1940)[True]: 0.02058603550669802
+                I(year_built > 2005)[T.True]: 0.02089273279903003
+                ave_income_500: -0.12746076702633302
+                building_age_old: -0.012026491539706268
+                building_age_recent: -0.008885936945200491
+                embarcadero: -0.009559563048441098
+                is_sanfran: -0.11751280574351039
+                jobs_45: -0.10452712348588432
+                juris_ave_income: -0.199996098002835
+                np.log1p(unit_price): -0.37941201781298833
+                pacheights: -0.0036959551163088427
+                residential_units_1500: 0.5381830306503679
+                stanford: -0.003923055040907026
             Std. Error:
-                ave_income_500: 0.08082385150798278
-                embarcadero: 0.0016463975541381618
-                is_sanfran: 0.05775382842140595
-                jobs_45: 0.03348347849241566
-                juris_ave_income: 0.07251145106880973
-                np.log1p(unit_price): 0.03276992369999344
-                pacheights: 0.0008277362592056949
-                residential_units_1500: 0.018666432952908926
-                stanford: 0.0008845960732272804
-                zonal_veryhighinc: 0.17222217800471779
+                I(year_built < 1940)[False]: 1.0777727105307366
+                I(year_built < 1940)[True]: 1.0789343159419131
+                I(year_built > 2005)[T.True]: 0.07660441385026825
+                ave_income_500: 0.0440293219628348
+                building_age_old: 0.0010594616580047217
+                building_age_recent: 0.0020940920819486936
+                embarcadero: 0.0018302915404791022
+                is_sanfran: 0.05977875261907281
+                jobs_45: 0.03847277474321226
+                juris_ave_income: 0.08063202718171873
+                np.log1p(unit_price): 0.03232238388444678
+                pacheights: 0.0008217743349085549
+                residential_units_1500: 0.01866140375909988
+                stanford: 0.0010411286757135059
             T-Score:
-                ave_income_500: 1.758166385809677
-                embarcadero: -6.383320058613218
-                is_sanfran: 5.24846076183988
-                jobs_45: -2.448894537199979
-                juris_ave_income: 7.5405332507859235
-                np.log1p(unit_price): -16.281113478277945
-                pacheights: -5.445611956096256
-                residential_units_1500: 12.814474118862307
-                stanford: -9.764190906147833
-                zonal_veryhighinc: -15.79271030251774
+                I(year_built < 1940)[False]: -0.01910053511798626
+                I(year_built < 1940)[True]: 0.019079971044137514
+                I(year_built > 2005)[T.True]: 0.2727353653520171
+                ave_income_500: -2.894906424721298
+                building_age_old: -11.351511825690505
+                building_age_recent: -4.243336299200143
+                embarcadero: -5.2229728636230055
+                is_sanfran: -1.9657955476644915
+                jobs_45: -2.7169114830826184
+                juris_ave_income: -2.480355573252647
+                np.log1p(unit_price): -11.738367416505987
+                pacheights: -4.497530476806774
+                residential_units_1500: 28.839364797942014
+                stanford: -3.768078943958084
         fitted: true
         log_likelihoods:
-            convergence: -22251.443178070993
+            convergence: -22501.262537358638
             'null': -23472.138032570383
-            ratio: 0.05200612116397452
+            ratio: 0.041362891350781084
         name: 3
     4:
         fit_parameters:
             Coefficient:
-                ave_income_500: 0.1709718717102685
-                embarcadero: -0.004301264923323331
-                is_sanfran: 0.2876413936190381
-                jobs_45: -0.05012982823847222
-                juris_ave_income: 0.7273004367891346
-                np.log1p(unit_price): -0.49538751257743624
-                pacheights: -0.004708988645755588
-                residential_units_1500: 0.24301396788109458
-                stanford: -0.007241305358971392
-                zonal_veryhighinc: -2.2937535663891633
+                I(year_built < 1940)[False]: -0.09618543222413808
+                I(year_built < 1940)[True]: 0.09618543222415314
+                I(year_built > 2005)[T.True]: -0.10929673970314067
+                ave_income_500: -0.08721142741308437
+                building_age_old: -0.014067495698762675
+                building_age_recent: -0.013285551524829435
+                embarcadero: -0.0038957008402383964
+                is_sanfran: 0.01339251736330862
+                jobs_45: -0.029017129419906213
+                juris_ave_income: -0.12587225197221774
+                np.log1p(unit_price): -0.3534175596569066
+                pacheights: -0.0025782462067966134
+                residential_units_1500: 0.46686742888860894
+                stanford: -0.0037974563708219355
             Std. Error:
-                ave_income_500: 0.08038772087107046
-                embarcadero: 0.001646866723942504
-                is_sanfran: 0.0609199469174543
-                jobs_45: 0.034667112631894564
-                juris_ave_income: 0.07237821642186235
-                np.log1p(unit_price): 0.03306770442251898
-                pacheights: 0.0008504702414576472
-                residential_units_1500: 0.018500745277831902
-                stanford: 0.0008769255983943261
-                zonal_veryhighinc: 0.16763786402191042
+                I(year_built < 1940)[False]: 1.0923447148880467
+                I(year_built < 1940)[True]: 1.094348344358472
+                I(year_built > 2005)[T.True]: 0.0762712115269435
+                ave_income_500: 0.050387545889382816
+                building_age_old: 0.0010749669483414517
+                building_age_recent: 0.0020942884591913452
+                embarcadero: 0.0018068947811186592
+                is_sanfran: 0.06049609171575774
+                jobs_45: 0.03858141004675706
+                juris_ave_income: 0.08211299703162511
+                np.log1p(unit_price): 0.03314566573047057
+                pacheights: 0.0008432280761619874
+                residential_units_1500: 0.019182922068812305
+                stanford: 0.0010242583929911872
             T-Score:
-                ave_income_500: 2.1268406400584623
-                embarcadero: -2.611786892521789
-                is_sanfran: 4.721629091515596
-                jobs_45: -1.4460341353133515
-                juris_ave_income: 10.048609550558757
-                np.log1p(unit_price): -14.981007034769526
-                pacheights: -5.536923476222645
-                residential_units_1500: 13.135360993931448
-                stanford: -8.257605174521547
-                zonal_veryhighinc: -13.682789265850868
+                I(year_built < 1940)[False]: -0.08805410134107348
+                I(year_built < 1940)[True]: 0.08789288412597625
+                I(year_built > 2005)[T.True]: -1.4330012270033317
+                ave_income_500: -1.730813157770018
+                building_age_old: -13.086444862762688
+                building_age_recent: -6.343706601887738
+                embarcadero: -2.156019753306579
+                is_sanfran: 0.22137822433610535
+                jobs_45: -0.7521013199035537
+                juris_ave_income: -1.5329150868009254
+                np.log1p(unit_price): -10.662557286698647
+                pacheights: -3.05759056141926
+                residential_units_1500: 24.337659675302778
+                stanford: -3.7075179435260033
         fitted: true
         log_likelihoods:
-            convergence: -22630.997810641413
+            convergence: -22740.39451171336
             'null': -23472.138032570383
-            ratio: 0.03583568828548078
+            ratio: 0.03117498371224825
         name: 4
     5:
         fit_parameters:
             Coefficient:
-                ave_income_500: 0.42315898339816854
-                embarcadero: -0.0016949561528736077
-                is_sanfran: 0.188288975614966
-                jobs_45: 0.014926356219927162
-                juris_ave_income: 0.5982352030160877
-                np.log1p(unit_price): -0.615757586255435
-                pacheights: -0.004061572845384143
-                residential_units_1500: 0.2697934998639829
-                stanford: -0.004603529440239805
-                zonal_veryhighinc: -0.7315721106245576
+                I(year_built < 1940)[False]: -0.042245931058742574
+                I(year_built < 1940)[True]: 0.04224593105874644
+                I(year_built > 2005)[T.True]: -0.07140887255076586
+                ave_income_500: 0.037544081458057786
+                building_age_old: -0.013274371175073272
+                building_age_recent: -0.00913892973310941
+                embarcadero: -0.0064160421981276925
+                is_sanfran: 0.057758292472709444
+                jobs_45: -0.029546375446522045
+                juris_ave_income: 0.12367958338619964
+                np.log1p(unit_price): -0.3425304874035005
+                pacheights: -0.003457448585968613
+                residential_units_1500: 0.38666433797429517
+                stanford: -0.004198600199805687
             Std. Error:
-                ave_income_500: 0.08271614322843744
-                embarcadero: 0.0015849376048587228
-                is_sanfran: 0.06381067632755798
-                jobs_45: 0.033337448286751906
-                juris_ave_income: 0.07190597664890444
-                np.log1p(unit_price): 0.03398349784041186
-                pacheights: 0.0008597411051623114
-                residential_units_1500: 0.018550022774439092
-                stanford: 0.0008615151578046134
-                zonal_veryhighinc: 0.15777634011078523
+                I(year_built < 1940)[False]: 1.0730329048634388
+                I(year_built < 1940)[True]: 1.0760370982304808
+                I(year_built > 2005)[T.True]: 0.07515141561102906
+                ave_income_500: 0.05651951628568332
+                building_age_old: 0.0010655907193202496
+                building_age_recent: 0.0020710154172225736
+                embarcadero: 0.0017727341469288935
+                is_sanfran: 0.06326085586580565
+                jobs_45: 0.03844106887225565
+                juris_ave_income: 0.08164693079073657
+                np.log1p(unit_price): 0.032781091015012635
+                pacheights: 0.0008500316076835199
+                residential_units_1500: 0.019208573734935574
+                stanford: 0.0009896683935990635
             T-Score:
-                ave_income_500: 5.115796830970818
-                embarcadero: -1.0694150657272667
-                is_sanfran: 2.950744083144116
-                jobs_45: 0.4477354142866058
-                juris_ave_income: 8.319686775649997
-                np.log1p(unit_price): -18.119311589026598
-                pacheights: -4.724181292480315
-                residential_units_1500: 14.54410612561314
-                stanford: -5.343526922928335
-                zonal_veryhighinc: -4.636766894902444
+                I(year_built < 1940)[False]: -0.03937058301499064
+                I(year_built < 1940)[True]: 0.03926066408697148
+                I(year_built > 2005)[T.True]: -0.9501999658977288
+                ave_income_500: 0.6642675649998068
+                building_age_old: -12.457288651632702
+                building_age_recent: -4.412777257527892
+                embarcadero: -3.6192918206279963
+                is_sanfran: 0.9130178794171119
+                jobs_45: -0.7686148255842793
+                juris_ave_income: 1.5148099529080152
+                np.log1p(unit_price): -10.449026459998938
+                pacheights: -4.067435322070842
+                residential_units_1500: 20.129778676438104
+                stanford: -4.242431330495367
         fitted: true
         log_likelihoods:
-            convergence: -23010.96673470732
+            convergence: -22912.36996727406
             'null': -23472.138032570383
-            ratio: 0.01964760505511398
+            ratio: 0.02384819246204073
         name: 5
     6:
         fit_parameters:
             Coefficient:
-                ave_income_500: 0.3418560228083446
-                embarcadero: 0.0019972450155462187
-                is_sanfran: 0.20915398598067655
-                jobs_45: 0.11782440026961344
-                juris_ave_income: 0.38291223394354396
-                np.log1p(unit_price): -0.49440503840234035
-                pacheights: -0.0030464694264179227
-                residential_units_1500: 0.24300918447712266
-                stanford: -0.003761620613388284
-                zonal_veryhighinc: 0.11782283872665048
+                I(year_built < 1940)[False]: -0.056041070981371816
+                I(year_built < 1940)[True]: 0.056041070981375105
+                I(year_built > 2005)[T.True]: -0.16101481764644962
+                ave_income_500: 0.12204003799735076
+                building_age_old: -0.014663012003143674
+                building_age_recent: -0.012680405222385482
+                embarcadero: -0.005935440412317468
+                is_sanfran: 0.1728281269592565
+                jobs_45: 0.005686317028088224
+                juris_ave_income: 0.1937419500756399
+                np.log1p(unit_price): -0.2670721648640868
+                pacheights: -0.0009817747617009527
+                residential_units_1500: 0.3193800372390912
+                stanford: -0.004845514666224808
             Std. Error:
-                ave_income_500: 0.08479202672588658
-                embarcadero: 0.0015930348015288946
-                is_sanfran: 0.06395707375241745
-                jobs_45: 0.035960177591086606
-                juris_ave_income: 0.07103572241105385
-                np.log1p(unit_price): 0.0344692014233286
-                pacheights: 0.0008601960328797594
-                residential_units_1500: 0.018435651369862464
-                stanford: 0.0008559390841536347
-                zonal_veryhighinc: 0.15687857694988816
+                I(year_built < 1940)[False]: 1.0592557341209448
+                I(year_built < 1940)[True]: 1.0632192551197481
+                I(year_built > 2005)[T.True]: 0.07496213639917461
+                ave_income_500: 0.056865143180697825
+                building_age_old: 0.0010646499471304168
+                building_age_recent: 0.0020266549527467124
+                embarcadero: 0.001751934584936295
+                is_sanfran: 0.06500183474005208
+                jobs_45: 0.03756318830596433
+                juris_ave_income: 0.07928623348609437
+                np.log1p(unit_price): 0.033029126832638
+                pacheights: 0.0008807151234904054
+                residential_units_1500: 0.018792748609589613
+                stanford: 0.0009588080778680175
             T-Score:
-                ave_income_500: 4.031700102103795
-                embarcadero: 1.2537359595844288
-                is_sanfran: 3.2702244444504616
-                jobs_45: 3.276524426809794
-                juris_ave_income: 5.390417960808393
-                np.log1p(unit_price): -14.343385340738681
-                pacheights: -3.541599019259563
-                residential_units_1500: 13.181480795106594
-                stanford: -4.394729348184667
-                zonal_veryhighinc: 0.7510447953915768
+                I(year_built < 1940)[False]: -0.05290608223884592
+                I(year_built < 1940)[True]: 0.05270885634502859
+                I(year_built > 2005)[T.True]: -2.147948622875995
+                ave_income_500: 2.1461308487266018
+                building_age_old: -13.772613282577371
+                building_age_recent: -6.256815056356688
+                embarcadero: -3.3879349510834023
+                is_sanfran: 2.658819211033212
+                jobs_45: 0.1513800421245218
+                juris_ave_income: 2.4435761614230214
+                np.log1p(unit_price): -8.085958984546249
+                pacheights: -1.1147472497236484
+                residential_units_1500: 16.994854976994535
+                stanford: -5.053685693803475
         fitted: true
         log_likelihoods:
-            convergence: -23151.516720725365
+            convergence: -23004.161281115266
             'null': -23472.138032570383
-            ratio: 0.013659655179264818
+            ratio: 0.019937542579450684
         name: 6
     7:
         fit_parameters:
             Coefficient:
-                ave_income_500: 0.22635101356296258
-                embarcadero: -0.003806893629967538
-                is_sanfran: 0.23456151769662698
-                jobs_45: 0.033044965295154105
-                juris_ave_income: 0.05346745502909071
-                np.log1p(unit_price): -0.407694544809125
-                pacheights: -0.003230079318218067
-                residential_units_1500: 0.1700372063052603
-                stanford: -0.005753488469882805
-                zonal_veryhighinc: 2.4239267383758656
+                I(year_built < 1940)[False]: -0.0336390957702844
+                I(year_built < 1940)[True]: 0.03363909577029969
+                I(year_built > 2005)[T.True]: 0.022427119169239566
+                ave_income_500: 1.0157332304359803
+                building_age_old: -0.009478484461582934
+                building_age_recent: -0.0038764108199020766
+                embarcadero: -0.005679370792388812
+                is_sanfran: 0.13496226350343477
+                jobs_45: 0.03823986019013767
+                juris_ave_income: 0.13892862541167056
+                np.log1p(unit_price): -0.13856755282729055
+                pacheights: -0.002443497344648003
+                residential_units_1500: 0.2840870317465828
+                stanford: -0.004694987945902275
             Std. Error:
-                ave_income_500: 0.0778942838138067
-                embarcadero: 0.001522813017386149
-                is_sanfran: 0.0633014474439631
-                jobs_45: 0.03543520048208938
-                juris_ave_income: 0.06390195084596811
-                np.log1p(unit_price): 0.03502158238244065
-                pacheights: 0.000833894316403413
-                residential_units_1500: 0.01772416189589783
-                stanford: 0.0008063796264192585
-                zonal_veryhighinc: 0.14079171264685303
+                I(year_built < 1940)[False]: 1.002979177742697
+                I(year_built < 1940)[True]: 1.0070641715198045
+                I(year_built > 2005)[T.True]: 0.07708530908062042
+                ave_income_500: 0.05703460937548062
+                building_age_old: 0.0010752544965536778
+                building_age_recent: 0.002021895121021686
+                embarcadero: 0.0017282420984562352
+                is_sanfran: 0.06633157829471738
+                jobs_45: 0.04046260515057285
+                juris_ave_income: 0.07107318812398053
+                np.log1p(unit_price): 0.03346095026355411
+                pacheights: 0.0008459820605422317
+                residential_units_1500: 0.018438801882239862
+                stanford: 0.0009267944487350092
             T-Score:
-                ave_income_500: 2.905874506838229
-                embarcadero: -2.4999087783619864
-                is_sanfran: 3.7054684713847963
-                jobs_45: 0.9325463055262404
-                juris_ave_income: 0.836710840925199
-                np.log1p(unit_price): -11.641237119358077
-                pacheights: -3.8734876286834554
-                residential_units_1500: 9.593525905708105
-                stanford: -7.134962592533819
-                zonal_veryhighinc: 17.21640210781288
+                I(year_built < 1940)[False]: -0.0335391766018438
+                I(year_built < 1940)[True]: 0.03340313032836176
+                I(year_built > 2005)[T.True]: 0.29093895369588446
+                ave_income_500: 17.809067889796886
+                building_age_old: -8.815107950687615
+                building_age_recent: -1.9172165655868854
+                embarcadero: -3.2862125031336475
+                is_sanfran: 2.0346608202775585
+                jobs_45: 0.9450666868293893
+                juris_ave_income: 1.9547262347275398
+                np.log1p(unit_price): -4.141172074787704
+                pacheights: -2.8883559813098696
+                residential_units_1500: 15.40702229791913
+                stanford: -5.0658352046783515
         fitted: true
         log_likelihoods:
-            convergence: -22916.962590020634
+            convergence: -22847.108690902736
             'null': -23472.138032570383
-            ratio: 0.02365252972606835
+            ratio: 0.026628564504875718
         name: 7
     8:
         fit_parameters:
             Coefficient:
-                ave_income_500: 0.5511817837815606
-                embarcadero: -0.004616653475483419
-                is_sanfran: 0.3377073906409674
-                jobs_45: 0.026032857382484276
-                juris_ave_income: 0.3935129702581985
-                np.log1p(unit_price): -0.2981363786536532
-                pacheights: -0.006206140167169649
-                residential_units_1500: 0.16443057329021885
-                stanford: -0.006242632219684839
-                zonal_veryhighinc: 2.433949423909636
+                I(year_built < 1940)[False]: -0.04933610610245512
+                I(year_built < 1940)[True]: 0.04933610610243924
+                I(year_built > 2005)[T.True]: -0.011074588629146988
+                ave_income_500: 1.3611547537884465
+                building_age_old: -0.00810716518555564
+                building_age_recent: -0.006990295897466067
+                embarcadero: -0.0043535651877068425
+                is_sanfran: 0.19957926377002452
+                jobs_45: 0.10660896333061762
+                juris_ave_income: 0.40093848849235014
+                np.log1p(unit_price): -0.01940779167230976
+                pacheights: -0.007091087231747521
+                residential_units_1500: 0.22424657477497806
+                stanford: -0.003746865107525894
             Std. Error:
-                ave_income_500: 0.07340099161657371
-                embarcadero: 0.0014966896800248384
-                is_sanfran: 0.06373704044026945
-                jobs_45: 0.03628292169508615
-                juris_ave_income: 0.05831075911727464
-                np.log1p(unit_price): 0.03622596008742508
-                pacheights: 0.0007604328349717967
-                residential_units_1500: 0.01726534620856374
-                stanford: 0.0007579635579163114
-                zonal_veryhighinc: 0.1338506681573147
+                I(year_built < 1940)[False]: 0.9547468655019307
+                I(year_built < 1940)[True]: 0.9606525277417116
+                I(year_built > 2005)[T.True]: 0.07786776619524557
+                ave_income_500: 0.05571716250009293
+                building_age_old: 0.0010761261775697928
+                building_age_recent: 0.0020534593453580335
+                embarcadero: 0.0017115324931754213
+                is_sanfran: 0.06526939090846758
+                jobs_45: 0.04030120042189169
+                juris_ave_income: 0.06301901418504324
+                np.log1p(unit_price): 0.03492143038508743
+                pacheights: 0.000746332934318868
+                residential_units_1500: 0.018395364081343957
+                stanford: 0.0008876528211734156
             T-Score:
-                ave_income_500: 7.509187160042474
-                embarcadero: -3.084576273290535
-                is_sanfran: 5.2984479402906475
-                jobs_45: 0.7174961708227027
-                juris_ave_income: 6.748548230469182
-                np.log1p(unit_price): -8.229909654130703
-                pacheights: -8.161325868312652
-                residential_units_1500: 9.523734497062101
-                stanford: -8.236058520869024
-                zonal_veryhighinc: 18.184066298787656
+                I(year_built < 1940)[False]: -0.051674541059129935
+                I(year_built < 1940)[True]: 0.051356869083994255
+                I(year_built > 2005)[T.True]: -0.14222301692048767
+                ave_income_500: 24.429721340999304
+                building_age_old: -7.533656698012854
+                building_age_recent: -3.404155973804909
+                embarcadero: -2.543664934826703
+                is_sanfran: 3.0577773285782657
+                jobs_45: 2.645304909396878
+                juris_ave_income: 6.362182805892063
+                np.log1p(unit_price): -0.5557559200266181
+                pacheights: -9.50123852998544
+                residential_units_1500: 12.190385239637763
+                stanford: -4.221092997341908
         fitted: true
         log_likelihoods:
-            convergence: -22298.10156173907
+            convergence: -22332.595035878512
             'null': -23472.138032570383
-            ratio: 0.05001830123877926
+            ratio: 0.04854875150745197
         name: 8
 
 fitted: true

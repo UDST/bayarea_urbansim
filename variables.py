@@ -29,6 +29,29 @@ def node_id(households, buildings):
 #####################
 
 
+@orca.column('homesales', cache=True)
+def general_type(buildings):
+    return buildings.general_type
+
+
+BUILDING_AGE_BREAK = 40
+@orca.column('homesales', cache=True)
+def building_age(homesales):
+    return 2014 - homesales.year_built
+
+
+@orca.column('homesales', cache=True)
+def building_age_recent(homesales):
+    s = homesales.building_age
+    return s * (s < BUILDING_AGE_BREAK)
+
+
+@orca.column('homesales', cache=True)
+def building_age_old(homesales):
+    s = homesales.building_age
+    return s * (s >= BUILDING_AGE_BREAK)
+
+
 @orca.column('homesales', 'juris_ave_income', cache=True)
 def juris_ave_income(parcels, homesales):
     return misc.reindex(parcels.juris_ave_income, homesales.parcel_id)
@@ -175,6 +198,23 @@ def preferred_general_type(jobs, buildings, settings):
 #####################
 # BUILDINGS VARIABLES
 #####################
+
+
+@orca.column('buildings', cache=True)
+def building_age(buildings, year):
+    return (year or 2014) - buildings.year_built
+
+
+@orca.column('buildings', cache=True)
+def building_age_recent(buildings):
+    s = buildings.building_age
+    return s * (s < BUILDING_AGE_BREAK)
+
+
+@orca.column('buildings', cache=True)
+def building_age_old(buildings):
+    s = buildings.building_age
+    return s * (s >= BUILDING_AGE_BREAK)
 
 
 @orca.column('buildings', cache=True)

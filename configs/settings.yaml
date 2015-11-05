@@ -86,7 +86,7 @@ table_reprocess:
 
 
 rates:
-  households_relocation: .05
+  households_relocation: .03
   jobs_relocation: .05
   simple_households_transition: .02
   simple_jobs_transition: .02
@@ -380,23 +380,23 @@ job_sector_to_type:
     Retail: 0.214
     Office: 0.279
   MWTEMPN:
-    Industrial: 0.124
+    Industrial: 0.054
     Retail: 0.191
     Office: 0.237
   FPSEMPN:  
-    Industrial: 0.056
+    Industrial: 0.026
     Retail: 0.088
     Office: 0.27
   RETEMPN:
-    Industrial: 0.094
+    Industrial: 0.044
     Retail: 0.283
     Office: 0.152
   HEREMPN:
-    Industrial: 0.104
+    Industrial: 0.004
     Retail: 0.099
     Office: 0.257
   OTHEMPN:
-    Industrial: 0.114
+    Industrial: 0.004
     Retail: 0.205
     Office: 0.278
 

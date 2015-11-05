@@ -43,6 +43,7 @@ if SLACK:
 
 print "Started", time.ctime()
 print "Current Commit : ", CURRENT_COMMIT
+print "Current Secnario : ", orca.get_injectable('scenario')
 in_year, out_year = 2010, 2040
 
 if SLACK:

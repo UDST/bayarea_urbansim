@@ -246,7 +246,7 @@ def add_population(df, year):
     zfi = zone_forecast_inputs()
     s = df.tothh * zfi.meanhhsize
 
-    s = scale_by_target(s, target, .1)
+    s = scale_by_target(s, target, .15)
 
     df["hhpop"] = round_series_match_target(s, target, 0)
     df["hhpop"] = df.hhpop.fillna(0)
