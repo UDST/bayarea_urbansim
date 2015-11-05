@@ -53,6 +53,16 @@ if SLACK:
 
 try:
     orca.run([
+        "geographic_summary",
+        "travel_model_output"
+    ], iter_vars=[2009])
+except Exception as e:
+    print traceback.print_exc()
+    raise e
+    sys.exit(0)
+
+try:
+    orca.run([
         "neighborhood_vars",            # local accessibility vars
         "regional_vars",                # regional accessibility vars
 

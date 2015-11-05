@@ -62,6 +62,11 @@ def diagnostic_output(households, buildings, parcels, taz, zones, year, summary)
 @orca.step("geographic_summary")
 def pda_output(parcels, households, jobs, buildings, taz_geography,
                run_number, year):
+    if year==2009:
+        year=2010
+        base=True
+    else:
+        base=False
 
     households_df = orca.merge_tables(
         'households',
@@ -154,8 +159,12 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
             summary_table = \
                 summary_table.reindex(all_summary_geographies).fillna(0)
 
-            summary_csv = "runs/run{}_{}_summaries_{}.csv".\
-                format(run_number, geography, year)
+            if base is False:
+                summary_csv = "runs/run{}_{}_summaries_{}.csv".\
+                    format(run_number, geography, year)
+            elif base is True:
+                summary_csv = "runs/run{}_{}_summaries_{}.csv".\
+                    format(run_number, geography, 'base')
             summary_table.to_csv(summary_csv)
 
 
@@ -164,6 +173,12 @@ def travel_model_output(parcels, households, jobs, buildings,
                         zones, homesales, year, summary, coffer,
                         zone_forecast_inputs, run_number,
                         taz):
+    if year==2009:
+        year=2010
+        base=True
+    else:
+        base=False
+    # import pdb;pdb.set_trace()
 
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
 
@@ -221,8 +236,12 @@ def travel_model_output(parcels, households, jobs, buildings,
         summary.write_parcel_output(add_xy=add_xy_config)
 
         # travel model csv
-        travel_model_csv = \
+        if base is False:
+            travel_model_csv = \
             "runs/run{}_taz_summaries_{}.csv".format(run_number, year)
+        elif base is True:
+            travel_model_csv = \
+            "runs/run{}_taz_summaries_{}.csv".format(run_number, 'base')
 
         # uppercase columns to match travel model template
         taz_df.columns = \

@@ -394,6 +394,8 @@ def ave_unit_sqft(buildings):
 
 @orca.column('taz', 'gqpop')
 def gqpop(zones, zone_forecast_inputs, year):
+    if year==2009:
+        year=2010
     str1 = "gqpop" + str(year)[-2:]
     s = zone_forecast_inputs[str1]
     return s
