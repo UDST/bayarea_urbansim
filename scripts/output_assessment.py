@@ -40,14 +40,14 @@ def compare_series(base_series,outcome_series,index):
     s = base_series
     s1 = outcome_series
     d = {
-        'count' : s1,
-        'share' : s1/s1.sum(),
-        'percent_change' : 100*(s1-s)/s,
-        'share_change' : (s1/s1.sum())/(s/s.sum()),
-        'div_by_base' : (s1/s)
+        'Count' : s1,
+        'Share' : s1/s1.sum(),
+        'Percent_Change' : 100*(s1-s)/s,
+        'Share_Change' : (s1/s1.sum())/(s/s.sum()),
+        'Divided_By_Base' : (s1/s)
     }
     #there must be a less verbose way to do this:
-    columns = ['count','share','percent_change','share_change','div_by_base']
+    columns = ['Count','Share','Percent_Change','Share_Change','Divided_By_Base']
     df = pd.DataFrame(d,index=index, columns=columns)
     return df
 
@@ -82,13 +82,13 @@ def compare_outcome_for(variable):
     for run in RUNS:
         df_lst.append(compare_outcome(run,s))
 
-    keys = ['Base Run']
+    keys = ['Base Run','Name']
 
     keys.extend(RUNS)
 
     df1 = pd.concat(df_lst, axis=1, keys=keys)
 
-    df1.to_csv('test.csv')
+    write_csvs(df1,variable,RUNS)
 
 base_df = base_df()
 compare_outcome_for('totemp')
