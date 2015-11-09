@@ -56,14 +56,45 @@ def compare_outcome(run,base_series):
     s = df[base_series.name]
     df = compare_series(base_series, s, df.index)
 
-    formatters1 = {'count': '{:.0f}',
-                  'share': '{:.2f}',
-                  'percent_change': '{:.2f}',
-                  'share_change': '{:.3f}',
-                  'div_by_base': '{:.4f}'}
+    formatters1 = {'Count': '{:.0f}',
+                  'Share': '{:.2f}',
+                  'Percent_Change': '{:.2f}',
+                  'Share_Change': '{:.3f}',
+                  'Divided_By_Base': '{:.4f}'}
 
     df = format_df(df,formatters1)
     return df
+
+def add_names(df):
+    sd_names = pd.read_csv('data/superdistrict_names.csv',
+                                   index_col='number')
+    df = pd.concat([df,sd_names], axis=1)
+    return df
+
+def remove_characters(word, characters=b' _aeiou'):
+    return word.translate(None, characters)
+
+def make_esri_columns(df):
+    df.columns = [str(x[0])+str(x[1]) for x in df.columns ]
+    df.columns = [remove_characters(x) for x in df.columns]
+    return df
+    df.to_csv(f)
+
+def to_esri_csv(df,variable,runs=RUNS):
+    f = 'compare/esri_'+\
+    '%(variable)s_%(runs)s.csv'\
+        % {"variable": variable,
+        "runs": '-'.join(str(x) for x in runs)}
+    df = make_esri_columns(df)
+    df.to_csv(f)
+
+def write_csvs(df,variable,runs=RUNS):
+    f = 'compare/'+\
+    '%(variable)s_%(runs)s.csv'\
+        % {"variable": variable,
+        "runs": '-'.join(str(x) for x in runs)}
+    df.to_csv(f)
+    to_esri_csv(df,variable,runs)
 
 def compare_outcome_for(variable):
     s = base_df[variable]
