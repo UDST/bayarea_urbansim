@@ -14,6 +14,16 @@ from utils import nearest_neighbor
 #####################
 
 
+@orca.injectable('year')
+def year():
+    try:
+        return orca.get_injectable("iter_var")
+    except:
+        pass
+    # if we're not running simulation, return base year
+    return 2014
+
+
 @orca.injectable('building_sqft_per_job', cache=True)
 def building_sqft_per_job(settings):
     return settings['building_sqft_per_job']
@@ -187,6 +197,7 @@ def development_projects(parcels, settings):
     df = pd.read_csv(os.path.join(misc.data_dir(), "development_projects.csv"))
 
     df = df.query("action == 'build'")
+    df = df[df.geom_id != ' ']
 
     for fld in ['residential_sqft', 'residential_price',
                 'non_residential_price']:
@@ -208,7 +219,7 @@ def development_projects(parcels, settings):
 
     df["geom_id"] = df.geom_id.astype("int")
     df = df.query('residential_units != "rent"')
-    df["residential_units"] = df.residential_units.astype("int")
+    df["residential_units"] = df.residential_units.fillna(0).astype("int")
     geom_id = df.geom_id
     df = df.set_index("geom_id")
     df = geom_id_to_parcel_id(df, parcels).reset_index()  # use parcel id
@@ -254,8 +265,17 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
     # set the vacancy rate in each building to 5% for testing purposes
     df["residential_units"] = df.residential_units.fillna(0)
 
+    # for some reason nonres can be more than total sqft
+    df["building_sqft"] = pd.DataFrame({
+        "one": df.building_sqft,
+        "two": df.residential_sqft + df.non_residential_sqft}).max(axis=1)
+    
     # keeps parking lots from getting redeveloped
     df["building_sqft"][df.building_type_id.isin([15, 16])] = 0
+    df["non_residential_sqft"][df.building_type_id.isin([15, 16])] = 0
+
+    # don't know what a 0 building type id, set to office
+    df["building_type_id"] = df.building_type_id.replace(0, 4)
 
     # we should only be using the "buildings" table during simulation, and in
     # simulation we want to normalize the prices to 2012 style prices

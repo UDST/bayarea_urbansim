@@ -42,8 +42,8 @@ if SLACK:
     host = socket.gethostname()
 
 print "Started", time.ctime()
-print "Current Commit : ", CURRENT_COMMIT
-print "Current Secnario : ", orca.get_injectable('scenario')
+print "Current Commit : ", CURRENT_COMMIT.rstrip()
+print "Current Scenario : ", orca.get_injectable('scenario').rstrip()
 in_year, out_year = 2010, 2040
 
 if SLACK:
@@ -74,6 +74,7 @@ try:
         "alt_feasibility",
 
         "residential_developer",
+        "developer_reprocess",
         "non_residential_developer",
 
         "hlcm_simulate",                 # put these last so they don't get

@@ -12,6 +12,7 @@ import pandana.network as pdna
 from urbansim_defaults import models
 from urbansim_defaults import utils
 from urbansim.developer import sqftproforma, developer
+from urbansim.developer.developer import Developer as dev
 import numpy as np
 import pandas as pd
 
@@ -126,7 +127,6 @@ def residential_developer(feasibility, households, buildings, parcels, year,
 
     kwargs = settings['residential_developer']
 
-    from urbansim.developer.developer import Developer as dev
     num_units = dev.compute_units_to_build(
         len(households),
         buildings["residential_units"].sum(),
@@ -204,25 +204,31 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year,
                               settings, summary, form_to_btype_func,
                               add_extra_columns_func, parcels_geography):
 
-    kwargs = settings['non_residential_developer']
+    dev_settings = settings['non_residential_developer']
+
+    # I'm going to try a new way of computing this because the math the other
+    # way is simply too hard.  Basically we used to try and apportion sectors
+    # into the demand for office, retail, and industrial, but there's just so
+    # much dirtyness to the data, for instance 15% of jobs are in residential
+    # buildings, and 15% in other buildings, it's just hard to know how much
+    # to build, we I think the right thing to do is to compute the number of
+    # job spaces that are required overall, and then to apportion that new dev
+    # into the three non-res types with a single set of coefficients
+    from urbansim.developer.developer import Developer as dev
+    all_units = dev.compute_units_to_build(
+        len(jobs),
+        buildings.job_spaces.sum(),
+        dev_settings['kwargs']['target_vacancy'])
+
+    print "Total units to build = %d" % all_units
+    if all_units <= 0:
+        return
 
     for typ in ["Office", "Retail", "Industrial"]:
 
         print "\nRunning for type: ", typ
 
-        num_jobs_of_this_type = \
-            (jobs.preferred_general_type == typ).value_counts()[True]
-
-        num_job_spaces_of_this_type = \
-            (buildings.job_spaces * (buildings.general_type == typ)).sum()
-
-        from urbansim.developer.developer import Developer as dev
-        num_units = dev.compute_units_to_build(num_jobs_of_this_type,
-                                               num_job_spaces_of_this_type,
-                                               kwargs['target_vacancy'])
-
-        if num_units == 0:
-            continue
+        num_units = all_units * float(dev_settings['type_splits'][typ])
 
         targets = []
         # now apply limits - limits are assumed to be yearly, apply to an
@@ -284,12 +290,76 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year,
                 add_more_columns_callback=add_extra_columns_func,
                 residential=False,
                 num_units_to_build=target,
-                **kwargs)
+                **dev_settings['kwargs'])
 
             if new_buildings is not None:
                 new_buildings["subsidized"] = False
 
             summary.add_parcel_output(new_buildings)
+
+
+@orca.step()
+def developer_reprocess(buildings, year, years_per_iter, jobs, parcels, summary):
+    # this takes new units that come out of the developer, both subsidized
+    # and non-subsidized and reprocesses them as required - please read comments
+    # to see what this means in detail
+
+    # 20% of base year buildings which are "residential" have job spaces - I
+    # mean, there is a ratio of job spaces to res units in residential
+    # buildings of 1 to 5 - this ratio should be kept for future year
+    # buildings
+    s = buildings.general_type == "Residential"
+    res_units = buildings.residential_units[s].sum()
+    job_spaces = buildings.job_spaces[s].sum()
+
+    to_add = res_units * .20 - job_spaces
+    if to_add > 0:
+        print "Adding %d job_spaces" % to_add
+        res_units = buildings.residential_units[s]
+        # bias selection of places to put job spaces based on res units
+        add_indexes = np.random.choice(res_units.index.values, size=to_add, 
+                                       replace=True,
+                                       p=(res_units/res_units.sum()))
+        add_indexes = pd.Series(add_indexes).value_counts()  # collect same indexes
+        add_sizes = add_indexes * 400  # this is sqft per job for residential bldgs
+        print "Job spaces in res before adjustment: ", buildings.job_spaces[s].sum()
+        buildings.local.loc[add_sizes.index, "non_residential_sqft"] += add_sizes.values
+        print "Job spaces in res after adjustment: ", buildings.job_spaces[s].sum()
+        print "Job to building type allocation\n",\
+            buildings.general_type.loc[jobs.building_id[jobs.building_id > -1]].\
+                value_counts()
+
+    buildings_df = buildings.to_frame(
+        ['year_built', 'building_sqft', 'general_type'])
+    sqft_by_gtype = buildings_df.query('year_built >= %d' % year).\
+        groupby('general_type').building_sqft.sum()
+    print "New square feet by general type in millions:\n",\
+        sqft_by_gtype / 1000000.0
+    
+    # the second step here is to add retail to buildings that are greater than
+    # X stories tall - presumably this is a ground floor retail policy
+    old_buildings = buildings.to_frame(buildings.local_columns)
+    new_buildings = old_buildings.query(
+       '%d <= year_built <= %d and year_built > 2014 and stories >= 4'
+        % (year - years_per_iter, year))
+    
+    # this is the key point - make these new buildings' nonres sqft equal
+    # to one story of the new buildings 
+    new_buildings.non_residential_sqft = new_buildings.building_sqft / \
+       new_buildings.stories
+
+    new_buildings["residential_units"] = 0
+    new_buildings["residential_sqft"] = 0
+    new_buildings.buildings_sqft = new_buildings.non_residential_sqft
+    new_buildings.stories = 1
+    new_buildings.building_type_id = 10 
+   
+    print "Adding %d sqft of ground floor retail in %d locations" % \
+       (new_buildings.non_residential_sqft.sum(), len(new_buildings))
+ 
+    all_buildings = dev.merge(old_buildings, new_buildings)
+    orca.add_table("buildings", all_buildings)
+    summary.add_parcel_output(new_buildings)
 
 
 def make_network(name, weight_col, max_distance):

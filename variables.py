@@ -169,35 +169,19 @@ def empsix_id(jobs, settings):
     return jobs.empsix.map(settings['empsix_name_to_id'])
 
 
-@orca.column('jobs', 'preferred_general_type')
-def preferred_general_type(jobs, buildings, settings):
-    # this column is the preferred general type for this job - this is used
-    # in the non-res developer to determine how much of a building type to
-    #  use.  basically each job has a certain pdf by sector of the building
-    # types is prefers and so we give each job a preferred type based on that
-    # pdf.  note that if a job is assigned a building, the building's type is
-    # it's preferred type by definition
-
-    s = misc.reindex(buildings.general_type, jobs.building_id).fillna("Other")
-
-    sector_pdfs = pd.DataFrame(settings['job_sector_to_type'])
-    # normalize (to be safe)
-    sector_pdfs = sector_pdfs / sector_pdfs.sum()
-
-    for sector in sector_pdfs.columns:
-        mask = ((s == "Other") & (jobs.empsix == sector))
-
-        sector_pdf = sector_pdfs[sector]
-        s[mask] = np.random.choice(sector_pdf.index,
-                                   size=mask.value_counts()[True],
-                                   p=sector_pdf.values)
-
-    return s
-
-
 #####################
 # BUILDINGS VARIABLES
 #####################
+
+
+# I want to round this cause otherwise we'll be underfilling job spaces
+# in the aggregate because of rounding errors - this way some spaces will
+# be underfilled and othersoverfilled which should yield an average of
+# the sqft_per_job table
+@orca.column('buildings', 'job_spaces', cache=False)
+def job_spaces(buildings):
+    return (buildings.non_residential_sqft /
+            buildings.sqft_per_job).fillna(0).round().astype('int')
 
 
 @orca.column('buildings', cache=True)
@@ -386,7 +370,7 @@ def gqpop(zones, zone_forecast_inputs, year):
 
 @orca.column('taz', 'totacre')
 def totacre(zone_forecast_inputs):
-    s = zone_forecast_inputs.totacre
+    s = zone_forecast_inputs.totacre_abag
     return s
 
 
@@ -743,6 +727,8 @@ def building_purchase_price_sqft(parcels):
             factor *= 3.0
         if form == "Retail":
             factor *= 2.0
+        if form == "Office":
+            factor *= 1.4
         tmp = parcel_average_price(form.lower())
         price += tmp * (gentype == form) * factor
 
