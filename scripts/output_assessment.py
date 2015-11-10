@@ -21,7 +21,7 @@ def format_df(df, formatters=None):
     return df
 
 
-def base_df(variables=VARIABLES, geography='superdistrict'):
+def get_base_year_df(variables=VARIABLES, geography='superdistrict'):
     variables.append(geography)
     df = pd.read_csv('data/superdistrict_summaries_2009.csv',
                      index_col='superdistrict',
@@ -71,7 +71,7 @@ def compare_outcome(run, base_series):
     return df
 
 
-def sd_names():
+def get_superdistrict_names_df():
     df = pd.read_csv('data/superdistrict_names.csv',
                      index_col='number')
     df.index.name = 'superdistrict'
@@ -120,29 +120,27 @@ def get_combinations(nparray):
 
 
 def compare_outcome_for(variable):
-    s = base_df[variable]
-    s1 = s / s.sum()
+    # empty list to build up dataframe from other dataframes
+    df_lst = []
+    df1 = get_superdistrict_names_df()
+    df_lst.append(df1)
 
+    s = base_year_df[variable]
+    s1 = s / s.sum()
     d = {
         'Count': s,
         'Share': s1
     }
-    df_lst = []
-
-    df1 = sd_names()
-    df_lst.append(df1)
-
     formatters = {'Count': '{:.0f}',
                   'Share': '{:.2f}'}
-
-    df = pd.DataFrame(d, index=base_df.index)
+    df = pd.DataFrame(d, index=base_year_df.index)
     df = format_df(df, formatters)
-
     df_lst.append(df)
 
     for run in RUNS:
         df_lst.append(compare_outcome(run, s))
 
+    # build up dataframe of ratios of run count variables to one another
     if len(RUNS) > 1:
         ratios = pd.DataFrame()
         combinations = get_combinations(RUNS)
@@ -150,30 +148,22 @@ def compare_outcome_for(variable):
             s2 = divide_series(combination, variable)
             ratios[s2.name] = s2
     df_rt = pd.DataFrame(ratios)
-
     formatters = {}
     for column in df_rt.columns:
         formatters[column] = '{:.2f}'
-
     df_rt = format_df(df_rt, formatters)
-
     df_lst.append(df_rt)
 
+    # build up summary names to the first level of the column multiindex
     keys = ['', 'r0y09']
-
     run_column_shortnames = ['r' + str(x) + 'y40' for x in RUNS]
-
     keys.extend(run_column_shortnames)
-
     keys.extend(['y40Ratios'])
 
     df2 = pd.concat(df_lst, axis=1, keys=keys)
 
     write_csvs(df2, variable, RUNS)
 
-    return df_rt
-
-
-base_df = base_df()
-df_rt = compare_outcome_for('totemp')
+base_year_df = get_base_year_df()
+compare_outcome_for('totemp')
 compare_outcome_for('tothh')
