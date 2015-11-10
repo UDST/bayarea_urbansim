@@ -1,7 +1,9 @@
 import pandas as pd
+import numpy as np
+import itertools as it
 
 VARIABLES = ['tothh', 'totemp']
-RUNS = [547, 540]
+RUNS = [547, 540, 37]
 
 # loosely borrowed from https://gist.github.com/haleemur/aac0ac216b3b9103d149
 
@@ -47,8 +49,7 @@ def compare_series(base_series, outcome_series, index):
         'Count': s1,
         'Share': s1 / s1.sum(),
         'Percent_Change': 100 * (s1 - s) / s,
-        'Share_Change': (s1 / s1.sum()) / (s / s.sum()),
-        'Ratio': (s1 / s)
+        'Share_Change': (s1 / s1.sum()) - (s / s.sum())
     }
     # there must be a less verbose way to do this:
     columns = ['Count', 'Share', 'Percent_Change',
@@ -60,13 +61,11 @@ def compare_series(base_series, outcome_series, index):
 def compare_outcome(run, base_series):
     df = outcome_df(run)
     s = df[base_series.name]
-    df = compare_series(base_series, s, df.index)
-
+    df = compare_series(base_series, s, df.index)    
     formatters1 = {'Count': '{:.0f}',
                    'Share': '{:.2f}',
                    'Percent_Change': '{:.2f}',
-                   'Share_Change': '{:.3f}',
-                   'Ratio': '{:.4f}'}
+                   'Share_Change': '{:.3f}'}
 
     df = format_df(df, formatters1)
     return df
@@ -107,6 +106,16 @@ def write_csvs(df, variable, runs=RUNS):
     df.to_csv(f)
     to_esri_csv(df, variable, runs)
 
+def divide_series(a_tuple, variable):
+    s = outcome_df(a_tuple[0])[variable]
+    s1 = outcome_df(a_tuple[1])[variable]
+    s2 = s/s1
+    import pdb; pdb.set_trace
+    s2.name = str(a_tuple[0]) + '/' + str(a_tuple[1])
+    return s2
+
+def get_combinations(nparray):
+    return pd.Series(list(it.combinations(np.unique(nparray),2)))
 
 def compare_outcome_for(variable):
     s = base_df[variable]
@@ -132,6 +141,17 @@ def compare_outcome_for(variable):
     for run in RUNS:
         df_lst.append(compare_outcome(run, s))
 
+    if len(RUNS)>1:
+        ratios = []
+        combinations = get_combinations(RUNS)
+        for combination in combinations:
+            s2 = divide_series(combination, variable)
+            ratios.append(s2)
+    df_rt = pd.DataFrame(ratios)
+
+    # 'Ratio': '{:.4f}'}
+    # 'Ratio': (s1 / s)
+
     keys = ['', 'r0y09']
 
     run_column_shortnames = ['r'+str(x)+'y40' for x in RUNS]
@@ -142,6 +162,8 @@ def compare_outcome_for(variable):
 
     write_csvs(df2, variable, RUNS)
 
+    return df_rt
+
 base_df = base_df()
-compare_outcome_for('totemp')
+df_rt = compare_outcome_for('totemp')
 compare_outcome_for('tothh')
