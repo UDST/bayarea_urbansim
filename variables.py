@@ -29,9 +29,38 @@ def node_id(households, buildings):
 #####################
 
 
+@orca.column('homesales', cache=True)
+def general_type(buildings):
+    return buildings.general_type
+
+
+BUILDING_AGE_BREAK = 40
+@orca.column('homesales', cache=True)
+def building_age(homesales):
+    return 2014 - homesales.year_built
+
+
+@orca.column('homesales', cache=True)
+def building_age_recent(homesales):
+    s = homesales.building_age
+    return s * (s < BUILDING_AGE_BREAK)
+
+
+@orca.column('homesales', cache=True)
+def building_age_old(homesales):
+    s = homesales.building_age
+    return s * (s >= BUILDING_AGE_BREAK)
+
+
 @orca.column('homesales', 'juris_ave_income', cache=True)
 def juris_ave_income(parcels, homesales):
     return misc.reindex(parcels.juris_ave_income, homesales.parcel_id)
+
+
+@orca.column('homesales', cache=True)
+def zonal_veryhighinc(homesales, taz):
+    return misc.reindex(taz.veryhighinc, homesales.zone_id).\
+        reindex(homesales.index).fillna(0)
 
 
 @orca.column('homesales', 'is_sanfran', cache=True)
@@ -140,41 +169,53 @@ def empsix_id(jobs, settings):
     return jobs.empsix.map(settings['empsix_name_to_id'])
 
 
-@orca.column('jobs', 'preferred_general_type')
-def preferred_general_type(jobs, buildings, settings):
-    # this column is the preferred general type for this job - this is used
-    # in the non-res developer to determine how much of a building type to
-    #  use.  basically each job has a certain pdf by sector of the building
-    # types is prefers and so we give each job a preferred type based on that
-    # pdf.  note that if a job is assigned a building, the building's type is
-    # it's preferred type by definition
-
-    s = misc.reindex(buildings.general_type, jobs.building_id).fillna("Other")
-
-    sector_pdfs = pd.DataFrame(settings['job_sector_to_type'])
-    # normalize (to be safe)
-    sector_pdfs = sector_pdfs / sector_pdfs.sum()
-
-    for sector in sector_pdfs.columns:
-        mask = ((s == "Other") & (jobs.empsix == sector))
-
-        sector_pdf = sector_pdfs[sector]
-        s[mask] = np.random.choice(sector_pdf.index,
-                                   size=mask.value_counts()[True],
-                                   p=sector_pdf.values)
-
-    return s
-
-
 #####################
 # BUILDINGS VARIABLES
 #####################
+
+
+# I want to round this cause otherwise we'll be underfilling job spaces
+# in the aggregate because of rounding errors - this way some spaces will
+# be underfilled and othersoverfilled which should yield an average of
+# the sqft_per_job table
+@orca.column('buildings', 'job_spaces', cache=False)
+def job_spaces(buildings):
+    return (buildings.non_residential_sqft /
+            buildings.sqft_per_job).fillna(0).round().astype('int')
+
+
+@orca.column('buildings', cache=True)
+def building_age(buildings, year):
+    return (year or 2014) - buildings.year_built
+
+
+@orca.column('buildings', cache=True)
+def building_age_recent(buildings):
+    s = buildings.building_age
+    return s * (s < BUILDING_AGE_BREAK)
+
+
+@orca.column('buildings', cache=True)
+def building_age_old(buildings):
+    s = buildings.building_age
+    return s * (s >= BUILDING_AGE_BREAK)
+
+
+@orca.column('buildings', cache=True)
+def zonal_veryhighinc(buildings, taz):
+    return misc.reindex(taz.veryhighinc, buildings.zone_id).\
+        reindex(buildings.index).fillna(0)
 
 
 @orca.column('buildings', cache=True)
 def transit_type(buildings, parcels_geography):
     return misc.reindex(parcels_geography.tpp_id, buildings.parcel_id).\
         reindex(buildings.index).fillna('none')
+
+
+@orca.column('buildings', cache=False)
+def unit_price(buildings):
+    return buildings.residential_price * buildings.sqft_per_unit
 
 
 @orca.column('buildings', cache=True)
@@ -246,19 +287,16 @@ def parcel_average_price(use, quantile=.5):
     # because I want to be able to determine the quantile of the distribution
     # I also want more spreading in the development and not keep it localized
     if use == "residential":
-        buildings = orca.get_table('buildings')
-        # get price per sqft
-        s = buildings.residential_price * 1.3  # / buildings.sqft_per_unit
-        # limit to res
-        s = s[buildings.general_type == "Residential"]
-        # group by zoneid and get 80th percentile
-        s = s.groupby(buildings.zone_id).quantile(.8).clip(150, 1250)
-        # broadcast back to parcel's index
-        s = misc.reindex(s, orca.get_table('parcels').zone_id)
-        # shifters
+
+        # get node price average and put it on parcels
+        s = misc.reindex(orca.get_table('nodes')[use],
+                         orca.get_table('parcels').node_id) * 1.3
+
+        # apply shifters
         cost_shifters = orca.get_table("parcels").cost_shifters
         price_shifters = orca.get_table("parcels").price_shifters
         s = s / cost_shifters * price_shifters
+
         # just to make sure
         s = s.fillna(0).clip(150, 1250)
         return s
@@ -301,12 +339,8 @@ def parcel_is_allowed(form):
 @orca.column('parcels', 'first_building_type_id')
 def first_building_type_id(buildings, parcels):
     df = buildings.to_frame(
-        columns=['building_type_id', 'parcel_id', 'general_type'])
-    df1 = df.groupby('parcel_id').first()
-    df2 = parcels.to_frame(columns=['parcel_acres', 'zone_id'])
-    df2['first_building_type_id'] = df['building_type_id']
-    s = df2['first_building_type_id']
-    return s
+        columns=['building_type_id', 'parcel_id'])
+    return df.groupby('parcel_id').building_type_id.first()
 
 
 @orca.injectable('parcel_first_building_type_is', autocall=False)
@@ -332,7 +366,7 @@ def gqpop(zones, zone_forecast_inputs, year):
 
 @orca.column('taz', 'totacre')
 def totacre(zone_forecast_inputs):
-    s = zone_forecast_inputs.totacre
+    s = zone_forecast_inputs.totacre_abag
     return s
 
 
@@ -423,6 +457,14 @@ def hhinq4(households_subset):
     s = df.query("income >= 75000").\
         groupby('zone_id').size()
     return s
+
+
+@orca.column('taz', 'veryhighinc')
+def hhinq4(households_subset, taz):
+    df = households_subset.to_frame()
+    s = df.query("income >= 75000").\
+        groupby('zone_id').size()
+    return s / taz.tothh.replace(0, 1)
 
 
 @orca.column('taz', 'tothh')
@@ -681,6 +723,8 @@ def building_purchase_price_sqft(parcels):
             factor *= 3.0
         if form == "Retail":
             factor *= 2.0
+        if form == "Office":
+            factor *= 1.4
         tmp = parcel_average_price(form.lower())
         price += tmp * (gentype == form) * factor
 

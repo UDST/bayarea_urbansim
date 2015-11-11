@@ -86,7 +86,7 @@ table_reprocess:
 
 
 rates:
-  households_relocation: .05
+  households_relocation: .03
   jobs_relocation: .05
   simple_households_transition: .02
   simple_jobs_transition: .02
@@ -120,7 +120,7 @@ rsh_simulate:
 
 
 feasibility:
-  parcel_filter: nodev != 1 and manual_nodev != 1 and sdem != 1 and oldest_building > 1940 and oldest_building_age > 20  and (total_residential_units != 1 or parcel_acres > .5) 
+  parcel_filter: nodev != 1 and manual_nodev != 1 and sdem != 1 and oldest_building > 1940 and oldest_building_age > 20  and (total_residential_units != 1 or parcel_acres > .5) and first_building_type_id != 5 and first_building_type_id != 6
   residential_to_yearly: True
   pass_through:
     - oldest_building
@@ -141,15 +141,19 @@ feasibility:
 
 
 residential_developer:
-  target_vacancy: .05
+  target_vacancy: .03
   min_unit_size: 1000
   bldg_sqft_per_job: 400
   max_parcel_size: 150000000
 
 non_residential_developer:
-  target_vacancy: 0.05
-  bldg_sqft_per_job: 400
-
+  kwargs:
+    target_vacancy: 0.15
+    bldg_sqft_per_job: 400
+  type_splits:
+    Industrial: 0.0
+    Retail: 0.2
+    Office: 0.8
 
 pusher:
   key: 7d78b1b3454b78aed26f
@@ -296,6 +300,7 @@ form_to_btype:
 
 building_sqft_per_job:
   -1: 400
+  0: 400
   1: 400
   2: 400
   3: 400
@@ -343,33 +348,6 @@ cost_shifters:
   "Napa": .9
   "Marin": 1.0
   "Contra Costa": .75
-
-
-job_sector_to_type:
-  AGREMPN:
-    Industrial: 0.265
-    Retail: 0.214
-    Office: 0.279
-  MWTEMPN:
-    Industrial: 0.214
-    Retail: 0.191
-    Office: 0.237
-  FPSEMPN:  
-    Industrial: 0.196
-    Retail: 0.188
-    Office: 0.27
-  RETEMPN:
-    Industrial: 0.194
-    Retail: 0.183
-    Office: 0.252
-  HEREMPN:
-    Industrial: 0.204
-    Retail: 0.199
-    Office: 0.257
-  OTHEMPN:
-    Industrial: 0.194
-    Retail: 0.205
-    Office: 0.278
 
 
 development_limits:
