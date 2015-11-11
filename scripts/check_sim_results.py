@@ -10,7 +10,7 @@ import models
 args = sys.argv[1:]
 runnum = int(args[0])
 
-devs = pd.read_csv('runs/run%d_parcel_output.csv' % runnum)
+devs = pd.read_csv('runs/run%d_parcel_output.csv' % runnum, low_memory=False)
 
 devs["building_ratio"] = devs.building_sqft / devs.total_sqft.replace(0, 1)
 
