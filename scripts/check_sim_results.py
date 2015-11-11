@@ -8,8 +8,9 @@ sys.path.append(".")
 import models
 
 args = sys.argv[1:]
+runnum = int(args[0])
 
-devs = pd.read_csv('runs/run%d_parcel_output.csv'%int(args[0]))
+devs = pd.read_csv('runs/run%d_parcel_output.csv' % runnum)
 
 devs["building_ratio"] = devs.building_sqft / devs.total_sqft.replace(0, 1)
 
@@ -18,7 +19,7 @@ df = devs[devs.building_ratio < 1.5]
 if len(df):
 
     print "Found %d devs that redev only slightly larger buildings (they change uses)" % len(df)
-    print df
+    #print df
 
     # write out some more detailed info on these buildings
     '''
@@ -37,3 +38,11 @@ if len(df):
 
     print "Found %d devs that redev a parcel that's already built on" % len(df)
     print df
+
+
+jdf10 = pd.read_csv('runs/run%d_juris_summaries_2010.csv' % runnum, index_col='juris')
+jdf40 = pd.read_csv('runs/run%d_juris_summaries_2040.csv' % runnum, index_col='juris')
+
+empdiff = jdf40.loc['San Francisco'].totemp - jdf10.loc['San Francisco'].totemp
+pctdiff = float(empdiff) / jdf10.loc['San Francisco'].totemp * 100
+print "San Francisco employment goes up by %d jobs (%.1f pct)" % (empdiff, pctdiff)
