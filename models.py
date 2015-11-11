@@ -100,6 +100,7 @@ def form_to_btype_func(building):
 def add_extra_columns(df):
     for col in ["residential_price", "non_residential_price"]:
         df[col] = 0
+    
     df["redfin_sale_year"] = 2012
     return df
 
@@ -345,6 +346,7 @@ def developer_reprocess(buildings, year, years_per_iter, jobs, parcels, summary)
     
     # this is the key point - make these new buildings' nonres sqft equal
     # to one story of the new buildings 
+    '''
     new_buildings.non_residential_sqft = new_buildings.building_sqft / \
        new_buildings.stories
 
@@ -360,6 +362,7 @@ def developer_reprocess(buildings, year, years_per_iter, jobs, parcels, summary)
     all_buildings = dev.merge(old_buildings, new_buildings)
     orca.add_table("buildings", all_buildings)
     summary.add_parcel_output(new_buildings)
+    '''
 
 
 def make_network(name, weight_col, max_distance):

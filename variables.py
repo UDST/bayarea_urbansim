@@ -339,12 +339,8 @@ def parcel_is_allowed(form):
 @orca.column('parcels', 'first_building_type_id')
 def first_building_type_id(buildings, parcels):
     df = buildings.to_frame(
-        columns=['building_type_id', 'parcel_id', 'general_type'])
-    df1 = df.groupby('parcel_id').first()
-    df2 = parcels.to_frame(columns=['parcel_acres', 'zone_id'])
-    df2['first_building_type_id'] = df['building_type_id']
-    s = df2['first_building_type_id']
-    return s
+        columns=['building_type_id', 'parcel_id'])
+    return df.groupby('parcel_id').building_type_id.first()
 
 
 @orca.injectable('parcel_first_building_type_is', autocall=False)
