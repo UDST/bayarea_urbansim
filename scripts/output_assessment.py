@@ -164,6 +164,12 @@ def compare_outcome_for(variable):
 
     write_csvs(df2, variable, RUNS)
 
-base_year_df = get_base_year_df()
-compare_outcome_for('totemp')
-compare_outcome_for('tothh')
+# base_year_df = get_base_year_df()
+# compare_outcome_for('totemp')
+# compare_outcome_for('tothh')
+
+base_year_df = get_base_year_df(geography='taz')
+outcome_df = outcome_df(540,geography='taz')
+s = base_year_df['RESACRE']
+s1 = outcome_df[s.name]
+df = compare_series(s, s1, df.index)
