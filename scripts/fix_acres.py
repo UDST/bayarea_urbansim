@@ -85,12 +85,52 @@ def scaled_resacre(base_year_df, outcome_df, acre_df):
     combined_acres[combined_acres<0]=0
     return combined_acres
 
-ciacre = scaled_ciacre(base_year_df, outcome_df, acre_df)
-resacre = scaled_resacre(base_year_df, outcome_df, acre_df)
+# ciacre = scaled_ciacre(base_year_df, outcome_df, acre_df)
+# resacre = scaled_resacre(base_year_df, outcome_df, acre_df)
+
+
+def report_outliers_in_base_year_data_differences(acre_df,base_year_df):
+    abgr = acre_df["resacre10_abag"]
+    mtcr = base_year_df["RESACRE"]
+
+    abgc = acre_df["ciacre10_abag"]
+    mtcc = base_year_df["CIACRE"]
+    us_outc = outcome_df["CIACRE"]
+
+
+    r = abgr-mtcr
+    c = abgc-mtcc
+
+    # c.describe()
+    # r.describe()
+
+    c_outliers = c[c<c.quantile(.05)]
+    c_outliers = c_outliers.append(c[c>c.quantile(.95)])
+    r_outliers = r[r<r.quantile(.05)]
+    r_outliers = r_outliers.append(r[r>r.quantile(.95)])
+
+    r_outliers.to_csv('r_acre_outliers.csv')
+    c_outliers.to_csv('c_acre_outliers.csv')
+
+    r = (abgr-mtcr)/abgr
+    c = (abgc-mtcc)/abgr
+
+    c.describe()
+    r.describe()
+
+    c_outliers = c[c<c.quantile(.05)]
+    c_outliers = c_outliers.append(c[c>c.quantile(.95)])
+    r_outliers = r[r<r.quantile(.05)]
+    r_outliers = r_outliers.append(r[r>r.quantile(.95)])
+
+    r_outliers.to_csv('r_acre_outliers_prcnt.csv')
+    c_outliers.to_csv('c_acre_outliers_prcnt.csv')
+
+
 
 #check
-print (outcome_df['RESACRE']-resacre).describe()
-print (outcome_df['CIACRE']-ciacre).describe()
+# print (outcome_df['RESACRE']-resacre).describe()
+# print (outcome_df['CIACRE']-ciacre).describe()
 # (outcome_df['RESACRE']/ciacre).value_counts()
 # (outcome_df['RESACRE']/ciacre).value_counts()
 
