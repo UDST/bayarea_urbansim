@@ -119,7 +119,7 @@ variable_definitions:
     apply: np.log1p
   
   - name: ave_income_1500
-    aggregation: median
+    aggregation: 75pct
     filters:
     - building_id != -1
     dataframe: households

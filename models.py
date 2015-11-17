@@ -30,6 +30,34 @@ def rsh_simulate(buildings, aggregations, settings):
             buildings.residential_price.describe()
 
 
+@orca.step('households_transition')
+def households_transition(households, household_controls, year, settings):
+    s = orca.get_table('households').base_income_quartile.value_counts()
+    print "Distribution by income before:\n", (s/s.sum())
+    ret = utils.full_transition(households,
+                                household_controls,
+                                year,
+                                settings['households_transition'],
+                                "building_id")
+    s = orca.get_table('households').base_income_quartile.value_counts()
+    print "Distribution by income after:\n", (s/s.sum())
+    return ret
+
+
+@orca.step('households_relocation')
+def households_relocation(households, settings, years_per_iter):
+    rate = settings['rates']['households_relocation']
+    rate *= years_per_iter
+    return utils.simple_relocation(households, rate, "building_id")
+
+
+@orca.step('jobs_relocation')
+def jobs_relocation(jobs, settings, years_per_iter):
+    rate = settings['rates']['jobs_relocation']
+    rate *= years_per_iter
+    return utils.simple_relocation(jobs, rate, "building_id")
+
+
 # this deviates from the step in urbansim_defaults only in how it deals with
 # demolished buildings - this version only demolishes when there is a row to
 # demolish in the csv file - this also allows building multiple buildings and
@@ -100,7 +128,7 @@ def form_to_btype_func(building):
 def add_extra_columns(df):
     for col in ["residential_price", "non_residential_price"]:
         df[col] = 0
-    
+
     df["redfin_sale_year"] = 2012
     return df
 

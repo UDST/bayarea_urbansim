@@ -8,11 +8,13 @@ from utils import random_indexes, round_series_match_target,\
 
 
 @orca.step("diagnostic_output")
-def diagnostic_output(households, buildings, parcels, zones, year, summary):
+def diagnostic_output(households, buildings, parcels, taz, zones, year, summary):
     households = households.to_frame()
     buildings = buildings.to_frame()
     parcels = parcels.to_frame()
     zones = zones.to_frame()
+
+    zones['ave_unit_sqft'] = zones.ave_unit_sqft
 
     zones['zoned_du'] = parcels.groupby('zone_id').zoned_du.sum()
     zones['zoned_du_underbuild'] = parcels.groupby('zone_id').\
