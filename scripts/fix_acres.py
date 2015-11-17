@@ -40,12 +40,12 @@ def scaled_ciacre(base_year_df, outcome_df, acre_df):
     # are absurdly different and if we model forward on them  
     # the results are absurd. see this commit for details:
     # da895ca0d828c274f248a34d6edbb4c4868f7d7d
-    very_big_difference = ((mtcc-abgc)/abgc)>1.1
-    sim_difference = [us_outc - mtcc][0]
-    combined_acres[very_big_difference==True] = abgc + sim_difference
+    # very_big_difference = ((mtcc-abgc)/abgc)>1.1
+    # sim_difference = [us_outc - mtcc][0]
+    # combined_acres[very_big_difference==True] = abgc + sim_difference
 
-    # set 83 TAZ's with negative values after the above to 0
-    combined_acres[combined_acres<0]=0
+    # # set 83 TAZ's with negative values after the above to 0
+    # combined_acres[combined_acres<0]=0
     return combined_acres
 
 def scaled_resacre(base_year_df, outcome_df, acre_df):
@@ -63,12 +63,13 @@ def scaled_resacre(base_year_df, outcome_df, acre_df):
     # are absurdly different and if we model forward on them  
     # the results are absurd. see this commit for details:
     # da895ca0d828c274f248a34d6edbb4c4868f7d7d
-    very_big_difference = ((abgr-mtcc)/mtcc)>1.1
-    sim_difference = [us_outr - mtcr][0]
-    combined_acres[very_big_difference==True] = abgr + sim_difference
+    # very_big_difference = ((abgr-mtcr)/mtcr)>1.1
+    # sim_difference = [us_outr - mtcr][0]
+    # combined_acres[very_big_difference==True] = abgr + sim_difference
 
-    # set ~300 TAZ's with negative values after the above to 0
-    combined_acres[combined_acres<0]=0
+    # # set ~300 TAZ's with negative values after the above to 0
+    # combined_acres[combined_acres<0]=0
+
     return combined_acres
 
 # ciacre = scaled_ciacre(base_year_df, outcome_df, acre_df)
