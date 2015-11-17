@@ -10,26 +10,9 @@ import numpy as np
 # 1) compute the % change in residential acres using the parcels method (ie acres of parcels with residential building on them in 2040 / same for 2010). 
 # 2) compute the output variable by increasing resacre10_abag by this percentage
 # 3) same for ciacre
-def get_base_year_df(geography='superdistrict'):
-    geography_id = 'zone_id' if geography == 'taz' else geography
-    df = pd.read_csv('data/run0_{}_summaries_2009.csv'.format(geography),
-                     index_col=geography_id)
-    df = df.fillna(1)
-    return df
-
-
-def get_outcome_df(run, geography='superdistrict', year=2040):
-    geography_id = 'zone_id' if geography == 'taz' else geography
-    df = pd.read_csv(
-         'runs/run%(run)d_%(geography)s_summaries_%(year)d.csv' \
-         % {"run": run, "year": year, "geography": geography},
-         index_col=geography_id)
-    df = df.fillna(1)
-    return df
-
-
+from output_assessment import get_outcome_df
+from output_assessment import get_base_year_df
 from output_assessment import write_outcome_csv
-
 
 base_year_df = get_base_year_df(geography='taz')
 outcome_df = get_outcome_df(540,geography='taz')
@@ -49,6 +32,9 @@ def scaled_ciacre(base_year_df, outcome_df, acre_df):
 
     prcnt_chng = (us_outc - mtcc) / mtcc
     combined_acres = abgc*(1 + prcnt_chng)
+
+    abgr = abgr.replace(0,1)
+    mtcr = mtcr.replace(0,1)
 
     # we do the following because some base year acreage numbers
     # are absurdly different and if we model forward on them  
