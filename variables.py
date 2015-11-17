@@ -92,6 +92,16 @@ def modern_condo(homesales):
 
 
 @orca.column('homesales', cache=True)
+def new_construction(homesales):
+    return (homesales.year_built > 2000).astype('int')
+
+
+@orca.column('homesales', cache=True)
+def historic(homesales):
+    return (homesales.year_built < 1940).astype('int')
+
+
+@orca.column('homesales', cache=True)
 def base_price_per_sqft(homesales):
     s = homesales.price_per_sqft.groupby(homesales.zone_id).quantile()
     return misc.reindex(s, homesales.zone_id)
@@ -255,6 +265,17 @@ def modern_condo(buildings):
 
 
 @orca.column('buildings', cache=True)
+def new_construction(buildings):
+    return (buildings.year_built > 2000).astype('int')
+
+
+
+@orca.column('buildings', cache=True)
+def historic(buildings):
+    return (buildings.year_built < 1940).astype('int')
+
+
+@orca.column('buildings', cache=True)
 def vmt_res_cat(buildings, vmt_fee_categories):
     return misc.reindex(vmt_fee_categories.res_cat, buildings.zone_id)
 
@@ -277,6 +298,15 @@ def pda(parcels, parcels_geography):
 @orca.column('parcels', cache=True)
 def juris(parcels, parcels_geography):
     return parcels_geography.juris_name.reindex(parcels.index)
+
+
+@orca.column('parcels', 'ave_sqft_per_unit')
+def ave_sqft_per_unit(parcels, zones, settings):
+    s = misc.reindex(zones.ave_unit_sqft, parcels.zone_id)
+    clip = settings.get("ave_sqft_per_unit_clip", None)
+    if clip is not None:
+        s = s.clip(lower=clip['lower'], upper=clip['upper'])
+    return s
 
 
 # these are actually functions that take parameters, but are parcel-related
@@ -355,6 +385,11 @@ def parcel_first_building_type_is(form):
 # Summary by TAZ for
 # Output to Travel Model
 #############################
+
+
+@orca.column('zones')
+def ave_unit_sqft(buildings):
+    return buildings.sqft_per_unit.groupby(buildings.zone_id).quantile(.6)
 
 
 @orca.column('taz', 'gqpop')

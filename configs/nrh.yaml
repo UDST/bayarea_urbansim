@@ -23,88 +23,88 @@ models:
     Industrial:
         fit_parameters:
             Coefficient:
-                I(transit_type == "bart1")[T.True]: 0.28221494278105297
-                I(transit_type == "bart2")[T.True]: -0.09602828846568656
-                I(transit_type == "bart3a")[T.True]: 2.3706697297491907e-14
-                I(transit_type == "lrt1")[T.True]: 0.7490777876760967
-                Intercept: -1.781654802970154
-                embarcadero: -0.008854114833137361
-                industrial_1500: -0.007577570332535179
-                jobs_45: -0.11685463874457752
-                juris_ave_income: 0.5538432709197917
-                office_1500: 0.047552404188020425
-                retail_1500: 0.02600594101468713
-                stanford: -0.004176392280286213
+                I(transit_type == "bart1")[T.True]: 0.2897535337499501
+                I(transit_type == "bart2")[T.True]: -0.07011551369205268
+                I(transit_type == "bart3a")[T.True]: -2.786584122320624e-15
+                I(transit_type == "lrt1")[T.True]: 0.7526758845318852
+                Intercept: -1.877446356445748
+                embarcadero: -0.0093471735654547
+                industrial_1500: 0.0014904259345182302
+                jobs_45: -0.13626894005234574
+                juris_ave_income: 0.5801067592798521
+                office_1500: 0.045259203213320595
+                retail_1500: 0.030994348286464052
+                stanford: -0.004789190675817782
             Std. Error:
-                I(transit_type == "bart1")[T.True]: 0.07379306264072112
-                I(transit_type == "bart2")[T.True]: 0.10136093023984084
-                I(transit_type == "bart3a")[T.True]: 1.4498671490182125e-14
-                I(transit_type == "lrt1")[T.True]: 0.1972734240132816
-                Intercept: 1.0774143965421596
-                embarcadero: 0.0019322018170497197
-                industrial_1500: 0.011317483376339265
-                jobs_45: 0.048287343070785936
-                juris_ave_income: 0.07025327763293676
-                office_1500: 0.006691400792473984
-                retail_1500: 0.007606921943546177
-                stanford: 0.0010170900720363894
+                I(transit_type == "bart1")[T.True]: 0.07441821478271397
+                I(transit_type == "bart2")[T.True]: 0.10218323084366923
+                I(transit_type == "bart3a")[T.True]: 1.0566627156762242e-15
+                I(transit_type == "lrt1")[T.True]: 0.1990557685281188
+                Intercept: 1.0885171725639664
+                embarcadero: 0.001943741982063645
+                industrial_1500: 0.011370572118924194
+                jobs_45: 0.04867586309677616
+                juris_ave_income: 0.07117993629643389
+                office_1500: 0.007535086106108864
+                retail_1500: 0.0075743076359204315
+                stanford: 0.001022429043514674
             T-Score:
-                I(transit_type == "bart1")[T.True]: 3.824410218004947
-                I(transit_type == "bart2")[T.True]: -0.9473895734625151
-                I(transit_type == "bart3a")[T.True]: 1.6350944507946856
-                I(transit_type == "lrt1")[T.True]: 3.797155097919649
-                Intercept: -1.6536393134231124
-                embarcadero: -4.582396494511487
-                industrial_1500: -0.6695455235549201
-                jobs_45: -2.4199848513776505
-                juris_ave_income: 7.883522158404379
-                office_1500: 7.106494688153192
-                retail_1500: 3.4187206346649774
-                stanford: -4.10621674039582
-        fit_rsquared: 0.2750366921518842
-        fit_rsquared_adj: 0.26630219446696723
+                I(transit_type == "bart1")[T.True]: 3.893583507693263
+                I(transit_type == "bart2")[T.True]: -0.6861743665095387
+                I(transit_type == "bart3a")[T.True]: -2.6371557176949465
+                I(transit_type == "lrt1")[T.True]: 3.781231210215149
+                Intercept: -1.7247742192467987
+                embarcadero: -4.808855111279189
+                industrial_1500: 0.1310774795612698
+                jobs_45: -2.799517694866944
+                juris_ave_income: 8.149863423085353
+                office_1500: 6.006461316563847
+                retail_1500: 4.092037157228248
+                stanford: -4.684130117582138
+        fit_rsquared: 0.2628120326371606
+        fit_rsquared_adj: 0.2539302498978493
         fitted: true
         name: Industrial
     Office:
         fit_parameters:
             Coefficient:
-                I(transit_type == "bart1")[T.True]: 0.14078870333863336
-                I(transit_type == "bart3a")[T.True]: 1.6407023495399284e-15
-                I(transit_type == "lrt1")[T.True]: 0.337620234148355
-                Intercept: 2.881443030676494
-                embarcadero: -0.019878802566494526
-                industrial_1500: -0.021395051091430986
-                jobs_45: -0.2806603053443242
-                juris_ave_income: 0.46143149962857755
-                office_1500: 0.07450164844162857
-                retail_1500: 0.010852127674716584
-                stanford: -0.012235671697479177
+                I(transit_type == "bart1")[T.True]: 0.11191787961850694
+                I(transit_type == "bart3a")[T.True]: -6.193662293233086e-14
+                I(transit_type == "lrt1")[T.True]: 0.29462343078883513
+                Intercept: 1.6755347595401475
+                embarcadero: -0.018285899139130507
+                industrial_1500: -0.022148623305408913
+                jobs_45: -0.2403334690515075
+                juris_ave_income: 0.5031887908284827
+                office_1500: 0.09200403691081838
+                retail_1500: 0.006438101749474429
+                stanford: -0.012004146966033857
             Std. Error:
-                I(transit_type == "bart1")[T.True]: 0.03481521705366457
-                I(transit_type == "bart3a")[T.True]: 3.068774967923318e-16
-                I(transit_type == "lrt1")[T.True]: 0.06729594410445608
-                Intercept: 0.5578695355690962
-                embarcadero: 0.0009790414378981868
-                industrial_1500: 0.003164630051678524
-                jobs_45: 0.02447364776391168
-                juris_ave_income: 0.036105251989527486
-                office_1500: 0.004994889093868601
-                retail_1500: 0.004760430368278838
-                stanford: 0.0005177012404517576
+                I(transit_type == "bart1")[T.True]: 0.03525461876970539
+                I(transit_type == "bart3a")[T.True]: 2.0521120941955426e-14
+                I(transit_type == "lrt1")[T.True]: 0.06738921528022807
+                Intercept: 0.5590447061392709
+                embarcadero: 0.0009874831111905062
+                industrial_1500: 0.003164420660292849
+                jobs_45: 0.024335705602604656
+                juris_ave_income: 0.036017479007849885
+                office_1500: 0.00603731405861089
+                retail_1500: 0.004860591093242721
+                stanford: 0.0005177934293377666
             T-Score:
-                I(transit_type == "bart1")[T.True]: 4.043884118878824
-                I(transit_type == "bart3a")[T.True]: 5.3464407351126635
-                I(transit_type == "lrt1")[T.True]: 5.016947732010481
-                Intercept: 5.165084033020488
-                embarcadero: -20.30435260142868
-                industrial_1500: -6.760679997993137
-                jobs_45: -11.467857511546761
-                juris_ave_income: 12.7801766835035
-                office_1500: 14.915576110204713
-                retail_1500: 2.279652643809227
-                stanford: -23.634619238698477
-        fit_rsquared: 0.4776613938465769
-        fit_rsquared_adj: 0.4756960730040264
+                I(transit_type == "bart1")[T.True]: 3.1745593492186326
+                I(transit_type == "bart3a")[T.True]: -3.018189070057155
+                I(transit_type == "lrt1")[T.True]: 4.371967080543782
+                Intercept: 2.997139121683648
+                embarcadero: -18.517682917214746
+                industrial_1500: -6.999266432345688
+                jobs_45: -9.87575511374466
+                juris_ave_income: 13.970683254061575
+                office_1500: 15.239233211595977
+                retail_1500: 1.3245511967515207
+                stanford: -23.18327403533605
+        fit_rsquared: 0.4796007390880057
+        fit_rsquared_adj: 0.4776427151130024
         fitted: true
         model_expression: np.log1p(costar_rent) ~ office_1500 + retail_1500 + industrial_1500
             + jobs_45 + juris_ave_income + embarcadero + stanford + I(transit_type
@@ -113,46 +113,46 @@ models:
     Retail:
         fit_parameters:
             Coefficient:
-                I(transit_type == "bart1")[T.True]: 0.1066680043304098
-                I(transit_type == "bart2")[T.True]: -0.15400259348435028
-                I(transit_type == "bart3a")[T.True]: 1.4789652416859203e-14
-                I(transit_type == "lrt1")[T.True]: 0.3872274393980104
-                Intercept: 3.99167446258967
-                embarcadero: -0.020161329423520696
-                industrial_1500: -0.046021568295729245
-                jobs_45: -0.248662287487721
-                juris_ave_income: 0.3305324058597619
-                office_1500: 0.07106422597816961
-                retail_1500: 0.011356761190732749
-                stanford: -0.01187296008030116
+                I(transit_type == "bart1")[T.True]: 0.07447096106366885
+                I(transit_type == "bart2")[T.True]: -0.17624795696500198
+                I(transit_type == "bart3a")[T.True]: 2.3393514356735716e-14
+                I(transit_type == "lrt1")[T.True]: 0.307871834801002
+                Intercept: 2.4532082469341985
+                embarcadero: -0.01713869635913507
+                industrial_1500: -0.047100208308708
+                jobs_45: -0.17797305461570812
+                juris_ave_income: 0.3576997889114493
+                office_1500: 0.10334660282769745
+                retail_1500: -0.005588690971088765
+                stanford: -0.011301488836588014
             Std. Error:
-                I(transit_type == "bart1")[T.True]: 0.05890241648753863
-                I(transit_type == "bart2")[T.True]: 0.063048435399396
-                I(transit_type == "bart3a")[T.True]: 4.212720086117669e-15
-                I(transit_type == "lrt1")[T.True]: 0.11805576606473313
-                Intercept: 1.1142043536798532
-                embarcadero: 0.0019515114444008726
-                industrial_1500: 0.008083504050738755
-                jobs_45: 0.04766452186322922
-                juris_ave_income: 0.07016746392251942
-                office_1500: 0.011800684797316482
-                retail_1500: 0.01935751319025743
-                stanford: 0.0011673149857284312
+                I(transit_type == "bart1")[T.True]: 0.05854192847281052
+                I(transit_type == "bart2")[T.True]: 0.06240008318001625
+                I(transit_type == "bart3a")[T.True]: 1.0571450694384981e-14
+                I(transit_type == "lrt1")[T.True]: 0.1172430386991956
+                Intercept: 1.111923947207423
+                embarcadero: 0.0019742428739745344
+                industrial_1500: 0.007989898837018767
+                jobs_45: 0.04679429511618848
+                juris_ave_income: 0.0694935007827676
+                office_1500: 0.013000886876574134
+                retail_1500: 0.01871774858155021
+                stanford: 0.0011573729057678477
             T-Score:
-                I(transit_type == "bart1")[T.True]: 1.8109274744776631
-                I(transit_type == "bart2")[T.True]: -2.4426076953184093
-                I(transit_type == "bart3a")[T.True]: 3.5107132955726366
-                I(transit_type == "lrt1")[T.True]: 3.280038343791554
-                Intercept: 3.582533535618015
-                embarcadero: -10.331135634057407
-                industrial_1500: -5.693269652227528
-                jobs_45: -5.216926086057132
-                juris_ave_income: 4.710622094376157
-                office_1500: 6.022042550812802
-                retail_1500: 0.5866849258534184
-                stanford: -10.171170785486114
-        fit_rsquared: 0.30984825443829866
-        fit_rsquared_adj: 0.3032816345947049
+                I(transit_type == "bart1")[T.True]: 1.2720961370149684
+                I(transit_type == "bart2")[T.True]: -2.8244827247513307
+                I(transit_type == "bart3a")[T.True]: 2.2128953757653305
+                I(transit_type == "lrt1")[T.True]: 2.6259284834035466
+                Intercept: 2.206273417435956
+                embarcadero: -8.681148902734316
+                industrial_1500: -5.894969294289873
+                jobs_45: -3.803306667486019
+                juris_ave_income: 5.1472408913402825
+                office_1500: 7.949196374742269
+                retail_1500: -0.29857709364669266
+                stanford: -9.764777437130475
+        fit_rsquared: 0.32639822417425457
+        fit_rsquared_adj: 0.31998907311977554
         fitted: true
         name: Retail
 
