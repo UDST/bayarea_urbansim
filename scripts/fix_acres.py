@@ -30,29 +30,10 @@ def scaled_ciacre(base_year_df, outcome_df, acre_df):
     mtcc = base_year_df["CIACRE"]
     us_outc = outcome_df["CIACRE"]
     totacre = outcome_df["TOTACRE"]
-
-    #replace 0's with 1's, because otherwise infinite values below
-    abgc = abgc.replace(0,1)
-    mtcc = mtcc.replace(0,1)
-
-    prcnt_chng = (us_outc - mtcc) / mtcc
-    combined_acres = abgc*(1 + prcnt_chng)
-
-    overtotal = combined_acres[combined_acres > 2*totacre]-totacre[combined_acres > 2*totacre]
-    overtotal.name = 'amnt_ovr_ttcre'
-
-    combined_acres[combined_acres > 2*totacre] = 2*totacre
-
-    # we do the following because some base year acreage numbers
-    # are absurdly different and if we model forward on them  
-    # the results are absurd. see this commit for details:
-    # da895ca0d828c274f248a34d6edbb4c4868f7d7d
-    # very_big_difference = ((mtcc-abgc)/abgc)>1.1
-    # sim_difference = [us_outc - mtcc][0]
-    # combined_acres[very_big_difference==True] = abgc + sim_difference
-
-    # # set 83 TAZ's with negative values after the above to 0
-    # combined_acres[combined_acres<0]=0
+    sim_difference = [us_outc - mtcc][0]
+    sim_difference[sim_difference<0]=0
+    combined_acres = abgc + sim_difference
+    overtotal = combined_acres[combined_acres > totacre]
     return (combined_acres, overtotal)
 
 def scaled_resacre(base_year_df, outcome_df, acre_df):
@@ -60,35 +41,14 @@ def scaled_resacre(base_year_df, outcome_df, acre_df):
     mtcr = base_year_df["RESACRE"]
     us_outr = outcome_df["RESACRE"]
     totacre = outcome_df["TOTACRE"]
-
-    #replace 0's with 1's, because otherwise infinite values below
-    abgr = abgr.replace(0,1)
-    mtcr = mtcr.replace(0,1)
-
-    prcnt_chng = (us_outr - mtcr) / mtcr
-    combined_acres = abgr*(1 + prcnt_chng)
-
-    overtotal = combined_acres[combined_acres > 2*totacre]
-    overtotal.name = 'amnt_ovr_ttcre'
-
-    combined_acres[combined_acres > 2*totacre] = 2*totacre
-
-    # we do the following because some base year acreage numbers
-    # are absurdly different and if we model forward on them  
-    # the results are absurd. see this commit for details:
-    # da895ca0d828c274f248a34d6edbb4c4868f7d7d
-    # very_big_difference = ((abgr-mtcr)/mtcr)>1.1
-    # sim_difference = [us_outr - mtcr][0]
-    # combined_acres[very_big_difference==True] = abgr + sim_difference
-
-    # # set ~300 TAZ's with negative values after the above to 0
-    # combined_acres[combined_acres<0]=0
-
+    sim_difference = [us_outr - mtcr][0]
+    sim_difference[sim_difference<0]=0
+    combined_acres = abgr + sim_difference
+    overtotal = combined_acres[combined_acres > totacre]
     return (combined_acres, overtotal)
 
 ciacre, c_overtotal = scaled_ciacre(base_year_df, outcome_df, acre_df)
 resacre, r_overtotal = scaled_resacre(base_year_df, outcome_df, acre_df)
-
 
 # print (outcome_df['RESACRE']-resacre).describe()
 # print (outcome_df['CIACRE']-ciacre).describe()
@@ -105,8 +65,8 @@ def write_outlier_csv(df, run, geography, landtype, year=2040):
 
 write_outlier_csv(c_overtotal, 540, 'taz', 'commercial', year=2040)
 write_outlier_csv(r_overtotal, 540, 'taz', 'residential', year=2040)
-# print outcome_df.CIACRE.describe()
-# print outcome_df.RESACRE.describe()
+print outcome_df.CIACRE.describe()
+print outcome_df.RESACRE.describe()
 
 write_outcome_csv(outcome_df, 540, 'taz', year=2040)
 
