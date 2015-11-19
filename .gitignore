@@ -1,6 +1,7 @@
 RUNNUM
 .cache
 .idea
+.vagrant
 runs
 *.pyc
 .ipynb_checkpoints
