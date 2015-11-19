@@ -12,9 +12,9 @@ data/2015_10_07_2_parcels_geography.csv  \
 data/2015_08_29_costar.csv
 
 #the database that the h5 file above was exported from:
-database_backup: 2015/10/14/18/14/full.dump \
-2015/10/14/18/14/db-schema.sql \
-2015/10/14/18/14/globals.sql
+database_backup:
+        mkdir -p database_backup
+        aws s3 cp --recursive s3://landuse/spandex/outputs/2015/10/14/18/ database_backup/
 
 cartography: data/simple_parcels.shp
 
@@ -51,23 +51,5 @@ data/2015_08_03_tmnet.h5:
 #a parcels shapefile is available on the land use server in d:/badata/out/summaries/ or box/badata/out/regeneration
 data/simple_parcels.zip: 
 	$(get)$@ \
-	$@.download
-	mv $@.download $@
-
-2015/10/14/18/14/full.dump:
-	mkdir -p $(dir $@)
-	$(database_get)$@ \
-	$@.download
-	mv $@.download $@
-
-2015/10/14/18/14/db-schema.sql:
-	mkdir -p $(dir $@)
-	$(database_get)$@ \
-	$@.download
-	mv $@.download $@
-
-2015/10/14/18/14/globals.sql:
-	mkdir -p $(dir $@)
-	$(database_get)$@ \
 	$@.download
 	mv $@.download $@
