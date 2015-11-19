@@ -12,7 +12,7 @@ warnings.filterwarnings("ignore")
 
 args = sys.argv[1:]
 
-SLACK = MAPS = False
+SLACK = MAPS = True
 LOGS = True
 INTERACT = False
 S3 = False
@@ -69,7 +69,7 @@ try:
 
         "scheduled_development_events",  # scheduled buildings additions
 
-        #"subsidized_residential_developer",
+        "subsidized_residential_developer",
 
         "alt_feasibility",
 
