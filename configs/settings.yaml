@@ -358,6 +358,6 @@ cost_shifters:
 
 development_limits:
   Office:
-    'San Francisco': 2000
+    'San Francisco': 3000
   Residential:
     'Half Moon Bay': 150
