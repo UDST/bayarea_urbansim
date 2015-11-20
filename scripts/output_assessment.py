@@ -32,18 +32,20 @@ def get_base_year_df(geography='superdistrict'):
 def get_outcome_df(run, geography='superdistrict', year=2040):
     geography_id = 'zone_id' if geography == 'taz' else geography
     df = pd.read_csv(
-         'runs/run%(run)d_%(geography)s_summaries_%(year)d.csv' \
-         % {"run": run, "year": year, "geography": geography},
-         index_col=geography_id)
+        'runs/run%(run)d_%(geography)s_summaries_%(year)d.csv' \
+        % {"run": run, "year": year, "geography": geography},
+        index_col=geography_id)
     df = df.fillna(0)
     return df
+
 
 def write_outcome_csv(df, run, geography, year=2040):
     geography_id = 'zone_id' if geography == 'taz' else geography
     f = 'runs/run%(run)d_%(geography)s_summaries_%(year)d_acre_fix.csv' \
-         % {"run": run, "year": year, "geography": geography}
+        % {"run": run, "year": year, "geography": geography}
     df = df.fillna(0)
     df.to_csv(f)
+
 
 def compare_series(base_series, outcome_series, index):
     s = base_series
@@ -166,4 +168,3 @@ def compare_outcome_for(variable):
     df2 = pd.concat(df_lst, axis=1, keys=keys)
 
     write_csvs(df2, variable, RUNS)
-
