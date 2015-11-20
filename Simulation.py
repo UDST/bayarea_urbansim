@@ -51,6 +51,7 @@ if SLACK:
         '#sim_updates',
         'Starting simulation %d on host %s' % (run_num, host))
 
+# output summary data before running the simulation
 try:
     orca.run([
         "geographic_summary",

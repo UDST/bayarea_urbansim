@@ -6,7 +6,6 @@ import numpy as np
 from utils import random_indexes, round_series_match_target,\
     scale_by_target, simple_ipf
 
-
 @orca.step("diagnostic_output")
 def diagnostic_output(households, buildings, parcels, taz, zones, year, summary):
     households = households.to_frame()
@@ -62,6 +61,10 @@ def diagnostic_output(households, buildings, parcels, taz, zones, year, summary)
 @orca.step("geographic_summary")
 def pda_output(parcels, households, jobs, buildings, taz_geography,
                run_number, year):
+    # using the following conditional b/c `year` is used to pull a column 
+    # from a csv based on a string of the year in add_population()
+    # and in add_employment() and 2009 is the 
+    # 'base'/pre-simulation year, as is the 2010 value in the csv.
     if year==2009:
         year=2010
         base=True
@@ -173,12 +176,15 @@ def travel_model_output(parcels, households, jobs, buildings,
                         zones, homesales, year, summary, coffer,
                         zone_forecast_inputs, run_number,
                         taz):
+    # using the following conditional b/c `year` is used to pull a column 
+    # from a csv based on a string of the year in add_population()
+    # and in add_employment() and 2009 is the 
+    # 'base'/pre-simulation year, as is the 2010 value in the csv.
     if year==2009:
         year=2010
         base=True
     else:
         base=False
-    # import pdb;pdb.set_trace()
 
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
 
