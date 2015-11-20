@@ -164,7 +164,7 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
                     format(run_number, geography, year)
             elif base is True:
                 summary_csv = "runs/run{}_{}_summaries_{}.csv".\
-                    format(run_number, geography, 'base')
+                    format(run_number, geography, 2009)
             summary_table.to_csv(summary_csv)
 
 
@@ -241,7 +241,7 @@ def travel_model_output(parcels, households, jobs, buildings,
             "runs/run{}_taz_summaries_{}.csv".format(run_number, year)
         elif base is True:
             travel_model_csv = \
-            "runs/run{}_taz_summaries_{}.csv".format(run_number, 'base')
+            "runs/run{}_taz_summaries_{}.csv".format(run_number, 2009)
 
         # uppercase columns to match travel model template
         taz_df.columns = \
