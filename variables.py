@@ -394,6 +394,11 @@ def ave_unit_sqft(buildings):
 
 @orca.column('taz', 'gqpop')
 def gqpop(zones, zone_forecast_inputs, year):
+    # need the following conditional b/c `year` is used to pull a column from
+    # a csv of group quarter population based on a string of the year
+    # and 2009 is the 'base'/pre-simulation year, as is the 2010 value
+    # in the csv. this value, gqpop is small, esp between one single sim years
+    year = 2010 if year == 2009 else year
     str1 = "gqpop" + str(year)[-2:]
     s = zone_forecast_inputs[str1]
     return s

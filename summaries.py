@@ -6,7 +6,6 @@ import numpy as np
 from utils import random_indexes, round_series_match_target,\
     scale_by_target, simple_ipf
 
-
 @orca.step("diagnostic_output")
 def diagnostic_output(households, buildings, parcels, taz, zones, year, summary):
     households = households.to_frame()
@@ -62,6 +61,15 @@ def diagnostic_output(households, buildings, parcels, taz, zones, year, summary)
 @orca.step("geographic_summary")
 def pda_output(parcels, households, jobs, buildings, taz_geography,
                run_number, year):
+    # using the following conditional b/c `year` is used to pull a column 
+    # from a csv based on a string of the year in add_population()
+    # and in add_employment() and 2009 is the 
+    # 'base'/pre-simulation year, as is the 2010 value in the csv.
+    if year==2009:
+        year=2010
+        base=True
+    else:
+        base=False
 
     households_df = orca.merge_tables(
         'households',
@@ -154,8 +162,12 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
             summary_table = \
                 summary_table.reindex(all_summary_geographies).fillna(0)
 
-            summary_csv = "runs/run{}_{}_summaries_{}.csv".\
-                format(run_number, geography, year)
+            if base is False:
+                summary_csv = "runs/run{}_{}_summaries_{}.csv".\
+                    format(run_number, geography, year)
+            elif base is True:
+                summary_csv = "runs/run{}_{}_summaries_{}.csv".\
+                    format(run_number, geography, 2009)
             summary_table.to_csv(summary_csv)
 
 
@@ -164,6 +176,15 @@ def travel_model_output(parcels, households, jobs, buildings,
                         zones, homesales, year, summary, coffer,
                         zone_forecast_inputs, run_number,
                         taz):
+    # using the following conditional b/c `year` is used to pull a column 
+    # from a csv based on a string of the year in add_population()
+    # and in add_employment() and 2009 is the 
+    # 'base'/pre-simulation year, as is the 2010 value in the csv.
+    if year==2009:
+        year=2010
+        base=True
+    else:
+        base=False
 
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
 
@@ -221,8 +242,12 @@ def travel_model_output(parcels, households, jobs, buildings,
         summary.write_parcel_output(add_xy=add_xy_config)
 
         # travel model csv
-        travel_model_csv = \
+        if base is False:
+            travel_model_csv = \
             "runs/run{}_taz_summaries_{}.csv".format(run_number, year)
+        elif base is True:
+            travel_model_csv = \
+            "runs/run{}_taz_summaries_{}.csv".format(run_number, 2009)
 
         # uppercase columns to match travel model template
         taz_df.columns = \
