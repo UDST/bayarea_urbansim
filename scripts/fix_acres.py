@@ -1,26 +1,13 @@
 import pandas as pd
 import numpy as np
-
 import sys
 
-print 'Number of arguments:', len(sys.argv), 'arguments.'
 RUN_NUMBER = int(sys.argv[1])
 SIMULATION_YEAR = int(sys.argv[2])
 
 from output_assessment import get_outcome_df
 from output_assessment import get_base_year_df
 from output_assessment import write_outcome_csv
-
-base_year_df = get_base_year_df(geography='taz')
-outcome_df = get_outcome_df(RUN_NUMBER, geography='taz', year=SIMULATION_YEAR)
-acre_df = pd.read_csv('data/zone_forecast_inputs.csv',
-                      index_col='zone_id',
-                      usecols=['resacre10_abag', 'ciacre10_abag', 'zone_id'])
-acre_df = acre_df.fillna(1)
-
-# same as output_assessment, but fillna with 1, since using
-# ratio to decide change in outcome
-
 
 def scaled_ciacre(base_year_df, outcome_df, acre_df):
     abgc = acre_df["ciacre10_abag"]
@@ -45,18 +32,26 @@ def scaled_resacre(base_year_df, outcome_df, acre_df):
     overtotal = combined_acres[combined_acres > totacre]
     return (combined_acres, overtotal)
 
+base_year_df = get_base_year_df(geography='taz')
+outcome_df = get_outcome_df(RUN_NUMBER, geography='taz', year=SIMULATION_YEAR)
+acre_df = pd.read_csv('data/zone_forecast_inputs.csv',
+                      index_col='zone_id',
+                      usecols=['resacre10_abag', 'ciacre10_abag', 'zone_id'])
+acre_df = acre_df.fillna(1)
+
 ciacre, c_overtotal = scaled_ciacre(base_year_df, outcome_df, acre_df)
 resacre, r_overtotal = scaled_resacre(base_year_df, outcome_df, acre_df)
-
-# print (outcome_df['RESACRE']-resacre).describe()
-# print (outcome_df['CIACRE']-ciacre).describe()
 
 # assign
 outcome_df['CIACRE'] = ciacre
 outcome_df['RESACRE'] = resacre
 outcome_df['abag_adjusted'] = 'yes'
 
-# can optionally use the following to check outlier TAZ acre values
+write_outcome_csv(outcome_df, RUN_NUMBER, 'taz', year=SIMULATION_YEAR)
+
+#################
+# Optional Tools
+#################
 
 def write_outlier_csv(df, run, geography, landtype, year=SIMULATION_YEAR):
     geography_id = 'zone_id' if geography == 'taz' else geography
@@ -67,11 +62,6 @@ def write_outlier_csv(df, run, geography, landtype, year=SIMULATION_YEAR):
 
 # write_outlier_csv(c_overtotal, RUN_NUMBER, 'taz', 'commercial', year=SIMULATION_YEAR)
 # write_outlier_csv(r_overtotal, RUN_NUMBER, 'taz', 'residential', year=SIMULATION_YEAR)
-print outcome_df.CIACRE.describe()
-print outcome_df.RESACRE.describe()
-
-write_outcome_csv(outcome_df, RUN_NUMBER, 'taz', year=SIMULATION_YEAR)
-
 
 def report_outliers_in_base_year_data_differences(acre_df, base_year_df):
     abgr = acre_df["resacre10_abag"]
