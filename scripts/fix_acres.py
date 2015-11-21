@@ -5,9 +5,9 @@ import sys
 RUN_NUMBER = int(sys.argv[1])
 SIMULATION_YEAR = int(sys.argv[2])
 
-from output_assessment import get_outcome_df
-from output_assessment import get_base_year_df
-from output_assessment import write_outcome_csv
+from output_csv_utils import get_outcome_df
+from output_csv_utils import get_base_year_df
+from output_csv_utils import write_outcome_csv
 
 def scaled_ciacre(base_year_df, outcome_df, acre_df):
     abgc = acre_df["ciacre10_abag"]
