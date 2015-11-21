@@ -1,12 +1,18 @@
 import pandas as pd
 import numpy as np
 
+import sys
+
+print 'Number of arguments:', len(sys.argv), 'arguments.'
+RUN_NUMBER = int(sys.argv[1])
+SIMULATION_YEAR = int(sys.argv[2])
+
 from output_assessment import get_outcome_df
 from output_assessment import get_base_year_df
 from output_assessment import write_outcome_csv
 
 base_year_df = get_base_year_df(geography='taz')
-outcome_df = get_outcome_df(540, geography='taz')
+outcome_df = get_outcome_df(RUN_NUMBER, geography='taz', year=SIMULATION_YEAR)
 acre_df = pd.read_csv('data/zone_forecast_inputs.csv',
                       index_col='zone_id',
                       usecols=['resacre10_abag', 'ciacre10_abag', 'zone_id'])
@@ -44,24 +50,27 @@ resacre, r_overtotal = scaled_resacre(base_year_df, outcome_df, acre_df)
 
 # print (outcome_df['RESACRE']-resacre).describe()
 # print (outcome_df['CIACRE']-ciacre).describe()
+
 # assign
 outcome_df['CIACRE'] = ciacre
 outcome_df['RESACRE'] = resacre
+outcome_df['abag_adjusted'] = 'yes'
 
+# can optionally use the following to check outlier TAZ acre values
 
-def write_outlier_csv(df, run, geography, landtype, year=2040):
+def write_outlier_csv(df, run, geography, landtype, year=SIMULATION_YEAR):
     geography_id = 'zone_id' if geography == 'taz' else geography
     f = 'runs/run%(run)d_%(geography)s_summaries_%(year)d_acre_fix_outliers_%(landtype)s.csv' \
         % {"run": run, "year": year, "geography": geography, "landtype": landtype}
     df = df.fillna(0)
     df.to_csv(f, header=True)
 
-write_outlier_csv(c_overtotal, 540, 'taz', 'commercial', year=2040)
-write_outlier_csv(r_overtotal, 540, 'taz', 'residential', year=2040)
+# write_outlier_csv(c_overtotal, RUN_NUMBER, 'taz', 'commercial', year=SIMULATION_YEAR)
+# write_outlier_csv(r_overtotal, RUN_NUMBER, 'taz', 'residential', year=SIMULATION_YEAR)
 print outcome_df.CIACRE.describe()
 print outcome_df.RESACRE.describe()
 
-write_outcome_csv(outcome_df, 540, 'taz', year=2040)
+write_outcome_csv(outcome_df, RUN_NUMBER, 'taz', year=SIMULATION_YEAR)
 
 
 def report_outliers_in_base_year_data_differences(acre_df, base_year_df):
@@ -100,4 +109,3 @@ def report_outliers_in_base_year_data_differences(acre_df, base_year_df):
     r_outliers.to_csv('r_acre_outliers_prcnt.csv')
     c_outliers.to_csv('c_acre_outliers_prcnt.csv')
 
-# write_outcome_csv(outcome_df, 540, 'taz', year=2040)

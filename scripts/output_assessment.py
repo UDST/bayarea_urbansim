@@ -41,7 +41,7 @@ def get_outcome_df(run, geography='superdistrict', year=2040):
 
 def write_outcome_csv(df, run, geography, year=2040):
     geography_id = 'zone_id' if geography == 'taz' else geography
-    f = 'runs/run%(run)d_%(geography)s_summaries_%(year)d_acre_fix.csv' \
+    f = 'runs/run%(run)d_%(geography)s_summaries_%(year)d.csv' \
         % {"run": run, "year": year, "geography": geography}
     df = df.fillna(0)
     df.to_csv(f)
