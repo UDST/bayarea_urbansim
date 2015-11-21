@@ -59,7 +59,7 @@ def compare_series(base_series, outcome_series, index):
 
 
 def compare_outcome(run, base_series):
-    df = outcome_df(run)
+    df = get_outcome_df(run)
     s = df[base_series.name]
     df = compare_series(base_series, s, df.index)
     formatters1 = {'Count': '{:.0f}',
@@ -108,8 +108,8 @@ def write_csvs(df, variable, runs):
 
 
 def divide_series(a_tuple, variable):
-    s = outcome_df(a_tuple[0])[variable]
-    s1 = outcome_df(a_tuple[1])[variable]
+    s = get_outcome_df(a_tuple[0])[variable]
+    s1 = get_outcome_df(a_tuple[1])[variable]
     s2 = s / s1
     s2.name = str(a_tuple[0]) + '/' + str(a_tuple[1])
     return s2
@@ -121,6 +121,7 @@ def get_combinations(nparray):
 
 def compare_outcome_for(variable, runs):
     # empty list to build up dataframe from other dataframes
+    base_year_df = get_base_year_df()
     df_lst = []
     df1 = get_superdistrict_names_df()
     df_lst.append(df1)
