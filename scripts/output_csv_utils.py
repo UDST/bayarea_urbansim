@@ -2,12 +2,7 @@ import pandas as pd
 import numpy as np
 import itertools as it
 
-VARIABLES = ['tothh', 'totemp']
-RUNS = [547, 540]
-
 # loosely borrowed from https://gist.github.com/haleemur/aac0ac216b3b9103d149
-
-
 def format_df(df, formatters=None):
     formatting_columns = list(set(formatters.keys()).intersection(df.columns))
     df_copy = df[formatting_columns].copy()
@@ -94,7 +89,7 @@ def make_esri_columns(df):
     df.to_csv(f)
 
 
-def to_esri_csv(df, variable, runs=RUNS):
+def to_esri_csv(df, variable, runs):
     f = 'compare/esri_' +\
         '%(variable)s_%(runs)s.csv'\
         % {"variable": variable,
@@ -103,7 +98,7 @@ def to_esri_csv(df, variable, runs=RUNS):
     df.to_csv(f)
 
 
-def write_csvs(df, variable, runs=RUNS):
+def write_csvs(df, variable, runs):
     f = 'compare/' +\
         '%(variable)s_%(runs)s.csv'\
         % {"variable": variable,
@@ -124,7 +119,7 @@ def get_combinations(nparray):
     return pd.Series(list(it.combinations(np.unique(nparray), 2)))
 
 
-def compare_outcome_for(variable):
+def compare_outcome_for(variable, runs):
     # empty list to build up dataframe from other dataframes
     df_lst = []
     df1 = get_superdistrict_names_df()
@@ -142,13 +137,13 @@ def compare_outcome_for(variable):
     df = format_df(df, formatters)
     df_lst.append(df)
 
-    for run in RUNS:
+    for run in runs:
         df_lst.append(compare_outcome(run, s))
 
     # build up dataframe of ratios of run count variables to one another
-    if len(RUNS) > 1:
+    if len(runs) > 1:
         ratios = pd.DataFrame()
-        combinations = get_combinations(RUNS)
+        combinations = get_combinations(runs)
         for combination in combinations:
             s2 = divide_series(combination, variable)
             ratios[s2.name] = s2
@@ -161,10 +156,10 @@ def compare_outcome_for(variable):
 
     # build up summary names to the first level of the column multiindex
     keys = ['', 'r0y09']
-    run_column_shortnames = ['r' + str(x) + 'y40' for x in RUNS]
+    run_column_shortnames = ['r' + str(x) + 'y40' for x in runs]
     keys.extend(run_column_shortnames)
     keys.extend(['y40Ratios'])
 
     df2 = pd.concat(df_lst, axis=1, keys=keys)
 
-    write_csvs(df2, variable, RUNS)
+    write_csvs(df2, variable, runs)
