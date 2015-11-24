@@ -29,6 +29,8 @@ ave_sqft_per_unit_clip:
 
 acct_settings:
   disable: False
+  obag_settings:
+    total_amount: 200000000
   sales_tax_settings:
     sending_buildings_filter: general_type != 'Residential'
     sending_buildings_tax: non_residential_price * non_residential_sqft * 20 * .01 * .01
@@ -37,6 +39,10 @@ acct_settings:
   vmt_settings:
     sending_buildings_subaccount_def: regional
     receiving_buildings_filter: vmt_res_cat == 'S'
+    fee_amounts:
+      VH: 25000
+      H: 15000
+      MH: 5000
 
 
 dont_enable_supply_correction:
@@ -51,13 +57,6 @@ dont_enable_supply_correction:
     clip_change_low: 1.0
     clip_change_high: 1.2
     iterations: 8
-
-
-enable_vmt_fees:
-  fee_amounts:
-    VH: 25000
-    H: 15000
-    MH: 5000
 
 
 table_reprocess:

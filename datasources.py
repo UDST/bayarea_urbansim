@@ -302,6 +302,7 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
     # we should only be using the "buildings" table during simulation, and in
     # simulation we want to normalize the prices to 2012 style prices
     df["redfin_sale_year"] = 2012
+
     return df
 
 

@@ -12,9 +12,10 @@ warnings.filterwarnings("ignore")
 
 args = sys.argv[1:]
 
-SLACK = MAPS = True
+SLACK = MAPS = False
 LOGS = True
 INTERACT = False
+SCENARIO = None
 S3 = False
 EVERY_NTH_YEAR = 5
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
@@ -24,6 +25,11 @@ orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 if len(args) and args[0] == "-i":
     SLACK = MAPS = LOGS = False
     INTERACT = True
+
+if len(args) and args[0] == "-s":
+    orca.add_injectable("scenario", args[1])
+
+SCENARIO = orca.get_injectable("scenario")
 
 if INTERACT:
     import code
@@ -52,7 +58,7 @@ if SLACK:
         'Starting simulation %d on host %s' % (run_num, host))
 
 try:
-    orca.run([
+    models = [
         "neighborhood_vars",            # local accessibility vars
         "regional_vars",                # regional accessibility vars
 
@@ -69,8 +75,6 @@ try:
 
         "scheduled_development_events",  # scheduled buildings additions
 
-        "subsidized_residential_developer",
-
         "alt_feasibility",
 
         "residential_developer",
@@ -80,12 +84,32 @@ try:
         "hlcm_simulate",                 # put these last so they don't get
         "elcm_simulate",                 # displaced by new dev
 
-        "calculate_vmt_fees",
-
         "diagnostic_output",
         "geographic_summary",
         "travel_model_output"
-    ], iter_vars=range(in_year, out_year+1, EVERY_NTH_YEAR))
+    ]
+
+    # compute feasibility for all negative profit residential devs
+    # will get subsidized in various ways by the next few steps
+    if SCENARIO in ["th", "au", "pr"]:
+        models.insert(models.index("alt_feasibility"),
+            "subsidized_residential_feasibility") 
+
+    # calculate VMT taxes
+    if SCENARIO == "th":
+        models.insert(models.index("alt_feasibility"),
+            "calculate_vmt_fees") 
+        models.insert(models.index("alt_feasibility"),
+            "subsidized_residential_developer_vmt") 
+
+    # add obag funds to the coffer
+    if SCENARIO in ["th", "au", "pr"]:
+        models.insert(models.index("alt_feasibility"),
+            "add_obag_funds")
+        models.insert(models.index("alt_feasibility"),
+            "subsidized_residential_developer_obag") 
+
+    orca.run(models, iter_vars=range(in_year, out_year+1, EVERY_NTH_YEAR))
 
 except Exception as e:
     print traceback.print_exc()
