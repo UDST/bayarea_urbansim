@@ -459,18 +459,16 @@ def sfdu(buildings_subset):
 
 @orca.table('households_subset')
 def households_subset(households):
-    zone_id = households.zone_id
-    income = households.income
-    persons = households.persons
-    df = pd.DataFrame(data={'zone_id': zone_id, 'income': income,
-                            'persons': persons})
-    return df
+    return households.to_frame(columns=['zone_id',
+                                        'base_income_quartile',
+                                        'income',
+                                        'persons'])
 
 
 @orca.column('taz', 'hhinq1')
 def hhinq1(households_subset):
     df = households_subset.to_frame()
-    s = df.query("income < 25000").\
+    s = df.query("base_income_quartile == 1").\
         groupby('zone_id').size()
     return s
 
@@ -478,7 +476,7 @@ def hhinq1(households_subset):
 @orca.column('taz', 'hhinq2')
 def hhinq2(households_subset):
     df = households_subset.to_frame()
-    s = df.query("income >= 25000 and income < 45000").\
+    s = df.query("base_income_quartile == 2").\
         groupby('zone_id').size()
     return s
 
@@ -486,7 +484,7 @@ def hhinq2(households_subset):
 @orca.column('taz', 'hhinq3')
 def hhinq3(households_subset):
     df = households_subset.to_frame()
-    s = df.query("income >= 45000 and income < 75000").\
+    s = df.query("base_income_quartile == 3").\
         groupby('zone_id').size()
     return s
 
@@ -494,7 +492,7 @@ def hhinq3(households_subset):
 @orca.column('taz', 'hhinq4')
 def hhinq4(households_subset):
     df = households_subset.to_frame()
-    s = df.query("income >= 75000").\
+    s = df.query("base_income_quartile == 4").\
         groupby('zone_id').size()
     return s
 

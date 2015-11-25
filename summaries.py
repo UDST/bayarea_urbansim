@@ -75,7 +75,7 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
         'households',
         [parcels, taz_geography, buildings, households],
         columns=['pda', 'zone_id', 'juris', 'superdistrict', 'puma5',
-                 'persons', 'income'])
+                 'persons', 'income', 'base_income_quartile'])
 
     jobs_df = orca.merge_tables(
         'jobs',
@@ -108,16 +108,17 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
             summary_table.columns = ['tothh', 'hhpop']
 
             # income quartile counts
-            summary_table['hhincq1'] = households_df.query("income < 25000").\
+            summary_table['hhincq1'] = \
+                households_df.query("base_income_quartile == 1").\
                 groupby(geography).size()
             summary_table['hhincq2'] = \
-                households_df.query("income >= 25000 and income < 45000").\
+                households_df.query("base_income_quartile == 2").\
                 groupby(geography).size()
             summary_table['hhincq3'] = \
-                households_df.query("income >= 45000 and income < 75000").\
+                households_df.query("base_income_quartile == 3").\
                 groupby(geography).size()
             summary_table['hhincq4'] = \
-                households_df.query("income >= 75000").\
+                households_df.query("base_income_quartile == 4").\
                 groupby(geography).size()
 
             # residential buildings by type
