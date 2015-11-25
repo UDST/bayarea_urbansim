@@ -218,7 +218,7 @@ def travel_model_output(parcels, households, jobs, buildings,
 
         taz_df = add_population(taz_df, year)
         # total population = group quarters plus households population
-        taz_df["totpop"] = df.hhpop + df.gqpop
+        taz_df["totpop"] = taz_df.hhpop + taz_df.gqpop
         taz_df["totpop"] = taz_df.totpop.fillna(0)
         taz_df = add_employment(taz_df, year)
         taz_df = add_age_categories(taz_df, year)
