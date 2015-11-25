@@ -42,6 +42,35 @@ acre_df = acre_df.fillna(1)
 ciacre, c_overtotal = scaled_ciacre(base_year_df, outcome_df, acre_df)
 resacre, r_overtotal = scaled_resacre(base_year_df, outcome_df, acre_df)
 
+print "acre adjustment summary checks"
+print "Year:{}".format(SIMULATION_YEAR)
+print "-------------"
+
+print "abag base year c/i acres:"
+print acre_df["ciacre10_abag"].sum()
+
+print "sum of simulation c/i  acres:"
+print outcome_df['CIACRE'].sum()
+
+print "adjusted sum of c/i acres:"
+print ciacre.sum()
+
+print "abag base year res acres:"
+print acre_df["resacre10_abag"].sum()
+
+print "sum of simulation res  acres:"
+print outcome_df['RESACRE'].sum()
+
+print "adjusted sum of res acres:"
+print resacre.sum()
+
+print "TAZ TOTPOP == HHPOP+GQPOP"
+print (outcome_df.TOTPOP==(outcome_df.HHPOP+outcome_df.GQPOP)).value_counts()
+
+#adf = print outcome_df[['AGE0004', 'AGE0519', 'AGE2044', 'AGE4564', 'AGE65UP', 'TOTPOP']]
+
+#print outcome_df[(outcome_df.TOTHH==(outcome_df.HHPOP-outcome_df.GQPOP))==False]
+
 # assign
 outcome_df['CIACRE'] = ciacre
 outcome_df['RESACRE'] = resacre
