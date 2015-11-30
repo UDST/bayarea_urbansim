@@ -145,15 +145,15 @@ if SLACK:
 
 if COMPARE_TO_NO_PROJECT:
     try:
-        os.system('python scripts/compare_output.py %d %d' % (NO_PROJECT,run_num)
+        os.system('python scripts/compare_output.py %d %d' % (NO_PROJECT,run_num))
     except Exception as e:
         raise e
     sys.exit(0)
 
 if ADJUST_ACRES:
     try:
-        for output_year in [2015,2020,2025,2030,2035,2040]:
-            os.system('python scripts/fix_acres.py %d %d' % (run_num,output_year)
+        for output_year in [2010,2015,2020,2025,2030,2035,2040]:
+            os.system('python scripts/fix_acres.py %d %d' % (run_num,output_year))
     except Exception as e:
         raise e
     sys.exit(0)
