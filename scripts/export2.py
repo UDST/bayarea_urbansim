@@ -6,14 +6,15 @@ import fiona
 from string import join
 from shapely.geometry import shape
 from pymongo import MongoClient
+from bson.objectid import ObjectId
 
-MONGO = False
-JURIS = "Berkeley"
+MONGO = True
+JURIS = None
 
 if MONGO:
     client = MongoClient()
-    client.drop_database("baus")
-    db = client.baus
+    #client.drop_database("baus")
+    db = client.togethermap
 else:
     outf = open("parcels.json", "w")
 
@@ -82,7 +83,8 @@ with fiona.drivers():
              f["creator"] = "Fletcher Foti"
              f["createDate"] = "2015-08-29T05:10:00.446Z"
              f["updateDate"] = "2015-08-29T05:10:00.446Z"
-             f["collectionId"] = "oGsGeLimzFHBDikvA"
+             f["collectionId"] = "ZC7yyAyA8jkDFnRtf"
+             f['_id'] = str(ObjectId())
              f["post_count"] = 0
 
              f = add_bbox(f)
