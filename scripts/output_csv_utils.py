@@ -19,7 +19,7 @@ def format_df(df, formatters=None):
 
 def get_base_year_df(geography='superdistrict'):
     geography_id = 'zone_id' if geography == 'taz' else geography
-    df = pd.read_csv('data/run0_{}_summaries_2009.csv'.format(geography),
+    df = pd.read_csv('data/run633_{}_summaries_2010.csv'.format(geography),
                      index_col=geography_id)
     df = df.fillna(0)
     return df
