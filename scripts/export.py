@@ -42,7 +42,7 @@ settings = orca.get_injectable("settings")
 
 # filter buildings as urbansim does
 f = settings["feasibility"]["parcel_filter"]
-df = df.query(f)
+#df = df.query(f)
 
 # get building types
 df["building_type"] = \
