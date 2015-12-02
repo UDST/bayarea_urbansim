@@ -291,7 +291,7 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
     df["building_sqft"] = pd.DataFrame({
         "one": df.building_sqft,
         "two": df.residential_sqft + df.non_residential_sqft}).max(axis=1)
-    
+
     # keeps parking lots from getting redeveloped
     df["building_sqft"][df.building_type_id.isin([15, 16])] = 0
     df["non_residential_sqft"][df.building_type_id.isin([15, 16])] = 0

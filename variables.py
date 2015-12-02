@@ -35,6 +35,8 @@ def general_type(buildings):
 
 
 BUILDING_AGE_BREAK = 40
+
+
 @orca.column('homesales', cache=True)
 def building_age(homesales):
     return 2014 - homesales.year_built
@@ -267,7 +269,6 @@ def modern_condo(buildings):
 @orca.column('buildings', cache=True)
 def new_construction(buildings):
     return (buildings.year_built > 2000).astype('int')
-
 
 
 @orca.column('buildings', cache=True)

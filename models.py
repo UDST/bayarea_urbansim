@@ -333,10 +333,11 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year,
 
 
 @orca.step()
-def developer_reprocess(buildings, year, years_per_iter, jobs, parcels, summary):
+def developer_reprocess(buildings, year, years_per_iter, jobs,
+                        parcels, summary):
     # this takes new units that come out of the developer, both subsidized
-    # and non-subsidized and reprocesses them as required - please read comments
-    # to see what this means in detail
+    # and non-subsidized and reprocesses them as required - please read
+    # comments to see what this means in detail
 
     # 20% of base year buildings which are "residential" have job spaces - I
     # mean, there is a ratio of job spaces to res units in residential
@@ -351,17 +352,22 @@ def developer_reprocess(buildings, year, years_per_iter, jobs, parcels, summary)
         print "Adding %d job_spaces" % to_add
         res_units = buildings.residential_units[s]
         # bias selection of places to put job spaces based on res units
-        add_indexes = np.random.choice(res_units.index.values, size=to_add, 
+        add_indexes = np.random.choice(res_units.index.values, size=to_add,
                                        replace=True,
                                        p=(res_units/res_units.sum()))
-        add_indexes = pd.Series(add_indexes).value_counts()  # collect same indexes
-        add_sizes = add_indexes * 400  # this is sqft per job for residential bldgs
-        print "Job spaces in res before adjustment: ", buildings.job_spaces[s].sum()
-        buildings.local.loc[add_sizes.index, "non_residential_sqft"] += add_sizes.values
-        print "Job spaces in res after adjustment: ", buildings.job_spaces[s].sum()
+        # collect same indexes
+        add_indexes = pd.Series(add_indexes).value_counts()
+        # this is sqft per job for residential bldgs
+        add_sizes = add_indexes * 400
+        print "Job spaces in res before adjustment: ", \
+            buildings.job_spaces[s].sum()
+        buildings.local.loc[add_sizes.index,
+                            "non_residential_sqft"] += add_sizes.values
+        print "Job spaces in res after adjustment: ",\
+            buildings.job_spaces[s].sum()
         print "Job to building type allocation\n",\
-            buildings.general_type.loc[jobs.building_id[jobs.building_id > -1]].\
-                value_counts()
+            buildings.general_type.loc[
+                jobs.building_id[jobs.building_id > -1]].value_counts()
 
     buildings_df = buildings.to_frame(
         ['year_built', 'building_sqft', 'general_type'])
@@ -369,16 +375,16 @@ def developer_reprocess(buildings, year, years_per_iter, jobs, parcels, summary)
         groupby('general_type').building_sqft.sum()
     print "New square feet by general type in millions:\n",\
         sqft_by_gtype / 1000000.0
-    
+
     # the second step here is to add retail to buildings that are greater than
     # X stories tall - presumably this is a ground floor retail policy
     old_buildings = buildings.to_frame(buildings.local_columns)
     new_buildings = old_buildings.query(
        '%d <= year_built <= %d and year_built > 2014 and stories >= 4'
-        % (year - years_per_iter, year))
-    
+       % (year - years_per_iter, year))
+
     # this is the key point - make these new buildings' nonres sqft equal
-    # to one story of the new buildings 
+    # to one story of the new buildings
     '''
     new_buildings.non_residential_sqft = new_buildings.building_sqft / \
        new_buildings.stories
@@ -387,11 +393,11 @@ def developer_reprocess(buildings, year, years_per_iter, jobs, parcels, summary)
     new_buildings["residential_sqft"] = 0
     new_buildings.buildings_sqft = new_buildings.non_residential_sqft
     new_buildings.stories = 1
-    new_buildings.building_type_id = 10 
-   
+    new_buildings.building_type_id = 10
+
     print "Adding %d sqft of ground floor retail in %d locations" % \
        (new_buildings.non_residential_sqft.sum(), len(new_buildings))
- 
+
     all_buildings = dev.merge(old_buildings, new_buildings)
     orca.add_table("buildings", all_buildings)
     summary.add_parcel_output(new_buildings)

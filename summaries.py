@@ -8,7 +8,8 @@ from utils import random_indexes, round_series_match_target,\
 
 
 @orca.step("diagnostic_output")
-def diagnostic_output(households, buildings, parcels, taz, zones, year, summary):
+def diagnostic_output(households, buildings, parcels, taz,
+                      zones, year, summary):
     households = households.to_frame()
     buildings = buildings.to_frame()
     parcels = parcels.to_frame()
@@ -31,7 +32,8 @@ def diagnostic_output(households, buildings, parcels, taz, zones, year, summary)
         groupby('zone_id').non_residential_sqft.sum()
     zones['office_sqft'] = buildings.query('general_type == "Office"').\
         groupby('zone_id').non_residential_sqft.sum()
-    zones['industrial_sqft'] = buildings.query('general_type == "Industrial"').\
+    zones['industrial_sqft'] = buildings.query(
+        'general_type == "Industrial"').\
         groupby('zone_id').non_residential_sqft.sum()
 
     zones['average_income'] = households.groupby('zone_id').income.quantile()
@@ -50,7 +52,7 @@ def diagnostic_output(households, buildings, parcels, taz, zones, year, summary)
         buildings[buildings.general_type == "Industrial"].\
         groupby('zone_id').non_residential_price.quantile()
 
-    zones['retail_sqft']  = buildings[buildings.general_type == "Retail"].\
+    zones['retail_sqft'] = buildings[buildings.general_type == "Retail"].\
         groupby('zone_id').non_residential_sqft.sum()
 
     zones['retail_to_res_units_ratio'] = \

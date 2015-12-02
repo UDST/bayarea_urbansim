@@ -69,7 +69,7 @@ def tax_buildings(buildings, acct_settings, account, year):
 
 @orca.step("add_obag_funds")
 def add_obag_funds(settings, year, buildings, coffer,
-                       summary):
+                   summary):
 
     amt = float(settings["acct_settings"]["obag_settings"]["total_amount"])
 
@@ -91,8 +91,8 @@ def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
     # this is the frame that knows which devs are subsidized
     df = summary.parcel_output
 
-    df = df.query("%d <= year_built < %d and subsidized != True" % \
-        (year, year + years_per_iter))
+    df = df.query("%d <= year_built < %d and subsidized != True" %
+                  (year, year + years_per_iter))
 
     if not len(df):
         return
@@ -330,8 +330,8 @@ def subsidized_residential_developer_vmt(
         households, buildings, add_extra_columns_func,
         parcels_geography, year, acct_settings, parcels,
         settings, summary, coffer, form_to_btype_func, feasibility):
-   
-    feasibility = feasibility.to_frame() 
+
+    feasibility = feasibility.to_frame()
     feasibility = feasibility.stack(level=0).reset_index(level=1, drop=True)
 
     run_subsidized_developer(feasibility,
@@ -353,7 +353,7 @@ def subsidized_residential_developer_obag(
         parcels_geography, year, acct_settings, parcels,
         settings, summary, coffer, form_to_btype_func, feasibility):
 
-    feasibility = feasibility.to_frame() 
+    feasibility = feasibility.to_frame()
     feasibility = feasibility.stack(level=0).reset_index(level=1, drop=True)
 
     run_subsidized_developer(feasibility,
@@ -369,4 +369,4 @@ def subsidized_residential_developer_obag(
                              summary)
 
     # set to an empty dataframe to save memory
-    #orca.add_table("feasibility", pd.DataFrame())
+    # orca.add_table("feasibility", pd.DataFrame())
