@@ -2,12 +2,8 @@ import pandas as pd
 import numpy as np
 import itertools as it
 
-VARIABLES = ['tothh', 'totemp']
-RUNS = [547, 540]
 
 # loosely borrowed from https://gist.github.com/haleemur/aac0ac216b3b9103d149
-
-
 def format_df(df, formatters=None):
     formatting_columns = list(set(formatters.keys()).intersection(df.columns))
     df_copy = df[formatting_columns].copy()
@@ -21,25 +17,30 @@ def format_df(df, formatters=None):
     return df
 
 
-def get_base_year_df(variables=VARIABLES, geography='superdistrict'):
-    variables.append(geography)
-    df = pd.read_csv('data/superdistrict_summaries_2009.csv',
-                     index_col='superdistrict',
-                     usecols=variables)
+def get_base_year_df(geography='superdistrict'):
+    geography_id = 'zone_id' if geography == 'taz' else geography
+    df = pd.read_csv('data/run633_{}_summaries_2010.csv'.format(geography),
+                     index_col=geography_id)
     df = df.fillna(0)
     return df
 
 
-def outcome_df(run, variables=VARIABLES,
-               geography='superdistrict', year=2040):
-    variables.append(geography)
+def get_outcome_df(run, geography='superdistrict', year=2040):
+    geography_id = 'zone_id' if geography == 'taz' else geography
     df = pd.read_csv(
         'runs/run%(run)d_%(geography)s_summaries_%(year)d.csv'
         % {"run": run, "year": year, "geography": geography},
-        index_col=geography,
-        usecols=variables)
+        index_col=geography_id)
     df = df.fillna(0)
     return df
+
+
+def write_outcome_csv(df, run, geography, year=2040):
+    geography_id = 'zone_id' if geography == 'taz' else geography
+    f = 'runs/run%(run)d_%(geography)s_summaries_%(year)d.csv' \
+        % {"run": run, "year": year, "geography": geography}
+    df = df.fillna(0)
+    df.to_csv(f)
 
 
 def compare_series(base_series, outcome_series, index):
@@ -59,7 +60,7 @@ def compare_series(base_series, outcome_series, index):
 
 
 def compare_outcome(run, base_series):
-    df = outcome_df(run)
+    df = get_outcome_df(run)
     s = df[base_series.name]
     df = compare_series(base_series, s, df.index)
     formatters1 = {'Count': '{:.0f}',
@@ -89,7 +90,7 @@ def make_esri_columns(df):
     df.to_csv(f)
 
 
-def to_esri_csv(df, variable, runs=RUNS):
+def to_esri_csv(df, variable, runs):
     f = 'compare/esri_' +\
         '%(variable)s_%(runs)s.csv'\
         % {"variable": variable,
@@ -98,7 +99,7 @@ def to_esri_csv(df, variable, runs=RUNS):
     df.to_csv(f)
 
 
-def write_csvs(df, variable, runs=RUNS):
+def write_csvs(df, variable, runs):
     f = 'compare/' +\
         '%(variable)s_%(runs)s.csv'\
         % {"variable": variable,
@@ -108,8 +109,8 @@ def write_csvs(df, variable, runs=RUNS):
 
 
 def divide_series(a_tuple, variable):
-    s = outcome_df(a_tuple[0])[variable]
-    s1 = outcome_df(a_tuple[1])[variable]
+    s = get_outcome_df(a_tuple[0])[variable]
+    s1 = get_outcome_df(a_tuple[1])[variable]
     s2 = s / s1
     s2.name = str(a_tuple[0]) + '/' + str(a_tuple[1])
     return s2
@@ -119,8 +120,9 @@ def get_combinations(nparray):
     return pd.Series(list(it.combinations(np.unique(nparray), 2)))
 
 
-def compare_outcome_for(variable):
+def compare_outcome_for(variable, runs):
     # empty list to build up dataframe from other dataframes
+    base_year_df = get_base_year_df()
     df_lst = []
     df1 = get_superdistrict_names_df()
     df_lst.append(df1)
@@ -137,13 +139,13 @@ def compare_outcome_for(variable):
     df = format_df(df, formatters)
     df_lst.append(df)
 
-    for run in RUNS:
+    for run in runs:
         df_lst.append(compare_outcome(run, s))
 
     # build up dataframe of ratios of run count variables to one another
-    if len(RUNS) > 1:
+    if len(runs) > 1:
         ratios = pd.DataFrame()
-        combinations = get_combinations(RUNS)
+        combinations = get_combinations(runs)
         for combination in combinations:
             s2 = divide_series(combination, variable)
             ratios[s2.name] = s2
@@ -156,14 +158,10 @@ def compare_outcome_for(variable):
 
     # build up summary names to the first level of the column multiindex
     keys = ['', 'r0y09']
-    run_column_shortnames = ['r' + str(x) + 'y40' for x in RUNS]
+    run_column_shortnames = ['r' + str(x) + 'y40' for x in runs]
     keys.extend(run_column_shortnames)
     keys.extend(['y40Ratios'])
 
     df2 = pd.concat(df_lst, axis=1, keys=keys)
 
-    write_csvs(df2, variable, RUNS)
-
-base_year_df = get_base_year_df()
-compare_outcome_for('totemp')
-compare_outcome_for('tothh')
+    write_csvs(df2, variable, runs)

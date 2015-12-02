@@ -18,6 +18,9 @@ INTERACT = False
 S3 = False
 EVERY_NTH_YEAR = 5
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
+ADJUST_ACRES = True
+COMPARE_TO_NO_PROJECT = True
+NO_PROJECT = 611
 
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 
@@ -126,10 +129,19 @@ if MAPS:
             raise e
         sys.exit(0)
 
+if ADJUST_ACRES:
+    try:
+        for output_year in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
+            os.system('python scripts/fix_acres.py %d %d' %
+                      (run_num, output_year))
+    except Exception as e:
+        raise e
+    sys.exit(0)
+
 if S3:
     try:
         os.system(
-            'ls runs/run%d_* ' % run_num + 
+            'ls runs/run%d_* ' % run_num +
             '| xargs -I file aws s3 cp file ' +
             's3://bayarea-urbansim-results')
     except Exception as e:
