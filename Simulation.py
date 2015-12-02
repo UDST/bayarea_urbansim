@@ -97,7 +97,8 @@ try:
 
     # calculate VMT taxes
     if SCENARIO == "th":
-        models.insert(models.index("alt_feasibility"),
+        # calculate the vmt fees at the end of the year
+        models.insert(models.index("diagnostic_output"),
             "calculate_vmt_fees") 
         models.insert(models.index("alt_feasibility"),
             "subsidized_residential_developer_vmt") 

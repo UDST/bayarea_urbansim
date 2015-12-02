@@ -66,7 +66,7 @@ def jobs_relocation(jobs, settings, years_per_iter):
 def scheduled_development_events(buildings, development_projects,
                                  development_events, summary, year, parcels,
                                  settings, years_per_iter,
-                                 building_sqft_per_job):
+                                 building_sqft_per_job, vmt_fee_categories):
 
     # then build
     dps = development_projects.to_frame().\
@@ -86,6 +86,11 @@ def scheduled_development_events(buildings, development_projects,
     new_buildings["job_spaces"] = new_buildings.job_spaces.astype('int')
     new_buildings["geom_id"] = parcel_id_to_geom_id(new_buildings.parcel_id)
     new_buildings["SDEM"] = True
+    new_buildings["subsidized"] = False
+    new_buildings["zone_id"] = misc.reindex(
+        parcels.zone_id, new_buildings.parcel_id)
+    new_buildings["vmt_res_cat"] = misc.reindex(
+        vmt_fee_categories.res_cat, new_buildings.zone_id)
 
     summary.add_parcel_output(new_buildings)
 

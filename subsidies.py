@@ -1,3 +1,4 @@
+
 import sys
 import time
 import orca
@@ -6,6 +7,7 @@ import numpy as np
 from urbansim import accounts
 from urbansim_defaults import utils
 from cStringIO import StringIO
+from urbansim.utils import misc
 
 
 @orca.injectable("coffer", cache=True)
@@ -82,16 +84,20 @@ def add_obag_funds(settings, year, buildings, coffer,
 
 @orca.step("calculate_vmt_fees")
 def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
-                       summary):
+                       summary, years_per_iter):
 
     vmt_settings = settings["acct_settings"]["vmt_settings"]
 
     # this is the frame that knows which devs are subsidized
     df = summary.parcel_output
 
-    print df.describe()
+    df = df.query("%d <= year_built < %d and subsidized != True" % \
+        (year, year + years_per_iter))
 
-    df = df.query("year_built == %d and subsidized != True" % year)
+    if not len(df):
+        return
+
+    print "%d projects pass the vmt filter" % len(df)
 
     df["res_fees"] = df.vmt_res_cat.map(vmt_settings["fee_amounts"])
 
@@ -283,7 +289,7 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
     print "Built {} total subsidized buildings".format(len(new_buildings))
     print "    Total subsidy: ${:,.2f}".format(
         -1*new_buildings.max_profit.sum())
-    print "    Total subsidzed units: {:.0f}".\
+    print "    Total subsidized units: {:.0f}".\
         format(new_buildings.residential_units.sum())
 
     new_buildings["subsidized"] = True
@@ -295,7 +301,7 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
 def subsidized_residential_feasibility(
         parcels, settings,
         add_extra_columns_func, parcel_sales_price_sqft_func,
-        parcel_is_allowed_func):
+        parcel_is_allowed_func, parcels_geography):
 
     kwargs = settings['feasibility'].copy()
     kwargs["only_built"] = False
@@ -306,18 +312,27 @@ def subsidized_residential_feasibility(
                           parcel_is_allowed_func,
                           **kwargs)
 
-
-@orca.step('subsidized_residential_developer_vmt')
-def subsidized_residential_developer_vmt(
-        households, buildings, add_extra_columns_func,
-        parcels_geography, year, acct_settings,
-        settings, summary, coffer, form_to_btype_func):
-
     feasibility = orca.get_table("feasibility").to_frame()
     # get rid of the multiindex that comes back from feasibility
     feasibility = feasibility.stack(level=0).reset_index(level=1, drop=True)
     # join to parcels_geography for filtering
     feasibility = feasibility.join(parcels_geography.to_frame())
+
+    # add the multiindex back
+    feasibility.columns = pd.MultiIndex.from_tuples(
+            [("residential", col) for col in feasibility.columns])
+
+    orca.add_table("feasibility", feasibility)
+
+
+@orca.step('subsidized_residential_developer_vmt')
+def subsidized_residential_developer_vmt(
+        households, buildings, add_extra_columns_func,
+        parcels_geography, year, acct_settings, parcels,
+        settings, summary, coffer, form_to_btype_func, feasibility):
+   
+    feasibility = feasibility.to_frame() 
+    feasibility = feasibility.stack(level=0).reset_index(level=1, drop=True)
 
     run_subsidized_developer(feasibility,
                              parcels,
@@ -335,14 +350,11 @@ def subsidized_residential_developer_vmt(
 @orca.step('subsidized_residential_developer_obag')
 def subsidized_residential_developer_obag(
         households, buildings, add_extra_columns_func,
-        parcels_geography, year, acct_settings,
-        settings, summary, coffer, form_to_btype_func):
+        parcels_geography, year, acct_settings, parcels,
+        settings, summary, coffer, form_to_btype_func, feasibility):
 
-    feasibility = orca.get_table("feasibility").to_frame()
-    # get rid of the multiindex that comes back from feasibility
+    feasibility = feasibility.to_frame() 
     feasibility = feasibility.stack(level=0).reset_index(level=1, drop=True)
-    # join to parcels_geography for filtering
-    feasibility = feasibility.join(parcels_geography.to_frame())
 
     run_subsidized_developer(feasibility,
                              parcels,
