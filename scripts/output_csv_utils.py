@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import itertools as it
 
+
 # loosely borrowed from https://gist.github.com/haleemur/aac0ac216b3b9103d149
 def format_df(df, formatters=None):
     formatting_columns = list(set(formatters.keys()).intersection(df.columns))
@@ -27,7 +28,7 @@ def get_base_year_df(geography='superdistrict'):
 def get_outcome_df(run, geography='superdistrict', year=2040):
     geography_id = 'zone_id' if geography == 'taz' else geography
     df = pd.read_csv(
-        'runs/run%(run)d_%(geography)s_summaries_%(year)d.csv' \
+        'runs/run%(run)d_%(geography)s_summaries_%(year)d.csv'
         % {"run": run, "year": year, "geography": geography},
         index_col=geography_id)
     df = df.fillna(0)

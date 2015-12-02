@@ -120,16 +120,17 @@ if MAPS:
 
 if ADJUST_ACRES:
     try:
-        for output_year in [2010,2015,2020,2025,2030,2035,2040]:
-            os.system('python scripts/fix_acres.py %d %d' % (run_num,output_year))
+        for output_year in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
+            os.system('python scripts/fix_acres.py %d %d' %
+                      (run_num, output_year))
     except Exception as e:
         raise e
     sys.exit(0)
-    
+
 if S3:
     try:
         os.system(
-            'ls runs/run%d_* ' % run_num + 
+            'ls runs/run%d_* ' % run_num +
             '| xargs -I file aws s3 cp file ' +
             's3://bayarea-urbansim-results')
     except Exception as e:
@@ -150,4 +151,3 @@ if SLACK:
         '#sim_updates',
         'PDA target comparison is available at ' +
         'http://urbanforecast.com/scratchpad/results_%d.html' % run_num)
-
