@@ -12,7 +12,7 @@ warnings.filterwarnings("ignore")
 
 args = sys.argv[1:]
 
-SLACK = MAPS = False
+SLACK = MAPS = True
 LOGS = True
 INTERACT = False
 SCENARIO = None
@@ -84,6 +84,9 @@ try:
         "hlcm_simulate",                 # put these last so they don't get
         "elcm_simulate",                 # displaced by new dev
 
+        "calculate_vmt_fees",
+
+        "topsheet",
         "diagnostic_output",
         "geographic_summary",
         "travel_model_output"

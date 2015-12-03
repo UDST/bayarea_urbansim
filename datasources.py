@@ -362,8 +362,16 @@ def vmt_fee_categories():
 
 @orca.table('taz_geography', cache=True)
 def taz_geography():
-    df = pd.read_csv(os.path.join(misc.data_dir(), "taz_geography.csv"))
-    return df.set_index('zone')
+    tg = pd.read_csv(os.path.join(misc.data_dir(), "taz_geography.csv"), index_col="zone")
+    sr = pd.read_csv(os.path.join(misc.data_dir(), "subregions.csv"), index_col="sd")
+    tg["subregion_id"] = sr.subregion.loc[tg.superdistrict].values
+    tg["subregion"] = tg.subregion_id.map({
+        1: "Core",
+        2: "Urban",
+        3: "Suburban",
+        4: "Rural"
+    })
+    return tg
 
 
 # these are shapes - "zones" in the bay area

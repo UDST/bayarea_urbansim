@@ -166,7 +166,7 @@ pusher:
 store: 2015_09_01_bayarea_v3.h5
 
 
-scenario: th
+scenario: np
 
 
 scenario_inputs:

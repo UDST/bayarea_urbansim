@@ -5,6 +5,119 @@ import pandas as pd
 import numpy as np
 from utils import random_indexes, round_series_match_target,\
     scale_by_target, simple_ipf
+from urbansim.utils import misc
+
+
+@orca.step("topsheet")
+def topsheet(households, jobs, buildings, parcels, zones, year,
+             run_number, taz_geography):
+
+    hh_by_subregion = misc.reindex(taz_geography.subregion,
+        households.zone_id).value_counts()
+
+    households_df = orca.merge_tables(
+        'households',
+        [parcels, buildings, households],
+        columns=['pda'])
+
+    hh_by_inpda = households_df.pda.notnull().value_counts()
+
+    jobs_by_subregion = misc.reindex(taz_geography.subregion,
+        jobs.zone_id).value_counts()
+
+    jobs_df = orca.merge_tables(
+        'jobs',
+        [parcels, buildings, jobs],
+        columns=['pda'])
+
+    jobs_by_inpda = jobs_df.pda.notnull().value_counts()
+
+    if year == 2010:
+        # save some info for computing growth measures
+        orca.add_injectable("base_year_measures", {
+            "hh_by_subregion": hh_by_subregion,
+            "jobs_by_subregion": jobs_by_subregion,
+            "hh_by_inpda": hh_by_inpda,
+            "jobs_by_inpda": jobs_by_inpda
+        })
+
+    #if year != 2040:
+    #    return
+
+    base_year_measures = orca.get_injectable("base_year_measures")
+
+    f = open(os.path.join("runs", "run%d_topsheet_%d.log" %
+        (run_number, year)), "w")
+
+    def write(s):
+        # print s
+        f.write(s + "\n\n")
+
+    nhh = len(households)
+    write("Number of households = %d" % nhh)
+    nj = len(jobs)
+    write("Number of jobs = %d" % nj)
+
+    n = len(households.building_id[households.building_id == -1])
+    write("Number of unplaced households = %d" % n)
+
+    n = len(jobs.building_id[jobs.building_id == -1])
+    write("Number of unplaced jobs = %d" % n)
+
+    du = buildings.residential_units.sum()
+    write("Number of residential units = %d" % du)
+    write("Residential vacancy rate = %.2f" % (1-0 - float(nhh)/du))
+
+    jsp = buildings.job_spaces.sum()
+    write("Number of job spaces = %d" % jsp)
+    write("Non-residential vacancy rate = %.2f" % (1-0 - float(nj)/jsp))
+
+    tmp = base_year_measures["hh_by_subregion"]
+    write("Households base year share by subregion:\n%s" %
+        str((tmp/tmp.sum()).round(2)))
+
+    write("Households share by subregion:\n%s" %
+        str((hh_by_subregion/hh_by_subregion.sum()).round(2)))
+    diff = hh_by_subregion - base_year_measures["hh_by_subregion"]
+
+    write("Households pct of regional growth by subregion:\n%s" %
+        str((diff/diff.sum()).round(2)))
+
+    tmp = base_year_measures["jobs_by_subregion"]
+    write("Jobs base year share by subregion:\n%s" %
+        str((tmp/tmp.sum()).round(2)))
+
+    write("Jobs share by subregion:\n%s" %
+        str((jobs_by_subregion/jobs_by_subregion.sum()).round(2)))
+    diff = jobs_by_subregion - base_year_measures["jobs_by_subregion"]
+
+    write("Jobs pct of regional growth by subregion:\n%s" %
+        str((diff/diff.sum()).round(2)))
+
+    tmp = base_year_measures["hh_by_inpda"]
+    write("Households base year share in pdas:\n%s" %
+        str((tmp/tmp.sum()).round(2)))
+
+    write("Households share in pdas:\n%s" %
+        str((hh_by_inpda/hh_by_inpda.sum()).round(2)))
+    diff = hh_by_inpda - base_year_measures["hh_by_inpda"]
+
+    write("Households pct of regional growth in pdas:\n%s" %
+        str((diff/diff.sum()).round(2)))
+
+    tmp = base_year_measures["jobs_by_inpda"]
+    write("Jobs base year share in pdas:\n%s" %
+        str((tmp/tmp.sum()).round(2)))
+
+    write("Jobs share in pdas:\n%s" %
+        str((jobs_by_inpda/jobs_by_inpda.sum()).round(2)))
+    diff = jobs_by_inpda - base_year_measures["jobs_by_inpda"]
+
+    write("Jobs pct of regional growth in pdas:\n%s" %
+        str((diff/diff.sum()).round(2)))
+
+    f.close()
+
 
 
 @orca.step("diagnostic_output")
