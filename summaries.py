@@ -119,7 +119,6 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
     f.close()
 
 
-
 @orca.step("diagnostic_output")
 def diagnostic_output(households, buildings, parcels, taz,
                       zones, year, summary):
@@ -177,12 +176,21 @@ def diagnostic_output(households, buildings, parcels, taz,
 @orca.step("geographic_summary")
 def pda_output(parcels, households, jobs, buildings, taz_geography,
                run_number, year):
+    # using the following conditional b/c `year` is used to pull a column 
+    # from a csv based on a string of the year in add_population()
+    # and in add_employment() and 2009 is the 
+    # 'base'/pre-simulation year, as is the 2010 value in the csv.
+    if year==2009:
+        year=2010
+        base=True
+    else:
+        base=False
 
     households_df = orca.merge_tables(
         'households',
         [parcels, taz_geography, buildings, households],
         columns=['pda', 'zone_id', 'juris', 'superdistrict', 'puma5',
-                 'persons', 'income'])
+                 'persons', 'income', 'base_income_quartile'])
 
     jobs_df = orca.merge_tables(
         'jobs',
@@ -215,16 +223,17 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
             summary_table.columns = ['tothh', 'hhpop']
 
             # income quartile counts
-            summary_table['hhincq1'] = households_df.query("income < 25000").\
+            summary_table['hhincq1'] = \
+                households_df.query("base_income_quartile == 1").\
                 groupby(geography).size()
             summary_table['hhincq2'] = \
-                households_df.query("income >= 25000 and income < 45000").\
+                households_df.query("base_income_quartile == 2").\
                 groupby(geography).size()
             summary_table['hhincq3'] = \
-                households_df.query("income >= 45000 and income < 75000").\
+                households_df.query("base_income_quartile == 3").\
                 groupby(geography).size()
             summary_table['hhincq4'] = \
-                households_df.query("income >= 75000").\
+                households_df.query("base_income_quartile == 4").\
                 groupby(geography).size()
 
             # residential buildings by type
@@ -269,8 +278,12 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
             summary_table = \
                 summary_table.reindex(all_summary_geographies).fillna(0)
 
-            summary_csv = "runs/run{}_{}_summaries_{}.csv".\
-                format(run_number, geography, year)
+            if base is False:
+                summary_csv = "runs/run{}_{}_summaries_{}.csv".\
+                    format(run_number, geography, year)
+            elif base is True:
+                summary_csv = "runs/run{}_{}_summaries_{}.csv".\
+                    format(run_number, geography, 2009)
             summary_table.to_csv(summary_csv)
 
 
@@ -279,6 +292,15 @@ def travel_model_output(parcels, households, jobs, buildings,
                         zones, homesales, year, summary, coffer,
                         zone_forecast_inputs, run_number,
                         taz):
+    # using the following conditional b/c `year` is used to pull a column 
+    # from a csv based on a string of the year in add_population()
+    # and in add_employment() and 2009 is the 
+    # 'base'/pre-simulation year, as is the 2010 value in the csv.
+    if year==2009:
+        year=2010
+        base=True
+    else:
+        base=False
 
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
 
@@ -312,7 +334,7 @@ def travel_model_output(parcels, households, jobs, buildings,
 
         taz_df = add_population(taz_df, year)
         # total population = group quarters plus households population
-        taz_df["totpop"] = df.hhpop + df.gqpop
+        taz_df["totpop"] = taz_df.hhpop + taz_df.gqpop
         taz_df["totpop"] = taz_df.totpop.fillna(0)
         taz_df = add_employment(taz_df, year)
         taz_df = add_age_categories(taz_df, year)
@@ -336,8 +358,12 @@ def travel_model_output(parcels, households, jobs, buildings,
         summary.write_parcel_output(add_xy=add_xy_config)
 
         # travel model csv
-        travel_model_csv = \
+        if base is False:
+            travel_model_csv = \
             "runs/run{}_taz_summaries_{}.csv".format(run_number, year)
+        elif base is True:
+            travel_model_csv = \
+            "runs/run{}_taz_summaries_{}.csv".format(run_number, 2009)
 
         # uppercase columns to match travel model template
         taz_df.columns = \
@@ -416,11 +442,11 @@ def add_age_categories(df, year):
     rc = regional_controls()
 
     seed_matrix = zfi[["sh_age0004", "sh_age0519", "sh_age2044",
-                       "sh_age4564", "sh_age65up"]].\
+                       "sh_age4564", "sh_age65p"]].\
         mul(df.totpop, axis='index').as_matrix()
 
     row_marginals = df.totpop.values
-    agecols = ["age0004", "age0519", "age2044", "age4564", "age65up"]
+    agecols = ["age0004", "age0519", "age2044", "age4564", "age65p"]
     col_marginals = rc[agecols].loc[year].values
 
     target = df.totpop.sum()

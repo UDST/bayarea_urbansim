@@ -12,10 +12,9 @@ warnings.filterwarnings("ignore")
 
 args = sys.argv[1:]
 
-SLACK = MAPS = True
+SLACK = MAPS = False
 LOGS = True
 INTERACT = False
-SCENARIO = None
 S3 = False
 EVERY_NTH_YEAR = 5
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
@@ -25,11 +24,6 @@ orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 if len(args) and args[0] == "-i":
     SLACK = MAPS = LOGS = False
     INTERACT = True
-
-if len(args) and args[0] == "-s":
-    orca.add_injectable("scenario", args[1])
-
-SCENARIO = orca.get_injectable("scenario")
 
 if INTERACT:
     import code
@@ -50,81 +44,30 @@ if SLACK:
 print "Started", time.ctime()
 print "Current Commit : ", CURRENT_COMMIT.rstrip()
 print "Current Scenario : ", orca.get_injectable('scenario').rstrip()
-in_year, out_year = 2010, 2040
+in_year, out_year = 2010, 2011
 
 if SLACK:
     slack.chat.post_message(
         '#sim_updates',
         'Starting simulation %d on host %s' % (run_num, host))
 
-# output summary data before running the simulation
 try:
     orca.run([
-        "geographic_summary",
-        "travel_model_output"
-    ], iter_vars=[2009])
-except Exception as e:
-    print traceback.print_exc()
-    raise e
-    sys.exit(0)
-
-try:
-    models = [
         "neighborhood_vars",            # local accessibility vars
         "regional_vars",                # regional accessibility vars
 
         "rsh_simulate",                 # residential sales hedonic
         "nrh_simulate",                 # non-residential rent hedonic
 
-        "households_relocation",
         "households_transition",
 
-        "jobs_relocation",
         "jobs_transition",
-
-        "price_vars",
-
-        "scheduled_development_events",  # scheduled buildings additions
-
-        "alt_feasibility",
-
-        "residential_developer",
-        "developer_reprocess",
-        "non_residential_developer",
 
         "hlcm_simulate",                 # put these last so they don't get
         "elcm_simulate",                 # displaced by new dev
 
-        "calculate_vmt_fees",
-
-        "topsheet",
-        "diagnostic_output",
-        "geographic_summary",
         "travel_model_output"
-    ]
-
-    # compute feasibility for all negative profit residential devs
-    # will get subsidized in various ways by the next few steps
-    if SCENARIO in ["th", "au", "pr"]:
-        models.insert(models.index("alt_feasibility"),
-                      "subsidized_residential_feasibility")
-
-    # calculate VMT taxes
-    if SCENARIO == "th":
-        # calculate the vmt fees at the end of the year
-        models.insert(models.index("diagnostic_output"),
-                      "calculate_vmt_fees")
-        models.insert(models.index("alt_feasibility"),
-                      "subsidized_residential_developer_vmt")
-
-    # add obag funds to the coffer
-    if SCENARIO in ["th", "au", "pr"]:
-        models.insert(models.index("alt_feasibility"),
-                      "add_obag_funds")
-        models.insert(models.index("alt_feasibility"),
-                      "subsidized_residential_developer_obag")
-
-    orca.run(models, iter_vars=range(in_year, out_year+1, EVERY_NTH_YEAR))
+    ], iter_vars=range(in_year, out_year+1, EVERY_NTH_YEAR))
 
 except Exception as e:
     print traceback.print_exc()

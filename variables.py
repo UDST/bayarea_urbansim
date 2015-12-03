@@ -395,6 +395,11 @@ def ave_unit_sqft(buildings):
 
 @orca.column('taz', 'gqpop')
 def gqpop(zones, zone_forecast_inputs, year):
+    # need the following conditional b/c `year` is used to pull a column from
+    # a csv of group quarter population based on a string of the year
+    # and 2009 is the 'base'/pre-simulation year, as is the 2010 value
+    # in the csv. this value, gqpop is small, esp between one single sim years
+    year = 2010 if year == 2009 else year
     str1 = "gqpop" + str(year)[-2:]
     s = zone_forecast_inputs[str1]
     return s
@@ -455,18 +460,16 @@ def sfdu(buildings_subset):
 
 @orca.table('households_subset')
 def households_subset(households):
-    zone_id = households.zone_id
-    income = households.income
-    persons = households.persons
-    df = pd.DataFrame(data={'zone_id': zone_id, 'income': income,
-                            'persons': persons})
-    return df
+    return households.to_frame(columns=['zone_id',
+                                        'base_income_quartile',
+                                        'income',
+                                        'persons'])
 
 
 @orca.column('taz', 'hhinq1')
 def hhinq1(households_subset):
     df = households_subset.to_frame()
-    s = df.query("income < 25000").\
+    s = df.query("base_income_quartile == 1").\
         groupby('zone_id').size()
     return s
 
@@ -474,7 +477,7 @@ def hhinq1(households_subset):
 @orca.column('taz', 'hhinq2')
 def hhinq2(households_subset):
     df = households_subset.to_frame()
-    s = df.query("income >= 25000 and income < 45000").\
+    s = df.query("base_income_quartile == 2").\
         groupby('zone_id').size()
     return s
 
@@ -482,7 +485,7 @@ def hhinq2(households_subset):
 @orca.column('taz', 'hhinq3')
 def hhinq3(households_subset):
     df = households_subset.to_frame()
-    s = df.query("income >= 45000 and income < 75000").\
+    s = df.query("base_income_quartile == 3").\
         groupby('zone_id').size()
     return s
 
@@ -490,7 +493,7 @@ def hhinq3(households_subset):
 @orca.column('taz', 'hhinq4')
 def hhinq4(households_subset):
     df = households_subset.to_frame()
-    s = df.query("income >= 75000").\
+    s = df.query("base_income_quartile == 4").\
         groupby('zone_id').size()
     return s
 

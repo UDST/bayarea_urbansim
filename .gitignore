@@ -1,8 +1,10 @@
 RUNNUM
 .cache
 .idea
+.vagrant
 runs
 *.pyc
+*.gz
 .ipynb_checkpoints
 dump.rdb
 logs
