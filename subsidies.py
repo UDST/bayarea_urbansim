@@ -1,4 +1,3 @@
-
 import sys
 import time
 import orca
@@ -200,8 +199,13 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
     # step 3
     feasibility['ave_sqft_per_unit'] = parcels.ave_sqft_per_unit
     feasibility['residential_units'] = \
-        np.floor(feasibility.residential_sqft /
-                 feasibility.ave_sqft_per_unit).replace(0, 1)
+        np.floor(feasibility.residential_sqft / feasibility.ave_sqft_per_unit)
+
+    # step 3B
+    # can only add units - don't subtract units - this is an approximation
+    # of the calculation that will be used to do this in the developer model
+    feasibility = feasibility[
+        feasibility.residential_units > feasibility.total_residential_units]
 
     # step 4
     feasibility['subsidy_per_unit'] = \
@@ -231,8 +235,6 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
 
         # step 7
         df = df.sort(columns=['subsidy_per_unit'], ascending=False)
-
-        print df
 
         # step 8
         print "Amount in subaccount: ${:,.2f}".format(amount)

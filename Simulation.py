@@ -106,8 +106,9 @@ try:
     # compute feasibility for all negative profit residential devs
     # will get subsidized in various ways by the next few steps
     if SCENARIO in ["th", "au", "pr"]:
-        models.insert(models.index("alt_feasibility"),
-                      "subsidized_residential_feasibility")
+        pass
+        # models.insert(models.index("alt_feasibility"),
+        #              "subsidized_residential_feasibility")
 
     # calculate VMT taxes
     if SCENARIO == "th":
@@ -115,12 +116,16 @@ try:
         models.insert(models.index("diagnostic_output"),
                       "calculate_vmt_fees")
         models.insert(models.index("alt_feasibility"),
+                      "subsidized_residential_feasibility")
+        models.insert(models.index("alt_feasibility"),
                       "subsidized_residential_developer_vmt")
 
     # add obag funds to the coffer
     if SCENARIO in ["th", "au", "pr"]:
         models.insert(models.index("alt_feasibility"),
                       "add_obag_funds")
+        models.insert(models.index("alt_feasibility"),
+                      "subsidized_residential_feasibility")
         models.insert(models.index("alt_feasibility"),
                       "subsidized_residential_developer_obag")
 
