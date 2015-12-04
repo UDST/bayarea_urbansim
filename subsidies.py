@@ -69,9 +69,11 @@ def tax_buildings(buildings, acct_settings, account, year):
 
 @orca.step("add_obag_funds")
 def add_obag_funds(settings, year, buildings, coffer,
-                   summary):
+                   summary, years_per_iter):
 
     amt = float(settings["acct_settings"]["obag_settings"]["total_amount"])
+
+    amt *= years_per_iter
 
     metadata = {
         "description": "OBAG regional subsidies",
@@ -220,12 +222,17 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
     # step 6
     for subacct, amount in account.iter_subaccounts():
         print "Subaccount: ", subacct
+
         df = feasibility[feasibility.subaccount == subacct]
+        print "Number of feasible projects in receiving zone: %d", len(df)
+
         if len(df) == 0:
             continue
 
         # step 7
         df = df.sort(columns=['subsidy_per_unit'], ascending=False)
+
+        print df
 
         # step 8
         print "Amount in subaccount: ${:,.2f}".format(amount)

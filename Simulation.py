@@ -12,7 +12,7 @@ warnings.filterwarnings("ignore")
 
 args = sys.argv[1:]
 
-SLACK = MAPS = True
+SLACK = MAPS = False
 LOGS = True
 INTERACT = False
 SCENARIO = None
@@ -157,7 +157,7 @@ if MAPS:
 if S3:
     try:
         os.system(
-            'ls runs/run%d_* ' % run_num + 
+            'ls runs/run%d_* ' % run_num +
             '| xargs -I file aws s3 cp file ' +
             's3://bayarea-urbansim-results')
     except Exception as e:
@@ -176,5 +176,10 @@ if SLACK:
 
     slack.chat.post_message(
         '#sim_updates',
-        'PDA target comparison is available at ' +
-        'http://urbanforecast.com/scratchpad/results_%d.html' % run_num)
+        'Final topsheet is available at ' +
+        'http://urbanforecast.com/runs/run%d_topsheet_2040.log' % run_num)
+
+    # slack.chat.post_message(
+    #    '#sim_updates',
+    #    'PDA target comparison is available at ' +
+    #    'http://urbanforecast.com/scratchpad/results_%d.html' % run_num)

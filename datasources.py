@@ -362,8 +362,10 @@ def vmt_fee_categories():
 
 @orca.table('taz_geography', cache=True)
 def taz_geography():
-    tg = pd.read_csv(os.path.join(misc.data_dir(), "taz_geography.csv"), index_col="zone")
-    sr = pd.read_csv(os.path.join(misc.data_dir(), "subregions.csv"), index_col="sd")
+    tg = pd.read_csv(os.path.join(misc.data_dir(),
+                     "taz_geography.csv"), index_col="zone")
+    sr = pd.read_csv(os.path.join(misc.data_dir(),
+                     "subregions.csv"), index_col="sd")
     tg["subregion_id"] = sr.subregion.loc[tg.superdistrict].values
     tg["subregion"] = tg.subregion_id.map({
         1: "Core",

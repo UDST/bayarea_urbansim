@@ -819,6 +819,11 @@ def node_id(parcels, net):
     return s
 
 
+@orca.column('parcels', 'subregion', cache=True)
+def subregion(taz_geography, parcels):
+    return misc.reindex(taz_geography.subregion, parcels.zone_id)
+
+
 @orca.column('parcels', 'vmt_res_cat', cache=True)
 def vmt_code(parcels, vmt_fee_categories):
     return misc.reindex(vmt_fee_categories.res_cat, parcels.zone_id)

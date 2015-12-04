@@ -31,7 +31,7 @@ acct_settings:
   disable: False
   obag_settings:
     sending_buildings_subaccount_def: regional
-    total_amount: 200000000
+    total_amount: 50000000
     receiving_buildings_filter: pda_id > 0
   sales_tax_settings:
     sending_buildings_filter: general_type != 'Residential'
