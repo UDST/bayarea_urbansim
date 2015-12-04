@@ -210,6 +210,10 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
     # step 4
     feasibility['subsidy_per_unit'] = \
         feasibility['max_profit'] / feasibility['residential_units']
+    # assumption that even if the developer says this property is almost
+    # profitable, even the administration costs are likely to cost at least
+    # 10k / unit
+    feasibility['subsidy_per_unit'] = feasibility.subsidy_per_unit.clip(10000)
 
     # step 5
     if "receiving_buildings_filter" in acct_settings:
