@@ -17,9 +17,9 @@ def format_df(df, formatters=None):
     return df
 
 
-def get_base_year_df(geography='superdistrict'):
+def get_base_year_df(base_run_num=633,base_run_year=2010,geography='superdistrict'):
     geography_id = 'zone_id' if geography == 'taz' else geography
-    df = pd.read_csv('data/run633_{}_summaries_2010.csv'.format(geography),
+    df = pd.read_csv('data/run{}_{}_summaries_{}.csv'.format(base_run_num, geography, base_run_year),
                      index_col=geography_id)
     df = df.fillna(0)
     return df
@@ -122,7 +122,7 @@ def get_combinations(nparray):
 
 def compare_outcome_for(variable, runs):
     # empty list to build up dataframe from other dataframes
-    base_year_df = get_base_year_df()
+    base_year_df = get_base_year_df(base_run_num=695,base_run_year=2009)
     df_lst = []
     df1 = get_superdistrict_names_df()
     df_lst.append(df1)
