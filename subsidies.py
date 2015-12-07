@@ -207,9 +207,16 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
     feasibility = feasibility[
         feasibility.residential_units > feasibility.total_residential_units]
 
+    # step 3C
+    # towards the end, because we're about to sort by subsidy per unit, some
+    # large projects never get built, because it could be a 100 unit project
+    # times a 500k subsidy per unit.  thus we're going to try filtering by
+    # the maximum subsidy for a single development here
+    feasibility = feasibility[feasibility.max_profit > -50*1000000]
+
     # step 4
     feasibility['subsidy_per_unit'] = \
-        feasibility['max_profit'] / feasibility['residential_units']
+        -1 * feasibility['max_profit'] / feasibility['residential_units']
     # assumption that even if the developer says this property is almost
     # profitable, even the administration costs are likely to cost at least
     # 10k / unit
@@ -232,13 +239,15 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
         print "Subaccount: ", subacct
 
         df = feasibility[feasibility.subaccount == subacct]
-        print "Number of feasible projects in receiving zone: %d", len(df)
+        print "Number of feasible projects in receiving zone:", len(df)
 
         if len(df) == 0:
             continue
 
         # step 7
-        df = df.sort(columns=['subsidy_per_unit'], ascending=False)
+        df = df.sort(columns=['subsidy_per_unit'], ascending=True)
+        # df.to_csv('subsidized_units_%d_%s_%s.csv' %
+        #           (orca.get_injectable("year"), account.name, subacct))
 
         # step 8
         print "Amount in subaccount: ${:,.2f}".format(amount)
