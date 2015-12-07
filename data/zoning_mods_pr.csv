@@ -1,4 +1,4 @@
-jurisdiction,pda,tpp,expansion,count,add_bldg,drop_bldg,dua_up,far_up,dua_down,far_down,subsidy,place_type,notes
+jurisdiction,pda_id,tpp_id,exp_id,count,add_bldg,drop_bldg,dua_up,far_up,dua_down,far_down,subsidy,place_type,notes
 01640,aca1,,,202,HM MR,,20,,,,,muc,
 00562,ala1,b2,,2,HM MR,,75,,,,,ttc,
 00562,ala1,b3,,1,HM MR,,75,,,,,ttc,

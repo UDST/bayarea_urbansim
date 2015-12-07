@@ -149,6 +149,17 @@ def zoning_au(parcels_geography):
                     how='left').set_index('parcel_id')
 
 
+@orca.table('zoning_pr', cache=True)
+def zoning_pr(parcels_geography):
+    scenario_zoning = pd.read_csv(os.path.join(misc.data_dir(),
+                                               'zoning_mods_pr.csv'),
+                                  dtype={'jurisdiction': 'str'})
+    return pd.merge(parcels_geography.to_frame().reset_index(),
+                    scenario_zoning,
+                    on=['jurisdiction', 'pda_id', 'tpp_id', 'exp_id'],
+                    how='left').set_index('parcel_id')
+
+
 # this is really bizarre, but the parcel table I have right now has empty
 # zone_ids for a few parcels.  Not enough to worry about so just filling with
 # the mode
