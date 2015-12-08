@@ -829,6 +829,8 @@ def vmt_code(parcels, vmt_fee_categories):
     return misc.reindex(vmt_fee_categories.res_cat, parcels.zone_id)
 
 GROSS_AVE_UNIT_SIZE = 1000
+PARCEL_USE_EFFICIENCY = .8
+HEIGHT_PER_STORY = 12.0
 
 ###################################
 #   Zoning Capacity Variables
@@ -845,20 +847,46 @@ def zoned_du(parcels):
 
 @orca.column('parcels_zoning_calculations', 'effective_max_dua', cache=True)
 def effective_max_dua(parcels):
-    s = parcels.max_dua
-    s2 = parcels.max_far * parcels.parcel_size / \
+
+    max_dua_from_far = parcels.max_far * parcels.parcel_size / \
         GROSS_AVE_UNIT_SIZE / parcels.parcel_acres
+
+    max_far_from_height = (parcels.max_height / HEIGHT_PER_STORY) * \
+        PARCEL_USE_EFFICIENCY
+
+    max_dua_from_height = max_far_from_height * parcels.parcel_size / \
+        GROSS_AVE_UNIT_SIZE / parcels.parcel_acres
+
+    d = DataFrame({
+        "max_dua": parcels.max_dua,
+        "max_dua_from_far": max_dua_from_far,
+        "max_dua_from_height": max_dua_from_height
+    })
+    s = d.min(axis=1)
     s3 = parcel_is_allowed('residential')
-    return (s.fillna(s2) * s3).reindex(parcels.index).fillna(0).astype('float')
+    return (s.fillna(0) * s3).reindex(parcels.index).fillna(0).astype('float')
+
+
+@orca.column('parcels_zoning_calculations',
+             'effective_far', cache=True)
+def effective_far(parcels):
+
+    max_far_from_height = (parcels.max_height / HEIGHT_PER_STORY) * \
+        PARCEL_USE_EFFICIENCY
+
+    d = DataFrame({
+        "max_far": parcels.max_far,
+        "max_far_from_height": max_far_from_height
+    })
+
+    s = d.min(axis=1)
+    return s.reindex(parcels.index).fillna(0).astype('float')
 
 
 @orca.column('parcels_zoning_calculations',
              'effective_max_office_far', cache=True)
 def effective_max_office_far(parcels):
-    s = parcels.max_far
-    s2 = parcels.max_height / 11
-    s3 = parcel_is_allowed('office')
-    return (s.fillna(s2) * s3).reindex(parcels.index).fillna(0).astype('float')
+    return parcels.effective_far * parcel_is_allowed('office')
 
 
 ########################################
