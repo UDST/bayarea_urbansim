@@ -29,6 +29,10 @@ ave_sqft_per_unit_clip:
 
 acct_settings:
   disable: False
+  obag_settings:
+    sending_buildings_subaccount_def: regional
+    total_amount: 50000000
+    receiving_buildings_filter: pda_id > 0
   sales_tax_settings:
     sending_buildings_filter: general_type != 'Residential'
     sending_buildings_tax: non_residential_price * non_residential_sqft * 20 * .01 * .01
@@ -37,6 +41,10 @@ acct_settings:
   vmt_settings:
     sending_buildings_subaccount_def: regional
     receiving_buildings_filter: vmt_res_cat == 'S'
+    fee_amounts:
+      VH: 25000
+      H: 15000
+      MH: 5000
 
 
 dont_enable_supply_correction:
@@ -51,13 +59,6 @@ dont_enable_supply_correction:
     clip_change_low: 1.0
     clip_change_high: 1.2
     iterations: 8
-
-
-enable_vmt_fees:
-  fee_amounts:
-    VH: 25000
-    H: 15000
-    MH: 5000
 
 
 table_reprocess:
@@ -125,6 +126,7 @@ feasibility:
   pass_through:
     - oldest_building
     - total_sqft
+    - total_residential_units
     - max_far
     - max_dua
     - land_cost
@@ -165,7 +167,7 @@ pusher:
 store: 2015_09_01_bayarea_v3.h5
 
 
-scenario: np
+scenario: th
 
 
 scenario_inputs:
@@ -173,6 +175,12 @@ scenario_inputs:
     zoning_table_name: zoning_baseline
   np:
     zoning_table_name: zoning_np
+  pr:
+    zoning_table_name: zoning_pr
+  th:
+    zoning_table_name: zoning_th
+  au:
+    zoning_table_name: zoning_au
 
 
 # this maps Synthicity's 25 employment categories to
@@ -352,6 +360,6 @@ cost_shifters:
 
 development_limits:
   Office:
-    'San Francisco': 2000
+    'San Francisco': 3000
   Residential:
     'Half Moon Bay': 150

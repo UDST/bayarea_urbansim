@@ -121,10 +121,43 @@ def zoning_np(parcels_geography):
     scenario_zoning = pd.read_csv(os.path.join(misc.data_dir(),
                                                'zoning_mods_np.csv'),
                                   dtype={'jurisdiction': 'str'})
-    return pd.merge(parcels_geography.to_frame(),
+    return pd.merge(parcels_geography.to_frame().reset_index(),
                     scenario_zoning,
                     on=['jurisdiction', 'pda_id', 'tpp_id', 'exp_id'],
-                    how='left')
+                    how='left').set_index('parcel_id')
+
+
+@orca.table('zoning_th', cache=True)
+def zoning_th(parcels_geography):
+    scenario_zoning = pd.read_csv(os.path.join(misc.data_dir(),
+                                               'zoning_mods_th.csv'),
+                                  dtype={'jurisdiction': 'str'})
+    return pd.merge(parcels_geography.to_frame().reset_index(),
+                    scenario_zoning,
+                    on=['jurisdiction', 'pda_id', 'tpp_id', 'exp_id'],
+                    how='left').set_index('parcel_id')
+
+
+@orca.table('zoning_au', cache=True)
+def zoning_au(parcels_geography):
+    scenario_zoning = pd.read_csv(os.path.join(misc.data_dir(),
+                                               'zoning_mods_au.csv'),
+                                  dtype={'jurisdiction': 'str'})
+    return pd.merge(parcels_geography.to_frame().reset_index(),
+                    scenario_zoning,
+                    on=['jurisdiction', 'pda_id', 'tpp_id', 'exp_id'],
+                    how='left').set_index('parcel_id')
+
+
+@orca.table('zoning_pr', cache=True)
+def zoning_pr(parcels_geography):
+    scenario_zoning = pd.read_csv(os.path.join(misc.data_dir(),
+                                               'zoning_mods_pr.csv'),
+                                  dtype={'jurisdiction': 'str'})
+    return pd.merge(parcels_geography.to_frame().reset_index(),
+                    scenario_zoning,
+                    on=['jurisdiction', 'pda_id', 'tpp_id', 'exp_id'],
+                    how='left').set_index('parcel_id')
 
 
 # this is really bizarre, but the parcel table I have right now has empty
@@ -269,7 +302,7 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
     df["building_sqft"] = pd.DataFrame({
         "one": df.building_sqft,
         "two": df.residential_sqft + df.non_residential_sqft}).max(axis=1)
-    
+
     # keeps parking lots from getting redeveloped
     df["building_sqft"][df.building_type_id.isin([15, 16])] = 0
     df["non_residential_sqft"][df.building_type_id.isin([15, 16])] = 0
@@ -280,6 +313,7 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
     # we should only be using the "buildings" table during simulation, and in
     # simulation we want to normalize the prices to 2012 style prices
     df["redfin_sale_year"] = 2012
+
     return df
 
 
@@ -339,8 +373,18 @@ def vmt_fee_categories():
 
 @orca.table('taz_geography', cache=True)
 def taz_geography():
-    df = pd.read_csv(os.path.join(misc.data_dir(), "taz_geography.csv"))
-    return df.set_index('zone')
+    tg = pd.read_csv(os.path.join(misc.data_dir(),
+                     "taz_geography.csv"), index_col="zone")
+    sr = pd.read_csv(os.path.join(misc.data_dir(),
+                     "subregions.csv"), index_col="sd")
+    tg["subregion_id"] = sr.subregion.loc[tg.superdistrict].values
+    tg["subregion"] = tg.subregion_id.map({
+        1: "Core",
+        2: "Urban",
+        3: "Suburban",
+        4: "Rural"
+    })
+    return tg
 
 
 # these are shapes - "zones" in the bay area

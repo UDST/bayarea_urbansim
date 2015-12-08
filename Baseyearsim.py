@@ -100,7 +100,7 @@ if MAPS:
 if S3:
     try:
         os.system(
-            'ls runs/run%d_* ' % run_num + 
+            'ls runs/run%d_* ' % run_num +
             '| xargs -I file aws s3 cp file ' +
             's3://bayarea-urbansim-results')
     except Exception as e:

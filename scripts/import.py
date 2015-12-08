@@ -7,7 +7,7 @@ mon = Monary()
 
 columns = [
     'properties.total_residential_units',
-    'properties.total_jobs_spaces',
+    'properties.total_job_spaces',
     'properties.parcel_id',
     'properties.max_dua',
     'properties.max_far'

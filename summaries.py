@@ -5,9 +5,148 @@ import pandas as pd
 import numpy as np
 from utils import random_indexes, round_series_match_target,\
     scale_by_target, simple_ipf
+from urbansim.utils import misc
+
+
+@orca.step("topsheet")
+def topsheet(households, jobs, buildings, parcels, zones, year,
+             run_number, taz_geography, parcels_zoning_calculations,
+             summary):
+
+    hh_by_subregion = misc.reindex(taz_geography.subregion,
+                                   households.zone_id).value_counts()
+
+    households_df = orca.merge_tables(
+        'households',
+        [parcels, buildings, households],
+        columns=['pda'])
+
+    hh_by_inpda = households_df.pda.notnull().value_counts()
+
+    jobs_by_subregion = misc.reindex(taz_geography.subregion,
+                                     jobs.zone_id).value_counts()
+
+    jobs_df = orca.merge_tables(
+        'jobs',
+        [parcels, buildings, jobs],
+        columns=['pda'])
+
+    jobs_by_inpda = jobs_df.pda.notnull().value_counts()
+
+    capacity = parcels_zoning_calculations.\
+        zoned_du_underbuild_nodev.groupby(parcels.subregion).sum()
+
+    if year == 2010:
+        # save some info for computing growth measures
+        orca.add_injectable("base_year_measures", {
+            "hh_by_subregion": hh_by_subregion,
+            "jobs_by_subregion": jobs_by_subregion,
+            "hh_by_inpda": hh_by_inpda,
+            "jobs_by_inpda": jobs_by_inpda,
+            "capacity": capacity
+        })
+
+    # if year != 2040:
+    #    return
+
+    base_year_measures = orca.get_injectable("base_year_measures")
+
+    f = open(os.path.join("runs", "run%d_topsheet_%d.log" %
+             (run_number, year)), "w")
+
+    def write(s):
+        # print s
+        f.write(s + "\n\n")
+
+    def norm_and_round(s):
+        # normalize and round a series
+        return str((s/s.sum()).round(2))
+
+    nhh = len(households)
+    write("Number of households = %d" % nhh)
+    nj = len(jobs)
+    write("Number of jobs = %d" % nj)
+
+    n = len(households.building_id[households.building_id == -1])
+    write("Number of unplaced households = %d" % n)
+
+    n = len(jobs.building_id[jobs.building_id == -1])
+    write("Number of unplaced jobs = %d" % n)
+
+    du = buildings.residential_units.sum()
+    write("Number of residential units = %d" % du)
+    write("Residential vacancy rate = %.2f" % (1-0 - float(nhh)/du))
+
+    jsp = buildings.job_spaces.sum()
+    write("Number of job spaces = %d" % jsp)
+    write("Non-residential vacancy rate = %.2f" % (1-0 - float(nj)/jsp))
+
+    tmp = base_year_measures["hh_by_subregion"]
+    write("Households base year share by subregion:\n%s" %
+          norm_and_round(tmp))
+
+    write("Households share by subregion:\n%s" %
+          norm_and_round(hh_by_subregion))
+    diff = hh_by_subregion - base_year_measures["hh_by_subregion"]
+
+    write("Households pct of regional growth by subregion:\n%s" %
+          norm_and_round(diff))
+
+    tmp = base_year_measures["jobs_by_subregion"]
+    write("Jobs base year share by subregion:\n%s" %
+          norm_and_round(tmp))
+
+    write("Jobs share by subregion:\n%s" %
+          norm_and_round(jobs_by_subregion))
+    diff = jobs_by_subregion - base_year_measures["jobs_by_subregion"]
+
+    write("Jobs pct of regional growth by subregion:\n%s" %
+          norm_and_round(diff))
+
+    tmp = base_year_measures["hh_by_inpda"]
+    write("Households base year share in pdas:\n%s" %
+          norm_and_round(tmp))
+
+    write("Households share in pdas:\n%s" %
+          norm_and_round(hh_by_inpda))
+    diff = hh_by_inpda - base_year_measures["hh_by_inpda"]
+
+    write("Households pct of regional growth in pdas:\n%s" %
+          norm_and_round(diff))
+
+    tmp = base_year_measures["jobs_by_inpda"]
+    write("Jobs base year share in pdas:\n%s" %
+          norm_and_round(tmp))
+
+    write("Jobs share in pdas:\n%s" %
+          norm_and_round(jobs_by_inpda))
+    diff = jobs_by_inpda - base_year_measures["jobs_by_inpda"]
+
+    write("Jobs pct of regional growth in pdas:\n%s" %
+          norm_and_round(diff))
+
+    write("Base year dwelling unit raw capacity:\n%s" %
+          base_year_measures["capacity"])
+
+    write("Dwelling unit raw capacity:\n%s" % capacity)
+
+    if summary.parcel_output is not None:
+        df = summary.parcel_output
+        # we mark greenfield as a parcel with less than 500 current sqft
+        greenfield = df.total_sqft < 500
+
+        write("Current share of projects which are greenfield development:\n%s"
+              % norm_and_round(greenfield.value_counts()))
+
+        write("Current share of units which are greenfield development:\n%s" %
+              norm_and_round(df.residential_units.groupby(greenfield).sum()))
+
+    f.close()
+
 
 @orca.step("diagnostic_output")
-def diagnostic_output(households, buildings, parcels, taz, zones, year, summary):
+def diagnostic_output(households, buildings, parcels, taz,
+                      zones, year, summary):
     households = households.to_frame()
     buildings = buildings.to_frame()
     parcels = parcels.to_frame()
@@ -30,7 +169,8 @@ def diagnostic_output(households, buildings, parcels, taz, zones, year, summary)
         groupby('zone_id').non_residential_sqft.sum()
     zones['office_sqft'] = buildings.query('general_type == "Office"').\
         groupby('zone_id').non_residential_sqft.sum()
-    zones['industrial_sqft'] = buildings.query('general_type == "Industrial"').\
+    zones['industrial_sqft'] = buildings.query(
+        'general_type == "Industrial"').\
         groupby('zone_id').non_residential_sqft.sum()
 
     zones['average_income'] = households.groupby('zone_id').income.quantile()
@@ -49,7 +189,7 @@ def diagnostic_output(households, buildings, parcels, taz, zones, year, summary)
         buildings[buildings.general_type == "Industrial"].\
         groupby('zone_id').non_residential_price.quantile()
 
-    zones['retail_sqft']  = buildings[buildings.general_type == "Retail"].\
+    zones['retail_sqft'] = buildings[buildings.general_type == "Retail"].\
         groupby('zone_id').non_residential_sqft.sum()
 
     zones['retail_to_res_units_ratio'] = \
@@ -61,15 +201,15 @@ def diagnostic_output(households, buildings, parcels, taz, zones, year, summary)
 @orca.step("geographic_summary")
 def pda_output(parcels, households, jobs, buildings, taz_geography,
                run_number, year):
-    # using the following conditional b/c `year` is used to pull a column 
+    # using the following conditional b/c `year` is used to pull a column
     # from a csv based on a string of the year in add_population()
-    # and in add_employment() and 2009 is the 
+    # and in add_employment() and 2009 is the
     # 'base'/pre-simulation year, as is the 2010 value in the csv.
-    if year==2009:
-        year=2010
-        base=True
+    if year == 2009:
+        year = 2010
+        base = True
     else:
-        base=False
+        base = False
 
     households_df = orca.merge_tables(
         'households',
@@ -177,15 +317,15 @@ def travel_model_output(parcels, households, jobs, buildings,
                         zones, homesales, year, summary, coffer,
                         zone_forecast_inputs, run_number,
                         taz):
-    # using the following conditional b/c `year` is used to pull a column 
+    # using the following conditional b/c `year` is used to pull a column
     # from a csv based on a string of the year in add_population()
-    # and in add_employment() and 2009 is the 
+    # and in add_employment() and 2009 is the
     # 'base'/pre-simulation year, as is the 2010 value in the csv.
-    if year==2009:
-        year=2010
-        base=True
+    if year == 2009:
+        year = 2010
+        base = True
     else:
-        base=False
+        base = False
 
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
 
@@ -245,10 +385,10 @@ def travel_model_output(parcels, households, jobs, buildings,
         # travel model csv
         if base is False:
             travel_model_csv = \
-            "runs/run{}_taz_summaries_{}.csv".format(run_number, year)
+                "runs/run{}_taz_summaries_{}.csv".format(run_number, year)
         elif base is True:
             travel_model_csv = \
-            "runs/run{}_taz_summaries_{}.csv".format(run_number, 2009)
+                "runs/run{}_taz_summaries_{}.csv".format(run_number, 2009)
 
         # uppercase columns to match travel model template
         taz_df.columns = \
