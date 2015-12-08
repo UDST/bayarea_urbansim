@@ -111,8 +111,8 @@ def write_csvs(df, variable, runs):
 def divide_series(a_tuple, variable):
     s = get_outcome_df(a_tuple[0])[variable]
     s1 = get_outcome_df(a_tuple[1])[variable]
-    s2 = s / s1
-    s2.name = str(a_tuple[0]) + '/' + str(a_tuple[1])
+    s2 = s1 / s
+    s2.name = str(a_tuple[1]) + '/' + str(a_tuple[0])
     return s2
 
 
@@ -146,7 +146,8 @@ def compare_outcome_for(variable, runs):
     if len(runs) > 1:
         ratios = pd.DataFrame()
         combinations = get_combinations(runs)
-        for combination in combinations:
+        for combination in combinations[0:3]:
+            #just compare no no project right now
             s2 = divide_series(combination, variable)
             ratios[s2.name] = s2
     df_rt = pd.DataFrame(ratios)
@@ -157,10 +158,11 @@ def compare_outcome_for(variable, runs):
     df_lst.append(df_rt)
 
     # build up summary names to the first level of the column multiindex
-    keys = ['', 'r0y09']
+    keys = ['', 'BaseRun2010']
     run_column_shortnames = ['r' + str(x) + 'y40' for x in runs]
     keys.extend(run_column_shortnames)
     keys.extend(['y40Ratios'])
+
 
     df2 = pd.concat(df_lst, axis=1, keys=keys)
 
