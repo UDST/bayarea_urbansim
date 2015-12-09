@@ -65,7 +65,7 @@ def compare_outcome(run, base_series):
     df = compare_series(base_series, s, df.index)
     formatters1 = {'Count': '{:.0f}',
                    'Share': '{:.2f}',
-                   'Percent_Change': '{:.2f}',
+                   'Percent_Change': '{:.0f}',
                    'Share_Change': '{:.3f}'}
 
     df = format_df(df, formatters1)
@@ -98,14 +98,33 @@ def to_esri_csv(df, variable, runs):
     df = make_esri_columns(df)
     df.to_csv(f)
 
+def write_bundle_comparison_csv(df, variable, runs):
+    df = make_esri_columns(df)
+    headers = ['superdistrict','hh10', 'hh10_shr', 'hh40np', 'hh40np_shr', 'pctch40np', 
+                  'Shrch40np', 'hh40th', 'hh40th_shr', 'pctch40th', 'shrch40th', 'hh40au', 
+                  'hh40au_shr', 'pctch40au', 'shrch40au', 'hh40pr', 'hh40pr_shr', 
+                  'pctch40pr', 'shrch40pr', 'th40np40_rat', 'au40np40_rat', 'pr40np40_rat']
+    df.columns = headers
+    df = df[['superdistrict','hh10', 'hh10_shr', 'hh40np', 'hh40np_shr', 'pctch40np', 
+         'Shrch40np', 'hh40th', 'hh40th_shr', 'pctch40th', 'shrch40th', 
+         'th40np40_rat', 'hh40au', 'hh40au_shr', 'pctch40au', 'shrch40au', 
+         'au40np40_rat', 'hh40pr', 'hh40pr_shr', 'pctch40pr', 'shrch40pr', 
+         'pr40np40_rat']]
+    cut_variable_name = variable[3:]
+    f = 'compare/sdcomp_' +\
+        '%(variable)s_%(runs)s.csv'\
+        % {"variable": cut_variable_name,
+           "runs": '_'.join(str(x) for x in runs)}
+    df.to_csv(f)
+
 
 def write_csvs(df, variable, runs):
     f = 'compare/' +\
         '%(variable)s_%(runs)s.csv'\
         % {"variable": variable,
            "runs": '-'.join(str(x) for x in runs)}
-    df.to_csv(f)
-    to_esri_csv(df, variable, runs)
+    #df.to_csv(f)
+    write_bundle_comparison_csv(df, variable, runs)
 
 
 def divide_series(a_tuple, variable):
