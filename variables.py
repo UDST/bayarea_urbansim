@@ -880,7 +880,7 @@ def effective_max_dua(zoning_baseline, parcels, scenario_inputs, scenario):
     ], axis=1).max(axis=1)
 
     s3 = parcel_is_allowed('residential')
-    
+
     return (s.fillna(0) * s3).reindex(parcels.index).fillna(0).astype('float')
 
 

@@ -58,7 +58,7 @@ in_year, out_year = 2010, 2040
 if SLACK:
     slack.chat.post_message(
         '#sim_updates',
-        'Starting simulation %d on host %s (scenario: %s)' % 
+        'Starting simulation %d on host %s (scenario: %s)' %
         (run_num, host, SCENARIO))
 
 # output summary data before running the simulation
