@@ -746,7 +746,7 @@ def building_purchase_price_sqft(parcels):
     gentype = parcels.general_type
     for form in ["Office", "Retail", "Industrial", "Residential"]:
         # convert to yearly
-        factor = 1.0 if form == "Residential" else 20.0
+        factor = 1.4 if form == "Residential" else 20.0
         # raise cost to convert from industrial
         if form == "Industrial":
             factor *= 3.0
@@ -826,9 +826,13 @@ def vmt_code(parcels, vmt_fee_categories):
 # it switches scenarios, clears the cache and recomputes the columns - this
 # is not really normal UrbanSim operation but it immensely useful for debugging
 @orca.table('parcels_zoning_by_scenario')
-def parcels_zoning_by_scenario(parcels, parcels_zoning_calculations):
+def parcels_zoning_by_scenario(parcels, parcels_zoning_calculations,
+                               zoning_baseline):
 
     df = pd.DataFrame(index=parcels.index)
+    df["baseline_dua"] = zoning_baseline.max_dua
+    df["baseline_far"] = zoning_baseline.max_far
+    df["baseline_height"] = zoning_baseline.max_height
 
     for scenario in ["np", "th", "au", "pr"]:
         orca.clear_cache()
