@@ -66,6 +66,7 @@ try:
         "hlcm_simulate",                 # put these last so they don't get
         "elcm_simulate",                 # displaced by new dev
 
+        "geographic_summary",
         "travel_model_output"
     ], iter_vars=range(in_year, out_year+1, EVERY_NTH_YEAR))
 

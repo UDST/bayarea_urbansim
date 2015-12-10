@@ -1,3 +1,5 @@
+from pymongo import MongoClient
+from bson.objectid import ObjectId
 import pandas as pd
 import geopandas
 import json
@@ -5,8 +7,6 @@ import time
 import fiona
 from string import join
 from shapely.geometry import shape
-from pymongo import MongoClient
-from bson.objectid import ObjectId
 
 MONGO = True
 JURIS = None

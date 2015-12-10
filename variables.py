@@ -689,11 +689,8 @@ def is_sanfran(parcels_geography, buildings, parcels):
 
 # actual columns start here
 @orca.column('parcels', 'max_far', cache=True)
-def max_far(parcels, scenario, scenario_inputs):
-    s = utils.conditional_upzone(scenario, scenario_inputs,
-                                 "max_far", "far_up").\
-        reindex(parcels.index)
-    return s * ~parcels.nodev
+def max_far(parcels_zoning_calculations, parcels):
+    return parcels_zoning_calculations.effective_max_far * ~parcels.nodev
 
 
 # returns a vector where parcels are ALLOWED to be built
@@ -702,7 +699,9 @@ def parcel_rules(parcels):
     # removes parcels with buildings < 1940,
     # and single family homes on less then half an acre
     s = (parcels.oldest_building < 1940) | \
-        ((parcels.total_residential_units == 1) & (parcels.parcel_acres < .5))
+        ((parcels.total_residential_units == 1) &
+         (parcels.parcel_acres < .5)) | \
+        (parcels.parcel_size < 2000)
     s = (~s.reindex(parcels.index).fillna(False)).astype('int')
     return s
 
@@ -720,16 +719,8 @@ def nodev(zoning_baseline, parcels):
 
 
 @orca.column('parcels', 'max_dua', cache=True)
-def max_dua(parcels, scenario, scenario_inputs):
-    s = utils.conditional_upzone(scenario, scenario_inputs,
-                                 "max_dua", "dua_up").\
-        reindex(parcels.index)
-    return s * ~parcels.nodev
-
-
-@orca.column('parcels', 'max_height', cache=True)
-def max_height(parcels, zoning_baseline):
-    return zoning_baseline.max_height.reindex(parcels.index)
+def max_dua(parcels_zoning_calculations, parcels):
+    return parcels_zoning_calculations.effective_max_dua * ~parcels.nodev
 
 
 # these next two are just indicators put into the output
@@ -756,7 +747,7 @@ def building_purchase_price_sqft(parcels):
     gentype = parcels.general_type
     for form in ["Office", "Retail", "Industrial", "Residential"]:
         # convert to yearly
-        factor = 1.0 if form == "Residential" else 20.0
+        factor = 1.4 if form == "Residential" else 20.0
         # raise cost to convert from industrial
         if form == "Industrial":
             factor *= 3.0
@@ -828,7 +819,37 @@ def subregion(taz_geography, parcels):
 def vmt_code(parcels, vmt_fee_categories):
     return misc.reindex(vmt_fee_categories.res_cat, parcels.zone_id)
 
-GROSS_AVE_UNIT_SIZE = 1000
+
+# This is an all computed table which takes calculations from the below and
+# puts it in a computed dataframe.  The catch here is that UrbanSim only
+# needs one scenario's zoning at a time.  This dataframe gives you the
+# zoning for all 4 scenarios at the same time for comparison sake.  Therefore
+# it switches scenarios, clears the cache and recomputes the columns - this
+# is not really normal UrbanSim operation but it immensely useful for debugging
+@orca.table('parcels_zoning_by_scenario')
+def parcels_zoning_by_scenario(parcels, parcels_zoning_calculations,
+                               zoning_baseline):
+
+    df = pd.DataFrame(index=parcels.index)
+    df["baseline_dua"] = zoning_baseline.max_dua
+    df["baseline_far"] = zoning_baseline.max_far
+    df["baseline_height"] = zoning_baseline.max_height
+
+    for scenario in ["np", "th", "au", "pr"]:
+        orca.clear_cache()
+        orca.add_injectable("scenario", scenario)
+        z = orca.get_table("parcels_zoning_calculations")
+        df["max_dua_%s" % scenario] = z.effective_max_dua
+        df["max_far_%s" % scenario] = z.effective_max_far
+        df["du_underbuild_%s" % scenario] = z.zoned_du_underbuild
+        df["non_res_cat_%s" % scenario] = z.non_res_categories
+
+    return df
+
+
+GROSS_AVE_UNIT_SIZE = 1000.0
+PARCEL_USE_EFFICIENCY = .8
+HEIGHT_PER_STORY = 12.0
 
 ###################################
 #   Zoning Capacity Variables
@@ -836,29 +857,67 @@ GROSS_AVE_UNIT_SIZE = 1000
 
 
 @orca.column('parcels_zoning_calculations', 'zoned_du', cache=True)
-def zoned_du(parcels):
-    s = parcels.max_dua * parcels.parcel_acres
-    s2 = parcels.max_far * parcels.parcel_size / GROSS_AVE_UNIT_SIZE
-    s3 = parcel_is_allowed('residential')
-    return (s.fillna(s2) * s3).reindex(parcels.index).fillna(0).astype('int')
+def zoned_du(parcels, parcels_zoning_calculations):
+    return parcels_zoning_calculations.effective_max_dua * parcels.parcel_acres
 
 
 @orca.column('parcels_zoning_calculations', 'effective_max_dua', cache=True)
-def effective_max_dua(parcels):
-    s = parcels.max_dua
-    s2 = parcels.max_far * parcels.parcel_size / \
-        GROSS_AVE_UNIT_SIZE / parcels.parcel_acres
+def effective_max_dua(zoning_baseline, parcels, scenario_inputs, scenario):
+
+    max_dua_from_far = zoning_baseline.max_far * 43560 / GROSS_AVE_UNIT_SIZE
+
+    max_far_from_height = (zoning_baseline.max_height / HEIGHT_PER_STORY) * \
+        PARCEL_USE_EFFICIENCY
+
+    max_dua_from_height = max_far_from_height * 43560 / GROSS_AVE_UNIT_SIZE
+
+    s = pd.concat([
+        zoning_baseline.max_dua,
+        max_dua_from_far,
+        max_dua_from_height
+    ], axis=1).min(axis=1)
+
+    scenario_max_dua = orca.get_table(
+        scenario_inputs[scenario]["zoning_table_name"]).dua_up
+
+    s = pd.concat([
+        s,
+        scenario_max_dua
+    ], axis=1).max(axis=1)
+
     s3 = parcel_is_allowed('residential')
-    return (s.fillna(s2) * s3).reindex(parcels.index).fillna(0).astype('float')
+
+    return (s.fillna(0) * s3).reindex(parcels.index).fillna(0).astype('float')
+
+
+@orca.column('parcels_zoning_calculations',
+             'effective_max_far', cache=True)
+def effective_max_far(zoning_baseline, parcels, scenario_inputs, scenario):
+
+    max_far_from_height = (zoning_baseline.max_height / HEIGHT_PER_STORY) * \
+        PARCEL_USE_EFFICIENCY
+
+    s = pd.concat([
+        zoning_baseline.max_far,
+        max_far_from_height
+    ], axis=1).min(axis=1)
+
+    scenario_max_far = orca.get_table(
+        scenario_inputs[scenario]["zoning_table_name"]).far_up
+
+    s = pd.concat([
+        s,
+        scenario_max_far
+    ], axis=1).max(axis=1)
+
+    return s.reindex(parcels.index).fillna(0).astype('float')
 
 
 @orca.column('parcels_zoning_calculations',
              'effective_max_office_far', cache=True)
-def effective_max_office_far(parcels):
-    s = parcels.max_far
-    s2 = parcels.max_height / 11
-    s3 = parcel_is_allowed('office')
-    return (s.fillna(s2) * s3).reindex(parcels.index).fillna(0).astype('float')
+def effective_max_office_far(parcels_zoning_calculations):
+    return parcels_zoning_calculations.effective_max_far * \
+        parcel_is_allowed('office')
 
 
 ########################################

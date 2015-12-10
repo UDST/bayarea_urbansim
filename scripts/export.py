@@ -20,9 +20,6 @@ fnames = [
     "juris",
     "county",
     "pda",
-    "max_far",
-    "max_dua",
-    "max_height",
     "zoned_du",
     "zoned_du_underbuild",
     "parcel_size",
@@ -33,7 +30,7 @@ fnames = [
 ]
 
 df = orca.get_table("parcels").to_frame(fnames)
-#df = df.join(orca.get_table("parcels_geography").to_frame())
+df = df.join(orca.get_table("parcels_zoning_by_scenario").to_frame())
 
 zoning = pd.read_csv('data/2015_10_06_zoning_parcels.csv', index_col="geom_id")
 df["zoning_id"] = zoning.zoning_id.loc[df.geom_id].values

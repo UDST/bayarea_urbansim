@@ -58,7 +58,7 @@ in_year, out_year = 2010, 2040
 if SLACK:
     slack.chat.post_message(
         '#sim_updates',
-        'Starting simulation %d on host %s (scenario: %s)' % 
+        'Starting simulation %d on host %s (scenario: %s)' %
         (run_num, host, SCENARIO))
 
 # output summary data before running the simulation
@@ -151,8 +151,8 @@ print "Finished", time.ctime()
 if MAPS:
     try:
         os.system('python scripts/explorer.py %d' % run_num)
-        os.system('python scripts/compare_to_targets.py %d' % run_num)
-        os.system('python scripts/make_pda_result_maps.py %d' % run_num)
+        # os.system('python scripts/compare_to_targets.py %d' % run_num)
+        # os.system('python scripts/make_pda_result_maps.py %d' % run_num)
     except Exception as e:
         if SLACK:
             slack.chat.post_message(
@@ -162,25 +162,6 @@ if MAPS:
         else:
             raise e
         sys.exit(0)
-
-if ADJUST_ACRES:
-    try:
-        for output_year in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
-            os.system('python scripts/fix_acres.py %d %d' %
-                      (run_num, output_year))
-    except Exception as e:
-        raise e
-    sys.exit(0)
-
-if S3:
-    try:
-        os.system(
-            'ls runs/run%d_* ' % run_num +
-            '| xargs -I file aws s3 cp file ' +
-            's3://bayarea-urbansim-results')
-    except Exception as e:
-        raise e
-    sys.exit(0)
 
 if SLACK:
     slack.chat.post_message(
@@ -201,3 +182,22 @@ if SLACK:
     #    '#sim_updates',
     #    'PDA target comparison is available at ' +
     #    'http://urbanforecast.com/scratchpad/results_%d.html' % run_num)
+
+if ADJUST_ACRES:
+    try:
+        for output_year in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
+            os.system('python scripts/fix_acres.py %d %d' %
+                      (run_num, output_year))
+    except Exception as e:
+        raise e
+    sys.exit(0)
+
+if S3:
+    try:
+        os.system(
+            'ls runs/run%d_* ' % run_num +
+            '| xargs -I file aws s3 cp file ' +
+            's3://bayarea-urbansim-results')
+    except Exception as e:
+        raise e
+    sys.exit(0)
