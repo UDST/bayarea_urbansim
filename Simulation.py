@@ -17,7 +17,7 @@ LOGS = True
 INTERACT = False
 SCENARIO = None
 S3 = False
-EVERY_NTH_YEAR = 5
+EVERY_NTH_YEAR = 15
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
 ADJUST_ACRES = True
 COMPARE_TO_NO_PROJECT = True
@@ -60,17 +60,6 @@ if SLACK:
         '#sim_updates',
         'Starting simulation %d on host %s (scenario: %s)' %
         (run_num, host, SCENARIO))
-
-# output summary data before running the simulation
-try:
-    orca.run([
-        "geographic_summary",
-        "travel_model_output"
-    ], iter_vars=[2009])
-except Exception as e:
-    print traceback.print_exc()
-    raise e
-    sys.exit(0)
 
 try:
     models = [

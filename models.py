@@ -47,14 +47,14 @@ def households_transition(households, household_controls, year, settings):
 @orca.step('households_relocation')
 def households_relocation(households, settings, years_per_iter):
     rate = settings['rates']['households_relocation']
-    rate *= years_per_iter
+    rate = min(rate * years_per_iter, 1.0)
     return utils.simple_relocation(households, rate, "building_id")
 
 
 @orca.step('jobs_relocation')
 def jobs_relocation(jobs, settings, years_per_iter):
     rate = settings['rates']['jobs_relocation']
-    rate *= years_per_iter
+    rate = min(rate * years_per_iter, 1.0)
     return utils.simple_relocation(jobs, rate, "building_id")
 
 
