@@ -17,6 +17,9 @@ for ind, row in scen.iterrows():
 
     #print row
 
+    if row.SDEM == True:
+        continue
+
     prevrow = base[base.parcel_id == row.parcel_id]
 
     if len(prevrow) == 0:
