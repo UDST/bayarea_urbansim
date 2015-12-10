@@ -1,4 +1,4 @@
-jurisdiction,pda,tpp,expansion,count,add_bldg,drop_bldg,dua_up,far_up,dua_down,far_down,subsidy,place_type,notes
+jurisdiction,pda_id,tpp_id,exp_id,count,add_bldg,drop_bldg,dua_up,far_up,dua_down,far_down,subsidy,place_type,notes
 00085,sjo6,b1,ubz,3,HS RS,,5.5,0.5,,,,,
 53000,eme1,b1,,16,HM MR,,20,1,,,,A,
 53000,okd1,b1,,2622,HM MR,,20,1,,,,A,
