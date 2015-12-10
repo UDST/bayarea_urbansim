@@ -100,16 +100,33 @@ def to_esri_csv(df, variable, runs):
 
 def write_bundle_comparison_csv(df, variable, runs):
     df = make_esri_columns(df)
-    headers = ['superdistrict','hh10', 'hh10_shr', 'hh40np', 'hh40np_shr', 'pctch40np', 
-                  'Shrch40np', 'hh40th', 'hh40th_shr', 'pctch40th', 'shrch40th', 'hh40au', 
-                  'hh40au_shr', 'pctch40au', 'shrch40au', 'hh40pr', 'hh40pr_shr', 
-                  'pctch40pr', 'shrch40pr', 'th40np40_rat', 'au40np40_rat', 'pr40np40_rat']
-    df.columns = headers
-    df = df[['superdistrict','hh10', 'hh10_shr', 'hh40np', 'hh40np_shr', 'pctch40np', 
-         'Shrch40np', 'hh40th', 'hh40th_shr', 'pctch40th', 'shrch40th', 
-         'th40np40_rat', 'hh40au', 'hh40au_shr', 'pctch40au', 'shrch40au', 
-         'au40np40_rat', 'hh40pr', 'hh40pr_shr', 'pctch40pr', 'shrch40pr', 
-         'pr40np40_rat']]
+    if variable=="tothh":
+        headers = ['superdistrict','hh10', 'hh10_shr', 'hh40np', 'hh40np_shr',
+                   'pctch40np', 'Shrch40np', 'hh40th', 'hh40th_shr',
+                   'pctch40th', 'shrch40th', 'hh40au', 'hh40au_shr',
+                   'pctch40au', 'shrch40au', 'hh40pr', 'hh40pr_shr',
+                   'pctch40pr', 'shrch40pr', 'th40np40_rat',
+                   'au40np40_rat', 'pr40np40_rat']
+        df.columns = headers
+        df = df[['superdistrict','hh10', 'hh10_shr', 'hh40np', 'hh40np_shr',
+             'pctch40np', 'Shrch40np', 'hh40th', 'hh40th_shr', 'pctch40th',
+             'shrch40th', 'th40np40_rat', 'hh40au', 'hh40au_shr', 'pctch40au',
+             'shrch40au', 'au40np40_rat', 'hh40pr', 'hh40pr_shr', 'pctch40pr',
+             'shrch40pr', 'pr40np40_rat']]
+    elif variable=="totemp":
+        headers = ['superdistrict','emp10', 'emp10_shr', 'emp40np',
+                  'emp40np_shr', 'pctch40np', 'Shrch40np', 'emp40th',
+                  'emp40th_shr', 'pctch40th', 'shrch40th', 'emp40au',
+                  'emp40au_shr', 'pctch40au', 'shrch40au', 'emp40pr',
+                  'emp40pr_shr', 'pctch40pr', 'shrch40pr', 'th40np40_rat',
+                  'au40np40_rat', 'pr40np40_rat']
+        df.columns = headers
+        df = df[['superdistrict','emp10', 'emp10_shr', 'emp40np',
+             'emp40np_shr', 'pctch40np', 'Shrch40np', 'emp40th',
+             'emp40th_shr', 'pctch40th', 'shrch40th', 'th40np40_rat',
+             'emp40au', 'emp40au_shr', 'pctch40au', 'shrch40au',
+             'au40np40_rat', 'emp40pr', 'emp40pr_shr', 'pctch40pr',
+             'shrch40pr', 'pr40np40_rat']]
     cut_variable_name = variable[3:]
     f = 'compare/sdcomp_' +\
         '%(variable)s_%(runs)s.csv'\
