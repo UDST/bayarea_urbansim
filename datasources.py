@@ -230,7 +230,7 @@ def development_projects(parcels, settings):
     df = pd.read_csv(os.path.join(misc.data_dir(), "development_projects.csv"))
 
     df = df.query("action == 'build'")
-    df = df[df.geom_id != ' ']
+    df = df.dropna(subset=['geom_id'])
 
     for fld in ['residential_sqft', 'residential_price',
                 'non_residential_price']:

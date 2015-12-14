@@ -13,8 +13,8 @@ data/2015_08_29_costar.csv
 
 #the database that the h5 file above was exported from:
 database_backup:
-        mkdir -p database_backup
-        aws s3 cp --recursive s3://landuse/spandex/outputs/2015/10/14/18/ database_backup/
+	mkdir -p database_backup
+	aws s3 cp --recursive s3://landuse/spandex/outputs/2015/10/14/18/ database_backup/
 
 cartography: data/simple_parcels.shp
 
