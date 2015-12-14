@@ -7,14 +7,14 @@ database_get = aws s3 cp s3://landuse/spandex/outputs/
 data: data/2015_09_01_bayarea_v3.h5 \
 data/2015_06_01_osm_bayarea4326.h5 \
 data/2015_08_03_tmnet.h5 \
-data/2015_10_06_zoning_parcels.csv \
+data/2015_12_11_zoning_parcels.csv \
 data/2015_10_07_2_parcels_geography.csv  \
 data/2015_08_29_costar.csv
 
 #the database that the h5 file above was exported from:
 database_backup:
-        mkdir -p database_backup
-        aws s3 cp --recursive s3://landuse/spandex/outputs/2015/10/14/18/ database_backup/
+	mkdir -p database_backup
+	aws s3 cp --recursive s3://landuse/spandex/outputs/2015/10/14/18/ database_backup/
 
 cartography: data/simple_parcels.shp
 
@@ -28,7 +28,7 @@ data/2015_06_01_osm_bayarea4326.h5:
 	$@.download
 	mv $@.download $@
 
-data/2015_10_06_zoning_parcels.csv: 
+data/2015_12_11_zoning_parcels.csv:
 	$(get)$@ \
 	$@.download
 	mv $@.download $@

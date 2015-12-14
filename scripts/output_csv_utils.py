@@ -17,9 +17,9 @@ def format_df(df, formatters=None):
     return df
 
 
-def get_base_year_df(geography='superdistrict'):
+def get_base_year_df(base_run_num=724,base_run_year=2010,geography='superdistrict'):
     geography_id = 'zone_id' if geography == 'taz' else geography
-    df = pd.read_csv('data/run633_{}_summaries_2010.csv'.format(geography),
+    df = pd.read_csv('data/run{}_{}_summaries_{}.csv'.format(base_run_num, geography, base_run_year),
                      index_col=geography_id)
     df = df.fillna(0)
     return df
@@ -65,7 +65,7 @@ def compare_outcome(run, base_series):
     df = compare_series(base_series, s, df.index)
     formatters1 = {'Count': '{:.0f}',
                    'Share': '{:.2f}',
-                   'Percent_Change': '{:.2f}',
+                   'Percent_Change': '{:.0f}',
                    'Share_Change': '{:.3f}'}
 
     df = format_df(df, formatters1)
@@ -98,21 +98,57 @@ def to_esri_csv(df, variable, runs):
     df = make_esri_columns(df)
     df.to_csv(f)
 
+def write_bundle_comparison_csv(df, variable, runs):
+    df = make_esri_columns(df)
+    if variable=="tothh":
+        headers = ['superdistrict','hh10', 'hh10_shr', 'hh40np', 'hh40np_shr',
+                   'pctch40np', 'Shrch40np', 'hh40th', 'hh40th_shr',
+                   'pctch40th', 'shrch40th', 'hh40au', 'hh40au_shr',
+                   'pctch40au', 'shrch40au', 'hh40pr', 'hh40pr_shr',
+                   'pctch40pr', 'shrch40pr', 'th40np40_rat',
+                   'au40np40_rat', 'pr40np40_rat']
+        df.columns = headers
+        df = df[['superdistrict','hh10', 'hh10_shr', 'hh40np', 'hh40np_shr',
+             'pctch40np', 'Shrch40np', 'hh40th', 'hh40th_shr', 'pctch40th',
+             'shrch40th', 'th40np40_rat', 'hh40au', 'hh40au_shr', 'pctch40au',
+             'shrch40au', 'au40np40_rat', 'hh40pr', 'hh40pr_shr', 'pctch40pr',
+             'shrch40pr', 'pr40np40_rat']]
+    elif variable=="totemp":
+        headers = ['superdistrict','emp10', 'emp10_shr', 'emp40np',
+                  'emp40np_shr', 'pctch40np', 'Shrch40np', 'emp40th',
+                  'emp40th_shr', 'pctch40th', 'shrch40th', 'emp40au',
+                  'emp40au_shr', 'pctch40au', 'shrch40au', 'emp40pr',
+                  'emp40pr_shr', 'pctch40pr', 'shrch40pr', 'th40np40_rat',
+                  'au40np40_rat', 'pr40np40_rat']
+        df.columns = headers
+        df = df[['superdistrict','emp10', 'emp10_shr', 'emp40np',
+             'emp40np_shr', 'pctch40np', 'Shrch40np', 'emp40th',
+             'emp40th_shr', 'pctch40th', 'shrch40th', 'th40np40_rat',
+             'emp40au', 'emp40au_shr', 'pctch40au', 'shrch40au',
+             'au40np40_rat', 'emp40pr', 'emp40pr_shr', 'pctch40pr',
+             'shrch40pr', 'pr40np40_rat']]
+    cut_variable_name = variable[3:]
+    f = 'compare/sdcomp_' +\
+        '%(variable)s_%(runs)s.csv'\
+        % {"variable": cut_variable_name,
+           "runs": '_'.join(str(x) for x in runs)}
+    df.to_csv(f)
+
 
 def write_csvs(df, variable, runs):
     f = 'compare/' +\
         '%(variable)s_%(runs)s.csv'\
         % {"variable": variable,
            "runs": '-'.join(str(x) for x in runs)}
-    df.to_csv(f)
-    to_esri_csv(df, variable, runs)
+    #df.to_csv(f)
+    write_bundle_comparison_csv(df, variable, runs)
 
 
 def divide_series(a_tuple, variable):
     s = get_outcome_df(a_tuple[0])[variable]
     s1 = get_outcome_df(a_tuple[1])[variable]
-    s2 = s / s1
-    s2.name = str(a_tuple[0]) + '/' + str(a_tuple[1])
+    s2 = s1 / s
+    s2.name = str(a_tuple[1]) + '/' + str(a_tuple[0])
     return s2
 
 
@@ -146,7 +182,8 @@ def compare_outcome_for(variable, runs):
     if len(runs) > 1:
         ratios = pd.DataFrame()
         combinations = get_combinations(runs)
-        for combination in combinations:
+        for combination in combinations[0:3]:
+            #just compare no no project right now
             s2 = divide_series(combination, variable)
             ratios[s2.name] = s2
     df_rt = pd.DataFrame(ratios)
@@ -157,10 +194,11 @@ def compare_outcome_for(variable, runs):
     df_lst.append(df_rt)
 
     # build up summary names to the first level of the column multiindex
-    keys = ['', 'r0y09']
+    keys = ['', 'BaseRun2010']
     run_column_shortnames = ['r' + str(x) + 'y40' for x in runs]
     keys.extend(run_column_shortnames)
     keys.extend(['y40Ratios'])
+
 
     df2 = pd.concat(df_lst, axis=1, keys=keys)
 
