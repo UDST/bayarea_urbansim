@@ -2,11 +2,14 @@ import pandas as pd
 import numpy as np
 import itertools as it
 
+geography = 'superdistrict'
+
 
 # loosely borrowed from https://gist.github.com/haleemur/aac0ac216b3b9103d149
-def format_df(df, formatters=None):
+def format_df(df, formatters=None, **kwargs):
     formatting_columns = list(set(formatters.keys()).intersection(df.columns))
     df_copy = df[formatting_columns].copy()
+    na_rep = kwargs.get('na_rep') or ''
     for col, formatter in formatters.items():
         try:
             df[col] = df[col].apply(lambda x: na_rep if pd.isnull(x)
@@ -17,7 +20,7 @@ def format_df(df, formatters=None):
     return df
 
 
-def get_base_year_df(base_run_num=724,base_run_year=2010,geography='superdistrict'):
+def get_base_year_df(base_run_num=724,base_run_year=2010):
     geography_id = 'zone_id' if geography == 'taz' else geography
     df = pd.read_csv('data/run{}_{}_summaries_{}.csv'.format(base_run_num, geography, base_run_year),
                      index_col=geography_id)
@@ -25,7 +28,7 @@ def get_base_year_df(base_run_num=724,base_run_year=2010,geography='superdistric
     return df
 
 
-def get_outcome_df(run, geography='superdistrict', year=2040):
+def get_outcome_df(run, year=2040):
     geography_id = 'zone_id' if geography == 'taz' else geography
     df = pd.read_csv(
         'runs/run%(run)d_%(geography)s_summaries_%(year)d.csv'
@@ -100,37 +103,38 @@ def to_esri_csv(df, variable, runs):
 
 def write_bundle_comparison_csv(df, variable, runs):
     df = make_esri_columns(df)
-    if variable=="tothh":
-        headers = ['superdistrict','hh10', 'hh10_shr', 'hh40np', 'hh40np_shr',
+    if variable=="tothh" or variable == "TOTHH":
+        headers = ['hh10', 'hh10_shr', 'hh40np', 'hh40np_shr',
                    'pctch40np', 'Shrch40np', 'hh40th', 'hh40th_shr',
                    'pctch40th', 'shrch40th', 'hh40au', 'hh40au_shr',
                    'pctch40au', 'shrch40au', 'hh40pr', 'hh40pr_shr',
                    'pctch40pr', 'shrch40pr', 'th40np40_rat',
                    'au40np40_rat', 'pr40np40_rat']
         df.columns = headers
-        df = df[['superdistrict','hh10', 'hh10_shr', 'hh40np', 'hh40np_shr',
+        df = df[['hh10', 'hh10_shr', 'hh40np', 'hh40np_shr',
              'pctch40np', 'Shrch40np', 'hh40th', 'hh40th_shr', 'pctch40th',
              'shrch40th', 'th40np40_rat', 'hh40au', 'hh40au_shr', 'pctch40au',
              'shrch40au', 'au40np40_rat', 'hh40pr', 'hh40pr_shr', 'pctch40pr',
              'shrch40pr', 'pr40np40_rat']]
-    elif variable=="totemp":
-        headers = ['superdistrict','emp10', 'emp10_shr', 'emp40np',
+    elif variable=="totemp" or variable == "TOTEMP":
+        headers = ['emp10', 'emp10_shr', 'emp40np',
                   'emp40np_shr', 'pctch40np', 'Shrch40np', 'emp40th',
                   'emp40th_shr', 'pctch40th', 'shrch40th', 'emp40au',
                   'emp40au_shr', 'pctch40au', 'shrch40au', 'emp40pr',
                   'emp40pr_shr', 'pctch40pr', 'shrch40pr', 'th40np40_rat',
                   'au40np40_rat', 'pr40np40_rat']
         df.columns = headers
-        df = df[['superdistrict','emp10', 'emp10_shr', 'emp40np',
+        df = df[['emp10', 'emp10_shr', 'emp40np',
              'emp40np_shr', 'pctch40np', 'Shrch40np', 'emp40th',
              'emp40th_shr', 'pctch40th', 'shrch40th', 'th40np40_rat',
              'emp40au', 'emp40au_shr', 'pctch40au', 'shrch40au',
              'au40np40_rat', 'emp40pr', 'emp40pr_shr', 'pctch40pr',
              'shrch40pr', 'pr40np40_rat']]
     cut_variable_name = variable[3:]
-    f = 'compare/sdcomp_' +\
-        '%(variable)s_%(runs)s.csv'\
-        % {"variable": cut_variable_name,
+    f = 'compare/' + \
+        '%(geography)s_%(variable)s_%(runs)s.csv'\
+        % {"geography": geography,
+           "variable": cut_variable_name,
            "runs": '_'.join(str(x) for x in runs)}
     df.to_csv(f)
 
@@ -156,13 +160,12 @@ def get_combinations(nparray):
     return pd.Series(list(it.combinations(np.unique(nparray), 2)))
 
 
-def compare_outcome_for(variable, runs):
+def compare_outcome_for(variable, runs, set_geography):
+    global geography
+    geography = set_geography
     # empty list to build up dataframe from other dataframes
     base_year_df = get_base_year_df()
     df_lst = []
-    df1 = get_superdistrict_names_df()
-    df_lst.append(df1)
-
     s = base_year_df[variable]
     s1 = s / s.sum()
     d = {
