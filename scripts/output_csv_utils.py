@@ -19,6 +19,7 @@ def format_df(df, formatters=None):
 
 def get_base_year_df(base_run_num=724,base_run_year=2010,geography='superdistrict'):
     geography_id = 'zone_id' if geography == 'taz' else geography
+    import pdb; pdb.set_trace()
     df = pd.read_csv('data/run{}_{}_summaries_{}.csv'.format(base_run_num, geography, base_run_year),
                      index_col=geography_id)
     df = df.fillna(0)
@@ -59,8 +60,8 @@ def compare_series(base_series, outcome_series, index):
     return df
 
 
-def compare_outcome(run, base_series):
-    df = get_outcome_df(run)
+def compare_outcome(run, base_series, geography='superdistrict'):
+    df = get_outcome_df(run, geography)
     s = df[base_series.name]
     df = compare_series(base_series, s, df.index)
     formatters1 = {'Count': '{:.0f}',
@@ -156,9 +157,9 @@ def get_combinations(nparray):
     return pd.Series(list(it.combinations(np.unique(nparray), 2)))
 
 
-def compare_outcome_for(variable, runs):
+def compare_outcome_for(variable, runs, geography='superdistrict'):
     # empty list to build up dataframe from other dataframes
-    base_year_df = get_base_year_df()
+    base_year_df = get_base_year_df(geography=geography)
     df_lst = []
     df1 = get_superdistrict_names_df()
     df_lst.append(df1)
