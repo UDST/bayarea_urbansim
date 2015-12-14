@@ -4,6 +4,7 @@ import itertools as it
 
 geography = 'superdistrict'
 
+
 # loosely borrowed from https://gist.github.com/haleemur/aac0ac216b3b9103d149
 def format_df(df, formatters=None, **kwargs):
     formatting_columns = list(set(formatters.keys()).intersection(df.columns))
@@ -102,7 +103,7 @@ def to_esri_csv(df, variable, runs):
 
 def write_bundle_comparison_csv(df, variable, runs):
     df = make_esri_columns(df)
-    if variable=="tothh":
+    if variable=="tothh" or variable == "TOTHH":
         headers = ['hh10', 'hh10_shr', 'hh40np', 'hh40np_shr',
                    'pctch40np', 'Shrch40np', 'hh40th', 'hh40th_shr',
                    'pctch40th', 'shrch40th', 'hh40au', 'hh40au_shr',
@@ -115,7 +116,7 @@ def write_bundle_comparison_csv(df, variable, runs):
              'shrch40th', 'th40np40_rat', 'hh40au', 'hh40au_shr', 'pctch40au',
              'shrch40au', 'au40np40_rat', 'hh40pr', 'hh40pr_shr', 'pctch40pr',
              'shrch40pr', 'pr40np40_rat']]
-    elif variable=="totemp":
+    elif variable=="totemp" or variable == "TOTEMP":
         headers = ['emp10', 'emp10_shr', 'emp40np',
                   'emp40np_shr', 'pctch40np', 'Shrch40np', 'emp40th',
                   'emp40th_shr', 'pctch40th', 'shrch40th', 'emp40au',
