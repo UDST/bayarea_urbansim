@@ -4,9 +4,10 @@ import itertools as it
 
 
 # loosely borrowed from https://gist.github.com/haleemur/aac0ac216b3b9103d149
-def format_df(df, formatters=None):
+def format_df(df, formatters=None, **kwargs):
     formatting_columns = list(set(formatters.keys()).intersection(df.columns))
     df_copy = df[formatting_columns].copy()
+    na_rep = kwargs.get('na_rep') or ''
     for col, formatter in formatters.items():
         try:
             df[col] = df[col].apply(lambda x: na_rep if pd.isnull(x)
