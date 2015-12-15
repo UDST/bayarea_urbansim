@@ -235,7 +235,7 @@ def residential_developer(feasibility, households, buildings, parcels, year,
 
 @orca.step('non_residential_developer')
 def non_residential_developer(feasibility, jobs, buildings, parcels, year,
-                              settings, summary, form_to_btype_func,
+                              settings, summary, form_to_btype_func, scenario,
                               add_extra_columns_func, parcels_geography):
 
     dev_settings = settings['non_residential_developer']
@@ -275,6 +275,11 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year,
 
             juris_list = settings['development_limits'][typ].keys()
             for juris, limit in settings['development_limits'][typ].items():
+
+                if typ == "Office" and juris == "San Francisco" \
+                    and scenario == "th":
+                    # don't impose the office limit in SF in the TH scenario
+                    continue
 
                 # the actual target is the limit times the number of years run
                 # so far in the simulation (plus this year), minus the amount
