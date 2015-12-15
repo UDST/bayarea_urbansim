@@ -54,6 +54,7 @@ print "Started", time.ctime()
 print "Current Commit : ", CURRENT_COMMIT.rstrip()
 print "Current Scenario : ", orca.get_injectable('scenario').rstrip()
 in_year, out_year = 2010, 2040
+years_to_run = range(in_year, out_year+1, EVERY_NTH_YEAR)
 
 if SLACK:
     slack.chat.post_message(
@@ -122,7 +123,7 @@ try:
         models.insert(models.index("alt_feasibility"),
                       "subsidized_residential_developer_obag")
 
-    orca.run(models, iter_vars=range(in_year, out_year+1, EVERY_NTH_YEAR))
+    orca.run(models, iter_vars=years_to_run)
 
 except Exception as e:
     print traceback.print_exc()
@@ -174,7 +175,7 @@ if SLACK:
 
 if ADJUST_ACRES:
     try:
-        for output_year in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
+        for output_year in years_to_run:
             os.system('python scripts/fix_acres.py %d %d' %
                       (run_num, output_year))
     except Exception as e:
