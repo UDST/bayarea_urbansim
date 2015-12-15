@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import itertools as it
 
-geography = 'superdistrict'
+geography = 'taz'
 
 
 # loosely borrowed from https://gist.github.com/haleemur/aac0ac216b3b9103d149

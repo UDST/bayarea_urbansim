@@ -32,8 +32,8 @@ def scaled_resacre(base_year_df, outcome_df, acre_df):
     overtotal = combined_acres[combined_acres > totacre]
     return (combined_acres, overtotal)
 
-base_year_df = get_base_year_df(geography='taz')
-outcome_df = get_outcome_df(RUN_NUMBER, geography='taz', year=SIMULATION_YEAR)
+base_year_df = get_base_year_df()
+outcome_df = get_outcome_df(RUN_NUMBER, year=SIMULATION_YEAR)
 acre_df = pd.read_csv('data/zone_forecast_inputs.csv',
                       index_col='zone_id',
                       usecols=['resacre10_abag', 'ciacre10_abag', 'zone_id'])
