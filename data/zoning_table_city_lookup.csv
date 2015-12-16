@@ -1,0 +1,101 @@
+juris,matchfield,tablename,city_name
+1,zoning,albanyzoningdesignations,Albany
+2,zondist,berkeleyzoning,Berkeley
+3,lu,dublingeneralplan,Dublin
+4,gp_lufardensht,emeryvillegpparcels,Emeryville
+5,urbansimlu,fremontgeneralplan,Fremont
+6,origgplu,fostercitygp2006db,Foster City
+7,origgplu,halfmoonbaygp2006db,Half Moon Bay
+8,origgplu,beniciagp2006db,Benicia
+9,origgplu,dixongp2006db,Dixon
+12,origgplu,cotatigp2006db,Cotati
+14,label,petalumagp2025_landuse,Petaluma
+15,gp_code,rohnertpark_gp_2010,Rohnert Park
+16,gp_landuse,santarosageneralplan,Santa Rosa
+18,origgplu,sonomacitygp2006db,Sonoma
+19,origgplu,windsorgp2006db,Windsor
+20,origgplu,hillsboroughgp2006db,Hillsborough
+21,zoning,menloparkzoning,Menlo Park
+22,origgplu,monteserenogp2006db,Monte Sereno
+23,origgplu,morganhillgp2006db,Morgan Hill
+24,origgplu,mountainviewgp2006db,Mountain View
+25,designat02,paloaltogenplan,Palo Alto
+26,designatio,sanjosegeneralplan2040,San Jose
+27,gp_designa,santaclaracountygenplan,Santa Clara
+29,gplanduse,sunnyvalegeneralplan,Sunnyvale
+30,zoning_db,sancarloszoning,San Carlos
+31,gplanduse,sanmateocitygpparcels,San Mateo
+32,origgplu,southsanfranciscogp2006db,South San Francisco
+33,origgplu,woodsidegp2006db,Woodside
+34,landuse,millbraegeneralplan,Millbrae
+35,exgp_db,pacificageneralplan,Pacifica
+36,origgplu,portolavalleygp2006db,Portola Valley
+37,lu_code,redwoodcityzoningparcels,Redwood City
+38,gplu,sanbrunogeneralplan,San Bruno
+39,origgplu,campbellgp2006db,Campbell
+40,label,cupertinozoning,Cupertino
+41,origgplu,losaltosgp2006db,Los Altos
+42,origgplu,losaltoshillsgp2006db,Los Altos Hills
+43,land_use,losgatosgeneralplan,Los Gatos
+44,gp_landuse,milpitasgeneralplan,Milpitas
+45,origgplu,athertongp2006db,Atherton
+46,origgplu,belmontgp2006db,Belmont
+47,origgplu,brisbanegp2006db,Brisbane
+48,origgplu,burlingamegp2006db,Burlingame
+49,origgplu,colmagp2006db,Colma
+50,origgplu,dalycitygp2006db,Daly City
+51,origgplu,eastpaloaltogp2006db,East Palo Alto
+52,origgplu,yountvillegp2006db,Yountville
+54,origgplu,calistogagp2006db,Calistoga
+55,zone_desg,napazoning,Napa
+56,origgplu,sthelenagp2006db,St. Helena
+57,generalpla,belvedere_general_plan,Belvedere
+58,generalpla,corte_madera_general_plan,Corte Madera
+59,generalpla,fairfax_general_plan,Fairfax
+60,origgplu,larkspurgp2006db,Larkspur
+61,zoning,millvalleyzoning,Mill Valley
+62,origgplu,novatogp2006db,Novato
+63,genplan,rossgenplan,Ross
+64,generalpla,sananselmogenplan,San Anselmo
+65,generalpla,sanrafaelgeneralplan,San Rafael
+66,generalpla,sausalitogenplan,Sausalito
+67,generalpla,tiburongenplan,Tiburon
+68,land_use,gilroygpparcels,Gilroy
+69,origgplu,riovistagp2006db,Rio Vista
+70,origgplu,suisuncitygp2006db,Suisun City
+71,land_use,vacavillegenplan,Vacaville
+72,origgplu,vallejogp2006db,Vallejo
+74,origgplu,pittsburggp2006db,Pittsburg
+75,origgplu,oakleygp2006db,Oakley
+76,dfx_text,orinda_zoning,Orinda
+77,origgplu,pleasanthillgp2006db,Pleasant Hill
+78,gp_des_txt,richmond_genplan,Richmond
+79,propgplu,sanpabloproposed_gplu_112410,San Pablo
+81,text_008,walnutcreekgenplan,Walnut Creek
+82,gpcode,antiochgeneralplan,Antioch
+83,origgplu,sanleandrogp2006db,San Leandro
+84,origgplu,unioncitygp2006db,Union City
+85,district,brentwood_zoning,Brentwood
+86,origgplu,claytongp2006db,Clayton
+87,gp,concordparcels_gp120607_clip,Concord
+88,origgplu,danvillegp2006db,Danville
+89,gplanduse,elcerritozoning,El Cerrito
+90,origgplu,herculesgp2006db,Hercules
+91,origgplu,lafayettegp2006db,Lafayette
+92,zoning,martinezzoning,Martinez
+93,origgplu,moragagp2006db,Moraga
+94,classifica,oakland_generalplan_2005,Oakland
+96,data,pleasantongeneralplan,Pleasanton
+97,gplan,alamedageneralplan,Alameda
+98,lu_abb,hayward_gp_landuse,Hayward
+99,layer,livermoregeneralplan,Livermore
+100,origgplu,newarkgp2006db,Newark
+101,landuse,sanfranciscozoning,San Francisco
+102,origgplu,alamedagp2006db,Unincorporated Alameda
+103,gp_lu_des,cccountygplanduse,Unincorporated Contra Costa
+104,generalpla,marincountygenplan,Unincorporated Marin
+105,zoning,napacozoning,Unincorporated Napa
+106,gen_plan,santaclaracountygenplan,Unincorporated Santa Clara
+107,zone_,sanmateocountyzoning,Unincorporated San Mateo
+108,full_name,solcogeneral_plan_unincorporated,Unincorporated Solano
+109,provision,sonomacountygeneralplan,Unincorporated Sonoma
