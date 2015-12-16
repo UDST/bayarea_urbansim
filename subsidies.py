@@ -83,6 +83,24 @@ def add_obag_funds(settings, year, buildings, coffer,
     coffer["obag_acct"].add_transaction(amt, subaccount=1, metadata=metadata)
 
 
+# this adds fees to the max_profit column of the feasibility dataframe
+# fees are usually spatially specified and are per unit so that calculation
+# is done here as well
+@orca.step('add_fees_to_feasibility')
+def add_fees_to_feasibility(feasibility, parcels):
+
+    feasibility = feasibility.to_frame()
+
+    units = feasibility[('residential', 'residential_sqft')] / \
+        parcels.ave_sqft_per_unit
+    fees = (units * parcels.fees_per_unit).fillna(0)
+
+    feasibility[("residential", "fees")] = fees
+    feasibility[("residential", "max_profit")] -= fees
+
+    orca.add_table('feasibility', feasibility)
+
+
 @orca.step("calculate_vmt_fees")
 def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
                        summary, years_per_iter):

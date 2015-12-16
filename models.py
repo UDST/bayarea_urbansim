@@ -277,7 +277,7 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year,
             for juris, limit in settings['development_limits'][typ].items():
 
                 if typ == "Office" and juris == "San Francisco" \
-                    and scenario == "th":
+                        and scenario == "th":
                     # don't impose the office limit in SF in the TH scenario
                     continue
 

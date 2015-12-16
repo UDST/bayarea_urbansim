@@ -292,6 +292,24 @@ def vmt_res_cat(parcels, vmt_fee_categories):
 
 
 @orca.column('parcels', cache=True)
+def vmt_res_fees(parcels, settings):
+    vmt_settings = settings["acct_settings"]["vmt_settings"]
+    return parcels.vmt_res_cat.map(vmt_settings["fee_amounts"])
+
+
+# compute the fees per unit for each parcel
+# (since feees are specified spatially)
+@orca.column('parcels', cache=True)
+def fees_per_unit(parcels, settings, scenario):
+    s = pd.Series(0, index=parcels.index)
+
+    if scenario == "th":
+        s += parcels.vmt_res_fees
+
+    return s
+
+
+@orca.column('parcels', cache=True)
 def pda(parcels, parcels_geography):
     return parcels_geography.pda_id.reindex(parcels.index)
 
