@@ -86,19 +86,29 @@ def add_obag_funds(settings, year, buildings, coffer,
 # this adds fees to the max_profit column of the feasibility dataframe
 # fees are usually spatially specified and are per unit so that calculation
 # is done here as well
-@orca.step('add_fees_to_feasibility')
-def add_fees_to_feasibility(feasibility, parcels):
+def add_fees_to_feasibility(feasibility, parcels, drop_unprofitable=False):
 
-    feasibility = feasibility.to_frame()
+    print "Subtracting fees from profitability"
 
     units = feasibility[('residential', 'residential_sqft')] / \
         parcels.ave_sqft_per_unit
     fees = (units * parcels.fees_per_unit).fillna(0)
 
+    print "Desribe of fees:\n", fees.describe()
+
     feasibility[("residential", "fees")] = fees
     feasibility[("residential", "max_profit")] -= fees
 
-    orca.add_table('feasibility', feasibility)
+    if drop_unprofitable:
+
+        profit = feasibility[("residential", "max_profit")]
+        l = len(feasibility)
+        feasibility = feasibility[profit > 0]
+
+        print "Dropped %d of %d developments that areno longer profitable" %\
+            (l - len(feasibility), l)
+
+    return feasibility
 
 
 @orca.step("calculate_vmt_fees")
@@ -361,6 +371,9 @@ def subsidized_residential_feasibility(
     # add the multiindex back
     feasibility.columns = pd.MultiIndex.from_tuples(
             [("residential", col) for col in feasibility.columns])
+
+    feasibility = add_fees_to_feasibility(feasibility,
+                                          parcels, drop_unprofitable=False)
 
     orca.add_table("feasibility", feasibility)
 

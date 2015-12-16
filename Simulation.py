@@ -81,7 +81,6 @@ try:
         "scheduled_development_events",  # scheduled buildings additions
 
         "alt_feasibility",
-        "add_fees_to_feasibility",
 
         "residential_developer",
         "developer_reprocess",
@@ -115,8 +114,6 @@ try:
                       "calculate_vmt_fees")
         models.insert(models.index("alt_feasibility"),
                       "subsidized_residential_feasibility")
-        models.insert(models.index("alt_feasibility"),
-                      "add_fees_to_feasibility")
         models.insert(models.index("alt_feasibility"),
                       "subsidized_residential_developer_vmt")
 
