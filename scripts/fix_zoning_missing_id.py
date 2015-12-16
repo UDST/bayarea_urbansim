@@ -15,6 +15,12 @@ print "there are " + str(len(null_df.index)) + " empty zoning ids"
 print "number of parcels with null values by city:"
 print null_df.tablename.value_counts()
 
+print "number of parcels with null values by source zoning code by city:"
+for ix, val in null_df.tablename.value_counts().iteritems():
+	if val>5:
+		print ix
+		print null_df[null_df.tablename==ix].zoning.value_counts()
+
 zl_df = zl.to_frame()
 
 zlcn = orca.get_table("zoning_table_city_lookup")
@@ -36,5 +42,5 @@ print "there are " + str(len(null_df.index)) + " empty zoning ids"
 print "number of parcels with null values by city:"
 print null_df.tablename.value_counts()
 
-zdf.to_csv('data/2015_12_15_zoning_parcels.csv')
+zdf.to_csv('data/2015_12_16_2_zoning_parcels.csv')
 
