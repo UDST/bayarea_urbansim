@@ -8,6 +8,7 @@ runs
 .ipynb_checkpoints
 dump.rdb
 logs
+compare
 data/2015_06_01_zoning_parcels.csv
 data/2015_08_13_parcels_geography.csv
 data/2015_08_13_zoning_parcels.csv
