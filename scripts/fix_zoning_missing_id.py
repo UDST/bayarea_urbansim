@@ -20,7 +20,6 @@ zl_df = zl.to_frame()
 zlcn = orca.get_table("zoning_table_city_lookup")
 zlcndf = zlcn.to_frame()
 zl_df['zoning_lookup_table_id'] = zl_df.index
-#zlcndf['zoning_lookup_table_id'] = zlcndf.index
 zldf_tbl_nm = pd.merge(zl_df,zlcndf,how='left',left_on='city',right_on='city_name')
 zl_df = zldf_tbl_nm
 

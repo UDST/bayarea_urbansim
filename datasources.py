@@ -86,7 +86,7 @@ def zoning_lookup():
 @orca.table('zcsv', cache=True)
 def zcsv():
     df = pd.read_csv(os.path.join(misc.data_dir(),
-                     "2015_12_15_zoning_parcels.csv"),
+                     "2015_12_16_zoning_parcels.csv"),
                      index_col="geom_id")
     return df
 
