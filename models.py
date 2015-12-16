@@ -153,6 +153,12 @@ def alt_feasibility(parcels, settings,
                           config=config,
                           **kwargs)
 
+    f = subsidies.add_fees_to_feasibility(
+        orca.get_table('feasibility').to_frame(),
+        parcels, drop_unprofitable=True)
+
+    orca.add_table("feasibility", f)
+
 
 @orca.step('residential_developer')
 def residential_developer(feasibility, households, buildings, parcels, year,
@@ -277,7 +283,7 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year,
             for juris, limit in settings['development_limits'][typ].items():
 
                 if typ == "Office" and juris == "San Francisco" \
-                    and scenario == "th":
+                        and scenario == "th":
                     # don't impose the office limit in SF in the TH scenario
                     continue
 

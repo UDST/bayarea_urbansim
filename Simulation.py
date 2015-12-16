@@ -17,7 +17,7 @@ LOGS = True
 INTERACT = False
 SCENARIO = None
 S3 = False
-EVERY_NTH_YEAR = 15
+EVERY_NTH_YEAR = 5
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
 ADJUST_ACRES = True
 COMPARE_TO_NO_PROJECT = True
@@ -107,6 +107,9 @@ try:
     # calculate VMT taxes
     if SCENARIO == "th":
         # calculate the vmt fees at the end of the year
+
+        # note that you might also have to change the fees that get
+        # imposed - look for fees_per_unit column in variables.py
         models.insert(models.index("diagnostic_output"),
                       "calculate_vmt_fees")
         models.insert(models.index("alt_feasibility"),
