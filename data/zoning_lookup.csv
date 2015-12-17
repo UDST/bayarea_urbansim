@@ -5151,7 +5151,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 62001,,Emeryville,104 - High Density Residential,4,,135,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,Pre22
 62002,,Emeryville,104 - Industrial,1,,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,Pre22
 62003,,Emeryville,104 - Medium Density Residential,1,,35,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,Pre22
-62004,Emeryville,104 - Mixed Use,,,60,,1,1,1,1,1,1,0,0,0,1,1,1,1,1,Pre22
+62004,Emeryville,104 - Mixed Use,,,,60,,1,1,1,1,1,1,0,0,0,1,1,1,1,1,Pre22
 62005,,Emeryville,104 - Open Space,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
 62006,,Emeryville,104 - Other Public Buildings,,,,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,Pre22
 62007,,Emeryville,104 - Parks,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
