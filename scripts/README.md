@@ -15,7 +15,7 @@ Here are the steps I take to get the data into Mongo (TogetherMap will read auto
 * Next we need to get the attributes that we'll put on the parcels.
   * This is easy - just `cd bayarea_urbansim` and then `python scripts/export.py` - this script should be pretty easy to follow as it just uses orca to get some computed columns on the parcels.  This outputs a file called parcels.csv automatically which has all the attributes tied to ids.
 * Next we need to join the attributes to shapes and load them into mongo.
-  * Assuming you're still in bayarea_urbansim, just `python scripts/export2.py` - this runs through the parcel shapefile using the Python Fiona library and the attributes from the above together with the shapes into geojson.  The geojson can get written to disk or loaded directly into Mongo (which is the default).
+  * Assuming you're still in bayarea_urbansim, just `python scripts/export2.py` - this runs through the parcel shapefile using the Python Fiona library and merges the attributes from the above together with the shapes and turns the result into geojson.  The geojson can get written to disk or loaded directly into Mongo (which is the default).
 
 ## These aren't used nearly as much anymore.
 
