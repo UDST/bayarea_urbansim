@@ -79,8 +79,15 @@ def costar(store, parcels):
 
 @orca.table(cache=True)
 def zoning_lookup():
-    return pd.read_csv(os.path.join(misc.data_dir(), "zoning_lookup.csv"),
-                       index_col="id")
+    df = pd.read_csv(os.path.join(misc.data_dir(), "zoning_lookup.csv"))
+    # this part is a bit strange - we do string matching on the names of zoning
+    # in order ot link parcels and zoning and some of the strings have small
+    # differences, so we copy the row and have different strings for the same
+    # lookup row.  for now we drop duplicates of the id field in order to run
+    # in urbansim (all the attributes of rows that share an id are the same -
+    # only the name is different)
+    df = df.drop_duplicates(subset='id').set_index('id')
+    return df
 
 
 @orca.table('zcsv', cache=True)
@@ -90,6 +97,7 @@ def zcsv():
                      index_col="geom_id")
     return df
 
+
 @orca.table('zoning_table_city_lookup', cache=True)
 def zoning_table_city_lookup():
     df = pd.read_csv(os.path.join(misc.data_dir(),
@@ -97,14 +105,14 @@ def zoning_table_city_lookup():
                      index_col="juris")
     return df
 
+
 # zoning for use in the "baseline" scenario
 # comes in the hdf5
 @orca.table('zoning_baseline', cache=True)
 def zoning_baseline(parcels, zoning_lookup):
     df = pd.read_csv(os.path.join(misc.data_dir(),
-                     "2015_12_11_zoning_parcels.csv"),
+                     "2015_12_16_2_zoning_parcels.csv"),
                      index_col="geom_id")
-
     df = pd.merge(df, zoning_lookup.to_frame(),
                   left_on="zoning_id", right_index=True)
     df = geom_id_to_parcel_id(df, parcels)

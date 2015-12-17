@@ -1011,7 +1011,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 7510,55,Napa,RI 5,0.3,30,26.13,3,1,1,1,0,0,1,0,0,0,0,0,0,0,0,
 7511,55,Napa,RI 4,0.3,30,32.67,3,1,1,1,0,0,1,0,0,0,0,0,0,0,0,
 7513,55,Napa,RT 5,0.3,30,26.13,3,1,1,0,0,0,1,0,0,0,0,0,0,0,0,
-7513,55,Napa,RT 4,0.3,30,26.13,3,1,1,0,0,0,1,0,0,0,0,0,0,0,0,
+7514,55,Napa,RT 4,0.3,30,26.13,3,1,1,0,0,0,1,0,0,0,0,0,0,0,0,
 7515,55,Napa,RM,0.3,35,40,,1,1,1,0,0,1,0,0,0,0,0,0,0,0,
 7516,55,Napa,CT,1,40,,,0,0,0,0,1,1,0,0,0,1,1,0,0,0,
 7517,55,Napa,CL,0.35,30,25,,0,0,1,1,0,0,0,0,0,1,1,0,1,1,
@@ -3223,15 +3223,6 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 60043,,Berkeley,103 - Medium Density Residential,,,40,,0,1,1,0,0,0,0,0,0,0,0,0,0,0,Pre22
 60044,,Berkeley,103 - Neighborhood Commercial,3,,25,,0,1,1,1,1,1,0,0,0,1,0,0,1,1,Pre22
 60045,,Berkeley,103 - Open Space,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
-60046,,Emeryville,104 - Commercial,,,,,0,0,0,1,1,1,0,0,0,1,1,0,1,1,Pre22
-60047,,Emeryville,104 - High Density Residential,4,,135,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,Pre22
-60048,,Emeryville,104 - Industrial,1,,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,Pre22
-60049,,Emeryville,104 - Medium Density Residential,1,,35,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,Pre22
-60050,,Emeryville,104 - Mixed Use,,,60,,1,1,1,1,1,1,0,0,0,1,1,1,1,1,Pre22
-60051,,Emeryville,104 - Open Space,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
-60052,,Emeryville,104 - Other Public Buildings,,,,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,Pre22
-60053,,Emeryville,104 - Parks,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
-60054,,Emeryville,104 - Schools,,,,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,Pre22
 60055,,Fremont,105 - Agriculture,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Post22
 60056,,Fremont,105 - Central Business District,0.8,,,,0,0,0,1,1,1,0,0,0,1,1,0,1,1,Post22
 60057,,Fremont,105 - Community Commercial,0.5,40,,,0,0,0,1,1,1,0,0,0,1,1,0,1,1,Post22
@@ -5156,3 +5147,12 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 60049,2,Berkeley,C-DMU Outer Core,,75,75,,1,1,1,1,1,1,0,0,0,1,1,1,1,1,
 60050,2,Berkeley,C-DMU Corridor,,75,75,,1,1,1,1,1,1,0,0,0,1,1,1,1,1,
 60051,2,Berkeley,R-Sh,,25,7.26,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
+62000,,Emeryville,104 - Commercial,,,,,0,0,0,1,1,1,0,0,0,1,1,0,1,1,Pre22
+62001,,Emeryville,104 - High Density Residential,4,,135,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,Pre22
+62002,,Emeryville,104 - Industrial,1,,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,Pre22
+62003,,Emeryville,104 - Medium Density Residential,1,,35,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,Pre22
+62004,Emeryville,104 - Mixed Use,,,60,,1,1,1,1,1,1,0,0,0,1,1,1,1,1,Pre22
+62005,,Emeryville,104 - Open Space,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
+62006,,Emeryville,104 - Other Public Buildings,,,,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,Pre22
+62007,,Emeryville,104 - Parks,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
+62008,,Emeryville,104 - Schools,,,,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,Pre22
