@@ -17,7 +17,7 @@ Here are the steps I take to get the data into Mongo (TogetherMap will read auto
 * Next we need to join the attributes to shapes and load them into mongo.
   * Assuming you're still in bayarea_urbansim, just `python scripts/export2.py` - this runs through the parcel shapefile using the Python Fiona library and merges the attributes from the above together with the shapes and turns the result into geojson.  The geojson can get written to disk or loaded directly into Mongo (which is the default).
 
-## These aren't used nearly as much anymore.
+## The scripts below aren't used nearly as much anymore.
 
 compare_to_targets compares parcel level residential unit totals to the pda targets
 
