@@ -163,7 +163,8 @@ def alt_feasibility(parcels, settings,
 @orca.step('residential_developer')
 def residential_developer(feasibility, households, buildings, parcels, year,
                           settings, summary, form_to_btype_func,
-                          add_extra_columns_func, parcels_geography):
+                          add_extra_columns_func, parcels_geography,
+                          limits_settings):
 
     kwargs = settings['residential_developer']
 
@@ -176,13 +177,13 @@ def residential_developer(feasibility, households, buildings, parcels, year,
     typ = "Residential"
     # now apply limits - limits are assumed to be yearly, apply to an
     # entire jurisdiction and be in terms of residential_units or job_spaces
-    if typ in settings['development_limits']:
+    if typ in limits_settings:
 
         juris_name = parcels_geography.juris_name.\
             reindex(parcels.index).fillna('Other')
 
-        juris_list = settings['development_limits'][typ].keys()
-        for juris, limit in settings['development_limits'][typ].items():
+        juris_list = limits_settings[typ].keys()
+        for juris, limit in limits_settings[typ].items():
 
             # the actual target is the limit times the number of years run
             # so far in the simulation (plus this year), minus the amount
@@ -242,7 +243,8 @@ def residential_developer(feasibility, households, buildings, parcels, year,
 @orca.step('non_residential_developer')
 def non_residential_developer(feasibility, jobs, buildings, parcels, year,
                               settings, summary, form_to_btype_func, scenario,
-                              add_extra_columns_func, parcels_geography):
+                              add_extra_columns_func, parcels_geography,
+                              limits_settings):
 
     dev_settings = settings['non_residential_developer']
 
@@ -274,18 +276,13 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year,
         # now apply limits - limits are assumed to be yearly, apply to an
         # entire jurisdiction and be in terms of residential_units or
         # job_spaces
-        if year > 2015 and typ in settings['development_limits']:
+        if year > 2015 and typ in limits_settings:
 
             juris_name = parcels_geography.juris_name.\
                 reindex(parcels.index).fillna('Other')
 
-            juris_list = settings['development_limits'][typ].keys()
-            for juris, limit in settings['development_limits'][typ].items():
-
-                if typ == "Office" and juris == "San Francisco" \
-                        and scenario == "th":
-                    # don't impose the office limit in SF in the TH scenario
-                    continue
+            juris_list = limits_settings[typ].keys()
+            for juris, limit in limits_settings[typ].items():
 
                 # the actual target is the limit times the number of years run
                 # so far in the simulation (plus this year), minus the amount

@@ -360,10 +360,14 @@ cost_shifters:
 
 
 development_limits:
-  Office:
-    'San Francisco': 3000
-  Residential:
-    'Half Moon Bay': 150
+  default:
+    Office:
+      'San Francisco': 3000
+    Residential:
+      'Half Moon Bay': 150
+  th:
+    Residential:
+      'Half Moon Bay': 150
 
 zoning_column_dictionary: 
   id: "generic zoning id"
