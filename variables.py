@@ -286,6 +286,18 @@ def vmt_res_cat(buildings, vmt_fee_categories):
 #####################
 
 
+# the stories attributes on parcels will be the max story
+# attribute on the buildings
+@orca.column('parcels', cache=True)
+def stories(buildings):
+    return buildings.stories.groupby(buildings.parcel_id).max()
+
+
+@orca.column('parcels', cache=True)
+def height(parcels):
+    return parcels.stories * 12
+
+
 @orca.column('parcels', cache=True)
 def vmt_res_cat(parcels, vmt_fee_categories):
     return misc.reindex(vmt_fee_categories.res_cat, parcels.zone_id)
@@ -852,6 +864,8 @@ def parcels_zoning_by_scenario(parcels, parcels_zoning_calculations,
     df["baseline_dua"] = zoning_baseline.max_dua
     df["baseline_far"] = zoning_baseline.max_far
     df["baseline_height"] = zoning_baseline.max_height
+    df["zoning_name"] = zoning_baseline["name"]
+    df["zoning_source"] = zoning_baseline["tablename"]
 
     for scenario in ["np", "th", "au", "pr"]:
         orca.clear_cache()
