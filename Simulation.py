@@ -19,7 +19,7 @@ SCENARIO = None
 S3 = False
 EVERY_NTH_YEAR = 5
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
-ADJUST_ACRES = True
+ADJUST_ACRES = False
 COMPARE_TO_NO_PROJECT = True
 NO_PROJECT = 611
 

@@ -41,6 +41,13 @@ def jobs(store):
     return df
 
 
+@orca.table(cache=True)
+def base_year_summary_taz():
+    return pd.read_csv(os.path.join(misc.data_dir(), 'run724_taz_summaries_2010.csv'),
+                       index_col="zone_id")
+    return df
+
+
 # the estimation data is not in the buildings table - they are the same
 @orca.table('homesales', cache=True)
 def homesales(store):

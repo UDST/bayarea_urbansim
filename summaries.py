@@ -316,7 +316,7 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
 def travel_model_output(parcels, households, jobs, buildings,
                         zones, homesales, year, summary, coffer,
                         zone_forecast_inputs, run_number,
-                        taz):
+                        taz, base_year_summary_taz):
     # using the following conditional b/c `year` is used to pull a column
     # from a csv based on a string of the year in add_population()
     # and in add_employment() and 2009 is the
@@ -350,8 +350,14 @@ def travel_model_output(parcels, households, jobs, buildings,
         taz_df["gqpop"] = df.gqpop.fillna(0)
         taz_df["mfdu"] = df.mfdu
         taz_df["sfdu"] = df.sfdu
-        taz_df["ciacre"] = df.ciacre
-        taz_df["resacre"] = df.resacre
+        taz_df["ciacre_unweighted"] = df.ciacre
+        taz_df["resacre_unweighted"] = df.resacre
+        taz_df["ciacre"] = scaled_ciacre(
+                           base_year_summary_taz.CIACRE, 
+                           df.ciacre)
+        taz_df["resacre"] = scaled_resacre(
+                            base_year_summary_taz.RESACRE, 
+                            df.resacre) 
         taz_df["totacre"] = df.totacre
         taz_df["totemp"] = df.totemp
         taz_df["tothh"] = df.tothh
@@ -395,6 +401,24 @@ def travel_model_output(parcels, households, jobs, buildings,
             [x.upper() for x in taz_df.columns]
 
         taz_df.fillna(0).to_csv(travel_model_csv)
+
+
+def scaled_ciacre(mtcc, us_outc):
+    zfi = zone_forecast_inputs()
+    abgc = zfi.ciacre10_abag
+    sim_difference = [us_outc - mtcc][0]
+    sim_difference[sim_difference < 0] = 0
+    combined_acres = abgc + sim_difference
+    return combined_acres
+
+
+def scaled_resacre(mtcr, us_outr):
+    zfi = zone_forecast_inputs()
+    abgr = zfi.resacre10_abag
+    sim_difference = [us_outr - mtcr][0]
+    sim_difference[sim_difference < 0] = 0
+    combined_acres = abgr + sim_difference
+    return combined_acres
 
 
 def zone_forecast_inputs():
