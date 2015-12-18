@@ -26,7 +26,8 @@ fnames = [
     "parcel_acres",
     "oldest_building",
     "first_building_type_id",
-    "general_type"
+    "general_type",
+    "height"
 ]
 
 df = orca.get_table("parcels").to_frame(fnames)
@@ -38,8 +39,8 @@ df["zoning_id"] = zoning.zoning_id.loc[df.geom_id].values
 settings = orca.get_injectable("settings")
 
 # filter buildings as urbansim does
-f = settings["feasibility"]["parcel_filter"]
-#df = df.query(f)
+# f = settings["feasibility"]["parcel_filter"]
+# df = df.query(f)
 
 # get building types
 df["building_type"] = \
