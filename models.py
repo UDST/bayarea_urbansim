@@ -296,6 +296,9 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year,
                 target = (year - 2015 + 1) * limit - current_total
 
                 if target <= 0:
+                    print "Already met target for juris = %s" % juris
+                    print "    target = %d, current_total = %d" %\
+                        (target, current_total)
                     continue
 
                 targets.append((juris_name == juris, target, juris))
@@ -312,6 +315,7 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year,
 
             print "Running developer for %s with target of %d" % \
                 (str(juris), target)
+            print "Parcels in play:\n", pd.Series(parcel_mask).value_counts()
 
             # this was a fairly heinous bug - have to get the building wrapper
             # again because the buildings df gets modified by the run_developer
