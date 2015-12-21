@@ -19,7 +19,6 @@ SCENARIO = None
 S3 = False
 EVERY_NTH_YEAR = 5
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
-ADJUST_ACRES = False
 COMPARE_TO_NO_PROJECT = True
 NO_PROJECT = 611
 
@@ -175,15 +174,6 @@ if SLACK:
     #    '#sim_updates',
     #    'PDA target comparison is available at ' +
     #    'http://urbanforecast.com/scratchpad/results_%d.html' % run_num)
-
-if ADJUST_ACRES:
-    try:
-        for output_year in years_to_run:
-            os.system('python scripts/fix_acres.py %d %d' %
-                      (run_num, output_year))
-    except Exception as e:
-        raise e
-    sys.exit(0)
 
 if S3:
     try:
