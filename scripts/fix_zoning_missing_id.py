@@ -42,5 +42,5 @@ print "there are " + str(len(null_df.index)) + " empty zoning ids"
 print "number of parcels with null values by city:"
 print null_df.tablename.value_counts()
 
-zdf.to_csv('data/2015_12_16_2_zoning_parcels.csv')
+zdf.to_csv('data/2015_12_21_zoning_parcels.csv')
 
