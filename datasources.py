@@ -126,7 +126,7 @@ def zoning_table_city_lookup():
 @orca.table('zoning_baseline', cache=True)
 def zoning_baseline(parcels, zoning_lookup):
     df = pd.read_csv(os.path.join(misc.data_dir(),
-                     "2015_12_16_2_zoning_parcels.csv"),
+                     "2015_12_21_zoning_parcels.csv"),
                      index_col="geom_id")
     df = pd.merge(df, zoning_lookup.to_frame(),
                   left_on="zoning_id", right_index=True)
