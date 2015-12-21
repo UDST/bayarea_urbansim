@@ -24,6 +24,22 @@ def year():
     return 2014
 
 
+@orca.injectable("limits_settings", cache=True)
+def limits_settings(settings, scenario):
+
+    d = settings['development_limits']
+
+    if scenario in d.keys():
+        print "Using limits for scenario: %s" % scenario
+        return d[scenario]
+
+    if "default" in d.keys():
+        print "Using default limits"
+        return d["default"]
+
+    # assume there's no scenario-based limits and the dict is the limits
+    return d
+
 @orca.injectable('building_sqft_per_job', cache=True)
 def building_sqft_per_job(settings):
     return settings['building_sqft_per_job']
