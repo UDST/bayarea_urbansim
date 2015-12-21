@@ -113,14 +113,6 @@ def zoning_lookup():
     return df
 
 
-@orca.table('zcsv', cache=True)
-def zcsv():
-    df = pd.read_csv(os.path.join(misc.data_dir(),
-                     "2015_12_16_2_zoning_parcels.csv"),
-                     index_col="geom_id")
-    return df
-
-
 @orca.table('zoning_table_city_lookup', cache=True)
 def zoning_table_city_lookup():
     df = pd.read_csv(os.path.join(misc.data_dir(),

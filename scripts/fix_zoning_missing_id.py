@@ -4,6 +4,13 @@ import sys
 sys.path.append(".")
 import datasources
 
+@orca.table('zcsv', cache=True)
+def zcsv():
+    df = pd.read_csv(os.path.join(misc.data_dir(),
+                     "2015_12_21_zoning_parcels.csv"),
+                     index_col="geom_id")
+    return df
+
 zb = orca.get_table("zoning_baseline")
 zl = orca.get_table("zoning_lookup")
 z = orca.get_table("zcsv")
