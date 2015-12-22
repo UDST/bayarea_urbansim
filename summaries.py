@@ -146,7 +146,7 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
 
 @orca.step("diagnostic_output")
 def diagnostic_output(households, buildings, parcels, taz,
-                      zones, year, summary):
+                      zones, year, summary, run_number):
     households = households.to_frame()
     buildings = buildings.to_frame()
     parcels = parcels.to_frame()

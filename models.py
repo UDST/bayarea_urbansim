@@ -394,10 +394,6 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
     new_buildings["building_sqft"] = new_buildings.non_residential_sqft
     new_buildings["stories"] = 1
     new_buildings["building_type_id"] = 10
-    # this is sqft per job for retail use - this is all rather
-    # ad-hoc so I'm hard-coding
-    new_buildings["job_spaces"] = (new_buildings.non_residential_sqft / 445.0).\
-        astype('int')
 
     print "Adding %d sqft of ground floor retail in %d locations" % \
        (new_buildings.non_residential_sqft.sum(), len(new_buildings))
@@ -406,6 +402,10 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
     orca.add_table("buildings", all_buildings)
 
     new_buildings["form"] = "retail"
+    # this is sqft per job for retail use - this is all rather
+    # ad-hoc so I'm hard-coding
+    new_buildings["job_spaces"] = (new_buildings.non_residential_sqft / 445.0).\
+        astype('int')
     new_buildings["net_units"] = new_buildings.job_spaces
     summary.add_parcel_output(new_buildings)
 
