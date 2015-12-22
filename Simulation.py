@@ -17,7 +17,7 @@ LOGS = True
 INTERACT = False
 SCENARIO = None
 S3 = False
-EVERY_NTH_YEAR = 5
+EVERY_NTH_YEAR = 15
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
 COMPARE_TO_NO_PROJECT = True
 NO_PROJECT = 611
@@ -82,8 +82,8 @@ try:
         "alt_feasibility",
 
         "residential_developer",
-        "developer_reprocess",
         "non_residential_developer",
+        "developer_reprocess",
 
         "hlcm_simulate",                 # put these last so they don't get
         "elcm_simulate",                 # displaced by new dev

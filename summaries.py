@@ -197,6 +197,14 @@ def diagnostic_output(households, buildings, parcels, taz,
 
     summary.add_zone_output(zones, "diagnostic_outputs", year)
 
+    # save the dropped buildings to a csv
+    if "dropped_buildings" in orca.orca._TABLES:
+        df = orca.get_table("dropped_buildings").to_frame()
+        print "Dropped buildings", df.describe()
+        df.to_csv(
+            "runs/run{}_dropped_buildings.csv".format(run_number)
+        )
+
 
 @orca.step("geographic_summary")
 def pda_output(parcels, households, jobs, buildings, taz_geography,

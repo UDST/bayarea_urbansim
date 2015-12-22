@@ -94,7 +94,7 @@ def add_fees_to_feasibility(feasibility, parcels, drop_unprofitable=False):
         parcels.ave_sqft_per_unit
     fees = (units * parcels.fees_per_unit).fillna(0)
 
-    print "Desribe of fees:\n", fees.describe()
+    print "Describe of fees:\n", fees.describe()
 
     feasibility[("residential", "fees")] = fees
     feasibility[("residential", "max_profit")] -= fees
