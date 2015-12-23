@@ -346,7 +346,7 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year,
 
 @orca.step()
 def developer_reprocess(buildings, year, years_per_iter, jobs,
-                        parcels, summary):
+                        parcels, summary, parcel_is_allowed_func):
     # this takes new units that come out of the developer, both subsidized
     # and non-subsidized and reprocesses them as required - please read
     # comments to see what this means in detail
@@ -383,6 +383,13 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
     old_buildings = buildings.to_frame(buildings.local_columns)
     new_buildings = old_buildings.query(
        '%d == year_built and stories >= 4' % year)
+
+    print "Attempting to add ground floor retail to %d devs" % \
+        len(new_buildings)
+    retail = parcel_is_allowed_func("retail")
+    new_buildings = new_buildings[retail.loc[new_buildings.parcel_id].values]
+    print "Disallowing dev on these parcels:"
+    print "    %d devs left after retail disallowed" % len(new_buildings)
 
     # this is the key point - make these new buildings' nonres sqft equal
     # to one story of the new buildings

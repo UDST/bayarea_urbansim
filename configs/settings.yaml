@@ -155,8 +155,8 @@ non_residential_developer:
     bldg_sqft_per_job: 400
   type_splits:
     Industrial: 0.0
-    Retail: 0.1
-    Office: 0.9
+    Retail: 0.2
+    Office: 0.8
 
 pusher:
   key: 7d78b1b3454b78aed26f
