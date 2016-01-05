@@ -263,10 +263,16 @@ def development_events(parcels, settings):
 
 
 @orca.table(cache=True)
-def development_projects(parcels, settings):
+def development_projects(parcels, settings, scenario):
     df = pd.read_csv(os.path.join(misc.data_dir(), "development_projects.csv"))
 
     df = df.query("action == 'build'")
+
+    # this filters project by scenario
+    if scenario in df:
+        # df[scenario] is 1s and 0s indicating whether to include it
+        df = df[df[scenario].astype('bool')]
+
     df = df.dropna(subset=['geom_id'])
 
     for fld in ['residential_sqft', 'residential_price',

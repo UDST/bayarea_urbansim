@@ -12,12 +12,12 @@ warnings.filterwarnings("ignore")
 
 args = sys.argv[1:]
 
-SLACK = MAPS = False
+SLACK = MAPS = True
 LOGS = True
 INTERACT = False
 SCENARIO = None
 S3 = False
-EVERY_NTH_YEAR = 5
+EVERY_NTH_YEAR = 10
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
 COMPARE_TO_NO_PROJECT = True
 NO_PROJECT = 611
