@@ -376,6 +376,12 @@ def parcel_sales_price_sqft(use):
         s *= 1.0
     return s
 
+
+@orca.column("parcels")
+def residential_sales_price_sqft(parcel_sales_price_sqft_func):
+    return parcel_sales_price_sqft_func("residential")
+
+
 #############################
 # Functions for Checking
 # Allowed Uses and Building
@@ -804,8 +810,10 @@ def building_purchase_price(parcels):
 
 @orca.column('parcels', 'land_cost')
 def land_cost(parcels):
-    s = pd.Series(20, parcels.index)
-    s[parcels.general_type == "Industrial"] = 150.0
+    s = (parcels.building_purchase_price_sqft / 40).clip(5, 20)
+    # industrial is an exception as cleanup is likely to be done - would
+    # be nice to have data on superfund sites and such
+    s[parcels.general_type == "Industrial"] = 100
     return parcels.building_purchase_price + parcels.parcel_size * s
 
 

@@ -77,7 +77,7 @@ with fiona.drivers():
              try:
                  rec = df.loc[geom_id]
              except:
-                 # don't need to keep it, it's not parcels.csv
+                 # don't need to keep it, it's not in parcels.csv
                  continue
     
              if JURIS and rec["juris"] != JURIS:
