@@ -113,14 +113,6 @@ def zoning_lookup():
     return df
 
 
-@orca.table('zcsv', cache=True)
-def zcsv():
-    df = pd.read_csv(os.path.join(misc.data_dir(),
-                     "2015_12_16_2_zoning_parcels.csv"),
-                     index_col="geom_id")
-    return df
-
-
 @orca.table('zoning_table_city_lookup', cache=True)
 def zoning_table_city_lookup():
     df = pd.read_csv(os.path.join(misc.data_dir(),
@@ -134,7 +126,7 @@ def zoning_table_city_lookup():
 @orca.table('zoning_baseline', cache=True)
 def zoning_baseline(parcels, zoning_lookup):
     df = pd.read_csv(os.path.join(misc.data_dir(),
-                     "2015_12_16_2_zoning_parcels.csv"),
+                     "2015_12_21_zoning_parcels.csv"),
                      index_col="geom_id")
     df = pd.merge(df, zoning_lookup.to_frame(),
                   left_on="zoning_id", right_index=True)
@@ -271,10 +263,16 @@ def development_events(parcels, settings):
 
 
 @orca.table(cache=True)
-def development_projects(parcels, settings):
+def development_projects(parcels, settings, scenario):
     df = pd.read_csv(os.path.join(misc.data_dir(), "development_projects.csv"))
 
     df = df.query("action == 'build'")
+
+    # this filters project by scenario
+    if scenario in df:
+        # df[scenario] is 1s and 0s indicating whether to include it
+        df = df[df[scenario].astype('bool')]
+
     df = df.dropna(subset=['geom_id'])
 
     for fld in ['residential_sqft', 'residential_price',

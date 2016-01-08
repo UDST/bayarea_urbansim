@@ -120,8 +120,9 @@ rsh_simulate:
   high: 2000
 
 
+
 feasibility:
-  parcel_filter: nodev != 1 and manual_nodev != 1 and sdem != 1 and oldest_building > 1940 and oldest_building_age > 20  and (total_residential_units > 2 or parcel_acres > .5) and first_building_type_id != 5 and first_building_type_id != 6
+  parcel_filter: nodev != 1 and manual_nodev != 1 and sdem != 1 and oldest_building > 1940 and oldest_building_age > 20  and (total_residential_units != 1 or parcel_acres > 1.0) and first_building_type_id != 5 and first_building_type_id != 6
   residential_to_yearly: True
   simple_zoning: True
   pass_through:
@@ -138,6 +139,7 @@ feasibility:
     - max_far_from_heights
     - building_purchase_price
     - building_purchase_price_sqft
+    - residential_sales_price_sqft
     - pda
     - geom_id
     - vmt_res_cat

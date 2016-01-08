@@ -5141,17 +5141,18 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 61970,,Sonoma County,999 - Rural Residential,,,0.05,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,Post22
 61971,,Sonoma County,999 - Urban Reserve,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Post22
 99999,,NODEV,NODEV,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NODEV
-60046,2,Berkeley,R-S,,25,7.26,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
-60047,2,Berkeley,R-SMU,,35,30,,0,1,1,0,0,0,0,0,0,0,0,0,0,0,
-60048,2,Berkeley,C-DMU Core,,75,75,,1,1,1,1,1,1,0,0,0,1,1,1,1,1,
-60049,2,Berkeley,C-DMU Outer Core,,75,75,,1,1,1,1,1,1,0,0,0,1,1,1,1,1,
-60050,2,Berkeley,C-DMU Corridor,,75,75,,1,1,1,1,1,1,0,0,0,1,1,1,1,1,
-60051,2,Berkeley,R-Sh,,25,7.26,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
+60046,2,Berkeley,R-S,,25,7.26,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,2015
+60047,2,Berkeley,R-SMU,,35,30,,0,1,1,0,0,0,0,0,0,0,0,0,0,0,2015
+60048,2,Berkeley,C-DMU Core,75,75,,,1,1,1,1,1,1,0,0,0,1,1,1,1,1,2015
+60049,2,Berkeley,C-DMU Outer Core,75,75,,,1,1,1,1,1,1,0,0,0,1,1,1,1,1,2015
+60050,2,Berkeley,C-DMU Corridor,75,75,,,1,1,1,1,1,1,0,0,0,1,1,1,1,1,2015
+60051,2,Berkeley,R-Sh,,25,7.26,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,2015
+60052,2,Berkeley,C-DMU Buffer,50,50,,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,2015
 62000,,Emeryville,104 - Commercial,,,,,0,0,0,1,1,1,0,0,0,1,1,0,1,1,Pre22
 62001,,Emeryville,104 - High Density Residential,4,,135,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,Pre22
 62002,,Emeryville,104 - Industrial,1,,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,Pre22
 62003,,Emeryville,104 - Medium Density Residential,1,,35,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,Pre22
-62004,Emeryville,104 - Mixed Use,,,,60,,1,1,1,1,1,1,0,0,0,1,1,1,1,1,Pre22
+62004,,Emeryville,104 - Mixed Use,,,60,,1,1,1,1,1,1,0,0,0,1,1,1,1,1,Pre22
 62005,,Emeryville,104 - Open Space,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
 62006,,Emeryville,104 - Other Public Buildings,,,,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,Pre22
 62007,,Emeryville,104 - Parks,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22

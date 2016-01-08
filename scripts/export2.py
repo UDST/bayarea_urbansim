@@ -10,6 +10,14 @@ from shapely.geometry import shape
 
 MONGO = True
 JURIS = None
+FEASIBILITY = True
+
+cid = "ZC7yyAyA8jkDFnRtf" # parcels
+csvname = "output/parcels.csv"
+
+if FEASIBILITY:
+    cid = "hMm5FqbDCPa4ube6Y" # feasibility
+    csvname = "output/feasibility.csv"
 
 if MONGO:
     client = MongoClient()
@@ -18,7 +26,7 @@ if MONGO:
 else:
     outf = open("parcels.json", "w")
 
-df = pd.read_csv('parcels.csv', index_col="geom_id")
+df = pd.read_csv(csvname, index_col="geom_id")
 
 cnt = 0
 features = []
@@ -69,7 +77,7 @@ with fiona.drivers():
              try:
                  rec = df.loc[geom_id]
              except:
-                 # don't need to keep it, it's not parcels.csv
+                 # don't need to keep it, it's not in parcels.csv
                  continue
     
              if JURIS and rec["juris"] != JURIS:
@@ -83,7 +91,7 @@ with fiona.drivers():
              f["creator"] = "Fletcher Foti"
              f["createDate"] = "2015-08-29T05:10:00.446Z"
              f["updateDate"] = "2015-08-29T05:10:00.446Z"
-             f["collectionId"] = "ZC7yyAyA8jkDFnRtf"
+             f["collectionId"] = cid
              f['_id'] = str(ObjectId())
              f["post_count"] = 0
 
