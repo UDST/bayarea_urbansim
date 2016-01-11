@@ -256,9 +256,12 @@ def parcels_geography(parcels):
 
 
 @orca.table(cache=True)
-def development_events(parcels, settings):
+def demolish_events(parcels, settings):
     df = pd.read_csv(os.path.join(misc.data_dir(), "development_projects.csv"))
-    df = df.query("action != 'build'")
+    df = df[df.action.isin(["demolish", "build"])]
+    df = df.dropna(subset=['geom_id'])
+    df = df.set_index("geom_id")
+    df = geom_id_to_parcel_id(df, parcels).reset_index()  # use parcel id
     return df
 
 

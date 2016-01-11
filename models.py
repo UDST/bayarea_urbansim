@@ -64,9 +64,23 @@ def jobs_relocation(jobs, settings, years_per_iter):
 # just adding capacity on an existing parcel, by adding one building at a time
 @orca.step("scheduled_development_events")
 def scheduled_development_events(buildings, development_projects,
-                                 development_events, summary, year, parcels,
+                                 demolish_events, summary, year, parcels,
                                  settings, years_per_iter,
                                  building_sqft_per_job, vmt_fee_categories):
+
+    # first demolish
+    demolish = demolish_events.to_frame().\
+        query("%d <= year_built < %d" % (year, year + years_per_iter))
+    print "Demolishing/building %d buildings" % len(demolish)
+    l1 = len(buildings)
+    buildings = utils._remove_developed_buildings(buildings.to_frame(buildings.local_columns),
+                                                  demolish,
+                                                  unplace_agents=["households", "jobs"])
+    orca.add_table("buildings", buildings)
+    buildings = orca.get_table("buildings")
+    print "Demolished %d buildings" % (l1 - len(buildings))
+    print "    (this number differs from the above when parcel has no existing buildings)"
+
 
     # then build
     dps = development_projects.to_frame().\
