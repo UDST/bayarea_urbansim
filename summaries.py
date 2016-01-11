@@ -146,7 +146,7 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
 
 @orca.step("diagnostic_output")
 def diagnostic_output(households, buildings, parcels, taz,
-                      zones, year, summary):
+                      zones, year, summary, run_number):
     households = households.to_frame()
     buildings = buildings.to_frame()
     parcels = parcels.to_frame()
@@ -196,6 +196,14 @@ def diagnostic_output(households, buildings, parcels, taz,
         zones.retail_sqft / zones.residential_units.replace(0, 1)
 
     summary.add_zone_output(zones, "diagnostic_outputs", year)
+
+    # save the dropped buildings to a csv
+    if "dropped_buildings" in orca.orca._TABLES:
+        df = orca.get_table("dropped_buildings").to_frame()
+        print "Dropped buildings", df.describe()
+        df.to_csv(
+            "runs/run{}_dropped_buildings.csv".format(run_number)
+        )
 
 
 @orca.step("geographic_summary")

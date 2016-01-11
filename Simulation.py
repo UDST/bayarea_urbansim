@@ -82,8 +82,8 @@ try:
         "alt_feasibility",
 
         "residential_developer",
-        "developer_reprocess",
         "non_residential_developer",
+        "developer_reprocess",
 
         "hlcm_simulate",                 # put these last so they don't get
         "elcm_simulate",                 # displaced by new dev

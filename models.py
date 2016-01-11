@@ -4,8 +4,6 @@ import sys
 import orca
 import datasources
 import variables
-import subsidies
-import summaries
 from utils import parcel_id_to_geom_id
 from urbansim.utils import networks
 import pandana.network as pdna
@@ -13,6 +11,8 @@ from urbansim_defaults import models
 from urbansim_defaults import utils
 from urbansim.developer import sqftproforma, developer
 from urbansim.developer.developer import Developer as dev
+import subsidies
+import summaries
 import numpy as np
 import pandas as pd
 
@@ -346,7 +346,7 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year,
 
 @orca.step()
 def developer_reprocess(buildings, year, years_per_iter, jobs,
-                        parcels, summary):
+                        parcels, summary, parcel_is_allowed_func):
     # this takes new units that come out of the developer, both subsidized
     # and non-subsidized and reprocesses them as required - please read
     # comments to see what this means in detail
@@ -377,43 +377,53 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
                             "non_residential_sqft"] += add_sizes.values
         print "Job spaces in res after adjustment: ",\
             buildings.job_spaces[s].sum()
-        print "Job to building type allocation\n",\
-            buildings.general_type.loc[
-                jobs.building_id[jobs.building_id > -1]].value_counts()
-
-    buildings_df = buildings.to_frame(
-        ['year_built', 'building_sqft', 'general_type'])
-    sqft_by_gtype = buildings_df.query('year_built >= %d' % year).\
-        groupby('general_type').building_sqft.sum()
-    print "New square feet by general type in millions:\n",\
-        sqft_by_gtype / 1000000.0
 
     # the second step here is to add retail to buildings that are greater than
     # X stories tall - presumably this is a ground floor retail policy
     old_buildings = buildings.to_frame(buildings.local_columns)
     new_buildings = old_buildings.query(
-       '%d <= year_built <= %d and year_built > 2014 and stories >= 4'
-       % (year - years_per_iter, year))
+       '%d == year_built and stories >= 4' % year)
+
+    print "Attempting to add ground floor retail to %d devs" % \
+        len(new_buildings)
+    retail = parcel_is_allowed_func("retail")
+    new_buildings = new_buildings[retail.loc[new_buildings.parcel_id].values]
+    print "Disallowing dev on these parcels:"
+    print "    %d devs left after retail disallowed" % len(new_buildings)
 
     # this is the key point - make these new buildings' nonres sqft equal
     # to one story of the new buildings
-    '''
     new_buildings.non_residential_sqft = new_buildings.building_sqft / \
-       new_buildings.stories
+       new_buildings.stories * .8
 
     new_buildings["residential_units"] = 0
     new_buildings["residential_sqft"] = 0
-    new_buildings.buildings_sqft = new_buildings.non_residential_sqft
-    new_buildings.stories = 1
-    new_buildings.building_type_id = 10
+    new_buildings["building_sqft"] = new_buildings.non_residential_sqft
+    new_buildings["stories"] = 1
+    new_buildings["building_type_id"] = 10
 
     print "Adding %d sqft of ground floor retail in %d locations" % \
        (new_buildings.non_residential_sqft.sum(), len(new_buildings))
 
     all_buildings = dev.merge(old_buildings, new_buildings)
     orca.add_table("buildings", all_buildings)
+
+    new_buildings["form"] = "retail"
+    # this is sqft per job for retail use - this is all rather
+    # ad-hoc so I'm hard-coding
+    new_buildings["job_spaces"] = (new_buildings.non_residential_sqft / 445.0).\
+        astype('int')
+    new_buildings["net_units"] = new_buildings.job_spaces
     summary.add_parcel_output(new_buildings)
-    '''
+
+    # got to get the frame again because we just added rows
+    buildings = orca.get_table('buildings')
+    buildings_df = buildings.to_frame(
+        ['year_built', 'building_sqft', 'general_type'])
+    sqft_by_gtype = buildings_df.query('year_built >= %d' % year).\
+        groupby('general_type').building_sqft.sum()
+    print "New square feet by general type in millions:\n",\
+        sqft_by_gtype / 1000000.0
 
 
 def make_network(name, weight_col, max_distance):
