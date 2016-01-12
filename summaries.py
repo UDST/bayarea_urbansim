@@ -361,11 +361,11 @@ def travel_model_output(parcels, households, jobs, buildings,
         taz_df["ciacre_unweighted"] = df.ciacre
         taz_df["resacre_unweighted"] = df.resacre
         taz_df["ciacre"] = scaled_ciacre(
-                           base_year_summary_taz.CIACRE, 
+                           base_year_summary_taz.CIACRE,
                            df.ciacre)
         taz_df["resacre"] = scaled_resacre(
-                            base_year_summary_taz.RESACRE, 
-                            df.resacre) 
+                            base_year_summary_taz.RESACRE,
+                            df.resacre)
         taz_df["totacre"] = df.totacre
         taz_df["totemp"] = df.totemp
         taz_df["tothh"] = df.tothh

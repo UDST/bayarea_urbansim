@@ -64,9 +64,23 @@ def jobs_relocation(jobs, settings, years_per_iter):
 # just adding capacity on an existing parcel, by adding one building at a time
 @orca.step("scheduled_development_events")
 def scheduled_development_events(buildings, development_projects,
-                                 development_events, summary, year, parcels,
+                                 demolish_events, summary, year, parcels,
                                  settings, years_per_iter,
                                  building_sqft_per_job, vmt_fee_categories):
+
+    # first demolish
+    demolish = demolish_events.to_frame().\
+        query("%d <= year_built < %d" % (year, year + years_per_iter))
+    print "Demolishing/building %d buildings" % len(demolish)
+    l1 = len(buildings)
+    buildings = utils._remove_developed_buildings(
+        buildings.to_frame(buildings.local_columns),
+        demolish,
+        unplace_agents=["households", "jobs"])
+    orca.add_table("buildings", buildings)
+    buildings = orca.get_table("buildings")
+    print "Demolished %d buildings" % (l1 - len(buildings))
+    print "    (this number is smaller when parcel has no existing buildings)"
 
     # then build
     dps = development_projects.to_frame().\
@@ -394,7 +408,7 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
     # this is the key point - make these new buildings' nonres sqft equal
     # to one story of the new buildings
     new_buildings.non_residential_sqft = new_buildings.building_sqft / \
-       new_buildings.stories * .8
+        new_buildings.stories * .8
 
     new_buildings["residential_units"] = 0
     new_buildings["residential_sqft"] = 0
@@ -403,7 +417,7 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
     new_buildings["building_type_id"] = 10
 
     print "Adding %d sqft of ground floor retail in %d locations" % \
-       (new_buildings.non_residential_sqft.sum(), len(new_buildings))
+        (new_buildings.non_residential_sqft.sum(), len(new_buildings))
 
     all_buildings = dev.merge(old_buildings, new_buildings)
     orca.add_table("buildings", all_buildings)
@@ -411,8 +425,8 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
     new_buildings["form"] = "retail"
     # this is sqft per job for retail use - this is all rather
     # ad-hoc so I'm hard-coding
-    new_buildings["job_spaces"] = (new_buildings.non_residential_sqft / 445.0).\
-        astype('int')
+    new_buildings["job_spaces"] = \
+        (new_buildings.non_residential_sqft / 445.0).astype('int')
     new_buildings["net_units"] = new_buildings.job_spaces
     summary.add_parcel_output(new_buildings)
 
