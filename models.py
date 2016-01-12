@@ -30,6 +30,23 @@ def rsh_simulate(buildings, aggregations, settings):
             buildings.residential_price.describe()
 
 
+@orca.step('hlcm_simulate')
+def hlcm_simulate(households, buildings, aggregations, settings):
+    # market rate goes first
+    utils.lcm_simulate("hlcm.yaml", households, buildings,
+                       aggregations,
+                       "building_id", "residential_units",
+                       "vacant_market_rate_units",
+                       settings.get("enable_supply_correction", None))
+
+    # then low income
+    utils.lcm_simulate("hlcm.yaml", households, buildings,
+                       aggregations,
+                       "building_id", "residential_units",
+                       "vacant_low_income_units",
+                       settings.get("enable_supply_correction", None))
+
+
 @orca.step('households_transition')
 def households_transition(households, household_controls, year, settings):
     s = orca.get_table('households').base_income_quartile.value_counts()

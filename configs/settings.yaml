@@ -47,6 +47,9 @@ acct_settings:
       MH: 5000
 
 
+low_income_for_hlcm: 30000
+
+
 dont_enable_supply_correction:
   price_col: residential_price
   submarket_col: zone_id

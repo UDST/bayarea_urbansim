@@ -196,6 +196,37 @@ def job_spaces(buildings):
             buildings.sqft_per_job).fillna(0).round().astype('int')
 
 
+@orca.column('buildings')
+def market_rate_units(buildings):
+    return buildings.residential_units - buildings.deed_restricted_units
+
+
+# this column can be negative when there are more low income households than
+# deed restricted units, which means some of the low income households are in
+# market rate units - this feature is used below
+@orca.columns('buildings')
+def vacant_affordable_units_neg(buildings, households, settings, low_income):
+    return buildings.deed_restricted_units.sub(
+        households.building_id[households.income <= low_income].value_counts(),
+        fill_value=0)
+
+
+@orca.columns('buildings')
+def vacant_affordable_units(buildings):
+    return buildings.vacant_affordable_units_neg.clip(low_value=0)
+
+
+@orca.column('buildings')
+def vacant_market_rate_units(buildings, households, settings, low_income):
+    # this is market rate households per building
+    s1 = households.building_id[households.income > low_income].value_counts()
+    # this is low income households in market rate units - a negative number
+    # in vacant affordable units indicates the number of households in market
+    # rate units
+    s2 = buildings.vacant_affordable_units_neg.clip(high_value=0)*-1
+    return buildings.market_rate_units.sub(s1, fill_value=0).sub(s2, fill_value=0)
+
+
 @orca.column('buildings', cache=True)
 def building_age(buildings, year):
     return (year or 2014) - buildings.year_built
