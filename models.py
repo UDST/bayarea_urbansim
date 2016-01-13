@@ -2,6 +2,7 @@ from urbansim.utils import misc
 import os
 import sys
 import orca
+import yaml
 import datasources
 import variables
 from utils import parcel_id_to_geom_id
@@ -31,19 +32,32 @@ def rsh_simulate(buildings, aggregations, settings):
 
 
 @orca.step('hlcm_simulate')
-def hlcm_simulate(households, buildings, aggregations, settings):
-    # market rate goes first
+def hlcm_simulate(households, buildings, aggregations, settings, low_income):
+
+    fname = misc.config("hlcm.yaml") 
+
+    print "\nAffordable housing HLCM:\n"
+
+    cfg = yaml.load(open(fname))
+    cfg["choosers_predict_filters"] = "income <= %d" % low_income
+    open(misc.config("hlcm_tmp.yaml"), "w").write(yaml.dump(cfg))
+
+    # low income into affordable units
+    utils.lcm_simulate("hlcm_tmp.yaml", households, buildings,
+                       aggregations,
+                       "building_id", "residential_units",
+                       "vacant_affordable_units",
+                       settings.get("enable_supply_correction", None))
+
+    os.remove(misc.config("hlcm_tmp.yaml"))
+
+    print "\nMarket rate housing HLCM:\n"
+
+    # then everyone into market rate units
     utils.lcm_simulate("hlcm.yaml", households, buildings,
                        aggregations,
                        "building_id", "residential_units",
                        "vacant_market_rate_units",
-                       settings.get("enable_supply_correction", None))
-
-    # then low income
-    utils.lcm_simulate("hlcm.yaml", households, buildings,
-                       aggregations,
-                       "building_id", "residential_units",
-                       "vacant_low_income_units",
                        settings.get("enable_supply_correction", None))
 
 
@@ -165,6 +179,7 @@ def add_extra_columns(df):
     for col in ["residential_price", "non_residential_price"]:
         df[col] = 0
 
+    df["deed_restricted_units"] = 0
     df["redfin_sale_year"] = 2012
     return df
 

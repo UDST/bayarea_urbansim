@@ -204,16 +204,17 @@ def market_rate_units(buildings):
 # this column can be negative when there are more low income households than
 # deed restricted units, which means some of the low income households are in
 # market rate units - this feature is used below
-@orca.columns('buildings')
+@orca.column('buildings')
 def vacant_affordable_units_neg(buildings, households, settings, low_income):
     return buildings.deed_restricted_units.sub(
         households.building_id[households.income <= low_income].value_counts(),
         fill_value=0)
 
 
-@orca.columns('buildings')
+@orca.column('buildings')
 def vacant_affordable_units(buildings):
-    return buildings.vacant_affordable_units_neg.clip(low_value=0)
+    return buildings.vacant_affordable_units_neg.clip(lower=0).\
+        reindex(buildings.index).fillna(0)
 
 
 @orca.column('buildings')
@@ -223,8 +224,9 @@ def vacant_market_rate_units(buildings, households, settings, low_income):
     # this is low income households in market rate units - a negative number
     # in vacant affordable units indicates the number of households in market
     # rate units
-    s2 = buildings.vacant_affordable_units_neg.clip(high_value=0)*-1
-    return buildings.market_rate_units.sub(s1, fill_value=0).sub(s2, fill_value=0)
+    s2 = buildings.vacant_affordable_units_neg.clip(upper=0)*-1
+    return buildings.market_rate_units.\
+        sub(s1, fill_value=0).sub(s2, fill_value=0).clip(lower=0)
 
 
 @orca.column('buildings', cache=True)
