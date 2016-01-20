@@ -101,8 +101,8 @@ def scheduled_development_events(buildings, development_projects,
     new_buildings["geom_id"] = parcel_id_to_geom_id(new_buildings.parcel_id)
     new_buildings["SDEM"] = True
     new_buildings["subsidized"] = False
-    new_buildings["zone_id"] = misc.reindex(
-        parcels.zone_id, new_buildings.parcel_id)
+    #new_buildings["zone_id"] = misc.reindex(
+    #    parcels.zone_id, new_buildings.parcel_id)
     new_buildings["vmt_res_cat"] = misc.reindex(
         vmt_fee_categories.res_cat, new_buildings.zone_id)
 

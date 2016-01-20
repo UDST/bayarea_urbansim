@@ -271,7 +271,7 @@ def demolish_events(parcels, settings):
 def development_projects(parcels, settings, scenario):
     df = pd.read_csv(os.path.join(misc.data_dir(), "development_projects.csv"))
 
-    df = df.query("action == 'build'")
+    df = df[df.action.isin(["add", "build"])]
 
     # this filters project by scenario
     if scenario in df:
