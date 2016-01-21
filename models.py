@@ -163,7 +163,7 @@ def add_extra_columns(df):
         df["year_built"] = orca.get_injectable("year")
 
     if "form_to_btype_func" in orca.orca._INJECTABLES and \
-        "building_type_id" not in df:
+            "building_type_id" not in df:
         form_to_btype_func = orca.get_injectable("form_to_btype_func")
         df["building_type_id"] = df.apply(form_to_btype_func, axis=1)
 
@@ -291,7 +291,7 @@ def retail_developer(jobs, buildings, parcels, nodes, feasibility,
     # indicates an underserved market
     nodes["retail_ratio"] = nodes.sum_income / nodes.retail_sqft.clip(lower=1)
 
-    feasibility = feasibility.to_frame().loc[:,"retail"]
+    feasibility = feasibility.to_frame().loc[:, "retail"]
 
     # add node_id to feasibility frame
     feasibility["node_id"] = misc.reindex(parcels.node_id,
@@ -328,7 +328,8 @@ def retail_developer(jobs, buildings, parcels, nodes, feasibility,
         target -= dev.non_residential_sqft
 
         # add redeveloped sqft to target
-        filt = "general_type == 'Retail' and parcel_id == %d" % dev["parcel_id"]
+        filt = "general_type == 'Retail' and parcel_id == %d" % \
+            dev["parcel_id"]
         target += bldgs.query(filt).non_residential_sqft.sum()
 
         devs.append(dev)

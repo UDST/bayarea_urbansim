@@ -22,7 +22,8 @@ def add_buildings(buildings, new_buildings,
     if remove_developed_buildings:
         unplace_agents = ["households", "jobs"]
         old_buildings = \
-            _remove_developed_buildings(old_buildings, new_buildings, unplace_agents)
+            _remove_developed_buildings(old_buildings, new_buildings,
+                                        unplace_agents)
 
     all_buildings = dev.merge(old_buildings, new_buildings)
 
