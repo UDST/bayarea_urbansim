@@ -12,8 +12,8 @@ warnings.filterwarnings("ignore")
 
 args = sys.argv[1:]
 
-SLACK = MAPS = True
-LOGS = True
+SLACK = MAPS = False
+LOGS = False
 INTERACT = False
 SCENARIO = None
 S3 = False
@@ -63,37 +63,38 @@ if SLACK:
 
 try:
     models = [
-        "neighborhood_vars",            # local accessibility vars
-        "regional_vars",                # regional accessibility vars
+        #"neighborhood_vars",            # local accessibility vars
+        #"regional_vars",                # regional accessibility vars
 
-        "rsh_simulate",                 # residential sales hedonic
-        "nrh_simulate",                 # non-residential rent hedonic
+        #"rsh_simulate",                 # residential sales hedonic
+        #"nrh_simulate",                 # non-residential rent hedonic
 
-        "households_relocation",
-        "households_transition",
+        #"households_relocation",
+        #"households_transition",
 
-        "jobs_relocation",
-        "jobs_transition",
+        #"jobs_relocation",
+        #"jobs_transition",
 
-        "price_vars",
+        #"price_vars",
 
-        "scheduled_development_events",  # scheduled buildings additions
+        #"scheduled_development_events",  # scheduled buildings additions
 
-        "alt_feasibility",
+        #"alt_feasibility",
 
-        "residential_developer",
-        "non_residential_developer",
-        "developer_reprocess",
+        #"residential_developer",
+        "retail_developer",
+        #"non_residential_developer",
+        #"developer_reprocess",
 
-        "hlcm_simulate",                 # put these last so they don't get
-        "elcm_simulate",                 # displaced by new dev
+        #"hlcm_simulate",                 # put these last so they don't get
+        #"elcm_simulate",                 # displaced by new dev
 
-        "calculate_vmt_fees",
+        #"calculate_vmt_fees",
 
-        "topsheet",
-        "diagnostic_output",
-        "geographic_summary",
-        "travel_model_output"
+        #"topsheet",
+        #"diagnostic_output",
+        #"geographic_summary",
+        #"travel_model_output"
     ]
 
     # compute feasibility for all negative profit residential devs
