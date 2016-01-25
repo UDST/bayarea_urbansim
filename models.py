@@ -277,29 +277,23 @@ def retail_developer(jobs, buildings, parcels, nodes, feasibility,
                      settings, summary, add_extra_columns_func, net):
 
     dev_settings = settings['non_residential_developer']
-
     all_units = dev.compute_units_to_build(
         len(jobs),
         buildings.job_spaces.sum(),
         dev_settings['kwargs']['target_vacancy'])
 
-    target = all_units * float(dev_settings['type_splits']["retail"])
-
-    nodes = nodes.to_frame()
-
-    # then compute the ratio of income to retail sqft - a high number here
-    # indicates an underserved market
-    nodes["retail_ratio"] = nodes.sum_income / nodes.retail_sqft.clip(lower=1)
+    target = all_units * float(dev_settings['type_splits']["Retail"])
+    # target here is in sqft
+    target *= settings["building_sqft_per_job"][10]
 
     feasibility = feasibility.to_frame().loc[:, "retail"]
+    feasibility = feasibility.dropna(subset=["max_profit"])
 
-    # add node_id to feasibility frame
-    feasibility["node_id"] = misc.reindex(parcels.node_id,
-                                          feasibility.parcel_id)
+    feasibility["non_residential_sqft"] = \
+        feasibility.non_residential_sqft.astype("int")
 
-    # add retail_ratio to feasibility frame using node_id
-    feasibility["retail_ratio"] = misc.reindex(nodes.retail_ratio,
-                                               feasibility.node_id)
+    feasibility["retail_ratio"] = parcels.retail_ratio
+    feasibility = feasibility.reset_index()
 
     # create features
     f1 = feasibility.retail_ratio / feasibility.retail_ratio.max()
@@ -308,9 +302,8 @@ def retail_developer(jobs, buildings, parcels, nodes, feasibility,
     # combine features in probability function - it's like combining expense
     # of building the building with the market in the neighborhood
     p = f1 * 1.5 + f2
+    p = p.clip(lower=1.0/len(p)/10)
 
-    import time
-    print time.ctime()
     print "Attempting to build {:,} retail sqft".format(target)
 
     # order by weighted random sample
@@ -320,24 +313,25 @@ def retail_developer(jobs, buildings, parcels, nodes, feasibility,
 
     devs = []
 
-    for dev_id, dev in feasibility.iterrows():
+    for dev_id, d in feasibility.iterrows():
+
+        if target <= 0:
+            break
 
         # any special logic to filter these devs?
 
         # remove new dev sqft from target
-        target -= dev.non_residential_sqft
+        target -= d.non_residential_sqft
 
         # add redeveloped sqft to target
         filt = "general_type == 'Retail' and parcel_id == %d" % \
-            dev["parcel_id"]
+            d["parcel_id"]
         target += bldgs.query(filt).non_residential_sqft.sum()
 
-        devs.append(dev)
+        devs.append(d)
 
-        if target < 0:
-            break
-
-    print time.ctime()
+    if len(devs) == 0:
+        return
 
     # record keeping - add extra columns to match building dataframe
     # add the buidings and demolish old buildings, and add to debug output
@@ -352,7 +346,6 @@ def retail_developer(jobs, buildings, parcels, nodes, feasibility,
     devs = add_extra_columns_func(devs)
 
     add_buildings(buildings, devs)
-    print time.ctime()
 
     summary.add_parcel_output(devs)
 
@@ -517,6 +510,13 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
     new_buildings["building_sqft"] = new_buildings.non_residential_sqft
     new_buildings["stories"] = 1
     new_buildings["building_type_id"] = 10
+
+    # this is a fairly arbitrary rule, but we're only adding ground floor
+    # retail in areas that are underserved right now - this is defined as
+    # the location where the retail ratio (ratio of income to retail sqft)
+    # is greater than the median
+    ratio = parcels.retail_ratio.loc[new_buildings.parcel_id]
+    new_buildings = new_buildings[ratio.values > ratio.median()]
 
     print "Adding %d sqft of ground floor retail in %d locations" % \
         (new_buildings.non_residential_sqft.sum(), len(new_buildings))
