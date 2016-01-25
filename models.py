@@ -4,7 +4,7 @@ import sys
 import orca
 import datasources
 import variables
-from utils import parcel_id_to_geom_id
+from utils import parcel_id_to_geom_id, add_buildings
 from urbansim.utils import networks
 import pandana.network as pdna
 from urbansim_defaults import models
@@ -101,10 +101,12 @@ def scheduled_development_events(buildings, development_projects,
     new_buildings["geom_id"] = parcel_id_to_geom_id(new_buildings.parcel_id)
     new_buildings["SDEM"] = True
     new_buildings["subsidized"] = False
-    #new_buildings["zone_id"] = misc.reindex(
-    #    parcels.zone_id, new_buildings.parcel_id)
+
+    new_buildings["zone_id"] = misc.reindex(
+        parcels.zone_id, new_buildings.parcel_id)
     new_buildings["vmt_res_cat"] = misc.reindex(
         vmt_fee_categories.res_cat, new_buildings.zone_id)
+    del new_buildings["zone_id"]
 
     summary.add_parcel_output(new_buildings)
 
@@ -149,6 +151,22 @@ def add_extra_columns(df):
         df[col] = 0
 
     df["redfin_sale_year"] = 2012
+
+    if "residential_units" not in df:
+        df["residential_units"] = 0
+
+    if "parcel_size" not in df:
+        df["parcel_size"] = \
+            orca.get_table("parcels").parcel_size.loc[df.parcel_id]
+
+    if "year" in orca.orca._INJECTABLES and "year_built" not in df:
+        df["year_built"] = orca.get_injectable("year")
+
+    if "form_to_btype_func" in orca.orca._INJECTABLES and \
+            "building_type_id" not in df:
+        form_to_btype_func = orca.get_injectable("form_to_btype_func")
+        df["building_type_id"] = df.apply(form_to_btype_func, axis=1)
+
     return df
 
 
@@ -254,11 +272,89 @@ def residential_developer(feasibility, households, buildings, parcels, year,
         summary.add_parcel_output(new_buildings)
 
 
-@orca.step('non_residential_developer')
-def non_residential_developer(feasibility, jobs, buildings, parcels, year,
-                              settings, summary, form_to_btype_func, scenario,
-                              add_extra_columns_func, parcels_geography,
-                              limits_settings):
+@orca.step()
+def retail_developer(jobs, buildings, parcels, nodes, feasibility,
+                     settings, summary, add_extra_columns_func, net):
+
+    dev_settings = settings['non_residential_developer']
+    all_units = dev.compute_units_to_build(
+        len(jobs),
+        buildings.job_spaces.sum(),
+        dev_settings['kwargs']['target_vacancy'])
+
+    target = all_units * float(dev_settings['type_splits']["Retail"])
+    # target here is in sqft
+    target *= settings["building_sqft_per_job"][10]
+
+    feasibility = feasibility.to_frame().loc[:, "retail"]
+    feasibility = feasibility.dropna(subset=["max_profit"])
+
+    feasibility["non_residential_sqft"] = \
+        feasibility.non_residential_sqft.astype("int")
+
+    feasibility["retail_ratio"] = parcels.retail_ratio
+    feasibility = feasibility.reset_index()
+
+    # create features
+    f1 = feasibility.retail_ratio / feasibility.retail_ratio.max()
+    f2 = feasibility.max_profit / feasibility.max_profit.max()
+
+    # combine features in probability function - it's like combining expense
+    # of building the building with the market in the neighborhood
+    p = f1 * 1.5 + f2
+    p = p.clip(lower=1.0/len(p)/10)
+
+    print "Attempting to build {:,} retail sqft".format(target)
+
+    # order by weighted random sample
+    feasibility = feasibility.sample(frac=1.0, weights=p)
+
+    bldgs = buildings.to_frame(buildings.local_columns + ["general_type"])
+
+    devs = []
+
+    for dev_id, d in feasibility.iterrows():
+
+        if target <= 0:
+            break
+
+        # any special logic to filter these devs?
+
+        # remove new dev sqft from target
+        target -= d.non_residential_sqft
+
+        # add redeveloped sqft to target
+        filt = "general_type == 'Retail' and parcel_id == %d" % \
+            d["parcel_id"]
+        target += bldgs.query(filt).non_residential_sqft.sum()
+
+        devs.append(d)
+
+    if len(devs) == 0:
+        return
+
+    # record keeping - add extra columns to match building dataframe
+    # add the buidings and demolish old buildings, and add to debug output
+    devs = pd.DataFrame(devs, columns=feasibility.columns)
+
+    print "Building {:,} retail sqft in {:,} projects".format(
+        devs.non_residential_sqft.sum(), len(devs))
+    if target > 0:
+        print "   WARNING: retail target not met"
+
+    devs["form"] = "retail"
+    devs = add_extra_columns_func(devs)
+
+    add_buildings(buildings, devs)
+
+    summary.add_parcel_output(devs)
+
+
+@orca.step()
+def office_developer(feasibility, jobs, buildings, parcels, year,
+                     settings, summary, form_to_btype_func, scenario,
+                     add_extra_columns_func, parcels_geography,
+                     limits_settings):
 
     dev_settings = settings['non_residential_developer']
 
@@ -270,7 +366,6 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year,
     # to build, we I think the right thing to do is to compute the number of
     # job spaces that are required overall, and then to apportion that new dev
     # into the three non-res types with a single set of coefficients
-    from urbansim.developer.developer import Developer as dev
     all_units = dev.compute_units_to_build(
         len(jobs),
         buildings.job_spaces.sum(),
@@ -280,7 +375,7 @@ def non_residential_developer(feasibility, jobs, buildings, parcels, year,
     if all_units <= 0:
         return
 
-    for typ in ["Office", "Retail", "Industrial"]:
+    for typ in ["Office"]:
 
         print "\nRunning for type: ", typ
 
@@ -415,6 +510,13 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
     new_buildings["building_sqft"] = new_buildings.non_residential_sqft
     new_buildings["stories"] = 1
     new_buildings["building_type_id"] = 10
+
+    # this is a fairly arbitrary rule, but we're only adding ground floor
+    # retail in areas that are underserved right now - this is defined as
+    # the location where the retail ratio (ratio of income to retail sqft)
+    # is greater than the median
+    ratio = parcels.retail_ratio.loc[new_buildings.parcel_id]
+    new_buildings = new_buildings[ratio.values > ratio.median()]
 
     print "Adding %d sqft of ground floor retail in %d locations" % \
         (new_buildings.non_residential_sqft.sum(), len(new_buildings))

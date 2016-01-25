@@ -12,7 +12,7 @@ warnings.filterwarnings("ignore")
 
 args = sys.argv[1:]
 
-SLACK = MAPS = True
+SLACK = MAPS = False
 LOGS = True
 INTERACT = False
 SCENARIO = None
@@ -82,8 +82,9 @@ try:
         "alt_feasibility",
 
         "residential_developer",
-        "non_residential_developer",
         "developer_reprocess",
+        "retail_developer",
+        "office_developer",
 
         "hlcm_simulate",                 # put these last so they don't get
         "elcm_simulate",                 # displaced by new dev

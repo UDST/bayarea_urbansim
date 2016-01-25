@@ -27,3 +27,10 @@ variable_definitions:
     dataframe: jobs
     radius: 45
     apply: np.log1p
+
+  - aggregation: sum
+    dataframe: households
+    decay: flat
+    name: sum_income_40
+    radius: 40
+    varname: income
