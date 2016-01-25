@@ -282,8 +282,26 @@ def vmt_res_cat(buildings, vmt_fee_categories):
 
 
 #####################
+# NODES VARIABLES
+#####################
+
+
+# these are computed outcomes of accessibility variables
+@orca.column('nodes')
+def retail_ratio(nodes):
+    # then compute the ratio of income to retail sqft - a high number here
+    # indicates an underserved market
+    return nodes.sum_income_3000 / nodes.retail_sqft_3000.clip(lower=1)
+
+
+#####################
 # PARCELS VARIABLES
 #####################
+
+
+@orca.column('parcels')
+def retail_ratio(parcels, nodes):
+    return misc.reindex(nodes.retail_ratio, parcels.node_id)
 
 
 # the stories attributes on parcels will be the max story

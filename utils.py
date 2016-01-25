@@ -2,11 +2,32 @@ import pandas as pd
 import numpy as np
 import orca
 import os
+from urbansim_defaults.utils import _remove_developed_buildings
+from urbansim.developer.developer import Developer as dev
 
 
 #####################
 # UTILITY FUNCTIONS
 #####################
+
+
+# similar to the function in urbansim_defaults, except it assumes you want
+# to use your own pick function
+def add_buildings(buildings, new_buildings,
+                  remove_developed_buildings=True):
+
+    old_buildings = buildings.to_frame(buildings.local_columns)
+    new_buildings = new_buildings[buildings.local_columns]
+
+    if remove_developed_buildings:
+        unplace_agents = ["households", "jobs"]
+        old_buildings = \
+            _remove_developed_buildings(old_buildings, new_buildings,
+                                        unplace_agents)
+
+    all_buildings = dev.merge(old_buildings, new_buildings)
+
+    orca.add_table("buildings", all_buildings)
 
 
 # assume df1 and df2 each have 2 float columns specifying x and y
