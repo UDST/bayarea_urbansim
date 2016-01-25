@@ -162,8 +162,14 @@ def diagnostic_output(households, buildings, parcels, taz,
 
     zones['residential_units'] = buildings.groupby('zone_id').\
         residential_units.sum()
+    zones['job_spaces'] = buildings.groupby('zone_id').\
+        job_spaces.sum()
+    zones['residential_vacancy'] = \
+        1.0 - households.groupby('zone_id').size() / zones.residential_units
     zones['non_residential_sqft'] = buildings.groupby('zone_id').\
         non_residential_sqft.sum()
+    zones['non_residential_vacancy'] = \
+        1.0 - jobs.groupby('zone_id').size() / zones.job_spaces
 
     zones['retail_sqft'] = buildings.query('general_type == "Retail"').\
         groupby('zone_id').non_residential_sqft.sum()
