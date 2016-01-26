@@ -145,7 +145,7 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
 
 
 @orca.step("diagnostic_output")
-def diagnostic_output(households, buildings, parcels, taz,
+def diagnostic_output(households, buildings, parcels, taz, jobs,
                       zones, year, summary, run_number):
     households = households.to_frame()
     buildings = buildings.to_frame()
@@ -162,8 +162,16 @@ def diagnostic_output(households, buildings, parcels, taz,
 
     zones['residential_units'] = buildings.groupby('zone_id').\
         residential_units.sum()
+    zones['job_spaces'] = buildings.groupby('zone_id').\
+        job_spaces.sum()
+    tothh = households.zone_id.value_counts().reindex(zones.index).fillna(0)
+    zones['residential_vacancy'] = \
+        1.0 - tothh / zones.residential_units.replace(0, 1)
     zones['non_residential_sqft'] = buildings.groupby('zone_id').\
         non_residential_sqft.sum()
+    totjobs = jobs.zone_id.value_counts().reindex(zones.index).fillna(0)
+    zones['non_residential_vacancy'] = \
+        1.0 - totjobs / zones.job_spaces.replace(0, 1)
 
     zones['retail_sqft'] = buildings.query('general_type == "Retail"').\
         groupby('zone_id').non_residential_sqft.sum()
