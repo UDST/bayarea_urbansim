@@ -338,6 +338,17 @@ county_id_map:
   41: Marin
   55: Napa
 
+county_id_tm_map:
+  3: Santa Clara
+  4: Alameda
+  5: Contra Costa
+  2: San Mateo
+  8: Sonoma
+  1: San Francisco
+  6: Solano
+  9: Marin
+  7: Napa
+
 pda_price_shifters:
   "ber1": 1.5
   "ber2": 1.5
