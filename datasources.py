@@ -46,9 +46,10 @@ def building_sqft_per_job(settings):
     return settings['building_sqft_per_job']
 
 
-@orca.table('locations', cache=True)
-def locations():
-    return pd.read_csv(os.path.join(misc.data_dir(), 'locations.csv'),
+# key locations in the Bay Area for use as attractions in the models
+@orca.table('landmarks', cache=True)
+def landmarks():
+    return pd.read_csv(os.path.join(misc.data_dir(), 'landmarks.csv'),
                        index_col="name")
 
 

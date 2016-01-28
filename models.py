@@ -596,7 +596,7 @@ def local_pois(settings):
     cols["bartdist"] = n.nearest_pois(3000, "tmp", num_pois=1)[1]
 
     locname = 'pacheights'
-    locs = orca.get_table('locations').local.query("name == '%s'" % locname)
+    locs = orca.get_table('landmarks').local.query("name == '%s'" % locname)
     n.set_pois("tmp", locs.lng, locs.lat)
     cols["pacheights"] = n.nearest_pois(3000, "tmp", num_pois=1)[1]
 
@@ -633,7 +633,7 @@ def regional_vars(net):
 
 
 @orca.step('regional_pois')
-def regional_pois(settings, locations):
+def regional_pois(settings, landmarks):
     # because of the aforementioned limit of one netowrk at a time for the
     # POIS, as well as the large amount of memory used, this is now a
     # preprocessing step
@@ -648,7 +648,7 @@ def regional_pois(settings, locations):
 
     cols = {}
     for locname in ["embarcadero", "stanford", "pacheights"]:
-        locs = locations.local.query("name == '%s'" % locname)
+        locs = landmarks.local.query("name == '%s'" % locname)
         n.set_pois("tmp", locs.lng, locs.lat)
         cols[locname] = n.nearest_pois(75, "tmp", num_pois=1)[1]
 
