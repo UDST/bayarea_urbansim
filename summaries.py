@@ -11,7 +11,7 @@ from urbansim.utils import misc
 @orca.step("topsheet")
 def topsheet(households, jobs, buildings, parcels, zones, year,
              run_number, taz_geography, parcels_zoning_calculations,
-             summary):
+             summary, settings):
 
     hh_by_subregion = misc.reindex(taz_geography.subregion,
                                    households.zone_id).value_counts()
@@ -140,6 +140,14 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
 
         write("Current share of units which are greenfield development:\n%s" %
               norm_and_round(df.residential_units.groupby(greenfield).sum()))
+
+    cmap = settings["county_id_tm_map"]
+    jobs_by_county = jobs.zone_id.map(taz_geography.county)\
+        .map(cmap).value_counts()
+    households_by_county = households.zone_id.map(taz_geography.county)\
+        .map(cmap).value_counts()
+    jobs_by_housing = jobs_by_county / households_by_county.replace(0, 1)
+    write("Jobs/housing balance:\n" + str(jobs_by_housing))
 
     f.close()
 
