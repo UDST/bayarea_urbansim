@@ -8,7 +8,7 @@ data: data/2015_09_01_bayarea_v3.h5 \
 data/2015_06_01_osm_bayarea4326.h5 \
 data/2015_08_03_tmnet.h5 \
 data/2015_12_21_zoning_parcels.csv \
-data/2015_10_07_2_parcels_geography.csv  \
+data/02_01_2016_parcels_geography.csv  \
 data/2015_08_29_costar.csv
 
 #the database that the h5 file above was exported from:
@@ -33,7 +33,7 @@ data/2015_12_21_zoning_parcels.csv:
 	$@.download
 	mv $@.download $@
 
-data/2015_10_07_2_parcels_geography.csv: 
+data/02_01_2016_parcels_geography.csv:
 	$(get)$@ \
 	$@.download
 	mv $@.download $@
