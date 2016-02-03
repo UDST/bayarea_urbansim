@@ -163,7 +163,7 @@ def zoning_np(parcels_geography):
                                   dtype={'jurisdiction': 'str'})
     return pd.merge(parcels_geography.to_frame().reset_index(),
                     scenario_zoning,
-                    on=['jurisdiction', 'pda_id', 'tpp_id', 'exp_id'],
+                    on=['zoningmodcat'],
                     how='left').set_index('parcel_id')
 
 
@@ -174,7 +174,7 @@ def zoning_th(parcels_geography):
                                   dtype={'jurisdiction': 'str'})
     return pd.merge(parcels_geography.to_frame().reset_index(),
                     scenario_zoning,
-                    on=['jurisdiction', 'pda_id', 'tpp_id', 'exp_id'],
+                    on=['zoningmodcat'],
                     how='left').set_index('parcel_id')
 
 
@@ -185,7 +185,7 @@ def zoning_au(parcels_geography):
                                   dtype={'jurisdiction': 'str'})
     return pd.merge(parcels_geography.to_frame().reset_index(),
                     scenario_zoning,
-                    on=['jurisdiction', 'pda_id', 'tpp_id', 'exp_id'],
+                    on=['zoningmodcat'],
                     how='left').set_index('parcel_id')
 
 
@@ -196,7 +196,7 @@ def zoning_pr(parcels_geography):
                                   dtype={'jurisdiction': 'str'})
     return pd.merge(parcels_geography.to_frame().reset_index(),
                     scenario_zoning,
-                    on=['jurisdiction', 'pda_id', 'tpp_id', 'exp_id'],
+                    on=['zoningmodcat'],
                     how='left').set_index('parcel_id')
 
 
@@ -255,7 +255,15 @@ def parcels_geography(parcels):
     df = pd.read_csv(os.path.join(misc.data_dir(),
                                   "02_01_2016_parcels_geography.csv"),
                      index_col="geom_id", dtype={'jurisdiction': 'str'})
-    return geom_id_to_parcel_id(df, parcels)
+    df = geom_id_to_parcel_id(df, parcels)
+
+    juris_name = pd.read_csv(os.path.join(misc.data_dir(),
+                                          "census_id_to_name.csv"),
+                             index_col="census_id").name10
+
+    df["juris_name"] = df.jurisdiction_id.map(juris_name)
+
+    return df
 
 
 @orca.table(cache=True)
