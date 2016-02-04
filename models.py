@@ -34,7 +34,7 @@ def rsh_simulate(buildings, aggregations, settings):
 @orca.step('hlcm_simulate')
 def hlcm_simulate(households, buildings, aggregations, settings, low_income):
 
-    fname = misc.config("hlcm.yaml") 
+    fname = misc.config("hlcm.yaml")
 
     print "\nAffordable housing HLCM:\n"
 
@@ -199,7 +199,7 @@ def alt_feasibility(parcels, settings,
                           config=config,
                           **kwargs)
 
-    f = subsidies.add_fees_to_feasibility(
+    f = subsidies.policy_modifications_of_profit(
         orca.get_table('feasibility').to_frame(),
         parcels, drop_unprofitable=True)
 
