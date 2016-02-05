@@ -179,7 +179,12 @@ def add_extra_columns(df):
     for col in ["residential_price", "non_residential_price"]:
         df[col] = 0
 
-    df["deed_restricted_units"] = 0
+    if "deed_restricted_units" not in df.columns:
+        df["deed_restricted_units"] = 0
+    else:
+        print "Number of deed restricted units built = %d" %\
+            df.deed_restricted_units.sum()
+
     df["redfin_sale_year"] = 2012
     return df
 

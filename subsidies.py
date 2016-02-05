@@ -186,7 +186,8 @@ def policy_modifications_of_profit(feasibility, parcels,
     feasibility[("residential", "policy_based_revenue_reduction")] = \
         revenue_reduction
     feasibility[("residential", "max_profit")] -= revenue_reduction
-    feasibility[("residential", "deed_restricted")] = num_affordable_units
+    feasibility[("residential", "deed_restricted_units")] = \
+        num_affordable_units
 
     if drop_unprofitable:
 
@@ -198,7 +199,7 @@ def policy_modifications_of_profit(feasibility, parcels,
             (l - len(feasibility), l)
 
     print "There are %d affordable units if all feasible projects are built" %\
-        feasibility[("residential", "deed_restricted")].sum()
+        feasibility[("residential", "deed_restricted_units")].sum()
 
     return feasibility
 
