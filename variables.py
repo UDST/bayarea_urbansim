@@ -703,9 +703,9 @@ def resacre(parcels):
 def juris_ave_income(households, buildings, parcels_geography, parcels):
     h = orca.merge_tables("households",
                           [households, buildings, parcels_geography],
-                          columns=["jurisdiction", "income"])
-    s = h.groupby(h.jurisdiction).income.quantile(.5)
-    return misc.reindex(s, parcels_geography.jurisdiction).\
+                          columns=["jurisdiction_id", "income"])
+    s = h.groupby(h.jurisdiction_id).income.quantile(.5)
+    return misc.reindex(s, parcels_geography.jurisdiction_id).\
         reindex(parcels.index).fillna(s.median()).apply(np.log1p)
 
 
