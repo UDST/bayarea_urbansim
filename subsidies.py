@@ -169,9 +169,22 @@ def policy_modifications_of_profit(feasibility, parcels,
     units = feasibility[('residential', 'residential_sqft')] / \
         parcels.ave_sqft_per_unit
     fees = (units * parcels.fees_per_unit).fillna(0)
+    print "Sum of residential fees: ", fees.sum()
 
     feasibility[("residential", "fees")] = fees
     feasibility[("residential", "max_profit")] -= fees
+    
+    for use in ["retail", "office"]:
+
+        if (use, 'non_residential_sqft') not in feasibility.columns:
+            continue 
+
+        sqft = feasibility[(use, 'non_residential_sqft')]
+        fees = (sqft * parcels.fees_per_sqft).fillna(0)
+        print "Sum of non-residential fees (%s): %.0f" % (use, fees.sum())
+
+        feasibility[(use, "fees")] = fees
+        feasibility[(use, "max_profit")] -= fees
 
     # this section adds inclusionary housing reduction in revenue
     revenue_reduction, num_affordable_units = \
@@ -221,13 +234,22 @@ def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
 
     print "%d projects pass the vmt filter" % len(df)
 
-    df["res_fees"] = df.vmt_res_cat.map(vmt_settings["fee_amounts"])
+    total_fees = 0
 
-    total_vmt_fees = (df.res_fees * df.residential_units).sum()
+    if settings.get("vmt_fee_res", False) == True:
 
-    print "Applying vmt fees to %d units" % df.residential_units.sum()
+        df["res_fees"] = df.vmt_res_cat.map(vmt_settings["res_fee_amounts"])
+        total_fees += (df.res_fees * df.residential_units).sum()
+        print "Applying vmt fees to %d units" % df.residential_units.sum()
 
-    print "Adding total vmt fees amount of $%.2f" % total_vmt_fees
+    if settings.get("vmt_fee_com", False) == True:
+
+        df["com_fees"] = df.vmt_res_cat.map(vmt_settings["com_fee_amounts"])
+        total_fees += (df.com_fees * df.non_residential_sqft).sum()
+        print "Applying vmt fees to %d commerical sqft" % \
+            df.non_residential_sqft.sum()
+
+    print "Adding total vmt fees amount of $%.2f" % total_fees
 
     metadata = {
         "description": "VMT development fees",
@@ -235,7 +257,7 @@ def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
     }
     # the subaccount is meaningless here (it's a regional account) -
     # but the subaccount number is referred to below
-    coffer["vmt_fee_acct"].add_transaction(total_vmt_fees, subaccount=1,
+    coffer["vmt_fee_acct"].add_transaction(total_fees, subaccount=1,
                                            metadata=metadata)
 
 

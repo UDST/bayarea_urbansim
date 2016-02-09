@@ -45,10 +45,14 @@ acct_settings:
   vmt_settings:
     sending_buildings_subaccount_def: regional
     receiving_buildings_filter: vmt_res_cat == 'S'
-    fee_amounts:
+    res_fee_amounts:
       VH: 25000
       H: 15000
       MH: 5000
+    com_fee_amounts:
+      VH: 20
+      H: 10
+      MH: 6
 
 
 low_income_for_hlcm: 30000
