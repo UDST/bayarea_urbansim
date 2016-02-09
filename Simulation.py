@@ -89,8 +89,6 @@ try:
         "hlcm_simulate",                 # put these last so they don't get
         "elcm_simulate",                 # displaced by new dev
 
-        "calculate_vmt_fees",
-
         "topsheet",
         "diagnostic_output",
         "geographic_summary",
