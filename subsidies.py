@@ -202,6 +202,13 @@ def policy_modifications_of_profit(feasibility, parcels,
     feasibility[("residential", "deed_restricted_units")] = \
         num_affordable_units
 
+    settings = orca.get_injectable("settings")
+    if settings["enable_sb743"]:
+        vmt_settings = settings["acct_settings"]["vmt_settings"]
+        pct_modifications = feasibility[("residential", "vmt_res_cat")].\
+            map(vmt_settings["sb743_pcts"]) + 1
+        feasibility[("residential", "max_profit")] *= pct_modifications
+
     if drop_unprofitable:
 
         profit = feasibility[("residential", "max_profit")]
