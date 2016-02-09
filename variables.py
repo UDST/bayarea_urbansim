@@ -339,7 +339,13 @@ def vmt_res_cat(parcels, vmt_fee_categories):
 @orca.column('parcels', cache=True)
 def vmt_res_fees(parcels, settings):
     vmt_settings = settings["acct_settings"]["vmt_settings"]
-    return parcels.vmt_res_cat.map(vmt_settings["fee_amounts"])
+    return parcels.vmt_res_cat.map(vmt_settings["res_fee_amounts"])
+
+
+@orca.column('parcels', cache=True)
+def vmt_com_fees(parcels, settings):
+    vmt_settings = settings["acct_settings"]["vmt_settings"]
+    return parcels.vmt_res_cat.map(vmt_settings["com_fee_amounts"])
 
 
 # compute the fees per unit for each parcel
@@ -350,6 +356,16 @@ def fees_per_unit(parcels, settings, scenario):
 
     if scenario == "th":
         s += parcels.vmt_res_fees
+
+    return s
+
+
+@orca.column('parcels', cache=True)
+def fees_per_sqft(parcels, settings, scenario):
+    s = pd.Series(0, index=parcels.index)
+
+    if scenario == "au":
+        s += parcels.vmt_com_fees
 
     return s
 

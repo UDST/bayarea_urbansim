@@ -88,8 +88,6 @@ try:
         "hlcm_simulate",                 # put these last so they don't get
         "elcm_simulate",                 # displaced by new dev
 
-        "calculate_vmt_fees",
-
         "topsheet",
         "diagnostic_output",
         "geographic_summary",
@@ -104,11 +102,15 @@ try:
         #              "subsidized_residential_feasibility")
 
     # calculate VMT taxes
-    if SCENARIO == "th":
+    if SCENARIO in ["th", "au"]:
         # calculate the vmt fees at the end of the year
 
         # note that you might also have to change the fees that get
         # imposed - look for fees_per_unit column in variables.py
+        if SCENARIO == "th":
+            orca.get_injectable("settings")["vmt_fee_res"] = True
+        if SCENARIO == "au":
+            orca.get_injectable("settings")["vmt_fee_com"] = True
         models.insert(models.index("diagnostic_output"),
                       "calculate_vmt_fees")
         models.insert(models.index("alt_feasibility"),
