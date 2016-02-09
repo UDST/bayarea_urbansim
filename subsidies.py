@@ -83,21 +83,111 @@ def add_obag_funds(settings, year, buildings, coffer,
     coffer["obag_acct"].add_transaction(amt, subaccount=1, metadata=metadata)
 
 
+# this will compute the reduction in revenue from a project due to
+# inclustionary housing - the calculation will be described in thorough
+# comments alongside the code
+def inclusionary_housing_revenue_reduction(feasibility, units):
+
+    print "Computing adjustments due to inclusionary housing"
+
+    # AMI by jurisdiction
+    #
+    # in practice deed restrictions are done by household size but we aren't
+    # going to deed restrict them by household size so it makes sense not to
+    # do that here - if we did this by household size like we do in the real
+    # world we'd need to have a better representation of what household size
+    # is in which unit type
+
+    households = orca.get_table("households")
+    buildings = orca.get_table("buildings")
+    parcels_geography = orca.get_table("parcels_geography")
+    h = orca.merge_tables("households",
+                          [households, buildings, parcels_geography],
+                          columns=["juris_name", "income"])
+    AMI = h.groupby(h.juris_name).income.quantile(.5)
+
+    # per Aksel Olsen (@akselx)
+    # take 90% of AMI and multiple by 33% to get the max amount a
+    # household can pay per year, divide by 12 to get monthly amt,
+    # subtract condo fee
+
+    monthly_condo_fee = 250
+    monthly_affordable_payment = AMI * .9 * .33 / 12 - monthly_condo_fee
+
+    def value_can_afford(monthly_payment):
+        # this is a 10 year average freddie mac interest rate
+        ten_year_average_interest = .055
+        return np.npv(ten_year_average_interest/12, [monthly_payment]*30*12)
+
+    value_can_afford = {k: value_can_afford(v) for k, v in
+                        monthly_affordable_payment.to_dict().items()}
+    value_can_afford = pd.Series(value_can_afford)
+
+    # account for interest and property taxes
+    interest_and_prop_taxes = .013
+    value_can_afford /= 1+interest_and_prop_taxes
+
+    settings = orca.get_injectable("settings")
+
+    # there's a lot more nuance to inclusionary percentages than this -
+    # e.g. specific neighborhoods get specific amounts -
+    # http://sf-moh.org/modules/showdocument.aspx?documentid=7253
+
+    pct_inclusionary = settings["inclusionary_housing"]
+    juris_name = parcels_geography.juris_name.loc[feasibility.index]
+    pct_affordable = juris_name.map(pct_inclusionary)
+    value_can_afford = juris_name.map(value_can_afford)
+
+    num_affordable_units = (units * pct_affordable).fillna(0).astype("int")
+
+    ave_price_per_unit = \
+        feasibility[('residential', 'building_revenue')] / units
+
+    revenue_diff_per_unit = (ave_price_per_unit - value_can_afford).fillna(0)
+    print "Revenue difference per unit (not zero values)"
+    print revenue_diff_per_unit[revenue_diff_per_unit > 0].describe()
+
+    revenue_reduction = revenue_diff_per_unit * num_affordable_units
+
+    s = num_affordable_units.groupby(parcels_geography.juris_name).sum()
+    print "Feasibile affordable units by jurisdiction"
+    print s[s > 0].order()
+
+    return revenue_reduction, num_affordable_units
+
+
 # this adds fees to the max_profit column of the feasibility dataframe
 # fees are usually spatially specified and are per unit so that calculation
 # is done here as well
-def add_fees_to_feasibility(feasibility, parcels, drop_unprofitable=False):
+def policy_modifications_of_profit(feasibility, parcels,
+                                   drop_unprofitable=False):
 
-    print "Subtracting fees from profitability"
+    print "Making policy modifications to profitability"
+
+    # this first section adds parcel unit-based fees
 
     units = feasibility[('residential', 'residential_sqft')] / \
         parcels.ave_sqft_per_unit
     fees = (units * parcels.fees_per_unit).fillna(0)
 
-    print "Describe of fees:\n", fees.describe()
-
     feasibility[("residential", "fees")] = fees
     feasibility[("residential", "max_profit")] -= fees
+
+    # this section adds inclusionary housing reduction in revenue
+    revenue_reduction, num_affordable_units = \
+        inclusionary_housing_revenue_reduction(feasibility, units)
+
+    print "Describe of inclusionary revenue reduction:\n", \
+        revenue_reduction[revenue_reduction > 0].describe()
+
+    print "Describe of number of affordable units:\n", \
+        num_affordable_units[num_affordable_units > 0].describe()
+
+    feasibility[("residential", "policy_based_revenue_reduction")] = \
+        revenue_reduction
+    feasibility[("residential", "max_profit")] -= revenue_reduction
+    feasibility[("residential", "deed_restricted_units")] = \
+        num_affordable_units
 
     if drop_unprofitable:
 
@@ -105,8 +195,11 @@ def add_fees_to_feasibility(feasibility, parcels, drop_unprofitable=False):
         l = len(feasibility)
         feasibility = feasibility[profit > 0]
 
-        print "Dropped %d of %d developments that areno longer profitable" %\
+        print "Dropped %d of %d developments that are no longer profitable" %\
             (l - len(feasibility), l)
+
+    print "There are %d affordable units if all feasible projects are built" %\
+        feasibility[("residential", "deed_restricted_units")].sum()
 
     return feasibility
 
@@ -372,8 +465,8 @@ def subsidized_residential_feasibility(
     feasibility.columns = pd.MultiIndex.from_tuples(
             [("residential", col) for col in feasibility.columns])
 
-    feasibility = add_fees_to_feasibility(feasibility,
-                                          parcels, drop_unprofitable=False)
+    feasibility = policy_modifications_of_profit(feasibility, parcels,
+                                                 drop_unprofitable=False)
 
     orca.add_table("feasibility", feasibility)
 

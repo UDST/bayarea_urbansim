@@ -27,6 +27,10 @@ ave_sqft_per_unit_clip:
   upper: 2500
 
 
+inclusionary_housing:
+  San Francisco: .2
+
+
 acct_settings:
   disable: False
   obag_settings:
@@ -45,6 +49,9 @@ acct_settings:
       VH: 25000
       H: 15000
       MH: 5000
+
+
+low_income_for_hlcm: 30000
 
 
 dont_enable_supply_correction:

@@ -24,6 +24,11 @@ def year():
     return 2014
 
 
+@orca.injectable(cache=True)
+def low_income(settings):
+    return int(settings["low_income_for_hlcm"])
+
+
 @orca.injectable("limits_settings", cache=True)
 def limits_settings(settings, scenario):
 
@@ -327,6 +332,8 @@ def development_projects(parcels, settings, scenario):
     # we don't predict prices for schools and hotels right now
     df = df.query("building_type_id <= 4 or building_type_id >= 7")
 
+    df["deed_restricted_units"] = 0
+
     print "Describe of development projects"
     print df[orca.get_table('buildings').local_columns].describe()
 
@@ -379,6 +386,11 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
     # we should only be using the "buildings" table during simulation, and in
     # simulation we want to normalize the prices to 2012 style prices
     df["redfin_sale_year"] = 2012
+
+    # hope we get more data on this soon
+    df["deed_restricted_units"] = 0
+    df.loc[df.sample(n=50000, weights="residential_units").index,
+           "deed_restricted_units"] = 1
 
     return df
 
