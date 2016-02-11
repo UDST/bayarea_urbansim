@@ -4,6 +4,9 @@ aggregation_tables:
   - logsums
 
 
+enable_sb743: true
+
+
 set_nan_price_to_zero: True
 
 
@@ -27,6 +30,10 @@ ave_sqft_per_unit_clip:
   upper: 2500
 
 
+inclusionary_housing:
+  San Francisco: .2
+
+
 acct_settings:
   disable: False
   obag_settings:
@@ -41,10 +48,23 @@ acct_settings:
   vmt_settings:
     sending_buildings_subaccount_def: regional
     receiving_buildings_filter: vmt_res_cat == 'S'
-    fee_amounts:
+    res_fee_amounts:
       VH: 25000
       H: 15000
       MH: 5000
+    com_fee_amounts:
+      VH: 20
+      H: 10
+      MH: 6
+    sb743_pcts:
+      VH: -0.02
+      H: -0.01
+      MH: -0.005
+      M: 0.0
+      S: 0.02
+
+
+low_income_for_hlcm: 30000
 
 
 dont_enable_supply_correction:

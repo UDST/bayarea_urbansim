@@ -2,6 +2,7 @@ from urbansim.utils import misc
 import os
 import sys
 import orca
+import yaml
 import datasources
 import variables
 from utils import parcel_id_to_geom_id, add_buildings
@@ -28,6 +29,36 @@ def rsh_simulate(buildings, aggregations, settings):
                              buildings.residential_price.clip(low, high))
         print "Clipped rsh_simulate produces\n", \
             buildings.residential_price.describe()
+
+
+@orca.step('hlcm_simulate')
+def hlcm_simulate(households, buildings, aggregations, settings, low_income):
+
+    fname = misc.config("hlcm.yaml")
+
+    print "\nAffordable housing HLCM:\n"
+
+    cfg = yaml.load(open(fname))
+    cfg["choosers_predict_filters"] = "income <= %d" % low_income
+    open(misc.config("hlcm_tmp.yaml"), "w").write(yaml.dump(cfg))
+
+    # low income into affordable units
+    utils.lcm_simulate("hlcm_tmp.yaml", households, buildings,
+                       aggregations,
+                       "building_id", "residential_units",
+                       "vacant_affordable_units",
+                       settings.get("enable_supply_correction", None))
+
+    os.remove(misc.config("hlcm_tmp.yaml"))
+
+    print "\nMarket rate housing HLCM:\n"
+
+    # then everyone into market rate units
+    utils.lcm_simulate("hlcm.yaml", households, buildings,
+                       aggregations,
+                       "building_id", "residential_units",
+                       "vacant_market_rate_units",
+                       settings.get("enable_supply_correction", None))
 
 
 @orca.step('households_transition')
@@ -150,6 +181,12 @@ def add_extra_columns(df):
     for col in ["residential_price", "non_residential_price"]:
         df[col] = 0
 
+    if "deed_restricted_units" not in df.columns:
+        df["deed_restricted_units"] = 0
+    else:
+        print "Number of deed restricted units built = %d" %\
+            df.deed_restricted_units.sum()
+
     df["redfin_sale_year"] = 2012
 
     if "residential_units" not in df:
@@ -185,9 +222,9 @@ def alt_feasibility(parcels, settings,
                           config=config,
                           **kwargs)
 
-    f = subsidies.add_fees_to_feasibility(
+    f = subsidies.policy_modifications_of_profit(
         orca.get_table('feasibility').to_frame(),
-        parcels, drop_unprofitable=True)
+        parcels)
 
     orca.add_table("feasibility", f)
 

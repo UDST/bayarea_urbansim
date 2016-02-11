@@ -196,6 +196,39 @@ def job_spaces(buildings):
             buildings.sqft_per_job).fillna(0).round().astype('int')
 
 
+@orca.column('buildings')
+def market_rate_units(buildings):
+    return buildings.residential_units - buildings.deed_restricted_units
+
+
+# this column can be negative when there are more low income households than
+# deed restricted units, which means some of the low income households are in
+# market rate units - this feature is used below
+@orca.column('buildings')
+def vacant_affordable_units_neg(buildings, households, settings, low_income):
+    return buildings.deed_restricted_units.sub(
+        households.building_id[households.income <= low_income].value_counts(),
+        fill_value=0)
+
+
+@orca.column('buildings')
+def vacant_affordable_units(buildings):
+    return buildings.vacant_affordable_units_neg.clip(lower=0).\
+        reindex(buildings.index).fillna(0)
+
+
+@orca.column('buildings')
+def vacant_market_rate_units(buildings, households, settings, low_income):
+    # this is market rate households per building
+    s1 = households.building_id[households.income > low_income].value_counts()
+    # this is low income households in market rate units - a negative number
+    # in vacant affordable units indicates the number of households in market
+    # rate units
+    s2 = buildings.vacant_affordable_units_neg.clip(upper=0)*-1
+    return buildings.market_rate_units.\
+        sub(s1, fill_value=0).sub(s2, fill_value=0).clip(lower=0)
+
+
 @orca.column('buildings', cache=True)
 def building_age(buildings, year):
     return (year or 2014) - buildings.year_built
@@ -324,7 +357,13 @@ def vmt_res_cat(parcels, vmt_fee_categories):
 @orca.column('parcels', cache=True)
 def vmt_res_fees(parcels, settings):
     vmt_settings = settings["acct_settings"]["vmt_settings"]
-    return parcels.vmt_res_cat.map(vmt_settings["fee_amounts"])
+    return parcels.vmt_res_cat.map(vmt_settings["res_fee_amounts"])
+
+
+@orca.column('parcels', cache=True)
+def vmt_com_fees(parcels, settings):
+    vmt_settings = settings["acct_settings"]["vmt_settings"]
+    return parcels.vmt_res_cat.map(vmt_settings["com_fee_amounts"])
 
 
 # compute the fees per unit for each parcel
@@ -335,6 +374,16 @@ def fees_per_unit(parcels, settings, scenario):
 
     if scenario == "th":
         s += parcels.vmt_res_fees
+
+    return s
+
+
+@orca.column('parcels', cache=True)
+def fees_per_sqft(parcels, settings, scenario):
+    s = pd.Series(0, index=parcels.index)
+
+    if scenario == "au":
+        s += parcels.vmt_com_fees
 
     return s
 
