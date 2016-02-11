@@ -159,8 +159,7 @@ def inclusionary_housing_revenue_reduction(feasibility, units):
 # this adds fees to the max_profit column of the feasibility dataframe
 # fees are usually spatially specified and are per unit so that calculation
 # is done here as well
-def policy_modifications_of_profit(feasibility, parcels,
-                                   drop_unprofitable=False):
+def policy_modifications_of_profit(feasibility, parcels):
 
     print "Making policy modifications to profitability"
 
@@ -208,15 +207,6 @@ def policy_modifications_of_profit(feasibility, parcels,
         pct_modifications = feasibility[("residential", "vmt_res_cat")].\
             map(vmt_settings["sb743_pcts"]) + 1
         feasibility[("residential", "max_profit")] *= pct_modifications
-
-    if drop_unprofitable:
-
-        profit = feasibility[("residential", "max_profit")]
-        l = len(feasibility)
-        feasibility = feasibility[profit > 0]
-
-        print "Dropped %d of %d developments that are no longer profitable" %\
-            (l - len(feasibility), l)
 
     print "There are %d affordable units if all feasible projects are built" %\
         feasibility[("residential", "deed_restricted_units")].sum()
@@ -494,8 +484,7 @@ def subsidized_residential_feasibility(
     feasibility.columns = pd.MultiIndex.from_tuples(
             [("residential", col) for col in feasibility.columns])
 
-    feasibility = policy_modifications_of_profit(feasibility, parcels,
-                                                 drop_unprofitable=False)
+    feasibility = policy_modifications_of_profit(feasibility, parcels)
 
     orca.add_table("feasibility", feasibility)
 

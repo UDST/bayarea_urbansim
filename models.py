@@ -224,7 +224,7 @@ def alt_feasibility(parcels, settings,
 
     f = subsidies.policy_modifications_of_profit(
         orca.get_table('feasibility').to_frame(),
-        parcels, drop_unprofitable=True)
+        parcels)
 
     orca.add_table("feasibility", f)
 
