@@ -144,8 +144,16 @@ except Exception as e:
 print "Finished", time.ctime()
 
 if MAPS:
+
+    from urbansim_explorer import sim_explorer as se
+
     try:
-        os.system('python scripts/explorer.py %d' % run_num)
+        se.start(
+            'runs/run%d_simulation_output.json' % run_num,
+            'runs/run%d_parcel_output.csv' % run_num,
+            write_static_file='/var/www/html/sim_explorer%d.html' % run_num
+        )
+        # os.system('python scripts/explorer.py %d' % run_num)
         # os.system('python scripts/compare_to_targets.py %d' % run_num)
         # os.system('python scripts/make_pda_result_maps.py %d' % run_num)
     except Exception as e:
