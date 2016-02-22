@@ -161,10 +161,10 @@ def zoning_baseline(parcels, zoning_lookup):
     return df
 
 
-@orca.table('zoning', cache=True)
-def zoning(parcels_geography, scenario):
+@orca.table('zoning_scenario', cache=True)
+def zoning_scenario(parcels_geography, scenario):
     scenario_zoning = pd.read_csv(os.path.join(misc.data_dir(),
-                                               'zoning_mods_%d.csv' % scenario),
+                                               'zoning_mods_%s.csv' % scenario),
                                   dtype={'jurisdiction': 'str'})
     return pd.merge(parcels_geography.to_frame().reset_index(),
                     scenario_zoning,

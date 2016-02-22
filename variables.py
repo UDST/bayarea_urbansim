@@ -969,7 +969,7 @@ def zoned_du(parcels, parcels_zoning_calculations):
 
 
 @orca.column('parcels_zoning_calculations', 'effective_max_dua', cache=True)
-def effective_max_dua(zoning_baseline, parcels, scenario_inputs, scenario):
+def effective_max_dua(zoning_baseline, parcels, scenario):
 
     max_dua_from_far = zoning_baseline.max_far * 43560 / GROSS_AVE_UNIT_SIZE
 
@@ -984,7 +984,7 @@ def effective_max_dua(zoning_baseline, parcels, scenario_inputs, scenario):
         max_dua_from_height
     ], axis=1).min(axis=1)
 
-    scenario_max_dua = orca.get_table("zoning_%d" % scenario).dua_up
+    scenario_max_dua = orca.get_table("zoning_scenario").dua_up
 
     s = pd.concat([
         s,
@@ -998,7 +998,7 @@ def effective_max_dua(zoning_baseline, parcels, scenario_inputs, scenario):
 
 @orca.column('parcels_zoning_calculations',
              'effective_max_far', cache=True)
-def effective_max_far(zoning_baseline, parcels, scenario_inputs, scenario):
+def effective_max_far(zoning_baseline, parcels, scenario):
 
     max_far_from_height = (zoning_baseline.max_height / HEIGHT_PER_STORY) * \
         PARCEL_USE_EFFICIENCY
@@ -1008,7 +1008,7 @@ def effective_max_far(zoning_baseline, parcels, scenario_inputs, scenario):
         max_far_from_height
     ], axis=1).min(axis=1)
 
-    scenario_max_far = orca.get_table("zoning_%d" % scenario).far_up
+    scenario_max_far = orca.get_table("zoning_scenario").far_up
 
     s = pd.concat([
         s,
