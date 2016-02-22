@@ -161,43 +161,10 @@ def zoning_baseline(parcels, zoning_lookup):
     return df
 
 
-@orca.table('zoning_np', cache=True)
-def zoning_np(parcels_geography):
+@orca.table('zoning', cache=True)
+def zoning(parcels_geography, scenario):
     scenario_zoning = pd.read_csv(os.path.join(misc.data_dir(),
-                                               'zoning_mods_np.csv'),
-                                  dtype={'jurisdiction': 'str'})
-    return pd.merge(parcels_geography.to_frame().reset_index(),
-                    scenario_zoning,
-                    on=['zoningmodcat'],
-                    how='left').set_index('parcel_id')
-
-
-@orca.table('zoning_th', cache=True)
-def zoning_th(parcels_geography):
-    scenario_zoning = pd.read_csv(os.path.join(misc.data_dir(),
-                                               'zoning_mods_th.csv'),
-                                  dtype={'jurisdiction': 'str'})
-    return pd.merge(parcels_geography.to_frame().reset_index(),
-                    scenario_zoning,
-                    on=['zoningmodcat'],
-                    how='left').set_index('parcel_id')
-
-
-@orca.table('zoning_au', cache=True)
-def zoning_au(parcels_geography):
-    scenario_zoning = pd.read_csv(os.path.join(misc.data_dir(),
-                                               'zoning_mods_au.csv'),
-                                  dtype={'jurisdiction': 'str'})
-    return pd.merge(parcels_geography.to_frame().reset_index(),
-                    scenario_zoning,
-                    on=['zoningmodcat'],
-                    how='left').set_index('parcel_id')
-
-
-@orca.table('zoning_pr', cache=True)
-def zoning_pr(parcels_geography):
-    scenario_zoning = pd.read_csv(os.path.join(misc.data_dir(),
-                                               'zoning_mods_pr.csv'),
+                                               'zoning_mods_%d.csv' % scenario),
                                   dtype={'jurisdiction': 'str'})
     return pd.merge(parcels_geography.to_frame().reset_index(),
                     scenario_zoning,

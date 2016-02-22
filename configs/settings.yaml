@@ -190,20 +190,7 @@ pusher:
 store: 2015_09_01_bayarea_v3.h5
 
 
-scenario: np
-
-
-scenario_inputs:
-  baseline:
-    zoning_table_name: zoning_baseline
-  np:
-    zoning_table_name: zoning_np
-  pr:
-    zoning_table_name: zoning_pr
-  th:
-    zoning_table_name: zoning_th
-  au:
-    zoning_table_name: zoning_au
+scenario: 0
 
 
 # this maps Synthicity's 25 employment categories to

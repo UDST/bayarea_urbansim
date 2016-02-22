@@ -2,15 +2,8 @@ import os
 
 # run a full package of scenarios
 
-os.system('python Simulation.py -s np')
-
-os.system('python Simulation.py -s th')
-
-os.system('python Simulation.py -s au')
-
-os.system('python Simulation.py -s pr')
-
-os.system('python Simulation.py -s np')
+for num in [0, 1, 2, 3, 0]:
+    os.system('python Simulation.py -s %d' % num)
 
 with open('RUNNUM', 'r') as f:
     runnum = f.readline()

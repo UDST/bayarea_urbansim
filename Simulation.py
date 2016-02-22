@@ -97,20 +97,20 @@ try:
 
     # compute feasibility for all negative profit residential devs
     # will get subsidized in various ways by the next few steps
-    if SCENARIO in ["th", "au", "pr"]:
+    if SCENARIO in ["1", "2", "3"]:
         pass
         # models.insert(models.index("alt_feasibility"),
         #              "subsidized_residential_feasibility")
 
     # calculate VMT taxes
-    if SCENARIO in ["th", "au"]:
+    if SCENARIO in ["1", "3"]:
         # calculate the vmt fees at the end of the year
 
         # note that you might also have to change the fees that get
         # imposed - look for fees_per_unit column in variables.py
-        if SCENARIO == "th":
+        if SCENARIO == "3":
             orca.get_injectable("settings")["vmt_fee_res"] = True
-        if SCENARIO == "au":
+        if SCENARIO == "1":
             orca.get_injectable("settings")["vmt_fee_com"] = True
         models.insert(models.index("diagnostic_output"),
                       "calculate_vmt_fees")
@@ -120,7 +120,7 @@ try:
                       "subsidized_residential_developer_vmt")
 
     # add obag funds to the coffer
-    if SCENARIO in ["th", "au", "pr"]:
+    if SCENARIO in ["1", "2", "3"]:
         models.insert(models.index("alt_feasibility"),
                       "add_obag_funds")
         models.insert(models.index("alt_feasibility"),
