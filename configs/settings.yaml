@@ -382,14 +382,14 @@ pda_price_shifters:
 
 cost_shifters:
   "Santa Clara": 1.3
-  "San Francisco": .8
-  "San Mateo": .8
+  "San Francisco": 0.8
+  "San Mateo": 0.8
   "Sonoma": 1.0
-  "Solano": .75
-  "Alameda": .7
-  "Napa": .9
+  "Solano": 0.75
+  "Alameda": 0.7
+  "Napa": 0.9
   "Marin": 1.0
-  "Contra Costa": .75
+  "Contra Costa": 0.75
 
 
 development_limits:
@@ -401,6 +401,12 @@ development_limits:
   th:
     Residential:
       'Half Moon Bay': 150
+  pr:
+    Office:
+      'San Francisco': 4500
+    Residential:
+      'Half Moon Bay': 150
+
 
 zoning_column_dictionary: 
   id: "generic zoning id"
