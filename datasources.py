@@ -268,6 +268,8 @@ def parcels_geography(parcels):
 
     df["juris_name"] = df.jurisdiction_id.map(juris_name)
 
+    df["pda_id"] = df.pda_id.lower()
+
     return df
 
 
