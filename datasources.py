@@ -264,9 +264,12 @@ def development_projects(parcels, settings, scenario):
     df = df[df.action.isin(["add", "build"])]
 
     # this filters project by scenario
-    if scenario in df:
-        # df[scenario] is 1s and 0s indicating whether to include it
-        df = df[df[scenario].astype('bool')]
+    colname = "scen%s" % scenario
+    # df[colname] is 1s and 0s indicating whether to include it
+    # this used to be an optional filter but now I'm going to require it so
+    # that we don't accidentally include all the development projects since we've
+    # started using scenario-based dev projects pretty extensively
+    df = df[df[colname].astype('bool')]
 
     df = df.dropna(subset=['geom_id'])
 
