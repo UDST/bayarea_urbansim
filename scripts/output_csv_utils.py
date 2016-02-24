@@ -62,16 +62,11 @@ def compare_series(base_series, outcome_series, index):
     return df
 
 
-def compare_outcome(run, base_series):
+def compare_outcome(run, base_series, formatters):
     df = get_outcome_df(run)
     s = df[base_series.name]
     df = compare_series(base_series, s, df.index)
-    formatters1 = {'Count': '{:.0f}',
-                   'Share': '{:.2f}',
-                   'Percent_Change': '{:.0f}',
-                   'Share_Change': '{:.3f}'}
-
-    df = format_df(df, formatters1)
+    df = format_df(df, formatters)
     return df
 
 
@@ -172,14 +167,32 @@ def compare_outcome_for(variable, runs, set_geography):
         'Count': s,
         'Share': s1
     }
-    formatters = {'Count': '{:.0f}',
-                  'Share': '{:.2f}'}
-    df = pd.DataFrame(d, index=base_year_df.index)
-    df = format_df(df, formatters)
-    df_lst.append(df)
 
-    for run in runs:
-        df_lst.append(compare_outcome(run, s))
+    df = pd.DataFrame(d, index=base_year_df.index)
+    if geography == 'superdistrict':
+        formatters = {'Count': '{:.0f}',
+                      'Share': '{:.2f}'}
+        df = pd.DataFrame(d, index=base_year_df.index)
+        df = format_df(df, formatters)
+        df_lst.append(df)
+        more_formatters = {'Count': '{:.0f}',
+                   'Share': '{:.2f}',
+                   'Percent_Change': '{:.0f}',
+                   'Share_Change': '{:.3f}'}
+        for run in runs:
+            df_lst.append(compare_outcome(run, s, more_formatters))
+    else:
+        formatters = {'Count': '{:.4f}',
+                      'Share': '{:.6f}'}
+        df = pd.DataFrame(d, index=base_year_df.index)
+        df = format_df(df, formatters)
+        df_lst.append(df)
+        more_formatters = {'Count': '{:.4f}',
+                   'Share': '{:.6f}',
+                   'Percent_Change': '{:.6f}',
+                   'Share_Change': '{:.6f}'}
+        for run in runs:
+            df_lst.append(compare_outcome(run, s, more_formatters))
 
     # build up dataframe of ratios of run count variables to one another
     if len(runs) > 1:
