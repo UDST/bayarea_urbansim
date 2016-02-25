@@ -161,43 +161,10 @@ def zoning_baseline(parcels, zoning_lookup):
     return df
 
 
-@orca.table('zoning_np', cache=True)
-def zoning_np(parcels_geography):
+@orca.table('zoning_scenario', cache=True)
+def zoning_scenario(parcels_geography, scenario):
     scenario_zoning = pd.read_csv(os.path.join(misc.data_dir(),
-                                               'zoning_mods_np.csv'),
-                                  dtype={'jurisdiction': 'str'})
-    return pd.merge(parcels_geography.to_frame().reset_index(),
-                    scenario_zoning,
-                    on=['zoningmodcat'],
-                    how='left').set_index('parcel_id')
-
-
-@orca.table('zoning_th', cache=True)
-def zoning_th(parcels_geography):
-    scenario_zoning = pd.read_csv(os.path.join(misc.data_dir(),
-                                               'zoning_mods_th.csv'),
-                                  dtype={'jurisdiction': 'str'})
-    return pd.merge(parcels_geography.to_frame().reset_index(),
-                    scenario_zoning,
-                    on=['zoningmodcat'],
-                    how='left').set_index('parcel_id')
-
-
-@orca.table('zoning_au', cache=True)
-def zoning_au(parcels_geography):
-    scenario_zoning = pd.read_csv(os.path.join(misc.data_dir(),
-                                               'zoning_mods_au.csv'),
-                                  dtype={'jurisdiction': 'str'})
-    return pd.merge(parcels_geography.to_frame().reset_index(),
-                    scenario_zoning,
-                    on=['zoningmodcat'],
-                    how='left').set_index('parcel_id')
-
-
-@orca.table('zoning_pr', cache=True)
-def zoning_pr(parcels_geography):
-    scenario_zoning = pd.read_csv(os.path.join(misc.data_dir(),
-                                               'zoning_mods_pr.csv'),
+                                               'zoning_mods_%s.csv' % scenario),
                                   dtype={'jurisdiction': 'str'})
     return pd.merge(parcels_geography.to_frame().reset_index(),
                     scenario_zoning,
@@ -299,9 +266,12 @@ def development_projects(parcels, settings, scenario):
     df = df[df.action.isin(["add", "build"])]
 
     # this filters project by scenario
-    if scenario in df:
-        # df[scenario] is 1s and 0s indicating whether to include it
-        df = df[df[scenario].astype('bool')]
+    colname = "scen%s" % scenario
+    # df[colname] is 1s and 0s indicating whether to include it
+    # this used to be an optional filter but now I'm going to require it so
+    # that we don't accidentally include all the development projects since we've
+    # started using scenario-based dev projects pretty extensively
+    df = df[df[colname].astype('bool')]
 
     df = df.dropna(subset=['geom_id'])
 
