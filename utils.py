@@ -120,3 +120,116 @@ def simple_ipf(seed_matrix, col_marginals, row_marginals, tolerance=1, cnt=0):
 
     return simple_ipf(seed_matrix, col_marginals, row_marginals,
                       tolerance, cnt+1)
+
+"""
+BELOW IS A SET OF UTITLIES TO COMPARE TWO SUMMARY DATAFRAMES, MAINLY LOOKING
+FOR PCT DIFFERENCE AND THEN FORMATTING INTO A DESCRIPTION OR INTO AN EXCEL
+OUTPUT FILE WHICH IS COLOR CODED TO HIGHLIGHT THE DIFFERENCES
+"""
+
+# for labels and cols in df1, find value in df2, and make sure value is
+# within pctdiff - if not return dataframe col, row and values in two frames
+# pctdiff should be specified as a number between 1 and 100
+
+
+def compare_dfs(df1, df2):
+
+    df3 = pd.DataFrame(index=df1.index, columns=df1.columns)
+
+    # for each row
+    for label, row in df1.iterrows():
+
+        # assume row exists in comparison
+        rowcomp = df2.loc[label]
+
+        # for each value
+        for col, val in row.iteritems():
+
+            val2 = rowcomp[col]
+
+            df3.loc[label, col] = \
+                int(abs(val - val2) / ((val + val2 + .01) / 2.0) * 100.0)
+
+    return df3
+
+
+# identify small values as a boolean T/F for each column
+def small_vals(df):
+
+    df = df.copy()
+
+    for col in df.columns:
+        df[col] = df[col] < df[col].mean() - .5*df[col].std()
+
+    return df
+
+
+def compare_dfs_excel(df1, df2, excelname="out.xlsx"):
+
+    writer = pd.ExcelWriter(excelname, engine='xlsxwriter')
+
+    df1.reset_index().to_excel(writer, index=False, sheet_name='df1')
+    df2.reset_index().to_excel(writer, index=False, sheet_name='df2')
+    writer.sheets['df1'].set_zoom(150)
+    writer.sheets['df2'].set_zoom(150)
+
+    df3 = compare_dfs(df1, df2)
+
+    df3.reset_index().to_excel(writer, index=False, sheet_name='comparison')
+
+    workbook = writer.book
+    worksheet = writer.sheets['comparison']
+    worksheet.set_zoom(150)
+
+    color_range = "B2:Z{}".format(len(df1)+1)
+
+    reds = palettable.colorbrewer.sequential.Blues_5.hex_colors
+    reds = {
+        i: workbook.add_format({'bg_color': reds[i]})
+        for i in range(len(reds))
+    }
+
+    blues = palettable.colorbrewer.sequential.Oranges_5.hex_colors
+    blues = {
+        i: workbook.add_format({'bg_color': blues[i]})
+        for i in range(len(blues))
+    }
+
+    def apply_format(worksheet, df, format, filter):
+
+        s = df.stack()
+
+        for (lab, col), val in filter(s).iteritems():
+
+            rowind = df.index.get_loc(lab)+2
+            colind = df.columns.get_loc(col)+1
+            colletter = xlsxwriter.utility.xl_col_to_name(colind)
+
+            worksheet.write(colletter+str(rowind), val, format)
+
+    for i in range(5):
+        apply_format(worksheet, df3, reds[i], lambda s: s[s > i*10+10])
+
+    df3[small_vals(df1)] = np.nan
+    for i in range(5):
+        apply_format(worksheet, df3, blues[i], lambda s: s[s > i*10+10])
+
+    writer.save()
+
+
+# compare certain columns of two dataframes for differences above a certain
+# amount and return a string describing the differences
+def compare_summary(df1, df2, index_names=None, pctdiff=10,
+                    cols=["tothh", "totemp"], geog_name="Superdistrict"):
+
+    df3 = compare_dfs(df1, df2)
+    df3[small_vals(df1)] = np.nan
+    s = df3[cols].stack()
+
+    buf = ""
+    for (lab, col), val in s[s > 10].iteritems():
+        lab = index_names.loc[lab]
+        buf += "%s '%s' is %d%% off in column '%s'\n" % \
+            (geog_name, lab, val, col)
+
+    return buf

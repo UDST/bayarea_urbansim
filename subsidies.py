@@ -172,11 +172,11 @@ def policy_modifications_of_profit(feasibility, parcels):
 
     feasibility[("residential", "fees")] = fees
     feasibility[("residential", "max_profit")] -= fees
-    
+
     for use in ["retail", "office"]:
 
         if (use, 'non_residential_sqft') not in feasibility.columns:
-            continue 
+            continue
 
         sqft = feasibility[(use, 'non_residential_sqft')]
         fees = (sqft * parcels.fees_per_sqft).fillna(0)
