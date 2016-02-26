@@ -1,6 +1,8 @@
 import pandas as pd
 import orca
 import sys
+import os
+from urbansim.utils import misc
 sys.path.append(".")
 import datasources
 
@@ -49,5 +51,9 @@ print "there are " + str(len(null_df.index)) + " empty zoning ids"
 print "number of parcels with null values by city:"
 print null_df.tablename.value_counts()
 
-zdf.to_csv('data/2015_12_21_zoning_parcels.csv')
+import datetime
+x = datetime.date.today()
+csvname = 'data/' + str(x.year) + '_' + str(x.month) + '_' + str(x.day) + '_zoning_parcels.csv'
+
+zdf.to_csv(csvname)
 
