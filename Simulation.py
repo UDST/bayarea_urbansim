@@ -170,8 +170,9 @@ df2 = df2.set_index(df2.columns[0]).sort_index()
 
 supnames = pd.read_csv("data/superdistrict_names.csv", index_col="number").name
 
+summary = compare_summary(df1, df2, supnames)
 with open("runs/run%d_difference_report.log" % run_num, "w") as f:
-    f.write(compare_summary(df1, df2, supnames))
+    f.write(summary)
 
 if SLACK:
     slack.chat.post_message(
@@ -188,10 +189,16 @@ if SLACK:
         'Final topsheet is available at ' +
         'http://urbanforecast.com/runs/run%d_topsheet_2040.log' % run_num)
 
-    slack.chat.post_message(
-        '#sim_updates',
-        'Difference report is available at ' +
-        'http://urbanforecast.com/runs/run%d_difference_report.log' % run_num)
+    if len(summary.strip()) == 0:
+        sum_lines = len(summary.strip().split("\n"))
+        slack.chat.post_message(
+            '#sim_updates',
+            ('Difference report is available at ' +
+             'http://urbanforecast.com/runs/run%d_difference_report.log ' +
+             '- %d line(s)') % (run_num, sum_lines))
+    else:
+        slack.chat.post_message(
+            '#sim_updates', "No differences with reference run.")
 
 if S3:
     try:
