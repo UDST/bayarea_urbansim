@@ -7,6 +7,7 @@ import pandas as pd
 import orca
 import socket
 import warnings
+from utils import compare_summary
 
 warnings.filterwarnings("ignore")
 
@@ -21,6 +22,13 @@ EVERY_NTH_YEAR = 5
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
 COMPARE_TO_NO_PROJECT = True
 NO_PROJECT = 611
+
+LAST_KNOWN_GOOD_RUNS = {
+    "0": 1057,
+    "1": 1058,
+    "2": 1059,
+    "3": 1060
+}
 
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 
@@ -152,6 +160,19 @@ if MAPS:
         write_static_file='/var/www/html/sim_explorer%d.html' % run_num
     )
 
+# compute and write the difference report at the superdistrict level
+prev_run = LAST_KNOWN_GOOD_RUNS[SCENARIO]
+df1 = pd.read_csv("runs/run%d_superdistrict_summaries_2040.csv" % prev_run)
+df1 = df1.set_index(df1.columns[0]).sort_index()
+
+df2 = pd.read_csv("runs/run%d_superdistrict_summaries_2040.csv" % run_num)
+df2 = df2.set_index(df2.columns[0]).sort_index()
+
+supnames = pd.read_csv("data/superdistrict_names.csv", index_col="number").name
+
+with open("runs/run%d_difference_report.log" % run_num, "w") as f:
+    f.write(compare_summary(df1, df2, supnames))
+
 if SLACK:
     slack.chat.post_message(
         '#sim_updates',
@@ -167,10 +188,10 @@ if SLACK:
         'Final topsheet is available at ' +
         'http://urbanforecast.com/runs/run%d_topsheet_2040.log' % run_num)
 
-    # slack.chat.post_message(
-    #    '#sim_updates',
-    #    'PDA target comparison is available at ' +
-    #    'http://urbanforecast.com/scratchpad/results_%d.html' % run_num)
+    slack.chat.post_message(
+        '#sim_updates',
+        'Difference report is available at ' +
+        'http://urbanforecast.com/runs/run%d_difference_report.log' % run_num)
 
 if S3:
     try:
