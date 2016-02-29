@@ -300,7 +300,7 @@ def development_projects(parcels, settings, scenario):
     geom_id = df.geom_id
     df = df.set_index("geom_id")
     df = geom_id_to_parcel_id(df, parcels).reset_index()  # use parcel id
-    df["geom_id"] = geom_id  # add it back again cause it goes away above
+    df["geom_id"] = geom_id.values  # add it back again cause it goes away above
 
     # we don't predict prices for schools and hotels right now
     df = df.query("building_type_id <= 4 or building_type_id >= 7")
