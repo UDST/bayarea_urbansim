@@ -7,6 +7,7 @@ for num in [0, 1, 2, 3, 0]:
 
 with open('RUNNUM', 'r') as f:
     runnum = f.readline()
+
 lastrun = int(runnum)
 lst = [lastrun for i in range(4)]
 lst1 = [-5, -4, -3, -2]
