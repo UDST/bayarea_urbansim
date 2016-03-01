@@ -474,7 +474,7 @@ def parcel_is_allowed(form):
     s = pd.concat(allowed, axis=1).max(axis=1).\
         reindex(orca.get_table('parcels').index).fillna(False)
 
-    return s
+    return s.astype("bool")
 
 
 @orca.column('parcels', 'first_building_type_id')
