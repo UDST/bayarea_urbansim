@@ -266,6 +266,17 @@ def development_projects(parcels, settings, scenario):
 
     df = df[df.action.isin(["add", "build"])]
 
+    # if dev projects with the same parcel id have more than one build
+    # record, we change the later ones to add records - we don't want to
+    # constantly be redeveloping projects, but it's a common error for users
+    # to make in their development project configuration
+    df = df.sort(["geom_id", "year_built"])
+    prev_geom_id = None
+    for index, rec in df.iterrows():
+        if rec.geom_id == prev_geom_id:
+            df.loc[index, "action"] = "add"
+        prev_geom_id = rec.geom_id
+
     # this filters project by scenario
     colname = "scen%s" % scenario
     # df[colname] is 1s and 0s indicating whether to include it
