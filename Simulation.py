@@ -13,7 +13,7 @@ warnings.filterwarnings("ignore")
 
 args = sys.argv[1:]
 
-SLACK = MAPS = True
+SLACK = MAPS = False
 LOGS = True
 INTERACT = False
 SCENARIO = None
@@ -189,7 +189,7 @@ if SLACK:
         'Final topsheet is available at ' +
         'http://urbanforecast.com/runs/run%d_topsheet_2040.log' % run_num)
 
-    if len(summary.strip()) == 0:
+    if len(summary.strip()) != 0:
         sum_lines = len(summary.strip().split("\n"))
         slack.chat.post_message(
             '#sim_updates',
