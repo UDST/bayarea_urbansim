@@ -2,12 +2,12 @@ import os
 import sys
 import time
 import traceback
-import models
+from baus import models
 import pandas as pd
 import orca
 import socket
 import warnings
-from utils import compare_summary
+from baus.utils import compare_summary
 
 warnings.filterwarnings("ignore")
 
