@@ -28,6 +28,7 @@ source ~/.bashrc
 wget https://bootstrap.pypa.io/get-pip.py -O - | sudo python
 
 pip install -u pandana
+sudo pip install awscli
 
 cd /bayarea_urbansim; pip install -r requirements.txt
 

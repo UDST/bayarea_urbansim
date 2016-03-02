@@ -19,7 +19,16 @@ How To
 ------
 ####Set Up Simulation and Estimation  
 Install dependencies using standard [pip](https://pip.pypa.io/en/latest/user_guide.html#requirements-files) requirements install:
-`pip install -r requirements.txt` 
+`pip install -r requirements.txt`
+You may also need to install pandana
+`pip install pandana`
+
+####Set up using a Virtual Machine
+For convenience, there is a (Vagrantfile)[https://www.vagrantup.com/] and a `scripts/vagrant/bootstrap.sh` file. This is the recommended way to set up and run `Simulation.py` on Windows. 
+
+####Enter Amazon Web Services credentials to fetch data.
+
+See (Installing) [http://docs.aws.amazon.com/cli/latest/userguide/installing.html] and (configuring) [http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html] 
 
 ####Run a Simulation  
 In the repository directory type `python Simulation.py`  
