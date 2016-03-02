@@ -96,7 +96,7 @@ def jobs_relocation(jobs, settings, years_per_iter):
 @orca.step("scheduled_development_events")
 def scheduled_development_events(buildings, development_projects,
                                  demolish_events, summary, year, parcels,
-                                 settings, years_per_iter,
+                                 settings, years_per_iter, parcels_geography,
                                  building_sqft_per_job, vmt_fee_categories):
 
     # first demolish
@@ -138,6 +138,8 @@ def scheduled_development_events(buildings, development_projects,
     new_buildings["vmt_res_cat"] = misc.reindex(
         vmt_fee_categories.res_cat, new_buildings.zone_id)
     del new_buildings["zone_id"]
+    new_buildings["pda"] = parcels_geography.pda_id.loc[
+        new_buildings.parcel_id].values
 
     summary.add_parcel_output(new_buildings)
 
