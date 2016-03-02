@@ -132,7 +132,7 @@ def zoning_table_city_lookup():
 # zoning for use in the "baseline" scenario
 # comes in the hdf5
 @orca.table('zoning_baseline', cache=True)
-def zoning_baseline(parcels, zoning_lookup):
+def zoning_baseline(parcels, zoning_lookup, settings):
     df = pd.read_csv(os.path.join(misc.data_dir(),
                      "2015_12_21_zoning_parcels.csv"),
                      index_col="geom_id")
@@ -140,32 +140,26 @@ def zoning_baseline(parcels, zoning_lookup):
                   left_on="zoning_id", right_index=True)
     df = geom_id_to_parcel_id(df, parcels)
 
-    d = {
-        "HS": "type1",
-        "HT": "type2",
-        "HM": "type3",
-        "OF": "type4",
-        "HO": "type5",
-        "SC": "type6",
-        "IL": "type7",
-        "IW": "type8",
-        "IH": "type9",
-        "RS": "type10",
-        "RB": "type11",
-        "MR": "type12",
-        "MT": "type13",
-        "ME": "type14"
-    }
+    d = {k: "type%d" % v for k, v in settings["building_type_map2"].items()}
+
     df.columns = [d.get(x, x) for x in df.columns]
 
     return df
 
 
 @orca.table('zoning_scenario', cache=True)
-def zoning_scenario(parcels_geography, scenario):
-    scenario_zoning = pd.read_csv(os.path.join(misc.data_dir(),
-                                               'zoning_mods_%s.csv' % scenario),
-                                  dtype={'jurisdiction': 'str'})
+def zoning_scenario(parcels_geography, scenario, settings):
+
+    scenario_zoning = pd.read_csv(
+        os.path.join(misc.data_dir(),
+                     'zoning_mods_%s.csv' % scenario),
+        dtype={'jurisdiction': 'str'})
+
+    d = {k: "type%d" % v for k, v in settings["building_type_map2"].items()}
+
+    for k, v in d.items():
+        scenario_zoning[v] = scenario_zoning.add_bldg.str.contains(k)
+
     return pd.merge(parcels_geography.to_frame().reset_index(),
                     scenario_zoning,
                     on=['zoningmodcat'],
@@ -235,7 +229,22 @@ def parcels_geography(parcels):
 
     df["juris_name"] = df.jurisdiction_id.map(juris_name)
 
-    df["pda_id"] = df.pda_id.lower()
+    df["pda_id"] = df.pda_id.str.lower()
+
+    return df
+
+
+def reprocess_dev_projects(df):
+    # if dev projects with the same parcel id have more than one build
+    # record, we change the later ones to add records - we don't want to
+    # constantly be redeveloping projects, but it's a common error for users
+    # to make in their development project configuration
+    df = df.sort(["geom_id", "year_built"])
+    prev_geom_id = None
+    for index, rec in df.iterrows():
+        if rec.geom_id == prev_geom_id:
+            df.loc[index, "action"] = "add"
+        prev_geom_id = rec.geom_id
 
     return df
 
@@ -243,6 +252,7 @@ def parcels_geography(parcels):
 @orca.table(cache=True)
 def demolish_events(parcels, settings, scenario):
     df = pd.read_csv(os.path.join(misc.data_dir(), "development_projects.csv"))
+    df = reprocess_dev_projects(df)
 
     # this filters project by scenario
     if scenario in df:
@@ -262,6 +272,7 @@ def demolish_events(parcels, settings, scenario):
 @orca.table(cache=True)
 def development_projects(parcels, settings, scenario):
     df = pd.read_csv(os.path.join(misc.data_dir(), "development_projects.csv"))
+    df = reprocess_dev_projects(df)
 
     df = df[df.action.isin(["add", "build"])]
 
@@ -269,8 +280,8 @@ def development_projects(parcels, settings, scenario):
     colname = "scen%s" % scenario
     # df[colname] is 1s and 0s indicating whether to include it
     # this used to be an optional filter but now I'm going to require it so
-    # that we don't accidentally include all the development projects since we've
-    # started using scenario-based dev projects pretty extensively
+    # that we don't accidentally include all the development projects since
+    # we've started using scenario-based dev projects pretty extensively
     df = df[df[colname].astype('bool')]
 
     df = df.dropna(subset=['geom_id'])
@@ -299,7 +310,7 @@ def development_projects(parcels, settings, scenario):
     geom_id = df.geom_id
     df = df.set_index("geom_id")
     df = geom_id_to_parcel_id(df, parcels).reset_index()  # use parcel id
-    df["geom_id"] = geom_id  # add it back again cause it goes away above
+    df["geom_id"] = geom_id.values  # add it back again cause it goes away
 
     # we don't predict prices for schools and hotels right now
     df = df.query("building_type_id <= 4 or building_type_id >= 7")

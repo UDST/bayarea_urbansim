@@ -464,10 +464,17 @@ def parcel_is_allowed(form):
     # to know if specific forms are allowed
     allowed = [orca.get_table('zoning_baseline')
                ['type%d' % typ] > 0 for typ in form_to_btype[form]]
+
+    # also check if the scenario based zoning adds the building type
+    allowed2 = [orca.get_table('zoning_scenario')
+                ['type%d' % typ] > 0 for typ in form_to_btype[form]]
+
+    allowed = allowed + allowed2
+
     s = pd.concat(allowed, axis=1).max(axis=1).\
         reindex(orca.get_table('parcels').index).fillna(False)
 
-    return s
+    return s.astype("bool")
 
 
 @orca.column('parcels', 'first_building_type_id')
