@@ -354,7 +354,7 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
         buildings_uf_df['count']=1
 
         df = buildings_df.\
-            loc[buildings_df['year_built'] > 2010].\
+            loc[buildings_uf_df['year_built'] > 2010].\
             groupby('urban_footprint').sum()\
             [['count','residential_units','non_residential_sqft','acres']]
 
