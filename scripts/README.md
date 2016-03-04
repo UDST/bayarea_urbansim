@@ -11,11 +11,11 @@ Use this script to compare the outcomes of 4 scenario runs. This script should r
 
 To compare the 2040 output files for all the geographies for a set of 4 runs, execute the following at the command line in the directory of the bayarea_urbansim repository:
 
-`python scripts/compare_output # # # #`
+`python scripts/compare_output.py # # # #`
 
 Where each # is a run number, for example:
 
-`python scripts/compare_output 717 718 719 777`
+`python scripts/compare_output.py 717 718 719 777`
 
 ####Usage Explained
 
@@ -40,6 +40,8 @@ runs/run718_superdistrict_summaries_2040.csv
 runs/run719_superdistrict_summaries_2040.csv
 runs/run777_superdistrict_summaries_2040.csv
 ```
+
+If you don't have all geographies present in the runs folder, you must comment out those geographies
 
 The `compare_outcome_for` function is further defined in `output_csv_utils.py`
 
