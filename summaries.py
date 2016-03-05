@@ -353,7 +353,7 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
 
         buildings_uf_df['count']=1
 
-        df = buildings_df.\
+        df = buildings_uf_df.\
             loc[buildings_uf_df['year_built'] > 2010].\
             groupby('urban_footprint').sum()\
             [['count','residential_units','non_residential_sqft','acres']]
@@ -369,7 +369,9 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
 
         df.columns = ['urban_footprint_0','urban_footprint_1']
 
-        df.to_csv('runs/urban_footprint_summary.csv')
+        summary_csv = "runs/run{}_urban_footprint_summary_summaries_{}.csv".\
+            format(run_number, year)
+        df.to_csv(summary_csv)
 
 
 @orca.step("travel_model_output")
