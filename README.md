@@ -1,7 +1,7 @@
 Bay Area Urbansim Implementation
 =======
 
-This is the full UrbanSim implementation for the Bay Area.
+This is the full UrbanSim implementation for the Bay Area. Documenation for the Bay Area model is available at http://metropolitantransportationcommission.github.io/baus_docs/ 
 
 ###Data
 
