@@ -30,11 +30,16 @@ For convenience, there is a [Vagrantfile](https://www.vagrantup.com/) and a `scr
 
 See [Installing](http://docs.aws.amazon.com/cli/latest/userguide/installing.html) and [configuring] (http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html) 
 
+Each of the following just runs a different set of models for a different set of years.
+
 ####Run a Simulation  
-In the repository directory type `python Simulation.py`  
+In the repository directory type `python run.py`  
 
 ####Estimate Regressions used in the Simulation
-In the repository directory type `python Estimation.py`  
+In the repository directory edit `run.py` and set `MODE` to estimation and type `python run.py`  
+
+####Run a Base Year Simulation
+In the repository directory edit `run.py` and set `MODE` to baseyearsim and type `python run.py`.  A base year simulation is used to run a few models and make sure everything matches the first year of the control totals and not to add any new buildings.  This is then used in comparison of the year 2040 to the base year for all future simulations (until the control totals change).
 
 ####Review Outputs from Simulation
 
