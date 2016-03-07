@@ -70,13 +70,6 @@ def compare_outcome(run, base_series, formatters):
     return df
 
 
-def get_superdistrict_names_df():
-    df = pd.read_csv('data/superdistrict_names.csv',
-                     index_col='number')
-    df.index.name = 'superdistrict'
-    return df
-
-
 def remove_characters(word, characters=b' _aeiou'):
     return word.translate(None, characters)
 

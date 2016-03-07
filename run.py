@@ -270,7 +270,7 @@ if MODE == "simulation":
     df2 = df2.set_index(df2.columns[0]).sort_index()
 
     supnames = \
-        pd.read_csv("data/superdistrict_names.csv", index_col="number").name
+        pd.read_csv("data/superdistricts.csv", index_col="number").name
 
     summary = compare_summary(df1, df2, supnames)
     with open("runs/run%d_difference_report.log" % run_num, "w") as f:
