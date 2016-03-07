@@ -20,9 +20,9 @@ def format_df(df, formatters=None, **kwargs):
     return df
 
 
-def get_base_year_df(base_run_num=724,base_run_year=2010):
+def get_base_year_df(base_run_year=2010):
     geography_id = 'zone_id' if geography == 'taz' else geography
-    df = pd.read_csv('data/run{}_{}_summaries_{}.csv'.format(base_run_num, geography, base_run_year),
+    df = pd.read_csv('output/baseyear_{}_summaries_{}.csv'.format(base_run_num, geography, base_run_year),
                      index_col=geography_id)
     df = df.fillna(0)
     return df
