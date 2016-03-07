@@ -36,10 +36,10 @@ Each of the following just runs a different set of models for a different set of
 In the repository directory type `python run.py`  
 
 ####Estimate Regressions used in the Simulation
-In the repository directory edit `run.py` and set `MODE` to estimation and type `python run.py`  
+In the repository directory edit `run.py` and set `MODE` to "estimation" and type `python run.py`  
 
 ####Run a Base Year Simulation
-In the repository directory edit `run.py` and set `MODE` to baseyearsim and type `python run.py`.  A base year simulation is used to run a few models and make sure everything matches the first year of the control totals and not to add any new buildings.  This is then used in comparison of the year 2040 to the base year for all future simulations (until the control totals change).
+In the repository directory edit `run.py` and set `MODE` to "baseyearsim" and type `python run.py`.  A base year simulation is used to run a few models and make sure everything matches the first year of the control totals but not to add any new buildings.  This is then used in comparison of the year 2040 to the base year for all future simulations (until the control totals change) and this mode is rerun.
 
 ####Review Outputs from Simulation
 
