@@ -49,10 +49,11 @@ if INTERACT:
     sys.exit()
 
 run_num = orca.get_injectable("run_number")
+
 if LOGS:
-    print '***The Standard stream is being written to /logs/sim_out{0}***'\
+    print '***The Standard stream is being written to /runs/run{0}.log***'\
         .format(run_num)
-    sys.stdout = sys.stderr = open("logs/sim_out_%d" % run_num, 'w')
+    sys.stdout = sys.stderr = open("runs/run%d.log" % run_num, 'w')
 
 if SLACK:
     from slacker import Slacker
@@ -130,6 +131,7 @@ def get_simulation_models(SCENARIO):
 
     return models
 
+
 def run_models(MODE, SCENARIO):
 
     if MODE == "simulation":
@@ -175,6 +177,11 @@ def run_models(MODE, SCENARIO):
 
         ], iter_vars=[2010])
 
+        for geog_name in ["juris", "pda", "superdistrict", "taz"]:
+            os.rename(
+                "runs/run%d_%s_summaries_2010.csv" % (run_num, geog_name),
+                "output/baseyear_%s_summaries_2010.csv" % geog_name)
+
     elif MODE == "feasibility":
 
         orca.run([
@@ -199,8 +206,6 @@ def run_models(MODE, SCENARIO):
     else:
 
         raise "Invalid mode"
-
-    return models, years_to_run
 
 
 print "Started", time.ctime()
@@ -240,20 +245,6 @@ if MAPS:
         write_static_file='/var/www/html/sim_explorer%d.html' % run_num
     )
 
-# compute and write the difference report at the superdistrict level
-prev_run = LAST_KNOWN_GOOD_RUNS[SCENARIO]
-df1 = pd.read_csv("runs/run%d_superdistrict_summaries_2040.csv" % prev_run)
-df1 = df1.set_index(df1.columns[0]).sort_index()
-
-df2 = pd.read_csv("runs/run%d_superdistrict_summaries_2040.csv" % run_num)
-df2 = df2.set_index(df2.columns[0]).sort_index()
-
-supnames = pd.read_csv("data/superdistrict_names.csv", index_col="number").name
-
-summary = compare_summary(df1, df2, supnames)
-with open("runs/run%d_difference_report.log" % run_num, "w") as f:
-    f.write(summary)
-
 if SLACK:
     slack.chat.post_message(
         '#sim_updates',
@@ -268,6 +259,24 @@ if SLACK:
         '#sim_updates',
         'Final topsheet is available at ' +
         'http://urbanforecast.com/runs/run%d_topsheet_2040.log' % run_num)
+
+if MODE == "simulation":
+    # compute and write the difference report at the superdistrict level
+    prev_run = LAST_KNOWN_GOOD_RUNS[SCENARIO]
+    df1 = pd.read_csv("runs/run%d_superdistrict_summaries_2040.csv" % prev_run)
+    df1 = df1.set_index(df1.columns[0]).sort_index()
+
+    df2 = pd.read_csv("runs/run%d_superdistrict_summaries_2040.csv" % run_num)
+    df2 = df2.set_index(df2.columns[0]).sort_index()
+
+    supnames = \
+        pd.read_csv("data/superdistrict_names.csv", index_col="number").name
+
+    summary = compare_summary(df1, df2, supnames)
+    with open("runs/run%d_difference_report.log" % run_num, "w") as f:
+        f.write(summary)
+
+if SLACK and MODE == "simulation":
 
     if len(summary.strip()) != 0:
         sum_lines = len(summary.strip().split("\n"))

@@ -66,8 +66,8 @@ def jobs(store):
 
 @orca.table(cache=True)
 def base_year_summary_taz():
-    return pd.read_csv(os.path.join(misc.data_dir(),
-                       'run724_taz_summaries_2010.csv'),
+    return pd.read_csv(os.path.join('output',
+                       'baseyear_taz_summaries_2010.csv'),
                        index_col="zone_id")
     return df
 
