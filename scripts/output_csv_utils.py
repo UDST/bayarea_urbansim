@@ -198,10 +198,13 @@ def compare_outcome_for(variable, runs, set_geography):
     if len(runs) > 1:
         ratios = pd.DataFrame()
         combinations = get_combinations(runs)
-        for combination in combinations[0:3]:
-            #just compare no no project right now
-            s2 = divide_series(combination, variable)
-            ratios[s2.name] = s2
+        #just compare no no project right now
+        s2 = divide_series((runs[0],runs[1]), variable)
+        ratios[s2.name] = s2
+        s2 = divide_series((runs[0],runs[2]), variable)
+        ratios[s2.name] = s2
+        s2 = divide_series((runs[0],runs[3]), variable)
+        ratios[s2.name] = s2
     df_rt = pd.DataFrame(ratios)
     formatters = {}
     for column in df_rt.columns:
