@@ -393,6 +393,12 @@ def pda(parcels, parcels_geography):
     return parcels_geography.pda_id.reindex(parcels.index)
 
 
+# perffoot is a dummy indicating the FOOTprint for the PERFormance targets
+@orca.column('parcels', cache=True)
+def urban_footprint(parcels, parcels_geography):
+    return parcels_geography.perffoot.reindex(parcels.index)
+
+
 @orca.column('parcels', cache=True)
 def juris(parcels, parcels_geography):
     return parcels_geography.juris_name.reindex(parcels.index)
