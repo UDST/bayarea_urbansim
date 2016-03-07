@@ -2,12 +2,12 @@ import os
 import sys
 import time
 import traceback
-import models
+from baus import models
 import pandas as pd
 import orca
 import socket
 import warnings
-from utils import compare_summary
+from baus.utils import compare_summary
 
 warnings.filterwarnings("ignore")
 
@@ -17,11 +17,13 @@ SLACK = MAPS = True
 LOGS = True
 INTERACT = False
 SCENARIO = None
+MODE = "simulation"
 S3 = False
 EVERY_NTH_YEAR = 5
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
 COMPARE_TO_NO_PROJECT = True
 NO_PROJECT = 611
+IN_YEAR, OUT_YEAR = 2010, 2040
 
 LAST_KNOWN_GOOD_RUNS = {
     "0": 1057,
@@ -57,19 +59,9 @@ if SLACK:
     slack = Slacker('xoxp-7025187590-7026053537-7111663091-9eeeb6')
     host = socket.gethostname()
 
-print "Started", time.ctime()
-print "Current Commit : ", CURRENT_COMMIT.rstrip()
-print "Current Scenario : ", orca.get_injectable('scenario').rstrip()
-in_year, out_year = 2010, 2040
-years_to_run = range(in_year, out_year+1, EVERY_NTH_YEAR)
 
-if SLACK:
-    slack.chat.post_message(
-        '#sim_updates',
-        'Starting simulation %d on host %s (scenario: %s)' %
-        (run_num, host, SCENARIO))
+def get_simulation_models(SCENARIO):
 
-try:
     models = [
         "neighborhood_vars",            # local accessibility vars
         "regional_vars",                # regional accessibility vars
@@ -136,7 +128,95 @@ try:
         models.insert(models.index("alt_feasibility"),
                       "subsidized_residential_developer_obag")
 
-    orca.run(models, iter_vars=years_to_run)
+    return models
+
+def run_models(MODE, SCENARIO):
+
+    if MODE == "simulation":
+
+        years_to_run = range(IN_YEAR, OUT_YEAR+1, EVERY_NTH_YEAR)
+        models = get_simulation_models(SCENARIO)
+        orca.run(models, iter_vars=years_to_run)
+
+    elif MODE == "estimation":
+
+        orca.run([
+
+            "neighborhood_vars",         # local accessibility variables
+            "regional_vars",             # regional accessibility variables
+            "rsh_estimate",              # residential sales hedonic
+            "nrh_estimate",              # non-res rent hedonic
+            "rsh_simulate",
+            "nrh_simulate",
+            "hlcm_estimate",             # household lcm
+            "elcm_estimate",             # employment lcm
+
+        ], iter_vars=[2010])
+
+    elif MODE == "baseyearsim":
+
+        orca.run([
+
+            "neighborhood_vars",            # local accessibility vars
+            "regional_vars",                # regional accessibility vars
+
+            "rsh_simulate",                 # residential sales hedonic
+            "nrh_simulate",                 # non-residential rent hedonic
+
+            "households_transition",
+
+            "jobs_transition",
+
+            "hlcm_simulate",                 # put these last so they don't get
+            "elcm_simulate",                 # displaced by new dev
+
+            "geographic_summary",
+            "travel_model_output"
+
+        ], iter_vars=[2010])
+
+    elif MODE == "feasibility":
+
+        orca.run([
+
+            "neighborhood_vars",            # local accessibility vars
+            "regional_vars",                # regional accessibility vars
+
+            "rsh_simulate",                 # residential sales hedonic
+            "nrh_simulate",                 # non-residential rent hedonic
+
+            "price_vars",
+            "subsidized_residential_feasibility"
+
+        ], iter_vars=[2010])
+
+        # the whole point of this is to get the feasibility dataframe
+        # for debugging
+        df = orca.get_table("feasibility").to_frame()
+        df = df.stack(level=0).reset_index(level=1, drop=True)
+        df.to_csv("output/feasibility.csv")
+
+    else:
+
+        raise "Invalid mode"
+
+    return models, years_to_run
+
+
+print "Started", time.ctime()
+print "Current Commit : ", CURRENT_COMMIT.rstrip()
+print "Current Scenario : ", orca.get_injectable('scenario').rstrip()
+
+
+if SLACK:
+    slack.chat.post_message(
+        '#sim_updates',
+        'Starting simulation %d on host %s (scenario: %s)' %
+        (run_num, host, SCENARIO))
+
+try:
+
+    run_models(MODE, SCENARIO)
 
 except Exception as e:
     print traceback.print_exc()
