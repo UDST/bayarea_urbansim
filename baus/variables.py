@@ -372,17 +372,18 @@ def vmt_com_fees(parcels, settings):
 def fees_per_unit(parcels, settings, scenario):
     s = pd.Series(0, index=parcels.index)
 
-    if scenario == "th":
+    if scenario == "3":
         s += parcels.vmt_res_fees
 
     return s
 
 
+# since this is by sqft this implies commercial
 @orca.column('parcels', cache=True)
 def fees_per_sqft(parcels, settings, scenario):
     s = pd.Series(0, index=parcels.index)
 
-    if scenario == "au":
+    if scenario == "1":
         s += parcels.vmt_com_fees
 
     return s
