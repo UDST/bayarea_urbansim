@@ -372,17 +372,18 @@ def vmt_com_fees(parcels, settings):
 def fees_per_unit(parcels, settings, scenario):
     s = pd.Series(0, index=parcels.index)
 
-    if scenario == "th":
+    if scenario == "3":
         s += parcels.vmt_res_fees
 
     return s
 
 
+# since this is by sqft this implies commercial
 @orca.column('parcels', cache=True)
 def fees_per_sqft(parcels, settings, scenario):
     s = pd.Series(0, index=parcels.index)
 
-    if scenario == "au":
+    if scenario == "1":
         s += parcels.vmt_com_fees
 
     return s
@@ -391,6 +392,12 @@ def fees_per_sqft(parcels, settings, scenario):
 @orca.column('parcels', cache=True)
 def pda(parcels, parcels_geography):
     return parcels_geography.pda_id.reindex(parcels.index)
+
+
+# perffoot is a dummy indicating the FOOTprint for the PERFormance targets
+@orca.column('parcels', cache=True)
+def urban_footprint(parcels, parcels_geography):
+    return parcels_geography.perffoot.reindex(parcels.index)
 
 
 @orca.column('parcels', cache=True)
