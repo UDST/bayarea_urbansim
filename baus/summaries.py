@@ -335,29 +335,13 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
                     format(run_number, geography, 2009)
             summary_table.to_csv(summary_csv)
 
+    ###############################
+    ###############################
+    #####Write Urban Footprint#####
+    ##########Summary##############
+    ###############################
+    ###############################
 
-            ###############################
-            ###############################
-            #####Write Urban Footprint#####
-            ##########Summary##############
-            ###############################
-            ###############################
-    if year in [2010]:
-        buildings_uf_df = orca.merge_tables(
-            'buildings',
-            [parcels, buildings],
-            columns=['urban_footprint', 'year_built',
-                     'acres', 'residential_units',
-                     'non_residential_sqft'])
-
-        buildings_uf_df['count']=1
-
-        df_base = buildings_uf_df.\
-            loc[buildings_uf_df['year_built'] > 2010].\
-            groupby('urban_footprint').sum()\
-            [['count','residential_units','non_residential_sqft','acres']]
-
-    if year in [2011, 2012, 2013, 2020, 2025, 2030, 2035, 2040]:
         buildings_uf_df = orca.merge_tables(
             'buildings',
             [parcels, buildings],
@@ -372,8 +356,6 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
             groupby('urban_footprint').sum()\
             [['count','residential_units','non_residential_sqft','acres']]
 
-        df = df - df_base
-
         formatters = {'count': '{:.0f}',
                    'residential_units': '{:.0f}',
                    'non_residential_sqft': '{:.0f}',
@@ -383,11 +365,12 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
 
         df = df.transpose()
 
-        df.columns = ['within_footprint','outside_footprint']
-
-        summary_csv = "runs/run{}_urban_footprint_summaries_{}.csv".\
+        df.columns = ['urban_footprint_0','urban_footprint_1']
+        uf_summary_csv = "runs/run{}_urban_footprint_summary_summaries_{}.csv".\
             format(run_number, year)
-        df.to_csv(summary_csv)
+        df.to_csv(uf_summary_csv)
+
+
 
 
 @orca.step("travel_model_output")
