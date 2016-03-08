@@ -42,6 +42,9 @@ acct_settings:
     receiving_buildings_filter: pda_id > 0
   sales_tax_settings:
     sending_buildings_filter: general_type != 'Residential'
+    # this is the method used to compute the property tax - the 20 here is a cap rate
+    # to turn yearly rent into overall value - 1% property tax and 1% actually goes into
+    # funding affordable housing
     sending_buildings_tax: non_residential_price * non_residential_sqft * 20 * .01 * .01
     sending_buildings_subaccount_def: city_id
     receiving_buildings_filter: pda_id > 0 and residential_units > 1
