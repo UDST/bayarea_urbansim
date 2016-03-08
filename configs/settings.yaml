@@ -388,10 +388,10 @@ development_limits:
       'San Francisco': 3000
     Residential:
       'Half Moon Bay': 150
-  th:
+  "3":
     Residential:
       'Half Moon Bay': 150
-  pr:
+  "2":
     Office:
       'San Francisco': 4500
     Residential:
