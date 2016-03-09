@@ -267,9 +267,9 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
             summary_table = pd.pivot_table(households_df,
                                            values=['persons'],
                                            index=[geography],
-                                           aggfunc=[np.size, np.sum])
+                                           aggfunc=[np.size])
 
-            summary_table.columns = ['tothh', 'hhpop']
+            summary_table.columns = ['tothh']
 
             # income quartile counts
             summary_table['hhincq1'] = \
