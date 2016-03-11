@@ -5,10 +5,23 @@ This is the full UrbanSim implementation for the Bay Area. Documenation for the 
 
 ###Data
 
-We track the data for this project in the Makefile in this repository. 
+We track the data for this project in the Makefile in this repository. The makefile will generally be the most up to date list of which data is needed, where it goes in the directory, etc.
 
 To fetch data with [AWS CLI](https://aws.amazon.com/cli/) and Make, you can:
 `make data`.
+
+Below we provide a list to links of the data in the Makefile for convenience, but in general the makefile is what is being used to run simulations. If you find that something below is out of date w/r/t the makefile, please feel free to update it and submit a pull request.
+
+####Data necessary for run.py to run
+
+These data should be in data/:
+
+https://s3.amazonaws.com/bayarea_urbansim/data/2015_06_01_osm_bayarea4326.h5
+https://s3.amazonaws.com/bayarea_urbansim/data/2015_08_03_tmnet.h5
+https://s3.amazonaws.com/bayarea_urbansim/data/2015_12_21_zoning_parcels.csv
+https://s3.amazonaws.com/bayarea_urbansim/data/02_01_2016_parcels_geography.csv
+https://s3.amazonaws.com/bayarea_urbansim/data/2015_08_29_costar.csv
+https://s3.amazonaws.com/bayarea_urbansim/data/2015_09_01_bayarea_v3.h5
 
 Because the hdf5 file used here contains one table with  proprietary data, you will need to enter credentials to download it. You can request them from Tom Buckley(tbuckl@mtc.ca.gov). Or if you already have access to Box, you can download the hdf5 file from there. 
 
