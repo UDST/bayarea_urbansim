@@ -14,7 +14,7 @@ Below we provide a list to links of the data in the Makefile for convenience, bu
 
 ####Data necessary for run.py to run
 
-These data should be in data/:
+These data should be in the data/ folder:
 
 https://s3.amazonaws.com/bayarea_urbansim/data/2015_06_01_osm_bayarea4326.h5  
 https://s3.amazonaws.com/bayarea_urbansim/data/2015_08_03_tmnet.h5  
