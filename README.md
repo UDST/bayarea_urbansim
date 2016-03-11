@@ -16,12 +16,12 @@ Below we provide a list to links of the data in the Makefile for convenience, bu
 
 These data should be in data/:
 
-https://s3.amazonaws.com/bayarea_urbansim/data/2015_06_01_osm_bayarea4326.h5
-https://s3.amazonaws.com/bayarea_urbansim/data/2015_08_03_tmnet.h5
-https://s3.amazonaws.com/bayarea_urbansim/data/2015_12_21_zoning_parcels.csv
-https://s3.amazonaws.com/bayarea_urbansim/data/02_01_2016_parcels_geography.csv
-https://s3.amazonaws.com/bayarea_urbansim/data/2015_08_29_costar.csv
-https://s3.amazonaws.com/bayarea_urbansim/data/2015_09_01_bayarea_v3.h5
+https://s3.amazonaws.com/bayarea_urbansim/data/2015_06_01_osm_bayarea4326.h5  
+https://s3.amazonaws.com/bayarea_urbansim/data/2015_08_03_tmnet.h5  
+https://s3.amazonaws.com/bayarea_urbansim/data/2015_12_21_zoning_parcels.csv  
+https://s3.amazonaws.com/bayarea_urbansim/data/02_01_2016_parcels_geography.csv  
+https://s3.amazonaws.com/bayarea_urbansim/data/2015_08_29_costar.csv  
+https://s3.amazonaws.com/bayarea_urbansim/data/2015_09_01_bayarea_v3.h5  
 
 Because the hdf5 file used here contains one table with  proprietary data, you will need to enter credentials to download it. You can request them from Tom Buckley(tbuckl@mtc.ca.gov). Or if you already have access to Box, you can download the hdf5 file from there. 
 
