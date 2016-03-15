@@ -268,7 +268,7 @@ def property_taxes(buildings, parcels_geography, acct_settings, coffer, year):
 def run_subsidized_developer(feasibility, parcels, buildings, households,
                              acct_settings, settings, account, year,
                              form_to_btype_func, add_extra_columns_func,
-                             summary):
+                             summary, create_deed_restricted=False):
     """
     The subsidized residential developer model.
 
@@ -298,6 +298,11 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
         Passed through to run_developer
     summary : Summary
         Used to add parcel summary information
+    create_deed_restricted : bool
+        Bool for whether to create deed restricted units with the subsidies
+        or not.  The logic at the time of this writing is to keep track of
+        partial units so that when partial units sum to greater than a unit,
+        that unit will be deed restricted.
 
     Returns
     -------
@@ -427,8 +432,13 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
         if new_buildings is None:
             continue
 
+        # keep track of partial subsidized untis so that we always get credit
+        # for a partial unit, even if it's not built in this specific building
+        partial_subsidized_units = 0
+
         # step 10
         for index, new_building in new_buildings.iterrows():
+
             amt = new_building.max_profit
             metadata = {
                 "description": "Developing subsidized building",
@@ -438,6 +448,26 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
             }
             account.add_transaction(amt, subaccount=subacct,
                                     metadata=metadata)
+
+            if create_deed_restricted:
+
+                revenue_per_unit = new_building.building_revenue / \
+                    new_building.residential_units
+                total_subsidy = abs(new_building.max_profit)
+                subsidized_units = total_subsidy / revenue_per_unit + \
+                    partial_subsidized_units
+                # right now there are inclusionary requirements
+                already_subsidized_units = new_building.deed_restricted_units
+
+                # get remainder
+                partial_subsidized_units = subsidized_units % 1
+                # round off for now
+                subsidized_units = int(subsidized_units) + \
+                    already_subsidized_units
+
+                buildings.local.loc[index, "deed_restricted_units"] =\
+                    int(round(subsidized_units))
+
         print "Amount left after subsidy: ${:,.2f}".\
             format(account.total_transactions_by_subacct(subacct))
 
@@ -509,7 +539,8 @@ def subsidized_residential_developer_vmt(
                              year,
                              form_to_btype_func,
                              add_extra_columns_func,
-                             summary)
+                             summary,
+                             create_deed_restricted=True)
 
 
 @orca.step('subsidized_residential_developer_obag')
