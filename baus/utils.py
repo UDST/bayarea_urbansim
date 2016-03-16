@@ -222,6 +222,9 @@ def compare_dfs_excel(df1, df2, excelname="out.xlsx"):
 def compare_summary(df1, df2, index_names=None, pctdiff=10,
                     cols=["tothh", "totemp"], geog_name="Superdistrict"):
 
+    if cols:
+        df1, df2 = df1[cols], df2[cols]
+
     df3 = compare_dfs(df1, df2)
     df3[small_vals(df1)] = np.nan
     s = df3[cols].stack()
