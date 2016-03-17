@@ -70,7 +70,7 @@ acct_settings:
 low_income_for_hlcm: 30000
 
 
-dont_enable_supply_correction:
+enable_supply_correction:
   price_col: residential_price
   submarket_col: zone_id
   submarket_table: zones
