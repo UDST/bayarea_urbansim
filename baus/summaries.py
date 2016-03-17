@@ -311,7 +311,7 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
 
             # summary columns
             summary_table['occupancy_rate'] = summary_table['tothh'] / \
-                (summary_table['sfdu'] + summary_table['sfdu'])
+                (summary_table['sfdu'] + summary_table['mfdu'])
             summary_table['non_residential_sqft'] = buildings_df.\
                 groupby(geography)['non_residential_sqft'].sum()
             summary_table['sq_ft_per_employee'] = \

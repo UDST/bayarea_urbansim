@@ -387,15 +387,15 @@ development_limits:
     Office:
       'San Francisco': 3000
     Residential:
-      'Half Moon Bay': 150
+      'Half Moon Bay': 43
   "3":
     Residential:
-      'Half Moon Bay': 150
+      'Half Moon Bay': 43
   "2":
     Office:
       'San Francisco': 4500
     Residential:
-      'Half Moon Bay': 150
+      'Half Moon Bay': 43
 
 
 zoning_column_dictionary: 
