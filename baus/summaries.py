@@ -366,7 +366,7 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
         df = df.transpose()
 
         df.columns = ['urban_footprint_0','urban_footprint_1']
-        uf_summary_csv = "runs/run{}_urban_footprint_summary_summaries_{}.csv".\
+        uf_summary_csv = "runs/run{}_urban_footprint_summary_{}.csv".\
             format(run_number, year)
         df.to_csv(uf_summary_csv)
 
