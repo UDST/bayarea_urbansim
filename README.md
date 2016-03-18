@@ -62,34 +62,19 @@ First, some vocabulary.
 
 `#` = a number that is updated in the RUNNUM file in the bayarea_urbansim directory each time you run Simulation.py.
 
-Several files are output to the `runs/` directory. They are described below.
+Many files are output to the `runs/` directory. They are described below.
 
 filename |description
 ----------------------------|-----------
+run#_topsheet_2040 | An overall summary of various housing, employment, etc by regional planning area types
 run#_parcel_output.csv 		|csv of parcels that are built for review in Explorer
 run#_subsidy_summary.csv 	|currently empty
 run#_simulation_output.json |summary by TAZ for review in Explorer (unix only)
 run#_taz_summaries 			|A CSV for [input to the MTC travel model](http://analytics.mtc.ca.gov/foswiki/UrbanSimTwo/OutputToTravelModel)
-
-#####Results on S3:
-
-Results can be pushed to S3 with the S3 flag in `Simulation.py`.   
-
-Browse results [here](http://bayarea-urbansim-results.s3-us-west-1.amazonaws.com/index.html)   
-
-Optional Tools
---------------
+run#_urban_footprint_summary | A CSV with A Summary of how close the scenario is to meeting [Performance Target 4](http://planbayarea.org/the-plan/plan-details/goals-and-targets.html)
 
 
-####Parcel geometries
-
-The parcel geometry for these data are on box::badata/out/summaries
-
-#####Using Make to get source data:
-
-To get the full dump of the database that the h5 file came from type:
-
-`make database_backup`
+Browse results [here](http://urbanforecast.com/runs/)   
 
 ######Other Directories
 Below is an explanation of the directories in this repository not described above.
@@ -106,3 +91,17 @@ The scripts in here can be used to re-create the data in the `data/` folder from
 
 scripts/
 This is a good place to put scripts that can exist independently of the analysis environment here.  
+
+####Parcel Geometries
+
+The parcel geometries are the basis of many operations in the simulation. For example, as one can see in [this pull request](https://github.com/MetropolitanTransportationCommission/bayarea_urbansim/pull/121), in order to add schedule real estate development projects to the list of projects that are included in the simulation, one must use an existing `geom_id`, which is a field on the parcels table added [here](https://github.com/MetropolitanTransportationCommission/bayarea_urbansim/blob/master/data_regeneration/match_aggregate.py#L775-L784).
+
+Parcel geometries are available at the following link:
+
+https://s3.amazonaws.com/bayarea_urbansim/data/09_01_2015_parcel_shareable.zip
+
+#####Geom ID
+
+What is the `geom_id` field and why does it exist? 
+
+In short, this is a legacy identifier. The `geom_id` field was introduced as a stable identifier for parcels across shapefiles, database tables, CSV's, and other data types. It is an integer because at some point there was a need to support integer only identifiers. It is not based on an Assessor's Parcel Numbers because there was a perception that those were inadequate. And it is based on the geometry of the parcel because many users have found that geometries are the most important feature of parcels.
