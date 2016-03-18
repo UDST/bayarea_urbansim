@@ -75,7 +75,7 @@ run#_taz_summaries 			|A CSV for [input to the MTC travel model](http://analytic
 
 Results can be pushed to S3 with the S3 flag in `Simulation.py`.   
 
-Browse results [here](http://bayarea-urbansim-results.s3-us-west-1.amazonaws.com/index.html)   
+Browse results [here](http://urbanforecast.com/runs/)   
 
 ######Other Directories
 Below is an explanation of the directories in this repository not described above.
