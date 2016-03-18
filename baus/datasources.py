@@ -24,6 +24,11 @@ def year():
     return 2014
 
 
+@orca.injectable()
+def final_year():
+    return 2040
+
+
 @orca.injectable(cache=True)
 def low_income(settings):
     return int(settings["low_income_for_hlcm"])
