@@ -106,3 +106,17 @@ The scripts in here can be used to re-create the data in the `data/` folder from
 
 scripts/
 This is a good place to put scripts that can exist independently of the analysis environment here.  
+
+####Parcel Geometries
+
+The parcel geometries are the basis of many operations in the simulation. For example, as one can see in [this pull request](https://github.com/MetropolitanTransportationCommission/bayarea_urbansim/pull/121), in order to add schedule real estate development projects to the list of projects that are included in the simulation, one must use an existing `geom_id`, which is a field on the parcels table added [here](https://github.com/MetropolitanTransportationCommission/bayarea_urbansim/blob/master/data_regeneration/match_aggregate.py#L775-L784).
+
+Parcel geometries are available at the following link:
+
+https://s3.amazonaws.com/bayarea_urbansim/data/09_01_2015_parcel_shareable.zip
+
+#####Geom ID
+
+What is the `geom_id` field and why does it exist? 
+
+In short, this is a legacy identifier. The `geom_id` field was introduced as a stable identifier for parcels across shapefiles, database tables, CSV's, and other data types. It is an integer because at some point there was a need to support integer only identifiers. It is not based on an Assessor's Parcel Numbers because there was a perception that those were inadequate. And it is based on the geometry of the parcel because many users have found that geometries are the most important feature of parcels.
