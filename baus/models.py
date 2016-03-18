@@ -235,7 +235,7 @@ def alt_feasibility(parcels, settings,
 def residential_developer(feasibility, households, buildings, parcels, year,
                           settings, summary, form_to_btype_func,
                           add_extra_columns_func, parcels_geography,
-                          limits_settings):
+                          limits_settings, final_year):
 
     kwargs = settings['residential_developer']
 
@@ -266,21 +266,26 @@ def residential_developer(feasibility, households, buildings, parcels, year,
                 .sum()
 
             target = (year - 2010 + 1) * limit - current_total
+            # make sure we don't overshoot the total development of the limit
+            # for the horizon year - for instance, in Half Moon Bay we have
+            # a very low limit and a single development in a far out year can
+            # easily build over the limit for the total simulation
+            max_target = (final_year - 2010 + 1) * limit - current_total
 
             if target <= 0:
                     continue
 
-            targets.append((juris_name == juris, target, juris))
+            targets.append((juris_name == juris, target, max_target, juris))
             num_units -= target
 
         # other cities not in the targets get the remaining target
-        targets.append((~juris_name.isin(juris_list), num_units, "none"))
+        targets.append((~juris_name.isin(juris_list), num_units, None, "none"))
 
     else:
         # otherwise use all parcels with total number of units
-        targets.append((parcels.index == parcels.index, num_units, "none"))
+        targets.append((parcels.index == parcels.index, num_units, None, "none"))
 
-    for parcel_mask, target, juris in targets:
+    for parcel_mask, target, final_target, juris in targets:
 
         print "Running developer for %s with target of %d" % \
             (str(juris), target)
@@ -305,8 +310,19 @@ def residential_developer(feasibility, households, buildings, parcels, year,
             num_units_to_build=target,
             **kwargs)
 
+        buildings = orca.get_table('buildings')
+
         if new_buildings is not None:
             new_buildings["subsidized"] = False
+
+        if final_target is not None:
+            # make sure we don't overbuild the target for the whole simulation 
+            overshoot = new_buildings.net_units.sum() - max_target
+
+            if overshoot > 0:
+                index = new_buildings.tail(1).index[0]
+                index = int(index)
+                buildings.local.loc[index, "residential_units"] -= overshoot
 
         summary.add_parcel_output(new_buildings)
 
