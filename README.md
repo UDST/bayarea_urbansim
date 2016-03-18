@@ -62,18 +62,17 @@ First, some vocabulary.
 
 `#` = a number that is updated in the RUNNUM file in the bayarea_urbansim directory each time you run Simulation.py.
 
-Several files are output to the `runs/` directory. They are described below.
+Many files are output to the `runs/` directory. They are described below.
 
 filename |description
 ----------------------------|-----------
+run#_topsheet_2040 | An overall summary of various housing, employment, etc by regional planning area types
 run#_parcel_output.csv 		|csv of parcels that are built for review in Explorer
 run#_subsidy_summary.csv 	|currently empty
 run#_simulation_output.json |summary by TAZ for review in Explorer (unix only)
 run#_taz_summaries 			|A CSV for [input to the MTC travel model](http://analytics.mtc.ca.gov/foswiki/UrbanSimTwo/OutputToTravelModel)
+run#_urban_footprint_summary | A CSV with A Summary of how close the scenario is to meeting [Performance Target 4](http://planbayarea.org/the-plan/plan-details/goals-and-targets.html)
 
-#####Results on S3:
-
-Results can be pushed to S3 with the S3 flag in `Simulation.py`.   
 
 Browse results [here](http://urbanforecast.com/runs/)   
 
