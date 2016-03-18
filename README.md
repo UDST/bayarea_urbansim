@@ -77,20 +77,6 @@ Results can be pushed to S3 with the S3 flag in `Simulation.py`.
 
 Browse results [here](http://bayarea-urbansim-results.s3-us-west-1.amazonaws.com/index.html)   
 
-Optional Tools
---------------
-
-
-####Parcel geometries
-
-The parcel geometry for these data are on box::badata/out/summaries
-
-#####Using Make to get source data:
-
-To get the full dump of the database that the h5 file came from type:
-
-`make database_backup`
-
 ######Other Directories
 Below is an explanation of the directories in this repository not described above.
 
