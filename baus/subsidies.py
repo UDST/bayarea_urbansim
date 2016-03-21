@@ -127,15 +127,13 @@ def inclusionary_housing_revenue_reduction(feasibility, units):
     interest_and_prop_taxes = .013
     value_can_afford /= 1+interest_and_prop_taxes
 
-    settings = orca.get_injectable("settings")
-
     # there's a lot more nuance to inclusionary percentages than this -
     # e.g. specific neighborhoods get specific amounts -
     # http://sf-moh.org/modules/showdocument.aspx?documentid=7253
 
-    pct_inclusionary = settings["inclusionary_housing"]
+    pct_inclusionary = orca.get_injectable("inclusionary_housing_settings")
     juris_name = parcels_geography.juris_name.loc[feasibility.index]
-    pct_affordable = juris_name.map(pct_inclusionary)
+    pct_affordable = juris_name.map(pct_inclusionary).fillna(0)
     value_can_afford = juris_name.map(value_can_afford)
 
     num_affordable_units = (units * pct_affordable).fillna(0).astype("int")

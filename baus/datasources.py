@@ -51,6 +51,31 @@ def limits_settings(settings, scenario):
     return d
 
 
+@orca.injectable(cache=True)
+def inclusionary_housing_settings(settings, scenario):
+
+    s = settings['inclusionary_housing_settings']
+
+    if scenario in s.keys():
+        print "Using inclusionary settings for scenario: %s" % scenario
+        s = s[scenario]
+
+    elif "default" in s.keys():
+        print "Using default inclusionary settings"
+        s = s["default"]
+
+    d = {}
+    for item in s:
+        print "Setting inclusionary rates for %d cities to %.2f" %\
+            (len(item["values"]), item["amount"])
+        # this is a list of inclusionary rates and the cities they apply
+        # to - need to turn it in a map of city names to rates
+        for juris in item["values"]:
+            d[juris] = item["amount"]
+
+    return d
+
+
 @orca.injectable('building_sqft_per_job', cache=True)
 def building_sqft_per_job(settings):
     return settings['building_sqft_per_job']
