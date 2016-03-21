@@ -1,7 +1,7 @@
 import sys
 import orca
 sys.path.append(".")
-import models
+import baus.models
 import pandas as pd
 import numpy as np
 
