@@ -30,8 +30,159 @@ ave_sqft_per_unit_clip:
   upper: 2500
 
 
-inclusionary_housing:
-  San Francisco: .2
+inclusionary_housing_settings:
+  default:
+    - type: jurisdictions
+      amount: .2
+      values:
+        San Francisco:
+  "1":
+    - type: jurisdictions
+      description: low setting
+      amount: .05
+      values:
+      - Alameda
+      - Alameda County
+      - Albany
+      - Atherton
+      - Belmont
+      - Belvedere
+      - Berkeley
+      - Burlingame
+      - Campbell
+      - Cloverdale
+      - Concord
+      - Contra Costa County
+      - Corte Madera
+      - Cupertino
+      - Danville
+      - Dublin
+      - East Palo Alto
+      - El Cerrito
+      - Emeryville
+      - Fairfax
+      - Foster City
+      - Fremont
+      - Lafayette
+      - Larkspur
+      - Los Altos
+      - Los Altos Hills
+      - Los Gatos
+      - Menlo Park
+      - Millbrae
+      - Milpitas
+      - Monte Sereno
+      - Moraga
+      - Mountain View
+      - Orinda
+      - Palo Alto
+      - Piedmont
+      - Pleasanton
+      - Redwood City
+      - Ross
+      - San Anselmo
+      - San Bruno
+      - San Carlos
+      - San Francisco
+      - San Jose
+      - San Mateo
+      - San Mateo County
+      - San Ramon
+      - Santa Clara
+      - Santa Rosa
+      - Saratoga
+      - Sausalito
+      - Sunnyvale
+      - Tiburon
+      - Union City
+      - Walnut Creek
+  "2":
+    - type: jurisdictions
+      description: medium setting
+      amount: .1
+      values:
+      - Alameda
+      - Alameda County
+      - Albany
+      - American Canyon
+      - Antioch
+      - Belmont
+      - Benicia
+      - Berkeley
+      - Brisbane
+      - Burlingame
+      - Campbell
+      - Cloverdale
+      - Colma
+      - Concord
+      - Contra Costa County
+      - Cotati
+      - Cupertino
+      - Daly City
+      - Danville
+      - Dixon
+      - Dublin
+      - East Palo Alto
+      - El Cerrito
+      - Emeryville
+      - Fairfield
+      - Fremont
+      - Gilroy
+      - Hayward
+      - Hercules
+      - Lafayette
+      - Livermore
+      - Los Altos
+      - Martinez
+      - Menlo Park
+      - Millbrae
+      - Milpitas
+      - Moraga
+      - Morgan Hill
+      - Mountain View
+      - Napa
+      - Newark
+      - Oakland
+      - Oakley
+      - Orinda
+      - Palo Alto
+      - Petaluma
+      - Pinole
+      - Pittsburg
+      - Pleasant Hill
+      - Pleasanton
+      - Redwood City
+      - Richmond
+      - Rohnert Park
+      - San Bruno
+      - San Carlos
+      - San Francisco
+      - San Jose
+      - San Leandro
+      - San Mateo
+      - San Mateo County
+      - San Pablo
+      - San Rafael
+      - San Ramon
+      - Santa Clara
+      - Santa Rosa
+      - Sebastopol
+      - South San Francisco
+      - Suisun City
+      - Sunnyvale
+      - Union City
+      - Vacaville
+      - Vallejo
+      - Walnut Creek
+      - Windsor  
+  "3":
+    - type: jurisdictions
+      description: high setting
+      amount: .2
+      values:
+      - San Jose
+      - Oakland
+      - San Francisco
 
 
 acct_settings:

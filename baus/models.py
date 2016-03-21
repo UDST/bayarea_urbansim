@@ -283,7 +283,8 @@ def residential_developer(feasibility, households, buildings, parcels, year,
 
     else:
         # otherwise use all parcels with total number of units
-        targets.append((parcels.index == parcels.index, num_units, None, "none"))
+        targets.append((parcels.index == parcels.index,
+                        num_units, None, "none"))
 
     for parcel_mask, target, final_target, juris in targets:
 
@@ -316,7 +317,7 @@ def residential_developer(feasibility, households, buildings, parcels, year,
             new_buildings["subsidized"] = False
 
         if final_target is not None:
-            # make sure we don't overbuild the target for the whole simulation 
+            # make sure we don't overbuild the target for the whole simulation
             overshoot = new_buildings.net_units.sum() - max_target
 
             if overshoot > 0:
