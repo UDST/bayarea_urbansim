@@ -201,11 +201,37 @@ def policy_modifications_of_profit(feasibility, parcels):
         num_affordable_units
 
     settings = orca.get_injectable("settings")
-    if settings["enable_sb743"]:
-        vmt_settings = settings["acct_settings"]["vmt_settings"]
-        pct_modifications = feasibility[("residential", "vmt_res_cat")].\
-            map(vmt_settings["sb743_pcts"]) + 1
-        feasibility[("residential", "max_profit")] *= pct_modifications
+
+    if "sb743_settings" in settings["acct_settings"]:
+
+        sb743_settings = settings["acct_settings"]["sb743_settings"]
+
+        if sb743_settings["enable"]:
+
+            pct_modifications = feasibility[("residential", "vmt_res_cat")].\
+                map(sb743_settings["sb743_pcts"]) + 1
+
+            print "Modifying profit for SB743:", pct_modifications.describe()
+
+            feasibility[("residential", "max_profit")] *= pct_modifications
+
+    if "ceqa_tiering_settings" in settings["acct_settings"]:
+
+        ceqa_tiering_settings = \
+            settings["acct_settings"]["ceqa_tiering_settings"]
+
+        if orca.get_injectable("scenario") in ceqa_tiering_settings["enable"]:
+
+            parcels_geography = orca.get_table("parcels_geography")
+
+            pct_modifications = \
+                parcels_geography.local.eval(
+                    ceqa_tiering_settings["profitability_adjustment_formula"])
+            pct_modifications += 1.0
+
+            print "Modifying profit for ceqa:", pct_modifications.describe()
+
+            feasibility[("residential", "max_profit")] *= pct_modifications
 
     print "There are %d affordable units if all feasible projects are built" %\
         feasibility[("residential", "deed_restricted_units")].sum()
