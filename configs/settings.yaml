@@ -4,8 +4,6 @@ aggregation_tables:
   - logsums
 
 
-enable_sb743: true
-
 
 set_nan_price_to_zero: True
 
@@ -210,13 +208,18 @@ acct_settings:
       VH: 20
       H: 10
       MH: 6
+  sb743_settings:
+    enable: true
     sb743_pcts:
       VH: -0.02
       H: -0.01
       MH: -0.005
       M: 0.0
       S: 0.02
-
+  ceqa_tiering_settings:
+    enable: ["1", "2", "3"]
+    # any parcel in a tpa
+    profitability_adjustment_formula: "(tpp_id > 0) * .01"
 
 low_income_for_hlcm: 30000
 
