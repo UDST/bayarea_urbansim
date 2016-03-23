@@ -1,29 +1,29 @@
 import pandas as pd
 import sys
-import urbansim.sim.simulation as sim
+import orca
 
 RUNNUM = sys.argv[1]
 
 if RUNNUM == "zoned":
     sys.path.append(".")
     import models
-    parcels = sim.get_table('parcels')
+    parcels = orca.get_table('parcels')
     modeled = parcels.zoned_du_underbuild.groupby(parcels.pda).sum()
 
-else: 
+else:
     RUNNUM = int(RUNNUM)
     # reading modeled
     df = pd.read_csv("runs/run%d_parcel_output.csv" % RUNNUM)
     print "Total modeled units = ", df.net_units.sum()
     print "Total modeled units in all pdas = ", \
-	df.dropna(subset=["pda"]).net_units.sum()
+        df.dropna(subset=["pda"]).net_units.sum()
     # aggregating net units for modeled
     modeled = df.groupby("pda").net_units.sum()
 
 targets = pd.read_csv("data/pdatargets.csv", sep="\t")
 targets.index = targets.Key.str.lower()
 targets = targets.Households2 - targets.Households1
-#print "Warning, halving targets for 15 year simulation"
+# print "Warning, halving targets for 15 year simulation"
 
 # something is wrong with the targets - they're too large
 # see email with mike about this, as this is only a temp solution

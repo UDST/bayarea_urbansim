@@ -1,0 +1,36 @@
+name: networks
+
+desc: Regional Accessibility Variables
+
+model_type: networks
+
+node_col: tmnode_id
+
+variable_definitions:
+
+  - name: residential_units_45
+    dataframe: buildings
+    varname: residential_units
+    radius: 45
+    apply: np.log1p
+
+  - name: jobs_15
+    filters:
+    - building_id != -1
+    dataframe: jobs
+    radius: 15
+    apply: np.log1p
+
+  - name: jobs_45
+    filters:
+    - building_id != -1
+    dataframe: jobs
+    radius: 45
+    apply: np.log1p
+
+  - aggregation: sum
+    dataframe: households
+    decay: flat
+    name: sum_income_40
+    radius: 40
+    varname: income

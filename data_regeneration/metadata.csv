@@ -1,0 +1,32 @@
+ Source,Coverage,Type,Spatial Type,Data Description,Year,Path,License,Redistributable
+ Jurisdiction,San Mateo County,Table,None,Property Characteristics,2010,/badata/built/parcel/2010/smt/Property Characteristics/ASSESSOR_ROLL.mdb,?,?
+ Jurisdiction,San Mateo County,Table,None,Property Characteristics,2010,/badata/built/parcel/2010/smt/Property Characteristics/SITUS_SNPSHT.csv,?,?
+ Jurisdiction,Napa County,Table,None,Property Characteristics,2010,/badata/built/parcel/2010/nap/Napa_buildings.dbf,?,?
+ Jurisdiction,Napa County,Table,None,Property Characteristics,2010,/badata/built/parcel/2010/nap/Napa_taxroll.dbf,?,?
+ Jurisdiction,Santa Clara County,Table,None,Property Characteristics,2010,/badata/built/parcel/2010/scl/Scvta031210.dbf,?,?
+ Jurisdiction,Alameda County,Table,None,Property Characteristics,2010,/badata/built/parcel/2010/ala/assessor_nov10/IE670c.txt,?,?
+ Jurisdiction,Alameda County,Table,None,Property Characteristics,2010,/badata/built/parcel/2010/ala/assessor_nov10/IE673c.txt,?,?
+ Jurisdiction,Sonoma County,Table,None,Property Characteristics?,2010,/badata/built/parcel/2010/son/ABAG_SonomaCounty.txt,?,?
+ MTC/Synthicity,Bay Area,Metadata,None,Land Use Codes,2010,/badata/built/parcel/2010/rtp13_processing_notes/lucodes.csv,?,?
+ MTC,Bay Area,Metadata,None,Land Use Codes, 2010,/badata/juris/loc/zoning/zoning_id_lookup_table.csv,?,?
+ MTC,Bay Area,Metadata,None,Land Use Code Parcel Assignment,2010,/badata/juris/loc/zoning/zoning_parcels.csv,?,?
+ Jurisdiction,Sonoma County,Parcels,MultiPolygon,Parcels,2010,/badata/built/parcel/2010/son/PAR_PARCELS.shp,?,?
+ ESRI,Bay Area,Property Attributes,Points,Establishment Points,2010,/badata/emp/micro/est10_gt1/est10_esri_gt1.sh,?,?
+ RedFin,Bay Area,Property Attributes,Points,Residential Sales Data,2014?,/badata/built/bldg/homeprices/redfin_03feb14.csv,?,?
+ CoStar,Solano,Property Attributes,Points,Commercial Sales Data,2011,/badata/built/bldg/costar/2011/costar__clean2011_sol_020315.csv,?,?
+ CoStar,Bay Area,Property Attributes,Points,Commercial Sales Data,2011,/badata/built/bldg/costar/2011/costar_allbayarea.xlsx,?,?
+ MTC,Bay Area,Traffic Analysis Zone,MultiPolygon,Traffic Analysis Zone Geometry,?,/badata/juris/reg/zones/taz1454.shp,?,?
+ MTC,Bay Area,Traffic Analysis Zone,MultiPolygon,Population (Synthesized),2010,/badata/hh/synth/hhFile.p2011s3a1.2010.csv,?,?
+ MTC,Bay Area,Traffic Analysis Zone,MultiPolygon,Household Imputation (of what?),2010,/badata/hh/taz2010_imputation.csv,?,?
+ MTC?,Bay Area,Traffic Analysis Zone,MultiPolygon,Land Area Calculations of Traffic Analysis Zones,2010,/badata/juris/reg/zones/zones.csv,?,?
+ Jurisdiction,Solano County,Zoning,MultiPolygon,Zoning,2010,/badata/built/parcel/2010/sol/zoning.shp,?,?
+ Jurisdiction,Napa County,Census Tracts,MultiPolygon,Census Tracts,2010,/badata/built/parcel/2010/nap/Napa_Census_tract.shp,?,?
+ Jurisdiction,Alameda County,Parcels,MultiPolygon,Parcels,2010,/badata/built/parcel/2010/ala/parcelsAlaCo2010/asr_parcel.shp,?,?
+ Jurisdiction,Contra Costa County,Parcels,MultiPolygon,Parcels,2010,/badata/built/parcel/2010/cnc/raw10/CAD_AO_ParcelPoly_0410.shp,?,?
+ Jurisdiction,Napa County,Parcels,MultiPolygon,Parcels,2010,/badata/built/parcel/2010/nap/Napa_Parcels.shp,?,?
+ Jurisdiction,Marin County,Parcels,MultiPolygon,Parcels,2005,/badata/built/parcel/2005/parcels2005_mar.shp,?,?
+ Jurisdiction,Santa Clara County,Parcels,MultiPolygon,Parcels,2010,/badata/built/parcel/2010/scl/parcels2010_scl.shp,?,?
+ Jurisdiction,San Francisco County,Parcels,MultiPolygon,Parcels,2010,/badata/built/parcel/2010/sfr/parcels2010_sfr.shp,?,?
+ Jurisdiction,San Mateo County,Parcels,MultiPolygon,Parcels,2010,/badata/built/parcel/2010/smt/shapefiles/ACTIVE_PARCELS_APN.shp,?,?
+ Jurisdiction,Solano County,Parcels,MultiPolygon,Parcels,2010,/badata/built/parcel/2010/sol/Parcels.shp,?,?
+ Jurisdiction,Contra Costa County,Points,Points,Owner Points,2010,/badata/built/parcel/2010/cnc/raw10/CAD_AO_ParcelPoints_int0410.shp,?,?

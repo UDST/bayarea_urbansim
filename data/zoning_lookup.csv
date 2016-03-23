@@ -780,6 +780,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 5749,37,Redwood City,RSB,,30,,,0,0,0,0,0,0,0,1,0,0,0,0,0,0,
 5750,37,Redwood City,ROW,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 5802,38,San Bruno,Low Density Residential,,30,8,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,
+5816,38,San Bruno,Multi-Use,,30,8,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,
 5803,38,San Bruno,Medium Density Residential,,50,24,,1,1,1,0,0,1,0,0,0,0,0,0,0,0,
 5804,38,San Bruno,High Density Residential,,50,40,,1,1,1,0,0,1,0,0,0,0,0,0,0,0,
 5806,38,San Bruno,Central Business District,3,50,40,,0,1,1,1,1,0,1,0,0,1,0,0,1,1,
@@ -998,18 +999,19 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 7408,54,Calistoga,401 - Airport Commercial,0.1,30,,,0,0,0,1,0,0,0,1,0,1,1,0,0,0,
 7409,54,Calistoga,401 - Light Industrial,0.6,30,,,0,0,0,1,0,0,1,1,1,1,1,0,0,0,
 7410,54,Calistoga,401 - Public/Quasi-Public,0.8,30,,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,
-7501,55,Napa,RS-40,0.3,30,1.08,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
-7502,55,Napa,RS-20,0.3,30,2.17,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
-7503,55,Napa,RS-10,0.3,30,4.35,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
-7504,55,Napa,RS-7,0.3,30,6.22,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
-7505,55,Napa,RS-5,0.3,30,8.71,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
-7506,55,Napa,RS-4,0.3,30,10.89,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
-7507,55,Napa,RI-20,0.3,30,6.53,3,1,1,1,0,0,1,0,0,0,0,0,0,0,0,
-7508,55,Napa,RI-10,0.3,30,13.06,3,1,1,1,0,0,1,0,0,0,0,0,0,0,0,
-7509,55,Napa,RI-7,0.3,30,18.66,3,1,1,1,0,0,1,0,0,0,0,0,0,0,0,
-7510,55,Napa,RI-5,0.3,30,26.13,3,1,1,1,0,0,1,0,0,0,0,0,0,0,0,
-7511,55,Napa,RI-4,0.3,30,32.67,3,1,1,1,0,0,1,0,0,0,0,0,0,0,0,
-7513,55,Napa,RT-5,0.3,30,26.13,3,1,1,0,0,0,1,0,0,0,0,0,0,0,0,
+7501,55,Napa,RS 40,0.3,30,1.08,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
+7502,55,Napa,RS 20,0.3,30,2.17,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
+7503,55,Napa,RS 10,0.3,30,4.35,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
+7504,55,Napa,RS 7,0.3,30,6.22,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
+7505,55,Napa,RS 5,0.3,30,8.71,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
+7506,55,Napa,RS 4,0.3,30,10.89,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
+7507,55,Napa,RI 20,0.3,30,6.53,3,1,1,1,0,0,1,0,0,0,0,0,0,0,0,
+7508,55,Napa,RI 10,0.3,30,13.06,3,1,1,1,0,0,1,0,0,0,0,0,0,0,0,
+7509,55,Napa,RI 7,0.3,30,18.66,3,1,1,1,0,0,1,0,0,0,0,0,0,0,0,
+7510,55,Napa,RI 5,0.3,30,26.13,3,1,1,1,0,0,1,0,0,0,0,0,0,0,0,
+7511,55,Napa,RI 4,0.3,30,32.67,3,1,1,1,0,0,1,0,0,0,0,0,0,0,0,
+7513,55,Napa,RT 5,0.3,30,26.13,3,1,1,0,0,0,1,0,0,0,0,0,0,0,0,
+7514,55,Napa,RT 4,0.3,30,26.13,3,1,1,0,0,0,1,0,0,0,0,0,0,0,0,
 7515,55,Napa,RM,0.3,35,40,,1,1,1,0,0,1,0,0,0,0,0,0,0,0,
 7516,55,Napa,CT,1,40,,,0,0,0,0,1,1,0,0,0,1,1,0,0,0,
 7517,55,Napa,CL,0.35,30,25,,0,0,1,1,0,0,0,0,0,1,1,0,1,1,
@@ -1272,6 +1274,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 8826,68,Gilroy,DTTrans,1.5,40,20,,1,1,1,1,0,1,0,0,0,1,0,1,1,1,
 8901,69,Rio Vista,804 - Neighborhood Core: Commercial,0.8,,20,,1,1,1,1,0,0,0,0,0,1,0,1,1,1,
 8904,69,Rio Vista,804 - Neighborhood Residential,0.5,,16,,1,1,0,0,0,1,0,0,0,0,0,0,0,0,
+8922,69,Rio Vista,804 - Neighborhood Core: Residential,0.5,,16,,1,1,0,0,0,1,0,0,0,0,0,0,0,0,
 8905,69,Rio Vista,804 - Downtown/ Waterfront,2,,40,,1,1,1,1,0,0,1,0,0,1,0,1,1,1,
 8906,69,Rio Vista,804 - Historic Residential,0.5,,30,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,
 8907,69,Rio Vista,804 - Multifamily Residential,,,25,,0,1,1,0,0,0,0,0,0,0,0,0,0,0,
@@ -1313,19 +1316,25 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 9022,70,Suisun City,805 - Public Access to Waterways,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 9023,70,Suisun City,805 - PUD Commercial,,,,,0,0,0,1,0,0,0,0,0,0,0,0,0,0,
 9024,70,Suisun City,805 - Suisun Marsh Protection District,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+9101,71,Vacaville,Residential Rural,,,0.4,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 9101,71,Vacaville,Rural Residential,,,0.4,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 9102,71,Vacaville,Residential Estate,,,3,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 9103,71,Vacaville,Golf Course Residential Community,,,2,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+9131,71,Vacaville,Residential Golf Course,,,2,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 9104,71,Vacaville,Residential Low Density,,,5,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 9105,71,Vacaville,Residential Low-Medium Density,,,8,,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
+9132,71,Vacaville,Residential Low Medium Density,,,8,,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
+9128,71,Vacaville,Residential Low Med Density,,,8,,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
 9106,71,Vacaville,Manufactured Housing Park,,,10,,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
 9107,71,Vacaville,Residential Medium Density,,,14,,0,1,1,0,0,0,0,0,0,0,0,0,0,0,
 9108,71,Vacaville,Residential High Density,,,24,,0,1,1,0,0,0,0,0,0,0,0,0,0,0,
 9109,71,Vacaville,Residential Urban High Density,,,36,,0,1,1,0,0,0,0,0,0,0,0,0,0,0,
 9110,71,Vacaville,General Commercial,0.3,,,,0,0,0,0,0,0,0,0,0,1,0,0,0,0,
+9129,71,Vacaville,Service Commercial,0.3,,,,0,0,0,0,0,0,0,0,0,1,0,0,0,0,
 9111,71,Vacaville,Neighborhood Commercial,0.3,,,,0,0,0,0,0,0,0,0,0,1,0,0,0,0,
 9112,71,Vacaville,Highway Commercial,0.3,,,,0,0,0,0,1,0,0,0,0,1,0,0,0,0,
 9113,71,Vacaville,Commercial Office,0.3,,,,0,0,0,1,0,0,0,0,0,1,0,0,0,0,
+9130,71,Vacaville,Commercial Offices,0.3,,,,0,0,0,1,0,0,0,0,0,1,0,0,0,0,
 9114,71,Vacaville,Downtown,3,,,,0,0,1,0,0,0,0,0,0,1,0,1,1,1,
 9115,71,Vacaville,Commercial Service,0.3,,,,0,0,0,0,0,0,1,1,0,0,1,0,0,0,
 9116,71,Vacaville,Business Park,0.3,,,,0,0,0,1,0,0,1,0,0,1,0,0,0,1,
@@ -1334,10 +1343,11 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 9119,71,Vacaville,Schools,,,,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,
 9120,71,Vacaville,Private Recreation,0.1,,,,0,0,0,0,0,0,0,0,0,1,0,0,0,0,
 9121,71,Vacaville,Public Parks,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+9122,71,Vacaville,Open Space,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 9122,71,Vacaville,Public Open Space,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 9123,71,Vacaville,Agricultural Buffer (Transitional Zone),0.01,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 9124,71,Vacaville,Agriculture,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-9125,71,Vacaville,Hillside Agriculture,,,0.05,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+9125,71,Vacaville,Hillside Agricultural,,,0.05,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 9126,71,Vacaville,Hillside Agriculture,,,0.05,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 9127,71,Vacaville,Community Separator Overlay,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 9202,72,Vallejo,807 - Low Density Residential,,,8.7,,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -2186,7 +2196,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 12526,105,Unincorporated Napa,PD:AH:AC,,35,20,,0,1,1,0,0,0,0,0,0,0,0,0,0,0,
 12527,105,Unincorporated Napa,PL,1,35,,,0,0,0,1,0,1,1,1,0,0,0,0,0,0,
 12528,105,Unincorporated Napa,PL:AC,1,35,,,0,0,0,1,0,1,1,1,0,0,0,0,0,0,
-12529,105,Unincorporated Napa,RC,,35,20,,1,0,0,0,0,1,0,1,0,0,0,0,0,0,
+12529,105,Unincorporated Napa,RC,,30,6,,1,0,0,0,0,1,0,1,0,0,0,0,0,0,
 12530,105,Unincorporated Napa,RC:AH,,35,20,,1,1,1,0,0,1,0,1,0,0,0,0,0,0,
 12531,105,Unincorporated Napa,RC:UR,,35,0.25,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 12532,105,Unincorporated Napa,RS:AC,,35,0.25,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
@@ -2792,6 +2802,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 20443,101,San Francisco,PARKMERCED-OPEN SPACE-40-X,,40,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 20444,101,San Francisco,PARKMERCED-OPEN SPACE-45-PM,,45,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 20445,101,San Francisco,PARKMERCED-OPEN SPACE-65-PM,,65,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+20676,101,San Francisco,PARKMERCED-RESIDENTIAL-145-PM,,45,,,0,0,1,0,0,0,0,0,0,0,0,0,0,0,
 20448,101,San Francisco,PARKMERCED-RESIDENTIAL-45-PM,,45,,,0,0,1,0,0,0,0,0,0,0,0,0,0,0,
 20449,101,San Francisco,PARKMERCED-RESIDENTIAL-65-PM,,65,,,0,0,1,0,0,0,0,0,0,0,0,0,0,0,
 20450,101,San Francisco,PARKMERCED-RESIDENTIAL-85-PM,,85,,,0,0,1,0,0,0,0,0,0,0,0,0,0,0,
@@ -3162,8 +3173,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 99014,38,San Bruno,Neighborhood Commercial,1.2,30,,,0,0,0,1,1,0,0,0,0,1,1,0,0,0,
 99015,38,San Bruno,Very Low Density Residential,,30,6,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,
 99016,40,Cupertino,A,0.45,28,0.202604651,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
-99017,40,Cupertino,Sep-18,0.45,28,0.202604651,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
-99018,40,Cupertino,Sep-18,0.45,28,0.202604651,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+99017,40,Cupertino,A1-40,0.45,28,0.202604651,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 99019,40,Cupertino,Pre R1-10,0.45,28,5.808,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 99020,40,Cupertino,Pre RHS-21,,30,2.074285714,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 99021,40,Cupertino,Pre RHS-40,,30,1.089,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -3213,15 +3223,6 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 60043,,Berkeley,103 - Medium Density Residential,,,40,,0,1,1,0,0,0,0,0,0,0,0,0,0,0,Pre22
 60044,,Berkeley,103 - Neighborhood Commercial,3,,25,,0,1,1,1,1,1,0,0,0,1,0,0,1,1,Pre22
 60045,,Berkeley,103 - Open Space,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
-60046,,Emeryville,104 - Commercial,,,,,0,0,0,1,1,1,0,0,0,1,1,0,1,1,Pre22
-60047,,Emeryville,104 - High Density Residential,4,,135,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,Pre22
-60048,,Emeryville,104 - Industrial,1,,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,Pre22
-60049,,Emeryville,104 - Medium Density Residential,1,,35,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,Pre22
-60050,,Emeryville,104 - Mixed Use,,,60,,1,1,1,1,1,1,0,0,0,1,1,1,1,1,Pre22
-60051,,Emeryville,104 - Open Space,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
-60052,,Emeryville,104 - Other Public Buildings,,,,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,Pre22
-60053,,Emeryville,104 - Parks,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
-60054,,Emeryville,104 - Schools,,,,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,Pre22
 60055,,Fremont,105 - Agriculture,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Post22
 60056,,Fremont,105 - Central Business District,0.8,,,,0,0,0,1,1,1,0,0,0,1,1,0,1,1,Post22
 60057,,Fremont,105 - Community Commercial,0.5,40,,,0,0,0,1,1,1,0,0,0,1,1,0,1,1,Post22
@@ -5140,3 +5141,19 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 61970,,Sonoma County,999 - Rural Residential,,,0.05,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,Post22
 61971,,Sonoma County,999 - Urban Reserve,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Post22
 99999,,NODEV,NODEV,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NODEV
+60046,2,Berkeley,R-S,,25,7.26,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,2015
+60047,2,Berkeley,R-SMU,,35,30,,0,1,1,0,0,0,0,0,0,0,0,0,0,0,2015
+60048,2,Berkeley,C-DMU Core,75,75,,,1,1,1,1,1,1,0,0,0,1,1,1,1,1,2015
+60049,2,Berkeley,C-DMU Outer Core,75,75,,,1,1,1,1,1,1,0,0,0,1,1,1,1,1,2015
+60050,2,Berkeley,C-DMU Corridor,75,75,,,1,1,1,1,1,1,0,0,0,1,1,1,1,1,2015
+60051,2,Berkeley,R-Sh,,25,7.26,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,2015
+60052,2,Berkeley,C-DMU Buffer,50,50,,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,2015
+62000,,Emeryville,104 - Commercial,,,,,0,0,0,1,1,1,0,0,0,1,1,0,1,1,Pre22
+62001,,Emeryville,104 - High Density Residential,4,,135,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,Pre22
+62002,,Emeryville,104 - Industrial,1,,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,Pre22
+62003,,Emeryville,104 - Medium Density Residential,1,,35,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,Pre22
+62004,,Emeryville,104 - Mixed Use,,,60,,1,1,1,1,1,1,0,0,0,1,1,1,1,1,Pre22
+62005,,Emeryville,104 - Open Space,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
+62006,,Emeryville,104 - Other Public Buildings,,,,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,Pre22
+62007,,Emeryville,104 - Parks,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
+62008,,Emeryville,104 - Schools,,,,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,Pre22
