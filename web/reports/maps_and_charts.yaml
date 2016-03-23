@@ -1,9 +1,0 @@
-name: maps_and_charts
-
-desc: Maps and charts report
-
-list:
--   map: jobs_count
--   chart: res_units_bldg_type
--   map: residential_units_sum
--   chart: mean_sale_price_flt_zone

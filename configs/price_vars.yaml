@@ -8,14 +8,14 @@ node_col: node_id
 
 variable_definitions:
 
--   aggregation: average
+-   aggregation: 75pct
     dataframe: buildings
     decay: flat
     varname: residential_price
     radius: 2000
     name: residential
 
--   aggregation: average
+-   aggregation: 75pct
     dataframe: buildings
     decay: flat
     filters:
@@ -24,7 +24,7 @@ variable_definitions:
     radius: 2000
     varname: non_residential_price
 
--   aggregation: average
+-   aggregation: 75pct
     dataframe: buildings
     decay: flat
     filters:
@@ -33,7 +33,7 @@ variable_definitions:
     radius: 2000
     varname: non_residential_price
 
--   aggregation: average
+-   aggregation: 75pct
     dataframe: buildings
     decay: flat
     filters:

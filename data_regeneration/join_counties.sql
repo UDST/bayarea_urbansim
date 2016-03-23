@@ -104,6 +104,24 @@ CREATE TABLE parcels AS (
   WHERE  a.apn = p.apn
 );
 
+-- Adding in SCL parcel geometries that did not join with attribute records
+-- And adding in COMMON AREA geometries
+with p as(
+SELECT parcel,
+ST_CollectionExtract(ST_Multi(ST_Union(geom)), 3) AS geom
+FROM staging.parcels_scl
+WHERE parcel != 'COMMON AREA'
+GROUP BY parcel
+), j as (  
+SELECT a.county_id, a.apn, p.parcel, p.geom
+FROM staging.attributes_scl a right join p
+on a.apn = p.parcel
+)
+insert into parcels (county_id, apn, geom)
+select '085' as county_id, j.parcel as apn, j.geom from j where apn is null and parcel is not null;
+insert into parcels (county_id, apn, geom)
+SELECT '085' as county_id, -1*objectid as apn, geom FROM "staging"."parcels_scl" where parcel = 'COMMON AREA';
+
 -- Add back specific geometry data type, which was lost during table union.
 ALTER TABLE parcels ALTER COLUMN geom
   SET DATA TYPE geometry(MultiPolygon);
