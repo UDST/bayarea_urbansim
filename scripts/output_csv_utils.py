@@ -96,28 +96,28 @@ def write_bundle_comparison_csv(df, variable, runs):
                    'pctch40np', 'Shrch40np', 'hh40_3', 'hh40_3_shr',
                    'pctch40_3', 'shrch40_3', 'hh40au', 'hh40_1_shr',
                    'pctch40_1', 'shrch40_1', 'hh40_2', 'hh40_2_shr',
-                   'pctch40_2', 'shrch40_2', '_3_40np40_rat',
-                   '_1_40np40_rat', '_2_40np40_rat']
+                   'pctch40_2', 'shrch40_2', '3_40np40_rat',
+                   '1_40np40_rat', '2_40np40_rat']
         df.columns = headers
         df = df[['hh10', 'hh10_shr', 'hh40np', 'hh40np_shr',
              'pctch40np', 'Shrch40np', 'hh40_3', 'hh40_3_shr', 'pctch40_3',
-             'shrch40_3', '_3_40np40_rat', 'hh40_1', 'hh40_1_shr', 'pctch40_1',
-             'shrch40_1', '_1_40np40_rat', 'hh40_2', 'hh40_2_shr', 'pctch40_2',
-             'shrch40_2', '_2_40np40_rat']]
+             'shrch40_3', '3_40np40_rat', 'hh40_1', 'hh40_1_shr', 'pctch40_1',
+             'shrch40_1', '1_40np40_rat', 'hh40_2', 'hh40_2_shr', 'pctch40_2',
+             'shrch40_2', '2_40np40_rat']]
     elif variable=="totemp" or variable == "TOTEMP":
         headers = ['emp10', 'emp10_shr', 'emp40np',
                   'emp40np_shr', 'pctch40np', 'Shrch40np', 'emp40_3',
                   'emp40_3_shr', 'pctch40_3', 'shrch40_3', 'emp40_1',
                   'emp40_1_shr', 'pctch40_1', 'shrch40_1', 'emp40_2',
-                  'emp40_2_shr', 'pctch40_2', 'shrch40_2', '_3_40np40_rat',
-                  '_1_40np40_rat', '_2_40np40_rat']
+                  'emp40_2_shr', 'pctch40_2', 'shrch40_2', '3_40np40_rat',
+                  '1_40np40_rat', '2_40np40_rat']
         df.columns = headers
         df = df[['emp10', 'emp10_shr', 'emp40np',
              'emp40np_shr', 'pctch40np', 'Shrch40np', 'emp40_3',
-             'emp40_3_shr', 'pctch40_3', 'shrch40_3', '_3_40np40_rat',
+             'emp40_3_shr', 'pctch40_3', 'shrch40_3', '3_40np40_rat',
              'emp40_1', 'emp40_1_shr', 'pctch40_1', 'shrch40_1',
-             '_1_40np40_rat', 'emp40_2', 'emp40_2_shr', 'pctch40_2',
-             'shrch40_2', '_2_40np40_rat']]
+             '1_40np40_rat', 'emp40_2', 'emp40_2_shr', 'pctch40_2',
+             'shrch40_2', '2_40np40_rat']]
     cut_variable_name = variable[3:]
     f = 'compare/' + \
         '%(geography)s_%(variable)s_%(runs)s.csv'\
