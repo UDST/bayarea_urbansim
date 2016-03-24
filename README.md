@@ -3,7 +3,30 @@ Bay Area Urbansim Implementation
 
 This is the full UrbanSim implementation for the Bay Area.
 
-###Data
+UAL development branch
+----------------------
+
+Extends Bay Area UrbanSim to better capture processes of residential displacement and affordable housing provision. Modifications include: 
+
+#### Data structures
+
+* Builds out the representation of individual housing units to include a semi-persistent tenure status, which is assigned based on characteristics of initial unit occupants
+* Joins additional race/ethnicity PUMS variables to synthetic households
+* Adds a representation of market rents alongside market sale prices
+
+#### Model steps
+
+* Residential hedonics predict market rents and sale prices separately, with rents estimated from Craigslist listings
+* Household move-out choice depends on tenure status
+* Household location choice is modeled separately for renters and owners, and includes race/ethnicity measures as explanatory variables
+* Developer models are updated to produce both rental and ownership housing stock
+
+Other work is in progress; see wiki. 
+
+Subsequent README content is from the master branch.
+
+Data
+----
 
 Put the following in the data directory:
 
