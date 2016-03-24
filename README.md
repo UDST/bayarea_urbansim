@@ -102,6 +102,8 @@ https://s3.amazonaws.com/bayarea_urbansim/data/09_01_2015_parcel_shareable.zip
 
 #####Geom ID
 
+Please be aware that many ArcGIS users have found that ArcGIS automatically converts and then rounds the `geom_id` column, effectively making it unusable. Therefore we recommend using QGIS, which does not exhibit this behavior with delimited files by default. 
+
 What is the `geom_id` field and why does it exist? 
 
 In short, this is a legacy identifier. The `geom_id` field was introduced as a stable identifier for parcels across shapefiles, database tables, CSV's, and other data types. It is an integer because at some point there was a need to support integer only identifiers. It is not based on an Assessor's Parcel Numbers because there was a perception that those were inadequate. And it is based on the geometry of the parcel because many users have found that geometries are the most important feature of parcels.
