@@ -68,7 +68,7 @@ filename |description
 ----------------------------|-----------
 run#_topsheet_2040 | An overall summary of various housing, employment, etc by regional planning area types
 run#_parcel_output.csv 		|csv of parcels that are built for review in Explorer
-run#_subsidy_summary.csv 	|currently empty
+run#_parcel_data_diff.csv 			|A CSV with parcel level output for *all* parcels with lat, lng and includes change in total_residential_units and change in total_job_spaces, as well as zoned capacity measures
 run#_simulation_output.json |summary by TAZ for review in Explorer (unix only)
 run#_taz_summaries 			|A CSV for [input to the MTC travel model](http://analytics.mtc.ca.gov/foswiki/UrbanSimTwo/OutputToTravelModel)
 run#_urban_footprint_summary | A CSV with A Summary of how close the scenario is to meeting [Performance Target 4](http://planbayarea.org/the-plan/plan-details/goals-and-targets.html)
