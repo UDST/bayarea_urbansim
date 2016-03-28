@@ -1,7 +1,7 @@
-Bay Area Urbansim Implementation
+DRAFT Bay Area Urbansim Implementation
 =======
 
-This is the full UrbanSim implementation for the Bay Area. Documenation for the Bay Area model is available at http://metropolitantransportationcommission.github.io/baus_docs/ and documentation for the generic UrbanSim model is at https://udst.github.io/urbansim/index.html
+This is the DRAFT UrbanSim implementation for the Bay Area. Documenation for the Bay Area model is available at http://metropolitantransportationcommission.github.io/baus_docs/ and documentation for the generic UrbanSim model is at https://udst.github.io/urbansim/index.html
 
 ###Data
 
@@ -58,7 +58,7 @@ In the repository directory edit `run.py` and set `MODE` to "baseyearsim" and ty
 
 #####Runs Directory
 
-First, some vocabulary.
+ALL OUTPUT IN THIS DIRECTORY IS CONSIDERED DRAFT. PLEASE CONTACT MTC FOR OFFICIAL FINAL OUTPUTS.
 
 `#` = a number that is updated in the RUNNUM file in the bayarea_urbansim directory each time you run Simulation.py.
 
