@@ -375,7 +375,8 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
 
 @orca.step()
 def parcel_summary(parcels, run_number, year,
-                     initial_year, final_year):
+                   parcels_zoning_calculations,
+                   initial_year, final_year):
 
     if year not in [initial_year, final_year]:
         return
@@ -384,11 +385,16 @@ def parcel_summary(parcels, run_number, year,
         "x", "y",
         "total_residential_units",
         "total_job_spaces",
-        "first_building_type_id",
+        "first_building_type_id"
+    ])
+
+    df2 = parcels_zoning_calculations.to_frame([
         "zoned_du",
         "zoned_du_underbuild",
         "zoned_du_underbuild_nodev"
     ])
+
+    df = df.join(df2)
 
     df.to_csv(
         os.path.join("runs", "run%d_parcel_data_%d.csv" %
