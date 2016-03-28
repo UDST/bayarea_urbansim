@@ -25,6 +25,11 @@ def year():
 
 
 @orca.injectable()
+def initial_year():
+    return 2010
+
+
+@orca.injectable()
 def final_year():
     return 2040
 

@@ -373,6 +373,55 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
         df.to_csv(uf_summary_csv)
 
 
+@orca.step()
+def parcel_summary(parcels, run_number, year,
+                   parcels_zoning_calculations,
+                   initial_year, final_year):
+
+    if year not in [initial_year, final_year]:
+        return
+
+    df = parcels.to_frame([
+        "x", "y",
+        "total_residential_units",
+        "total_job_spaces",
+        "first_building_type_id"
+    ])
+
+    df2 = parcels_zoning_calculations.to_frame([
+        "zoned_du",
+        "zoned_du_underbuild",
+        "zoned_du_underbuild_nodev"
+    ])
+
+    df = df.join(df2)
+
+    df.to_csv(
+        os.path.join("runs", "run%d_parcel_data_%d.csv" %
+             (run_number, year))
+    )
+
+    if year == final_year:
+
+        # do diff with initial year
+        
+        df2 = pd.read_csv(
+            os.path.join("runs", "run%d_parcel_data_%d.csv" %
+                         (run_number, initial_year)), index_col="parcel_id")
+
+        for col in df.columns:
+
+            if col in ["x", "y", "first_building_type_id"]:
+                continue
+
+            df[col] = df[col] - df2[col]
+
+        df.to_csv(
+            os.path.join("runs", "run%d_parcel_data_diff.csv" %
+                         run_number)
+        )
+
+
 @orca.step("travel_model_output")
 def travel_model_output(parcels, households, jobs, buildings,
                         zones, homesales, year, summary, coffer,
