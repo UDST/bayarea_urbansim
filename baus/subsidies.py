@@ -609,4 +609,6 @@ def subsidized_residential_developer_lump_sum_accts(
                                  year,
                                  form_to_btype_func,
                                  add_extra_columns_func,
-                                 summary)
+                                 summary,
+                                 create_deed_restricted=acct[
+                                    "subsidize_affordable"])
