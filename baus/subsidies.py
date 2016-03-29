@@ -11,11 +11,15 @@ from urbansim.utils import misc
 
 @orca.injectable("coffer", cache=True)
 def coffer():
-    return {
+    d = {
         "prop_tax_acct": accounts.Account("prop_tax_act"),
-        "vmt_fee_acct":  accounts.Account("vmt_fee_acct"),
-        "obag_acct":  accounts.Account("obag_acct")
+        "vmt_fee_acct":  accounts.Account("vmt_fee_acct")
     }
+
+    for key, acct in settings["acct_settings"]["lump_sum_accounts"].items():
+        d[acct["name"]] = account.Account(acct["name"])
+
+    return d
 
 
 @orca.injectable("acct_settings", cache=True)
@@ -66,21 +70,29 @@ def tax_buildings(buildings, acct_settings, account, year):
         sort(columns=["amount"], ascending=False).head(7)
 
 
-@orca.step("add_obag_funds")
-def add_obag_funds(settings, year, buildings, coffer,
-                   summary, years_per_iter):
+@orca.step()
+def lump_sum_accounts(settings, year, buildings, coffer,
+                      summary, years_per_iter, scenario):
 
-    amt = float(settings["acct_settings"]["obag_settings"]["total_amount"])
+    s = settings["acct_settings"]["lump_sum_accounts"]
 
-    amt *= years_per_iter
+    for key, acct in s.items():
 
-    metadata = {
-        "description": "OBAG regional subsidies",
-        "year": year
-    }
-    # the subaccount is meaningless here (it's a regional account) -
-    # but the subaccount number is referred to below
-    coffer["obag_acct"].add_transaction(amt, subaccount=1, metadata=metadata)
+        if scenario not in acct["enable_in_scenarios"]:
+            continue
+
+        amt = float(acct[key]["total_amount"])
+
+        amt *= years_per_iter
+
+        metadata = {
+            "description": "%s subsidies" % acct["name"],
+            "year": year
+        }
+        # the subaccount is meaningless here (it's a regional account) -
+        # but the subaccount number is referred to below
+        coffer[acct["name"]].add_transaction(amt, subaccount=1,
+                                             metadata=metadata)
 
 
 # this will compute the reduction in revenue from a project due to
@@ -215,23 +227,25 @@ def policy_modifications_of_profit(feasibility, parcels):
 
             feasibility[("residential", "max_profit")] *= pct_modifications
 
-    if "ceqa_tiering_settings" in settings["acct_settings"]:
+    if "profitability_adjustment_policies" in settings["acct_settings"]:
 
-        ceqa_tiering_settings = \
-            settings["acct_settings"]["ceqa_tiering_settings"]
+        for key, policy in \
+                settings["acct_settings"]["profitability_adjustment_policies"]:
 
-        if orca.get_injectable("scenario") in ceqa_tiering_settings["enable"]:
+            if orca.get_injectable("scenario") in \
+                    policy["enable_in_scenarios"]:
 
-            parcels_geography = orca.get_table("parcels_geography")
+                parcels_geography = orca.get_table("parcels_geography")
 
-            pct_modifications = \
-                parcels_geography.local.eval(
-                    ceqa_tiering_settings["profitability_adjustment_formula"])
-            pct_modifications += 1.0
+                pct_modifications = \
+                    parcels_geography.local.eval(
+                        policy["profitability_adjustment_formula"])
+                pct_modifications += 1.0
 
-            print "Modifying profit for ceqa:", pct_modifications.describe()
+                print "Modifying profit for %s" % policy["name"], \
+                    pct_modifications.describe()
 
-            feasibility[("residential", "max_profit")] *= pct_modifications
+                feasibility[("residential", "max_profit")] *= pct_modifications
 
     print "There are %d affordable units if all feasible projects are built" %\
         feasibility[("residential", "deed_restricted_units")].sum()
@@ -567,26 +581,32 @@ def subsidized_residential_developer_vmt(
                              create_deed_restricted=True)
 
 
-@orca.step('subsidized_residential_developer_obag')
-def subsidized_residential_developer_obag(
+@orca.step()
+def subsidized_residential_developer_lump_sum_accts(
         households, buildings, add_extra_columns_func,
         parcels_geography, year, acct_settings, parcels,
-        settings, summary, coffer, form_to_btype_func, feasibility):
+        settings, summary, coffer, form_to_btype_func):
 
-    feasibility = feasibility.to_frame()
-    feasibility = feasibility.stack(level=0).reset_index(level=1, drop=True)
+    for key, acct in settings["acct_settings"]["lump_sum_accounts"].items():
 
-    run_subsidized_developer(feasibility,
-                             parcels,
-                             buildings,
-                             households,
-                             acct_settings["obag_settings"],
-                             settings,
-                             coffer["obag_acct"],
-                             year,
-                             form_to_btype_func,
-                             add_extra_columns_func,
-                             summary)
+        print "Running the subsidized developer for acct: %s" % acct["name"]
 
-    # set to an empty dataframe to save memory
-    # orca.add_table("feasibility", pd.DataFrame())
+        # need to rerun the subsidized feasibility every time and get new
+        # results - this is not ideal and is a story to fix in pivotal, but the
+        # only cost is in time - the results should be the same
+        orca.eval_step("subsidized_residential_feasibility")
+        feasibility = orca.get_table("feasibility").to_frame()
+        feasibility = feasibility.stack(level=0).\
+            reset_index(level=1, drop=True)
+
+        run_subsidized_developer(feasibility,
+                                 parcels,
+                                 buildings,
+                                 households,
+                                 acct,
+                                 settings,
+                                 coffer[acct["name"]],
+                                 year,
+                                 form_to_btype_func,
+                                 add_extra_columns_func,
+                                 summary)
