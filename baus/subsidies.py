@@ -10,14 +10,14 @@ from urbansim.utils import misc
 
 
 @orca.injectable("coffer", cache=True)
-def coffer():
+def coffer(settings):
     d = {
         "prop_tax_acct": accounts.Account("prop_tax_act"),
         "vmt_fee_acct":  accounts.Account("vmt_fee_acct")
     }
 
     for key, acct in settings["acct_settings"]["lump_sum_accounts"].items():
-        d[acct["name"]] = account.Account(acct["name"])
+        d[acct["name"]] = accounts.Account(acct["name"])
 
     return d
 
@@ -230,7 +230,8 @@ def policy_modifications_of_profit(feasibility, parcels):
     if "profitability_adjustment_policies" in settings["acct_settings"]:
 
         for key, policy in \
-                settings["acct_settings"]["profitability_adjustment_policies"]:
+                settings["acct_settings"][
+                    "profitability_adjustment_policies"].items():
 
             if orca.get_injectable("scenario") in \
                     policy["enable_in_scenarios"]:

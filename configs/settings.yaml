@@ -189,7 +189,7 @@ acct_settings:
   lump_sum_accounts:
 
     obag_settings:
-      name: "OBAG",
+      name: "OBAG"
       sending_buildings_subaccount_def: regional
       total_amount: 40000000
       receiving_buildings_filter: pda_id > 0
