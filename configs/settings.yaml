@@ -232,6 +232,12 @@ acct_settings:
       # any parcel in a tpa
       profitability_adjustment_formula: "(pda_id > 0) * .01"
 
+  land_value_tax_settings:
+    enable_in_scenarios: ["3"]
+    bins:
+      pcts: [0.5, 0.2, 0.1, 0.0]
+      breaks: [0.1, 0.3, 0.5]
+
   sales_tax_settings:
     sending_buildings_filter: general_type != 'Residential'
     # this is the method used to compute the property tax - the 20 here is a cap rate

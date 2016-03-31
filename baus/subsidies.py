@@ -227,6 +227,27 @@ def policy_modifications_of_profit(feasibility, parcels):
 
             feasibility[("residential", "max_profit")] *= pct_modifications
 
+    if "land_value_tax" in settings["acct_settings"]:
+
+        s = settings["acct_settings"]["land_value_tax"]
+
+        if orca.get_injectable("scenario") in \
+            policy["enable_in_scenarios"]:
+
+            bins = s["bins"]
+            pcts = bins["pcts"]
+            # need to boud the breaks with a reasonable low and high goalpost
+            breaks = [-1]+bins["breaks"]+[2]
+
+            s = orca.get_table("parcels_zoning_calculations")["underbuild_ratio"]
+            # map the breakpoints defined in yaml to the pcts defined in the same
+            pct_modifications = pd.cut(s, breaks, pcts) + 1
+
+            print "Modifying profit for Land Value Tax:\n", \
+                pct_modifications.describe()
+
+            feasibility[("residential", "max_profit")] *= pct_modifications
+
     if "profitability_adjustment_policies" in settings["acct_settings"]:
 
         for key, policy in \
