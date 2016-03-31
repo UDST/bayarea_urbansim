@@ -81,7 +81,7 @@ def lump_sum_accounts(settings, year, buildings, coffer,
         if scenario not in acct["enable_in_scenarios"]:
             continue
 
-        amt = float(acct[key]["total_amount"])
+        amt = float(acct["total_amount"])
 
         amt *= years_per_iter
 
@@ -223,7 +223,7 @@ def policy_modifications_of_profit(feasibility, parcels):
             pct_modifications = feasibility[("residential", "vmt_res_cat")].\
                 map(sb743_settings["sb743_pcts"]) + 1
 
-            print "Modifying profit for SB743:", pct_modifications.describe()
+            print "Modifying profit for SB743:\n", pct_modifications.describe()
 
             feasibility[("residential", "max_profit")] *= pct_modifications
 
@@ -243,7 +243,7 @@ def policy_modifications_of_profit(feasibility, parcels):
                         policy["profitability_adjustment_formula"])
                 pct_modifications += 1.0
 
-                print "Modifying profit for %s" % policy["name"], \
+                print "Modifying profit for %s:\n" % policy["name"], \
                     pct_modifications.describe()
 
                 feasibility[("residential", "max_profit")] *= pct_modifications
@@ -586,9 +586,14 @@ def subsidized_residential_developer_vmt(
 def subsidized_residential_developer_lump_sum_accts(
         households, buildings, add_extra_columns_func,
         parcels_geography, year, acct_settings, parcels,
-        settings, summary, coffer, form_to_btype_func):
+        settings, summary, coffer, form_to_btype_func,
+        scenario):
 
     for key, acct in settings["acct_settings"]["lump_sum_accounts"].items():
+
+        # quick return in order to save performance time
+        if scenario not in acct["enable_in_scenarios"]:
+            continue
 
         print "Running the subsidized developer for acct: %s" % acct["name"]
 
@@ -613,3 +618,8 @@ def subsidized_residential_developer_lump_sum_accts(
                                  summary,
                                  create_deed_restricted=acct[
                                     "subsidize_affordable"])
+
+        # set to an empty dataframe to save memory
+        orca.add_table("feasibility", pd.DataFrame())
+
+
