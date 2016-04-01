@@ -13,12 +13,14 @@ print "Building's parcel id in parcel index\n", s.value_counts()
 
 s = households.building_id.isin(buildings.index)
 
-print "Households with no building assigned: \n", (households.building_id == -1).value_counts()
+print "Households with no building assigned: \n", \
+    (households.building_id == -1).value_counts()
 print "Household's building id in building index\n", s.value_counts()
 
 s = jobs.building_id.isin(buildings.index)
 
-print "Jobs with no building assigned: \n", (jobs.building_id == -1).value_counts()
+print "Jobs with no building assigned: \n", \
+    (jobs.building_id == -1).value_counts()
 print "Job's building id in building index\n", s.value_counts()
 
 print "Len jobs"

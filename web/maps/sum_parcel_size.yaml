@@ -1,9 +1,0 @@
-name: sum_parcel_size
-
-desc: Sum Parcel Size
-
-table: parcels
-
-metric: shape_area.sum()
-
-groupby: zone_id

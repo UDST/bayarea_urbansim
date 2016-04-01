@@ -1,0 +1,35 @@
+number,name,subregion
+1,SF NE,1
+2,SF NW,1
+3,SF S SE,1
+4,SF SW,1
+5,Daly City Millbrae,2
+6,San Mateo,2
+7,Redwood City,2
+8,Santa Clara,2
+9,Golden Triangle,1
+10,West San Jose,1
+11,San Jose CBD,1
+12,East San Jose,1
+13,South San Jose,1
+14,SE Snta Clara Cnty,4
+15,Tri Valley,3
+16,Fremont,2
+17,S Leandro Hayward,2
+18,Oakland Alameda,1
+19,Berkeley Eville,2
+20,Richmond Pinole,2
+21,Martinez Concord,3
+22,Lamorinda WC,3
+23,S Ramon Danville,3
+24,East Contra Costa,4
+25,Vallejo Benicia,3
+26,Solano Remainder,4
+27,Napa City and S,3
+28,Napa Remainder,4
+29,Southern Sonoma,4
+30,Santa Rosa Area,3
+31,Northern Sonoma,4
+32,Northern Marin,4
+33,Central Marin,3
+34,Southern Marin,3

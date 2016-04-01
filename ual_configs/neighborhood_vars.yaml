@@ -7,16 +7,56 @@ model_type: networks
 node_col: node_id
 
 variable_definitions:
-    
-  - name: sum_residential_units
+
+  - aggregation: sum
+    dataframe: buildings
+    decay: linear
+    filters:
+    - general_type == "Retail"
+    name: retail_sqft_3000
+    radius: 3000
+    varname: non_residential_sqft
+
+  - aggregation: sum
+    dataframe: households
+    decay: flat
+    name: sum_income_3000
+    radius: 3000
+    varname: income
+
+  - name: residential_units_500
+    dataframe: buildings
+    varname: residential_units
+    radius: 500
+    apply: np.log1p
+
+  - name: residential_units_1500
     dataframe: buildings
     varname: residential_units
     radius: 1500
     apply: np.log1p
 
-  - name: sum_nonresidential_units
+  - name: office_1500
     dataframe: buildings
     varname: job_spaces
+    filters:
+    - general_type == "Office"
+    radius: 1500
+    apply: np.log1p
+
+  - name: retail_1500
+    dataframe: buildings
+    varname: job_spaces
+    filters:
+    - general_type == "Retail"
+    radius: 1500
+    apply: np.log1p
+
+  - name: industrial_1500
+    dataframe: buildings
+    varname: job_spaces
+    filters:
+    - general_type == "Industrial"
     radius: 1500
     apply: np.log1p
 
@@ -141,11 +181,11 @@ variable_definitions:
     decay: flat
     apply: np.log1p
 
-  - name: jobs
+  - name: jobs_500
     filters:
     - building_id != -1
     dataframe: jobs
-    radius: 1500
+    radius: 500
     apply: np.log1p
 
   - name: jobs3k
@@ -161,6 +201,15 @@ variable_definitions:
     dataframe: households
     varname: income
     radius: 1500
-    aggregation: average
+    decay: flat
+    apply: np.log1p
+  
+  - name: ave_income_500
+    aggregation: median
+    filters:
+    - building_id != -1
+    dataframe: households
+    varname: income
+    radius: 500
     decay: flat
     apply: np.log1p

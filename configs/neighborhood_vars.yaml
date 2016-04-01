@@ -1,0 +1,216 @@
+name: networks
+
+desc: Neighborhood Accessibility Variables
+
+model_type: networks
+
+node_col: node_id
+
+variable_definitions:
+
+  - aggregation: sum
+    dataframe: buildings
+    decay: linear
+    filters:
+    - general_type == "Retail"
+    name: retail_sqft_3000
+    radius: 3000
+    varname: non_residential_sqft
+
+  - aggregation: sum
+    dataframe: households
+    decay: flat
+    name: sum_income_3000
+    radius: 3000
+    varname: income
+
+  - name: residential_units_500
+    dataframe: buildings
+    varname: residential_units
+    radius: 500
+    apply: np.log1p
+
+  - name: residential_units_1500
+    dataframe: buildings
+    varname: residential_units
+    radius: 1500
+    apply: np.log1p
+
+  - name: office_1500
+    dataframe: buildings
+    varname: job_spaces
+    filters:
+    - general_type == "Office"
+    radius: 1500
+    apply: np.log1p
+
+  - name: retail_1500
+    dataframe: buildings
+    varname: job_spaces
+    filters:
+    - general_type == "Retail"
+    radius: 1500
+    apply: np.log1p
+
+  - name: industrial_1500
+    dataframe: buildings
+    varname: job_spaces
+    filters:
+    - general_type == "Industrial"
+    radius: 1500
+    apply: np.log1p
+
+  - name: ave_sqft_per_unit
+    dataframe: buildings
+    varname: sqft_per_unit
+    filters:
+    - general_type == "Residential"
+    radius: 1500
+    apply: np.log1p
+    decay: flat
+    aggregation: average
+
+  - name: ave_lot_size_per_unit
+    dataframe: buildings
+    varname: lot_size_per_unit
+    filters:
+    - general_type == "Residential"
+    radius: 1500
+    apply: np.log1p
+    decay: flat
+    aggregation: average
+
+  - name: population
+    filters:
+    - building_id != -1
+    dataframe: households
+    varname: persons
+    radius: 1500
+    apply: np.log1p
+
+  - name: poor
+    dataframe: households
+    filters:
+    - income < 40000 and building_id != -1
+    varname: persons
+    radius: 1500
+    apply: np.log1p
+
+  - name: blacks
+    dataframe: households
+    filters:
+    - black == 1
+    varname: persons
+    radius: 1500
+    apply: np.log1p
+    
+  - name: whites
+    dataframe: households
+    filters:
+    - white == 1
+    varname: persons
+    radius: 1500
+    apply: np.log1p
+
+  - name: nonwhites
+    dataframe: households
+    filters:
+    - white != 1
+    varname: persons
+    radius: 1500
+    apply: np.log1p
+
+  - name: hispanics
+    dataframe: households
+    filters:
+    - hisp == 1
+    varname: persons
+    radius: 1500
+    apply: np.log1p
+
+  - name: asians
+    dataframe: households
+    filters:
+    - asian == 1
+    varname: persons
+    radius: 1500
+    apply: np.log1p
+
+  - name: renters
+    dataframe: households
+    filters:
+    - tenure == 2 and building_id != -1
+    radius: 1500
+    apply: np.log1p
+
+  - name: singles
+    dataframe: households
+    filters:
+    - hhs1 == 1
+    radius: 1500
+    apply: np.log1p
+
+  - name: two_persons
+    dataframe: households
+    filters:
+    - hhs2 == 1
+    radius: 1500
+    apply: np.log1p
+
+  - name: three_plus
+    dataframe: households
+    filters:
+    - hhs3p == 1
+    radius: 1500
+    apply: np.log1p
+
+  - name: sfdu
+    dataframe: buildings
+    filters:
+    - building_type_id == 1
+    radius: 1500
+    apply: np.log1p
+
+  - name: ave_hhsize
+    dataframe: households
+    filters:
+    - building_id != -1
+    varname: persons
+    radius: 1500
+    aggregation: average
+    decay: flat
+    apply: np.log1p
+
+  - name: jobs_500
+    filters:
+    - building_id != -1
+    dataframe: jobs
+    radius: 500
+    apply: np.log1p
+
+  - name: jobs_1500
+    filters:
+    - building_id != -1
+    dataframe: jobs
+    radius: 1500
+    apply: np.log1p
+  
+  - name: ave_income_1500
+    aggregation: 75pct
+    filters:
+    - building_id != -1
+    dataframe: households
+    varname: income
+    radius: 1500
+    decay: flat
+    apply: np.log1p
+  
+  - name: ave_income_500
+    aggregation: median
+    filters:
+    - building_id != -1
+    dataframe: households
+    varname: income
+    radius: 500
+    decay: flat
+    apply: np.log1p

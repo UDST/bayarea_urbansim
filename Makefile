@@ -4,17 +4,21 @@ get = aws s3 cp s3://bayarea_urbansim/
 database_get = aws s3 cp s3://landuse/spandex/outputs/
 
 #the data necessary for simulation.py to run:
-data: data/2015_06_01_bayarea_v3.h5 \
+data: data/2015_09_01_bayarea_v3.h5 \
 data/2015_06_01_osm_bayarea4326.h5 \
-data/2015_08_13_zoning_parcels.csv \
-data/2015_08_13_parcels_geography.csv
+data/2015_08_03_tmnet.h5 \
+data/2015_12_21_zoning_parcels.csv \
+data/02_01_2016_parcels_geography.csv  \
+data/2015_08_29_costar.csv
 
 #the database that the h5 file above was exported from:
-database_backup: 2015/06/23/full.dump \
-2015/06/23/db-schema.sql \
-2015/06/23/globals.sql
+database_backup:
+	mkdir -p database_backup
+	aws s3 cp --recursive s3://landuse/spandex/outputs/2015/10/14/18/ database_backup/
 
-data/2015_06_01_bayarea_v3.h5:
+cartography: data/simple_parcels.shp
+
+data/2015_09_01_bayarea_v3.h5:
 	$(get)$@ \
 	$@.download
 	mv $@.download $@
@@ -24,43 +28,28 @@ data/2015_06_01_osm_bayarea4326.h5:
 	$@.download
 	mv $@.download $@
 
-data/2015_08_13_zoning_parcels.csv: 
+data/2015_12_21_zoning_parcels.csv:
 	$(get)$@ \
 	$@.download
 	mv $@.download $@
 
-data/2015_08_13_parcels_geography.csv: 
+data/02_01_2016_parcels_geography.csv:
 	$(get)$@ \
 	$@.download
 	mv $@.download $@
 
-#####################
-####EXTRAS/SOURCE####
-#####################
-parcels_06_12_2015.shp: parcels_06_12_2015.zip
-	unzip -o $<
-	touch $@
-
-#the database was updated on 6/23, with some changes to the zoning_parcels table--it is based on the 6/1/2015 parcel database
-data/parcels_06_12_2015.zip: 
+data/2015_08_29_costar.csv: 
 	$(get)$@ \
 	$@.download
 	mv $@.download $@
 
-2015/06/23/full.dump:
-	mkdir -p $(dir $@)
-	$(database_get)$@ \
+data/2015_08_03_tmnet.h5:
+	$(get)$@ \
 	$@.download
 	mv $@.download $@
 
-2015/06/23/db-schema.sql:
-	mkdir -p $(dir $@)
-	$(database_get)$@ \
-	$@.download
-	mv $@.download $@
-
-2015/06/23/globals.sql:
-	mkdir -p $(dir $@)
-	$(database_get)$@ \
+#a parcels shapefile is available on the land use server in d:/badata/out/summaries/ or box/badata/out/regeneration
+data/simple_parcels.zip: 
+	$(get)$@ \
 	$@.download
 	mv $@.download $@
