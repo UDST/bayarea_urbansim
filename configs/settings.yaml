@@ -224,8 +224,8 @@ acct_settings:
 low_income_for_hlcm: 30000
 
 
-dont_enable_supply_correction:
-  price_col: unit_residential_price
+enable_supply_correction:
+  price_col: residential_price
   submarket_col: zone_id
   submarket_table: zones
   warm_start: False
@@ -309,6 +309,7 @@ feasibility:
     - max_far
     - max_dua
     - land_cost
+    - residential
     - min_max_fars
     - max_far_from_dua
     - max_height
@@ -443,11 +444,7 @@ building_type_map2:
 # developer model should account for the differences.
 # travel_model_ variables are for the travel_model_summary step.
 form_to_btype:
-  residential_ownerocc:
-    - 1
-    - 2
-    - 3
-  residential_rented:
+  residential:
     - 1
     - 2
     - 3
@@ -460,13 +457,9 @@ form_to_btype:
     - 11
   office:
     - 4
-  mixedresidential_ownerocc:
+  mixedresidential:
     - 12
-  mixedresidential_rented:
-    - 12
-  mixedoffice_ownerocc:
-    - 14
-  mixedoffice_rented:
+  mixedoffice:
     - 14
   select_non_residential:
     - 4

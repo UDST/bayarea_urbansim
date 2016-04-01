@@ -11,18 +11,9 @@ variable_definitions:
 -   aggregation: 75pct
     dataframe: buildings
     decay: flat
-    filters:
-    name: residential_price
+    varname: residential_price
     radius: 2000
-    varname: unit_residential_price
-
--   aggregation: average
-    dataframe: residential_units
-    decay: flat
-    filters:
-    name: residential_rent
-    radius: 2000
-    varname: unit_residential_rent
+    name: residential
 
 -   aggregation: 75pct
     dataframe: buildings

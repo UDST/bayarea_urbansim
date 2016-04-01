@@ -5,6 +5,7 @@ import orca
 import datasources
 import variables
 from urbansim import accounts
+from urbansim.utils import networks
 from urbansim.developer import sqftproforma
 from urbansim_defaults import models
 from urbansim_defaults import utils
@@ -13,21 +14,51 @@ import pandas as pd
 from cStringIO import StringIO
 
 
+@orca.step('neighborhood_vars')
+def neighborhood_vars(net):
+    nodes = networks.from_yaml(net, "ual_neighborhood_vars.yaml")
+    nodes = nodes.fillna(0)
+    print nodes.describe()
+    orca.add_table("nodes", nodes)
+
+
+@orca.step('price_vars')
+def price_vars(net):
+    nodes2 = networks.from_yaml(net, "ual_price_vars.yaml")
+    nodes2 = nodes2.fillna(0)
+    print nodes2.describe()
+    nodes = orca.get_table('nodes')
+    nodes = nodes.to_frame().join(nodes2)
+    orca.add_table("nodes", nodes)
+
+
 @orca.step('rsh_simulate')
 def rsh_simulate(residential_units, unit_aggregations):
-    return utils.hedonic_simulate("rsh.yaml", residential_units, 
+    return utils.hedonic_simulate("ual_rsh.yaml", residential_units, 
     								unit_aggregations, "unit_residential_price")
+
 
 # creating a residential rental hedonic
 @orca.step('rrh_estimate')
 def rh_cl_estimate(craigslist, aggregations):
-    return utils.hedonic_estimate("rrh.yaml", craigslist, aggregations)
+    return utils.hedonic_estimate("ual_rrh.yaml", craigslist, aggregations)
 
 
 @orca.step('rrh_simulate')
 def rh_cl_simulate(residential_units, unit_aggregations):
-    return utils.hedonic_simulate("rrh.yaml", residential_units, 
+    return utils.hedonic_simulate("ual_rrh.yaml", residential_units, 
     								unit_aggregations, "unit_residential_rent")
+
+
+@orca.step('nrh_estimate')
+def nrh_estimate(costar, aggregations):
+    return utils.hedonic_estimate("ual_nrh.yaml", costar, aggregations)
+
+
+@orca.step('nrh_simulate')
+def nrh_simulate(buildings, aggregations):
+    return utils.hedonic_simulate("ual_nrh.yaml", buildings, aggregations,
+                                  "non_residential_price")
 
 
 # This augments urbansim_defaults/utils.simple_relocation()
@@ -140,28 +171,41 @@ def hlcm_li_simulate(households, residential_units, settings):
 # adding HLCM's for owners vs renters
 @orca.step('hlcm_owner_estimate')
 def hlcm_owner_estimate(households, residential_units, unit_aggregations):
-    return utils.lcm_estimate("hlcm_owner.yaml", households, "unit_id",
+    return utils.lcm_estimate("ual_hlcm_owner.yaml", households, "unit_id",
                               residential_units, unit_aggregations)
 
 
 @orca.step('hlcm_owner_simulate')
 def hlcm_owner_simulate(households, residential_units, unit_aggregations, settings):
-    return utils.lcm_simulate("hlcm_owner.yaml", households, residential_units,
+    return utils.lcm_simulate("ual_hlcm_owner.yaml", households, residential_units,
                               unit_aggregations, "unit_id", "num_units", "vacant_units",
                               settings.get("enable_supply_correction", None))
 
 
 @orca.step('hlcm_renter_estimate')
 def hlcm_renter_estimate(households, residential_units, unit_aggregations):
-    return utils.lcm_estimate("hlcm_renter.yaml", households, "unit_id",
+    return utils.lcm_estimate("ual_hlcm_renter.yaml", households, "unit_id",
                               residential_units, unit_aggregations)
 
 
 @orca.step('hlcm_renter_simulate')
 def hlcm_renter_simulate(households, residential_units, unit_aggregations, settings):
-    return utils.lcm_simulate("hlcm_renter.yaml", households, residential_units,
+    return utils.lcm_simulate("ual_hlcm_renter.yaml", households, residential_units,
                               unit_aggregations, "unit_id", "num_units", "vacant_units",
                               settings.get("enable_supply_correction", None))
+
+
+@orca.step('elcm_estimate')
+def elcm_estimate(jobs, buildings, aggregations):
+    return utils.lcm_estimate("ual_elcm.yaml", jobs, "building_id",
+                              buildings, aggregations)
+
+
+@orca.step('elcm_simulate')
+def elcm_simulate(jobs, buildings, aggregations):
+    return utils.lcm_simulate("ual_elcm.yaml", jobs, buildings, aggregations,
+                              "building_id", "job_spaces",
+                              "vacant_job_spaces")
 
 
 # translate residential rental/ownership income into consistent terms so the two forms 

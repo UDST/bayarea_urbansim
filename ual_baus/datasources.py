@@ -5,6 +5,17 @@ from urbansim_defaults import datasources
 from urbansim_defaults import utils
 from urbansim.utils import misc
 import orca
+import yaml
+
+
+@orca.injectable('settings', cache=True)
+def settings():
+    with open(os.path.join(misc.configs_dir(), "ual_settings.yaml")) as f:
+        settings = yaml.load(f)
+        # monkey patch on the settings object since it's pretty global
+        # but will also be available as injectable
+        orca.settings = settings
+        return settings
 
 
 @orca.injectable('building_sqft_per_job', cache=True)

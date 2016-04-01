@@ -24,7 +24,7 @@ variable_definitions:
     radius: 2000
     varname: unit_residential_rent
 
--   aggregation: 75pct
+-   aggregation: average
     dataframe: buildings
     decay: flat
     filters:
@@ -33,7 +33,7 @@ variable_definitions:
     radius: 2000
     varname: non_residential_price
 
--   aggregation: 75pct
+-   aggregation: average
     dataframe: buildings
     decay: flat
     filters:
@@ -42,7 +42,7 @@ variable_definitions:
     radius: 2000
     varname: non_residential_price
 
--   aggregation: 75pct
+-   aggregation: average
     dataframe: buildings
     decay: flat
     filters:
