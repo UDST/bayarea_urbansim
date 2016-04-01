@@ -227,21 +227,25 @@ def policy_modifications_of_profit(feasibility, parcels):
 
             feasibility[("residential", "max_profit")] *= pct_modifications
 
-    if "land_value_tax" in settings["acct_settings"]:
+    if "land_value_tax_settings" in settings["acct_settings"]:
 
-        s = settings["acct_settings"]["land_value_tax"]
+        s = settings["acct_settings"]["land_value_tax_settings"]
 
         if orca.get_injectable("scenario") in \
-            policy["enable_in_scenarios"]:
+            s["enable_in_scenarios"]:
 
             bins = s["bins"]
             pcts = bins["pcts"]
             # need to boud the breaks with a reasonable low and high goalpost
             breaks = [-1]+bins["breaks"]+[2]
 
-            s = orca.get_table("parcels_zoning_calculations")["underbuild_ratio"]
+            pzc = orca.get_table("parcels_zoning_calculations")
+            s = pzc.zoned_build_ratio
             # map the breakpoints defined in yaml to the pcts defined in the same
-            pct_modifications = pd.cut(s, breaks, pcts) + 1
+            pct_modifications = pd.cut(s, breaks, labels=pcts).astype('float') + 1
+            # if some parcels got skipped, fill them in with no modification
+            pct_modifications = pct_modifications.reindex(pzc.index).fillna(1.0)
+
 
             print "Modifying profit for Land Value Tax:\n", \
                 pct_modifications.describe()
