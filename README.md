@@ -3,12 +3,16 @@ Bay Area Urbansim Implementation
 
 This is the full UrbanSim implementation for the Bay Area. Documenation for the Bay Area model is available at http://metropolitantransportationcommission.github.io/baus_docs/ and documentation for the generic UrbanSim model is at https://udst.github.io/urbansim/index.html
 
-UAL development branch
-----------------------
+UAL research fork
+-----------------
 
-Extends Bay Area UrbanSim to better capture processes of residential displacement and affordable housing provision. Modifications include: 
+This copy of the Bay Area UrbanSim repository is a research fork maintained by U.C. Berkeley's Urban Analytics Lab (http://ual.berkeley.edu).
 
-#### Data structures
+The `master` branch tracks the main UDST fork, and the `ual-development` branch contains our modifications to the model. Our current projects focus on extending Bay Area UrbanSim to better capture processes of residential displacement and affordable housing provision.
+
+Modifications include: 
+
+#### Data schemas
 
 * Builds out the representation of individual housing units to include a semi-persistent tenure status, which is assigned based on characteristics of initial unit occupants
 * Joins additional race/ethnicity PUMS variables to synthetic households
@@ -21,7 +25,15 @@ Extends Bay Area UrbanSim to better capture processes of residential displacemen
 * Household location choice is modeled separately for renters and owners, and includes race/ethnicity measures as explanatory variables
 * Developer models are updated to produce both rental and ownership housing stock
 
-Other work is in progress; see wiki. 
+Other work is in progress; see [wiki](https://github.com/ual/bayarea_urbansim_work/wiki). Notebooks, work history, code samples, etc are kept in a separate [bayarea_urbansim_work](https://github.com/ual/bayarea_urbansim_work) repository. 
+
+#### Current status (April 2016)
+
+* The MTC and UAL models have diverged quite a bit, including in aspects of their data schemas that will take some work to reconcile
+* For now, both models can be configured and run separately within this branch
+* The MTC model is specified in the `baus` directory ("bay area urban sim"), and associated with the `all.py` and `run.py` scripts
+* The UAL model is specified in the `ual_baus` directory, and associated with the `Estimation.py` and `Simulation.py` scripts
+* The `configs` and `data` folders are shared, with UAL-specific files marked with a prefix
 
 Subsequent README content is from the master branch.
 
