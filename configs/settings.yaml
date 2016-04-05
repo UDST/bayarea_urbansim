@@ -345,7 +345,7 @@ rsh_simulate:
 
 
 feasibility:
-  parcel_filter: nodev != 1 and manual_nodev != 1 and sdem != 1 and oldest_building > 1940 and oldest_building_age > 20  and (total_residential_units != 1 or parcel_acres > 1.0) and first_building_type_id != 5 and first_building_type_id != 6
+  parcel_filter: nodev != 1 and manual_nodev != 1 and sdem != 1 and oldest_building > 1906 and oldest_building_age > 20  and (total_residential_units != 1 or parcel_acres > 1.0) and first_building_type_id != 5 and first_building_type_id != 6
   residential_to_yearly: True
   simple_zoning: True
   pass_through:
