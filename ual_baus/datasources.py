@@ -18,6 +18,18 @@ def settings():
         return settings
 
 
+@orca.table('household_controls', cache=True)
+def household_controls():
+    df = pd.read_csv(os.path.join(misc.data_dir(), "ual_household_controls.csv"))
+    return df.set_index('year')
+
+
+@orca.table('employment_controls', cache=True)
+def employment_controls():
+    df = pd.read_csv(os.path.join(misc.data_dir(), "ual_employment_controls.csv"))
+    return df.set_index('year')
+
+
 @orca.injectable('building_sqft_per_job', cache=True)
 def building_sqft_per_job(settings):
     return settings['building_sqft_per_job']
@@ -131,7 +143,7 @@ def zoning_baseline(parcels, zoning_lookup):
 @orca.table('zoning_np', cache=True)
 def zoning_np(parcels_geography):
     scenario_zoning = pd.read_csv(os.path.join(misc.data_dir(),
-                                                 'zoning_mods_np.csv'))
+                                                 'ual_zoning_mods_np.csv'))
     return pd.merge(parcels_geography.to_frame(),
                     scenario_zoning,
                     on=['jurisdiction', 'pda_id', 'tpp_id', 'exp_id'],
@@ -183,7 +195,7 @@ def parcels_geography(parcels):
 
 @orca.table(cache=True)
 def development_projects(parcels, settings):
-    df = pd.read_csv(os.path.join(misc.data_dir(), "development_projects.csv"))
+    df = pd.read_csv(os.path.join(misc.data_dir(), "ual_development_projects.csv"))
 
     for fld in ['residential_sqft', 'residential_price', 'non_residential_price']:
         df[fld] = 0
