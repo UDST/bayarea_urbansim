@@ -1,9 +1,19 @@
-Bay Area Urbansim Implementation
+Bay Area UrbanSim 
 =======
 
 This is the full UrbanSim implementation for the Bay Area. Documenation for the Bay Area model is available at http://metropolitantransportationcommission.github.io/baus_docs/ and documentation for the generic UrbanSim model is at https://udst.github.io/urbansim/index.html
 
-###Data
+UAL development branch
+----------------------
+
+This copy of the Bay Area UrbanSim repository is a research fork maintained by U.C. Berkeley's Urban Analytics Lab (http://ual.berkeley.edu). 
+
+The `master` branch tracks the main UDST fork, and the `ual-development` branch contains our modifications to the model. Our current projects focus on extending Bay Area UrbanSim to better capture processes of residential displacement and affordable housing provision. Switch to the [development branch](https://github.com/ual/bayarea_urbansim/tree/ual-development) for more information. 
+
+Subsequent README content is from the main UDST fork. 
+
+Data
+----
 
 We track the data for this project in the Makefile in this repository. The makefile will generally be the most up to date list of which data is needed, where it goes in the directory, etc.
 
