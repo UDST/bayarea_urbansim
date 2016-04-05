@@ -12,17 +12,22 @@ from scripts.output_csv_utils import format_df
 @orca.step("topsheet")
 def topsheet(households, jobs, buildings, parcels, zones, year,
              run_number, taz_geography, parcels_zoning_calculations,
-             summary, settings):
+             summary, settings, parcels_geography):
 
     hh_by_subregion = misc.reindex(taz_geography.subregion,
                                    households.zone_id).value_counts()
 
     households_df = orca.merge_tables(
         'households',
-        [parcels, buildings, households],
-        columns=['pda'])
+        [parcels_geography, buildings, households],
+        columns=['pda_id', 'tpp_id', 'income'])
 
-    hh_by_inpda = households_df.pda.notnull().value_counts()
+    hh_by_inpda = households_df.pda_id.notnull().value_counts()
+
+    hhincome_by_intpp = households_df.income.groupby(
+        households_df.tpp_id.notnull()).mean()
+    # round to nearest 100s
+    hhincome_by_intpp = (hhincome_by_intpp/100).round()*100
 
     jobs_by_subregion = misc.reindex(taz_geography.subregion,
                                      jobs.zone_id).value_counts()
@@ -44,6 +49,7 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
             "jobs_by_subregion": jobs_by_subregion,
             "hh_by_inpda": hh_by_inpda,
             "jobs_by_inpda": jobs_by_inpda,
+            "hhincome_by_intpp": hhincome_by_intpp,
             "capacity": capacity
         })
 
@@ -80,6 +86,12 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
 
     du = buildings.deed_restricted_units.sum()
     write("Number of deed restricted units = %d" % du)
+
+    write("Base year mean income by whether household is in tpp:\n%s" %
+          base_year_measures["hhincome_by_intpp"])
+
+    write("Horizon year mean income by whether household is in tpp:\n%s" %
+          hhincome_by_intpp)
 
     jsp = buildings.job_spaces.sum()
     write("Number of job spaces = %d" % jsp)
