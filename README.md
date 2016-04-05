@@ -3,8 +3,8 @@ Bay Area UrbanSim
 
 This is the full UrbanSim implementation for the Bay Area. Documenation for the Bay Area model is available at http://metropolitantransportationcommission.github.io/baus_docs/ and documentation for the generic UrbanSim model is at https://udst.github.io/urbansim/index.html
 
-UAL development branch
-----------------------
+UAL research fork
+-----------------
 
 This copy of the Bay Area UrbanSim repository is a research fork maintained by U.C. Berkeley's Urban Analytics Lab (http://ual.berkeley.edu). 
 
