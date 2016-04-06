@@ -94,9 +94,132 @@ def landmarks():
 
 
 @orca.table('jobs', cache=True)
-def jobs(store):
-    df = store['jobs']
+def jobs(store, baseyear_taz_controls, buildings, settings):
+
+    # we need to do a new assignment from the controls to the buildings
+
+    # first disaggregate the job totals
+    sector_map = settings["naics_to_empsix"]
+    jobs = []
+    for taz, row in baseyear_taz_controls.local.iterrows():
+        for sector_col, num in row.iteritems():
+
+            # not a sector total
+            if not sector_col.startswith("emp_sec"):
+                continue
+
+            # get integer sector id
+            sector_id = int(''.join(c for c in sector_col if c.isdigit()))
+            sector_name = sector_map[sector_id]
+
+            jobs += [[sector_id, sector_name, taz, -1]] * num
+
+    df = pd.DataFrame(jobs, columns=[
+        'sector_id', 'empsix', 'taz', 'building_id'])
+
+    required_job_spaces = df.groupby('taz').size()
+    current_job_spaces = buildings.job_spaces.groupby(buildings.zone_id).sum()
+    # add one just to preventing rounding error - no harm in having a vacancy 
+    # of one space in each zone
+    need_additional_job_spaces = (required_job_spaces - current_job_spaces) + 2
+
+    need_additional_job_spaces = \
+        need_additional_job_spaces[need_additional_job_spaces > 0]
+
+    print "Adding %d total job_spaces to fit the job totals" % \
+        need_additional_job_spaces.sum()
+
+    print "Non-res sqft pre imputation", buildings.non_residential_sqft.sum()
+
+    for taz, num in need_additional_job_spaces.iteritems():
+        # print "Adding %d spaces to taz %d" % (num, taz)
+
+        potential_add_locations = buildings.sqft_per_job[
+            (buildings.zone_id == taz) & (buildings.job_spaces > 0)]
+
+        if len(potential_add_locations) == 0:
+            potential_add_locations = \
+                buildings.sqft_per_job[buildings.zone_id == taz]
+
+        if len(potential_add_locations) == 0:
+            assert 0
+            continue
+
+        potential_add_locations = pd.DataFrame(
+            {"sqft_per_job": potential_add_locations}).reset_index()
+
+        add_locations = potential_add_locations.sample(num, replace=True)
+
+        total_new_sqft = \
+            add_locations.groupby("building_id").sqft_per_job.sum()
+
+        buildings.local.loc[total_new_sqft.index, "non_residential_sqft"] += \
+            total_new_sqft.values
+
+    print "Non-res sqft post imputation", buildings.non_residential_sqft.sum()
+
+    # got enough spaces now can do the assignment
+    for taz, cnt in df.groupby('taz').size().iteritems():
+
+        potential_add_locations = \
+            buildings.job_spaces[buildings.zone_id == taz]
+
+        # fan out the building_ids by the number of job spaces
+        potential_add_locations = np.repeat(
+            potential_add_locations.index.values,
+            potential_add_locations.values)
+
+        print taz, potential_add_locations.size, cnt
+        assert potential_add_locations.size >= cnt
+
+        buildings_ids = np.random.choice(potential_add_locations,
+                                         cnt, replace=False)
+
+        df["building_id"][df.taz == taz] = buildings_ids
+
+    print jobs.taz
+    s = buildings.zone_id.loc[jobs.building_id]
+    print s
+    s = s.value_counts()
+    t = baseyear_taz_controls.emp_tot - s
+    print t.describe()
+
+    # this is some exploratory diagnostics comparing the job controls to
+    # the buildings table
+    '''
+    old_jobs = store['jobs']
+    old_jobs_cnt = old_jobs.groupby('taz').si ze()
+
+    emp_tot = baseyear_taz_controls.emp_tot
+    print buildings.job_spaces.groupby(buildings.building_type_id).sum()
+    supply = buildings.job_spaces.groupby(buildings.zone_id).sum()
+    non_residential_sqft = buildings.non_residential_sqft.\
+        groupby(buildings.zone_id).sum()
+    s = (supply-emp_tot).order()
+    df = pd.DataFrame({
+        "job_spaces": supply,
+        "jobs": emp_tot,
+        "non_residential_sqft": non_residential_sqft
+    }, index=s.index)
+    df["vacant_spaces"] = supply-emp_tot
+    df["vacancy_rate"] = df.vacant_spaces/supply.astype('float')
+    df["old_jobs"] = old_jobs_cnt
+    df["old_vacant_spaces"] = supply-old_jobs_cnt
+    df["old_vacancy_rate"] = df.old_vacant_spaces/supply.astype('float')
+    df["sqft_per_job"] = df.non_residential_sqft / df.jobs
+    df["old_sqft_per_job"] = df.non_residential_sqft / df.old_jobs
+    df.index.name = "zone_id"
+    print df[["jobs", "old_jobs", "job_spaces", "non_residential_sqft"]].corr()
+    df.sort("sqft_per_job").to_csv("job_demand.csv")
+    '''
+
     return df
+
+
+@orca.table(cache=True)
+def baseyear_taz_controls():
+    return pd.read_csv(os.path.join("data",
+                       "baseyear_taz_controls.csv"), index_col="taz1454")
 
 
 @orca.table(cache=True)
@@ -104,7 +227,6 @@ def base_year_summary_taz():
     return pd.read_csv(os.path.join('output',
                        'baseyear_taz_summaries_2010.csv'),
                        index_col="zone_id")
-    return df
 
 
 # the estimation data is not in the buildings table - they are the same
@@ -375,10 +497,10 @@ def households(store, settings):
 
 
 @orca.table('buildings', cache=True)
-def buildings(store, households, jobs, building_sqft_per_job, settings):
+def buildings(store, households, settings):
     # start with buildings from urbansim_defaults
-    df = datasources.buildings(store, households, jobs,
-                               building_sqft_per_job, settings)
+    df = datasources.buildings(store, households, None,
+                               None, settings)
 
     df = df.drop(['development_type_id', 'improvement_value',
                   'sqft_per_unit', 'nonres_rent_per_sqft',

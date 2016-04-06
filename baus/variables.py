@@ -171,9 +171,9 @@ def naics(jobs):
     return jobs.sector_id
 
 
-@orca.column('jobs', 'empsix', cache=True)
-def empsix(jobs, settings):
-    return jobs.naics.map(settings['naics_to_empsix'])
+# @orca.column('jobs', 'empsix', cache=True)
+# def empsix(jobs, settings):
+#    return jobs.naics.map(settings['naics_to_empsix'])
 
 
 @orca.column('jobs', 'empsix_id', cache=True)

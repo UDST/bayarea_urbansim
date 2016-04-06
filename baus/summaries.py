@@ -398,13 +398,13 @@ def parcel_summary(parcels, run_number, year,
 
     df.to_csv(
         os.path.join("runs", "run%d_parcel_data_%d.csv" %
-             (run_number, year))
+                     (run_number, year))
     )
 
     if year == final_year:
 
         # do diff with initial year
-        
+
         df2 = pd.read_csv(
             os.path.join("runs", "run%d_parcel_data_%d.csv" %
                          (run_number, initial_year)), index_col="parcel_id")

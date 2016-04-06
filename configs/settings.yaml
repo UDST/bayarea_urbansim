@@ -354,6 +354,7 @@ scenario: "0"
 # the six major employment categories traditionally
 # used by MTC and ABAG for use in output to the Travel Model
 naics_to_empsix:
+  10: AGREMPN
   11: AGREMPN
   21: AGREMPN
   22: MWTEMPN
@@ -380,6 +381,7 @@ naics_to_empsix:
   71: HEREMPN
   72: HEREMPN
   81: OTHEMPN
+  91: OTHEMPN
   92: OTHEMPN
   99: OTHEMPN
   3133: MWTEMPN
