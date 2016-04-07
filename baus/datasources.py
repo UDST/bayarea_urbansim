@@ -100,7 +100,8 @@ def jobs(store, baseyear_taz_controls, settings, parcels):
     # be a circular dependenct - I mean jobs dependent on buildings and
     # buildings on jobs, so we have to grab from the store directly
     buildings = store['buildings']
-    buildings["non_residential_sqft"][buildings.building_type_id.isin([15, 16])] = 0    
+    buildings["non_residential_sqft"][
+        buildings.building_type_id.isin([15, 16])] = 0
     buildings["building_sqft"][buildings.building_type_id.isin([15, 16])] = 0
     buildings["zone_id"] = misc.reindex(parcels.zone_id, buildings.parcel_id)
 
@@ -122,7 +123,7 @@ def jobs(store, baseyear_taz_controls, settings, parcels):
 
             jobs += [[sector_id, sector_name, taz, -1]] * num
 
-    # df is now the 
+    # df is now the
     df = pd.DataFrame(jobs, columns=[
         'sector_id', 'empsix', 'taz', 'building_id'])
 
@@ -142,7 +143,8 @@ def jobs(store, baseyear_taz_controls, settings, parcels):
 
         weights = potential_add_locations / potential_add_locations.sum()
 
-        print taz, len(potential_add_locations), potential_add_locations.sum(), cnt
+        print taz, len(potential_add_locations),\
+            potential_add_locations.sum(), cnt
 
         buildings_ids = potential_add_locations.sample(
             cnt, replace=True, weights=weights)
@@ -499,8 +501,8 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
 
     # hope we get more data on this soon
     df["deed_restricted_units"] = 0
-    # df.loc[df.sample(n=50000, weights="residential_units").index,
-    #       "deed_restricted_units"] = 1
+    df.loc[df.sample(n=50000, weights="residential_units").index,
+           "deed_restricted_units"] = 1
 
     return df
 
