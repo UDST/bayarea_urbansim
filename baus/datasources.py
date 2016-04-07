@@ -114,73 +114,38 @@ def jobs(store, baseyear_taz_controls, buildings, settings):
 
             jobs += [[sector_id, sector_name, taz, -1]] * num
 
+    # df is now the 
     df = pd.DataFrame(jobs, columns=[
         'sector_id', 'empsix', 'taz', 'building_id'])
 
-    required_job_spaces = df.groupby('taz').size()
-    current_job_spaces = buildings.job_spaces.groupby(buildings.zone_id).sum()
-    # add one just to preventing rounding error - no harm in having a vacancy 
-    # of one space in each zone
-    need_additional_job_spaces = (required_job_spaces - current_job_spaces) + 2
+    # just do random assignment weighted by job spaces - we'll then
+    # fill in the job_spaces if overfilled in the next step (code
+    # has existed in urbansim for a while)
+    for taz, cnt in df.groupby('taz').size().iteritems():
 
-    need_additional_job_spaces = \
-        need_additional_job_spaces[need_additional_job_spaces > 0]
-
-    print "Adding %d total job_spaces to fit the job totals" % \
-        need_additional_job_spaces.sum()
-
-    print "Non-res sqft pre imputation", buildings.non_residential_sqft.sum()
-
-    for taz, num in need_additional_job_spaces.iteritems():
-        # print "Adding %d spaces to taz %d" % (num, taz)
-
-        potential_add_locations = buildings.sqft_per_job[
+        potential_add_locations = buildings.job_spaces[
             (buildings.zone_id == taz) & (buildings.job_spaces > 0)]
 
         if len(potential_add_locations) == 0:
-            potential_add_locations = \
-                buildings.sqft_per_job[buildings.zone_id == taz]
+            # if no non-res buildings, put jobs in res buildings
+            potential_add_locations = buildings.building_sqft[
+                buildings.zone_id == taz]
 
-        if len(potential_add_locations) == 0:
-            assert 0
-            continue
+        weights = potential_add_locations / potential_add_locations.sum()
 
-        potential_add_locations = pd.DataFrame(
-            {"sqft_per_job": potential_add_locations}).reset_index()
+        print taz, len(potential_add_locations), potential_add_locations.sum(), cnt
 
-        add_locations = potential_add_locations.sample(num, replace=True)
+        buildings_ids = potential_add_locations.sample(
+            cnt, replace=True, weights=weights)
 
-        total_new_sqft = \
-            add_locations.groupby("building_id").sqft_per_job.sum()
+        df["building_id"][df.taz == taz] = buildings_ids.index.values
 
-        buildings.local.loc[total_new_sqft.index, "non_residential_sqft"] += \
-            total_new_sqft.values
-
-    print "Non-res sqft post imputation", buildings.non_residential_sqft.sum()
-
-    # got enough spaces now can do the assignment
-    for taz, cnt in df.groupby('taz').size().iteritems():
-
-        potential_add_locations = \
-            buildings.job_spaces[buildings.zone_id == taz]
-
-        # fan out the building_ids by the number of job spaces
-        potential_add_locations = np.repeat(
-            potential_add_locations.index.values,
-            potential_add_locations.values)
-
-        print taz, potential_add_locations.size, cnt
-        assert potential_add_locations.size >= cnt
-
-        buildings_ids = np.random.choice(potential_add_locations,
-                                         cnt, replace=False)
-
-        df["building_id"][df.taz == taz] = buildings_ids
-
-    print jobs.taz
-    s = buildings.zone_id.loc[jobs.building_id]
-    print s
+    print "df.taz", df.taz
+    s = buildings.zone_id.loc[df.building_id]
+    print "s", s
     s = s.value_counts()
+    print "value counts", s
+    print "emptot", baseyear_taz_controls.emp_tot
     t = baseyear_taz_controls.emp_tot - s
     print t.describe()
 
