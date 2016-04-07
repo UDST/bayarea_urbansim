@@ -80,6 +80,9 @@ def get_simulation_models(SCENARIO):
 
         "scheduled_development_events",  # scheduled buildings additions
 
+        "lump_sum_accounts",             # run the subsidized acct system
+        "subsidized_residential_developer_lump_sum_accts",
+
         "alt_feasibility",
 
         "residential_developer",
@@ -97,13 +100,6 @@ def get_simulation_models(SCENARIO):
         "travel_model_output"
     ]
 
-    # compute feasibility for all negative profit residential devs
-    # will get subsidized in various ways by the next few steps
-    if SCENARIO in ["1", "2", "3"]:
-        pass
-        # models.insert(models.index("alt_feasibility"),
-        #              "subsidized_residential_feasibility")
-
     # calculate VMT taxes
     if SCENARIO in ["1", "3"]:
         # calculate the vmt fees at the end of the year
@@ -120,15 +116,6 @@ def get_simulation_models(SCENARIO):
                       "subsidized_residential_feasibility")
         models.insert(models.index("alt_feasibility"),
                       "subsidized_residential_developer_vmt")
-
-    # add obag funds to the coffer
-    if SCENARIO in ["1", "2", "3"]:
-        models.insert(models.index("alt_feasibility"),
-                      "add_obag_funds")
-        models.insert(models.index("alt_feasibility"),
-                      "subsidized_residential_feasibility")
-        models.insert(models.index("alt_feasibility"),
-                      "subsidized_residential_developer_obag")
 
     return models
 
