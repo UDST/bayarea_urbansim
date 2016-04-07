@@ -94,7 +94,15 @@ def landmarks():
 
 
 @orca.table('jobs', cache=True)
-def jobs(store, baseyear_taz_controls, buildings, settings):
+def jobs(store, baseyear_taz_controls, settings, parcels):
+
+    # this isn't pretty, but can't use orca table because there would
+    # be a circular dependenct - I mean jobs dependent on buildings and
+    # buildings on jobs, so we have to grab from the store directly
+    buildings = store['buildings']
+    buildings["non_residential_sqft"][buildings.building_type_id.isin([15, 16])] = 0    
+    buildings["building_sqft"][buildings.building_type_id.isin([15, 16])] = 0
+    buildings["zone_id"] = misc.reindex(parcels.zone_id, buildings.parcel_id)
 
     # we need to do a new assignment from the controls to the buildings
 
@@ -123,8 +131,9 @@ def jobs(store, baseyear_taz_controls, buildings, settings):
     # has existed in urbansim for a while)
     for taz, cnt in df.groupby('taz').size().iteritems():
 
-        potential_add_locations = buildings.job_spaces[
-            (buildings.zone_id == taz) & (buildings.job_spaces > 0)]
+        potential_add_locations = buildings.non_residential_sqft[
+            (buildings.zone_id == taz) &
+            (buildings.non_residential_sqft > 0)]
 
         if len(potential_add_locations) == 0:
             # if no non-res buildings, put jobs in res buildings
@@ -140,14 +149,10 @@ def jobs(store, baseyear_taz_controls, buildings, settings):
 
         df["building_id"][df.taz == taz] = buildings_ids.index.values
 
-    print "df.taz", df.taz
-    s = buildings.zone_id.loc[df.building_id]
-    print "s", s
-    s = s.value_counts()
-    print "value counts", s
-    print "emptot", baseyear_taz_controls.emp_tot
+    s = buildings.zone_id.loc[df.building_id].value_counts()
     t = baseyear_taz_controls.emp_tot - s
-    print t.describe()
+    # assert we matched the totals exactly
+    assert t.sum() == 0
 
     # this is some exploratory diagnostics comparing the job controls to
     # the buildings table
@@ -462,10 +467,10 @@ def households(store, settings):
 
 
 @orca.table('buildings', cache=True)
-def buildings(store, households, settings):
+def buildings(store, households, jobs, building_sqft_per_job, settings):
     # start with buildings from urbansim_defaults
-    df = datasources.buildings(store, households, None,
-                               None, settings)
+    df = datasources.buildings(store, households, jobs,
+                               building_sqft_per_job, settings)
 
     df = df.drop(['development_type_id', 'improvement_value',
                   'sqft_per_unit', 'nonres_rent_per_sqft',
@@ -494,8 +499,8 @@ def buildings(store, households, settings):
 
     # hope we get more data on this soon
     df["deed_restricted_units"] = 0
-    df.loc[df.sample(n=50000, weights="residential_units").index,
-           "deed_restricted_units"] = 1
+    # df.loc[df.sample(n=50000, weights="residential_units").index,
+    #       "deed_restricted_units"] = 1
 
     return df
 
