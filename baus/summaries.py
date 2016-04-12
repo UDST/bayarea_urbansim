@@ -350,22 +350,37 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
                      'acres', 'residential_units',
                      'non_residential_sqft'])
 
-        buildings_uf_df['count'] = 1
+        buildings_uf_df['count']=1
+
+        s1=buildings_uf_df['residential_units']/buildings_uf_df['acres']
+        s2=s1>1
+        s3=(buildings_uf_df['urban_footprint'] == 0)*1
+        buildings_uf_df['denser_greenfield'] = s3*s2
 
         df = buildings_uf_df.\
             loc[buildings_uf_df['year_built'] > 2010].\
-            groupby('urban_footprint').sum()
-        df = df[['count', 'residential_units',
-                 'non_residential_sqft', 'acres']]
+            groupby('urban_footprint').sum()\
+            [['count','residential_units','non_residential_sqft','acres']]
+
+        df2 = buildings_uf_df.\
+            loc[buildings_uf_df['year_built'] > 2010].\
+            groupby('denser_greenfield').sum()\
+            [['count','residential_units','non_residential_sqft','acres']]
 
         formatters = {'count': '{:.0f}',
-                      'residential_units': '{:.0f}',
-                      'non_residential_sqft': '{:.0f}',
-                      'acres': '{:.0f}'}
+                   'residential_units': '{:.0f}',
+                   'non_residential_sqft': '{:.0f}',
+                   'acres': '{:.0f}'}
 
         df = format_df(df, formatters)
 
+        df2 = format_df(df2, formatters)
+
         df = df.transpose()
+
+        df2 = df2.transpose()
+
+        df[2]=df2[1]
 
         df.columns = ['urban_footprint_0', 'urban_footprint_1']
         uf_summary_csv = "runs/run{}_urban_footprint_summary_{}.csv".\
