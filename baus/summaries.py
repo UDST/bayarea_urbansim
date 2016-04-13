@@ -402,6 +402,48 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
             format(run_number, year)
         df.to_csv(uf_summary_csv)
 
+@orca.step()
+def building_summary(parcels, run_number, year,
+                   buildings,
+                   initial_year, final_year):
+
+    if year not in [initial_year, final_year]:
+        return
+
+    df = orca.merge_tables(
+        'buildings',
+        [parcels, buildings],
+        columns=['urban_footprint', 'year_built',
+                 'residential_units','unit_price',
+                 'zone_id','non_residential_sqft',
+                 'deed_restricted_units'])
+
+    df2 = df[(df.urban_footprint==1)]
+
+    df2.to_csv(
+        os.path.join("runs", "run%d_building_data_%d.csv" %
+                     (run_number, year))
+    )
+
+    if year == final_year:
+
+        # do diff with initial year
+
+        df2 = pd.read_csv(
+            os.path.join("runs", "run%d_building_data_%d.csv" %
+                         (run_number, initial_year)), index_col="building")
+
+        for col in df.columns:
+
+            if col in ["x", "y", "first_building_type_id"]:
+                continue
+
+            df[col] = df[col] - df2[col]
+
+        df.to_csv(
+            os.path.join("runs", "run%d_building_data_diff.csv" %
+                         run_number)
+        )
 
 @orca.step()
 def parcel_summary(parcels, run_number, year,
