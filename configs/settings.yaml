@@ -185,10 +185,59 @@ inclusionary_housing_settings:
 
 acct_settings:
   disable: False
-  obag_settings:
-    sending_buildings_subaccount_def: regional
-    total_amount: 50000000
-    receiving_buildings_filter: pda_id > 0
+
+  lump_sum_accounts:
+
+    obag_settings:
+      name: "OBAG"
+      sending_buildings_subaccount_def: regional
+      total_amount: 40000000
+      receiving_buildings_filter: pda_id > 0
+      subsidize_affordable: False
+      enable_in_scenarios: ["1", "2", "3"]
+
+    parcel_tax_settings:
+      name: "Parcel Tax"
+      sending_buildings_subaccount_def: regional
+      total_amount: 500000000
+      receiving_buildings_filter: pda_id > 0
+      subsidize_affordable: True
+      enable_in_scenarios: ["1"]
+
+    capital_gains_tax_settings:
+      name: "Capital Gains Tax"
+      sending_buildings_subaccount_def: regional
+      total_amount: 42000000
+      receiving_buildings_filter: pda_id > 0
+      subsidize_affordable: True
+      enable_in_scenarios: ["1"]
+
+  profitability_adjustment_policies:  
+
+    ceqa_tiering:
+      name: "CEQA"
+      enable_in_scenarios: ["1", "2", "3"]
+      # any parcel in a tpa
+      profitability_adjustment_formula: "(tpp_id > 0) * .01"
+
+    parking_requirements_tpps:
+      name: "Reduce Parking Requirements in TPPs"
+      enable_in_scenarios: ["3"]
+      # any parcel in a tpa   
+      profitability_adjustment_formula: "(tpp_id > 0) * .01"
+
+    parking_requirements_pdas:
+      name: "Reduce Parking Requirements in PDAs"
+      enable_in_scenarios: ["1", "2"]
+      # any parcel in a tpa
+      profitability_adjustment_formula: "(pda_id > 0) * .01"
+
+  land_value_tax_settings:
+    enable_in_scenarios: ["3"]
+    bins:
+      pcts: [0.05, 0.02, 0.01, 0.0]
+      breaks: [0.1, 0.3, 0.5]
+
   sales_tax_settings:
     sending_buildings_filter: general_type != 'Residential'
     # this is the method used to compute the property tax - the 20 here is a cap rate
@@ -216,10 +265,7 @@ acct_settings:
       MH: -0.005
       M: 0.0
       S: 0.02
-  ceqa_tiering_settings:
-    enable: ["1", "2", "3"]
-    # any parcel in a tpa
-    profitability_adjustment_formula: "(tpp_id > 0) * .01"
+
 
 low_income_for_hlcm: 30000
 
@@ -299,7 +345,7 @@ rsh_simulate:
 
 
 feasibility:
-  parcel_filter: nodev != 1 and manual_nodev != 1 and sdem != 1 and oldest_building > 1940 and oldest_building_age > 20  and (total_residential_units != 1 or parcel_acres > 1.0) and first_building_type_id != 5 and first_building_type_id != 6
+  parcel_filter: nodev != 1 and manual_nodev != 1 and sdem != 1 and oldest_building > 1906 and oldest_building_age > 20  and (total_residential_units != 1 or parcel_acres > 1.0) and first_building_type_id != 5 and first_building_type_id != 6
   residential_to_yearly: True
   simple_zoning: True
   pass_through:

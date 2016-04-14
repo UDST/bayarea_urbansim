@@ -1062,6 +1062,32 @@ def zoned_du_underbuild(parcels, parcels_zoning_calculations):
 
 
 @orca.column('parcels_zoning_calculations')
+def zoned_du_build_ratio(parcels, parcels_zoning_calculations):
+    # ratio of existing res built space to zoned res built space
+    s = parcels.total_residential_units / \
+        (parcels_zoning_calculations.effective_max_dua * \
+         parcels.parcel_acres)
+    return s.replace(np.inf, 1).clip(0, 1)
+
+
+@orca.column('parcels_zoning_calculations')
+def zoned_far_build_ratio(parcels, parcels_zoning_calculations):
+    # ratio of existing nonres built space to zoned nonres built space
+    s = parcels.total_non_residential_sqft / \
+        (parcels_zoning_calculations.effective_max_far * \
+         parcels.parcel_size)
+    return s.replace(np.inf, 1).clip(0, 1)
+
+
+@orca.column('parcels_zoning_calculations')
+def zoned_build_ratio(parcels_zoning_calculations):
+    # add them together in order to get the sum of residential and commercial
+    # build space
+    return parcels_zoning_calculations.zoned_du_build_ratio + \
+        parcels_zoning_calculations.zoned_far_build_ratio
+
+
+@orca.column('parcels_zoning_calculations')
 def zoned_du_underbuild_nodev(parcels, parcels_zoning_calculations):
     return (parcels_zoning_calculations.zoned_du_underbuild *
             parcels.parcel_rules).astype('int')
