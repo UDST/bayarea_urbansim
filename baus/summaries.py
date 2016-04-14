@@ -425,26 +425,6 @@ def building_summary(parcels, run_number, year,
                      (run_number, year))
     )
 
-    if year == final_year:
-
-        # do diff with initial year
-
-        df2 = pd.read_csv(
-            os.path.join("runs", "run%d_building_data_%d.csv" %
-                         (run_number, initial_year)), index_col="building")
-
-        for col in df.columns:
-
-            if col in ["x", "y", "first_building_type_id"]:
-                continue
-
-            df[col] = df[col] - df2[col]
-
-        df.to_csv(
-            os.path.join("runs", "run%d_building_data_diff.csv" %
-                         run_number)
-        )
-
 @orca.step()
 def parcel_summary(parcels, run_number, year,
                    parcels_zoning_calculations,
