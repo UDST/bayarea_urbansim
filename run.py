@@ -95,6 +95,7 @@ def get_simulation_models(SCENARIO):
 
         "topsheet",
         "parcel_summary",
+        "building_summary",
         "diagnostic_output",
         "geographic_summary",
         "travel_model_output"

@@ -11,8 +11,8 @@ Vagrant.configure(2) do |config|
   config.vm.synced_folder ".", "/bayarea_urbansim"
 
   config.vm.provider "virtualbox" do |vb|
-    vb.memory = "20000"
-    vb.cpus = 4
+    vb.memory = "50000"
+    vb.cpus = 8
   end
 
   config.vm.provision :shell, :inline => 'apt-get -y install dos2unix'
