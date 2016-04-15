@@ -152,14 +152,10 @@ def run_models(MODE, SCENARIO):
             "regional_vars",                # regional accessibility vars
 
             "rsh_simulate",                 # residential sales hedonic
-            "nrh_simulate",                 # non-residential rent hedonic
 
             "households_transition",
 
-            "jobs_transition",
-
             "hlcm_simulate",                 # put these last so they don't get
-            "elcm_simulate",                 # displaced by new dev
 
             "geographic_summary",
             "travel_model_output"
