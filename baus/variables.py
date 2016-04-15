@@ -400,6 +400,12 @@ def urban_footprint(parcels, parcels_geography):
     return parcels_geography.perffoot.reindex(parcels.index)
 
 
+# perfzone is a dummy for geography for a performance target
+@orca.column('parcels', cache=True)
+def performance_zone(parcels, parcels_geography):
+    return parcels_geography.perfarea.reindex(parcels.index)
+
+
 @orca.column('parcels', cache=True)
 def juris(parcels, parcels_geography):
     return parcels_geography.juris_name.reindex(parcels.index)

@@ -413,12 +413,12 @@ def building_summary(parcels, run_number, year,
     df = orca.merge_tables(
         'buildings',
         [parcels, buildings],
-        columns=['urban_footprint', 'year_built',
+        columns=['performance_zone', 'year_built',
                  'residential_units','unit_price',
                  'zone_id','non_residential_sqft',
                  'deed_restricted_units'])
 
-    df2 = df[(df.urban_footprint==1)]
+    df2 = df[(df.performance_zone==1)]
 
     df2.to_csv(
         os.path.join("runs", "run%d_building_data_%d.csv" %
