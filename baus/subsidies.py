@@ -231,8 +231,7 @@ def policy_modifications_of_profit(feasibility, parcels):
 
         s = settings["acct_settings"]["land_value_tax_settings"]
 
-        if orca.get_injectable("scenario") in \
-            s["enable_in_scenarios"]:
+        if orca.get_injectable("scenario") in s["enable_in_scenarios"]:
 
             bins = s["bins"]
             pcts = bins["pcts"]
@@ -241,11 +240,12 @@ def policy_modifications_of_profit(feasibility, parcels):
 
             pzc = orca.get_table("parcels_zoning_calculations")
             s = pzc.zoned_build_ratio
-            # map the breakpoints defined in yaml to the pcts defined in the same
-            pct_modifications = pd.cut(s, breaks, labels=pcts).astype('float') + 1
+            # map the breakpoints defined in yaml to the pcts defined there
+            pct_modifications = pd.cut(s, breaks, labels=pcts).\
+                astype('float') + 1
             # if some parcels got skipped, fill them in with no modification
-            pct_modifications = pct_modifications.reindex(pzc.index).fillna(1.0)
-
+            pct_modifications = \
+                pct_modifications.reindex(pzc.index).fillna(1.0)
 
             print "Modifying profit for Land Value Tax:\n", \
                 pct_modifications.describe()
@@ -646,5 +646,3 @@ def subsidized_residential_developer_lump_sum_accts(
 
         # set to an empty dataframe to save memory
         orca.add_table("feasibility", pd.DataFrame())
-
-

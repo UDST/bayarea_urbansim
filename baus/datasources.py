@@ -157,7 +157,8 @@ def jobs(store, baseyear_taz_controls, settings, parcels):
     assert t.sum() == 0
 
     # this is some exploratory diagnostics comparing the job controls to
-    # the buildings table
+    # the buildings table - in other words, comparing non-residential space
+    # to the number of jobs
     '''
     old_jobs = store['jobs']
     old_jobs_cnt = old_jobs.groupby('taz').si ze()
