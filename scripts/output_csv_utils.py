@@ -31,7 +31,7 @@ def get_base_year_df(base_run_year=2010):
 def get_outcome_df(run, year=2040):
     geography_id = 'zone_id' if geography == 'taz' else geography
     df = pd.read_csv(
-        'runs/run%(run)d_%(geography)s_summaries_%(year)d.csv'
+        'http://urbanforecast.com/runs/run%(run)d_%(geography)s_summaries_%(year)d.csv'
         % {"run": run, "year": year, "geography": geography},
         index_col=geography_id)
     df = df.fillna(0)
