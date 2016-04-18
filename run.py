@@ -57,7 +57,7 @@ if LOGS:
 
 if SLACK:
     from slacker import Slacker
-    slack = Slacker('xoxp-7025187590-7026053537-7111663091-9eeeb6')
+    slack = Slacker(os.environ["SLACK_TOKEN"])
     host = socket.gethostname()
 
 
