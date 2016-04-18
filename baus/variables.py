@@ -171,9 +171,9 @@ def naics(jobs):
     return jobs.sector_id
 
 
-@orca.column('jobs', 'empsix', cache=True)
-def empsix(jobs, settings):
-    return jobs.naics.map(settings['naics_to_empsix'])
+# @orca.column('jobs', 'empsix', cache=True)
+# def empsix(jobs, settings):
+#    return jobs.naics.map(settings['naics_to_empsix'])
 
 
 @orca.column('jobs', 'empsix_id', cache=True)
@@ -1071,8 +1071,7 @@ def zoned_du_underbuild(parcels, parcels_zoning_calculations):
 def zoned_du_build_ratio(parcels, parcels_zoning_calculations):
     # ratio of existing res built space to zoned res built space
     s = parcels.total_residential_units / \
-        (parcels_zoning_calculations.effective_max_dua * \
-         parcels.parcel_acres)
+       (parcels_zoning_calculations.effective_max_dua * parcels.parcel_acres)
     return s.replace(np.inf, 1).clip(0, 1)
 
 
@@ -1080,7 +1079,7 @@ def zoned_du_build_ratio(parcels, parcels_zoning_calculations):
 def zoned_far_build_ratio(parcels, parcels_zoning_calculations):
     # ratio of existing nonres built space to zoned nonres built space
     s = parcels.total_non_residential_sqft / \
-        (parcels_zoning_calculations.effective_max_far * \
+        (parcels_zoning_calculations.effective_max_far *
          parcels.parcel_size)
     return s.replace(np.inf, 1).clip(0, 1)
 

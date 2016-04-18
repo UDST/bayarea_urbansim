@@ -1,4 +1,4 @@
-zone_id,totacre_abag,resacre10_abag,ciacre10_abag,meanhhsize,gqpop10,gqpop15,gqpop20,gqpop25,gqpop30,gqpop35,gqpop40,zonal_emp_sh_resid10,sh_age0004,sh_age0519,sh_age2044,sh_age4564,sh_age65up,sh_62plus,perf1re1gt1,perfareagt10,perfareagt50
+zone_id,totacre_abag,resacre10_abag,ciacre10_abag,meanhhsize,gqpop10,gqpop15,gqpop20,gqpop25,gqpop30,gqpop35,gqpop40,zonal_emp_sh_resid10,sh_age0004,sh_age0519,sh_age2044,sh_age4564,sh_age65p,sh_62plus,perf1re1gt1,perfareagt10,perfareagt50
 1,20.3,1,15,1.6047,8,8,9,9,10,10,11,-0.0924,0.039,0.078,0.364,0.325,0.195,0.238,1,1,1
 2,31.1,1,24,1.5816,25,26,28,30,31,33,35,-0.0941,0.032,0.077,0.363,0.327,0.202,0.238,1,1,1
 3,14.7,1,2,1.5859,46,49,51,54,57,61,64,-0.0935,0.033,0.077,0.361,0.327,0.201,0.238,1,1,1

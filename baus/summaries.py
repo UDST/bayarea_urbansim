@@ -365,27 +365,29 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
                      'acres', 'residential_units',
                      'non_residential_sqft'])
 
-        buildings_uf_df['count']=1
+        buildings_uf_df['count'] = 1
 
-        s1=buildings_uf_df['residential_units']/buildings_uf_df['acres']
-        s2=s1>1
-        s3=(buildings_uf_df['urban_footprint'] == 0)*1
-        buildings_uf_df['denser_greenfield'] = s3*s2
+        s1 = buildings_uf_df['residential_units'] / buildings_uf_df['acres']
+        s2 = s1 > 1
+        s3 = (buildings_uf_df['urban_footprint'] == 0) * 1
+        buildings_uf_df['denser_greenfield'] = s3 * s2
 
         df = buildings_uf_df.\
             loc[buildings_uf_df['year_built'] > 2010].\
-            groupby('urban_footprint').sum()\
-            [['count','residential_units','non_residential_sqft','acres']]
+            groupby('urban_footprint').sum()
+        df = df[['count', 'residential_units', 'non_residential_sqft',
+                 'acres']]
 
         df2 = buildings_uf_df.\
             loc[buildings_uf_df['year_built'] > 2010].\
-            groupby('denser_greenfield').sum()\
-            [['count','residential_units','non_residential_sqft','acres']]
+            groupby('denser_greenfield').sum()
+        df2 = df2[['count', 'residential_units', 'non_residential_sqft',
+                   'acres']]
 
         formatters = {'count': '{:.0f}',
-                   'residential_units': '{:.0f}',
-                   'non_residential_sqft': '{:.0f}',
-                   'acres': '{:.0f}'}
+                      'residential_units': '{:.0f}',
+                      'non_residential_sqft': '{:.0f}',
+                      'acres': '{:.0f}'}
 
         df = format_df(df, formatters)
 
@@ -395,17 +397,19 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
 
         df2 = df2.transpose()
 
-        df[2]=df2[1]
+        df[2] = df2[1]
 
-        df.columns = ['urban_footprint_0', 'urban_footprint_1','denser_greenfield']
+        df.columns = ['urban_footprint_0', 'urban_footprint_1',
+                      'denser_greenfield']
         uf_summary_csv = "runs/run{}_urban_footprint_summary_{}.csv".\
             format(run_number, year)
         df.to_csv(uf_summary_csv)
 
+
 @orca.step()
 def building_summary(parcels, run_number, year,
-                   buildings,
-                   initial_year, final_year):
+                     buildings,
+                     initial_year, final_year):
 
     if year not in [initial_year, final_year]:
         return
@@ -414,16 +418,17 @@ def building_summary(parcels, run_number, year,
         'buildings',
         [parcels, buildings],
         columns=['performance_zone', 'year_built',
-                 'residential_units','unit_price',
-                 'zone_id','non_residential_sqft',
+                 'residential_units', 'unit_price',
+                 'zone_id', 'non_residential_sqft',
                  'deed_restricted_units'])
 
-    df2 = df[(df.performance_zone==1)]
+    df2 = df[(df.performance_zone == 1)]
 
     df2.to_csv(
         os.path.join("runs", "run%d_building_data_%d.csv" %
                      (run_number, year))
     )
+
 
 @orca.step()
 def parcel_summary(parcels, run_number, year,

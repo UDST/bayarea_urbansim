@@ -94,9 +94,105 @@ def landmarks():
 
 
 @orca.table('jobs', cache=True)
-def jobs(store):
-    df = store['jobs']
+def jobs(store, baseyear_taz_controls, settings, parcels):
+
+    # this isn't pretty, but can't use orca table because there would
+    # be a circular dependenct - I mean jobs dependent on buildings and
+    # buildings on jobs, so we have to grab from the store directly
+    buildings = store['buildings']
+    buildings["non_residential_sqft"][
+        buildings.building_type_id.isin([15, 16])] = 0
+    buildings["building_sqft"][buildings.building_type_id.isin([15, 16])] = 0
+    buildings["zone_id"] = misc.reindex(parcels.zone_id, buildings.parcel_id)
+
+    # we need to do a new assignment from the controls to the buildings
+
+    # first disaggregate the job totals
+    sector_map = settings["naics_to_empsix"]
+    jobs = []
+    for taz, row in baseyear_taz_controls.local.iterrows():
+        for sector_col, num in row.iteritems():
+
+            # not a sector total
+            if not sector_col.startswith("emp_sec"):
+                continue
+
+            # get integer sector id
+            sector_id = int(''.join(c for c in sector_col if c.isdigit()))
+            sector_name = sector_map[sector_id]
+
+            jobs += [[sector_id, sector_name, taz, -1]] * num
+
+    # df is now the
+    df = pd.DataFrame(jobs, columns=[
+        'sector_id', 'empsix', 'taz', 'building_id'])
+
+    # just do random assignment weighted by job spaces - we'll then
+    # fill in the job_spaces if overfilled in the next step (code
+    # has existed in urbansim for a while)
+    for taz, cnt in df.groupby('taz').size().iteritems():
+
+        potential_add_locations = buildings.non_residential_sqft[
+            (buildings.zone_id == taz) &
+            (buildings.non_residential_sqft > 0)]
+
+        if len(potential_add_locations) == 0:
+            # if no non-res buildings, put jobs in res buildings
+            potential_add_locations = buildings.building_sqft[
+                buildings.zone_id == taz]
+
+        weights = potential_add_locations / potential_add_locations.sum()
+
+        print taz, len(potential_add_locations),\
+            potential_add_locations.sum(), cnt
+
+        buildings_ids = potential_add_locations.sample(
+            cnt, replace=True, weights=weights)
+
+        df["building_id"][df.taz == taz] = buildings_ids.index.values
+
+    s = buildings.zone_id.loc[df.building_id].value_counts()
+    t = baseyear_taz_controls.emp_tot - s
+    # assert we matched the totals exactly
+    assert t.sum() == 0
+
+    # this is some exploratory diagnostics comparing the job controls to
+    # the buildings table - in other words, comparing non-residential space
+    # to the number of jobs
+    '''
+    old_jobs = store['jobs']
+    old_jobs_cnt = old_jobs.groupby('taz').si ze()
+
+    emp_tot = baseyear_taz_controls.emp_tot
+    print buildings.job_spaces.groupby(buildings.building_type_id).sum()
+    supply = buildings.job_spaces.groupby(buildings.zone_id).sum()
+    non_residential_sqft = buildings.non_residential_sqft.\
+        groupby(buildings.zone_id).sum()
+    s = (supply-emp_tot).order()
+    df = pd.DataFrame({
+        "job_spaces": supply,
+        "jobs": emp_tot,
+        "non_residential_sqft": non_residential_sqft
+    }, index=s.index)
+    df["vacant_spaces"] = supply-emp_tot
+    df["vacancy_rate"] = df.vacant_spaces/supply.astype('float')
+    df["old_jobs"] = old_jobs_cnt
+    df["old_vacant_spaces"] = supply-old_jobs_cnt
+    df["old_vacancy_rate"] = df.old_vacant_spaces/supply.astype('float')
+    df["sqft_per_job"] = df.non_residential_sqft / df.jobs
+    df["old_sqft_per_job"] = df.non_residential_sqft / df.old_jobs
+    df.index.name = "zone_id"
+    print df[["jobs", "old_jobs", "job_spaces", "non_residential_sqft"]].corr()
+    df.sort("sqft_per_job").to_csv("job_demand.csv")
+    '''
+
     return df
+
+
+@orca.table(cache=True)
+def baseyear_taz_controls():
+    return pd.read_csv(os.path.join("data",
+                       "baseyear_taz_controls.csv"), index_col="taz1454")
 
 
 @orca.table(cache=True)
@@ -104,7 +200,6 @@ def base_year_summary_taz():
     return pd.read_csv(os.path.join('output',
                        'baseyear_taz_summaries_2010.csv'),
                        index_col="zone_id")
-    return df
 
 
 # the estimation data is not in the buildings table - they are the same
