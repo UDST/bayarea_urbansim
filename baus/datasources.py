@@ -470,7 +470,8 @@ def households(store, settings):
 
 
 @orca.table('buildings', cache=True)
-def buildings(store, households, jobs, building_sqft_per_job, settings):
+def buildings(store, parcels, households, jobs, building_sqft_per_job,
+              settings):
     # start with buildings from urbansim_defaults
     df = datasources.buildings(store, households, jobs,
                                building_sqft_per_job, settings)
@@ -502,8 +503,41 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
 
     # hope we get more data on this soon
     df["deed_restricted_units"] = 0
-    df.loc[df.sample(n=50000, weights="residential_units").index,
-           "deed_restricted_units"] = 1
+    zone_ids = misc.reindex(parcels.zone_id, df.parcel_id).\
+        reindex(df.index).fillna(-1)
+
+    # sample deed restricted units to match current deed restricted unit
+    # zone totals
+    for taz, row in pd.read_csv('data/deed_restricted_zone_totals.csv',
+                                index_col='taz_key').iterrows():
+
+        cnt = row["units"]
+
+        if cnt <= 0:
+            continue
+
+        potential_add_locations = df.residential_units[
+            (zone_ids == taz) &
+            (df.residential_units > 0)]
+
+        assert len(potential_add_locations) > 0
+
+        weights = potential_add_locations / potential_add_locations.sum()
+
+        buildings_ids = potential_add_locations.sample(
+            cnt, replace=True, weights=weights)
+
+        units = pd.Series(buildings_ids.index.values).value_counts()
+        df.loc[units.index, "deed_restricted_units"] += units.values
+
+    print "Total deed restricted units after random selection: %d" % \
+        df.deed_restricted_units.sum()
+
+    df["deed_restricted_units"] = \
+        df[["deed_restricted_units", "residential_units"]].min(axis=1)
+
+    print "Total deed restricted units after truncating to res units: %d" % \
+        df.deed_restricted_units.sum()
 
     return df
 
