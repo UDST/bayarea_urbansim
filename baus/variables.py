@@ -831,7 +831,7 @@ def max_far(parcels_zoning_calculations, parcels, scenario, settings):
     if settings["dont_build_most_dense_building"]:
         # in this case we shrink the zoning such that we don't built the
         # tallest building in a given zone
-        # if there no building in the zone currently, we make the max_dua = 4
+        # if there no building in the zone currently, we make the max_far = .2
         s2 = parcels.built_far.groupby(parcels.zone_id).max()
         s2 = misc.reindex(s2, parcels.zone_id).fillna(.2)
         s = pd.DataFrame([s, s2]).min()
