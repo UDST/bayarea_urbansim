@@ -34,6 +34,12 @@ def final_year():
     return 2040
 
 
+@orca.injectable('store', cache=True)
+def hdfstore(settings):
+    return pd.HDFStore(
+        os.path.join(misc.data_dir(), settings["store"]))
+
+
 @orca.injectable(cache=True)
 def low_income(settings):
     return int(settings["low_income_for_hlcm"])
@@ -94,6 +100,22 @@ def landmarks():
 
 
 @orca.table('jobs', cache=True)
+def jobs(store):
+
+    if 'jobs_urbansim_allocated' not in store:
+        # if jobs allocation hasn't been done, then do it
+        # (this should only happen once)
+        orca.run(["allocate_jobs"])
+
+    return store['jobs_urbansim_allocated']
+
+
+# the way this works is there is an orca step to do jobs allocation, which
+# reads base year totals and creates jobs and allocates them to buildings,
+# and writes it back to the h5.  then the actual jobs table above just reads
+# the auto-allocated version from the h5.  was hoping to just do allocation
+# on the fly but it takes about 4 minutes so way to long to do on the fly
+@orca.step('allocate_jobs')
 def jobs(store, baseyear_taz_controls, settings, parcels):
 
     # this isn't pretty, but can't use orca table because there would
@@ -186,7 +208,7 @@ def jobs(store, baseyear_taz_controls, settings, parcels):
     df.sort("sqft_per_job").to_csv("job_demand.csv")
     '''
 
-    return df
+    store['jobs_urbansim_allocated'] = df
 
 
 @orca.table(cache=True)
