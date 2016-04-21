@@ -4,6 +4,8 @@ aggregation_tables:
   - logsums
 
 
+dont_build_most_dense_building: False
+
 
 set_nan_price_to_zero: True
 

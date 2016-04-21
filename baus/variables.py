@@ -810,10 +810,33 @@ def is_sanfran(parcels_geography, buildings, parcels):
         reindex(parcels.index).fillna(False).astype('int')
 
 
+@orca.column('parcels')
+def built_far(parcels):
+    # compute the actually built farn on a parcel
+    return parcels.total_sqft / parcels.parcel_size
+
+
 # actual columns start here
-@orca.column('parcels', 'max_far', cache=True)
-def max_far(parcels_zoning_calculations, parcels):
-    return parcels_zoning_calculations.effective_max_far * ~parcels.nodev
+@orca.column('parcels')
+def max_far(parcels_zoning_calculations, parcels, scenario, settings):
+    # first we combine the zoning columns
+    s = parcels_zoning_calculations.effective_max_far * ~parcels.nodev
+
+    if scenario in ["1", "2"]:
+        # we had trouble with the zoning outside of the footprint
+        # make sure we have rural zoning outside of the footprint
+        s2 = parcels.urban_footprint.map({0: 0, 1: np.nan})
+        s = pd.DataFrame([s, s2]).min()
+
+    if settings["dont_build_most_dense_building"]:
+        # in this case we shrink the zoning such that we don't built the
+        # tallest building in a given zone
+        # if there no building in the zone currently, we make the max_dua = 4
+        s2 = parcels.built_far.groupby(parcels.zone_id).max()
+        s2 = misc.reindex(s2, parcels.zone_id).fillna(.2)
+        s = pd.DataFrame([s, s2]).min()
+
+    return s
 
 
 # returns a vector where parcels are ALLOWED to be built
@@ -841,9 +864,32 @@ def nodev(zoning_baseline, parcels):
         fillna(0).astype('bool')
 
 
-@orca.column('parcels', 'max_dua', cache=True)
-def max_dua(parcels_zoning_calculations, parcels):
-    return parcels_zoning_calculations.effective_max_dua * ~parcels.nodev
+@orca.column('parcels')
+def built_dua(parcels):
+    # compute the actually built dua on a parcel
+    return parcels.total_residential_units / parcels.parcel_acres
+
+
+@orca.column('parcels', 'max_dua')
+def max_dua(parcels_zoning_calculations, parcels, scenario, settings):
+    # first we combine the zoning columns
+    s = parcels_zoning_calculations.effective_max_dua * ~parcels.nodev
+
+    if scenario in ["1", "2"]:
+        # we had trouble with the zoning outside of the footprint
+        # make sure we have rural zoning outside of the footprint
+        s2 = parcels.urban_footprint.map({0: .01, 1: np.nan})
+        s = pd.DataFrame([s, s2]).min()
+
+    if settings["dont_build_most_dense_building"]:
+        # in this case we shrink the zoning such that we don't built the
+        # tallest building in a given zone
+        # if there no building in the zone currently, we make the max_dua = 4
+        s2 = parcels.built_dua.groupby(parcels.zone_id).max()
+        s2 = misc.reindex(s2, parcels.zone_id).fillna(4)
+        s = pd.DataFrame([s, s2]).min()
+
+    return s
 
 
 # these next two are just indicators put into the output

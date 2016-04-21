@@ -102,7 +102,7 @@ def landmarks():
 @orca.table('jobs', cache=True)
 def jobs(store):
 
-    if not 'jobs_urbansim_allocated' in store:
+    if 'jobs_urbansim_allocated' not in store:
         # if jobs allocation hasn't been done, then do it
         # (this should only happen once)
         orca.run(["allocate_jobs"])
