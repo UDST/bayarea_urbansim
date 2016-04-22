@@ -822,7 +822,7 @@ def max_far(parcels_zoning_calculations, parcels, scenario, settings):
     # first we combine the zoning columns
     s = parcels_zoning_calculations.effective_max_far * ~parcels.nodev
 
-    if scenario in ["1", "2"]:
+    if scenario in ["2", "3"]:
         # we had trouble with the zoning outside of the footprint
         # make sure we have rural zoning outside of the footprint
         s2 = parcels.urban_footprint.map({0: 0, 1: np.nan})
@@ -875,7 +875,7 @@ def max_dua(parcels_zoning_calculations, parcels, scenario, settings):
     # first we combine the zoning columns
     s = parcels_zoning_calculations.effective_max_dua * ~parcels.nodev
 
-    if scenario in ["1", "2"]:
+    if scenario in ["2", "3"]:
         # we had trouble with the zoning outside of the footprint
         # make sure we have rural zoning outside of the footprint
         s2 = parcels.urban_footprint.map({0: .01, 1: np.nan})
