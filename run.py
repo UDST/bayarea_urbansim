@@ -13,7 +13,7 @@ warnings.filterwarnings("ignore")
 
 args = sys.argv[1:]
 
-SLACK = MAPS = True
+SLACK = MAPS = False
 LOGS = True
 INTERACT = False
 SCENARIO = None
@@ -91,6 +91,7 @@ def get_simulation_models(SCENARIO):
         "elcm_simulate",                 # displaced by new dev
 
         "topsheet",
+        "parcel_summary",
         "diagnostic_output",
         "geographic_summary",
         "travel_model_output"
