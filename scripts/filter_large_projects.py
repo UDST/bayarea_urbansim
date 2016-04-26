@@ -10,10 +10,10 @@ def readfile(year):
 
 df = pd.concat([
 	readfile(runnum)
-    for runnum in range(1337, 1338)
+    for runnum in range(1338, 1344)
 ], axis=0)
 
-df = df.query("(residential_units > 300 or job_spaces > 900) and SDEM != True")
+df = df.query("(residential_units > 150 or job_spaces > 300) and SDEM != True")
 
 grps = df.groupby('geom_id')
 
