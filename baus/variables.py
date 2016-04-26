@@ -411,12 +411,19 @@ def juris(parcels, parcels_geography):
     return parcels_geography.juris_name.reindex(parcels.index)
 
 
-@orca.column('parcels', 'ave_sqft_per_unit')
+@orca.column('parcels', 'ave_sqft_per_unit', cache=True)
 def ave_sqft_per_unit(parcels, zones, settings):
     s = misc.reindex(zones.ave_unit_sqft, parcels.zone_id)
+
     clip = settings.get("ave_sqft_per_unit_clip", None)
     if clip is not None:
         s = s.clip(lower=clip['lower'], upper=clip['upper'])
+
+    cfg = settings.get("clip_sqft_per_unit_based_on_dua", None)
+    if cfg is not None:
+        for clip in cfg:
+            s[parcels.max_dua >= clip["threshold"]] = clip["max"]
+
     return s
 
 
@@ -813,7 +820,10 @@ def is_sanfran(parcels_geography, buildings, parcels):
 @orca.column('parcels')
 def built_far(parcels):
     # compute the actually built farn on a parcel
-    return parcels.total_sqft / parcels.parcel_size
+    s = parcels.total_sqft / parcels.parcel_size
+    # if the parcel size is too small to get an accurate reading, remove it
+    s[parcels.parcel_acres < .1] = np.nan
+    return s
 
 
 # actual columns start here
@@ -867,7 +877,10 @@ def nodev(zoning_baseline, parcels):
 @orca.column('parcels')
 def built_dua(parcels):
     # compute the actually built dua on a parcel
-    return parcels.total_residential_units / parcels.parcel_acres
+    s = parcels.total_residential_units / parcels.parcel_acres
+    # if the parcel size is too small to get an accurate reading, remove it
+    s[parcels.parcel_acres < .1] = np.nan
+    return s
 
 
 @orca.column('parcels', 'max_dua')

@@ -25,6 +25,14 @@ set_nan_price_to_zero: True
 parcel_size_factor: 10.764
 
 
+clip_sqft_per_unit_based_on_dua:
+  - threshold: 50
+    max: 1000
+  - threshold: 100
+    max: 900
+  - threshold: 150
+    max: 800
+
 ave_sqft_per_unit_clip:
   lower: 800
   upper: 2500
