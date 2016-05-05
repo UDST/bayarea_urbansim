@@ -374,6 +374,8 @@ feasibility:
     - building_purchase_price_sqft
     - residential_sales_price_sqft
     - pda
+    - juris
+    - superdistrict
     - geom_id
     - vmt_res_cat
 

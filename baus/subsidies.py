@@ -211,6 +211,8 @@ def policy_modifications_of_profit(feasibility, parcels):
     feasibility[("residential", "max_profit")] -= revenue_reduction
     feasibility[("residential", "deed_restricted_units")] = \
         num_affordable_units
+    feasibility[("residential", "inclusionary_units")] = \
+        num_affordable_units
 
     settings = orca.get_injectable("settings")
 
@@ -332,7 +334,8 @@ def property_taxes(buildings, parcels_geography, acct_settings, coffer, year):
 def run_subsidized_developer(feasibility, parcels, buildings, households,
                              acct_settings, settings, account, year,
                              form_to_btype_func, add_extra_columns_func,
-                             summary, create_deed_restricted=False):
+                             summary, create_deed_restricted=False,
+                             policy_name="Unnamed"):
     """
     The subsidized residential developer model.
 
@@ -532,6 +535,10 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
                 buildings.local.loc[index, "deed_restricted_units"] =\
                     int(round(subsidized_units))
 
+                # also correct the debug output
+                new_buildings.loc[index, "deed_restricted_units"] =\
+                    int(round(subsidized_units))
+
         print "Amount left after subsidy: ${:,.2f}".\
             format(account.total_transactions_by_subacct(subacct))
 
@@ -550,6 +557,7 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
         format(new_buildings.residential_units.sum())
 
     new_buildings["subsidized"] = True
+    new_buildings["policy_name"] = policy_name
 
     summary.add_parcel_output(new_buildings)
 
@@ -604,7 +612,8 @@ def subsidized_residential_developer_vmt(
                              form_to_btype_func,
                              add_extra_columns_func,
                              summary,
-                             create_deed_restricted=True)
+                             create_deed_restricted=True,
+                             policy_name="VMT")
 
 
 @orca.step()
@@ -642,7 +651,8 @@ def subsidized_residential_developer_lump_sum_accts(
                                  add_extra_columns_func,
                                  summary,
                                  create_deed_restricted=acct[
-                                    "subsidize_affordable"])
+                                    "subsidize_affordable"],
+                                 policy_name=acct["name"])
 
         # set to an empty dataframe to save memory
         orca.add_table("feasibility", pd.DataFrame())
