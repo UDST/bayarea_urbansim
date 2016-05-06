@@ -386,6 +386,11 @@ def parcels_geography(parcels):
     return df
 
 
+@orca.table(cache=True)
+def manual_edits():
+    return pd.read_csv(os.path.join(misc.data_dir(), "manual_edits.csv"))
+
+
 def reprocess_dev_projects(df):
     # if dev projects with the same parcel id have more than one build
     # record, we change the later ones to add records - we don't want to
@@ -493,7 +498,8 @@ def households(store, settings):
 
 @orca.table('buildings', cache=True)
 def buildings(store, parcels, households, jobs, building_sqft_per_job,
-              settings):
+              settings, manual_edits):
+
     # start with buildings from urbansim_defaults
     df = datasources.buildings(store, households, jobs,
                                building_sqft_per_job, settings)
@@ -503,6 +509,12 @@ def buildings(store, parcels, households, jobs, building_sqft_per_job,
                   'res_price_per_sqft', 'redfin_sale_price',
                   'redfin_home_type', 'costar_property_type',
                   'costar_rent'], axis=1)
+
+    edits = manual_edits.local
+    edits = edits[edits.table == 'buildings']
+    for index, row, col, val in \
+            edits[["id", "attribute", "new_value"]].itertuples():
+        df.set_value(row, col, val)
 
     # set the vacancy rate in each building to 5% for testing purposes
     df["residential_units"] = df.residential_units.fillna(0)
