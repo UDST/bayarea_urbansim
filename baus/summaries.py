@@ -238,9 +238,9 @@ def diagnostic_output(households, buildings, parcels, taz, jobs,
         )
 
 
-@orca.step("geographic_summary")
-def pda_output(parcels, households, jobs, buildings, taz_geography,
-               run_number, year):
+@orca.step()
+def geographic_summary(parcels, households, jobs, buildings, taz_geography,
+                       run_number, year, summary):
     # using the following conditional b/c `year` is used to pull a column
     # from a csv based on a string of the year in add_population()
     # and in add_employment() and 2009 is the
@@ -253,21 +253,23 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
 
     households_df = orca.merge_tables(
         'households',
-        [parcels, taz_geography, buildings, households],
-        columns=['pda', 'zone_id', 'juris', 'superdistrict', 'puma5',
+        [parcels, buildings, households],
+        columns=['pda', 'zone_id', 'juris', 'superdistrict',
                  'persons', 'income', 'base_income_quartile'])
 
     jobs_df = orca.merge_tables(
         'jobs',
-        [parcels, taz_geography, buildings, jobs],
+        [parcels, buildings, jobs],
         columns=['pda', 'superdistrict', 'juris', 'zone_id', 'empsix'])
 
     buildings_df = orca.merge_tables(
         'buildings',
-        [parcels, taz_geography, buildings],
+        [parcels, buildings],
         columns=['pda', 'superdistrict', 'juris', 'building_type_id',
                  'zone_id', 'residential_units', 'building_sqft',
                  'non_residential_sqft'])
+
+    parcel_output = summary.parcel_output
 
     # because merge_tables returns multiple zone_id_'s, but not the one we need
     buildings_df = buildings_df.rename(columns={'zone_id_x': 'zone_id'})
@@ -332,6 +334,29 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
                 groupby(geography)['non_residential_sqft'].sum()
             summary_table['sq_ft_per_employee'] = \
                 summary_table['non_residential_sqft'] / summary_table['totemp']
+
+            parcel_output['subsidized_units'] = \
+                parcel_output.deed_restricted_units - \
+                parcel_output.inclusionary_units
+
+            # columns re: affordable housing
+            summary_table['deed_restricted_units'] = \
+                parcel_output.groupby(geography).deed_restricted_units.sum()
+            summary_table['inclusionary_units'] = \
+                parcel_output.groupby(geography).inclusionary_units.sum()
+            summary_table['subsidized_units'] = \
+                parcel_output.groupby(geography).subsidized_units.sum()
+            summary_table['inclusionary_revenue_reduction'] = \
+                parcel_output.groupby(geography).\
+                policy_based_revenue_reduction.sum()
+            summary_table['inclusionary_revenue_reduction_per_unit'] = \
+                summary_table.inclusionary_revenue_reduction / \
+                summary_table.inclusionary_units
+            summary_table['total_subsidy'] = \
+                parcel_output[parcel_output.subsidized_units > 0].\
+                groupby(geography).max_profit.sum() * -1
+            summary_table['subsidy_per_unit'] = \
+                summary_table.total_subsidy / summary_table.subsidized_units
 
             # fill in 0 values where there are NA's so that summary table
             # outputs are the same over the years otherwise a PDA or summary

@@ -394,6 +394,11 @@ def pda(parcels, parcels_geography):
     return parcels_geography.pda_id.reindex(parcels.index)
 
 
+@orca.column('parcels', cache=True)
+def superdistrict(parcels, taz):
+    return misc.reindex(taz.sd, parcels.zone_id)
+
+
 # perffoot is a dummy indicating the FOOTprint for the PERFormance targets
 @orca.column('parcels', cache=True)
 def urban_footprint(parcels, parcels_geography):
@@ -411,12 +416,19 @@ def juris(parcels, parcels_geography):
     return parcels_geography.juris_name.reindex(parcels.index)
 
 
-@orca.column('parcels', 'ave_sqft_per_unit')
+@orca.column('parcels', 'ave_sqft_per_unit', cache=True)
 def ave_sqft_per_unit(parcels, zones, settings):
     s = misc.reindex(zones.ave_unit_sqft, parcels.zone_id)
+
     clip = settings.get("ave_sqft_per_unit_clip", None)
     if clip is not None:
         s = s.clip(lower=clip['lower'], upper=clip['upper'])
+
+    cfg = settings.get("clip_sqft_per_unit_based_on_dua", None)
+    if cfg is not None:
+        for clip in cfg:
+            s[parcels.max_dua >= clip["threshold"]] = clip["max"]
+
     return s
 
 
@@ -813,7 +825,10 @@ def is_sanfran(parcels_geography, buildings, parcels):
 @orca.column('parcels')
 def built_far(parcels):
     # compute the actually built farn on a parcel
-    return parcels.total_sqft / parcels.parcel_size
+    s = parcels.total_sqft / parcels.parcel_size
+    # if the parcel size is too small to get an accurate reading, remove it
+    s[parcels.parcel_acres < .1] = np.nan
+    return s
 
 
 # actual columns start here
@@ -822,7 +837,7 @@ def max_far(parcels_zoning_calculations, parcels, scenario, settings):
     # first we combine the zoning columns
     s = parcels_zoning_calculations.effective_max_far * ~parcels.nodev
 
-    if scenario in ["1", "2"]:
+    if scenario in ["2", "3"]:
         # we had trouble with the zoning outside of the footprint
         # make sure we have rural zoning outside of the footprint
         s2 = parcels.urban_footprint.map({0: 0, 1: np.nan})
@@ -831,7 +846,7 @@ def max_far(parcels_zoning_calculations, parcels, scenario, settings):
     if settings["dont_build_most_dense_building"]:
         # in this case we shrink the zoning such that we don't built the
         # tallest building in a given zone
-        # if there no building in the zone currently, we make the max_dua = 4
+        # if there no building in the zone currently, we make the max_far = .2
         s2 = parcels.built_far.groupby(parcels.zone_id).max()
         s2 = misc.reindex(s2, parcels.zone_id).fillna(.2)
         s = pd.DataFrame([s, s2]).min()
@@ -867,7 +882,10 @@ def nodev(zoning_baseline, parcels):
 @orca.column('parcels')
 def built_dua(parcels):
     # compute the actually built dua on a parcel
-    return parcels.total_residential_units / parcels.parcel_acres
+    s = parcels.total_residential_units / parcels.parcel_acres
+    # if the parcel size is too small to get an accurate reading, remove it
+    s[parcels.parcel_acres < .1] = np.nan
+    return s
 
 
 @orca.column('parcels', 'max_dua')
@@ -875,7 +893,7 @@ def max_dua(parcels_zoning_calculations, parcels, scenario, settings):
     # first we combine the zoning columns
     s = parcels_zoning_calculations.effective_max_dua * ~parcels.nodev
 
-    if scenario in ["1", "2"]:
+    if scenario in ["2", "3"]:
         # we had trouble with the zoning outside of the footprint
         # make sure we have rural zoning outside of the footprint
         s2 = parcels.urban_footprint.map({0: .01, 1: np.nan})
