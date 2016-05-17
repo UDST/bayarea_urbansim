@@ -248,7 +248,9 @@ if SLACK:
 if MODE == "simulation":
     # compute and write the difference report at the superdistrict level
     prev_run = LAST_KNOWN_GOOD_RUNS[SCENARIO]
-    df1 = pd.read_csv("runs/run%d_superdistrict_summaries_2040.csv" % prev_run)
+    # fetch the previous run off of the internet for comparison - the "last
+    # known good run" should always be available on EC2
+    df1 = pd.read_csv("http://urbanforecast.com/runs/run%d_superdistrict_summaries_2040.csv" % prev_run)
     df1 = df1.set_index(df1.columns[0]).sort_index()
 
     df2 = pd.read_csv("runs/run%d_superdistrict_summaries_2040.csv" % run_num)
