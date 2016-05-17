@@ -35,6 +35,9 @@ Other work is in progress; see [wiki](https://github.com/ual/bayarea_urbansim_wo
 * The UAL model is specified in the `ual_baus` directory, and associated with the `Estimation.py` and `Simulation.py` scripts
 * The `configs` and `data` folders are shared, with UAL-specific files marked with a prefix
 
+To run the UAL model, use the `arb` fork of `urbansim_defaults`.  
+To run the MTC model, use the `master` fork of `urbansim_defaults`. 
+
 Subsequent README content is from the master branch.
 
 Data
