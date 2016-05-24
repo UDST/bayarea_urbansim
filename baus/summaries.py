@@ -442,10 +442,9 @@ def building_summary(parcels, run_number, year,
     df = orca.merge_tables(
         'buildings',
         [parcels, buildings],
-        columns=['performance_zone', 'year_built',
-                 'residential_units', 'unit_price',
-                 'zone_id', 'non_residential_sqft',
-                 'deed_restricted_units'])
+        columns=['performance_zone', 'year_built', 'residential_units',
+                 'unit_price', 'zone_id', 'non_residential_sqft',
+                 'deed_restricted_units', 'job_spaces', 'x', 'y'])
 
     df2 = df[(df.performance_zone == 1)]
 
