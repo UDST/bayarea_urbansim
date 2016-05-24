@@ -18,7 +18,7 @@ MAPS = True
 LOGS = True
 INTERACT = False
 SCENARIO = None
-MODE = "simulation"
+MODE = "ual_testing"
 S3 = False
 EVERY_NTH_YEAR = 5
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
@@ -140,6 +140,16 @@ def run_models(MODE, SCENARIO):
         years_to_run = range(IN_YEAR, OUT_YEAR+1, EVERY_NTH_YEAR)
         models = get_simulation_models(SCENARIO)
         orca.run(models, iter_vars=years_to_run)
+
+    elif MODE == "ual_testing":
+
+        orca.run([
+
+            "neighborhood_vars",         # local accessibility variables
+            "regional_vars",             # regional accessibility variables
+            "ual_data_diagnostics",
+
+        ], iter_vars=[2010])
 
     elif MODE == "estimation":
 

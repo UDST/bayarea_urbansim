@@ -17,6 +17,26 @@ import summaries
 import numpy as np
 import pandas as pd
 
+""" UAL MODEL STEPS """
+
+@orca.step('ual_data_diagnostics')
+def ual_data_diagnostics():
+	"""
+	Lists some tables and columns for diagnostic purposes
+	"""
+	print
+	print "RUNNING ual_data_diagnostics"
+	print orca.list_tables()
+	print orca.get_table('buildings').local_columns
+	print orca.get_table('households').local_columns
+	try:
+		print orca.get_table('residential_units').local_columns
+	except:
+		pass
+	print
+
+
+""" END UAL MODEL STEPS """
 
 @orca.step('rsh_simulate')
 def rsh_simulate(buildings, aggregations, settings):
