@@ -17,6 +17,7 @@ import summaries
 import numpy as np
 import pandas as pd
 
+
 """ UAL MODEL STEPS """
 
 @orca.step('ual_data_diagnostics')
@@ -39,32 +40,53 @@ def ual_data_diagnostics():
 @orca.table('residential_units', cache=True)
 def residential_units(buildings):
 	"""
-	Create a table of synthetic residential units, based on building info
+	Creates a table of synthetic residential units, based on building info
 	"""
 	df = pd.DataFrame({
-		"unit_residential_price": 0,
-		"unit_residential_rent": 0,
-		"building_id": np.repeat(buildings.index.values,
+		'unit_residential_price': 0,
+		'unit_residential_rent': 0,
+		'building_id': np.repeat(buildings.index.values,
 								 buildings.residential_units.values),
 		# counter of the units in a building
-		"unit_num": np.concatenate([np.arange(i) for i in \
+		'unit_num': np.concatenate([np.arange(i) for i in \
 									buildings.residential_units.values])
-	}).sort(columns=["building_id", "unit_num"]).reset_index(drop=True)
+	}).sort(columns=['building_id', 'unit_num']).reset_index(drop=True)
 	df.index.name = 'unit_id'
 	return df
 
 
 @orca.step('ual_update_residential_units')
-def ual_update_residential_units(buildings, households):
+def ual_update_residential_units(buildings, households, residential_units):
 	"""
-	This model step (1) updates the table of synthetic residential units, based on changes
-	to the buildings table, and (2) updates assignment of households to units.
+	This model step (1) updates the table of synthetic residential units, based on
+	the buildings table, and (2) updates assignment of households to units.
 	"""
-	# Add a unit_id to the households table if it's not there yet
+	households = households.to_frame(households.local_columns)
+	units = residential_units.to_frame()
 	
+	# On the first model run, add a unit_id to the households table and populate it
+	# based on existing placement in buildings. This code block is from Fletcher.
+	if 'unit_id' not in households.columns:
+		unit_lookup = units.reset_index().set_index(["building_id", "unit_num"])
+		households = households.sort(columns=["building_id"], ascending=True)
+		building_counts = households.building_id.value_counts().sort_index()
+		households["unit_num"] = np.concatenate([np.arange(i) for i in \
+												 building_counts.values])
+		unplaced = households[households.building_id == -1].index
+		placed = households[households.building_id != -1].index
+		indexes = [tuple(t) for t in \
+				   households.loc[placed, ["building_id", "unit_num"]].values]
+		households.loc[placed, "unit_id"] = unit_lookup.loc[indexes].unit_id.values
+		households.loc[unplaced, "unit_id"] = -1
+		orca.add_table("households", households)
+		# do we need code linking tables together?
+	
+	# Now take care of anything we need for subsequent model iterations
+	return
 
 
 """ END UAL MODEL STEPS """
+
 
 @orca.step('rsh_simulate')
 def rsh_simulate(buildings, aggregations, settings):

@@ -147,6 +147,8 @@ def run_models(MODE, SCENARIO):
 
             "neighborhood_vars",         # local accessibility variables
             "regional_vars",             # regional accessibility variables
+            
+            "ual_update_residential_units",
             "ual_data_diagnostics",
 
         ], iter_vars=[2010])
