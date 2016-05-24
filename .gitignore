@@ -3,6 +3,7 @@ RUNNUM
 .idea
 .vagrant
 runs
+_run_archives
 *.pyc
 *.gz
 .ipynb_checkpoints

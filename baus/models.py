@@ -36,6 +36,34 @@ def ual_data_diagnostics():
 	print
 
 
+@orca.table('residential_units', cache=True)
+def residential_units(buildings):
+	"""
+	Create a table of synthetic residential units, based on building info
+	"""
+	df = pd.DataFrame({
+		"unit_residential_price": 0,
+		"unit_residential_rent": 0,
+		"building_id": np.repeat(buildings.index.values,
+								 buildings.residential_units.values),
+		# counter of the units in a building
+		"unit_num": np.concatenate([np.arange(i) for i in \
+									buildings.residential_units.values])
+	}).sort(columns=["building_id", "unit_num"]).reset_index(drop=True)
+	df.index.name = 'unit_id'
+	return df
+
+
+@orca.step('ual_update_residential_units')
+def ual_update_residential_units(buildings, households):
+	"""
+	This model step (1) updates the table of synthetic residential units, based on changes
+	to the buildings table, and (2) updates assignment of households to units.
+	"""
+	# Add a unit_id to the households table if it's not there yet
+	
+
+
 """ END UAL MODEL STEPS """
 
 @orca.step('rsh_simulate')
