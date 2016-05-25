@@ -191,6 +191,164 @@ inclusionary_housing_settings:
       - San Jose
       - Oakland
       - San Francisco
+  "4":
+    - type: jurisdictions
+      description: medium setting
+      amount: .1
+      values:
+      - Alameda
+      - Alameda County
+      - Albany
+      - American Canyon
+      - Antioch
+      - Belmont
+      - Benicia
+      - Berkeley
+      - Brisbane
+      - Burlingame
+      - Campbell
+      - Cloverdale
+      - Colma
+      - Concord
+      - Contra Costa County
+      - Cotati
+      - Cupertino
+      - Daly City
+      - Danville
+      - Dixon
+      - Dublin
+      - East Palo Alto
+      - El Cerrito
+      - Emeryville
+      - Fairfield
+      - Fremont
+      - Gilroy
+      - Hayward
+      - Hercules
+      - Lafayette
+      - Livermore
+      - Los Altos
+      - Martinez
+      - Menlo Park
+      - Millbrae
+      - Milpitas
+      - Moraga
+      - Morgan Hill
+      - Mountain View
+      - Napa
+      - Newark
+      - Oakland
+      - Oakley
+      - Orinda
+      - Palo Alto
+      - Petaluma
+      - Pinole
+      - Pittsburg
+      - Pleasant Hill
+      - Pleasanton
+      - Redwood City
+      - Richmond
+      - Rohnert Park
+      - San Bruno
+      - San Carlos
+      - San Francisco
+      - San Jose
+      - San Leandro
+      - San Mateo
+      - San Mateo County
+      - San Pablo
+      - San Rafael
+      - San Ramon
+      - Santa Clara
+      - Santa Rosa
+      - Sebastopol
+      - South San Francisco
+      - Suisun City
+      - Sunnyvale
+      - Union City
+      - Vacaville
+      - Vallejo
+      - Walnut Creek
+      - Windsor
+  "5":
+    - type: jurisdictions
+      description: medium setting
+      amount: .1
+      values:
+      - Alameda
+      - Alameda County
+      - Albany
+      - American Canyon
+      - Antioch
+      - Belmont
+      - Benicia
+      - Berkeley
+      - Brisbane
+      - Burlingame
+      - Campbell
+      - Cloverdale
+      - Colma
+      - Concord
+      - Contra Costa County
+      - Cotati
+      - Cupertino
+      - Daly City
+      - Danville
+      - Dixon
+      - Dublin
+      - East Palo Alto
+      - El Cerrito
+      - Emeryville
+      - Fairfield
+      - Fremont
+      - Gilroy
+      - Hayward
+      - Hercules
+      - Lafayette
+      - Livermore
+      - Los Altos
+      - Martinez
+      - Menlo Park
+      - Millbrae
+      - Milpitas
+      - Moraga
+      - Morgan Hill
+      - Mountain View
+      - Napa
+      - Newark
+      - Oakland
+      - Oakley
+      - Orinda
+      - Palo Alto
+      - Petaluma
+      - Pinole
+      - Pittsburg
+      - Pleasant Hill
+      - Pleasanton
+      - Redwood City
+      - Richmond
+      - Rohnert Park
+      - San Bruno
+      - San Carlos
+      - San Francisco
+      - San Jose
+      - San Leandro
+      - San Mateo
+      - San Mateo County
+      - San Pablo
+      - San Rafael
+      - San Ramon
+      - Santa Clara
+      - Santa Rosa
+      - Sebastopol
+      - South San Francisco
+      - Suisun City
+      - Sunnyvale
+      - Union City
+      - Vacaville
+      - Vallejo
+      - Walnut Creek
+      - Windsor       
 
 
 acct_settings:
@@ -204,7 +362,7 @@ acct_settings:
       total_amount: 40000000
       receiving_buildings_filter: pda_id > 0
       subsidize_affordable: False
-      enable_in_scenarios: ["1", "2", "3"]
+      enable_in_scenarios: ["1", "2", "3", "4", "5"]
 
     parcel_tax_settings:
       name: "Parcel Tax"
@@ -238,7 +396,7 @@ acct_settings:
 
     parking_requirements_pdas:
       name: "Reduce Parking Requirements in PDAs"
-      enable_in_scenarios: ["1", "2"]
+      enable_in_scenarios: ["1", "2", "4", "5"]
       # any parcel in a tpa
       profitability_adjustment_formula: "(pda_id > 0) * .01"
 
@@ -602,10 +760,20 @@ development_limits:
       'San Francisco': 3000
     Residential:
       'Half Moon Bay': 43
+  "2":
+    Office:
+      'San Francisco': 4500
+    Residential:
+      'Half Moon Bay': 43
   "3":
     Residential:
       'Half Moon Bay': 43
-  "2":
+  "4":
+    Office:
+      'San Francisco': 4500
+    Residential:
+      'Half Moon Bay': 43
+  "5":
     Office:
       'San Francisco': 4500
     Residential:
