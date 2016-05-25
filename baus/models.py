@@ -30,6 +30,9 @@ def ual_data_diagnostics():
 	print orca.list_tables()
 	print orca.get_table('buildings').local_columns
 	print orca.get_table('households').local_columns
+	
+	hh = orca.get_table('households').to_frame()
+	print hh[['tenure','hownrent']].describe()
 	try:
 		print orca.get_table('residential_units').local_columns
 	except:
@@ -37,32 +40,53 @@ def ual_data_diagnostics():
 	print
 
 
-@orca.table('residential_units', cache=True)
-def residential_units(buildings):
+@orca.step('ual_initialize_residential_units')
+def ual_initialize_residential_units(buildings):
 	"""
-	Creates a table of synthetic residential units, based on building info
+	This model step creates and registers a table of synthetic residential units, based
+	on building info.
+	
+	Data expections
+	---------------
+	- 'buildings' table has an index that serves as its id
+	- 'buildings' table has column 'residential_units' (int, never missing)
+	
+	Results
+	-------
+	- creates new 'residential_units' table with columns..
+		- 'unit_id' (index)
+		- 'unit_residential_price' (float, 0-filled)
+	  	- 'unit_residential_rent' (float, 0-filled)
+	  	- 'building_id' (int, corresponds to index of 'buildings' table)
+	  	- 'unit_num' (int, unique within building)
 	"""
-	df = pd.DataFrame({
-		'unit_residential_price': 0,
-		'unit_residential_rent': 0,
-		'building_id': np.repeat(buildings.index.values,
-								 buildings.residential_units.values),
-		# counter of the units in a building
-		'unit_num': np.concatenate([np.arange(i) for i in \
-									buildings.residential_units.values])
-	}).sort(columns=['building_id', 'unit_num']).reset_index(drop=True)
-	df.index.name = 'unit_id'
-	return df
+
+	@orca.table('residential_units', cache=True)
+	def residential_units(buildings):
+		"""
+		Sets up a table of synthetic residential units, based on building info
+		"""
+		df = pd.DataFrame({
+			'unit_residential_price': 0,
+			'unit_residential_rent': 0,
+			'building_id': np.repeat(buildings.index.values,
+									 buildings.residential_units.values),
+			# counter of the units in a building
+			'unit_num': np.concatenate([np.arange(i) for i in \
+										buildings.residential_units.values])
+		}).sort(columns=['building_id', 'unit_num']).reset_index(drop=True)
+		df.index.name = 'unit_id'
+		return df
 
 
-@orca.step('ual_update_residential_units')
+@orca.step('ual_update_residential_units')  # needs clearer name
 def ual_update_residential_units(buildings, households, residential_units):
 	"""
 	This model step (1) updates the table of synthetic residential units, based on
 	the buildings table, and (2) updates assignment of households to units.
 	"""
-	households = households.to_frame(households.local_columns)
-	units = residential_units.to_frame()
+	households = households.to_frame(households.local_columns)  # -> rename df for clarity
+	units = residential_units.to_frame()  # -> should limit to columns we need
 	
 	# On the first model run, add a unit_id to the households table and populate it
 	# based on existing placement in buildings. This code block is from Fletcher.
@@ -79,9 +103,55 @@ def ual_update_residential_units(buildings, households, residential_units):
 		households.loc[placed, "unit_id"] = unit_lookup.loc[indexes].unit_id.values
 		households.loc[unplaced, "unit_id"] = -1
 		orca.add_table("households", households)
-		# do we need code linking tables together?
+		# -> do we need code linking columns together?
 	
-	# Now take care of anything we need for subsequent model iterations
+	# -> Now take care of anything we need for subsequent model iterations
+	return
+
+@orca.step('ual_assign_tenure_to_units')
+def ual_assign_tenure_to_units(residential_units, households):
+	"""
+	This model step assigns tenure to residential units. Tenure for occupied units is
+	determined by the 'hownrent' attribute of the household. Tenure for unoccupied units
+	is assigned randomly. In subsequent model years, tenure for newly constructed units
+	will be either assigned in the developer model, or here using relative prices.
+	
+	Data expections
+	---------------
+	Initial run: 
+	  - 'residential_units' table has NO column 'hownrent'
+	  - 'households' table has columns 'hownrent' (int, missing values ok), 
+	    'unit_id' (int, missing = '-1')
+	Subsequent runs: 
+	  - 'residential_units' table has column 'hownrent' (int, missing values ok)
+	"""
+	units = residential_units.to_frame(residential_units.local_columns)
+	hh = households.to_frame(['hownrent','unit_id'])
+	
+	# On the first model run, create a tenure column for units and assign it from the 
+	# household that lives there, or randomly for unoccupied units. 
+	
+	# 'Hownrent' is a PUMS field where 1=owns, 2=rents. Note that there's also a field
+	# in the MTC households table called 'tenure', with min=1, max=4, mean=2. Not sure 
+	# where this comes from or what the values indicate.
+		
+	if 'hownrent' not in units.columns:
+		units['hownrent'] = np.nan
+		own = hh[(hh.hownrent == 1) & (hh.unit_id != -1)].unit_id.values
+		rent = hh[(hh.hownrent == 2) & (hh.unit_id != -1)].unit_id.values
+		units.loc[own, 'hownrent'] = 1
+		units.loc[rent, 'hownrent'] = 2
+			
+		print "Initial unit tenure assignment: %d%% owner occupied, %d%% unfilled" % \
+				(round(len(units[units.hownrent == 1])*100/len(units[units.hownrent.notnull()])), \
+				 round(len(units[units.hownrent.isnull()])*100/len(units)))
+				 
+		# Fill remaining units with random tenure assignment -> Fix this to be to be weighted
+		unfilled = units[units.hownrent.isnull()].index
+		units.loc[unfilled, 'hownrent'] = np.random.randint(1, 3, len(unfilled))
+		
+		orca.add_table('residential_units', units)
+    
 	return
 
 

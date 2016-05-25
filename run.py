@@ -144,12 +144,17 @@ def run_models(MODE, SCENARIO):
     elif MODE == "ual_testing":
 
         orca.run([
+            "ual_initialize_residential_units",
+        ])
 
-            "neighborhood_vars",         # local accessibility variables
-            "regional_vars",             # regional accessibility variables
+        orca.run([
+
+            #"neighborhood_vars",         # local accessibility variables
+            #"regional_vars",             # regional accessibility variables
             
             "ual_update_residential_units",
-            "ual_data_diagnostics",
+            #"ual_data_diagnostics",
+            "ual_assign_tenure_to_units",
 
         ], iter_vars=[2010])
 
