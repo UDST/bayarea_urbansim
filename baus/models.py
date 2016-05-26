@@ -82,34 +82,6 @@ def households_relocation(households, settings, years_per_iter):
     return utils.simple_relocation(households, rate, "building_id")
 
 
-def relocation_by_rate_table(choosers, relocation_rate, fieldname):
-    """
-    Run a simple rate based relocation model
-
-    Parameters
-    ----------
-    tbl : DataFrameWrapper or DataFrame
-        Table of agents that might relocate
-    rate : float
-        Rate of relocation
-    location_fname : str
-        The field name in the resulting dataframe to set to -1 (to unplace
-        new agents)
-
-    Returns
-    -------
-    Nothing
-    """
-    print "Total agents: %d" % len(choosers)
-    _print_number_unplaced(choosers, fieldname)
-
-    print "Assigning for relocation..."
-    chooser_ids = np.random.choice(choosers.index, size=int(relocation_rate *
-                                   len(choosers)), replace=False)
-
-    _print_number_unplaced(choosers, fieldname)
-
-
 @orca.table(cache=True)
 def employment_relocation_rates():
 
