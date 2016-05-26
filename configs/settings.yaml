@@ -479,9 +479,6 @@ table_reprocess:
 
 rates:
   households_relocation: .07
-  jobs_relocation: .07
-  simple_households_transition: .02
-  simple_jobs_transition: .02
 
 
 build_networks:
