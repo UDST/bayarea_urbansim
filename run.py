@@ -29,7 +29,9 @@ LAST_KNOWN_GOOD_RUNS = {
     "0": 1057,
     "1": 1058,
     "2": 1059,
-    "3": 1060
+    "3": 1060,
+    "4": 1059
+    "5": 1059
 }
 
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
