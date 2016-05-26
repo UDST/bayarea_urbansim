@@ -82,11 +82,32 @@ def households_relocation(households, settings, years_per_iter):
     return utils.simple_relocation(households, rate, "building_id")
 
 
-@orca.step('jobs_relocation')
-def jobs_relocation(jobs, settings, years_per_iter):
-    rate = settings['rates']['jobs_relocation']
-    rate = min(rate * years_per_iter, 1.0)
-    return utils.simple_relocation(jobs, rate, "building_id")
+@orca.table(cache=True)
+def employment_relocation_rates():
+
+    df = pd.read_csv(os.path.join("data", "employment_relocation_rates.csv"))
+
+    df = df.set_index("zone_id").stack().reset_index()
+
+    df.columns=["zone_id", "empsix", "rate"]
+
+    return df
+
+
+@orca.step()
+def jobs_relocation(jobs, employment_relocation_rates, years_per_iter):
+
+    df = pd.merge(jobs.to_frame(["zone_id", "empsix"]),
+        employment_relocation_rates.local, on=["zone_id", "empsix"])
+
+    rate = (df.rate * years_per_iter).clip(0, 1.0)
+
+    move = np.random.random(len(rate)) < rate
+
+    index = jobs.index[move]
+
+    jobs.update_col_from_series("building_id",
+                                pd.Series(-1, index=index))
 
 
 # this deviates from the step in urbansim_defaults only in how it deals with
