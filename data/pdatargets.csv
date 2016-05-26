@@ -1,0 +1,295 @@
+juris,pda,hh_target,hh_mode,jobs_target,jobs_mode,name,city,county
+,ACA1,1959,,2241,,Highway 29 Corridor,American Canyon,Napa
+,ALA1,5116,,8960,,Naval Air Station,Alameda,Alameda
+,ALA2,1790,,3651,,Northern Waterfront,Alameda,Alameda
+,ALB1,2003,,2586,,San Pablo - Solano Mixed Use Neighborhood,Albany,Alameda
+,ALC1,2121,,3164,,Castro Valley BART,Alameda County,Alameda
+,ALC2,8932,,4522,,East 14th Street and Mission Boulevard,Alameda County,Alameda
+,ALC3,3504,,2760,,Hesperian Boulevard,Alameda County,Alameda
+,ALC4,1819,,1415,,Meekland Avenue Corridor,Alameda County,Alameda
+,ANT1,2438,,2944,,Hillcrest eBART Station,Antioch,Contra Costa
+,ANT2,3382,,5354,,Rivertown Waterfront,Antioch,Contra Costa
+,BEL1,1812,,2677,,Villages of Belmont,Belmont,San Mateo
+,BEN1,1497,,3346,,Downtown,Benicia,Solano
+,BEN2,2,,11311,,Northern Gateway - Benicias Industrial Park,Benicia,Solano
+,BER1,911,,1729,,Adeline Street,Berkeley,Alameda
+,BER2,6768,,22994,,Downtown,Berkeley,Alameda
+,BER3,2378,,3555,,San Pablo Avenue,Berkeley,Alameda
+,BER4,443,,1535,,South Shattuck,Berkeley,Alameda
+,BER5,1422,,2722,,Telegraph Avenue,Berkeley,Alameda
+,BER6,1972,,2114,,University Avenue,Berkeley,Alameda
+,BUR1,10686,,19682,,Burlingame El Camino Real,Burlingame,San Mateo
+,CAM1,2791,,10880,,Central Redevelopment Area,Campbell,Santa Clara
+,CCC1,2345,,5047,,Contra Costa Centre,Contra Costa County,Contra Costa
+,CCC2,1427,,2104,,North Richmond,Richmond (with Contra Costa County),Contra Costa
+,CCC3_a,1827,,1154,,Pittsburg/Bay Point BART Station,Contra Costa County,Contra Costa
+,CCC3_b,1084,,1615,,Pittsburg/Bay Point BART Station,Contra Costa County,Contra Costa
+,CCC4,2219,,1504,,Downtown El Sobrante,Contra Costa County,Contra Costa
+,CCG1_b,797,,2564,,El Camino Real - Colma,C/CAG,San Mateo
+,CCG1_c,9099,,7000,,El Camino Real - South San Francisco,C/CAG,San Mateo
+,CCG1_k,256,,439,,El Camino Real - Uninc Daly City,C/CAG,San Mateo
+,CCG1_l,6123,,6146,,El Camino Real - North Fair Oaks,C/CAG,San Mateo
+,CLO1,1825,,1480,,Downtown/SMART Transit Area,Cloverdale,Sonoma
+,CON1_a,3365,,15013,,Community Reuse Area/Los Medanos,Concord,Contra Costa
+,CON1_b,9089,,3505,,Community Reuse Area/Los Medanos,Concord,Contra Costa
+,CON2,7639,,10972,,Downtown,Concord,Contra Costa
+,COT1,1265,,1271,,Downtown and Cotati Depot,Cotati,Sonoma
+,DAL1,3257,,5573,,Mission Boulevard,Daly City,San Mateo
+,DAL2,3558,,3476,,Bayshore,Daly City,San Mateo
+,DAN1,2162,,7757,,Downtown,Danville,Contra Costa
+,DIX1,969,,885,,Downtown,Dixon,Solano
+,DUB1,1773,,8913,,Downtown Specific Plan Area,Dublin,Alameda
+,DUB2,3776,,6854,,Transit Center/Dublin Crossings,Dublin,Alameda
+,DUB3,5854,,1433,,Town Center,Dublin,Alameda
+,ELC1_a,1163,,2384,,San Pablo Avenue Corridor,El Cerrito,Contra Costa
+,ELC1_b,1153,,2244,,San Pablo Avenue Corridor,El Cerrito,Contra Costa
+,EME1,9437,,19637,,Mixed-Use Core,Emeryville,Alameda
+,EPA1,1858,,1318,,Ravenswood,East Palo Alto,San Mateo
+,FAI1,1077,,4559,,Downtown South (Jefferson Street),Fairfield,Solano
+,FAI2,6143,,2859,,Fairfield-Vacaville Train Station,Fairfield,Solano
+,FAI3,3421,,2584,,North Texas Street Core,Fairfield,Solano
+,FAI4,3504,,3091,,West Texas Street Gateway,Fairfield,Solano
+,FRE1,13179,,4755,,Centerville,Fremont,Alameda
+,FRE2,10059,,26238,,City Center,Fremont,Alameda
+,FRE3,10141,,6549,,Irvington District,Fremont,Alameda
+,FRE4,5227,,30239,,Warm Springs,Fremont,Alameda
+,GIL1,2862,,3848,,Downtown,Gilroy,Santa Clara
+,HAY1,1087,,2534,,The Cannery,Hayward,Alameda
+,HAY2,5451,,11289,,Downtown,Hayward,Alameda
+,HAY3_a,1350,,866,,South Hayward BART,Hayward,Alameda
+,HAY3_b,4460,,1748,,South Hayward BART,Hayward,Alameda
+,HAY4,3253,,3037,,Mission Boulevard Corridor,Hayward,Alameda
+,HER1,2840,,1966,,Central Hercules,Hercules,Contra Costa
+,HER2,1686,,1983,,Waterfront District,Hercules,Contra Costa
+,LAF1,2921,,8012,,Downtown,Lafayette,Contra Costa
+,LIV1,2663,,3582,,Downtown,Livermore,Alameda
+,LIV2,4343,,26247,,East Side,Livermore,Alameda
+,LIV3,3967,,7585,,Isabel Avenue/BART Station Planning Area,Livermore,Alameda
+,MAR1,1478,,5441,,Martinez: Downtown,Martinez,Contra Costa
+,MCO1,4878,,3153,,Urbanized 101 Corridor,Marin County,Marin
+,MEN1,2006,,8177,,El Camino Real Corridor and Downtown,Menlo Park,San Mateo
+,MIL1,2692,,3298,,Transit Station Area,Millbrae,San Mateo
+,MOH1,1955,,3195,,Downtown,Morgan Hill,Santa Clara
+,MOR1,770,,1390,,Moraga Center,Moraga,Contra Costa
+,MPT1,7839,,10221,,Transit Area,Milpitas,Santa Clara
+,MVW1,1663,,1290,,Whisman Station,Mountain View,Santa Clara
+,MVW2,6123,,10918,,Downtown,Mountain View,Santa Clara
+,MVW3,6275,,4631,,San Antonio Center,Mountain View,Santa Clara
+,MVW4,10987,,7065,,El Camino Real,Mountain View,Santa Clara
+,MVW6,1776,,16050,,North Bayshore,Mountain View,Santa Clara
+,NEW1,2533,,2248,,Dumbarton Transit Oriented Development,Newark,Alameda
+,NEW2,958,,414,,Old Town Mixed Use Area,Newark,Alameda
+,OAK1,1472,,2543,,Employment Area,Oakley,Contra Costa
+,OAK2,1715,,1482,,Downtown,Oakley,Contra Costa
+,OAK3,2273,,945,,Potential Planning Area,Oakley,Contra Costa
+,OKD1,75501,bottom,44516,bottom,Transit Oriented Development Corridors,Oakland,Alameda
+,OKD1_a,7217,bottom,13228,bottom, TOD Corridors San Antonio/Central Estuary ,Oakland,Alameda
+,OKD1_b,11013,bottom,7624,bottom, TOD Corridors International Boulevard ,Oakland,Alameda
+,OKD2,10571,bottom,14323,bottom,Coliseum BART Station Area,Oakland,Alameda
+,OKD3,25767,bottom,135887,bottom,Downtown - Jack London Square,Oakland,Alameda
+,OKD4,6942,bottom,5656,bottom,Eastmont Town Center,Oakland,Alameda
+,OKD5,18087,bottom,15641,bottom,Fruitvale and Dimond Areas,Oakland,Alameda
+,OKD6,13611,bottom,14358,bottom,MacArthur Transit Village,Oakland,Alameda
+,OKD7,17190,bottom,15256,bottom,West Oakland,Oakland,Alameda
+,ORI1,541,,4233,,Downtown,Orinda,Contra Costa
+,NAP1,1695,,14438,,Dowtown Napa,Napa,Napa
+,PAL1,1627,,5363,,California Avenue,Palo Alto,Santa Clara
+,PET1,2539,,8867,,Central Turning Basin/Lower Reach,Petaluma,Sonoma
+,PIN1,1494,,3449,,Old Town San Pablo Avenue,Pinole,Contra Costa
+,PIN2,1128,,3606,,Appian Way Corridor,Pinole,Contra Costa
+,PIT1,7349,,7165,,Railroad Avenue eBART Station,Pittsburg,Contra Costa
+,PIT2,3597,,3945,,Downtown,Pittsburg,Contra Costa
+,PLE1,4874,,18714,,Hacienda,Pleasanton,Alameda
+,PLH1,652,,4456,,Diablo Valley College,Pleasant Hill,Contra Costa
+,PLH2,1777,,6584,,Buskirk Avenue Corridor,Pleasant Hill,Contra Costa
+,RIC1_a,5560,,9223,,Central Richmond A,Richmond,Contra Costa
+,RIC1_b,1482,,702,,Central Richmond B,Richmond,Contra Costa
+,RIC2,4806,,9922,,South Richmond,Richmond,Contra Costa
+,ROH1,2203,,1275,,Sonoma Mountain Village,Rohnert Park,Sonoma
+,ROH2,2306,,5501,,Central Rohnert Park,Rohnert Park,Sonoma
+,RWC1,6270,,14868,,Downtown,Redwood City,San Mateo
+,RWC2,2286,,12579,,Broadway/Veterans Boulevard Corridor,Redwood City,San Mateo
+,RWC3,1157,,11236,,El Camino Real,Redwood City,San Mateo
+,SAR1,1407,,18783,,City Center,San Ramon,Contra Costa
+,SAR2,1851,,15478,,North Camino Ramon,San Ramon,Contra Costa
+,SBR1,7561,,11399,,Transit Corridors,San Bruno,San Mateo
+,SCA1,1221,,3316,,RR Corridor,San Carlos,San Mateo
+,SCL1,5300,,7446,,El Camino Real Focus Area,Santa Clara,Santa Clara
+,SCL2,3861,,13595,,Santa Clara Station Focus Area,Santa Clara,Santa Clara
+,SEB1,2792,,7461,,Core Area,Sebastopol,Sonoma
+,SFO1,22090,bottom,31495,bottom,Bayview/Hunters Point Shipyard/Candlestick Point,San Francisco,San Francisco
+,SFO10,11028,bottom,14636,bottom,19th Avenue,San Francisco,San Francisco
+,SFO11,17795,bottom,37629,bottom,Market - Octavia,San Francisco,San Francisco
+,SFO12,31338,bottom,19957,bottom,Mission-San Jose Corridor,San Francisco,San Francisco
+,SFO2,3062,bottom,4068,bottom,Balboa Park,San Francisco,San Francisco
+,SFO3,123426,bottom,387697,bottom,Downtown-Van Ness-Geary,San Francisco,San Francisco
+,SFO4,44467,bottom,76320,bottom,Eastern Neighborhoods,San Francisco,San Francisco
+,SFO5,6704,bottom,28930,bottom,Mission Bay,San Francisco,San Francisco
+,SFO6,1938,bottom,26886,bottom,Port of San Francisco,San Francisco,San Francisco
+,SFO7,5067,bottom,41166,bottom,Transbay Terminal,San Francisco,San Francisco
+,SFO8,7860,bottom,3338,bottom,Treasure Island,San Francisco,San Francisco
+,SFO9_a,0,,1152,,San Francisco/San Mateo Bi-County Area,San Francisco - Brisbane,San Mateo
+,SFO9_b,6818,bottom,2927,bottom,San Francisco/San Mateo Bi-County Area,San Francisco - Brisbane,San Francisco
+,SJO1,19595,bottom,57657,bottom,Greater Downtown,San Jose,Santa Clara
+,SJO10,9159,bottom,10246,bottom,Oakridge/Almaden Plaza Urban Village,San Jose,Santa Clara
+,SJO11,3319,bottom,7491,bottom,Capitol/Tully/King Urban Villages,San Jose,Santa Clara
+,SJO12,3516,bottom,5856,bottom,Saratoga TOD Corridor,San Jose,Santa Clara
+,SJO13,6786,bottom,7238,bottom,Winchester Boulevard TOD Corridor,San Jose,Santa Clara
+,SJO14,2223,bottom,13726,bottom,Bascom TOD Corridor,San Jose,Santa Clara
+,SJO15,2558,bottom,2826,bottom,Bascom Urban Village,San Jose,Santa Clara
+,SJO16,1478,bottom,8106,bottom,Camden Urban Village,San Jose,Santa Clara
+,SJO17,1709,bottom,1819,bottom,Blossom Hill/Snell Urban Village,San Jose,Santa Clara
+,SJO18,7061,bottom,5880,bottom,Capitol Corridor Urban Villages,San Jose,Santa Clara
+,SJO19,3322,bottom,5540,bottom,Westgate/El Paseo Urban Village,San Jose,Santa Clara
+,SJO2,3563,bottom,4090,bottom,Cottle Transit Village (Hitachi),San Jose,Santa Clara
+,SJO3,43457,bottom,139694,bottom,North San Jose,San Jose,Santa Clara
+,SJO4,27821,bottom,33353,bottom,Downtown Frame,San Jose,Santa Clara
+,SJO5,7965,bottom,12455,bottom,Berryessa Station,San Jose,Santa Clara
+,SJO6,10056,bottom,6063,bottom,Communications Hill,San Jose,Santa Clara
+,SJO7,20717,bottom,16134,bottom,West San Carlos and Southwest Expressway Corridors,San Jose,Santa Clara
+,SJO8,13175,bottom,14598,bottom,East Santa Clara/Alum Rock Corridor,San Jose,Santa Clara
+,SJO9,7738,bottom,8634,bottom,Stevens Creek TOD Corridor,San Jose,Santa Clara
+,SLE1,1542,,2860,,Bay Fair BART Transit Village,San Leandro,Alameda
+,SLE2,4679,,4350,,East 14th Street,San Leandro,Alameda
+,SLE3,7805,,15349,,Downtown Transit Oriented Development,San Leandro,Alameda
+,SMA1,1587,,7768,,Downtown,San Mateo,San Mateo
+,SMA2,5516,,20096,,Rail Corridor,San Mateo,San Mateo
+,SMA3,2062,,6032,,El Camino Real,San Mateo,San Mateo
+,SMA4,21112,,13789,,Grand Blvd Initiative,San Mateo,San Mateo
+,SPA1,4168,,8001,,San Pablo Avenue - 23rd Street Corridors,San Pablo,Contra Costa
+,SRA1,3884,,11160,,Downtown,San Rafael,Marin
+,SRO1,6066,,14714,,Downtown Station Area,Santa Rosa,Sonoma
+,SRO2,7571,,32020,,Mendocino Avenue/Santa Rosa Avenue Corridor,Santa Rosa,Sonoma
+,SRO3,4545,,3684,,Sebastopol Road Corridor,Santa Rosa,Sonoma
+,SRO4,6133,,13908,,North Santa Rosa Station,Santa Rosa,Sonoma
+,SRO5,6391,,4159,,Roseland,Santa Rosa,Sonoma
+,SSF1,4663,,7109,,Downtown,South San Francisco,San Mateo
+,SUI1,2189,,2094,,Downtown - Waterfront,Suisun City,Solano
+,SUN1,5173,,6054,,Lawrence Station Transit Village,Sunnyvale,Santa Clara
+,SUN2,3765,,6012,,Downtown - Caltrain Station,Sunnyvale,Santa Clara
+,SUN3,15161,,16354,,El Camino Real Corridor,Sunnyvale,Santa Clara
+,SUN6,4235,,5557,,East Sunnyvale,Sunnyvale,Santa Clara
+,SUN8,3248,,977,,Tasman Crossing,Sunnyvale,Santa Clara
+,UNI1,1835,,2815,,Intermodal Station District,Union City,Alameda
+,VAC1,929,,4023,,Downtown,Vacaville,Solano
+,VAC2,695,,1836,,Allison Area,Vacaville,Solano
+,VAL1,1953,,6324,,Waterfront - Downtown,Vallejo,Solano
+,VTA1_b,6515,,15042,,Cupertino,VTA,Santa Clara
+,VTA1_c,1830,,3169,,Gilroy,VTA,Santa Clara
+,VTA1_d,1174,,7674,,Los Altos,VTA,Santa Clara
+,VTA1_f,775,bottom,533,bottom,Milpitas,VTA,Santa Clara
+,VTA1_i,30550,bottom,28510,bottom,San Jose,VTA,Santa Clara
+,WAL1,4461,,13015,,West Downtown,Walnut Creek,Contra Costa
+,WCC1_a,1854,,1053,,San Pablo Avenue Corridor - Unincorporated County,WCCTAC,Contra Costa
+,WCC1_c,3400,,3194,,San Pablo Avenue Corridor - Richmond,WCCTAC,Contra Costa
+,WCC1_g,1325,,1258,,San Pablo Avenue Corridor - Hercules,WCCTAC,Contra Costa
+,WIN1,2590,,1954,,Redevelopment Area,Windsor,Sonoma
+1,,,,,,ala,,
+13,,,,,,cnc,,
+41,,26542,top,16449,top,mar,,
+55,,11064,top,31931,top,nap,,
+81,,20300,top,25525,top,smt,,
+85,,31536,top,51008,top,scl,,
+95,,,,,,sol,,
+97,,,,,,son,,
+562,,,,,,Alameda,,
+674,,,,,,Albany,,
+1640,,,,,,American Canyon,,
+2252,,,,,,Antioch,,
+3092,,,,,,Atherton,,
+5108,,,,,,Belmont,,
+5164,,985,top,511,top,Belvedere,,
+5290,,,,,,Benicia,,
+6000,,,,,,Berkeley,,
+8142,,,,,,Brentwood,,
+8310,,,,,,Brisbane,,
+9066,,,,,,Burlingame,,
+9892,,,,,,Calistoga,,
+10345,,,,,,Campbell,,
+13882,,,,,,Clayton,,
+14190,,,,,,Cloverdale,,
+14736,,,,,,Colma,,
+16000,,,,,,Concord,,
+16462,,,,,,Corte Madera,,
+16560,,,,,,Cotati,,
+17610,,,,,,Cupertino,,
+17918,,,,,,Daly City,,
+17988,,,,,,Danville,,
+19402,,,,,,Dixon,,
+20018,,,,,,Dublin,,
+20956,,,,,,East Palo Alto,,
+21796,,,,,,El Cerrito,,
+22594,,,,,,Emeryville,,
+23168,,3674,top,1936,top,Fairfax,,
+23182,,,,,,Fairfield,,
+25338,,,,,,Foster City,,
+26000,,,,,,Fremont,,
+29504,,,,,,Gilroy,,
+31708,,4476,top,6405,top,Half Moon Bay,,
+33000,,,,,,Hayward,,
+33056,,,,,,Healdsburg,,
+33308,,,,,,Hercules,,
+33798,,4070,top,2394,top,Hillsborough,,
+39122,,,,,,Lafayette,,
+40438,,6547,top,8310,top,Larkspur,,
+41992,,,,,,Livermore,,
+43280,,,,,,Los Altos,,
+43294,,3025,top,2703,top,Los Altos Hills,,
+44112,,,,,,Los Gatos,,
+46114,,,,,,Martinez,,
+46870,,,,,,Menlo Park,,
+47486,,,,,,Millbrae,,
+47710,,6638,top,7225,top,Mill Valley,,
+47766,,,,,,Milpitas,,
+48956,,1320,top,617,top,Monte Sereno,,
+49187,,,,,,Moraga,,
+49278,,,,,,Morgan Hill,,
+49670,,,,,,Mountain View,,
+50258,,,,,,Napa,,
+50916,,,,,,Newark,,
+52582,,,,,,Novato,,
+53000,,,bottom,,bottom,Oakland,,
+53070,,,,,,Oakley,,
+54232,,6912,top,3149,top,Orinda,,
+54806,,,,,,Pacifica,,
+55282,,33262,top,121732,top,Palo Alto,,
+56784,,,,,,Petaluma,,
+56938,,3948,top,2564,top,Piedmont,,
+57288,,,,,,Pinole,,
+57456,,,,,,Pittsburg,,
+57764,,,,,,Pleasant Hill,,
+57792,,,,,,Pleasanton,,
+58380,,1929,top,1883,top,Portola Valley,,
+60102,,,,,,Redwood City,,
+60620,,,,,,Richmond,,
+60984,,,,,,Rio Vista,,
+62546,,,,,,Rohnert Park,,
+62980,,873,top,628,top,Ross,,
+64140,,,,,,St. Helena,,
+64434,,5613,top,4639,top,San Anselmo,,
+65028,,,,,,San Bruno,,
+65070,,,,,,San Carlos,,
+67000,,,bottom,,bottom,San Francisco,,
+68000,,,bottom,,bottom,San Jose,,
+68084,,,,,,San Leandro,,
+68252,,,,,,San Mateo,,
+68294,,,,,,San Pablo,,
+68364,,,,,,San Rafael,,
+68378,,,,,,San Ramon,,
+69084,,,,,,Santa Clara,,
+70098,,,,,,Santa Rosa,,
+70280,,,,,,Saratoga,,
+70364,,,,,,Sausalito,,
+70770,,,,,,Sebastopol,,
+72646,,,,,,Sonoma,,
+73262,,,,,,South San Francisco,,
+75630,,,,,,Suisun City,,
+77000,,,,,,Sunnyvale,,
+78666,,4060,top,2862,top,Tiburon,,
+81204,,,,,,Union City,,
+81554,,,,,,Vacaville,,
+81666,,,,,,Vallejo,,
+83346,,,,,,Walnut Creek,,
+85922,,,,,,Windsor,,
+86440,,2111,top,2192,top,Woodside,,
+86930,,1127,top,2107,top,Yountville,,
