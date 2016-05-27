@@ -88,7 +88,7 @@ def ual_match_households_to_units(households, residential_units):
 	Data expectations
 	-----------------
 	- 'households' table has NO column 'unit_id'
-	- 'households' table has column 'building_id' (int, -1-filled, corresponds to index 
+	- 'households' table has column 'building_id' (int, '-1'-filled, corresponds to index 
 		  of 'buildings' table)
 	- 'residential_units' table has an index that serves as its id, and following columns:
 	  	- 'building_id' (int, non-missing, corresponds to index of 'buildings' table)
@@ -97,7 +97,7 @@ def ual_match_households_to_units(households, residential_units):
 	Results
 	-------
 	- adds following column to 'households' table:
-		- 'unit_id' (int, -1-filled, corresponds to index of 'residential_units' table
+		- 'unit_id' (int, '-1'-filled, corresponds to index of 'residential_units' table)
 	"""
 	hh = households.to_frame(households.local_columns)
 	units = residential_units.to_frame(['building_id', 'unit_num'])
@@ -117,59 +117,48 @@ def ual_match_households_to_units(households, residential_units):
 	return
 
 
-@orca.step('ual_update_residential_units')  # needs clearer name
-def ual_update_residential_units(buildings, households, residential_units):
-	"""
-	This model step (1) updates the table of synthetic residential units, based on
-	the buildings table, and (2) updates assignment of households to units.
-	"""
-	
-	# -> Now take care of anything we need for subsequent model iterations
-	return
-
 @orca.step('ual_assign_tenure_to_units')
 def ual_assign_tenure_to_units(residential_units, households):
 	"""
-	This model step assigns tenure to residential units. Tenure for occupied units is
-	determined by the 'hownrent' attribute of the household. Tenure for unoccupied units
-	is assigned randomly. In subsequent model years, tenure for newly constructed units
-	will be either assigned in the developer model, or here using relative prices.
+	This initialization step assigns tenure to residential units, based on the 'hownrent'
+	attribute of the households occupying them. (Tenure for unoccupied units is assigned
+	randomly.)
 	
 	Data expections
 	---------------
-	Initial run: 
-	  - 'residential_units' table has NO column 'hownrent'
-	  - 'households' table has columns 'hownrent' (int, missing values ok), 
-	    'unit_id' (int, missing = '-1')
-	Subsequent runs: 
-	  - 'residential_units' table has column 'hownrent' (int, missing values ok)
+	- 'residential_units' table has NO column 'hownrent'
+	- 'households' table has following columns: 
+		- 'hownrent' (int, missing values ok) 
+		- 'unit_id' (int, '-1'-filled, corresponds to index of 'residential_units' table)
+	
+	Results
+	-------
+	- adds following column to 'residential_units' table:
+		- 'hownrent' (int in range [1,2], non-missing)
 	"""
 	units = residential_units.to_frame(residential_units.local_columns)
-	hh = households.to_frame(['hownrent','unit_id'])
-	
-	# On the first model run, create a tenure column for units and assign it from the 
-	# household that lives there, or randomly for unoccupied units. 
+	hh = households.to_frame(['hownrent', 'unit_id'])
 	
 	# 'Hownrent' is a PUMS field where 1=owns, 2=rents. Note that there's also a field
 	# in the MTC households table called 'tenure', with min=1, max=4, mean=2. Not sure 
 	# where this comes from or what the values indicate.
 		
-	if 'hownrent' not in units.columns:
-		units['hownrent'] = np.nan
-		own = hh[(hh.hownrent == 1) & (hh.unit_id != -1)].unit_id.values
-		rent = hh[(hh.hownrent == 2) & (hh.unit_id != -1)].unit_id.values
-		units.loc[own, 'hownrent'] = 1
-		units.loc[rent, 'hownrent'] = 2
-			
-		print "Initial unit tenure assignment: %d%% owner occupied, %d%% unfilled" % \
-				(round(len(units[units.hownrent == 1])*100/len(units[units.hownrent.notnull()])), \
-				 round(len(units[units.hownrent.isnull()])*100/len(units)))
-				 
-		# Fill remaining units with random tenure assignment -> Fix this to be to be weighted
-		unfilled = units[units.hownrent.isnull()].index
-		units.loc[unfilled, 'hownrent'] = np.random.randint(1, 3, len(unfilled))
+	units['hownrent'] = np.nan
+	own = hh[(hh.hownrent == 1) & (hh.unit_id != -1)].unit_id.values
+	rent = hh[(hh.hownrent == 2) & (hh.unit_id != -1)].unit_id.values
+	units.loc[own, 'hownrent'] = 1
+	units.loc[rent, 'hownrent'] = 2
 		
-		orca.add_table('residential_units', units)
+	print "Initial unit tenure assignment: %d%% owner occupied, %d%% unfilled" % \
+			(round(len(units[units.hownrent == 1])*100/len(units[units.hownrent.notnull()])), \
+			 round(len(units[units.hownrent.isnull()])*100/len(units)))
+			 
+	# Fill remaining units with random tenure assignment 
+	# -> Fix this to be to be weighted
+	unfilled = units[units.hownrent.isnull()].index
+	units.loc[unfilled, 'hownrent'] = np.random.randint(1, 3, len(unfilled))
+	
+	orca.add_table('residential_units', units)
     
 	return
 
