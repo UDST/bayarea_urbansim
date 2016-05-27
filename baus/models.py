@@ -74,7 +74,7 @@ def ual_initialize_residential_units(buildings):
 			# counter of the units in a building
 			'unit_num': np.concatenate([np.arange(i) for i in \
 										buildings.residential_units.values])
-		}).sort(columns=['building_id', 'unit_num']).reset_index(drop=True)
+		}).sort_values(by=['building_id', 'unit_num']).reset_index(drop=True)
 		df.index.name = 'unit_id'
 		return df
 
@@ -104,7 +104,7 @@ def ual_match_households_to_units(households, residential_units):
 	
 	# This code block is from Fletcher
 	unit_lookup = units.reset_index().set_index(['building_id', 'unit_num'])
-	hh = hh.sort(columns=['building_id'], ascending=True)
+	hh = hh.sort_values(by=['building_id'], ascending=True)
 	building_counts = hh.building_id.value_counts().sort_index()
 	hh['unit_num'] = np.concatenate([np.arange(i) for i in building_counts.values])
 	unplaced = hh[hh.building_id == -1].index
