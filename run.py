@@ -145,6 +145,7 @@ def run_models(MODE, SCENARIO):
 
         orca.run([
             "ual_initialize_residential_units",
+            "ual_match_households_to_units",
         ])
 
         orca.run([
@@ -152,7 +153,6 @@ def run_models(MODE, SCENARIO):
             #"neighborhood_vars",         # local accessibility variables
             #"regional_vars",             # regional accessibility variables
             
-            "ual_update_residential_units",
             #"ual_data_diagnostics",
             "ual_assign_tenure_to_units",
 

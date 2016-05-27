@@ -43,8 +43,8 @@ def ual_data_diagnostics():
 @orca.step('ual_initialize_residential_units')
 def ual_initialize_residential_units(buildings):
 	"""
-	This model step creates and registers a table of synthetic residential units, based
-	on building info.
+	This initialization step creates and registers a table of synthetic residential units, 
+	based on building info.
 	
 	Data expections
 	---------------
@@ -53,12 +53,12 @@ def ual_initialize_residential_units(buildings):
 	
 	Results
 	-------
-	- creates new 'residential_units' table with columns..
+	- creates new 'residential_units' table with following columns:
 		- 'unit_id' (index)
 		- 'unit_residential_price' (float, 0-filled)
 	  	- 'unit_residential_rent' (float, 0-filled)
-	  	- 'building_id' (int, corresponds to index of 'buildings' table)
-	  	- 'unit_num' (int, unique within building)
+	  	- 'building_id' (int, non-missing, corresponds to index of 'buildings' table)
+	  	- 'unit_num' (int, non-missing, unique within building)
 	"""
 
 	@orca.table('residential_units', cache=True)
@@ -78,6 +78,44 @@ def ual_initialize_residential_units(buildings):
 		df.index.name = 'unit_id'
 		return df
 
+		
+@orca.step('ual_match_households_to_units')
+def ual_match_households_to_units(households, residential_units):
+	"""
+	This initialization step adds a unit_id to the households table and populates it
+	based on existing assignments of households to buildings.
+	
+	Data expectations
+	-----------------
+	- 'households' table has NO column 'unit_id'
+	- 'households' table has column 'building_id' (int, -1-filled, corresponds to index 
+		  of 'buildings' table)
+	- 'residential_units' table has an index that serves as its id, and following columns:
+	  	- 'building_id' (int, non-missing, corresponds to index of 'buildings' table)
+	  	- 'unit_num' (int, non-missing, unique within building)
+	
+	Results
+	-------
+	- adds following column to 'households' table:
+		- 'unit_id' (int, -1-filled, corresponds to index of 'residential_units' table
+	"""
+	hh = households.to_frame(households.local_columns)
+	units = residential_units.to_frame(['building_id', 'unit_num'])
+	
+	# This code block is from Fletcher
+	unit_lookup = units.reset_index().set_index(['building_id', 'unit_num'])
+	hh = hh.sort(columns=['building_id'], ascending=True)
+	building_counts = hh.building_id.value_counts().sort_index()
+	hh['unit_num'] = np.concatenate([np.arange(i) for i in building_counts.values])
+	unplaced = hh[hh.building_id == -1].index
+	placed = hh[hh.building_id != -1].index
+	indexes = [tuple(t) for t in hh.loc[placed, ['building_id', 'unit_num']].values]
+	hh.loc[placed, 'unit_id'] = unit_lookup.loc[indexes].unit_id.values
+	hh.loc[unplaced, 'unit_id'] = -1
+	orca.add_table('households', hh)
+	# -> do we need to add broadcasts linking tables together?
+	return
+
 
 @orca.step('ual_update_residential_units')  # needs clearer name
 def ual_update_residential_units(buildings, households, residential_units):
@@ -85,25 +123,6 @@ def ual_update_residential_units(buildings, households, residential_units):
 	This model step (1) updates the table of synthetic residential units, based on
 	the buildings table, and (2) updates assignment of households to units.
 	"""
-	households = households.to_frame(households.local_columns)  # -> rename df for clarity
-	units = residential_units.to_frame()  # -> should limit to columns we need
-	
-	# On the first model run, add a unit_id to the households table and populate it
-	# based on existing placement in buildings. This code block is from Fletcher.
-	if 'unit_id' not in households.columns:
-		unit_lookup = units.reset_index().set_index(["building_id", "unit_num"])
-		households = households.sort(columns=["building_id"], ascending=True)
-		building_counts = households.building_id.value_counts().sort_index()
-		households["unit_num"] = np.concatenate([np.arange(i) for i in \
-												 building_counts.values])
-		unplaced = households[households.building_id == -1].index
-		placed = households[households.building_id != -1].index
-		indexes = [tuple(t) for t in \
-				   households.loc[placed, ["building_id", "unit_num"]].values]
-		households.loc[placed, "unit_id"] = unit_lookup.loc[indexes].unit_id.values
-		households.loc[unplaced, "unit_id"] = -1
-		orca.add_table("households", households)
-		# -> do we need code linking columns together?
 	
 	# -> Now take care of anything we need for subsequent model iterations
 	return
