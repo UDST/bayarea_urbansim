@@ -163,6 +163,66 @@ def ual_assign_tenure_to_units(residential_units, households):
 	return
 
 
+@orca.step('ual_load_rental_listings')
+def ual_load_rental_listings():
+	"""
+	This initialization step loads the Craigslist rental listings data for hedonic 
+	estimation. Not needed for simulation.
+	
+	Data expectations
+	-----------------
+	- injectable 'net' that can provide 'node_id' and 'tmnode_id' from lat-lon coordinates
+	- some way to get 'zone_id' (currently using parcels table)
+	- 'sfbay_craigslist.csv' file
+	
+	Results
+	-------
+	- creates new 'craigslist' table with the following columns:
+		- 'price' (int, may be missing)
+		- 'sqft_per_unit' (int, may be missing)
+		- 'price_per_sqft' (float, may be missing)
+		- 'bedrooms' (int, may be missing)
+		- 'neighborhood' (string, ''-filled)
+		- 'node_id' (int, may be missing, corresponds to index of 'nodes' table)
+		- 'tmnode_id' (int, may be missing, corresponds to index of 'tmnodes' tables)
+		- 'zone_id' (int, may be missing, corresponds to index of 'zones' table)
+	- adds broadcasts linking 'craigslist' to 'nodes', 'tmnodes', 'logsums'
+	"""
+	@orca.table('craigslist', cache=True)
+	def craigslist():
+		df = pd.read_csv(os.path.join(misc.data_dir(), "sfbay_craigslist.csv"))
+		net = orca.get_injectable('net')
+		df['node_id'] = net['walk'].get_node_ids(df['lon'], df['lat'])
+		df['tmnode_id'] = net['drive'].get_node_ids(df['lon'], df['lat'])
+		# fill nans -- missing bedrooms are mostly studio apts
+		df['bedrooms'] = df.bedrooms.replace(np.nan, 1)
+		df['neighborhood'] = df.neighborhood.replace(np.nan, '')
+		return df
+
+	# Is it simpler to just do this in the table definition?
+	@orca.column('craigslist', 'zone_id', cache=True)
+	def zone_id(craigslist, parcels):
+		return misc.reindex(parcels.zone_id, craigslist.node_id)
+		
+	orca.broadcast('nodes', 'craigslist', cast_index=True, onto_on='node_id')
+	orca.broadcast('tmnodes', 'craigslist', cast_index=True, onto_on='tmnode_id')
+	orca.broadcast('logsums', 'craigslist', cast_index=True, onto_on='zone_id')
+
+
+@orca.step('ual_rrh_estimate')
+def ual_rrh_estimate(craigslist, aggregations):
+	"""
+	This model step estimates a residental rental hedonic using craigslist listings.
+	
+	Data expectations
+	-----------------
+	- 'craigslist' table and others, as defined in the yaml config
+	"""
+	return utils.hedonic_estimate("ual_rrh.yaml", craigslist, aggregations)
+
+
+
+
 """ END UAL MODEL STEPS """
 
 

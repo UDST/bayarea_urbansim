@@ -144,17 +144,48 @@ def run_models(MODE, SCENARIO):
     elif MODE == "ual_testing":
 
         orca.run([
-            "ual_initialize_residential_units",
-            "ual_match_households_to_units",
-            "ual_assign_tenure_to_units",
+            #"ual_initialize_residential_units",
+            #"ual_match_households_to_units",
+            #"ual_assign_tenure_to_units",
+            "ual_load_rental_listings",
         ])
 
         orca.run([
 
-            #"neighborhood_vars",         # local accessibility variables
-            #"regional_vars",             # regional accessibility variables
+            "neighborhood_vars",         # local accessibility variables
+            "regional_vars",             # regional accessibility variables
+            
+            "ual_rrh_estimate",
             
             #"ual_data_diagnostics",
+
+			#"rsh_simulate",                 # residential sales hedonic
+			#"nrh_simulate",                 # non-residential rent hedonic
+
+			#"households_relocation",
+			#"households_transition",
+
+			#"jobs_relocation",
+			#"jobs_transition",
+
+			#"price_vars",
+
+			#"scheduled_development_events",  # scheduled buildings additions
+
+			#"alt_feasibility",
+
+			#"residential_developer",
+			#"developer_reprocess",
+			#"retail_developer",
+			#"office_developer",
+
+			#"hlcm_simulate",                 # put these last so they don't get
+			#"elcm_simulate",                 # displaced by new dev
+
+			#"topsheet",
+			#"diagnostic_output",
+			#"geographic_summary",
+			#"travel_model_output"
 
         ], iter_vars=[2010])
 
