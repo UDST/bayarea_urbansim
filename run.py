@@ -143,6 +143,7 @@ def run_models(MODE, SCENARIO):
 
     elif MODE == "ual_testing":
 
+        # Initialization steps
         orca.run([
             #"ual_initialize_residential_units",
             #"ual_match_households_to_units",
@@ -150,12 +151,19 @@ def run_models(MODE, SCENARIO):
             "ual_load_rental_listings",
         ])
 
+        # Estimation steps
+        orca.run([
+            "neighborhood_vars",         	# local accessibility variables
+            "regional_vars",             	# regional accessibility variables
+            
+            "ual_rrh_estimate",				# estimate residential rental hedonic
+        ])
+
+        # Simulation steps
         orca.run([
 
-            "neighborhood_vars",         # local accessibility variables
-            "regional_vars",             # regional accessibility variables
-            
-            "ual_rrh_estimate",
+            #"neighborhood_vars",         	 # local accessibility variables
+            #"regional_vars",             	 # regional accessibility variables
             
             #"ual_data_diagnostics",
 
