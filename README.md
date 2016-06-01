@@ -3,6 +3,11 @@ DRAFT Bay Area Urbansim Implementation
 
 This is the DRAFT UrbanSim implementation for the Bay Area. Documenation for the Bay Area model is available at http://metropolitantransportationcommission.github.io/baus_docs/ and documentation for the generic UrbanSim model is at https://udst.github.io/urbansim/index.html
 
+###Simple Intall
+1 get anaconda
+2 bash Anaconda2-4.0.0-Linux-x86_64.sh
+3 clone 
+
 ###Data
 
 We track the data for this project in the Makefile in this repository. The makefile will generally be the most up to date list of which data is needed, where it goes in the directory, etc.
