@@ -8,9 +8,11 @@ This is the DRAFT UrbanSim implementation for the Bay Area. Documenation for the
 * bash Anaconda2-4.0.0-Linux-x86_64.sh
 * yes to prepend install location to .bashrc
 * open new terminal
-* sudo apt-get install git
+* sudo apt-get update
+* sudo apt-get -y install git g++ python-dev unzip
 * git clone https://github.com/MetropolitanTransportationCommission/bayarea_urbansim.git
-* pip install -r requirements.txt
+* pip install -r requirements.txt (no pandana)
+* pip install pandana
 * get data
 
 ###Data
