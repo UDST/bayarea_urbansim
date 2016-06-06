@@ -89,7 +89,7 @@ def employment_relocation_rates():
 
     df = df.set_index("zone_id").stack().reset_index()
 
-    df.columns=["zone_id", "empsix", "rate"]
+    df.columns = ["zone_id", "empsix", "rate"]
 
     return df
 
@@ -98,7 +98,11 @@ def employment_relocation_rates():
 def jobs_relocation(jobs, employment_relocation_rates, years_per_iter):
 
     df = pd.merge(jobs.to_frame(["zone_id", "empsix"]),
-        employment_relocation_rates.local, on=["zone_id", "empsix"])
+                  employment_relocation_rates.local,
+                  on=["zone_id", "empsix"],
+                  how="left")
+
+    df.index = jobs.index
 
     rate = (df.rate * years_per_iter).clip(0, 1.0)
 
