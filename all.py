@@ -2,7 +2,7 @@ import os
 
 # run a full package of scenarios
 
-for num in [0, 1, 2, 3, 4, 5, 0]:
+for num in [0, 1, 2, 3, 4]:
     os.system('python run.py -s %d' % num)
 
 with open('RUNNUM', 'r') as f:

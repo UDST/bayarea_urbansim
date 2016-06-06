@@ -300,13 +300,13 @@ def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
 
     total_fees = 0
 
-    if settings.get("vmt_fee_res", False) == True:
+    if settings.get("vmt_fee_res", False):
 
         df["res_fees"] = df.vmt_res_cat.map(vmt_settings["res_fee_amounts"])
         total_fees += (df.res_fees * df.residential_units).sum()
         print "Applying vmt fees to %d units" % df.residential_units.sum()
 
-    if settings.get("vmt_fee_com", False) == True:
+    if settings.get("vmt_fee_com", False):
 
         df["com_fees"] = df.vmt_res_cat.map(vmt_settings["com_fee_amounts"])
         total_fees += (df.com_fees * df.non_residential_sqft).sum()
