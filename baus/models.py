@@ -94,15 +94,20 @@ def employment_relocation_rates():
     return df
 
 
-@orca.step()
-def jobs_relocation(jobs, employment_relocation_rates, years_per_iter,
-                    settings, parcels, buildings):
-
+# this is a list of parcel_ids which are to be treated as static
+@orca.injectable()
+def static_parcels(settings, parcels):
     # list of geom_ids to not relocate
     static_parcels = settings["static_parcels"]
     # geom_ids -> parcel_ids
-    static_parcels = geom_id_to_parcel_id(
-        pd.DataFrame(index=static_parcels), parcels).index
+    return geom_id_to_parcel_id(
+        pd.DataFrame(index=static_parcels), parcels).index.values
+
+
+@orca.step()
+def jobs_relocation(jobs, employment_relocation_rates, years_per_iter,
+                    settings, static_parcels, buildings):
+
     # get buildings that are on those parcels
     static_buildings = buildings.index[
         buildings.parcel_id.isin(static_parcels)]
