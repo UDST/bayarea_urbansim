@@ -12,7 +12,6 @@ from urbansim.utils import misc
 @orca.injectable("coffer", cache=True)
 def coffer(settings):
     d = {
-        "prop_tax_acct": accounts.Account("prop_tax_act"),
         "vmt_fee_acct":  accounts.Account("vmt_fee_acct")
     }
 
@@ -323,12 +322,6 @@ def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
     # but the subaccount number is referred to below
     coffer["vmt_fee_acct"].add_transaction(total_fees, subaccount=1,
                                            metadata=metadata)
-
-
-@orca.step("calc_prop_taxes")
-def property_taxes(buildings, parcels_geography, acct_settings, coffer, year):
-    buildings = orca.merge_tables('buildings', [buildings, parcels_geography])
-    tax_buildings(buildings, acct_settings, coffer["prop_tax_acct"], year)
 
 
 def run_subsidized_developer(feasibility, parcels, buildings, households,
