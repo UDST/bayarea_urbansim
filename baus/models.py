@@ -5,7 +5,7 @@ import orca
 import yaml
 import datasources
 import variables
-from utils import parcel_id_to_geom_id, add_buildings
+from utils import parcel_id_to_geom_id, geom_id_to_parcel_id, add_buildings
 from urbansim.utils import networks
 import pandana.network as pdna
 from urbansim_defaults import models
@@ -94,8 +94,23 @@ def employment_relocation_rates():
     return df
 
 
+# this is a list of parcel_ids which are to be treated as static
+@orca.injectable()
+def static_parcels(settings, parcels):
+    # list of geom_ids to not relocate
+    static_parcels = settings["static_parcels"]
+    # geom_ids -> parcel_ids
+    return geom_id_to_parcel_id(
+        pd.DataFrame(index=static_parcels), parcels).index.values
+
+
 @orca.step()
-def jobs_relocation(jobs, employment_relocation_rates, years_per_iter):
+def jobs_relocation(jobs, employment_relocation_rates, years_per_iter,
+                    settings, static_parcels, buildings):
+
+    # get buildings that are on those parcels
+    static_buildings = buildings.index[
+        buildings.parcel_id.isin(static_parcels)]
 
     df = pd.merge(jobs.to_frame(["zone_id", "empsix"]),
                   employment_relocation_rates.local,
@@ -104,12 +119,18 @@ def jobs_relocation(jobs, employment_relocation_rates, years_per_iter):
 
     df.index = jobs.index
 
+    # get the move rate for each job
     rate = (df.rate * years_per_iter).clip(0, 1.0)
-
+    # get random floats and move jobs if they're less than the rate
     move = np.random.random(len(rate)) < rate
 
+    # also don't move jobs that are on static parcels
+    move &= ~jobs.building_id.isin(static_buildings)
+
+    # get the index of the moving jobs
     index = jobs.index[move]
 
+    # set jobs that are moving to a building_id of -1 (means unplaced)
     jobs.update_col_from_series("building_id",
                                 pd.Series(-1, index=index))
 

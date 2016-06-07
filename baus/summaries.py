@@ -240,7 +240,7 @@ def diagnostic_output(households, buildings, parcels, taz, jobs,
 
 @orca.step()
 def geographic_summary(parcels, households, jobs, buildings, taz_geography,
-                       run_number, year, summary):
+                       run_number, year, summary, final_year):
     # using the following conditional b/c `year` is used to pull a column
     # from a csv based on a string of the year in add_population()
     # and in add_employment() and 2009 is the
@@ -378,6 +378,18 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
                 summary_csv = "runs/run{}_{}_summaries_{}.csv".\
                     format(run_number, geography, 2009)
             summary_table.to_csv(summary_csv)
+
+    # ##############################
+    # ##############################
+    # ##Write Summary of Accounts###
+    # ##############################
+    # ##############################
+
+    if year == final_year:
+        for acct_name, acct in orca.get_injectable("coffer").iteritems():
+            fname = "runs/run{}_{}_{}.csv".\
+                format(run_number, acct_name, year)
+            acct.to_frame().to_csv(fname)
 
     # ##############################
     # ##############################

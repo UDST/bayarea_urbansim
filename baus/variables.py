@@ -874,9 +874,13 @@ def total_non_residential_sqft(parcels, buildings):
 
 
 @orca.column('parcels')
-def nodev(zoning_baseline, parcels):
-    return zoning_baseline.nodev.reindex(parcels.index).\
+def nodev(zoning_baseline, parcels, static_parcels):
+    # nodev from zoning
+    s1 = zoning_baseline.nodev.reindex(parcels.index).\
         fillna(0).astype('bool')
+    # nodev from static parcels
+    s2 = parcels.index.isin(static_parcels)
+    return s1 | s2
 
 
 @orca.column('parcels')

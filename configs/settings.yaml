@@ -798,3 +798,7 @@ zoning_column_dictionary:
   mr: "residential-focus mixed"
   mt: "retail-focus mixed"
   me: "employment-focus mixed"
+
+
+static_parcels:
+  - 11280465768398 # city hall
