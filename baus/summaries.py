@@ -461,9 +461,7 @@ def building_summary(parcels, run_number, year,
                  'unit_price', 'zone_id', 'non_residential_sqft',
                  'deed_restricted_units', 'job_spaces', 'x', 'y'])
 
-    df2 = df[(df.performance_zone == 1)]
-
-    df2.to_csv(
+    df.to_csv(
         os.path.join("runs", "run%d_building_data_%d.csv" %
                      (run_number, year))
     )
