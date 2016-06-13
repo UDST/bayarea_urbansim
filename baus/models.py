@@ -20,6 +20,8 @@ import pandas as pd
 
 """ UAL MODEL STEPS """
 
+from urbansim.models.relocation import RelocationModel
+
 @orca.step('ual_data_diagnostics')
 def ual_data_diagnostics():
 	"""
@@ -269,7 +271,7 @@ def ual_rrh_simulate(residential_units, unit_aggregations, settings):
 
 	# Clipping to match the other hedonic (set cap rate as desired)
 	if "rsh_simulate" in settings:
-		cap_rate = 0.05  # sale price * cap rate = annual rent
+		cap_rate = 0.05	 # sale price * cap rate = annual rent
 		low = float(settings["rsh_simulate"]["low"]) * cap_rate / 12
 		high = float(settings["rsh_simulate"]["high"]) * cap_rate / 12
 		residential_units.update_col("unit_residential_rent",
@@ -279,6 +281,41 @@ def ual_rrh_simulate(residential_units, unit_aggregations, settings):
 	return
 
 
+@orca.step('ual_households_relocation')
+def ual_households_relocation(households):
+	"""
+	This model step randomly assigns households for relocation, using probabilities
+	that depend on their tenure status.
+	
+	Data expectations
+	-----------------
+	- 'households' table has following columns:
+		- 'hownrent' (int in range [1,2], non-missing)
+		- 'unit_id' (int, '-1'-filled, corresponds to index of 'residential_units' table
+		
+	Results
+	-------
+	- assigns households for relocation by setting their 'unit_id' to -1
+	"""
+	rates = pd.DataFrame.from_dict({
+		'hownrent': [1, 2],
+		'probability_of_relocating': [0.15, 0.25]})
+		
+	print "Total agents: %d" % len(households)
+	_print_number_unplaced(households, 'unit_id')
+
+	print "Assigning for relocation..."
+	m = RelocationModel(rates, rate_column='probability_of_relocating')
+	mover_ids = m.find_movers(households.to_frame(['unit_id','hownrent']))
+	households.update_col_from_series('unit_id', pd.Series(-1, index=mover_ids))
+	
+	_print_number_unplaced(households, 'unit_id')
+	return
+
+
+def _print_number_unplaced(df, fieldname):
+	print "Total currently unplaced: %d" % \
+		  df[fieldname].value_counts().get(-1, 0)
 
 
 

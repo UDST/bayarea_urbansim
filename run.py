@@ -147,7 +147,7 @@ def run_models(MODE, SCENARIO):
         orca.run([
             "ual_initialize_residential_units",
             "ual_match_households_to_units",
-            "ual_assign_tenure_to_units",
+            #"ual_assign_tenure_to_units",
             #"ual_load_rental_listings",		# required to estimate rental hedonic
         ])
 
@@ -162,16 +162,16 @@ def run_models(MODE, SCENARIO):
         # Simulation steps
         orca.run([
 
-            "neighborhood_vars",         	# street network accessibility
-            "regional_vars",             	# road network accessibility
+            #"neighborhood_vars",         	# street network accessibility
+            #"regional_vars",             	# road network accessibility
             
             #"ual_data_diagnostics",
 
-			"ual_rsh_simulate",             # residential sales hedonic
-			"ual_rrh_simulate",             # residential rental hedonic
-			"nrh_simulate",                 # non-residential rent hedonic
+			#"ual_rsh_simulate",             # residential sales hedonic
+			#"ual_rrh_simulate",             # residential rental hedonic
+			#"nrh_simulate",                 # non-residential rent hedonic
 
-			#"households_relocation",
+			"ual_households_relocation",
 			#"households_transition",
 
 			#"jobs_relocation",
