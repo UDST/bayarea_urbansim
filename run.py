@@ -168,8 +168,8 @@ def run_models(MODE, SCENARIO):
             #"ual_data_diagnostics",
 
 			"ual_rsh_simulate",             # residential sales hedonic
-			#"ual_rrh_simulate",             # residential rental hedonic
-			#"nrh_simulate",                 # non-residential rent hedonic
+			"ual_rrh_simulate",             # residential rental hedonic
+			"nrh_simulate",                 # non-residential rent hedonic
 
 			#"households_relocation",
 			#"households_transition",

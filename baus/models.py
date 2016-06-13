@@ -216,6 +216,7 @@ def ual_load_rental_listings():
 	orca.broadcast('nodes', 'craigslist', cast_index=True, onto_on='node_id')
 	orca.broadcast('tmnodes', 'craigslist', cast_index=True, onto_on='tmnode_id')
 	orca.broadcast('logsums', 'craigslist', cast_index=True, onto_on='zone_id')
+	return
 
 
 @orca.step('ual_rrh_estimate')
@@ -251,11 +252,34 @@ def ual_rsh_simulate(residential_units, unit_aggregations, settings):
 							 residential_units.unit_residential_price.clip(low, high))
 		print "Clipped rsh_simulate produces\n", \
 			residential_units.unit_residential_price.describe()
+	return
+
+
+@orca.step('ual_rrh_simulate')
+def ual_rrh_simulate(residential_units, unit_aggregations, settings):
+	"""
+	Description tk.
+	
+	Data expectations
+	-----------------
+	- tk
+	"""
+	utils.hedonic_simulate("ual_rrh.yaml", residential_units, 
+									unit_aggregations, "unit_residential_rent")
+
+	# Clipping to match the other hedonic (set cap rate as desired)
+	if "rsh_simulate" in settings:
+		cap_rate = 0.05  # sale price * cap rate = annual rent
+		low = float(settings["rsh_simulate"]["low"]) * cap_rate / 12
+		high = float(settings["rsh_simulate"]["high"]) * cap_rate / 12
+		residential_units.update_col("unit_residential_rent",
+							 residential_units.unit_residential_rent.clip(low, high))
+		print "Clipped rrh_simulate produces\n", \
+			residential_units.unit_residential_rent.describe()
+	return
 
 
 
-
-# Next, rewrite rsh_simulate to use units, and then make rrh_simulate similarly
 
 
 
