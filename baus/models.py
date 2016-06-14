@@ -318,6 +318,54 @@ def _print_number_unplaced(df, fieldname):
 		  df[fieldname].value_counts().get(-1, 0)
 
 
+@orca.step('ual_households_transition')
+def households_transition(households, household_controls, year, settings):
+	"""
+	This model step differs from the MTC version only in setting 'unit_id' rather than
+	'building_id' to -1 for new households.
+	"""
+	s = orca.get_table('households').base_income_quartile.value_counts()
+	print "Distribution by income before:\n", (s/s.sum())
+	ret = utils.full_transition(households,
+								household_controls,
+								year,
+								settings['households_transition'],
+								"unit_id")
+	s = orca.get_table('households').base_income_quartile.value_counts()
+	print "Distribution by income after:\n", (s/s.sum())
+	return ret
+
+
+@orca.step('ual_hlcm_owner_estimate')
+def ual_hlcm_owner_estimate(households, residential_units, unit_aggregations):
+    return utils.lcm_estimate(cfg = "ual_hlcm_owner.yaml",
+    						  choosers = households, 
+    						  chosen_fname = "unit_id",
+                              buildings = residential_units, 
+                              join_tbls = unit_aggregations)
+
+
+@orca.step('ual_hlcm_renter_estimate')
+def ual_hlcm_renter_estimate(households, residential_units, unit_aggregations):
+    return utils.lcm_estimate(cfg = "ual_hlcm_renter.yaml",
+    						  choosers = households, 
+    						  chosen_fname = "unit_id",
+                              buildings = residential_units, 
+                              join_tbls = unit_aggregations)
+
+
+
+
+# Maybe allocate low-income people first for both the rental and owner models
+
+# Add an initialization step to figure out which units are restricted?
+
+
+# After building new housing, can we allocate a tenure after the fact by comparing the
+# rent vs price? Isn't this the same thing the developer model would do? Maybe this would
+# be biased toward ownership buildings though
+
+
 
 
 """ END UAL MODEL STEPS """

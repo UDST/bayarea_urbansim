@@ -171,8 +171,8 @@ def run_models(MODE, SCENARIO):
 			#"ual_rrh_simulate",             # residential rental hedonic
 			#"nrh_simulate",                 # non-residential rent hedonic
 
-			"ual_households_relocation",
-			#"households_transition",
+			#"ual_households_relocation",
+			"ual_households_transition",
 
 			#"jobs_relocation",
 			#"jobs_transition",
