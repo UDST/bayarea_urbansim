@@ -387,7 +387,7 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
 
     if year == final_year:
         for acct_name, acct in orca.get_injectable("coffer").iteritems():
-            fname = "runs/run{}_{}_{}.csv".\
+            fname = "runs/run{}_acctlog_{}_{}.csv".\
                 format(run_number, acct_name, year)
             acct.to_frame().to_csv(fname)
 
@@ -461,9 +461,7 @@ def building_summary(parcels, run_number, year,
                  'unit_price', 'zone_id', 'non_residential_sqft',
                  'deed_restricted_units', 'job_spaces', 'x', 'y'])
 
-    df2 = df[(df.performance_zone == 1)]
-
-    df2.to_csv(
+    df.to_csv(
         os.path.join("runs", "run%d_building_data_%d.csv" %
                      (run_number, year))
     )
