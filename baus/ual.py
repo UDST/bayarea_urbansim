@@ -1,6 +1,9 @@
 import orca
 from urbansim_defaults import utils
+from urbansim.utils import misc
 from urbansim.models.relocation import RelocationModel
+import os
+import yaml
 import numpy as np
 import pandas as pd
 
@@ -8,6 +11,22 @@ import pandas as pd
 ###############################################################
 """ UAL ORCA STEPS FOR DATA MANAGEMENT (MODEL STEPS FOLLOW) """
 ###############################################################
+
+
+@orca.injectable('ual_settings', cache=True)
+def ual_settings():
+	""" 
+	This step loads the UAL settings, which are kept separate for clarity.
+	
+	Data expectations
+	-----------------
+	- 'configs' folder contains a file called 'ual_settings.yaml'
+	- 'os.path' is expected to provide the root level of the urbansim instance, so be sure 
+	  to either (a) launch the python process from that directory, or (b) use os.chdir to 
+	  switch to that directory before running any model steps
+	"""
+	with open(os.path.join(misc.configs_dir(), 'ual_settings.yaml')) as f:
+		return yaml.load(f)
 
 
 @orca.step('ual_data_diagnostics')
@@ -31,7 +50,7 @@ def ual_data_diagnostics():
 
 
 @orca.step('ual_initialize_residential_units')
-def ual_initialize_residential_units(buildings):
+def ual_initialize_residential_units(buildings, ual_settings):
 	"""
 	This initialization step creates and registers a table of synthetic residential units, 
 	based on building info.
@@ -40,19 +59,26 @@ def ual_initialize_residential_units(buildings):
 	---------------
 	- 'buildings' table has an index that serves as its id
 	- 'buildings' table has column 'residential_units' (int, never missing)
-	- 'aggregations' injectable contains list of tables
+	- 'buildings' table has column 'zone_id' (int, non-missing??)
+	- 'ual_settings' injectable contains list of tables called 'unit_aggregation_tables'
 	
 	Results
 	-------
-	- creates new 'residential_units' table with following columns:
+	- initializes a 'residential_units' table with the following columns:
 		- 'unit_id' (index)
+		- 'num_units' (int, always '1', needed when passing the table to utility functions
+		  that expect it to look like a 'buildings' table)
 		- 'unit_residential_price' (float, 0-filled)
 		- 'unit_residential_rent' (float, 0-filled)
 		- 'building_id' (int, non-missing, corresponds to index of 'buildings' table)
-		- 'unit_num' (int, non-missing, unique within building)		
-	- adds broadcast linking 'residential_units' to 'buildings'
-	- creates new 'unit_aggregations' injectable containing the following tables:
-		- 'buildings', plus whatever is in in the 'aggregations' injectable
+		- 'unit_num' (int, non-missing, unique within building) 
+		- 'vacant_units' (int, 0 or 1, computed)
+		- 'zone_id' (int, non-missing??, computed)
+	- adds a broadcasts linking 'residential_units' table to:
+		- 'buildings' table
+		- 'zones' table
+	- initializes a 'unit_aggregations' injectable containing tables as specified in 
+		'ual_settings' -> 'unit_aggregation_tables'
 	"""
 
 	@orca.table('residential_units', cache=True)
@@ -63,6 +89,7 @@ def ual_initialize_residential_units(buildings):
 		df = pd.DataFrame({
 			'unit_residential_price': 0,
 			'unit_residential_rent': 0,
+			'num_units': 1,
 			'building_id': np.repeat(buildings.index.values,
 									 buildings.residential_units.values),
 			# counter of the units in a building
@@ -72,11 +99,23 @@ def ual_initialize_residential_units(buildings):
 		df.index.name = 'unit_id'
 		return df
 	
+	@orca.column('residential_units', 'vacant_units')
+	def vacant_units(residential_units, households):
+		return residential_units.num_units.sub(
+			households.unit_id[households.unit_id != -1].value_counts(), fill_value=0)
+
+	@orca.column('residential_units', 'zone_id')
+	def zone_id(residential_units, buildings):
+		return misc.reindex(buildings.zone_id, residential_units.building_id)
+
 	orca.broadcast('buildings', 'residential_units', cast_index=True, onto_on='building_id')
+	orca.broadcast('zones', 'residential_units', cast_index=True, onto_on='zone_id')
 	
 	@orca.injectable('unit_aggregations')
-	def unit_aggregations(aggregations):
-		return aggregations + [orca.get_table('buildings')]
+	def unit_aggregations(ual_settings):
+		# This injectable provides a list of the tables needed for hedonic model steps
+		# and location choice model steps
+		return [orca.get_table(tbl) for tbl in ual_settings['unit_aggregation_tables']]
 
 		
 @orca.step('ual_match_households_to_units')
@@ -113,7 +152,6 @@ def ual_match_households_to_units(households, residential_units):
 	hh.loc[placed, 'unit_id'] = unit_lookup.loc[indexes].unit_id.values
 	hh.loc[unplaced, 'unit_id'] = -1
 	orca.add_table('households', hh)
-	# -> do we need to add broadcasts linking tables together?
 	return
 
 
@@ -198,7 +236,7 @@ def ual_load_rental_listings():
 		df['neighborhood'] = df.neighborhood.replace(np.nan, '')
 		return df
 
-	# Is it simpler to just do this in the table definition?
+	# Is it simpler to just do this in the table definition since it is never updated?
 	@orca.column('craigslist', 'zone_id', cache=True)
 	def zone_id(craigslist, parcels):
 		return misc.reindex(parcels.zone_id, craigslist.node_id)
@@ -224,8 +262,12 @@ def ual_rrh_estimate(craigslist, aggregations):
 	-----------------
 	- 'craigslist' table and others, as defined in the yaml config
 	"""
-	return utils.hedonic_estimate("ual_rrh.yaml", craigslist, aggregations)
+	return utils.hedonic_estimate(cfg = 'ual_rrh.yaml', 
+								  tbl = craigslist, 
+								  join_tbls = aggregations)
 
+
+# TO DO - factor out the clipping into a function
 
 @orca.step('ual_rsh_simulate')
 def ual_rsh_simulate(residential_units, unit_aggregations, settings):
@@ -237,8 +279,10 @@ def ual_rsh_simulate(residential_units, unit_aggregations, settings):
 	-----------------
 	- tk
 	"""
-	utils.hedonic_simulate("rsh.yaml", residential_units, 
-							unit_aggregations, "unit_residential_price")
+	utils.hedonic_simulate(cfg = 'rsh.yaml', 
+						   tbl = residential_units, 
+						   join_tbls = unit_aggregations, 
+						   out_fname = 'unit_residential_price')
 	
 	# Following is included to match the MTC model step
 	if "rsh_simulate" in settings:
@@ -260,8 +304,10 @@ def ual_rrh_simulate(residential_units, unit_aggregations, settings):
 	-----------------
 	- tk
 	"""
-	utils.hedonic_simulate("ual_rrh.yaml", residential_units, 
-									unit_aggregations, "unit_residential_rent")
+	utils.hedonic_simulate(cfg = 'ual_rrh.yaml', 
+						   tbl = residential_units,
+						   join_tbls = unit_aggregations, 
+						   out_fname = 'unit_residential_rent')
 
 	# Clipping to match the other hedonic (set cap rate as desired)
 	if "rsh_simulate" in settings:
@@ -320,11 +366,11 @@ def households_transition(households, household_controls, year, settings):
 	"""
 	s = orca.get_table('households').base_income_quartile.value_counts()
 	print "Distribution by income before:\n", (s/s.sum())
-	ret = utils.full_transition(households,
-								household_controls,
-								year,
-								settings['households_transition'],
-								"unit_id")
+	ret = utils.full_transition(agents = households,
+								agent_controls = household_controls,
+								year = year,
+								settings = settings['households_transition'],
+								location_fname = 'unit_id')
 	s = orca.get_table('households').base_income_quartile.value_counts()
 	print "Distribution by income after:\n", (s/s.sum())
 	return ret
@@ -332,31 +378,69 @@ def households_transition(households, household_controls, year, settings):
 
 @orca.step('ual_hlcm_owner_estimate')
 def ual_hlcm_owner_estimate(households, residential_units, unit_aggregations):
-    return utils.lcm_estimate(cfg = "ual_hlcm_owner.yaml",
-    						  choosers = households, 
-    						  chosen_fname = "unit_id",
-                              buildings = residential_units, 
-                              join_tbls = unit_aggregations)
+	return utils.lcm_estimate(cfg = "ual_hlcm_owner.yaml",
+							  choosers = households, 
+							  chosen_fname = "unit_id",
+							  buildings = residential_units, 
+							  join_tbls = unit_aggregations)
 
 
 @orca.step('ual_hlcm_renter_estimate')
 def ual_hlcm_renter_estimate(households, residential_units, unit_aggregations):
-    return utils.lcm_estimate(cfg = "ual_hlcm_renter.yaml",
-    						  choosers = households, 
-    						  chosen_fname = "unit_id",
-                              buildings = residential_units, 
-                              join_tbls = unit_aggregations)
+	return utils.lcm_estimate(cfg = "ual_hlcm_renter.yaml",
+							  choosers = households, 
+							  chosen_fname = "unit_id",
+							  buildings = residential_units, 
+							  join_tbls = unit_aggregations)
 
 
+@orca.step('ual_hlcm_owner_simulate')
+def ual_hlcm_owner_simulate(households, residential_units, unit_aggregations, ual_settings):
+	return utils.lcm_simulate(cfg = 'ual_hlcm_owner.yaml', 
+							  choosers = households, 
+							  buildings = residential_units,
+							  join_tbls = unit_aggregations,
+							  out_fname = 'unit_id', 
+							  supply_fname = 'num_units',
+							  vacant_fname = 'vacant_units',
+							  enable_supply_correction = 
+									ual_settings.get('price_equilibration', None))
+
+
+@orca.step('ual_hlcm_renter_simulate')
+def ual_hlcm_renter_simulate(households, residential_units, unit_aggregations, ual_settings):
+	return utils.lcm_simulate(cfg = 'ual_hlcm_renter.yaml', 
+							  choosers = households, 
+							  buildings = residential_units,
+							  join_tbls = unit_aggregations,
+							  out_fname = 'unit_id', 
+							  supply_fname = 'num_units',
+							  vacant_fname = 'vacant_units',
+							  enable_supply_correction = 
+									ual_settings.get('rent_equilibration', None))
 
 
 # Maybe allocate low-income people first for both the rental and owner models
+# Four model steps for hlcm
 
-# Add an initialization step to figure out which units are restricted?
+# Add an initialization step to specify which units are affordable
 
 
 # After building new housing, can we allocate a tenure after the fact by comparing the
 # rent vs price? Isn't this the same thing the developer model would do? Maybe this would
 # be biased toward ownership buildings though
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
