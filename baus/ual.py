@@ -319,7 +319,7 @@ def ual_rrh_simulate(residential_units, unit_aggregations, settings):
 
 
 @orca.step('ual_households_relocation')
-def ual_households_relocation(households):
+def ual_households_relocation(households, ual_settings):
 	"""
 	This model step randomly assigns households for relocation, using probabilities
 	that depend on their tenure status.
@@ -330,32 +330,27 @@ def ual_households_relocation(households):
 		- 'hownrent' (int in range [1,2], non-missing)
 		- 'building_id' (int, '-1'-filled, corredponds to index of 'buildings' table
 		- 'unit_id' (int, '-1'-filled, corresponds to index of 'residential_units' table
+	- 'ual_settings.yaml' has:
+		- 'relocation_rates' as specified in RelocationModel() documentation
 		
 	Results
 	-------
 	- assigns households for relocation by setting their 'building_id' and 'unit_id' to -1
 	"""
-	rates = pd.DataFrame.from_dict({
-		'hownrent': [1, 2],
-		'probability_of_relocating': [0.15, 0.25]})
-		
-	print "Total agents: %d" % len(households)
-	_print_number_unplaced(households, 'unit_id')
+	rates = pd.DataFrame.from_dict(ual_settings['relocation_rates'])
 
+	print "Total agents: %d" % len(households)
+	print "Total currently unplaced: %d" % (households.unit_id == -1).sum()
 	print "Assigning for relocation..."
-	m = RelocationModel(rates, rate_column='probability_of_relocating')
-	mover_ids = m.find_movers(households.to_frame(['unit_id','hownrent']))
+	
+	# Initialize model, choose movers, and un-place them from buildings and units
+	m = RelocationModel(rates)
+	mover_ids = m.find_movers(households.to_frame(['unit_id', 'hownrent']))
 	households.update_col_from_series('building_id', pd.Series(-1, index=mover_ids))
 	households.update_col_from_series('unit_id', pd.Series(-1, index=mover_ids))
 	
-	_print_number_unplaced(households, 'unit_id')
+	print "Total currently unplaced: %d" % (households.unit_id == -1).sum()
 	return
-
-
-# TO DO - consolidate 
-def _print_number_unplaced(df, fieldname):
-	print "Total currently unplaced: %d" % \
-		  df[fieldname].value_counts().get(-1, 0)
 
 
 @orca.step('ual_reconcile_placed_households')
@@ -378,13 +373,15 @@ def reconcile_unplaced_households(households):
 	
 	Data expectations
 	-----------------
-	- 'households' table has these columns:
-		- 'unit_id' (int, may be missing)
-		- 'building_id' (int, may be missing)
+	- 'households' table has an index, and these columns:
+		- 'unit_id'
+		- 'building_id'
 	
 	Results
 	-------
-	- 
+	- updates the 'households' table:
+		- 'unit_id' = 'building_id' = -1 for the superset of rows where either column
+		  initially had this vaue
 	"""
 	def _print_status():
 		print "Households not in a unit: %d" % (households.unit_id == -1).sum()

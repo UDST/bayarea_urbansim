@@ -9,8 +9,12 @@ unit_aggregation_tables:
 
 
 relocation_rates:
-  - hownrent: [1, 2]
-  - probability_of_relocating: [0.15, 0.25]
+  hownrent: 
+    - 1
+    - 2
+  probability_of_relocating: 
+    - 0.15
+    - 0.25
   
 
 price_equilibration:
