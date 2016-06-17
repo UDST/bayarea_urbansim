@@ -15,7 +15,8 @@ This is the DRAFT UrbanSim implementation for the Bay Area. Documenation for the
 * pip install -r requirements.txt (comment out pandana)
 * pip install pandana
 * get data
-* change RUNNUM so in 5000s
+* change RUNNUM so in 5000s etc
+* python run.py -s 4 & OR python all.py &
 
 ###Data
 
