@@ -71,7 +71,7 @@ def ual_initialize_residential_units(buildings, ual_settings):
 		- 'unit_num' (int, non-missing, unique within building) 
 		- 'vacant_units' (int, 0 or 1, computed)
 		- 'zone_id' (int, non-missing??, computed)
-	- adds a broadcasts linking 'residential_units' table to:
+	- adds broadcasts linking 'residential_units' table to:
 		- 'buildings' table
 		- 'zones' table
 	- initializes a 'unit_aggregations' injectable containing tables as specified in 
@@ -328,11 +328,12 @@ def ual_households_relocation(households):
 	-----------------
 	- 'households' table has following columns:
 		- 'hownrent' (int in range [1,2], non-missing)
+		- 'building_id' (int, '-1'-filled, corredponds to index of 'buildings' table
 		- 'unit_id' (int, '-1'-filled, corresponds to index of 'residential_units' table
 		
 	Results
 	-------
-	- assigns households for relocation by setting their 'unit_id' to -1
+	- assigns households for relocation by setting their 'building_id' and 'unit_id' to -1
 	"""
 	rates = pd.DataFrame.from_dict({
 		'hownrent': [1, 2],
@@ -344,34 +345,67 @@ def ual_households_relocation(households):
 	print "Assigning for relocation..."
 	m = RelocationModel(rates, rate_column='probability_of_relocating')
 	mover_ids = m.find_movers(households.to_frame(['unit_id','hownrent']))
+	households.update_col_from_series('building_id', pd.Series(-1, index=mover_ids))
 	households.update_col_from_series('unit_id', pd.Series(-1, index=mover_ids))
 	
 	_print_number_unplaced(households, 'unit_id')
 	return
 
 
+# TO DO - consolidate 
 def _print_number_unplaced(df, fieldname):
 	print "Total currently unplaced: %d" % \
 		  df[fieldname].value_counts().get(-1, 0)
 
 
-@orca.step('ual_households_transition')
-def households_transition(households, household_controls, year, settings):
+@orca.step('ual_reconcile_placed_households')
+def reconcile_placed_households(buildings, residential_units):
 	"""
-	This model step differs from the MTC version only in setting 'unit_id' rather than
-	'building_id' to -1 for new households.
 	"""
-	s = orca.get_table('households').base_income_quartile.value_counts()
-	print "Distribution by income before:\n", (s/s.sum())
-	ret = utils.full_transition(agents = households,
-								agent_controls = household_controls,
-								year = year,
-								settings = settings['households_transition'],
-								location_fname = 'unit_id')
-	s = orca.get_table('households').base_income_quartile.value_counts()
-	print "Distribution by income after:\n", (s/s.sum())
-	return ret
+	
 
+@orca.step('ual_reconcile_unplaced_households')
+def reconcile_unplaced_households(households):
+	"""
+	In the current data schema, households should have both a 'building_id' and 'unit_id'
+	of -1 when they are not matched with housing. But sometimes only of these is set when
+	households are created or unplaced, because the UrbanSim utility functions expect
+	housing placement to be recorded in a single place. 
+	
+	If households have been unplaced from buildings, this model step unplaces them from 
+	units as well. Or if they have been unplaced from units, it unplaces them from 
+	buildings. This keeps the building/unit/household correspondence up to date.
+	
+	Data expectations
+	-----------------
+	- 'households' table has these columns:
+		- 'unit_id' (int, may be missing)
+		- 'building_id' (int, may be missing)
+	
+	Results
+	-------
+	- 
+	"""
+	def _print_status():
+		print "Households not in a unit: %d" % (households.unit_id == -1).sum()
+		print "Househing missing a unit: %d" % households.unit_id.isnull().sum()
+		print "Households not in a building: %d" % (households.building_id == -1).sum()
+		print "Househing missing a building: %d" % households.building_id.isnull().sum()
+
+	_print_status()
+	print "Reconciling unplaced households"
+	hh = households.to_frame(['building_id', 'unit_id'])
+	
+	# Get indexes of households unplaced in buildings or in units
+	bldg_unplaced = pd.Series(-1, index=hh[hh.building_id == -1].index)
+	unit_unplaced = pd.Series(-1, index=hh[hh.unit_id == -1].index)
+	
+	# Update those households to be fully unplaced
+	households.update_col_from_series('building_id', unit_unplaced)
+	households.update_col_from_series('unit_id', bldg_unplaced)
+	_print_status()
+	return
+	
 
 @orca.step('ual_hlcm_owner_estimate')
 def ual_hlcm_owner_estimate(households, residential_units, unit_aggregations):

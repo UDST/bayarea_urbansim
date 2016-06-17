@@ -166,22 +166,23 @@ def run_models(MODE, SCENARIO):
         # Simulation steps
         orca.run([
 
-            "neighborhood_vars",         	# street network accessibility
-            "regional_vars",             	# road network accessibility
+            #"neighborhood_vars",         	# street network accessibility
+            #"regional_vars",             	# road network accessibility
             
-			"ual_rsh_simulate",             # residential sales hedonic
-			"ual_rrh_simulate",             # residential rental hedonic
+			#"ual_rsh_simulate",             # residential sales hedonic
+			#"ual_rrh_simulate",             # residential rental hedonic
 			#"nrh_simulate",                 # non-residential rent hedonic
 
-			"ual_households_relocation",
-			#"ual_households_transition",
+			"ual_households_relocation",	# uses conditional probabilities
+			"households_transition",
+			"ual_reconcile_unplaced_households",  # update building/unit/hh correspondence
 
 			#"jobs_relocation",
 			#"jobs_transition",
 
-            "ual_data_diagnostics",
+            #"ual_data_diagnostics",
 
-			"ual_hlcm_owner_simulate",  	 # allocate owners to vacant owner-occupied units
+			#"ual_hlcm_owner_simulate",  	  # allocate owners to vacant owner-occupied units
 			#"ual_hlcm_renter_simulate",      # allocate renters to vacant rental units
 
 			#"price_vars",
