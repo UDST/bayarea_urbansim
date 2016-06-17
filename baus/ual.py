@@ -37,16 +37,13 @@ def ual_data_diagnostics():
 	print
 	print "RUNNING ual_data_diagnostics"
 	print orca.list_tables()
-	print orca.get_table('buildings').local_columns
-	print orca.get_table('households').local_columns
+	print orca.get_table('households').columns
+	print orca.get_table('residential_units').columns
 	
-	hh = orca.get_table('households').to_frame()
-	print hh[['tenure','hownrent']].describe()
-	try:
-		print orca.get_table('residential_units').local_columns
-	except:
-		pass
+	hh = orca.get_table('residential_units').to_frame()
+	print hh[['zone_id']].describe()
 	print
+	return
 
 
 @orca.step('ual_initialize_residential_units')

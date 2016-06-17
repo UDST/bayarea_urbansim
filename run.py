@@ -169,8 +169,6 @@ def run_models(MODE, SCENARIO):
             "neighborhood_vars",         	# street network accessibility
             "regional_vars",             	# road network accessibility
             
-            #"ual_data_diagnostics",
-
 			"ual_rsh_simulate",             # residential sales hedonic
 			"ual_rrh_simulate",             # residential rental hedonic
 			#"nrh_simulate",                 # non-residential rent hedonic
@@ -180,6 +178,8 @@ def run_models(MODE, SCENARIO):
 
 			#"jobs_relocation",
 			#"jobs_transition",
+
+            "ual_data_diagnostics",
 
 			"ual_hlcm_owner_simulate",  	 # allocate owners to vacant owner-occupied units
 			#"ual_hlcm_renter_simulate",      # allocate renters to vacant rental units
