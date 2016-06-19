@@ -19,7 +19,7 @@ relocation_rates:
 
 price_equilibration:
   price_col: unit_residential_price
-  submarket_col: zone_id
+  submarket_col: submarket_id
   submarket_table: zones
   warm_start: False
   multiplier_func: supply_and_demand_multiplier_func
@@ -33,7 +33,7 @@ price_equilibration:
 
 rent_equilibration:
   price_col: unit_residential_rent
-  submarket_col: zone_id
+  submarket_col: submarket_id
   submarket_table: zones
   warm_start: False
   multiplier_func: supply_and_demand_multiplier_func

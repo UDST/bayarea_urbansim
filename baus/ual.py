@@ -70,10 +70,9 @@ def ual_initialize_residential_units(buildings, ual_settings):
 		- 'building_id' (int, non-missing, corresponds to index of 'buildings' table)
 		- 'unit_num' (int, non-missing, unique within building) 
 		- 'vacant_units' (int, 0 or 1, computed)
-		- 'zone_id' (int, non-missing??, computed)
+		- 'submarket_id' (int, non-missing, computed, corresponds to index of 'zones' table)
 	- adds broadcasts linking 'residential_units' table to:
 		- 'buildings' table
-		- 'zones' table
 	- initializes a 'unit_aggregations' injectable containing tables as specified in 
 		'ual_settings' -> 'unit_aggregation_tables'
 	"""
@@ -101,17 +100,17 @@ def ual_initialize_residential_units(buildings, ual_settings):
 		return residential_units.num_units.sub(
 			households.unit_id[households.unit_id != -1].value_counts(), fill_value=0)
 
-	@orca.column('residential_units', 'zone_id')
-	def zone_id(residential_units, buildings):
+	@orca.column('residential_units', 'submarket_id')
+	def submarket_id(residential_units, buildings):
+		# The submarket is used for supply/demand equilibration. It's the same as the 
+		# zone_id, but in a separate column to avoid name conflicts when tables are merged.
 		return misc.reindex(buildings.zone_id, residential_units.building_id)
 
 	orca.broadcast('buildings', 'residential_units', cast_index=True, onto_on='building_id')
-	orca.broadcast('zones', 'residential_units', cast_index=True, onto_on='zone_id')
 	
 	@orca.injectable('unit_aggregations')
 	def unit_aggregations(ual_settings):
-		# This injectable provides a list of the tables needed for hedonic model steps
-		# and location choice model steps
+		# This injectable provides a list of tables needed for hedonic and LCM model steps
 		return [orca.get_table(tbl) for tbl in ual_settings['unit_aggregation_tables']]
 
 		
@@ -356,6 +355,7 @@ def ual_households_relocation(households, ual_settings):
 @orca.step('ual_reconcile_placed_households')
 def reconcile_placed_households(buildings, residential_units):
 	"""
+	We'll need to run this after HLCM...
 	"""
 	
 
@@ -390,7 +390,7 @@ def reconcile_unplaced_households(households):
 		print "Househing missing a building: %d" % households.building_id.isnull().sum()
 
 	_print_status()
-	print "Reconciling unplaced households"
+	print "Reconciling unplaced households..."
 	hh = households.to_frame(['building_id', 'unit_id'])
 	
 	# Get indexes of households unplaced in buildings or in units
@@ -437,6 +437,11 @@ def ual_hlcm_owner_simulate(households, residential_units, unit_aggregations, ua
 
 @orca.step('ual_hlcm_renter_simulate')
 def ual_hlcm_renter_simulate(households, residential_units, unit_aggregations, ual_settings):
+	
+	# Note that the submarket id (zone_id) needs to be in the table of alternatives,
+	# for supply/demand equilibration, and needs to NOT be in the choosers table, to
+	# avoid conflicting when the tables are joined
+	
 	return utils.lcm_simulate(cfg = 'ual_hlcm_renter.yaml', 
 							  choosers = households, 
 							  buildings = residential_units,
@@ -452,6 +457,17 @@ def ual_hlcm_renter_simulate(households, residential_units, unit_aggregations, u
 # Four model steps for hlcm
 
 # Add an initialization step to specify which units are affordable
+
+
+@orca.step('ual_reconcile_residential_prices')
+def ual_reconcile_residential_prices(buildings, residential_units, ual_settings):
+	"""
+	Set the building prices to the higher of the unit price or adjusted rent!
+	Then run the developer model steps as usual, and when we create units use a choice
+	model to allocate their tenure.
+	"""
+
+
 
 
 # After building new housing, can we allocate a tenure after the fact by comparing the
