@@ -2,6 +2,7 @@ import orca
 from urbansim_defaults import utils
 from urbansim.utils import misc
 from urbansim.models.relocation import RelocationModel
+from urbansim.developer.developer import Developer as dev
 import os
 import yaml
 import numpy as np
@@ -48,6 +49,35 @@ def ual_data_diagnostics():
 	return
 
 
+def _ual_create_empty_units(buildings):
+	"""
+	Create a table of empty units corresponding to the provided buildings.
+	
+	Parameters
+	----------
+	buildings : DataFrameWrapper or DataFrame
+		Must contain an index to be used as a building identifier, and a count of 
+		'residential_units' which will determine the number of units to create
+	
+	Returns
+	-------
+	df : DataFrame
+		Table of units, to be processed within an orca step
+	"""
+	df = pd.DataFrame({
+		'unit_residential_price': 0,
+		'unit_residential_rent': 0,
+		'num_units': 1,
+		'building_id': np.repeat(buildings.index.values,
+								 buildings.residential_units.values),
+		# counter of the units in a building
+		'unit_num': np.concatenate([np.arange(i) for i in \
+									buildings.residential_units.values])
+	}).sort_values(by=['building_id', 'unit_num']).reset_index(drop=True)
+	df.index.name = 'unit_id'
+	return df
+	
+	
 @orca.step('ual_initialize_residential_units')
 def ual_initialize_residential_units(buildings, ual_settings):
 	"""
@@ -82,21 +112,7 @@ def ual_initialize_residential_units(buildings, ual_settings):
 
 	@orca.table('residential_units', cache=True)
 	def residential_units(buildings):
-		"""
-		Sets up a table of synthetic residential units, based on building info
-		"""
-		df = pd.DataFrame({
-			'unit_residential_price': 0,
-			'unit_residential_rent': 0,
-			'num_units': 1,
-			'building_id': np.repeat(buildings.index.values,
-									 buildings.residential_units.values),
-			# counter of the units in a building
-			'unit_num': np.concatenate([np.arange(i) for i in \
-										buildings.residential_units.values])
-		}).sort_values(by=['building_id', 'unit_num']).reset_index(drop=True)
-		df.index.name = 'unit_id'
-		return df
+		return _ual_create_empty_units(buildings)
 	
 	@orca.column('residential_units', 'vacant_units')
 	def vacant_units(residential_units, households):
@@ -347,9 +363,76 @@ def ual_update_building_residential_price(buildings, residential_units, ual_sett
 	buildings.update_col_from_series('residential_price', means.max_potential)
 	return
 	
-	
-	
 
+@orca.step('ual_remove_old_units')
+def ual_remove_old_units(buildings, residential_units):
+	"""
+	This data maintenance step removes units whose building_ids no longer exist.
+	
+	If new buildings have been created that re-use prior building_ids, we would fail to
+	remove the associated units. Hopefully new buidlings do not duplicate prior ids,
+	but this needs to be verified!
+
+	Data expectations
+	-----------------
+	- 'buildings' table has an index that serves as its identifier
+	- 'residential_units' table has a column 'building_id' corresponding to the index
+	  of the 'buildings' table
+	
+	Results
+	-------
+	- removes rows from the 'residential_units' table if their 'building_id' no longer
+	  exists in the 'buildings' table
+	"""
+	units = residential_units.to_frame(residential_units.local_columns)
+	current_units = units[units.building_id.isin(buildings.index)]
+	
+	print "Removing %d residential units from %d buildings that no longer exist" % \
+			((len(units) - len(current_units)), \
+			(len(units.groupby('building_id')) - len(current_units.groupby('building_id'))))
+	
+	orca.add_table('residential_units', current_units) 
+	return
+
+
+@orca.step('ual_initialize_new_units')
+def ual_initialize_new_units(buildings, residential_units):
+	"""
+	Initializes units for buildings that have been newly created, conforming to the data
+	requirements of the 'residential_units' table.
+	
+	Data expectations
+	-----------------
+	- 'buildings' table has following columns:
+		- index that serves as its identifier
+		- 'residential_units' (int)
+	- 'residential_units' table has following columns:
+		- index named 'unit_id' that serves as its identifier
+		- 'building_id' corresponding to the index of the 'buildings' table
+	
+	Results
+	-------
+	- extends the 'residential_units' table, following its initial data schema
+	"""
+	old_units = residential_units.to_frame(residential_units.local_columns)
+	bldgs = buildings.to_frame(['residential_units'])
+	
+	# Filter for residential buildings not currently in the units table
+	bldgs = bldgs[bldgs.residential_units > 0]
+	new_bldgs = bldgs[~bldgs.index.isin(old_units.building_id)]
+	
+	# Create new units, merge them, and update the table
+	new_units = _ual_create_empty_units(new_bldgs)
+	all_units = dev.merge(old_units, new_units)
+	all_units.index.name = 'unit_id'
+	
+	print "Creating %d residential units for %d new buildings" % \
+			(len(new_units), len(new_bldgs))
+	
+	orca.add_table('residential_units', all_units)
+	return
+	
+	
 ##########################################################################################
 #
 # (3) UAL ORCA STEPS FOR SIMULATION LOCIC
