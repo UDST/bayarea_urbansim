@@ -13,6 +13,9 @@ warnings.filterwarnings("ignore")
 
 args = sys.argv[1:]
 
+# Suppress scientific notation in pandas output
+pd.set_option('display.float_format', lambda x: '%.3f' % x)
+
 SLACK = False
 MAPS = True
 LOGS = True
@@ -173,7 +176,8 @@ def run_models(MODE, SCENARIO):
 			"ual_rrh_simulate",             # residential rental hedonic for units
 # 			"nrh_simulate",                 # non-residential rent hedonic
 			
-# 			"ual_assign_tenure_to_new_units",  # (based on higher of predicted price or rent)
+			"ual_assign_tenure_to_new_units",  # (based on higher of predicted price or rent)
+			"ual_assign_tenure_to_new_units",  # (based on higher of predicted price or rent)
  
 # 			"ual_households_relocation",	# uses conditional probabilities
 # 			"households_transition",

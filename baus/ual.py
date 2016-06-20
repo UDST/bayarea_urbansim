@@ -200,7 +200,8 @@ def ual_assign_tenure_to_units(residential_units, households):
 	own = hh[(hh.hownrent == 1) & (hh.unit_id != -1)].unit_id.values
 	rent = hh[(hh.hownrent == 2) & (hh.unit_id != -1)].unit_id.values
 	units.loc[own, 'hownrent'] = 1
-	units.loc[rent, 'hownrent'] = 2
+# MESSING THIS UP FOR TESTING
+	units.loc[rent, 'hownrent'] = 3
 		
 	print "Initial unit tenure assignment: %d%% owner occupied, %d%% unfilled" % \
 			(round(len(units[units.hownrent == 1])*100/len(units[units.hownrent.notnull()])), \
@@ -437,26 +438,45 @@ def ual_initialize_new_units(buildings, residential_units):
 @orca.step('ual_assign_tenure_to_new_units')
 def ual_assign_tenure_to_new_units(residential_units, ual_settings):
 	"""
-	Description.
-	
-	May want to make this more sophisticated in the future, or at least stochastic.
+	This data maintenance step assigns tenure to new residential units. Tenure is
+	determined by comparing the fitted sale price and fitted rent from the hedonic models,
+	with rents adjusted to price-equivalent terms using a cap rate.
+
+	We may want to make this more sophisticated in the future, or at least stochastic. 
+	Also, it might be better to do this assignment based on the zonal average prices and 
+	rents following supply/demand equilibration.
 	
 	Data expectations
 	-----------------
-	- 'residential_units' table has following columns:
+	- 'residential_units' table has the following columns:
 		- 'hownrent' (int in range 1 to 2, may be missing)
 		- 'unit_residential_price' (float, non-missing)
 		- 'unit_residential_rent' (float, non-missing)
 	
 	Results
 	-------
-	- fills missing values of 'hownrent' based on higher of price or adjusted rent
+	- fills missing values of 'hownrent'
 	"""
 	cols = ['hownrent', 'unit_residential_price', 'unit_residential_rent']
-	units = residential_units.to_frame()
+	units = residential_units.to_frame(cols)
 	
+	# Filter for units that are missing a tenure assignment
+	units = units[~units.hownrent.isin([1,2])]
 	
+	# Convert monthly rent to equivalent sale price
+	cap_rate = ual_settings.get('cap_rate')
+	units['unit_residential_rent'] = units.unit_residential_rent * 12 / cap_rate
+	
+	# Assign tenure based on higher of price or adjusted rent
+	rental_units = (units.unit_residential_rent > units.unit_residential_price)
+	units.loc[~rental_units, 'hownrent'] = 1
+	units.loc[rental_units, 'hownrent'] = 2
+	
+	print "Adding tenure assignment to %d new residential units" % len(units)
+	print units.describe()
 
+	residential_units.update_col_from_series('hownrent', units.hownrent)	
+	
 
 
 ##########################################################################################
