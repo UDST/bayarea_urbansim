@@ -398,26 +398,27 @@ def ual_remove_old_units(buildings, residential_units):
 @orca.step('ual_initialize_new_units')
 def ual_initialize_new_units(buildings, residential_units):
 	"""
-	Initializes units for buildings that have been newly created, conforming to the data
-	requirements of the 'residential_units' table.
+	This data maintenance step initializes units for buildings that have been newly
+	created, conforming to the data requirements of the 'residential_units' table.
 	
 	Data expectations
 	-----------------
-	- 'buildings' table has following columns:
+	- 'buildings' table has the following columns:
 		- index that serves as its identifier
-		- 'residential_units' (int)
-	- 'residential_units' table has following columns:
+		- 'residential_units' (int, count of units in building)
+	- 'residential_units' table has the following columns:
 		- index named 'unit_id' that serves as its identifier
 		- 'building_id' corresponding to the index of the 'buildings' table
 	
 	Results
 	-------
-	- extends the 'residential_units' table, following its initial data schema
+	- extends the 'residential_units' table, following the same schema as the
+	  'ual_initialize_residential_units' model step
 	"""
 	old_units = residential_units.to_frame(residential_units.local_columns)
 	bldgs = buildings.to_frame(['residential_units'])
 	
-	# Filter for residential buildings not currently in the units table
+	# Filter for residential buildings not currently represented in the units table
 	bldgs = bldgs[bldgs.residential_units > 0]
 	new_bldgs = bldgs[~bldgs.index.isin(old_units.building_id)]
 	
@@ -432,7 +433,32 @@ def ual_initialize_new_units(buildings, residential_units):
 	orca.add_table('residential_units', all_units)
 	return
 	
+
+@orca.step('ual_assign_tenure_to_new_units')
+def ual_assign_tenure_to_new_units(residential_units, ual_settings):
+	"""
+	Description.
 	
+	May want to make this more sophisticated in the future, or at least stochastic.
+	
+	Data expectations
+	-----------------
+	- 'residential_units' table has following columns:
+		- 'hownrent' (int in range 1 to 2, may be missing)
+		- 'unit_residential_price' (float, non-missing)
+		- 'unit_residential_rent' (float, non-missing)
+	
+	Results
+	-------
+	- fills missing values of 'hownrent' based on higher of price or adjusted rent
+	"""
+	cols = ['hownrent', 'unit_residential_price', 'unit_residential_rent']
+	units = residential_units.to_frame()
+	
+	
+
+
+
 ##########################################################################################
 #
 # (3) UAL ORCA STEPS FOR SIMULATION LOCIC
@@ -454,7 +480,16 @@ def ual_rrh_estimate(craigslist, aggregations):
 								  join_tbls = aggregations)
 
 
-# TO DO - factor out the clipping into a function
+def _mtc_clip(table, col_name, settings, price_scale=1):
+	# This is included to match the MTC hedonic model steps, with 'price_scale' 
+	# adjusting the clip bounds from price to monthly rent if needed.
+	
+	if "rsh_simulate" in settings:
+		low = float(settings["rsh_simulate"]["low"]) * price_scale
+		high = float(settings["rsh_simulate"]["high"]) * price_scale
+		table.update_col(col_name, table[col_name].clip(low, high))
+		print "Clipping produces\n", table[col_name].describe()
+
 
 @orca.step('ual_rsh_simulate')
 def ual_rsh_simulate(residential_units, unit_aggregations, settings):
@@ -471,14 +506,7 @@ def ual_rsh_simulate(residential_units, unit_aggregations, settings):
 						   join_tbls = unit_aggregations, 
 						   out_fname = 'unit_residential_price')
 	
-	# Following is included to match the MTC model step
-	if "rsh_simulate" in settings:
-		low = float(settings["rsh_simulate"]["low"])
-		high = float(settings["rsh_simulate"]["high"])
-		residential_units.update_col("unit_residential_price",
-							 residential_units.unit_residential_price.clip(low, high))
-		print "Clipped rsh_simulate produces\n", \
-			residential_units.unit_residential_price.describe()
+	_mtc_clip(residential_units, 'unit_residential_price', settings)
 	return
 
 
@@ -496,15 +524,17 @@ def ual_rrh_simulate(residential_units, unit_aggregations, settings):
 						   join_tbls = unit_aggregations, 
 						   out_fname = 'unit_residential_rent')
 
+	_mtc_clip(residential_units, 'unit_residential_rent', settings, price_scale=0.05/12)
+
 	# Clipping to match the other hedonic (set cap rate as desired)
-	if "rsh_simulate" in settings:
-		cap_rate = 0.05	 # sale price * cap rate = annual rent
-		low = float(settings["rsh_simulate"]["low"]) * cap_rate / 12
-		high = float(settings["rsh_simulate"]["high"]) * cap_rate / 12
-		residential_units.update_col("unit_residential_rent",
-							 residential_units.unit_residential_rent.clip(low, high))
-		print "Clipped rrh_simulate produces\n", \
-			residential_units.unit_residential_rent.describe()
+# 	if "rsh_simulate" in settings:
+# 		cap_rate = 0.05	 # sale price * cap rate = annual rent
+# 		low = float(settings["rsh_simulate"]["low"]) * cap_rate / 12
+# 		high = float(settings["rsh_simulate"]["high"]) * cap_rate / 12
+# 		residential_units.update_col("unit_residential_rent",
+# 							 residential_units.unit_residential_rent.clip(low, high))
+# 		print "Clipped rrh_simulate produces\n", \
+# 			residential_units.unit_residential_rent.describe()
 	return
 
 
@@ -596,16 +626,6 @@ def ual_hlcm_renter_simulate(households, residential_units, unit_aggregations, u
 # Four model steps for hlcm
 
 # Add an initialization step (placeholder at least) to specify which units are affordable
-
-
-
-
-
-# After building new housing, can we allocate a tenure after the fact by comparing the
-# rent vs price? Isn't this the same thing the developer model would do? Maybe this would
-# be biased toward ownership buildings though
-
-
 
 
 

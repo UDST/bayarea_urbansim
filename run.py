@@ -166,11 +166,11 @@ def run_models(MODE, SCENARIO):
         # Simulation steps
         orca.run([
 
-#          	"neighborhood_vars",         	# street network accessibility
-#          	"regional_vars",             	# road network accessibility
+         	"neighborhood_vars",         	# street network accessibility
+         	"regional_vars",             	# road network accessibility
             
-# 			"ual_rsh_simulate",             # residential sales hedonic for units
-# 			"ual_rrh_simulate",             # residential rental hedonic for units
+			"ual_rsh_simulate",             # residential sales hedonic for units
+			"ual_rrh_simulate",             # residential rental hedonic for units
 # 			"nrh_simulate",                 # non-residential rent hedonic
 			
 # 			"ual_assign_tenure_to_new_units",  # (based on higher of predicted price or rent)
@@ -188,7 +188,7 @@ def run_models(MODE, SCENARIO):
 
 # 			"ual_update_building_residential_price",  # apply unit prices to buildings			
 # 			"price_vars",
-			"scheduled_development_events",
+# 			"scheduled_development_events",
 # 			"alt_feasibility",
 			
 # 			"residential_developer",
@@ -196,8 +196,8 @@ def run_models(MODE, SCENARIO):
 # 			"retail_developer",
 # 			"office_developer",
 			
-			"ual_remove_old_units",		     # (for buildings that were removed)
-			"ual_initialize_new_units",		 # set up units for new residential buildings
+# 			"ual_remove_old_units",		     # (for buildings that were removed)
+# 			"ual_initialize_new_units",		 # set up units for new residential buildings
 # 			"ual_reconcile_unplaced_households",  # update building/unit/hh correspondence
 
 			#"topsheet",
