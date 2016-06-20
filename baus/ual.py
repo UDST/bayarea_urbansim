@@ -8,9 +8,11 @@ import numpy as np
 import pandas as pd
 
 
-###############################################################
-""" UAL ORCA STEPS FOR DATA MANAGEMENT (MODEL STEPS FOLLOW) """
-###############################################################
+##########################################################################################
+#
+# (1) UAL ORCA STEPS FOR DATA MODEL INITIALIZATION
+#
+##########################################################################################
 
 
 @orca.injectable('ual_settings', cache=True)
@@ -54,9 +56,10 @@ def ual_initialize_residential_units(buildings, ual_settings):
 	
 	Data expections
 	---------------
-	- 'buildings' table has an index that serves as its id
-	- 'buildings' table has column 'residential_units' (int, never missing)
-	- 'buildings' table has column 'zone_id' (int, non-missing??)
+	- 'buildings' table has following columns:
+		- index that serves as its id
+		- 'residential_units' (int, never missing)
+		- 'zone_id' (int, non-missing??)
 	- 'ual_settings' injectable contains list of tables called 'unit_aggregation_tables'
 	
 	Results
@@ -188,7 +191,7 @@ def ual_assign_tenure_to_units(residential_units, households):
 			 round(len(units[units.hownrent.isnull()])*100/len(units)))
 			 
 	# Fill remaining units with random tenure assignment 
-	# -> Fix this to be to be weighted
+	# TO DO: Make this weighted by existing allocation, rather than 50/50
 	unfilled = units[units.hownrent.isnull()].index
 	units.loc[unfilled, 'hownrent'] = np.random.randint(1, 3, len(unfilled))
 	
@@ -244,9 +247,114 @@ def ual_load_rental_listings():
 
 
 
-############################
-""" UAL ORCA MODEL STEPS """
-############################
+##########################################################################################
+#
+# (2) UAL ORCA STEPS FOR DATA MODEL MAINTENANCE
+#
+##########################################################################################
+
+
+@orca.step('ual_reconcile_placed_households')
+def reconcile_placed_households(buildings, residential_units):
+	"""
+	We'll need to run this after HLCM...
+	"""
+	
+
+@orca.step('ual_reconcile_unplaced_households')
+def reconcile_unplaced_households(households):
+	"""
+	This data maintenance step keeps the building/unit/household correspondence up to 
+	date by reconciling un-placed households.
+	
+	In the current data model, households should have both a 'building_id' and 'unit_id'
+	of -1 when they are not matched with housing. But sometimes only of these is set when
+	households are created or unplaced. If households have been unplaced from buildings, 
+	this model step unplaces them from units as well. Or if they have been unplaced from 
+	units, it unplaces them from buildings. 
+	
+	Data expectations
+	-----------------
+	- 'households' table has an index, and these columns:
+		- 'unit_id' (int, '-1'-filled)
+		- 'building_id' (int, '-1'-filled)
+	
+	Results
+	-------
+	- updates the 'households' table:
+		- 'unit_id' = 'building_id' = -1 for the superset of rows where either column
+		  initially had this vaue
+	"""
+	def _print_status():
+		print "Households not in a unit: %d" % (households.unit_id == -1).sum()
+		print "Househing missing a unit: %d" % households.unit_id.isnull().sum()
+		print "Households not in a building: %d" % (households.building_id == -1).sum()
+		print "Househing missing a building: %d" % households.building_id.isnull().sum()
+
+	_print_status()
+	print "Reconciling unplaced households..."
+	hh = households.to_frame(['building_id', 'unit_id'])
+	
+	# Get indexes of households unplaced in buildings or in units
+	bldg_unplaced = pd.Series(-1, index=hh[hh.building_id == -1].index)
+	unit_unplaced = pd.Series(-1, index=hh[hh.unit_id == -1].index)
+	
+	# Update those households to be fully unplaced
+	households.update_col_from_series('building_id', unit_unplaced)
+	households.update_col_from_series('unit_id', bldg_unplaced)
+	_print_status()
+	return
+	
+
+@orca.step('ual_update_building_residential_price')
+def ual_update_building_residential_price(buildings, residential_units, ual_settings):
+	"""
+	This data maintenance step updates the prices in the buildings table to reflect 
+	changes to the unit-level prices. This allows model steps like 'price_vars' and 
+	'feasibility' to read directly from the buildings table. 
+	
+	We currently set the building price per square foot to be the higher of the average
+	(a) unit price per square foot or (b) unit price-adjusted rent per square foot.
+	
+	Data expectations
+	-----------------
+	- 'residential_units' table has following columns:
+		- 'unit_residential_price' (float, 0-filled)
+		- 'unit_residential_rent' (float, 0-filled)
+		- 'building_id' (int, non-missing, corresponds to index of 'buildings' table)
+	- 'buildings' table has following columns:
+		- index that serves as its id
+		- 'residential_price' (float, 0-filled)
+	- 'ual_settings' injectable has a 'cap_rate' (float, range 0 to 1)
+	
+	Results
+	-------
+	- updates the 'buildings' table:
+		- 'residential_price' = max avg of unit prices or rents
+	"""
+	cols = ['building_id', 'unit_residential_price', 'unit_residential_rent']
+	means = residential_units.to_frame(cols).groupby(['building_id']).mean()
+	
+	# Convert monthly rent to equivalent sale price
+	cap_rate = ual_settings.get('cap_rate')
+	means['unit_residential_rent'] = means.unit_residential_rent * 12 / cap_rate
+	
+	# Calculate max of price or rent, by building
+	means['max_potential'] = means.max(axis=1)
+	print means.describe()
+	
+	# Update the buildings table
+	buildings.update_col_from_series('residential_price', means.max_potential)
+	return
+	
+	
+	
+
+##########################################################################################
+#
+# (3) UAL ORCA STEPS FOR SIMULATION LOCIC
+#
+##########################################################################################
 
 
 @orca.step('ual_rrh_estimate')
@@ -352,58 +460,6 @@ def ual_households_relocation(households, ual_settings):
 	return
 
 
-@orca.step('ual_reconcile_placed_households')
-def reconcile_placed_households(buildings, residential_units):
-	"""
-	We'll need to run this after HLCM...
-	"""
-	
-
-@orca.step('ual_reconcile_unplaced_households')
-def reconcile_unplaced_households(households):
-	"""
-	In the current data schema, households should have both a 'building_id' and 'unit_id'
-	of -1 when they are not matched with housing. But sometimes only of these is set when
-	households are created or unplaced, because the UrbanSim utility functions expect
-	housing placement to be recorded in a single place. 
-	
-	If households have been unplaced from buildings, this model step unplaces them from 
-	units as well. Or if they have been unplaced from units, it unplaces them from 
-	buildings. This keeps the building/unit/household correspondence up to date.
-	
-	Data expectations
-	-----------------
-	- 'households' table has an index, and these columns:
-		- 'unit_id'
-		- 'building_id'
-	
-	Results
-	-------
-	- updates the 'households' table:
-		- 'unit_id' = 'building_id' = -1 for the superset of rows where either column
-		  initially had this vaue
-	"""
-	def _print_status():
-		print "Households not in a unit: %d" % (households.unit_id == -1).sum()
-		print "Househing missing a unit: %d" % households.unit_id.isnull().sum()
-		print "Households not in a building: %d" % (households.building_id == -1).sum()
-		print "Househing missing a building: %d" % households.building_id.isnull().sum()
-
-	_print_status()
-	print "Reconciling unplaced households..."
-	hh = households.to_frame(['building_id', 'unit_id'])
-	
-	# Get indexes of households unplaced in buildings or in units
-	bldg_unplaced = pd.Series(-1, index=hh[hh.building_id == -1].index)
-	unit_unplaced = pd.Series(-1, index=hh[hh.unit_id == -1].index)
-	
-	# Update those households to be fully unplaced
-	households.update_col_from_series('building_id', unit_unplaced)
-	households.update_col_from_series('unit_id', bldg_unplaced)
-	_print_status()
-	return
-	
-
 @orca.step('ual_hlcm_owner_estimate')
 def ual_hlcm_owner_estimate(households, residential_units, unit_aggregations):
 	return utils.lcm_estimate(cfg = "ual_hlcm_owner.yaml",
@@ -424,6 +480,11 @@ def ual_hlcm_renter_estimate(households, residential_units, unit_aggregations):
 
 @orca.step('ual_hlcm_owner_simulate')
 def ual_hlcm_owner_simulate(households, residential_units, unit_aggregations, ual_settings):
+	
+	# Note that the submarket id (zone_id) needs to be in the table of alternatives,
+	# for supply/demand equilibration, and needs to NOT be in the choosers table, to
+	# avoid conflicting when the tables are joined
+	
 	return utils.lcm_simulate(cfg = 'ual_hlcm_owner.yaml', 
 							  choosers = households, 
 							  buildings = residential_units,
@@ -437,11 +498,6 @@ def ual_hlcm_owner_simulate(households, residential_units, unit_aggregations, ua
 
 @orca.step('ual_hlcm_renter_simulate')
 def ual_hlcm_renter_simulate(households, residential_units, unit_aggregations, ual_settings):
-	
-	# Note that the submarket id (zone_id) needs to be in the table of alternatives,
-	# for supply/demand equilibration, and needs to NOT be in the choosers table, to
-	# avoid conflicting when the tables are joined
-	
 	return utils.lcm_simulate(cfg = 'ual_hlcm_renter.yaml', 
 							  choosers = households, 
 							  buildings = residential_units,
@@ -456,16 +512,8 @@ def ual_hlcm_renter_simulate(households, residential_units, unit_aggregations, u
 # Maybe allocate low-income people first for both the rental and owner models
 # Four model steps for hlcm
 
-# Add an initialization step to specify which units are affordable
+# Add an initialization step (placeholder at least) to specify which units are affordable
 
-
-@orca.step('ual_reconcile_residential_prices')
-def ual_reconcile_residential_prices(buildings, residential_units, ual_settings):
-	"""
-	Set the building prices to the higher of the unit price or adjusted rent!
-	Then run the developer model steps as usual, and when we create units use a choice
-	model to allocate their tenure.
-	"""
 
 
 
@@ -473,13 +521,6 @@ def ual_reconcile_residential_prices(buildings, residential_units, ual_settings)
 # After building new housing, can we allocate a tenure after the fact by comparing the
 # rent vs price? Isn't this the same thing the developer model would do? Maybe this would
 # be biased toward ownership buildings though
-
-
-
-
-
-
-
 
 
 

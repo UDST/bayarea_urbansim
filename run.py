@@ -169,35 +169,39 @@ def run_models(MODE, SCENARIO):
             "neighborhood_vars",         	# street network accessibility
             "regional_vars",             	# road network accessibility
             
-			"ual_rsh_simulate",             # residential sales hedonic
-			"ual_rrh_simulate",             # residential rental hedonic
-			#"nrh_simulate",                 # non-residential rent hedonic
+			"ual_rsh_simulate",             # residential sales hedonic for units
+			"ual_rrh_simulate",             # residential rental hedonic for units
+			"nrh_simulate",                 # non-residential rent hedonic
+			
+			#"ual_assign_tenure_to_new_units",  # (based on higher of predicted price or rent)
 
-			"ual_households_relocation",	# uses conditional probabilities
-			"households_transition",
-			"ual_reconcile_unplaced_households",  # update building/unit/hh correspondence
+			#"ual_households_relocation",	# uses conditional probabilities
+			#"households_transition",
+			#"ual_reconcile_unplaced_households",  # update building/unit/hh correspondence
 
 			#"jobs_relocation",
 			#"jobs_transition",
 
             #"ual_data_diagnostics",
 
-			"ual_hlcm_owner_simulate",  	 # allocate owners to vacant owner-occupied units
-			"ual_hlcm_renter_simulate",      # allocate renters to vacant rental units
-
-			#"price_vars",
-
-			#"scheduled_development_events",  # scheduled buildings additions
-
-			#"alt_feasibility",
-
-			#"residential_developer",
-			#"developer_reprocess",
-			#"retail_developer",
-			#"office_developer",
-
-			#"hlcm_simulate",                 # put these last so they don't get
-			#"elcm_simulate",                 # displaced by new dev
+			#"ual_hlcm_owner_simulate",  	 # allocate owners to vacant owner-occupied units
+			#"ual_hlcm_renter_simulate",     # allocate renters to vacant rental units
+			
+			#"ual_reconcile_placed_households",  # update building/unit/hh correspondence
+			"ual_update_building_residential_price",  # apply unit prices to buildings
+			
+			"price_vars",
+			"scheduled_development_events",
+			"alt_feasibility",
+			
+			"residential_developer",
+			"developer_reprocess",
+			"retail_developer",
+			"office_developer",
+			
+			"ual_remove_old_units",		     # (for buildings that were removed)
+			"ual_initialize_new_units",		 # set up units for new residential buildings
+			"ual_reconcile_unplaced_households",  # update building/unit/hh correspondence
 
 			#"topsheet",
 			#"diagnostic_output",
