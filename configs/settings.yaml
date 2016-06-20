@@ -806,3 +806,12 @@ zoning_column_dictionary:
 
 static_parcels:
   - 11280465768398 # city hall
+  - 2240580234395 # sf state
+  - 7299494955245 # sj state
+  - 13202883289710 # sj state
+  - 6193503633797 # sj state
+  - 8603860488630 # sj state
+  - 8173572322083 # ucb
+  - 14259504015679 # labs
+  - 3473860030354 # sfo
+  
