@@ -766,8 +766,11 @@ development_limits:
   "4":
     Office:
       'San Francisco': 3750
+      'Sonoma County': 100
     Residential:
       'Half Moon Bay': 43
+    Retail:
+      'Sonoma County': 100
   "5":
     Office:
       'San Francisco': 4500
