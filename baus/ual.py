@@ -497,10 +497,21 @@ def ual_assign_tenure_to_new_units(residential_units, ual_settings):
 	residential_units.update_col_from_series('hownrent', units.hownrent)	
 	
 
+@orca.step('ual_save_intermediate_tables')
+def ual_save_intermediate_tables(households, buildings, parcels, jobs, zones, year):
+	"""
+	This orca step saves intermediate versions of data tables, for developing 
+	visualization proofs of concept. 
+	"""
+	filename = 'baus_' + str(year) + '.h5'
+	for table in [households, buildings, parcels, jobs, zones]:
+		table.to_frame().to_hdf(filename, table.name)
+
+
 
 ##########################################################################################
 #
-# (3) UAL ORCA STEPS FOR SIMULATION LOCIC
+# (3) UAL ORCA STEPS FOR SIMULATION LOGIC
 #
 ##########################################################################################
 
