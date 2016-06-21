@@ -32,31 +32,15 @@ def ual_settings():
 		return yaml.load(f)
 
 
-@orca.step('ual_data_diagnostics')
-def ual_data_diagnostics():
-	"""
-	Lists some tables and columns for diagnostic purposes
-	"""
-	print
-	print "RUNNING ual_data_diagnostics"
-	print orca.list_tables()
-	print orca.get_table('households').columns
-	print orca.get_table('residential_units').columns
-	
-	hh = orca.get_table('residential_units').to_frame()
-	print hh[['zone_id']].describe()
-	print
-	return
-
-
 def _ual_create_empty_units(buildings):
 	"""
-	Create a table of empty units corresponding to the provided buildings.
+	Create a table of empty units corresponding to an input table of buildings. This
+	function is used (a) in initialization and (b) after the developer model steps run.
 	
 	Parameters
 	----------
 	buildings : DataFrameWrapper or DataFrame
-		Must contain an index to be used as a building identifier, and a count of 
+		Must contain an index to be used as the building identifier, and a count of 
 		'residential_units' which will determine the number of units to create
 	
 	Returns
@@ -665,11 +649,6 @@ def ual_hlcm_renter_simulate(households, residential_units, unit_aggregations, u
 							  vacant_fname = 'vacant_units',
 							  enable_supply_correction = 
 									ual_settings.get('rent_equilibration', None))
-
-
-
-# Add an initialization step (placeholder at least) to specify which units are affordable
-
 
 
 
