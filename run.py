@@ -177,18 +177,17 @@ def run_models(MODE, SCENARIO):
 # 			"nrh_simulate",                 # non-residential rent hedonic
 			
 			"ual_assign_tenure_to_new_units",  # (based on higher of predicted price or rent)
-			"ual_assign_tenure_to_new_units",  # (based on higher of predicted price or rent)
  
-# 			"ual_households_relocation",	# uses conditional probabilities
-# 			"households_transition",
-# 			"ual_reconcile_unplaced_households",  # update building/unit/hh correspondence
+			"ual_households_relocation",	# uses conditional probabilities
+			"households_transition",
+			"ual_reconcile_unplaced_households",  # update building/unit/hh correspondence
 
 # 			"jobs_relocation",
 # 			"jobs_transition",
 
-# 			"ual_hlcm_owner_simulate",  	 # allocate owners to vacant owner-occupied units
-# 			"ual_hlcm_renter_simulate",      # allocate renters to vacant rental units
-# 			"ual_reconcile_placed_households",  # update building/unit/hh correspondence
+			"ual_hlcm_owner_simulate",  	 # allocate owners to vacant owner-occupied units
+			"ual_hlcm_renter_simulate",      # allocate renters to vacant rental units
+			"ual_reconcile_placed_households",  # update building/unit/hh correspondence
 
 # 			"ual_update_building_residential_price",  # apply unit prices to buildings			
 # 			"price_vars",

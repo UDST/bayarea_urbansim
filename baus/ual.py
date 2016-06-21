@@ -152,6 +152,7 @@ def ual_match_households_to_units(households, residential_units):
 	-------
 	- adds following column to 'households' table:
 		- 'unit_id' (int, '-1'-filled, corresponds to index of 'residential_units' table)
+	- adds a broadcast linking 'households' to 'residential_units'
 	"""
 	hh = households.to_frame(households.local_columns)
 	units = residential_units.to_frame(['building_id', 'unit_num'])
@@ -168,6 +169,8 @@ def ual_match_households_to_units(households, residential_units):
 	hh.loc[unplaced, 'unit_id'] = -1
 	orca.add_table('households', hh)
 	return
+
+	orca.broadcast('residential_units', 'households', cast_index=True, onto_on='unit_id')
 
 
 @orca.step('ual_assign_tenure_to_units')
@@ -200,8 +203,7 @@ def ual_assign_tenure_to_units(residential_units, households):
 	own = hh[(hh.hownrent == 1) & (hh.unit_id != -1)].unit_id.values
 	rent = hh[(hh.hownrent == 2) & (hh.unit_id != -1)].unit_id.values
 	units.loc[own, 'hownrent'] = 1
-# MESSING THIS UP FOR TESTING
-	units.loc[rent, 'hownrent'] = 3
+	units.loc[rent, 'hownrent'] = 2
 		
 	print "Initial unit tenure assignment: %d%% owner occupied, %d%% unfilled" % \
 			(round(len(units[units.hownrent == 1])*100/len(units[units.hownrent.notnull()])), \
@@ -272,17 +274,50 @@ def ual_load_rental_listings():
 
 
 @orca.step('ual_reconcile_placed_households')
-def reconcile_placed_households(buildings, residential_units):
+def reconcile_placed_households(households, residential_units):
 	"""
-	We'll need to run this after HLCM...
+	This data maintenance step keeps the building/unit/household correspondence up to 
+	date by reconciling placed households.
+	
+	In the current data model, households should have both a 'building_id' and 'unit_id'
+	when they have been matched with housing. But the existing HLCM models assign only
+	a 'unit_id', so this model step updates the building id's accordingly. 
+	
+	Data expectations
+	-----------------
+	- 'households' table has the following columns:
+		- index that serves as its id
+		- 'unit_id' (int, '-1'-filled)
+		- 'building_id' (int, '-1'-filled)
+	- 'residential_units' table has the following columns:
+		- index that serves as its id
+		- 'building_id' (int, non-missing, corresponds to index of the 'buildings' table)
+	
+	Results
+	-------
+	- updates the 'households' table:
+		- 'building_id' updated where it was -1 but 'unit_id' wasn't
 	"""
+	print "Reconciling placed households..."
+	hh = households.to_frame(['unit_id', 'building_id'])
+	units = residential_units.to_frame(['building_id'])
+	
+	# Filter for households missing a 'building_id' but not a 'unit_id'
+	hh = hh[(hh.building_id == -1) & (hh.unit_id != -1)]
+	
+	# Join building id's
+	hh = pd.merge(hh[['unit_id']], units, left_on='unit_id', right_index=True, how='left')
+	
+	print "%d movers updated" % len(hh)
+	households.update_col_from_series('building_id', hh.building_id)
+	return
 	
 
 @orca.step('ual_reconcile_unplaced_households')
 def reconcile_unplaced_households(households):
 	"""
 	This data maintenance step keeps the building/unit/household correspondence up to 
-	date by reconciling un-placed households.
+	date by reconciling unplaced households.
 	
 	In the current data model, households should have both a 'building_id' and 'unit_id'
 	of -1 when they are not matched with housing. But sometimes only of these is set when
@@ -533,7 +568,7 @@ def ual_rsh_simulate(residential_units, unit_aggregations, settings):
 @orca.step('ual_rrh_simulate')
 def ual_rrh_simulate(residential_units, unit_aggregations, settings):
 	"""
-	Description tk.
+	This uses an altered hedonic specification to generate unit-level rent predictions.
 	
 	Data expectations
 	-----------------
@@ -545,16 +580,6 @@ def ual_rrh_simulate(residential_units, unit_aggregations, settings):
 						   out_fname = 'unit_residential_rent')
 
 	_mtc_clip(residential_units, 'unit_residential_rent', settings, price_scale=0.05/12)
-
-	# Clipping to match the other hedonic (set cap rate as desired)
-# 	if "rsh_simulate" in settings:
-# 		cap_rate = 0.05	 # sale price * cap rate = annual rent
-# 		low = float(settings["rsh_simulate"]["low"]) * cap_rate / 12
-# 		high = float(settings["rsh_simulate"]["high"]) * cap_rate / 12
-# 		residential_units.update_col("unit_residential_rent",
-# 							 residential_units.unit_residential_rent.clip(low, high))
-# 		print "Clipped rrh_simulate produces\n", \
-# 			residential_units.unit_residential_rent.describe()
 	return
 
 
@@ -642,8 +667,6 @@ def ual_hlcm_renter_simulate(households, residential_units, unit_aggregations, u
 									ual_settings.get('rent_equilibration', None))
 
 
-# Maybe allocate low-income people first for both the rental and owner models
-# Four model steps for hlcm
 
 # Add an initialization step (placeholder at least) to specify which units are affordable
 
