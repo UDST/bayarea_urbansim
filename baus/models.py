@@ -575,6 +575,8 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
         print "Adding %d job_spaces" % to_add
         res_units = buildings.residential_units[s]
         # bias selection of places to put job spaces based on res units
+        print res_units.describe()
+        print res_units[res_units < 0]
         add_indexes = np.random.choice(res_units.index.values, size=to_add,
                                        replace=True,
                                        p=(res_units/res_units.sum()))

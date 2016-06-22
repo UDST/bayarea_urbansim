@@ -766,12 +766,11 @@ development_limits:
   "4":
     Office:
       'San Francisco': 3750
-      'Sonoma County': 50  
+      'Sonoma County': 100
     Residential:
       'Half Moon Bay': 43
-      'Sonoma County': 109
     Retail:
-      'Sonoma County': 50
+      'Sonoma County': 100
   "5":
     Office:
       'San Francisco': 4500
@@ -806,3 +805,19 @@ zoning_column_dictionary:
 
 static_parcels:
   - 11280465768398 # city hall
+  - 2240580234395 # sf state
+  - 7299494955245 # sj state
+  - 13202883289710 # sj state
+  - 6193503633797 # sj state
+  - 8603860488630 # sj state
+  - 8173572322083 # ucb
+  - 14259504015679 # labs
+  - 3473860030354 # sfo
+  - 14512305680993 # sonoma state
+  - 15424804982410 # cal state east bay
+  - 7414256675266 # cal state east bay
+  - 8817315949318 # san quentin
+  - 12668875358422 # san quentin
+  
+  
+  
