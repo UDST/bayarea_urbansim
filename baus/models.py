@@ -369,6 +369,9 @@ def residential_developer(feasibility, households, buildings, parcels, year,
             if overshoot > 0:
                 index = new_buildings.tail(1).index[0]
                 index = int(index)
+                # make sure we don't get into a negative unit situation
+                overshoot = min(overshoot,
+                                buildings.local.loc[index, "residential_units"])
                 buildings.local.loc[index, "residential_units"] -= overshoot
 
         summary.add_parcel_output(new_buildings)
