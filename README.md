@@ -15,33 +15,42 @@ Modifications include:
 #### Data schemas
 
 * Builds out the representation of individual housing units to include a semi-persistent tenure status, which is assigned based on characteristics of initial unit occupants
-* Joins additional race/ethnicity PUMS variables to synthetic households
+* Joins additional race/ethnicity PUMS variables to synthetic households [NB: currently missing from the reconciled model, but will be re-added]
 * Adds a representation of market rents alongside market sale prices
 
 #### Model steps
 
 * Residential hedonics predict market rents and sale prices separately, with rents estimated from Craigslist listings
-* Household move-out choice depends on tenure status
+* Household move-out choice is conditional on tenure status
 * Household location choice is modeled separately for renters and owners, and includes race/ethnicity measures as explanatory variables
 * Developer models are updated to produce both rental and ownership housing stock
 
 Other work is in progress; see [wiki](https://github.com/ual/bayarea_urbansim_work/wiki). Notebooks, work history, code samples, etc are kept in a separate [bayarea_urbansim_work](https://github.com/ual/bayarea_urbansim_work) repository. 
 
-#### Current status (April 2016)
+#### Current status (June 2016)
 
-* The MTC and UAL models have diverged quite a bit, including in aspects of their data schemas that will take some work to reconcile
-* For now, both models can be configured and run separately within this branch
-* The MTC model is specified in the `baus` directory ("bay area urban sim"), and associated with the `all.py` and `run.py` scripts
-* The UAL model is specified in the `ual_baus` directory, and associated with the `Estimation.py` and `Simulation.py` scripts
-* The `configs` and `data` folders are shared, with UAL-specific files marked with a prefix
+* The UAL alterations have been refactored as modular orca steps
+* Code is contained in a new file `baus/ual.py`, `configs/ual_settings.yaml` and individual `yaml` files as needed for regression models that have been re-estimated
+* There are *no* changes to `urbansim`, `urbansim_defaults`, or MTC's python scripts
+* MTC and UAL simulation models can be run side-by-side using different lists of orca steps; see `run.py` for details
+* Note that MTC's developer model code requires using the `return-on-cost` branch of `urbansim`
 
-When running the UAL model, use the `ual-development` branch of `urbansim_defaults`.  
-When running the MTC model, use the `master` branch of `urbansim_defaults`. 
+#### Installation
 
-Subsequent README content is from the master branch.
+This setup procedure seems reliable for OS X and Linux. see [ual_baus_install](https://github.com/ual/bayarea_urbansim/blob/ual-development/ual_baus_install_template.sh) for a programmatic version. 
 
-Data
-----
+* Install Anaconda
+* Git-clone the repositories for `orca`, `pandana`, `urbansim`, `urbansim_defaults`, and `bayarea_urbansim`
+* Run `python setup.py develop` for all of them (except `bayarea_urbansim)
+* Switch to the `return-on-cost` branch of `urbansim` and the `ual-development` branch of `bayarea_urbansim`
+* Put the `bayarea_urbansim` data files in place
+* Try running `python run.py`
+
+
+Subsequent README content is from the master branch
+---------------------------------------------------
+
+###Data
 
 We track the data for this project in the Makefile in this repository. The makefile will generally be the most up to date list of which data is needed, where it goes in the directory, etc.
 

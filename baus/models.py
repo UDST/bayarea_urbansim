@@ -14,7 +14,6 @@ from urbansim.developer import sqftproforma, developer
 from urbansim.developer.developer import Developer as dev
 import subsidies
 import summaries
-import ual
 import numpy as np
 import pandas as pd
 
