@@ -1,9 +1,3 @@
-# ual requirements
-
-#h5py>=2.6.0
-#scikit-learn>=0.17.1
-
--e git+https://github.com/UDST/orca.git#egg=orca
--e git+https://github.com/UDST/urbansim.git#egg=urbansim
--e git+https://github.com/UDST/urbansim_defaults.git#egg=urbansim_defaults
-
+-e git+https://github.com/synthicity/urbansim.git@894bc21138011271183fb2734bbd7795e4ee6e86#egg=urbansim
+-e git+https://github.com/synthicity/urbansim_defaults.git@b8086f1c6781b113bd111f088da786f7816fde01#egg=urbansim_defaults
+-e git+https://github.com/UDST/orca.git@73f80f6345f282d8c836e8fcd11b22264cad0ac8#egg=orca
