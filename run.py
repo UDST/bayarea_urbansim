@@ -203,14 +203,14 @@ def run_models(MODE, SCENARIO):
 			"ual_initialize_new_units",		 # set up units for new residential buildings
 			"ual_reconcile_unplaced_households",  # update building/unit/hh correspondence
 
-			"ual_save_intermediate_tables",
+# 			"ual_save_intermediate_tables",
 			
 			#"topsheet",
 			#"diagnostic_output",
 			#"geographic_summary",
 			#"travel_model_output"
 
-        ], iter_vars=[2010,2011,2012,2013,2014])
+        ], iter_vars=[2010, 2011])
 
     elif MODE == "estimation":
 
