@@ -32,12 +32,12 @@ Other work is in progress; see [wiki](https://github.com/ual/bayarea_urbansim_wo
 * All of the UAL alterations have been refactored as modular orca steps
 * This code is contained in `baus/ual.py`, `configs/ual_settings.yaml` and individual `yaml` files as needed for regression models that have been re-estimated
 * There are *no* changes to `urbansim`, `urbansim_defaults`, or MTC's orca initialization and model steps
-* MTC and UAL model steps can be mixed and matched using different lists of orca steps; see `run.py` for examples
+* MTC and UAL model steps can be mixed and matched by passing different lists to orca; see `run.py` for examples
 * Note that MTC's developer model code requires using the `return-on-cost` branch of `urbansim` to avoid crashing when unprofitable subsidized buildings appear to have negative probability of being chosen
 
 #### Installation
 
-The following setup procedure seems reliable for OS X and Linux. see [ual_baus_install.sh](https://github.com/ual/bayarea_urbansim/blob/ual-development/ual_baus_install_template.sh) for a programmatic version. 
+The following setup procedure seems reliable for OS X and Linux. See [ual_baus_install.sh](https://github.com/ual/bayarea_urbansim/blob/ual-development/ual_baus_install_template.sh) for a programmatic version. 
 
 * Install Anaconda
 * Git-clone the repositories for `orca`, `pandana`, `urbansim`, `urbansim_defaults`, and `bayarea_urbansim`
