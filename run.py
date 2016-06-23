@@ -22,7 +22,7 @@ MAPS = True
 LOGS = True
 INTERACT = False
 SCENARIO = None
-MODE = "simulation"
+MODE = "ual_simulation"
 S3 = False
 EVERY_NTH_YEAR = 1
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
@@ -145,7 +145,7 @@ def run_models(MODE, SCENARIO):
         models = get_simulation_models(SCENARIO)
         orca.run(models, iter_vars=years_to_run)
 
-    elif MODE == "ual_testing":
+    elif MODE == "ual_simulation":
 
         # Initialization steps
         orca.run([
@@ -206,12 +206,12 @@ def run_models(MODE, SCENARIO):
 
 # 			"ual_save_intermediate_tables",
 			
-			#"topsheet",
-			#"diagnostic_output",
-			#"geographic_summary",
-			#"travel_model_output"
+			"topsheet",
+			"diagnostic_output",
+			"geographic_summary",
+			"travel_model_output"
 
-        ], iter_vars=[2010, 2011])
+        ], iter_vars=range(2010, 2040+1))
 
     elif MODE == "estimation":
 
