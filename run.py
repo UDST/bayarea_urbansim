@@ -183,12 +183,13 @@ def run_models(MODE, SCENARIO):
 			"households_transition",
 			"ual_reconcile_unplaced_households",  # update building/unit/hh correspondence
 
-			"jobs_relocation",
-			"jobs_transition",
-
 			"ual_hlcm_owner_simulate",  	 # allocate owners to vacant owner-occupied units
 			"ual_hlcm_renter_simulate",      # allocate renters to vacant rental units
 			"ual_reconcile_placed_households",  # update building/unit/hh correspondence
+
+			"jobs_relocation",
+			"jobs_transition",
+			"elcm_simulate",
 
 			"ual_update_building_residential_price",  # apply unit prices to buildings			
 			"price_vars",
