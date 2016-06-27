@@ -152,65 +152,65 @@ def run_models(MODE, SCENARIO):
             "ual_initialize_residential_units",
             "ual_match_households_to_units",
             "ual_assign_tenure_to_units",
-#          	"ual_load_rental_listings",		# required to estimate rental hedonic
+#           "ual_load_rental_listings",     # required to estimate rental hedonic
         ])
 
         # Estimation steps
         orca.run([
-#          	"neighborhood_vars",         	 # street network accessibility
-#          	"regional_vars",             	 # road network accessibility
+#           "neighborhood_vars",             # street network accessibility
+#           "regional_vars",                 # road network accessibility
 #             
-#          	"ual_rrh_estimate",			 	 # estimate residential rental hedonic
+#           "ual_rrh_estimate",              # estimate residential rental hedonic
 # 
-# 			"ual_hlcm_owner_estimate",  	 # estimate location choice for owners
-# 			"ual_hlcm_renter_estimate",  	 # estimate location choice for renters
+#           "ual_hlcm_owner_estimate",       # estimate location choice for owners
+#           "ual_hlcm_renter_estimate",      # estimate location choice for renters
 
         ])
 
         # Simulation steps
         orca.run([
 
-         	"neighborhood_vars",         	# street network accessibility
-         	"regional_vars",             	# road network accessibility
+            "neighborhood_vars",            # street network accessibility
+            "regional_vars",                # road network accessibility
             
-			"ual_rsh_simulate",             # residential sales hedonic for units
-			"ual_rrh_simulate",             # residential rental hedonic for units
-			"nrh_simulate",                 # non-residential rent hedonic
-			
-			"ual_assign_tenure_to_new_units",  # (based on higher of predicted price or rent)
+            "ual_rsh_simulate",             # residential sales hedonic for units
+            "ual_rrh_simulate",             # residential rental hedonic for units
+            "nrh_simulate",                 # non-residential rent hedonic
+            
+            "ual_assign_tenure_to_new_units",  # (based on higher of predicted price or rent)
  
-			"ual_households_relocation",	# uses conditional probabilities
-			"households_transition",
-			"ual_reconcile_unplaced_households",  # update building/unit/hh correspondence
+            "ual_households_relocation",    # uses conditional probabilities
+            "households_transition",
+            "ual_reconcile_unplaced_households",  # update building/unit/hh correspondence
 
-			"ual_hlcm_owner_simulate",  	 # allocate owners to vacant owner-occupied units
-			"ual_hlcm_renter_simulate",      # allocate renters to vacant rental units
-			"ual_reconcile_placed_households",  # update building/unit/hh correspondence
+            "ual_hlcm_owner_simulate",       # allocate owners to vacant owner-occupied units
+            "ual_hlcm_renter_simulate",      # allocate renters to vacant rental units
+            "ual_reconcile_placed_households",  # update building/unit/hh correspondence
 
-			"jobs_relocation",
-			"jobs_transition",
-			"elcm_simulate",
+            "jobs_relocation",
+            "jobs_transition",
+            "elcm_simulate",
 
-			"ual_update_building_residential_price",  # apply unit prices to buildings			
-			"price_vars",
-			"scheduled_development_events",
-			"alt_feasibility",
-			
-			"residential_developer",
-			"developer_reprocess",
-			"retail_developer",
-			"office_developer",
-			
-			"ual_remove_old_units",		     # (for buildings that were removed)
-			"ual_initialize_new_units",		 # set up units for new residential buildings
-			"ual_reconcile_unplaced_households",  # update building/unit/hh correspondence
+            "ual_update_building_residential_price",  # apply unit prices to buildings          
+            "price_vars",
+            "scheduled_development_events",
+            "alt_feasibility",
+            
+            "residential_developer",
+            "developer_reprocess",
+            "retail_developer",
+            "office_developer",
+            
+            "ual_remove_old_units",          # (for buildings that were removed)
+            "ual_initialize_new_units",      # set up units for new residential buildings
+            "ual_reconcile_unplaced_households",  # update building/unit/hh correspondence
 
-# 			"ual_save_intermediate_tables",
-			
-			"topsheet",
-			"diagnostic_output",
-			"geographic_summary",
-			"travel_model_output"
+#           "ual_save_intermediate_tables",
+            
+            "topsheet",
+            "diagnostic_output",
+            "geographic_summary",
+            "travel_model_output"
 
         ], iter_vars=range(2010, 2040+1))
 
