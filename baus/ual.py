@@ -48,15 +48,18 @@ def _ual_create_empty_units(buildings):
 	df : DataFrame
 		Table of units, to be processed within an orca step
 	"""
+	# The '.astype(int)' deals with a bug (?) where the developer model creates 
+	# floating-point unit counts
+	
 	df = pd.DataFrame({
 		'unit_residential_price': 0,
 		'unit_residential_rent': 0,
 		'num_units': 1,
 		'building_id': np.repeat(buildings.index.values,
-								 buildings.residential_units.values),
+								 buildings.residential_units.values.astype(int)),
 		# counter of the units in a building
 		'unit_num': np.concatenate([np.arange(i) for i in \
-									buildings.residential_units.values])
+									buildings.residential_units.values.astype(int)])
 	}).sort_values(by=['building_id', 'unit_num']).reset_index(drop=True)
 	df.index.name = 'unit_id'
 	return df
