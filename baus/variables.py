@@ -383,7 +383,7 @@ def fees_per_unit(parcels, settings, scenario):
 def fees_per_sqft(parcels, settings, scenario):
     s = pd.Series(0, index=parcels.index)
 
-    if scenario == "1":
+    if scenario == "1" or scenario == "4":
         s += parcels.vmt_com_fees
 
     return s
