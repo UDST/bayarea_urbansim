@@ -766,11 +766,13 @@ development_limits:
   "4":
     Office:
       'San Francisco': 3750
-      'Sonoma County': 100
+      'Sonoma County': 1
     Residential:
       'Half Moon Bay': 43
+      'Petaluma': 100
+      'San Jose': 5000
     Retail:
-      'Sonoma County': 100
+      'Sonoma County': 1
   "5":
     Office:
       'San Francisco': 4500
