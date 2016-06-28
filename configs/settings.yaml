@@ -384,7 +384,7 @@ acct_settings:
 
     ceqa_tiering:
       name: "CEQA"
-      enable_in_scenarios: ["1", "2", "3"]
+      enable_in_scenarios: ["1", "2", "3", "4"]
       # any parcel in a tpa
       profitability_adjustment_formula: "(tpp_id > 0) * .01"
 
