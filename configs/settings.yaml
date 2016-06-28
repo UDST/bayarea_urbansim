@@ -769,10 +769,15 @@ development_limits:
       'Sonoma County': 1
     Residential:
       'Half Moon Bay': 43
+      'Brisbane': 180
       'Petaluma': 100
       'San Jose': 5000
       'Mill Valley': 16
+      'Sonoma County': 50
+      'Napa County': 50
     Retail:
+      'Sonoma County': 1
+    Industrial:
       'Sonoma County': 1
   "5":
     Office:
