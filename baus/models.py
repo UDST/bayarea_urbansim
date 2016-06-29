@@ -649,6 +649,40 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
         sqft_by_gtype / 1000000.0
 
 
+def proportional_job_allocation(parcel_id):
+    # this method takes a parcel and increases the number of jobs on the
+    # parcel in proportion to the ratio of sectors that existed in the base year
+    # this is because elcms can't get the distribution right in some cases, e.g.
+    # to keep mostly gov't jobs in city hall, etc - these are largely
+    # institutions and not subject to the market
+
+    # get buildings on this parcel
+    buildings = orca.get_table("buildings").to_frame(
+        ["parcel_id", "job_spaces", "zone_id"]).\
+        query("parcel_id == %d" % parcel_id)
+
+    all_jobs = orca.get_table("jobs").local
+    jobs = all_jobs[all_jobs.building_id.isin(buildings.index)]
+
+    # get job distribution by sector for this parcel
+    job_dist = jobs.empsix.value_counts()
+
+    for index, building in buildings.iteritems():
+        sectors = np.random.choice(job_dist.index, size=building.job_spaces,
+                                   p=job_dist/job_dist.sum())
+        new_jobs = pd.DataFrame({"empsix": sectors, "building_id": index}
+                                index=all_jobs.index.max())
+        all_jobs = all_jobs.append(new_jobs)
+
+    orca.add_table("jobs", all_jobs)
+
+
+@orca.step()
+def static_parcel_proportional_job_allocation(settings):
+    for parcel_id in settings("static_parcels"):
+        proportional_job_allocation(parcel_id)
+
+
 def make_network(name, weight_col, max_distance):
     st = pd.HDFStore(os.path.join(misc.data_dir(), name), "r")
     nodes, edges = st.nodes, st.edges
