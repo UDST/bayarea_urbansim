@@ -371,7 +371,8 @@ def residential_developer(feasibility, households, buildings, parcels, year,
                 index = int(index)
                 # make sure we don't get into a negative unit situation
                 overshoot = min(overshoot,
-                                buildings.local.loc[index, "residential_units"])
+                                buildings.local.loc[index,
+                                                    "residential_units"])
                 buildings.local.loc[index, "residential_units"] -= overshoot
 
         summary.add_parcel_output(new_buildings)
@@ -651,35 +652,49 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
 
 def proportional_job_allocation(parcel_id):
     # this method takes a parcel and increases the number of jobs on the
-    # parcel in proportion to the ratio of sectors that existed in the base year
-    # this is because elcms can't get the distribution right in some cases, e.g.
+    # parcel in proportion to the ratio of sectors that existed in the base yr
+    # this is because elcms can't get the distribution right in some cases, eg
     # to keep mostly gov't jobs in city hall, etc - these are largely
     # institutions and not subject to the market
 
     # get buildings on this parcel
     buildings = orca.get_table("buildings").to_frame(
-        ["parcel_id", "job_spaces", "zone_id"]).\
+        ["parcel_id", "job_spaces", "zone_id", "year_built"]).\
         query("parcel_id == %d" % parcel_id)
 
+    # get jobs in those buildings
     all_jobs = orca.get_table("jobs").local
-    jobs = all_jobs[all_jobs.building_id.isin(buildings.index)]
+    jobs = all_jobs[
+        all_jobs.building_id.isin(buildings.query("year_built <= 2015").index)]
 
     # get job distribution by sector for this parcel
     job_dist = jobs.empsix.value_counts()
 
-    for index, building in buildings.iteritems():
-        sectors = np.random.choice(job_dist.index, size=building.job_spaces,
-                                   p=job_dist/job_dist.sum())
-        new_jobs = pd.DataFrame({"empsix": sectors, "building_id": index}
-                                index=all_jobs.index.max())
-        all_jobs = all_jobs.append(new_jobs)
+    # only add jobs to new buildings records
+    for index, building in buildings.query("year_built > 2015").iterrows():
 
-    orca.add_table("jobs", all_jobs)
+        num_new_jobs = building.job_spaces - len(
+            all_jobs.query("building_id == %d" % index))
+
+        if num_new_jobs == 0:
+            continue
+
+        sectors = np.random.choice(job_dist.index, size=num_new_jobs,
+                                   p=job_dist/job_dist.sum())
+        new_jobs = pd.DataFrame({"empsix": sectors, "building_id": index})
+        # make sure index is incrementing
+        new_jobs.index = new_jobs.index + 1 + np.max(all_jobs.index.values)
+
+        print "Adding {} new jobs to parcel {} with proportional model".format(
+            num_new_jobs, parcel_id)
+        print new_jobs.head()
+        all_jobs = all_jobs.append(new_jobs)
+        orca.add_table("jobs", all_jobs)
 
 
 @orca.step()
-def static_parcel_proportional_job_allocation(settings):
-    for parcel_id in settings("static_parcels"):
+def static_parcel_proportional_job_allocation(static_parcels):
+    for parcel_id in static_parcels:
         proportional_job_allocation(parcel_id)
 
 
