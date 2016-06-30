@@ -773,7 +773,7 @@ development_limits:
       'Petaluma': 100
       'San Jose': 5000
       'Mill Valley': 16
-      'Sonoma County': 50
+      'Sonoma County': 75
       'Napa County': 50
     Retail:
       'Sonoma County': 1
