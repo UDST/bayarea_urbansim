@@ -416,7 +416,7 @@ acct_settings:
     receiving_buildings_filter: pda_id > 0 and residential_units > 1
   vmt_settings:
     sending_buildings_subaccount_def: regional
-    receiving_buildings_filter: vmt_res_cat == 'S'
+    receiving_buildings_filter: pda_id>0
     res_fee_amounts:
       VH: 25000
       H: 15000
