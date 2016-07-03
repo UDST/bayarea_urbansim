@@ -127,6 +127,8 @@ def get_simulation_models(SCENARIO):
 
 def run_models(MODE, SCENARIO):
 
+    orca.run(["correct_baseyear_data"])
+
     if MODE == "simulation":
 
         years_to_run = range(IN_YEAR, OUT_YEAR+1, EVERY_NTH_YEAR)

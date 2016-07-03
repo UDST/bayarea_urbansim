@@ -809,3 +809,46 @@ def mls_appreciation(homesales, year, summary):
 
     summary.add_zone_output(zones, "appreciation", year)
     summary.write_zone_output()
+
+
+@orca.step()
+def correct_baseyear_data(buildings, parcels, jobs):
+    # sonoma county has too much vacancy in the buildings so we're
+    # going to lower it a bit to match job totals - I'm doing it here
+    # as opposed to in datasources as it requires registered orca
+    # variables
+
+    # making sure we have no more than 10% vacancy
+    SURPLUS_VACANCY = .20
+    # count of jobs by building
+    job_counts_by_building = jobs.building_id.value_counts().\
+        reindex(buildings.index).fillna(0)
+    # with a 10% vacancy
+    job_counts_by_building_surplus = \
+        (job_counts_by_building * (1+SURPLUS_VACANCY)).astype('int')
+    # min of job spaces and 10% greater than number of jobs
+    correct_job_spaces = pd.DataFrame(
+        [job_counts_by_building_surplus, buildings.job_spaces]).min()
+    # convert back to non res sqft because job spaces is computed
+    correct_non_res_sqft = correct_job_spaces * buildings.sqft_per_job
+    # get buildings by county
+    buildings_county = misc.reindex(parcels.county, buildings.parcel_id)
+    # filter updates down to Sonoma only
+    correct_non_res_sqft = correct_non_res_sqft[buildings_county == "Sonoma"]
+
+    s = buildings.non_residential_sqft
+    s.loc[correct_non_res_sqft.index] = correct_non_res_sqft.values
+
+    buildings.update_col("non_residential_sqft", s)
+
+    jobs_county = misc.reindex(buildings_county, jobs.building_id)
+
+    print "Vacancy rate by county:\n", \
+        buildings.job_spaces.groupby(buildings_county).sum() / \
+        jobs_county.value_counts() - 1.0
+
+    buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
+    jobs_juris = misc.reindex(buildings_juris, jobs.building_id)
+    s = buildings.job_spaces.groupby(buildings_juris).sum() / \
+        jobs_juris.value_counts() - 1.0
+    print "Vacancy rate by juris:\n", s.to_string()
