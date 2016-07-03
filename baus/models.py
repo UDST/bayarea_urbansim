@@ -574,7 +574,7 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
     res_units = buildings.residential_units[s].sum()
     job_spaces = buildings.job_spaces[s].sum()
 
-    to_add = res_units * .20 - job_spaces
+    to_add = res_units * .05 - job_spaces
     if to_add > 0:
         print "Adding %d job_spaces" % to_add
         res_units = buildings.residential_units[s]
