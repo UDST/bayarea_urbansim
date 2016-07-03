@@ -887,14 +887,14 @@ def correct_baseyear_data(buildings, parcels, jobs):
     # this is the maximum vacancy you can have any a building so it NOT the
     # same thing as setting the vacancy for the entire county
     SURPLUS_VACANCY = buildings_county.map({
-       "Alameda": .7,
-       "Contra Costa": .7,
+       "Alameda": .9,  # down .2
+       "Contra Costa": .7,  # down .17
        "Marin": .3,  # down .14
-       "Napa": .5,
-       "San Francisco": .9,
+       "Napa": .7,  # down .15
+       "San Francisco": .9,  # down .25
        "San Mateo": .28,  # down .15
        "Santa Clara": .35,  # down .18
-       "Solano": .4,
+       "Solano": .4,  # down .17
        "Sonoma": .25,  # down .3 letting this go lower cause it's the problem
     }).fillna(.2)
 
@@ -907,8 +907,6 @@ def correct_baseyear_data(buildings, parcels, jobs):
     # min of job spaces and 10% greater than number of jobs
     correct_job_spaces = pd.DataFrame([
         job_counts_by_building_surplus, buildings.job_spaces]).min()
-    print buildings.index
-    print correct_job_spaces.index
     # convert back to non res sqft because job spaces is computed
     correct_non_res_sqft = correct_job_spaces * buildings.sqft_per_job
 
