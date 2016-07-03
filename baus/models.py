@@ -370,8 +370,9 @@ def residential_developer(feasibility, households, buildings, parcels, year,
                 index = new_buildings.tail(1).index[0]
                 index = int(index)
                 # make sure we don't get into a negative unit situation
-                overshoot = min(overshoot,
-                                buildings.local.loc[index, "residential_units"])
+                overshoot = min(
+                    overshoot,
+                    buildings.local.loc[index, "residential_units"])
                 buildings.local.loc[index, "residential_units"] -= overshoot
 
         summary.add_parcel_output(new_buildings)
@@ -818,28 +819,52 @@ def correct_baseyear_data(buildings, parcels, jobs):
     # as opposed to in datasources as it requires registered orca
     # variables
 
+    '''
+    These are the original vacancies
+    Alameda          0.607865
+    Contra Costa     0.464277
+    Marin            0.326655
+    Napa             0.427900
+    San Francisco    0.714938
+    San Mateo        0.285090
+    Santa Clara      0.368031
+    Solano           0.383663
+    Sonoma           0.434263
+    '''
+
+    # get buildings by county
+    buildings_county = misc.reindex(parcels.county, buildings.parcel_id)
+
     # making sure we have no more than 10% vacancy
-    SURPLUS_VACANCY = .20
+    # this is the maximum vacancy you can have any a building so it NOT the
+    # same thing as setting the vacancy for the entire county
+    SURPLUS_VACANCY = buildings_county.map({
+       "Alameda": .7,
+       "Contra Costa": .7,
+       "Marin": .3,  # down .14
+       "Napa": .5,
+       "San Francisco": .9,
+       "San Mateo": .28,  # down .15
+       "Santa Clara": .35,  # down .18
+       "Solano": .4,
+       "Sonoma": .25,  # down .3 letting this go lower cause it's the problem
+    }).fillna(.2)
+
     # count of jobs by building
     job_counts_by_building = jobs.building_id.value_counts().\
         reindex(buildings.index).fillna(0)
     # with a 10% vacancy
     job_counts_by_building_surplus = \
-        (job_counts_by_building * (1+SURPLUS_VACANCY)).astype('int')
+        (job_counts_by_building * (SURPLUS_VACANCY+1)).astype('int')
     # min of job spaces and 10% greater than number of jobs
-    correct_job_spaces = pd.DataFrame(
-        [job_counts_by_building_surplus, buildings.job_spaces]).min()
+    correct_job_spaces = pd.DataFrame([
+        job_counts_by_building_surplus, buildings.job_spaces]).min()
+    print buildings.index
+    print correct_job_spaces.index
     # convert back to non res sqft because job spaces is computed
     correct_non_res_sqft = correct_job_spaces * buildings.sqft_per_job
-    # get buildings by county
-    buildings_county = misc.reindex(parcels.county, buildings.parcel_id)
-    # filter updates down to Sonoma only
-    correct_non_res_sqft = correct_non_res_sqft[buildings_county == "Sonoma"]
 
-    s = buildings.non_residential_sqft
-    s.loc[correct_non_res_sqft.index] = correct_non_res_sqft.values
-
-    buildings.update_col("non_residential_sqft", s)
+    buildings.update_col("non_residential_sqft", correct_non_res_sqft)
 
     jobs_county = misc.reindex(buildings_county, jobs.building_id)
 
@@ -847,8 +872,10 @@ def correct_baseyear_data(buildings, parcels, jobs):
         buildings.job_spaces.groupby(buildings_county).sum() / \
         jobs_county.value_counts() - 1.0
 
+    '''
     buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
     jobs_juris = misc.reindex(buildings_juris, jobs.building_id)
     s = buildings.job_spaces.groupby(buildings_juris).sum() / \
         jobs_juris.value_counts() - 1.0
     print "Vacancy rate by juris:\n", s.to_string()
+    '''
