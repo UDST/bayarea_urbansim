@@ -3486,7 +3486,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 60315,,Antioch,201 - Open Space (Antioch Dunes),,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,x99
 60316,,Antioch,201 - Public/ Institutional,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,x99
 60317,,Antioch,201 - Rivertown/Urban Waterfront,1.5,,20,,0,1,1,0,0,0,0,0,0,0,0,0,0,0,x99
-60318,,Antioch,201 - Sand Creek,0.5,,20,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,x99
+60318,,Antioch,201 - Sand Creek,0.5,,4,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,x99
 60319,,Antioch,201 - Somersville Road Corridor,0.5,,,,0,0,0,1,1,0,0,0,0,1,1,0,1,1,x99
 60320,,Antioch,201 - State Route 4 Industrial Frontage,1.25,,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,x99
 60321,,Antioch,201 - Western Gateway,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,x99
