@@ -1106,7 +1106,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 8016,60,Larkspur,304 - Educational/Environmental Resources Area,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 8017,60,Larkspur,304 - Open Residential,,,0.2,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 8018,60,Larkspur,304 - Water Area,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-8101,61,Mill Valley,R-P,,,11.616,,1,1,0,0,0,1,0,0,0,0,0,0,0,0,
+8101,61,Mill Valley,R-P,,,1,,1,1,0,0,0,1,0,0,0,0,0,0,0,0,
 8102,61,Mill Valley,RS-6,,25,7.26,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
 8103,61,Mill Valley,RS-7.5,,25,5.808,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
 8104,61,Mill Valley,RS-10,,25,4.356,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
