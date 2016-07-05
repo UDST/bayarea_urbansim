@@ -174,7 +174,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 2616,6,Foster City,607 - Parks,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 2617,6,Foster City,607 - Public/Semi Public,,,,,0,0,0,1,0,0,0,0,0,0,0,0,0,0,
 2618,6,Foster City,607 - Water,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-2701,7,Half Moon Bay,608 - Low Density Residential,0.5,28,8.7,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+2701,7,Half Moon Bay,608 - Low Density Residential,0.5,28,4,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 2702,7,Half Moon Bay,608 - Medium Density Residential,0.5,28,8.7,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,
 2703,7,Half Moon Bay,608 - High Density Residential,,40,29,,0,1,1,0,0,0,0,0,0,0,0,0,0,0,
 2704,7,Half Moon Bay,608 - Commercial Downtown,,36,,,0,0,0,1,0,0,0,0,0,1,0,0,0,0,
