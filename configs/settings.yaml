@@ -767,6 +767,8 @@ development_limits:
     Office:
       'San Francisco': 3000
       'Sonoma County': 1
+      'Half Moon Bay': 1
+      'Yountville': 1
     Residential:
       'Half Moon Bay': 43
       'Brisbane': 180
@@ -784,6 +786,8 @@ development_limits:
       'Woodside': 5
     Retail:
       'Sonoma County': 1
+      'Half Moon Bay': 1
+      'Yountville': 1
     Industrial:
       'Sonoma County': 1
   "5":
