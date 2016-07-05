@@ -765,7 +765,7 @@ development_limits:
       'Half Moon Bay': 43
   "4":
     Office:
-      'San Francisco': 3750
+      'San Francisco': 3000
       'Sonoma County': 1
     Residential:
       'Half Moon Bay': 43
@@ -775,6 +775,13 @@ development_limits:
       'Mill Valley': 16
       'Sonoma County': 75
       'Napa County': 50
+      'Lafayette': 50
+      'Belvedere': 2
+      'Marin County': 55
+      'San Rafael': 140
+      'Calistoga': 5
+      'St Helena': 6
+      'Woodside': 5
     Retail:
       'Sonoma County': 1
     Industrial:
