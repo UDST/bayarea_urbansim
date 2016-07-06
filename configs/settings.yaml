@@ -777,6 +777,9 @@ development_limits:
       'Sonoma County': 1
       'Half Moon Bay': 1
       'Yountville': 1
+      'Benicia': 50
+      'San Mateo County': 50
+      'Contra Costa County': 50
     Residential:
       'Half Moon Bay': 43
       'Brisbane': 180
@@ -797,6 +800,9 @@ development_limits:
       'Yountville': 1
     Industrial:
       'Sonoma County': 1
+      'Benicia': 50
+      'San Mateo County': 50
+      'Contra Costa County': 50
   "5":
     Office:
       'San Francisco': 4500
