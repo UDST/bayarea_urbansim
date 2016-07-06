@@ -383,7 +383,7 @@ def fees_per_unit(parcels, settings, scenario):
 def fees_per_sqft(parcels, settings, scenario):
     s = pd.Series(0, index=parcels.index)
 
-    if scenario == "1":
+    if scenario == "1" or scenario == "4":
         s += parcels.vmt_com_fees
 
     return s
@@ -413,7 +413,14 @@ def performance_zone(parcels, parcels_geography):
 
 @orca.column('parcels', cache=True)
 def juris(parcels, parcels_geography):
-    return parcels_geography.juris_name.reindex(parcels.index)
+    s = parcels_geography.juris_name.reindex(parcels.index)
+    s.loc[2054504] = "Marin County"
+    s.loc[2054505] = "Santa Clara County"
+    s.loc[2054506] = "Marin County"
+    s.loc[572927] = "Contra Costa County"
+    # assert no empty juris values
+    assert True not in s.isnull().value_counts()
+    return s
 
 
 @orca.column('parcels', 'ave_sqft_per_unit', cache=True)
@@ -498,6 +505,13 @@ def parcel_is_allowed(form):
 
     s = pd.concat(allowed, axis=1).max(axis=1).\
         reindex(orca.get_table('parcels').index).fillna(False)
+
+    settings = orca.get_injectable("settings")
+    if "eliminate_retail_zoning_from_juris" in settings and form == "retail":
+        print s.value_counts()
+        s *= ~orca.get_table("parcels").juris.isin(
+            settings["eliminate_retail_zoning_from_juris"])
+        print s.value_counts()
 
     return s.astype("bool")
 

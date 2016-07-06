@@ -25,6 +25,11 @@ set_nan_price_to_zero: True
 parcel_size_factor: 10.764
 
 
+# this is really because we don't have limits right now for retail
+eliminate_retail_zoning_from_juris:
+  - 'Sonoma County'
+
+
 clip_sqft_per_unit_based_on_dua:
   - threshold: 50
     max: 1000
@@ -384,7 +389,7 @@ acct_settings:
 
     ceqa_tiering:
       name: "CEQA"
-      enable_in_scenarios: ["1", "2", "3"]
+      enable_in_scenarios: ["1", "2", "3", "4"]
       # any parcel in a tpa
       profitability_adjustment_formula: "(tpp_id > 0) * .01"
 
@@ -416,15 +421,15 @@ acct_settings:
     receiving_buildings_filter: pda_id > 0 and residential_units > 1
   vmt_settings:
     sending_buildings_subaccount_def: regional
-    receiving_buildings_filter: vmt_res_cat == 'S'
+    receiving_buildings_filter: pda_id>0
     res_fee_amounts:
       VH: 25000
       H: 15000
       MH: 5000
     com_fee_amounts:
-      VH: 20
-      H: 10
-      MH: 6
+      VH: 30
+      H: 15
+      MH: 9
   sb743_settings:
     enable: true
     sb743_pcts:
@@ -765,9 +770,30 @@ development_limits:
       'Half Moon Bay': 43
   "4":
     Office:
-      'San Francisco': 4500
+      'San Francisco': 3000
+      'Sonoma County': 1
+      'Half Moon Bay': 1
+      'Yountville': 1
     Residential:
       'Half Moon Bay': 43
+      'Brisbane': 180
+      'Petaluma': 100
+      'San Jose': 5000
+      'Mill Valley': 16
+      'Sonoma County': 75
+      'Napa County': 50
+      'Lafayette': 50
+      'Belvedere': 2
+      'Marin County': 55
+      'San Rafael': 140
+      'Calistoga': 5
+      'Woodside': 5
+    Retail:
+      'Sonoma County': 1
+      'Half Moon Bay': 1
+      'Yountville': 1
+    Industrial:
+      'Sonoma County': 1
   "5":
     Office:
       'San Francisco': 4500
@@ -802,3 +828,19 @@ zoning_column_dictionary:
 
 static_parcels:
   - 11280465768398 # city hall
+  - 2240580234395 # sf state
+  - 7299494955245 # sj state
+  - 13202883289710 # sj state
+  - 6193503633797 # sj state
+  - 8603860488630 # sj state
+  - 8173572322083 # ucb
+  - 14259504015679 # labs
+  - 3473860030354 # sfo
+  - 14512305680993 # sonoma state
+  - 15424804982410 # cal state east bay
+  - 7414256675266 # cal state east bay
+  - 8817315949318 # san quentin
+  - 12668875358422 # san quentin
+  
+  
+  
