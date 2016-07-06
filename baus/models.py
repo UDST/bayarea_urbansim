@@ -895,15 +895,25 @@ def correct_baseyear_data(buildings, parcels, jobs):
 
     '''
     After round two of changes
+    Alameda          0.392677
+    Contra Costa     0.289937
+    Marin            0.250259
+    Napa             0.272657
+    San Francisco    0.468813
+    San Mateo        0.137320
+    Santa Clara      0.185758
+    Solano           0.287250
+    Sonoma           0.144422
     '''
 
     # get buildings by county
     buildings_county = misc.reindex(parcels.county, buildings.parcel_id)
+    buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
 
     # making sure we have no more than 10% vacancy
     # this is the maximum vacancy you can have any a building so it NOT the
     # same thing as setting the vacancy for the entire county
-    SURPLUS_VACANCY = buildings_county.map({
+    SURPLUS_VACANCY_COUNTY = buildings_county.map({
        "Alameda": .9,  # down .2
        "Contra Costa": .7,  # down .17
        "Marin": .5,  # down .14
@@ -914,6 +924,13 @@ def correct_baseyear_data(buildings, parcels, jobs):
        "Solano": .7,  # down .17
        "Sonoma": .25,  # down .3 letting this go lower cause it's the problem
     }).fillna(.2)
+
+    SURPLUS_VACANCY_JURIS = buildings_juris.map({
+       "Yountville": .2 
+    })
+
+    SURPLUS_VACANCY = pd.DataFrame([
+       SURPLUS_VACANCY_COUNTY, SURPLUS_VACANCY_JURIS]).min()
 
     # count of jobs by building
     job_counts_by_building = jobs.building_id.value_counts().\
@@ -935,8 +952,8 @@ def correct_baseyear_data(buildings, parcels, jobs):
         buildings.job_spaces.groupby(buildings_county).sum() / \
         jobs_county.value_counts() - 1.0
 
-    buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
     jobs_juris = misc.reindex(buildings_juris, jobs.building_id)
+
     s = buildings.job_spaces.groupby(buildings_juris).sum() / \
         jobs_juris.value_counts() - 1.0
     print "Vacancy rate by juris:\n", s.to_string()
