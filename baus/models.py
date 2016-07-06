@@ -935,10 +935,8 @@ def correct_baseyear_data(buildings, parcels, jobs):
         buildings.job_spaces.groupby(buildings_county).sum() / \
         jobs_county.value_counts() - 1.0
 
-    '''
     buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
     jobs_juris = misc.reindex(buildings_juris, jobs.building_id)
     s = buildings.job_spaces.groupby(buildings_juris).sum() / \
         jobs_juris.value_counts() - 1.0
     print "Vacancy rate by juris:\n", s.to_string()
-    '''
