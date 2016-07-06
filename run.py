@@ -208,7 +208,7 @@ if SLACK:
     slack.chat.post_message(
         '#sim_updates',
         'Starting simulation %d on host %s (scenario: %s)' %
-        (run_num, host, SCENARIO))
+        (run_num, host, SCENARIO), as_user=True)
 
 try:
 
@@ -220,7 +220,7 @@ except Exception as e:
         slack.chat.post_message(
             '#sim_updates',
             'DANG!  Simulation failed for %d on host %s'
-            % (run_num, host))
+            % (run_num, host), as_user=True)
     else:
         raise e
     sys.exit(0)
@@ -239,17 +239,18 @@ if MAPS:
 if SLACK:
     slack.chat.post_message(
         '#sim_updates',
-        'Completed simulation %d on host %s' % (run_num, host))
+        'Completed simulation %d on host %s' % (run_num, host), as_user=True)
 
     slack.chat.post_message(
         '#sim_updates',
         'UrbanSim explorer is available at ' +
-        'http://urbanforecast.com/sim_explorer%d.html' % run_num)
+        'http://urbanforecast.com/sim_explorer%d.html' % run_num, as_user=True)
 
     slack.chat.post_message(
         '#sim_updates',
         'Final topsheet is available at ' +
-        'http://urbanforecast.com/runs/run%d_topsheet_2040.log' % run_num)
+        'http://urbanforecast.com/runs/run%d_topsheet_2040.log' % run_num,
+        as_user=True)
 
 if MODE == "simulation":
     # compute and write the difference report at the superdistrict level
@@ -277,10 +278,11 @@ if SLACK and MODE == "simulation":
             '#sim_updates',
             ('Difference report is available at ' +
              'http://urbanforecast.com/runs/run%d_difference_report.log ' +
-             '- %d line(s)') % (run_num, sum_lines))
+             '- %d line(s)') % (run_num, sum_lines),
+            as_user=True)
     else:
         slack.chat.post_message(
-            '#sim_updates', "No differences with reference run.")
+            '#sim_updates', "No differences with reference run.", as_user=True)
 
 if S3:
     try:
