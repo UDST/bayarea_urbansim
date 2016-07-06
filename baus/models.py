@@ -362,7 +362,7 @@ def residential_developer(feasibility, households, buildings, parcels, year,
         if new_buildings is not None:
             new_buildings["subsidized"] = False
 
-        if final_target is not None:
+        if final_target is not None and new_buildings is not None:
             # make sure we don't overbuild the target for the whole simulation
             overshoot = new_buildings.net_units.sum() - max_target
 
