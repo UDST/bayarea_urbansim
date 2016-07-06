@@ -880,6 +880,23 @@ def correct_baseyear_data(buildings, parcels, jobs):
     Sonoma           0.434263
     '''
 
+    '''
+    After round one of changes
+    Alameda          0.392677
+    Contra Costa     0.289937
+    Marin            0.183273
+    Napa             0.280621
+    San Francisco    0.468813
+    San Mateo        0.137320
+    Santa Clara      0.185758
+    Solano           0.211494
+    Sonoma           0.144422
+    '''
+
+    '''
+    After round two of changes
+    '''
+
     # get buildings by county
     buildings_county = misc.reindex(parcels.county, buildings.parcel_id)
 
@@ -889,12 +906,12 @@ def correct_baseyear_data(buildings, parcels, jobs):
     SURPLUS_VACANCY = buildings_county.map({
        "Alameda": .9,  # down .2
        "Contra Costa": .7,  # down .17
-       "Marin": .3,  # down .14
+       "Marin": .5,  # down .14
        "Napa": .7,  # down .15
        "San Francisco": .9,  # down .25
        "San Mateo": .28,  # down .15
        "Santa Clara": .35,  # down .18
-       "Solano": .4,  # down .17
+       "Solano": .7,  # down .17
        "Sonoma": .25,  # down .3 letting this go lower cause it's the problem
     }).fillna(.2)
 
