@@ -880,32 +880,6 @@ def correct_baseyear_data(buildings, parcels, jobs):
     Sonoma           0.434263
     '''
 
-    '''
-    After round one of changes
-    Alameda          0.392677
-    Contra Costa     0.289937
-    Marin            0.183273
-    Napa             0.280621
-    San Francisco    0.468813
-    San Mateo        0.137320
-    Santa Clara      0.185758
-    Solano           0.211494
-    Sonoma           0.144422
-    '''
-
-    '''
-    After round two of changes
-    Alameda          0.392677
-    Contra Costa     0.289937
-    Marin            0.250259
-    Napa             0.272657
-    San Francisco    0.468813
-    San Mateo        0.137320
-    Santa Clara      0.185758
-    Solano           0.287250
-    Sonoma           0.144422
-    '''
-
     # get buildings by county
     buildings_county = misc.reindex(parcels.county, buildings.parcel_id)
     buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
@@ -914,19 +888,20 @@ def correct_baseyear_data(buildings, parcels, jobs):
     # this is the maximum vacancy you can have any a building so it NOT the
     # same thing as setting the vacancy for the entire county
     SURPLUS_VACANCY_COUNTY = buildings_county.map({
-       "Alameda": .9,  # down .2
-       "Contra Costa": .7,  # down .17
-       "Marin": .5,  # down .14
-       "Napa": .7,  # down .15
-       "San Francisco": .9,  # down .25
-       "San Mateo": .28,  # down .15
-       "Santa Clara": .35,  # down .18
-       "Solano": .7,  # down .17
-       "Sonoma": .25,  # down .3 letting this go lower cause it's the problem
+       "Alameda": .9,
+       "Contra Costa": .7,
+       "Marin": .4,
+       "Napa": .7,
+       "San Francisco": .9,
+       "San Mateo": .28,
+       "Santa Clara": .35,
+       "Solano": .55,
+       "Sonoma": .35,
     }).fillna(.2)
 
     SURPLUS_VACANCY_JURIS = buildings_juris.map({
-       "Yountville": .2 
+       "Yountville": .2,
+       "Benicia": .2
     })
 
     SURPLUS_VACANCY = pd.DataFrame([
