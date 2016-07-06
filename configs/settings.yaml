@@ -773,10 +773,13 @@ development_limits:
       'Half Moon Bay': 43
   "4":
     Office:
-      'San Francisco': 3000
+      'San Francisco': 3750
       'Sonoma County': 1
       'Half Moon Bay': 1
       'Yountville': 1
+      'Benicia': 50
+      'San Mateo County': 50
+      'Contra Costa County': 50
     Residential:
       'Half Moon Bay': 43
       'Brisbane': 180
@@ -787,16 +790,21 @@ development_limits:
       'Napa County': 50
       'Lafayette': 50
       'Belvedere': 2
-      'Marin County': 55
+      'Marin County': 1
       'San Rafael': 140
       'Calistoga': 5
       'Woodside': 5
+      'Moraga': 25
+      'St. Helena': 6
     Retail:
       'Sonoma County': 1
       'Half Moon Bay': 1
       'Yountville': 1
     Industrial:
       'Sonoma County': 1
+      'Benicia': 50
+      'San Mateo County': 50
+      'Contra Costa County': 50
   "5":
     Office:
       'San Francisco': 4500
