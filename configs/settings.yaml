@@ -764,12 +764,12 @@ cost_shifters:
 development_limits:
   default:
     Office:
-      'San Francisco': 3000
+      'San Francisco': 3500
     Residential:
       'Half Moon Bay': 43
   "2":
     Office:
-      'San Francisco': 4500
+      'San Francisco': 5250
     Residential:
       'Half Moon Bay': 43
   "3":
@@ -777,7 +777,7 @@ development_limits:
       'Half Moon Bay': 43
   "4":
     Office:
-      'San Francisco': 3750
+      'San Francisco': 3500
       'Sonoma County': 1
       'Half Moon Bay': 1
       'Yountville': 1
@@ -814,7 +814,7 @@ development_limits:
       'Contra Costa County': 50
   "5":
     Office:
-      'San Francisco': 4500
+      'San Francisco': 5250
     Residential:
       'Half Moon Bay': 43
 
