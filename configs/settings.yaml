@@ -30,7 +30,11 @@ eliminate_retail_zoning_from_juris:
   - 'Sonoma County'
   - 'Contra Costa County'
   - 'San Mateo County'
+  - 'Solano County'
   - 'Benicia'
+  - 'Brentwood'
+  - 'Antioch'
+  - 'Yountville'
 
 
 clip_sqft_per_unit_based_on_dua:
@@ -780,6 +784,9 @@ development_limits:
       'Benicia': 50
       'San Mateo County': 50
       'Contra Costa County': 50
+      'Brentwood': 1
+      'Solano County': 1
+      'Antioch': 1
     Residential:
       'Half Moon Bay': 43
       'Brisbane': 180
