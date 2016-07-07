@@ -508,10 +508,8 @@ def parcel_is_allowed(form):
 
     settings = orca.get_injectable("settings")
     if "eliminate_retail_zoning_from_juris" in settings and form == "retail":
-        print s.value_counts()
         s *= ~orca.get_table("parcels").juris.isin(
             settings["eliminate_retail_zoning_from_juris"])
-        print s.value_counts()
 
     return s.astype("bool")
 
