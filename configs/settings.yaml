@@ -778,15 +778,15 @@ development_limits:
   "4":
     Office:
       'San Francisco': 3500
-      'Sonoma County': 1
+      'Sonoma County': 10
       'Half Moon Bay': 1
       'Yountville': 1
-      'Benicia': 50
-      'San Mateo County': 50
-      'Contra Costa County': 50
-      'Brentwood': 1
-      'Solano County': 1
-      'Antioch': 1
+      'Benicia': 200
+      'San Mateo County': 150
+      'Contra Costa County': 130
+      'Brentwood': 85
+      'Solano County': 30
+      'Antioch': 500
     Residential:
       'Half Moon Bay': 43
       'Brisbane': 180
