@@ -503,7 +503,7 @@ def parcel_is_allowed(form):
 
     allowed = allowed + allowed2
 
-    allowed = pd.concat(allowed, axis=1).max(axis=1).\
+    allowed = pd.DataFrame(allowed).max().\
         reindex(orca.get_table('parcels').index).fillna(False)
 
     # also check if the scenario based zoning drops the building type
@@ -513,8 +513,8 @@ def parcel_is_allowed(form):
 
     disallowed = pd.DataFrame(disallowed).max().\
         reindex(orca.get_table('parcels').index).fillna(False)
- 
-    allowed &= ~disallowed
+
+    allowed = allowed.astype('bool') & ~disallowed
 
     settings = orca.get_injectable("settings")
     if "eliminate_retail_zoning_from_juris" in settings and form == "retail":
