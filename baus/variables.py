@@ -499,21 +499,29 @@ def parcel_is_allowed(form):
 
     # also check if the scenario based zoning adds the building type
     allowed2 = [orca.get_table('zoning_scenario')
-                ['type%d' % typ] > 0 for typ in form_to_btype[form]]
+                ['add-type%d' % typ] > 0 for typ in form_to_btype[form]]
 
     allowed = allowed + allowed2
 
-    s = pd.concat(allowed, axis=1).max(axis=1).\
+    allowed = pd.DataFrame(allowed).max().\
         reindex(orca.get_table('parcels').index).fillna(False)
+
+    # also check if the scenario based zoning drops the building type
+    # NOTE THAT DROPPING OVERRIDES ADDING!
+    disallowed = [orca.get_table('zoning_scenario')
+                  ['drop-type%d' % typ] > 0 for typ in form_to_btype[form]]
+
+    disallowed = pd.DataFrame(disallowed).max().\
+        reindex(orca.get_table('parcels').index).fillna(False)
+
+    allowed = allowed.astype('bool') & ~disallowed
 
     settings = orca.get_injectable("settings")
     if "eliminate_retail_zoning_from_juris" in settings and form == "retail":
-        print s.value_counts()
-        s *= ~orca.get_table("parcels").juris.isin(
+        allowed *= ~orca.get_table("parcels").juris.isin(
             settings["eliminate_retail_zoning_from_juris"])
-        print s.value_counts()
 
-    return s.astype("bool")
+    return allowed.astype("bool")
 
 
 @orca.column('parcels', 'first_building_type_id')
@@ -1080,18 +1088,31 @@ def effective_max_dua(zoning_baseline, parcels, scenario):
 
     max_dua_from_height = max_far_from_height * 43560 / GROSS_AVE_UNIT_SIZE
 
-    s = pd.concat([
+    s = pd.DataFrame([
         zoning_baseline.max_dua,
         max_dua_from_far,
         max_dua_from_height
-    ], axis=1).min(axis=1)
+    ]).min()
+
+    # take the max dua IFF the upzone value is greater than the current value
+    # i.e. don't let the upzoning operation accidentally downzone
 
     scenario_max_dua = orca.get_table("zoning_scenario").dua_up
 
-    s = pd.concat([
+    s = pd.DataFrame([
         s,
         scenario_max_dua
-    ], axis=1).max(axis=1)
+    ]).max()
+
+    # take the min dua IFF the upzone value is less than the current value
+    # i.e. don't let the downzoning operation accidentally upzone
+
+    scenario_max_dua = orca.get_table("zoning_scenario").dua_down
+
+    s = pd.DataFrame([
+        s,
+        scenario_max_dua
+    ]).min()
 
     s3 = parcel_is_allowed('residential')
 
@@ -1105,17 +1126,30 @@ def effective_max_far(zoning_baseline, parcels, scenario):
     max_far_from_height = (zoning_baseline.max_height / HEIGHT_PER_STORY) * \
         PARCEL_USE_EFFICIENCY
 
-    s = pd.concat([
+    s = pd.DataFrame([
         zoning_baseline.max_far,
         max_far_from_height
-    ], axis=1).min(axis=1)
+    ]).min()
+
+    # take the max far IFF the upzone value is greater than the current value
+    # i.e. don't let the upzoning operation accidentally downzone
 
     scenario_max_far = orca.get_table("zoning_scenario").far_up
 
-    s = pd.concat([
+    s = pd.DataFrame([
         s,
         scenario_max_far
-    ], axis=1).max(axis=1)
+    ]).max()
+
+    # take the max far IFF the downzone value is less than the current value
+    # i.e. don't let the downzoning operation accidentally upzone
+
+    scenario_max_far = orca.get_table("zoning_scenario").far_down
+
+    s = pd.DataFrame([
+        s,
+        scenario_max_far
+    ]).min()
 
     return s.reindex(parcels.index).fillna(0).astype('float')
 
