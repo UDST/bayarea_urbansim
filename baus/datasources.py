@@ -310,7 +310,11 @@ def zoning_scenario(parcels_geography, scenario, settings):
     d = {k: "type%d" % v for k, v in settings["building_type_map2"].items()}
 
     for k, v in d.items():
-        scenario_zoning[v] = scenario_zoning.add_bldg.str.contains(k)
+        scenario_zoning['add-'+v] = scenario_zoning.add_bldg.str.contains(k)
+
+    for k, v in d.items():
+        scenario_zoning['drop-'+v] = scenario_zoning.drop_bldg.\
+            astype(str).str.contains(k)
 
     return pd.merge(parcels_geography.to_frame().reset_index(),
                     scenario_zoning,
