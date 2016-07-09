@@ -436,9 +436,9 @@ acct_settings:
       H: 15000
       MH: 5000
     com_fee_amounts:
-      VH: 30
-      H: 15
-      MH: 9
+      VH: 45
+      H: 22
+      MH: 12
   sb743_settings:
     enable: true
     sb743_pcts:
