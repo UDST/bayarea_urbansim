@@ -32,6 +32,7 @@ eliminate_retail_zoning_from_juris:
   - 'San Mateo County'
   - 'Solano County'
   - 'Napa County'
+  - 'Marin County'
   - 'Benicia'
   - 'Brentwood'
   - 'Antioch'
