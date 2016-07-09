@@ -888,19 +888,19 @@ def correct_baseyear_data(buildings, parcels, jobs):
     # this is the maximum vacancy you can have any a building so it NOT the
     # same thing as setting the vacancy for the entire county
     SURPLUS_VACANCY_COUNTY = buildings_county.map({
-       "Alameda": .9,
-       "Contra Costa": .7,
-       "Marin": .4,
+       "Alameda": .95,
+       "Contra Costa": .6,
+       "Marin": .3,
        "Napa": .7,
-       "San Francisco": .9,
+       "San Francisco": .95,
        "San Mateo": .28,
-       "Santa Clara": .35,
-       "Solano": .55,
+       "Santa Clara": .33,
+       "Solano": .50,
        "Sonoma": .35,
     }).fillna(.2)
 
     SURPLUS_VACANCY_JURIS = buildings_juris.map({
-       "Yountville": .2,
+       "Yountville": .1,
        "Benicia": .2
     })
 
