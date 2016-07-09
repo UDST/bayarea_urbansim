@@ -790,6 +790,7 @@ development_limits:
       'Brentwood': 85
       'Solano County': 30
       'Antioch': 250
+      'Brisbane': 350
     Residential:
       'Half Moon Bay': 43
       'Brisbane': 180
