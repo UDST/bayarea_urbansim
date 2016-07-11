@@ -273,11 +273,11 @@ def reconcile_placed_households(households, residential_units):
 	Data expectations
 	-----------------
 	- 'households' table has the following columns:
-		- index that serves as its id
+		- index 'household_id'
 		- 'unit_id' (int, '-1'-filled)
 		- 'building_id' (int, '-1'-filled)
 	- 'residential_units' table has the following columns:
-		- index that serves as its id
+		- index 'unit_id'
 		- 'building_id' (int, non-missing, corresponds to index of the 'buildings' table)
 	
 	Results
@@ -286,14 +286,15 @@ def reconcile_placed_households(households, residential_units):
 		- 'building_id' updated where it was -1 but 'unit_id' wasn't
 	"""
 	print "Reconciling placed households..."
-	hh = households.to_frame(['unit_id', 'building_id'])
-	units = residential_units.to_frame(['building_id'])
+	hh = households.to_frame(['unit_id', 'building_id']).reset_index()
+	units = residential_units.to_frame(['building_id']).reset_index()
 	
 	# Filter for households missing a 'building_id' but not a 'unit_id'
 	hh = hh[(hh.building_id == -1) & (hh.unit_id != -1)]
 	
-	# Join building id's
-	hh = pd.merge(hh[['unit_id']], units, left_on='unit_id', right_index=True, how='left')
+	# Join building id's to the filtered households, using mapping from the units table
+	hh = hh.drop('building_id', axis=1)
+	hh = pd.merge(hh, units, on='unit_id', how='left').set_index('household_id')
 	
 	print "%d movers updated" % len(hh)
 	households.update_col_from_series('building_id', hh.building_id)
