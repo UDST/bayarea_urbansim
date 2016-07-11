@@ -900,7 +900,7 @@ def correct_baseyear_data(buildings, parcels, jobs):
     }).fillna(.2)
 
     SURPLUS_VACANCY_JURIS = buildings_juris.map({
-       "Yountville": .1,
+       "Yountville": .001,
        "Benicia": .2
     })
 
