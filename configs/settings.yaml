@@ -791,6 +791,9 @@ development_limits:
       'Solano County': 30
       'Antioch': 250
       'Brisbane': 350
+      'Los Altos Hills': 1
+      'Pacifica': 1
+      'Woodside': 1
     Residential:
       'Half Moon Bay': 43
       'Brisbane': 180
@@ -808,8 +811,6 @@ development_limits:
       'Woodside': 5
       'Moraga': 25
       'St. Helena': 6
-      'Los Altos Hills': 1
-      'Pacifica': 1
     Retail:
       'Sonoma County': 1
       'Half Moon Bay': 1
