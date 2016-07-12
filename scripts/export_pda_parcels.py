@@ -4,7 +4,7 @@ import json
 from bson import json_util
 import pandas as pd
 
-parcels = pd.read_csv("parcels.csv").dropna(subset=["pda"])
+parcels = pd.read_csv("parcels.csv").dropna(subset=["pda"]).fillna("na")
 
 parcels["nodev"] = parcels.nodev.astype('int')
 
