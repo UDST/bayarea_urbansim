@@ -29,7 +29,7 @@ for pda in pdas.unique():
 
     with open("output/%s.json" % pda, "w") as f:
 
-        pids = pdas[pdas == pda].index
+        pids = pdas[pdas == pda].parcel_id
 
         features = [fix(p) for p in db['places'].find(
             {
