@@ -584,6 +584,12 @@ def subsidized_residential_feasibility(
 
     orca.add_table("feasibility", feasibility)
 
+    df = orca.get_table("feasibility").to_frame()
+    df = df.stack(level=0).reset_index(level=1, drop=True)
+    df.to_csv("runs/run{}_feasibility_{}.csv".format(
+        orca.get_injectable("run_number"),
+        orca.get_injectable("year")))
+
 
 @orca.step('subsidized_residential_developer_vmt')
 def subsidized_residential_developer_vmt(
