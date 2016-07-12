@@ -301,29 +301,6 @@ def reconcile_placed_households(households, residential_units):
 	return
 	
 
-@orca.step('ual_reconcile_placed_households_test')
-def reconcile_placed_households(households, residential_units):
-	"""
-	Trying to establish why the household indexing seems to have been working despite
-	that pd.merge() ought to be creating a new index..
-	"""
-	print "Reconciling placed households..."
-	hh = households.to_frame(['unit_id', 'building_id'])
-	units = residential_units.to_frame(['building_id'])
-	
-	# Filter for households missing a 'building_id' but not a 'unit_id'
-	hh = hh[(hh.building_id == -1) & (hh.unit_id != -1)]
-	
-	# Join building id's to the filtered households, using mapping from the units table
-	hh = pd.merge(hh[['unit_id']], units, left_on='unit_id', right_index=True, how='left')
-	
-	print hh[:5]
-	
-	print "%d movers updated" % len(hh)
-	households.update_col_from_series('building_id', hh.building_id)
-	return
-	
-
 @orca.step('ual_reconcile_unplaced_households')
 def reconcile_unplaced_households(households):
 	"""

@@ -185,7 +185,7 @@ def run_models(MODE, SCENARIO):
 
             "ual_hlcm_owner_simulate",       # allocate owners to vacant owner-occupied units
             "ual_hlcm_renter_simulate",      # allocate renters to vacant rental units
-            "ual_reconcile_placed_households_test",  # update building/unit/hh correspondence
+            "ual_reconcile_placed_households",  # update building/unit/hh correspondence
 
 #             "jobs_relocation",
 #             "jobs_transition",
