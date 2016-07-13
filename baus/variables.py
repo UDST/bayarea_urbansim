@@ -191,9 +191,17 @@ def empsix_id(jobs, settings):
 # be underfilled and othersoverfilled which should yield an average of
 # the sqft_per_job table
 @orca.column('buildings', 'job_spaces', cache=False)
-def job_spaces(buildings):
+def job_spaces(buildings, superdistricts):
+
+    # this factor changes all sqft per job according to which superdistrict
+    # the building is in - this is so denser areas can have lower sqft
+    # per job - this is a simple multiple so a number 1.1 increases the
+    # sqft per job by 10% and .9 decreases it by 10%
+    sqft_per_job = buildings.sqft_per_job * \
+        buildings.superdistrict.map(superdistricts.sqft_per_job_factor)
+
     return (buildings.non_residential_sqft /
-            buildings.sqft_per_job).fillna(0).round().astype('int')
+            sqft_per_job).fillna(0).round().astype('int')
 
 
 @orca.column('buildings')
@@ -283,6 +291,11 @@ def juris_ave_income(parcels, buildings):
 @orca.column('buildings', 'is_sanfran', cache=True)
 def is_sanfran(parcels, buildings):
     return misc.reindex(parcels.is_sanfran, buildings.parcel_id)
+
+
+@orca.column('buildings', cache=True)
+def superdistrict(buildings, taz):
+    return misc.reindex(taz.sd, buildings.zone_id)
 
 
 @orca.column('buildings', 'sqft_per_unit', cache=True)
