@@ -8,6 +8,9 @@ parcels = pd.read_csv("parcels.csv").dropna(subset=["pda"]).fillna("na")
 
 parcels["nodev"] = parcels.nodev.astype('int')
 
+# use as index and as a column
+parcels.index = parcels.parcel_id
+
 pdas = parcels.pda
 
 db = MongoClient('localhost', 27017).togethermap
@@ -29,7 +32,7 @@ for pda in pdas.unique():
 
     with open("output/%s.json" % pda, "w") as f:
 
-        pids = pdas[pdas == pda].parcel_id
+        pids = parcels[pdas == pda].parcel_id
 
         features = [fix(p) for p in db['places'].find(
             {
