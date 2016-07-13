@@ -12,7 +12,7 @@ from scripts.output_csv_utils import format_df
 @orca.step("topsheet")
 def topsheet(households, jobs, buildings, parcels, zones, year,
              run_number, taz_geography, parcels_zoning_calculations,
-             summary, settings, parcels_geography):
+             summary, settings, parcels_geography, abag_targets):
 
     hh_by_subregion = misc.reindex(taz_geography.subregion,
                                    households.zone_id).value_counts()
@@ -165,7 +165,64 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
     jobs_by_housing = jobs_by_county / households_by_county.replace(0, 1)
     write("Jobs/housing balance:\n" + str(jobs_by_housing))
 
+    for geo, typ, corr in compare_to_targets(parcels, buildings, jobs,
+                                              households, abag_targets):
+        write("{} in {} have correlation of {:,.3f} with targets".format(
+            typ, geo, corr
+        ))
+
     f.close()
+
+def compare_to_targets(parcels, buildings, jobs, households, abag_targets):
+
+    # yes a similar join is used in the summarize step below - but it's
+    # better to keep it clean and separate
+
+    abag_targets = abag_targets.to_frame()
+    abag_targets["pda_fill_juris"] = abag_targets["joinkey"].\
+        replace("Non-PDA", np.nan).replace("Total", np.nan).\
+        str.upper().fillna(abag_targets.juris)
+
+    households_df = orca.merge_tables(
+        'households',
+        [parcels, buildings, households],
+        columns=['pda', 'juris'])
+
+    households_df["pda_fill_juris"] = \
+       households_df.pda.str.upper().replace("Total", np.nan).\
+       str.upper().fillna(households_df.juris)
+
+    jobs_df = orca.merge_tables(
+        'jobs',
+        [parcels, buildings, jobs],
+        columns=['pda', 'juris'])
+
+    jobs_df["pda_fill_juris"] = \
+       jobs_df.pda.str.upper().fillna(jobs_df.juris)
+
+    # compute correlection for pda and juris, for households and for jobs
+
+    l = []
+
+    for geo in ['pda_fill_juris', 'juris']:
+
+        for typ in ['households', 'jobs']:
+
+            abag_distribution = abag_targets.groupby(geo)[typ].sum()
+
+            agents = {
+                "households": households_df,
+                "jobs": jobs_df
+            }[typ]
+
+            baus_distribution = agents.groupby(geo).size().\
+                reindex(abag_distribution.index).fillna(0)
+
+            assert len(abag_distribution) == len(baus_distribution)
+
+            l.append((geo, typ, abag_distribution.corr(baus_distribution)))
+
+    return l
 
 
 @orca.step("diagnostic_output")

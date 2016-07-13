@@ -541,6 +541,10 @@ def buildings(store, parcels, households, jobs, building_sqft_per_job,
 
     # hope we get more data on this soon
     df["deed_restricted_units"] = 0
+
+    if "skip_deed_restricted_units" in settings:
+        return df
+
     zone_ids = misc.reindex(parcels.zone_id, df.parcel_id).\
         reindex(df.index).fillna(-1)
 
@@ -638,6 +642,11 @@ def vmt_fee_categories():
 def superdistricts():
     return pd.read_csv(os.path.join(misc.data_dir(),
                        "superdistricts.csv"), index_col="number")
+
+
+@orca.table(cache=True)
+def abag_targets():
+    return pd.read_csv(os.path.join(misc.data_dir(), "abag_targets.csv"))
 
 
 @orca.table('taz_geography', cache=True)
