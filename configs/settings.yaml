@@ -780,7 +780,7 @@ development_limits:
   "4":
     Office:
       'San Francisco': 4375
-      'San Jose': 7250
+      'San Jose': 7000
       'Sonoma County': 10
       'Half Moon Bay': 1
       'Yountville': 1
@@ -790,7 +790,7 @@ development_limits:
       'Brentwood': 85
       'Solano County': 30
       'Antioch': 250
-      'Brisbane': 125
+      'Brisbane': 175
       'Los Altos Hills': 1
       'Pacifica': 1
       'Woodside': 1
