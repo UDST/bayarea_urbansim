@@ -167,7 +167,7 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
 
     for geo, typ, corr in compare_to_targets(parcels, buildings, jobs,
                                               households, abag_targets):
-        write("{} in {} have correlation of {:,.3f} with targets".format(
+        write("{} in {} have correlation of {:,.4f} with targets".format(
             typ, geo, corr
         ))
 
