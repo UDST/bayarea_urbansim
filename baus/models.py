@@ -901,7 +901,12 @@ def correct_baseyear_data(buildings, parcels, jobs):
 
     SURPLUS_VACANCY_JURIS = buildings_juris.map({
        "Yountville": .001,
-       "Benicia": .2
+       "Benicia": .2,
+       "Woodside": .2,
+       "Atherton": .2,
+       "Los Altos Hills": .2,
+       "Monte Sereno": .2,
+       "Half Moon Bay": .2
     })
 
     SURPLUS_VACANCY = pd.DataFrame([
