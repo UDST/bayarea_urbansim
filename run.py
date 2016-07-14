@@ -252,6 +252,12 @@ if SLACK:
         'http://urbanforecast.com/runs/run%d_topsheet_2040.log' % run_num,
         as_user=True)
 
+    slack.chat.post_message(
+        '#sim_updates',
+        'Targets comparison is available at ' +
+        'http://urbanforecast.com/runs/run%d_targets_comparison_2040.csv' %
+        run_num, as_user=True)
+
 if MODE == "simulation":
     # compute and write the difference report at the superdistrict level
     prev_run = LAST_KNOWN_GOOD_RUNS[SCENARIO]

@@ -4,6 +4,9 @@ aggregation_tables:
   - logsums
 
 
+profit_vs_return_on_cost_combination_factor: 0.25
+
+
 dont_build_most_dense_building: True
 
 

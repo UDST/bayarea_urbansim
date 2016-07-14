@@ -166,14 +166,17 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
     write("Jobs/housing balance:\n" + str(jobs_by_housing))
 
     for geo, typ, corr in compare_to_targets(parcels, buildings, jobs,
-                                              households, abag_targets):
+                                              households, abag_targets,
+                                              write_comparison_dfs=True):
         write("{} in {} have correlation of {:,.4f} with targets".format(
             typ, geo, corr
         ))
 
     f.close()
 
-def compare_to_targets(parcels, buildings, jobs, households, abag_targets):
+
+def compare_to_targets(parcels, buildings, jobs, households, abag_targets,
+                       write_comparison_dfs=False):
 
     # yes a similar join is used in the summarize step below - but it's
     # better to keep it clean and separate
@@ -204,11 +207,15 @@ def compare_to_targets(parcels, buildings, jobs, households, abag_targets):
 
     l = []
 
+    df = pd.DataFrame()
+
     for geo in ['pda_fill_juris', 'juris']:
 
         for typ in ['households', 'jobs']:
 
             abag_distribution = abag_targets.groupby(geo)[typ].sum()
+
+            df["abag_"+geo] = abag_distribution
 
             agents = {
                 "households": households_df,
@@ -218,9 +225,19 @@ def compare_to_targets(parcels, buildings, jobs, households, abag_targets):
             baus_distribution = agents.groupby(geo).size().\
                 reindex(abag_distribution.index).fillna(0)
 
+            df["mtc_"+geo] = abag_distribution
+
             assert len(abag_distribution) == len(baus_distribution)
 
             l.append((geo, typ, abag_distribution.corr(baus_distribution)))
+
+    if write_comparison_dfs:
+
+        run_number = orca.get_injectable("run_number")
+        year = orca.get_injectable("year")
+
+        df.to_csv(os.path.join("runs", "run%d_targets_comparison_%d.csv" %
+             (run_number, year)), "w")
 
     return l
 
