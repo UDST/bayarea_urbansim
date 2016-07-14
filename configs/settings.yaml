@@ -780,10 +780,10 @@ development_limits:
   "4":
     Office:
       'San Francisco': 4375
-      'San Jose': 7000
+      'San Jose': 7100
       'Sonoma County': 10
-      'Half Moon Bay': 1
-      'Yountville': 1
+      'Half Moon Bay': 0
+      'Yountville': 0
       'Benicia': 200
       'San Mateo County': 150
       'Contra Costa County': 130
@@ -793,24 +793,34 @@ development_limits:
       'Brisbane': 200
       'Los Altos Hills': 1
       'Pacifica': 1
-      'Woodside': 1
+      'Woodside': 0
+      'Atherton': 0
+      'Calistoga': 5
+      'Los Gatos': 0
+      'Monte Sereno': 0
+      'Piedmont': 0
+      'Portola Valley': 0
+      'St. Helena': 0
     Residential:
-      'Half Moon Bay': 43
+      'Half Moon Bay': 4
       'Brisbane': 180
       'Petaluma': 100
       'San Jose': 5200
       'Mill Valley': 16
       'Sonoma County': 75
       'Solano County': 230
-      'Napa County': 50
+      'Napa County': 45
       'Lafayette': 50
       'Belvedere': 2
       'Marin County': 1
       'San Rafael': 140
       'Calistoga': 5
-      'Woodside': 5
+      'Woodside': 0
       'Moraga': 25
       'St. Helena': 6
+      'Yountville': 0
+      'Los Altos': 30
+      'Belvedere': 1
     Retail:
       'Sonoma County': 1
       'Half Moon Bay': 1
