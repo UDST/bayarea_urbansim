@@ -781,7 +781,7 @@ development_limits:
     Office:
       'San Francisco': 4375
       'San Jose': 7250
-      'Sonoma County': 10
+      'Sonoma County': 5
       'Half Moon Bay': 0
       'Yountville': 0
       'Benicia': 200
