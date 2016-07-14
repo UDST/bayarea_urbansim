@@ -896,7 +896,7 @@ def correct_baseyear_data(buildings, parcels, jobs):
        "San Mateo": .4,
        "Santa Clara": .35,
        "Solano": .53,
-       "Sonoma": .45,
+       "Sonoma": .5,
     }).fillna(.2)
 
     SURPLUS_VACANCY_JURIS = buildings_juris.map({
