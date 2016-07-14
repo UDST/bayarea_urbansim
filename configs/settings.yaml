@@ -780,7 +780,7 @@ development_limits:
   "4":
     Office:
       'San Francisco': 4375
-      'San Jose': 7100
+      'San Jose': 7250
       'Sonoma County': 10
       'Half Moon Bay': 0
       'Yountville': 0
@@ -791,7 +791,7 @@ development_limits:
       'Solano County': 30
       'Antioch': 250
       'Brisbane': 200
-      'Los Altos Hills': 1
+      'Los Altos Hills': 0
       'Pacifica': 1
       'Woodside': 0
       'Atherton': 0
@@ -801,6 +801,7 @@ development_limits:
       'Piedmont': 0
       'Portola Valley': 0
       'St. Helena': 0
+      'Saratoga': 0
     Residential:
       'Half Moon Bay': 4
       'Brisbane': 180
