@@ -237,7 +237,7 @@ def compare_to_targets(parcels, buildings, jobs, households, abag_targets,
         year = orca.get_injectable("year")
 
         df.to_csv(os.path.join("runs", "run%d_targets_comparison_%d.csv" %
-             (run_number, year)), "w")
+             (run_number, year)))
 
     return l
 
