@@ -215,7 +215,7 @@ def compare_to_targets(parcels, buildings, jobs, households, abag_targets,
 
             abag_distribution = abag_targets.groupby(geo)[typ].sum()
 
-            df["abag_"+geo] = abag_distribution
+            df["abag_"+geo+"_"+typ] = abag_distribution
 
             agents = {
                 "households": households_df,
@@ -225,7 +225,7 @@ def compare_to_targets(parcels, buildings, jobs, households, abag_targets,
             baus_distribution = agents.groupby(geo).size().\
                 reindex(abag_distribution.index).fillna(0)
 
-            df["mtc_"+geo] = abag_distribution
+            df["baus_"+geo+"_"+typ] = baus_distribution
 
             assert len(abag_distribution) == len(baus_distribution)
 
