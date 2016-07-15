@@ -1,4 +1,4 @@
--e git+https://github.com/synthicity/urbansim.git@24fee166e22931d6189a07b68dd166ce0b227966#egg=urbansim
+-e git+https://github.com/synthicity/urbansim.git@6118e07958a59bf575864881969c2eca00ccd78e#egg=urbansim
 -e git+https://github.com/synthicity/urbansim_defaults.git@579efcc21b43de6f914f1b7f5103d6b6bfa1c9dc#egg=urbansim_defaults
 -e git+https://github.com/UDST/orca.git@73f80f6345f282d8c836e8fcd11b22264cad0ac8#egg=orca
 #-e git+https://github.com/UDST/pandana.git@8f24b8a1b7539c95b51153e9954f755a7116089b#egg=pandana
