@@ -805,6 +805,7 @@ development_limits:
       'Portola Valley': 0
       'St. Helena': 0
       'Saratoga': 0
+      'Alameda': 5800
     Residential:
       'Half Moon Bay': 4
       'Brisbane': 180
@@ -815,6 +816,7 @@ development_limits:
       'Solano County': 230
       'Napa County': 45
       'Contra Costa County': 600
+      'Santa Clara County': 50
       'Lafayette': 50
       'Belvedere': 2
       'Marin County': 1
@@ -826,6 +828,7 @@ development_limits:
       'Yountville': 0
       'Los Altos': 30
       'Belvedere': 1
+      'Alameda': 200
     Retail:
       'Sonoma County': 1
       'Half Moon Bay': 1
