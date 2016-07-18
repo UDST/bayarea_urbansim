@@ -9,6 +9,28 @@ from cStringIO import StringIO
 from urbansim.utils import misc
 
 
+# this method is a custom profit to probability function where we test the
+# combination of different metrics like return on cost and raw profit
+def profit_to_prob_func(df):
+
+    # the clip is because we still might build negative profit buildings
+    # (when we're subsidizing them) and choice doesn't allow negative
+    # probability options
+    max_profit = df.max_profit.clip(1)
+
+    factor = float(orca.get_injectable("settings")[
+        "profit_vs_return_on_cost_combination_factor"])
+
+    df['return_on_cost'] = max_profit / df.total_cost
+
+    # now we're going to make two pdfs and weight them
+    ROC_p = df.return_on_cost.values / df.return_on_cost.sum()
+    profit_p = max_profit / max_profit.sum()
+    p = 1.0 * ROC_p + factor * profit_p
+
+    return p / p.sum()
+
+
 @orca.injectable("coffer", cache=True)
 def coffer(settings):
     d = {
@@ -485,6 +507,7 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
             year=year,
             form_to_btype_callback=form_to_btype_func,
             add_more_columns_callback=add_extra_columns_func,
+            profit_to_prob_func=profit_to_prob_func,
             **kwargs)
         sys.stdout = old_stdout
         buildings = orca.get_table("buildings")
