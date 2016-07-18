@@ -166,8 +166,8 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
     write("Jobs/housing balance:\n" + str(jobs_by_housing))
 
     for geo, typ, corr in compare_to_targets(parcels, buildings, jobs,
-                                              households, abag_targets,
-                                              write_comparison_dfs=True):
+                                             households, abag_targets,
+                                             write_comparison_dfs=True):
         write("{} in {} have correlation of {:,.4f} with targets".format(
             typ, geo, corr
         ))
@@ -192,8 +192,8 @@ def compare_to_targets(parcels, buildings, jobs, households, abag_targets,
         columns=['pda', 'juris'])
 
     households_df["pda_fill_juris"] = \
-       households_df.pda.str.upper().replace("Total", np.nan).\
-       str.upper().fillna(households_df.juris)
+        households_df.pda.str.upper().replace("Total", np.nan).\
+        str.upper().fillna(households_df.juris)
 
     jobs_df = orca.merge_tables(
         'jobs',
@@ -201,7 +201,7 @@ def compare_to_targets(parcels, buildings, jobs, households, abag_targets,
         columns=['pda', 'juris'])
 
     jobs_df["pda_fill_juris"] = \
-       jobs_df.pda.str.upper().fillna(jobs_df.juris)
+        jobs_df.pda.str.upper().fillna(jobs_df.juris)
 
     # compute correlection for pda and juris, for households and for jobs
 
@@ -237,7 +237,7 @@ def compare_to_targets(parcels, buildings, jobs, households, abag_targets,
         year = orca.get_injectable("year")
 
         df.to_csv(os.path.join("runs", "run%d_targets_comparison_%d.csv" %
-             (run_number, year)))
+                  (run_number, year)))
 
     return l
 
