@@ -263,6 +263,8 @@ def alt_feasibility(parcels, settings,
     config = sqftproforma.SqFtProFormaConfig()
     config.parking_rates["office"] = 1.5
     config.parking_rates["retail"] = 1.5
+    config.building_efficiency = .85
+    config.parcel_coverage = .85
 
     utils.run_feasibility(parcels,
                           parcel_sales_price_sqft_func,
@@ -355,6 +357,7 @@ def residential_developer(feasibility, households, buildings, parcels, year,
             form_to_btype_callback=form_to_btype_func,
             add_more_columns_callback=add_extra_columns_func,
             num_units_to_build=target,
+            profit_to_prob_func=subsidies.profit_to_prob_func,
             **kwargs)
 
         buildings = orca.get_table('buildings')
@@ -551,6 +554,7 @@ def office_developer(feasibility, jobs, buildings, parcels, year,
                 add_more_columns_callback=add_extra_columns_func,
                 residential=False,
                 num_units_to_build=target,
+                profit_to_prob_func=subsidies.profit_to_prob_func,
                 **dev_settings['kwargs'])
 
             if new_buildings is not None:
