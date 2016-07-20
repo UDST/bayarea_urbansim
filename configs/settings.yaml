@@ -434,11 +434,15 @@ acct_settings:
   vmt_settings:
     sending_buildings_subaccount_def: regional
     receiving_buildings_filter: pda_id>0
-    res_fee_amounts:
+    res_for_res_fee_amounts:
       VH: 25000
       H: 15000
       MH: 5000
-    com_fee_amounts:
+    com_for_res_fee_amounts:
+      VH: 45
+      H: 22
+      MH: 12
+    com_for_com_fee_amounts:  # commercial fee subsidizing commercial devs
       VH: 45
       H: 22
       MH: 12
