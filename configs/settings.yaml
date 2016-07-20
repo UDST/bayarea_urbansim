@@ -770,28 +770,11 @@ development_limits:
   default:
     Office:
       'San Francisco': 3500
-    Residential:
-      'Half Moon Bay': 43
-  "2":
-    Office:
-      'San Francisco': 5250
-    Residential:
-      'Half Moon Bay': 43
-  "3":
-    Residential:
-      'Half Moon Bay': 43
-  "4":
-    Office:
-      'San Francisco': 4375
       'San Jose': 7250
-      'Sonoma County': 2
       'Half Moon Bay': 0
       'Yountville': 0
       'Benicia': 200
-      'San Mateo County': 150
-      'Contra Costa County': 130
       'Brentwood': 85
-      'Solano County': 30
       'Antioch': 250
       'Brisbane': 225
       'Los Altos Hills': 0
@@ -806,17 +789,16 @@ development_limits:
       'St. Helena': 0
       'Saratoga': 0
       'Alameda': 5800
+      'Contra Costa County': 130
+      'San Mateo County': 150
+      'Solano County': 30
+      'Sonoma County': 2
     Residential:
       'Half Moon Bay': 4
       'Brisbane': 180
       'Petaluma': 100
       'San Jose': 5200
       'Mill Valley': 16
-      'Sonoma County': 75
-      'Solano County': 230
-      'Napa County': 45
-      'Contra Costa County': 600
-      'Santa Clara County': 50
       'Lafayette': 50
       'Belvedere': 2
       'Marin County': 1
@@ -829,16 +811,30 @@ development_limits:
       'Los Altos': 30
       'Belvedere': 1
       'Alameda': 200
+      'Contra Costa County': 600
+      'Napa County': 45
+      'Santa Clara County': 50
+      'Solano County': 230
+      'Sonoma County': 75
     Industrial:
-      'Sonoma County': 1
       'Benicia': 50
-      'San Mateo County': 50
       'Contra Costa County': 50
+      'San Mateo County': 50
+      'Sonoma County': 1
+  "2":
+    Office:
+      'San Francisco': 5250
+  "3":
+    Residential:
+      'Half Moon Bay': 4
+  "4":
+    Office:
+      'San Francisco': 4375
   "5":
     Office:
       'San Francisco': 5250
     Residential:
-      'Half Moon Bay': 43
+      'Half Moon Bay': 4
 
 
 zoning_column_dictionary: 
