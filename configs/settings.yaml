@@ -829,10 +829,6 @@ development_limits:
       'Los Altos': 30
       'Belvedere': 1
       'Alameda': 200
-    Retail:
-      'Sonoma County': 1
-      'Half Moon Bay': 1
-      'Yountville': 1
     Industrial:
       'Sonoma County': 1
       'Benicia': 50
