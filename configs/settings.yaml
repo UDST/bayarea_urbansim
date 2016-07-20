@@ -824,17 +824,12 @@ development_limits:
   "2":
     Office:
       'San Francisco': 5250
-  "3":
-    Residential:
-      'Half Moon Bay': 4
   "4":
     Office:
       'San Francisco': 4375
   "5":
     Office:
       'San Francisco': 5250
-    Residential:
-      'Half Moon Bay': 4
 
 
 zoning_column_dictionary: 
