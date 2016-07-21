@@ -7,6 +7,7 @@ from urbansim import accounts
 from urbansim_defaults import utils
 from cStringIO import StringIO
 from urbansim.utils import misc
+from utils import add_buildings
 
 
 # this method is a custom profit to probability function where we test the
@@ -365,7 +366,8 @@ def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
 
 
 @orca.step()
-def subsidized_office_developer(feasibility, coffer, acct_settings, year):
+def subsidized_office_developer(feasibility, coffer, acct_settings, year,
+                                add_extra_columns_func, buildings, summary):
 
     # get the total subsidy for subsidizing office
     total_subsidy = coffer["vmt_com_acct"].\
@@ -375,6 +377,8 @@ def subsidized_office_developer(feasibility, coffer, acct_settings, year):
     feasibility = feasibility.to_frame().loc[:, "office"]
     feasibility = feasibility.dropna(subset=["max_profit"])
 
+    feasibility["pda_id"] = feasibility.pda
+
     # filter to receiving zone
     feasibility = feasibility.\
         query(acct_settings["vmt_settings"]["receiving_buildings_filter"])
@@ -382,13 +386,18 @@ def subsidized_office_developer(feasibility, coffer, acct_settings, year):
     feasibility["non_residential_sqft"] = \
         feasibility.non_residential_sqft.astype("int")
 
-    feasibility["max_profit_per_sqft"] = df.max_profit / \
-        df.non_residential_sqft
+    feasibility["max_profit_per_sqft"] = feasibility.max_profit / \
+        feasibility.non_residential_sqft
 
     # sorting by our choice metric as we're going to pick our devs
     # in order off the top
-    feasibility = feasibility.sort(columns=['max_profit_per_sqft'],
-                                   ascending=True)
+    feasibility = feasibility.sort(columns=['max_profit_per_sqft'])
+
+    # make parcel_id available
+    feasibility = feasibility.reset_index()
+
+    print "%.3f subsidy with %d developments to choose from" % (
+        total_subsidy, len(feasibility))
 
     devs = []
 
@@ -407,7 +416,7 @@ def subsidized_office_developer(feasibility, coffer, acct_settings, year):
             #  competes in open market
             continue
         else:
-            amt = NORMAL_PROFIT_PER_SQFT * d.max_profit_per_sqft * \
+            amt = (NORMAL_PROFIT_PER_SQFT - d.max_profit_per_sqft) * \
                 d.non_residential_sqft
 
             if amt > total_subsidy:
@@ -417,14 +426,18 @@ def subsidized_office_developer(feasibility, coffer, acct_settings, year):
         metadata = {
             "description": "Developing subsidized office building",
             "year": year,
-            "non_residential_sqft": d["non_residential_sqft"]
+            "non_residential_sqft": d["non_residential_sqft"],
             "index": dev_id
         }
-        account.add_transaction(amt, subaccount=subacct, metadata=metadata)
+        coffer["vmt_res_acct"].add_transaction(amt, subaccount="reagional",
+                                               metadata=metadata)
 
         total_subsidy -= amt
 
         devs.append(d)
+
+    print "Subsidizing %d developments with %.3f remaining subsidy" % (
+        len(devs), total_subsidy)
 
     if len(devs) == 0:
         return
