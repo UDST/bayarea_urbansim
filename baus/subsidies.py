@@ -361,7 +361,7 @@ def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
 
     print "Adding total vmt fees for com amount of $%.2f" % total_fees
 
-    coffer["vmt_com_acct"].add_transaction(total_fees, subaccount=1,
+    coffer["vmt_com_acct"].add_transaction(total_fees, subaccount="regional",
                                            metadata=metadata)
 
 
@@ -396,7 +396,7 @@ def subsidized_office_developer(feasibility, coffer, acct_settings, year,
     # make parcel_id available
     feasibility = feasibility.reset_index()
 
-    print "%.3f subsidy with %d developments to choose from" % (
+    print "%.0f subsidy with %d developments to choose from" % (
         total_subsidy, len(feasibility))
 
     devs = []
@@ -410,7 +410,7 @@ def subsidized_office_developer(feasibility, coffer, acct_settings, year,
         # we just allow it to compete on the open market - e.g. in the
         # non-subsidized office developer
 
-        NORMAL_PROFIT_PER_SQFT = 50  # assume price is around $500/sqft
+        NORMAL_PROFIT_PER_SQFT = 70  # assume price is around $700/sqft
 
         if d.max_profit_per_sqft >= NORMAL_PROFIT_PER_SQFT:
             #  competes in open market
@@ -429,15 +429,13 @@ def subsidized_office_developer(feasibility, coffer, acct_settings, year,
             "non_residential_sqft": d["non_residential_sqft"],
             "index": dev_id
         }
-        coffer["vmt_res_acct"].add_transaction(amt, subaccount="reagional",
+
+        coffer["vmt_com_acct"].add_transaction(-1*amt, subaccount="regional",
                                                metadata=metadata)
 
         total_subsidy -= amt
 
         devs.append(d)
-
-    print "Subsidizing %d developments with %.3f remaining subsidy" % (
-        len(devs), total_subsidy)
 
     if len(devs) == 0:
         return
