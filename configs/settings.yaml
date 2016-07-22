@@ -823,7 +823,7 @@ development_limits:
       'Contra Costa County': 600
       'Napa County': 45
       'Santa Clara County': 50
-      'Solano County': 230
+      'Solano County': 2
       'Sonoma County': 75
     Industrial:
       'Benicia': 50
