@@ -7,6 +7,7 @@ from urbansim import accounts
 from urbansim_defaults import utils
 from cStringIO import StringIO
 from urbansim.utils import misc
+from utils import add_buildings
 
 
 # this method is a custom profit to probability function where we test the
@@ -34,7 +35,8 @@ def profit_to_prob_func(df):
 @orca.injectable("coffer", cache=True)
 def coffer(settings):
     d = {
-        "vmt_fee_acct":  accounts.Account("vmt_fee_acct")
+        "vmt_res_acct":  accounts.Account("vmt_res_acct"),
+        "vmt_com_acct":  accounts.Account("vmt_com_acct")
     }
 
     for key, acct in settings["acct_settings"]["lump_sum_accounts"].items():
@@ -321,20 +323,22 @@ def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
 
     total_fees = 0
 
-    if settings.get("vmt_fee_res", False):
+    if settings.get("vmt_res_for_res", False):
 
-        df["res_fees"] = df.vmt_res_cat.map(vmt_settings["res_fee_amounts"])
-        total_fees += (df.res_fees * df.residential_units).sum()
+        df["res_for_res_fees"] = df.vmt_res_cat.map(
+            vmt_settings["res_for_res_fee_amounts"])
+        total_fees += (df.res_for_res_fees * df.residential_units).sum()
         print "Applying vmt fees to %d units" % df.residential_units.sum()
 
-    if settings.get("vmt_fee_com", False):
+    if settings.get("vmt_com_for_res", False):
 
-        df["com_fees"] = df.vmt_res_cat.map(vmt_settings["com_fee_amounts"])
-        total_fees += (df.com_fees * df.non_residential_sqft).sum()
+        df["com_for_res_fees"] = df.vmt_res_cat.map(
+            vmt_settings["com_for_res_fee_amounts"])
+        total_fees += (df.com_for_res_fees * df.non_residential_sqft).sum()
         print "Applying vmt fees to %d commerical sqft" % \
             df.non_residential_sqft.sum()
 
-    print "Adding total vmt fees amount of $%.2f" % total_fees
+    print "Adding total vmt fees for res amount of $%.2f" % total_fees
 
     metadata = {
         "description": "VMT development fees",
@@ -342,8 +346,113 @@ def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
     }
     # the subaccount is meaningless here (it's a regional account) -
     # but the subaccount number is referred to below
-    coffer["vmt_fee_acct"].add_transaction(total_fees, subaccount=1,
+    coffer["vmt_res_acct"].add_transaction(total_fees, subaccount=1,
                                            metadata=metadata)
+
+    total_fees = 0
+
+    if settings.get("vmt_com_for_com", False):
+
+        df["com_for_com_fees"] = df.vmt_res_cat.map(
+            vmt_settings["com_for_com_fee_amounts"])
+        total_fees += (df.com_for_com_fees * df.non_residential_sqft).sum()
+        print "Applying vmt fees to %d commerical sqft" % \
+            df.non_residential_sqft.sum()
+
+    print "Adding total vmt fees for com amount of $%.2f" % total_fees
+
+    coffer["vmt_com_acct"].add_transaction(total_fees, subaccount="regional",
+                                           metadata=metadata)
+
+
+@orca.step()
+def subsidized_office_developer(feasibility, coffer, acct_settings, year,
+                                add_extra_columns_func, buildings, summary):
+
+    # get the total subsidy for subsidizing office
+    total_subsidy = coffer["vmt_com_acct"].\
+        total_transactions_by_subacct("regional")
+
+    # get the office feasibility frame and sort by profit per sqft
+    feasibility = feasibility.to_frame().loc[:, "office"]
+    feasibility = feasibility.dropna(subset=["max_profit"])
+
+    feasibility["pda_id"] = feasibility.pda
+
+    # filter to receiving zone
+    feasibility = feasibility.\
+        query(acct_settings["vmt_settings"]["receiving_buildings_filter"])
+
+    feasibility["non_residential_sqft"] = \
+        feasibility.non_residential_sqft.astype("int")
+
+    feasibility["max_profit_per_sqft"] = feasibility.max_profit / \
+        feasibility.non_residential_sqft
+
+    # sorting by our choice metric as we're going to pick our devs
+    # in order off the top
+    feasibility = feasibility.sort(columns=['max_profit_per_sqft'])
+
+    # make parcel_id available
+    feasibility = feasibility.reset_index()
+
+    print "%.0f subsidy with %d developments to choose from" % (
+        total_subsidy, len(feasibility))
+
+    devs = []
+
+    for dev_id, d in feasibility.iterrows():
+
+        # the logic here is that we allow each dev to have a "normal"
+        # profit per square foot and once it does we guarantee that it
+        # gets build - we assume the planning commission for each city
+        # enables this to happen.  If a project gets enough profit already
+        # we just allow it to compete on the open market - e.g. in the
+        # non-subsidized office developer
+
+        NORMAL_PROFIT_PER_SQFT = 70  # assume price is around $700/sqft
+
+        if d.max_profit_per_sqft >= NORMAL_PROFIT_PER_SQFT:
+            #  competes in open market
+            continue
+        else:
+            amt = (NORMAL_PROFIT_PER_SQFT - d.max_profit_per_sqft) * \
+                d.non_residential_sqft
+
+            if amt > total_subsidy:
+                # we don't have enough money to buy yet
+                continue
+
+        metadata = {
+            "description": "Developing subsidized office building",
+            "year": year,
+            "non_residential_sqft": d["non_residential_sqft"],
+            "index": dev_id
+        }
+
+        coffer["vmt_com_acct"].add_transaction(-1*amt, subaccount="regional",
+                                               metadata=metadata)
+
+        total_subsidy -= amt
+
+        devs.append(d)
+
+    if len(devs) == 0:
+        return
+
+    # record keeping - add extra columns to match building dataframe
+    # add the buidings and demolish old buildings, and add to debug output
+    devs = pd.DataFrame(devs, columns=feasibility.columns)
+
+    print "Building {:,} subsidized office sqft in {:,} projects".format(
+        devs.non_residential_sqft.sum(), len(devs))
+
+    devs["form"] = "office"
+    devs = add_extra_columns_func(devs)
+
+    add_buildings(buildings, devs)
+
+    summary.add_parcel_output(devs)
 
 
 def run_subsidized_developer(feasibility, parcels, buildings, households,
@@ -629,7 +738,7 @@ def subsidized_residential_developer_vmt(
                              households,
                              acct_settings["vmt_settings"],
                              settings,
-                             coffer["vmt_fee_acct"],
+                             coffer["vmt_res_acct"],
                              year,
                              form_to_btype_func,
                              add_extra_columns_func,
