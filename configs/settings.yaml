@@ -45,6 +45,8 @@ eliminate_retail_zoning_from_juris:
   - 'Monte Sereno'
   - 'Los Altos Hills'
   - 'Half Moon Bay'
+  - 'Portola Valley'
+  - 'Saratoga'
 
 
 clip_sqft_per_unit_based_on_dua:
@@ -449,10 +451,10 @@ acct_settings:
       MH: 12
       M: 6
     com_for_com_fee_amounts:  # commercial fee subsidizing commercial devs
-      VH: 75
-      H: 40
-      MH: 20
-      M: 10
+      VH: 85
+      H: 50
+      MH: 25
+      M: 12
   sb743_settings:
     enable: true
     sb743_pcts:
@@ -784,47 +786,52 @@ development_limits:
       'San Jose': 7250
       'Half Moon Bay': 0
       'Yountville': 0
+      'Berkeley': 1000
       'Benicia': 200
       'Brentwood': 85
       'Antioch': 250
       'Brisbane': 225
       'Los Altos Hills': 0
+      'Los Gatos': 66
       'Pacifica': 1
       'Woodside': 0
       'Atherton': 0
       'Calistoga': 5
-      'Cloverdale': 5
+      'Cloverdale': 1
       'Los Gatos': 0
       'Monte Sereno': 0
       'Piedmont': 0
       'Portola Valley': 0
       'St. Helena': 0
       'Saratoga': 0
-      'Alameda': 5500
+      'Alameda': 300
       'Contra Costa County': 130
       'San Mateo County': 150
       'Solano County': 30
       'Sonoma County': 2
     Residential:
-      'Half Moon Bay': 4
+      'Half Moon Bay': 2
       'Brisbane': 180
-      'Petaluma': 100
-      'San Jose': 5000
+      'Petaluma': 90
+      'San Jose': 4700
       'Mill Valley': 16
-      'Lafayette': 50
+      'Lafayette': 40
       'Belvedere': 2
       'Marin County': 1
       'San Rafael': 140
       'Calistoga': 5
+      'Cloverdale': 25
       'Woodside': 0
       'Moraga': 25
-      'St. Helena': 6
+      'Saratoga': 2
+      'St. Helena': 3
       'Yountville': 0
       'Los Altos': 30
       'Belvedere': 2
-      'Alameda': 175
+      'Alameda': 150
       'Contra Costa County': 600
       'Napa County': 45
+      'Marin County': 50
       'Santa Clara County': 50
       'Solano County': 2
       'Sonoma County': 75
