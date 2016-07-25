@@ -800,7 +800,7 @@ development_limits:
       'Portola Valley': 0
       'St. Helena': 0
       'Saratoga': 0
-      'Alameda': 5800
+      'Alameda': 5500
       'Contra Costa County': 130
       'San Mateo County': 150
       'Solano County': 30
@@ -822,7 +822,7 @@ development_limits:
       'Yountville': 0
       'Los Altos': 30
       'Belvedere': 2
-      'Alameda': 200
+      'Alameda': 175
       'Contra Costa County': 600
       'Napa County': 45
       'Santa Clara County': 50
