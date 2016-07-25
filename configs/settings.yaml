@@ -444,13 +444,15 @@ acct_settings:
       H: 15000
       MH: 5000
     com_for_res_fee_amounts:
-      VH: 45
-      H: 22
+      VH: 50
+      H: 25
       MH: 12
+      M: 6
     com_for_com_fee_amounts:  # commercial fee subsidizing commercial devs
-      VH: 45
-      H: 22
+      VH: 50
+      H: 25
       MH: 12
+      M: 6
   sb743_settings:
     enable: true
     sb743_pcts:
