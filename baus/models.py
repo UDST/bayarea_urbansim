@@ -908,10 +908,18 @@ def correct_baseyear_data(buildings, parcels, jobs):
        "Benicia": .2,
        "Woodside": .05,
        "Atherton": .05,
-       "Los Altos Hills": .01,
-       "Monte Sereno": .01,
-       "Portola Valley": .01,
-       "Half Moon Bay": .01
+       "Los Altos Hills": 0,
+       "Monte Sereno": 0,
+       "Portola Valley": 0,
+       "Berkeley": .75,
+       "St. Helena": 0,
+       "Saratoga": .05,
+       "Piedmont": 0,
+       "Portola Valley": 0,
+       "Los Gatos": .05,
+       "Cloverdale": 0,
+       "Alameda": .2,
+       "Half Moon Bay": 0
     })
 
     SURPLUS_VACANCY = pd.DataFrame([
