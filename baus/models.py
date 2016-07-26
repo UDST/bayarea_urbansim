@@ -172,7 +172,7 @@ def scheduled_development_events(buildings, development_projects,
         unplace_agents=['households', 'jobs'])
     new_buildings["form"] = new_buildings.building_type_id.map(
         settings['building_type_map']).str.lower()
-    new_buildings["job_spaces"] = new_buildings.building_sqft / \
+    new_buildings["job_spaces"] = new_buildings.non_residential_sqft / \
         new_buildings.building_type_id.fillna(-1).map(building_sqft_per_job)
     new_buildings["job_spaces"] = new_buildings.job_spaces.astype('int')
     new_buildings["geom_id"] = parcel_id_to_geom_id(new_buildings.parcel_id)
