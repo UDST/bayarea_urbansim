@@ -919,6 +919,7 @@ def correct_baseyear_data(buildings, parcels, jobs):
        "Los Gatos": .05,
        "Cloverdale": 0,
        "Alameda": .2,
+       "Walnut Creek": .9
        "Half Moon Bay": 0
     })
 
