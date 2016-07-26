@@ -47,6 +47,9 @@ eliminate_retail_zoning_from_juris:
   - 'Half Moon Bay'
   - 'Portola Valley'
   - 'Saratoga'
+  - 'Cloverdale'
+  - 'St. Helena'
+  - 'Los Gatos'
 
 
 clip_sqft_per_unit_based_on_dua:
@@ -792,7 +795,6 @@ development_limits:
       'Antioch': 250
       'Brisbane': 225
       'Los Altos Hills': 0
-      'Los Gatos': 66
       'Pacifica': 1
       'Woodside': 0
       'Atherton': 0
@@ -804,7 +806,7 @@ development_limits:
       'Portola Valley': 0
       'St. Helena': 0
       'Saratoga': 0
-      'Alameda': 300
+      'Alameda': 250
       'Contra Costa County': 130
       'San Mateo County': 150
       'Solano County': 30
@@ -813,7 +815,7 @@ development_limits:
       'Half Moon Bay': 2
       'Brisbane': 180
       'Petaluma': 90
-      'San Jose': 4700
+      'San Jose': 4500
       'Mill Valley': 16
       'Lafayette': 40
       'Belvedere': 2
