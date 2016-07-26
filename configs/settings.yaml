@@ -40,6 +40,16 @@ eliminate_retail_zoning_from_juris:
   - 'Brentwood'
   - 'Antioch'
   - 'Yountville'
+  - 'Woodside'
+  - 'Piedmont'
+  - 'Monte Sereno'
+  - 'Los Altos Hills'
+  - 'Half Moon Bay'
+  - 'Portola Valley'
+  - 'Saratoga'
+  - 'Cloverdale'
+  - 'St. Helena'
+  - 'Los Gatos'
 
 
 clip_sqft_per_unit_based_on_dua:
@@ -439,13 +449,15 @@ acct_settings:
       H: 15000
       MH: 5000
     com_for_res_fee_amounts:
-      VH: 45
-      H: 22
+      VH: 50
+      H: 25
       MH: 12
+      M: 6
     com_for_com_fee_amounts:  # commercial fee subsidizing commercial devs
-      VH: 45
-      H: 22
-      MH: 12
+      VH: 85
+      H: 50
+      MH: 25
+      M: 12
   sb743_settings:
     enable: true
     sb743_pcts:
@@ -777,6 +789,7 @@ development_limits:
       'San Jose': 7250
       'Half Moon Bay': 0
       'Yountville': 0
+      'Berkeley': 1000
       'Benicia': 200
       'Brentwood': 85
       'Antioch': 250
@@ -786,39 +799,43 @@ development_limits:
       'Woodside': 0
       'Atherton': 0
       'Calistoga': 5
+      'Cloverdale': 1
       'Los Gatos': 0
       'Monte Sereno': 0
       'Piedmont': 0
       'Portola Valley': 0
       'St. Helena': 0
       'Saratoga': 0
-      'Alameda': 5800
+      'Alameda': 250
       'Contra Costa County': 130
       'San Mateo County': 150
       'Solano County': 30
       'Sonoma County': 2
     Residential:
-      'Half Moon Bay': 4
+      'Half Moon Bay': 2
       'Brisbane': 180
-      'Petaluma': 100
-      'San Jose': 5200
+      'Petaluma': 90
+      'San Jose': 4500
       'Mill Valley': 16
-      'Lafayette': 50
+      'Lafayette': 40
       'Belvedere': 2
       'Marin County': 1
       'San Rafael': 140
       'Calistoga': 5
+      'Cloverdale': 25
       'Woodside': 0
       'Moraga': 25
-      'St. Helena': 6
+      'Saratoga': 2
+      'St. Helena': 3
       'Yountville': 0
       'Los Altos': 30
-      'Belvedere': 1
-      'Alameda': 200
+      'Belvedere': 2
+      'Alameda': 150
       'Contra Costa County': 600
       'Napa County': 45
+      'Marin County': 50
       'Santa Clara County': 50
-      'Solano County': 230
+      'Solano County': 2
       'Sonoma County': 75
     Industrial:
       'Benicia': 50
@@ -871,6 +888,11 @@ static_parcels:
   - 8173572322083 # ucb
   - 14259504015679 # labs
   - 3473860030354 # sfo
+  - 11976417381057 # sf general
+  - 5600199824880 # more sf gen
+  - 9143399820283
+  - 2161358104676
+  - 15636310238820
   - 14512305680993 # sonoma state
   - 15424804982410 # cal state east bay
   - 7414256675266 # cal state east bay

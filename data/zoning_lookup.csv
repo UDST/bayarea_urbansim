@@ -1125,9 +1125,9 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 8117,61,Mill Valley,RSP-5A,,35,,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 8118,61,Mill Valley,RSP-10A,,35,,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 8119,61,Mill Valley,RSP-30,,35,,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
-8120,61,Mill Valley,RM-1.5,,35,29.04,,1,1,1,0,0,0,0,0,0,0,0,1,1,1,
-8121,61,Mill Valley,RM-2.0,,35,21.78,,1,1,1,0,0,0,0,0,0,0,0,1,1,1,
-8122,61,Mill Valley,RM-2.5,,35,17.424,,1,1,1,0,0,0,0,0,0,0,0,1,1,1,
+8120,61,Mill Valley,RM-1.5,,35,25,,1,1,1,0,0,0,0,0,0,0,0,1,1,1,
+8121,61,Mill Valley,RM-2.0,,35,15,,1,1,1,0,0,0,0,0,0,0,0,1,1,1,
+8122,61,Mill Valley,RM-2.5,,35,12,,1,1,1,0,0,0,0,0,0,0,0,1,1,1,
 8123,61,Mill Valley,RM-3.0,,35,14.52,,1,1,1,0,0,0,0,0,0,0,0,1,1,1,
 8124,61,Mill Valley,RM-3.5,,35,12.44571429,,1,1,1,0,0,0,0,0,0,0,0,1,1,1,
 8125,61,Mill Valley,RM-4.0,,35,10.89,,1,1,1,0,0,0,0,0,0,0,0,1,1,1,
@@ -1273,11 +1273,11 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 8825,68,Gilroy,DTHist,2.5,50,,,1,1,1,1,1,1,0,0,0,1,0,1,1,1,
 8826,68,Gilroy,DTTrans,1.5,40,20,,1,1,1,1,0,1,0,0,0,1,0,1,1,1,
 8901,69,Rio Vista,804 - Neighborhood Core: Commercial,0.8,,20,,1,1,1,1,0,0,0,0,0,1,0,1,1,1,
-8904,69,Rio Vista,804 - Neighborhood Residential,0.5,,16,,1,1,0,0,0,1,0,0,0,0,0,0,0,0,
+8904,69,Rio Vista,804 - Neighborhood Residential,0.5,,12,,1,1,0,0,0,1,0,0,0,0,0,0,0,0,
 8905,69,Rio Vista,804 - Downtown/ Waterfront,2,,40,,1,1,1,1,0,0,1,0,0,1,0,1,1,1,
 8906,69,Rio Vista,804 - Historic Residential,0.5,,30,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,
-8907,69,Rio Vista,804 - Multifamily Residential,,,25,,0,1,1,0,0,0,0,0,0,0,0,0,0,0,
-8908,69,Rio Vista,804 - Edgewater Neighborhood,0.5,,16,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+8907,69,Rio Vista,804 - Multifamily Residential,,,22,,0,1,1,0,0,0,0,0,0,0,0,0,0,0,
+8908,69,Rio Vista,804 - Edgewater Neighborhood,0.5,,12,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 8909,69,Rio Vista,804 - Limited Industrial,1,,,,0,0,0,1,0,0,1,1,1,1,0,0,0,1,
 8910,69,Rio Vista,804 - Industrial/ General Commercial,1,,,,0,0,0,1,0,0,1,1,1,1,0,0,0,1,
 8911,69,Rio Vista,804 - Industrial/ Warehouse& Services,1,,,,0,0,0,1,0,0,1,1,0,1,0,0,0,0,
@@ -1291,7 +1291,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 8919,69,Rio Vista,804 - Highway Commercial,0.5,,,,0,0,0,0,0,1,0,0,0,1,1,0,0,1,
 8920,69,Rio Vista,804 - Golf Course,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 8921,69,Rio Vista,804 - Marina,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-8922,69,Rio Vista,804 - Neighborhood Core: Residential,0.5,,16,,1,1,0,0,0,1,0,0,0,0,0,0,0,0,
+8922,69,Rio Vista,804 - Neighborhood Core: Residential,0.5,,12,,1,1,0,0,0,1,0,0,0,0,0,0,0,0,
 9001,70,Suisun City,805 - Rural Residential,,35,,1,1,0,0,0,0,0,0,0,0,0,0,1,0,0,
 9002,70,Suisun City,805 - Low Density Residential,0.6,35,8,,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
 9003,70,Suisun City,805 - Medium Density Residential,0.6,35,15,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,
@@ -1546,7 +1546,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 10217,82,Antioch,Rivertown/Urban Waterfront,1.5,,20,,0,1,1,1,1,0,0,0,0,1,0,0,0,0,
 10218,82,Antioch,Roddy Ranch,0.5,,3,,1,1,1,0,0,0,0,0,0,1,0,0,0,0,
 10219,82,Antioch,SR 4 Industrial Frontage,1.25,,,,0,0,0,1,1,0,1,1,1,1,0,0,0,0,
-10220,82,Antioch,Sand Creek,0.5,,20,,1,1,1,1,0,0,1,0,0,1,0,0,0,0,
+10220,82,Antioch,Sand Creek,0.5,,4,,1,1,1,1,0,0,1,0,0,1,0,0,0,0,
 10221,82,Antioch,Sommersville Rd Corridor,0.5,,20,,0,0,0,1,1,0,0,0,0,1,0,0,0,0,
 10222,82,Antioch,Standard Oil Interchange,0.6,,20,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 10301,83,San Leandro,112 - Garden Residential,,,5.4,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -1650,10 +1650,10 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 10571,85,Brentwood,PD-48,0.75,40,,,0,0,0,1,0,0,1,0,0,1,0,0,0,0,
 10572,85,Brentwood,PD-49,2,75,,,0,1,1,1,1,0,0,0,0,1,0,1,1,0,
 10574,85,Brentwood,PD-51,1,50,,,0,0,1,1,0,0,0,0,0,1,1,0,0,0,
-10575,85,Brentwood,PD-52,,35,30,,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
-10576,85,Brentwood,PD-53,,55,30,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,
+10575,85,Brentwood,PD-52,,35,25,,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
+10576,85,Brentwood,PD-53,,55,25,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,
 10577,85,Brentwood,PD-54,,30,3.6,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
-10578,85,Brentwood,PD-55,,,25,,1,1,1,1,0,0,0,0,0,1,0,0,0,0,
+10578,85,Brentwood,PD-55,,,20,,1,1,1,1,0,0,0,0,0,1,0,0,0,0,
 10579,85,Brentwood,PD-56,0.75,35,,,0,0,0,0,0,0,1,1,0,1,0,0,0,0,
 10580,85,Brentwood,PD-57,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 10581,85,Brentwood,PD-58,,30,20,,0,1,1,0,1,0,0,0,0,0,0,0,0,0,
@@ -4678,11 +4678,11 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 61521,,San Jose,712 - Industrial Park with Mixed Industrial Overlay,,,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,Post22
 61522,,San Jose,712 - Integrated Residential/Recreational,,,,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,Post22
 61523,,San Jose,712 - Light Industrial,,,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,Post22
-61524,,San Jose,712 - Low Density Residential (5.0 DU/AC),,,5,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,Post22
-61525,,San Jose,712 - Medium Density Residential (8-16 DU/AC),,,16,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,Post22
-61526,,San Jose,712 - Medium High Density Residential (12-25 DU/AC),,,25,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,Post22
-61527,,San Jose,712 - Medium High Density Residential (12-25 DU/AC)/General Commercial,,,25,,0,1,1,1,1,1,0,0,0,1,1,1,1,1,Post22
-61528,,San Jose,712 - Medium Low Density Residential (8.0 DU/AC),,,8,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,Post22
+61524,,San Jose,712 - Low Density Residential (5.0 DU/AC),,,3,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,Post22
+61525,,San Jose,712 - Medium Density Residential (8-16 DU/AC),,,14,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,Post22
+61526,,San Jose,712 - Medium High Density Residential (12-25 DU/AC),,,22,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,Post22
+61527,,San Jose,712 - Medium High Density Residential (12-25 DU/AC)/General Commercial,,,22,,0,1,1,1,1,1,0,0,0,1,1,1,1,1,Post22
+61528,,San Jose,712 - Medium Low Density Residential (8.0 DU/AC),,,6,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,Post22
 61529,,San Jose,712 - Mixed Use,,,25,,1,1,1,1,1,1,0,0,0,1,1,1,1,1,Post22
 61530,,San Jose,"712 - Mixed Use 1, 2, 3 & 4 see GP text",,,25,,1,1,1,1,1,1,0,0,0,1,1,1,1,1,Post22
 61531,,San Jose,712 - Neighborhood/Community Commercial,3,,,,0,0,0,1,1,1,0,0,0,1,1,0,1,1,Post22
@@ -4705,8 +4705,8 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 61548,,San Jose,712 - Residential Support for the Core Area (25+ DU/AC)/General Commercial,,,30,,0,1,1,1,1,1,0,0,0,1,1,1,1,1,Post22
 61549,,San Jose,712 - River Commercial,3,,,,0,0,0,1,1,1,0,0,0,1,1,0,1,1,Post22
 61550,,San Jose,712 - Rural Residential (0.2 DU/AC),,,0.2,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,Post22
-61551,,San Jose,712 - Transit-Oriented Mixed Use (40-150 DU/AC),,,150,,0,1,1,1,0,1,1,1,0,1,1,0,1,1,Post22
-61552,,San Jose,712 - Transit Corridor Mixed Use (40-100 DU/AC),,,100,,0,1,1,1,0,1,1,1,0,1,1,0,1,1,Post22
+61551,,San Jose,712 - Transit-Oriented Mixed Use (40-150 DU/AC),,,145,,0,1,1,1,0,1,1,1,0,1,1,0,1,1,Post22
+61552,,San Jose,712 - Transit Corridor Mixed Use (40-100 DU/AC),,,95,,0,1,1,1,0,1,1,1,0,1,1,0,1,1,Post22
 61553,,San Jose,712 - Transit Corridor Residential (12+ DU/AC),,,15,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,Post22
 61554,,San Jose,712 - Transit Corridor Residential (12+ DU/AC)/General Commercial,,,15,,0,1,1,1,1,1,0,0,0,1,1,1,1,1,Post22
 61555,,San Jose,712 - Transit Mall,3,,,,0,0,0,1,1,1,0,0,0,1,1,0,1,1,Post22
@@ -4860,7 +4860,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 61703,,Rio Vista,804 - Agriculture/ Open Space,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
 61704,,Rio Vista,804 - Airport/ Transportation,0.8,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
 61705,,Rio Vista,804 - Downtown/ Waterfront,2,,40,,0,1,1,1,1,1,0,0,0,1,1,0,1,1,Pre22
-61706,,Rio Vista,804 - Edgewater Neighborhood,0.5,,16,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
+61706,,Rio Vista,804 - Edgewater Neighborhood,0.5,,12,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
 61707,,Rio Vista,804 - Golf Course,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
 61708,,Rio Vista,804 - Highway Commercial,0.5,,,,0,0,0,1,1,1,0,0,0,1,1,0,1,1,Pre22
 61709,,Rio Vista,804 - Historic Residential,0.5,,30,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
@@ -4868,10 +4868,10 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 61711,,Rio Vista,804 - Industrial/ Warehouse& Services,1,,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,Pre22
 61712,,Rio Vista,804 - Limited Industrial,1,,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,Pre22
 61713,,Rio Vista,804 - Marina,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
-61714,,Rio Vista,804 - Multifamily Residential,,,25,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,
-61715,,Rio Vista,804 - Neighborhood Core: Commercial,0.8,,20,,0,1,1,1,1,1,0,0,0,1,1,0,1,1,Pre22
-61716,,Rio Vista,804 - Neighborhood Core: Residential,,,20,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,Pre22
-61717,,Rio Vista,804 - Neighborhood Residential,0.5,,16,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
+61714,,Rio Vista,804 - Multifamily Residential,,,22,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,
+61715,,Rio Vista,804 - Neighborhood Core: Commercial,0.8,,16,,0,1,1,1,1,1,0,0,0,1,1,0,1,1,Pre22
+61716,,Rio Vista,804 - Neighborhood Core: Residential,,,16,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,Pre22
+61717,,Rio Vista,804 - Neighborhood Residential,0.5,,12,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
 61718,,Rio Vista,804 - Neighborhood Service/ Mixed Use,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
 61719,,Rio Vista,804 - Parks/Open Space,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
 61720,,Rio Vista,804 - Public Facility,,,,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,Pre22
