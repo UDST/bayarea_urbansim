@@ -1049,11 +1049,11 @@ development_projects_id,raw_id,building_name,site_name,action,scen0,scen3,scen1,
 1048,259,Transbay Termina East,Transbay,build,1,1,1,1,1,1,,,,,-122.39547,37.79019,9568185365876,2017,,10,RS,20000,20000,0,,,,,,,,,,,
 1049,31,Park Tower at Transbay / Transbay Block 3718,Transbay,build,1,1,1,1,1,1,,,,,-122.39453,37.79055,17329531198870,2018,,14,ME,751000,751000,0,,,,43,,,,,,,
 1050,32,Essex building,Transbay,build,1,1,1,1,1,1,,,,,-122.39511,37.78720,17265257405191,2017,,3,HM,495800,0,536,925,own,Market/Affordable,43,,,,,,900000,
-1051,33,Rem Koolhaas,Transbay,build,1,1,1,1,1,1,,,,,-122.39459,37.78790,11992800345729,2019,,12,MR,1106900,31500,554,925,own,Market/Affordable,56,,,,,,900000,
+1051,33,Rem Koolhaas,Transbay,build,1,1,1,1,1,1,,,,,-122.39459,37.78790,11992800345729,2019,,12,MR,543950,31500,554,925,own,Market/Affordable,56,,,,,,900000,
 1052,34,Transbay Block 3738,Transbay,build,1,1,1,1,1,1,,,,,-122.39361,37.78871,8695287094504,2025,,12,MR,389675,0,545,715,own,Market/Affordable,30,,,,,,900000,
-1053,35,Transbay Block 3739,Transbay,build,1,1,1,1,1,1,,,,,-122.39315,37.78966,8430391218013,2025,,12,MR,2254670,496295,1465,925,own,Market/Affordable,,,,,,,900000,
+1053,35,Transbay Block 3739,Transbay,build,1,1,1,1,1,1,,,,,-122.39315,37.78966,8430391218013,2025,,12,MR,1851420,496295,1465,925,own,Market/Affordable,,,,,,,900000,
 1054,36,Tishman Speyer,Transbay,build,1,1,1,1,1,1,,,,,-122.39184,37.79007,17090335104476,2025,,12,MR,379128,10053,399,925,own,Market/Affordable,40,,,,,,900000,
-1055,38,Transbay Block 3764,Transbay,build,1,1,1,1,1,1,,,,,-122.39468,37.78434,16411128982922,2025,,12,MR,130200,8680,101,925,own,,,,,,,,900000,
+1055,38,Transbay Block 3764,Transbay,build,1,1,1,1,1,1,,,,,-122.39468,37.78434,16411128982922,2025,,12,MR,102105,8680,101,925,own,,,,,,,,900000,
 1056,260,555 Howard Condos (all in one building),Transbay,build,1,1,1,1,1,1,,,,,-122.39687,37.78738,6550242144401,2018,,3,MR,123775,6300,127,925,,,36,,,,,,,
 1057,261,555 Howard Hotel,Transbay,build,1,1,1,1,1,1,,,,,-122.39697,37.78731,1481255110514,2018,,5,HO,93660,93660,0,,,,36,,,,,,,
 1058,262,Parcel F (also includes some neighbor parcels),Transbay,build,1,1,1,1,1,1,,,,,-121.97229,37.40851,2325196212882,2018,,12,MR,735000,375000,300,1200,,,,,,,,,,
@@ -1061,17 +1061,17 @@ development_projects_id,raw_id,building_name,site_name,action,scen0,scen3,scen1,
 1060,40,MacArthur Transit Village Phase 2,BART MacArthur,build,1,1,1,1,1,1,,,,,-122.26612,37.82741,1257003392051,2016,,3,HM,108000,0,90,1200,rent,,4,,,,,,,
 1061,41,MacArthur Transit Village Phase 3,BART MacArthur,build,1,1,1,1,1,1,,,,,-122.26567,37.82893,8437778118860,2016,,12,MR,279100,23500,213,1200,rent,,4,,,,,,,
 1062,42,MacArthur Transit Village Phase 4 (make low Income),BART MacArthur,build,1,1,1,1,1,1,,,,,-122.26587,37.82813,5369173475514,2021,,12,MR,163400,5000,132,1200,rent,Affordable,4,,,,,,,
-1063,43,MacArthur Transit Village Phase 5,BART MacArthur,demolish,1,1,1,1,1,1,,,,,-122.26512,37.82801,9028451860436,2023,,,,,,0,,,,,,,,,,,
+1063,43,MacArthur Transit Village Phase 5,BART MacArthur,demolish,1,1,1,1,1,1,,,,,-122.26512,37.82801,9028451860436,2023,,,,0,,0,,,,,,,,,,,
 1064,44,MacArthur Transit Village Phase 5,BART MacArthur,build,1,1,1,1,1,1,,,,,-122.26512,37.82801,9028451860436,2023,,12,MR,240800,14000,189,1200,rent,,4,,,,,,,
-1065,45,Walnut Creek BART Transit Village Phase I,BART Walnut Creek,build,1,1,1,1,1,1,,,,,-122.06796,37.90624,16176181392101,2018,,4,OF,1325993,4000,0,,,,4,,,,,,,
-1066,46,Walnut Creek BART Transit Village Phase II,BART Walnut Creek,build,1,1,1,1,1,1,,,,,-122.06796,37.90624,16176181392101,2019,,12,MR,1325993,12020,358,1200,rent,,4,,,,,,,
-1067,47,Walnut Creek BART Transit Village Phase III,BART Walnut Creek,build,1,1,1,1,1,1,,,,,-122.06694,37.90547,9748568850958,2020,,12,MR,1333103,26635,238,1200,rent,,4,,,,,,,
-1068,48,Park Merced Phase 1 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47745,37.71945,1341258589695,2014,,,,,,0,,,,,,,,,,,
-1069,49,Park Merced Phase 1 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.48397,37.71729,8355509595902,2014,,,,,,0,,,,,,,,,,,
-1070,50,Park Merced Phase 1 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47867,37.71949,330656628805,2014,,,,,,0,,,,,,,,,,,
-1071,51,Park Merced Phase 1 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.48387,37.71920,9169579217651,2014,,,,,,0,,,,,,,,,,,
-1072,52,Park Merced Phase 1 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.48373,37.71593,15338988512137,2014,,,,,,0,,,,,,,,,,,
-1073,53,Park Merced Phase 1 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.48246,37.71584,4911206504323,2014,,,,,,0,,,,,,,,,,,
+1065,45,Walnut Creek BART Transit Village Phase I,BART Walnut Creek,build,1,1,1,1,1,1,,,,,-122.06796,37.90624,16176181392101,2018,,4,OF,4000,4000,0,,,,4,,,,,,,
+1066,46,Walnut Creek BART Transit Village Phase II,BART Walnut Creek,build,1,1,1,1,1,1,,,,,-122.06796,37.90624,16176181392101,2019,,12,MR,441620,12020,358,1200,rent,,4,,,,,,,
+1067,47,Walnut Creek BART Transit Village Phase III,BART Walnut Creek,build,1,1,1,1,1,1,,,,,-122.06694,37.90547,9748568850958,2020,,12,MR,312235,26635,238,1200,rent,,4,,,,,,,
+1068,48,Park Merced Phase 1 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47745,37.71945,1341258589695,2014,,,,0,,0,,,,,,,,,,,
+1069,49,Park Merced Phase 1 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.48397,37.71729,8355509595902,2014,,,,0,,0,,,,,,,,,,,
+1070,50,Park Merced Phase 1 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47867,37.71949,330656628805,2014,,,,0,,0,,,,,,,,,,,
+1071,51,Park Merced Phase 1 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.48387,37.71920,9169579217651,2014,,,,0,,0,,,,,,,,,,,
+1072,52,Park Merced Phase 1 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.48373,37.71593,15338988512137,2014,,,,0,,0,,,,,,,,,,,
+1073,53,Park Merced Phase 1 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.48246,37.71584,4911206504323,2014,,,,0,,0,,,,,,,,,,,
 1074,54,Park Merced Phase 1,Park Merced,build,1,1,1,1,1,1,,,,,-122.48388,37.72050,3534253806217,2014,,3,HM,213600,0,178,1200,rent,,6,,,,,,,
 1075,55,Park Merced Phase 1,Park Merced,build,1,1,1,1,1,1,,,,,-122.48091,37.71827,3769978412545,2014,,3,HM,213600,0,178,1200,rent,,6,,,,,,,
 1076,56,Park Merced Phase 1,Park Merced,build,1,1,1,1,1,1,,,,,-122.47745,37.71945,1341258589695,2015,,12,MR,442634,71834,309,1200,rent,,6,,,,,,,
@@ -1080,16 +1080,16 @@ development_projects_id,raw_id,building_name,site_name,action,scen0,scen3,scen1,
 1079,59,Park Merced Phase 1,Park Merced,build,1,1,1,1,1,1,,,,,-122.48387,37.71920,9169579217651,2015,,3,HM,370800,0,309,1200,rent,,6,,,,,,,
 1080,60,Park Merced Phase 1,Park Merced,build,1,1,1,1,1,1,,,,,-122.48373,37.71593,15338988512137,2015,,3,HM,370800,0,309,1200,rent,,6,,,,,,,
 1081,61,Park Merced Phase 1,Park Merced,build,1,1,1,1,1,1,,,,,-122.48246,37.71584,4911206504323,2015,,3,HM,372000,0,310,1200,rent,,6,,,,,,,
-1082,62,Park Merced Phase 2 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.48025,37.71608,13309596242659,2019,,,,,,0,,,,,,,,,,,
-1083,63,Park Merced Phase 2 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47584,37.71938,1928148798610,2019,,,,,,0,,,,,,,,,,,
-1084,64,Park Merced Phase 2 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47578,37.72046,507979352300,2019,,,,,,0,,,,,,,,,,,
-1085,65,Park Merced Phase 2 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47528,37.71943,12301571522070,2019,,,,,,0,,,,,,,,,,,
-1086,66,Park Merced Phase 2 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47628,37.71860,14493279386286,2019,,,,,,0,,,,,,,,,,,
-1087,67,Park Merced Phase 2 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47612,37.71764,9079349383011,2019,,,,,,0,,,,,,,,,,,
-1088,68,Park Merced Phase 2 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47494,37.71823,8582740561415,2019,,,,,,0,,,,,,,,,,,
-1089,69,Park Merced Phase 2 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47486,37.71683,14135816993896,2019,,,,,,0,,,,,,,,,,,
-1090,70,Park Merced Phase 2 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47649,37.71987,15835485717342,2019,,,,,,0,,,,,,,,,,,
-1091,71,Park Merced Phase 2 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47904,37.71713,9400356560364,2019,,,,,,0,,,,,,,,,,,
+1082,62,Park Merced Phase 2 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.48025,37.71608,13309596242659,2019,,,,0,,0,,,,,,,,,,,
+1083,63,Park Merced Phase 2 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47584,37.71938,1928148798610,2019,,,,0,,0,,,,,,,,,,,
+1084,64,Park Merced Phase 2 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47578,37.72046,507979352300,2019,,,,0,,0,,,,,,,,,,,
+1085,65,Park Merced Phase 2 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47528,37.71943,12301571522070,2019,,,,0,,0,,,,,,,,,,,
+1086,66,Park Merced Phase 2 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47628,37.71860,14493279386286,2019,,,,0,,0,,,,,,,,,,,
+1087,67,Park Merced Phase 2 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47612,37.71764,9079349383011,2019,,,,0,,0,,,,,,,,,,,
+1088,68,Park Merced Phase 2 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47494,37.71823,8582740561415,2019,,,,0,,0,,,,,,,,,,,
+1089,69,Park Merced Phase 2 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47486,37.71683,14135816993896,2019,,,,0,,0,,,,,,,,,,,
+1090,70,Park Merced Phase 2 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47649,37.71987,15835485717342,2019,,,,0,,0,,,,,,,,,,,
+1091,71,Park Merced Phase 2 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47904,37.71713,9400356560364,2019,,,,0,,0,,,,,,,,,,,
 1092,72,Park Merced Phase 2,Park Merced,build,1,1,1,1,1,1,,,,,-122.47317,37.71603,16753957086460,2019,,3,HM,376800,0,314,1200,rent,,6,,,,,,,
 1093,73,Park Merced Phase 2,Park Merced,build,1,1,1,1,1,1,,,,,-122.48025,37.71608,13309596242659,2020,,3,HM,168000,0,140,1200,rent,,6,,,,,,,
 1094,74,Park Merced Phase 2,Park Merced,build,1,1,1,1,1,1,,,,,-122.47584,37.71938,1928148798610,2020,,3,HM,168000,0,140,1200,rent,,6,,,,,,,
@@ -1101,27 +1101,27 @@ development_projects_id,raw_id,building_name,site_name,action,scen0,scen3,scen1,
 1100,80,Park Merced Phase 2,Park Merced,build,1,1,1,1,1,1,,,,,-122.47486,37.71683,14135816993896,2020,,3,HM,168000,0,140,1200,rent,,6,,,,,,,
 1101,81,Park Merced Phase 2,Park Merced,build,1,1,1,1,1,1,,,,,-122.47649,37.71987,15835485717342,2020,,3,HM,163200,0,136,1200,rent,,6,,,,,,,
 1102,82,Park Merced Phase 2,Park Merced,build,1,1,1,1,1,1,,,,,-122.47904,37.71713,9400356560364,2020,,6,SC,25000,25000,0,,,,4,,,,,,,
-1103,83,Park Merced Phase 3 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47700,37.71672,2943537749193,2024,,,,,,0,,,,,,,,,,,
-1104,84,Park Merced Phase 3 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.48081,37.71968,12445755072749,2024,,,,,,0,,,,,,,,,,,
-1105,85,Park Merced Phase 3 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47919,37.71557,4495833038755,2024,,,,,,0,,,,,,,,,,,
-1106,86,Park Merced Phase 3 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47821,37.71659,13406279697552,2024,,,,,,0,,,,,,,,,,,
-1107,87,Park Merced Phase 3 - Demolition,Park Merced,subtract,1,1,1,1,1,1,,,,,-122.47451,37.71499,4911030994681,2024,,,,,,65,,,,,,,,,,,
-1108,88,Park Merced Phase 3 - Demolition,Park Merced,subtract,1,1,1,1,1,1,,,,,-122.48091,37.71827,3769978412545,2024,,,,,,45,,,,,,,,,,,
+1103,83,Park Merced Phase 3 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47700,37.71672,2943537749193,2024,,,,0,,0,,,,,,,,,,,
+1104,84,Park Merced Phase 3 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.48081,37.71968,12445755072749,2024,,,,0,,0,,,,,,,,,,,
+1105,85,Park Merced Phase 3 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47919,37.71557,4495833038755,2024,,,,0,,0,,,,,,,,,,,
+1106,86,Park Merced Phase 3 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.47821,37.71659,13406279697552,2024,,,,0,,0,,,,,,,,,,,
+1107,87,Park Merced Phase 3 - Demolition,Park Merced,subtract,1,1,1,1,1,1,,,,,-122.47451,37.71499,4911030994681,2024,,,,0,,65,,,,,,,,,,,
+1108,88,Park Merced Phase 3 - Demolition,Park Merced,subtract,1,1,1,1,1,1,,,,,-122.48091,37.71827,3769978412545,2024,,,,0,,45,,,,,,,,,,,
 1109,89,Park Merced Phase 3,Park Merced,build,1,1,1,1,1,1,,,,,-122.47451,37.71499,4911030994681,2025,,3,HM,673200,0,561,1200,rent,,6,,,,,,,
 1110,90,Park Merced Phase 3,Park Merced,build,1,1,1,1,1,1,,,,,-122.48091,37.71827,3769978412545,2025,,3,HM,673200,0,561,1200,rent,,6,,,,,,,
 1111,91,Park Merced Phase 3,Park Merced,build,1,1,1,1,1,1,,,,,-122.47919,37.71557,4495833038755,2025,,10,RS,64000,64000,0,,,,4,,,,,,,
 1112,92,Park Merced Phase 3,Park Merced,build,1,1,1,1,1,1,,,,,-122.47700,37.71672,2943537749193,2025,,12,MR,377000,41000,280,1200,rent,,6,,,,,,,
 1113,93,Park Merced Phase 3,Park Merced,build,1,1,1,1,1,1,,,,,-122.48081,37.71968,12445755072749,2025,,3,HM,336000,0,280,1200,rent,,6,,,,,,,
 1114,94,Park Merced Phase 3,Park Merced,build,1,1,1,1,1,1,,,,,-122.47821,37.71659,13406279697552,2025,,3,HM,336000,0,280,1200,rent,,6,,,,,,,
-1115,95,Park Merced Phase 4 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.48099,37.71686,4519155341974,2029,,,,,,0,,,,,,,,,,,
-1116,96,Park Merced Phase 4 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.48241,37.71688,11879774407047,2029,,,,,,0,,,,,,,,,,,
-1117,97,Park Merced Phase 4 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.48222,37.71976,9317524767968,2029,,,,,,0,,,,,,,,,,,
+1115,95,Park Merced Phase 4 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.48099,37.71686,4519155341974,2029,,,,0,,0,,,,,,,,,,,
+1116,96,Park Merced Phase 4 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.48241,37.71688,11879774407047,2029,,,,0,,0,,,,,,,,,,,
+1117,97,Park Merced Phase 4 - Demolition,Park Merced,demolish,1,1,1,1,1,1,,,,,-122.48222,37.71976,9317524767968,2029,,,,0,,0,,,,,,,,,,,
 1118,98,Park Merced Phase 4,Park Merced,build,1,1,1,1,1,1,,,,,-122.47246,37.71388,16629925703562,2029,,3,HM,838800,0,699,1200,rent,,6,,,,,,,
 1119,99,Park Merced Phase 4,Park Merced,build,1,1,1,1,1,1,,,,,-122.48099,37.71686,4519155341974,2030,,3,HM,418800,0,349,1200,rent,,6,,,,,,,
 1120,100,Park Merced Phase 4,Park Merced,build,1,1,1,1,1,1,,,,,-122.48241,37.71688,11879774407047,2030,,3,HM,418800,0,349,1200,rent,,6,,,,,,,
 1121,101,Park Merced Phase 4,Park Merced,build,1,1,1,1,1,1,,,,,-122.48222,37.71976,9317524767968,2030,,3,HM,420000,0,350,1200,rent,,6,,,,,,,
 1122,102,Moscone Center,Moscone Center,add,1,1,1,1,1,1,,,,,-122.40081,37.78351,8788404141928,2018,,4,OF,105000,105000,0,,,,4,,,,,,,
-1123,103,Treasure Island - Demolition,Treasure Island,demolish,1,1,1,1,1,1,,,,,-122.37126,37.82325,16017463623230,2020,,,,,,0,,,,,,,,,,,
+1123,103,Treasure Island - Demolition,Treasure Island,demolish,1,1,1,1,1,1,,,,,-122.37126,37.82325,16017463623230,2020,,,,0,,0,,,,,,,,,,,
 1124,104,TI_Phase 1_1YA,Treasure Island,build,1,1,1,1,1,1,,,,,-122.36859,37.81076,12226182883485,2014,,3,HM,240000,0,200,1200,own,,6,,,,,,900000,
 1125,105,TI_Phase 1_1A (around 400 affordable),Treasure Island,build,1,1,1,1,1,1,,,,,-122.36761,37.81847,7421705466043,2014,,12,MR,637250,61250,480,1200,own,Market/Affordable,60,,,,,,350000,
 1126,106,TI_Phase 1_1B,Treasure Island,build,1,1,1,1,1,1,,,,,-122.37105,37.81710,3511510537245,2015,,12,MR,637250,61250,480,1200,own,,40,,,,,,900000,
@@ -1130,12 +1130,12 @@ development_projects_id,raw_id,building_name,site_name,action,scen0,scen3,scen1,
 1129,109,TI_Phase 1_1E,Treasure Island,build,1,1,1,1,1,1,,,,,-122.37300,37.82078,3296985159891,2018,,3,HM,576000,0,480,1200,own,,6,,,,,,900000,
 1130,110,TI_Phase 1_1F,Treasure Island,build,1,1,1,1,1,1,,,,,-122.36627,37.82071,9105622600336,2019,,3,HM,576000,0,480,1200,own,,6,,,,,,900000,
 1131,111,TI_Phase 1_1YB,Treasure Island,build,1,1,1,1,1,1,,,,,-122.36545,37.81110,12265278081312,2020,,5,HO,1625000,1625000,0,,,,2,,,,,,,
-1132,112,TI_Phase 2_2A,Treasure Island,build,1,1,1,1,1,1,,,,,-122.36627,37.82071,9105622600336,2020,,12,MR,583500,100000,480,1200,own,,40,,,,,,900000,
+1132,112,TI_Phase 2_2A,Treasure Island,build,1,1,1,1,1,1,,,,,-122.36627,37.82071,9105622600336,2020,,12,MR,676000,100000,480,1200,own,,40,,,,,,900000,
 1133,113,TI_Phase 2_2B,Treasure Island,build,1,1,1,1,1,1,,,,,-122.37414,37.82247,11516206395227,2021,,3,HM,576000,0,480,1200,own,,6,,,,,,900000,
 1134,114,TI_Phase 2_2C,Treasure Island,build,1,1,1,1,1,1,,,,,-122.36514,37.82120,9433913931319,2022,,3,HM,576000,0,480,1200,own,,6,,,,,,900000,
 1135,115,TI_Phase 3_3A,Treasure Island,build,1,1,1,1,1,1,,,,,-122.36417,37.82259,7586366277115,2023,,3,HM,576000,0,480,1200,own,,6,,,,,,900000,
 1136,116,TI_Phase 3_3B,Treasure Island,build,1,1,1,1,1,1,,,,,-122.37282,37.82514,3250618240732,2024,,3,HM,576000,0,480,1200,own,,6,,,,,,900000,
-1137,117,TI_Phase 3_3C,Treasure Island,build,1,1,1,1,1,1,,,,,-122.37282,37.82514,3250618240732,2025,,12,MR,583500,10000,480,1200,own,,40,,,,,,900000,
+1137,117,TI_Phase 3_3C,Treasure Island,build,1,1,1,1,1,1,,,,,-122.37282,37.82514,3250618240732,2025,,12,MR,586000,10000,480,1200,own,,40,,,,,,900000,
 1138,118,TI_Phase 4_4A,Treasure Island,build,1,1,1,1,1,1,,,,,-122.37622,37.82376,12048404359915,2026,,3,HM,576000,0,480,1200,own,,6,,,,,,900000,
 1139,119,TI_Phase 4_4B,Treasure Island,build,1,1,1,1,1,1,,,,,-122.37420,37.82430,3558070814770,2027,,3,HM,576000,0,480,1200,own,,6,,,,,,900000,
 1140,120,TI_Phase 4_4C,Treasure Island,build,1,1,1,1,1,1,,,,,-122.37651,37.82520,5726859996106,2028,,3,HM,576000,0,480,1200,own,,6,,,,,,900000,
@@ -1248,39 +1248,39 @@ development_projects_id,raw_id,building_name,site_name,action,scen0,scen3,scen1,
 1247,298,Neighborhood 4,Berkeley Global Campus,build,1,1,1,1,1,1,,,,,-122.34014,37.91648,11122180636912,2035,,6,SC,1284000,1284000,0,,,,,,,,,,,
 1248,299,EPA and NRLF,Berkeley Global Campus,build,1,1,1,1,1,1,,,,,-122.33468,37.91536,6231721130624,2025,,6,SC,651000,651000,0,,,,,,,,,,,
 1249,300,Housing,Berkeley Global Campus,build,0,0,0,0,0,0,,,,,-122.33692,37.91357,9231790818771,2020,,3,HM,100000,0,500,200,,,,,,,,,,
-1250,201,BART Hotel and Retail,West Dublin Pleasanton BART TOD,build,0,0,0,0,0,0,,,,,-121.92871,37.70075,12294161549707,2015,,5,HO,0,157500,0,,,,,,,,,,,
-1251,206,Phase I,Shellmound MixedUse at Public Market,build,0,0,0,0,0,0,,,,,-122.29309,37.84038,13482645428118,2017,,12,MR,0,8525,10,1500,own,,3,,,,,,,
-1252,207,Phase I,Shellmound MixedUse at Public Market,build,0,0,0,0,0,0,,,,,-122.29309,37.84038,13482645428118,2017,,12,MR,0,6200,196,1200,own,,14,,,,,,,
-1253,209,Phase I - Demolition,Shellmound MixedUse at Public Market,demolish,0,0,0,0,0,0,,,,,-122.29522,37.84345,5891221412103,2015,,,,,,217,,,,,,,,,,,
-1254,211,Phase II - Demolition,Shellmound MixedUse at Public Market,demolish,0,0,0,0,0,0,,,,,-122.29439,37.84304,618919510583,2015,,,,,,0,,,,,,,,,,,
-1255,212,Phase II,Shellmound MixedUse at Public Market,build,0,0,0,0,0,0,,,,,-122.29439,37.84304,618919510583,2017,,12,MR,0,114500,198,1200,own,,11,,,,,,,
-1256,213,Phase II,Shellmound MixedUse at Public Market,build,0,0,0,0,0,0,,,,,-122.29384,37.84140,4197096503412,2017,,4,OF,0,149150,0,,,,5,,,,,,,
-1257,214,Phase I - Parcel A - Demolition,Oak to Ninth Mixed Use,demolish,1,1,1,1,1,1,,,,,-122.25702,37.78731,10224218046774,2013,,,,,,0,,,,,,,,,,,
-1258,215,Phase I - Parcel A,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.25702,37.78731,10224218046774,2015,,12,MR,0,13800,225,1200,own,,,,,,,,,
-1259,216,Phase I - Parcel B,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.25702,37.78731,10224218046774,2015,,12,MR,0,13800,225,1200,own,,,,,,,,,
-1260,217,Phase I - Parcel C,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.25702,37.78731,10224218046774,2015,,12,MR,0,13800,225,1200,own,,,,,,,,,
-1261,218,Phase I - Parcel F,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.25702,37.78731,10224218046774,2015,,12,MR,0,13800,225,1200,own,,,,,,,,,
-1262,219,Phase I - Parcel G,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.25702,37.78731,10224218046774,2015,,12,MR,0,13800,225,1200,own,,,,,,,,,
-1263,220,Phase I,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.25702,37.78731,10224218046774,2015,,4,OF,0,12000,0,,,,,,,,,,,
-1264,221,Phase II - Parcel D,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.26079,37.78705,1406001999129,2016,,12,MR,0,19750,226,1200,own,,,,,,,,,
-1265,222,Phase II - Parcel E,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.26079,37.78705,1406001999129,2016,,12,MR,0,19750,226,1200,own,,,,,,,,,
-1266,223,Phase II - Parcel H,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.26079,37.78705,1406001999129,2016,,12,MR,0,19750,226,1200,own,,,,,,,,,
-1267,224,Phase II - Parcel J,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.26079,37.78705,1406001999129,2016,,12,MR,0,19750,227,1200,own,,,,,,,,,
-1268,225,Phase III - Parcel K - Demolition,Oak to Ninth Mixed Use,demolish,1,1,1,1,1,1,,,,,-122.26079,37.78705,1406001999129,2016,,,,,,0,1200,,,,,,,,,,
-1269,226,Phase III - Parcel K,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.26079,37.78705,1406001999129,2017,,12,MR,0,12500,230,1200,own,,,,,,,,,
-1270,227,Phase III - Parcel L,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.26079,37.78705,1406001999129,2017,,12,MR,0,12500,230,1200,own,,,,,,,,,
-1271,228,Phase IV - Parcel M - Demolition,Oak to Ninth Mixed Use,demolish,1,1,1,1,1,1,,,,,-122.26422,37.78879,49314471615,2017,,,,,,0,1200,,,,,,,,,,
-1272,229,Phase IV - Parcel M,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.26422,37.78879,49314471615,2018,,12,MR,0,15000,310,1200,own,,,,,,,,,
-1273,230,Phase V - Parcel N - Demolition,Oak to Ninth Mixed Use,demolish,1,1,1,1,1,1,,,,,-122.26651,37.78979,13744526928192,2018,,,,,,0,1200,,,,,,,,,,
-1274,231,Phase V - Parcel N,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.26651,37.78979,13744526928192,2019,,12,MR,0,15000,300,1200,own,,,,,,,,,
-1275,232,Phase 1B,Fruitvale Transit Village Phase II,build,1,1,1,1,1,1,,,,,-122.22301,37.77482,13654158533195,2017,,3,HM,0,,16,634,,,4,,,,,,,
-1276,233,Phase 1B,Fruitvale Transit Village Phase II,build,1,1,1,1,1,1,,,,,-122.22301,37.77482,13654158533195,2017,,3,HM,0,,48,828,,,4,,,,,,,
-1277,234,Phase 1B,Fruitvale Transit Village Phase II,build,1,1,1,1,1,1,,,,,-122.22301,37.77482,13654158533195,2017,,3,HM,0,,29,1167,,,4,,,,,,,
-1278,235,Phase 2,Fruitvale Transit Village Phase II,build,1,1,1,1,1,1,,,,,-122.22301,37.77482,13654158533195,2019,,3,HM,0,,12,634,,,4,,,,,,,
-1279,236,Phase 2,Fruitvale Transit Village Phase II,build,1,1,1,1,1,1,,,,,-122.22301,37.77482,13654158533195,2019,,3,HM,0,,45,828,,,4,,,,,,,
-1280,237,Phase 2,Fruitvale Transit Village Phase II,build,1,1,1,1,1,1,,,,,-122.22301,37.77482,13654158533195,2019,,3,HM,0,,31,1167,,,4,,,,,,,
-1281,238,Affordable,Fruitvale Transit Village Phase II,build,1,1,1,1,1,1,,,,,-122.22234,37.77428,16129572698441,2018,,3,HM,0,,22,587,,Affordable,4,,,,,,,
-1282,239,Affordable,Fruitvale Transit Village Phase II,build,1,1,1,1,1,1,,,,,-122.22234,37.77428,16129572698441,2018,,3,HM,0,,44,906,,Affordable,4,,,,,,,
+1250,201,BART Hotel and Retail,West Dublin Pleasanton BART TOD,build,0,0,0,0,0,0,,,,,-121.92871,37.70075,12294161549707,2015,,5,HO,157500,157500,0,,,,,,,,,,,
+1251,206,Phase I,Shellmound MixedUse at Public Market,build,0,0,0,0,0,0,,,,,-122.29309,37.84038,13482645428118,2017,,12,MR,23525,8525,10,1500,own,,3,,,,,,,
+1252,207,Phase I,Shellmound MixedUse at Public Market,build,0,0,0,0,0,0,,,,,-122.29309,37.84038,13482645428118,2017,,12,MR,241400,6200,196,1200,own,,14,,,,,,,
+1253,209,Phase I - Demolition,Shellmound MixedUse at Public Market,demolish,0,0,0,0,0,0,,,,,-122.29522,37.84345,5891221412103,2015,,,,0,,217,,,,,,,,,,,
+1254,211,Phase II - Demolition,Shellmound MixedUse at Public Market,demolish,0,0,0,0,0,0,,,,,-122.29439,37.84304,618919510583,2015,,,,0,,0,,,,,,,,,,,
+1255,212,Phase II,Shellmound MixedUse at Public Market,build,0,0,0,0,0,0,,,,,-122.29439,37.84304,618919510583,2017,,12,MR,352100,114500,198,1200,own,,11,,,,,,,
+1256,213,Phase II,Shellmound MixedUse at Public Market,build,0,0,0,0,0,0,,,,,-122.29384,37.84140,4197096503412,2017,,4,OF,149150,149150,0,,,,5,,,,,,,
+1257,214,Phase I - Parcel A - Demolition,Oak to Ninth Mixed Use,demolish,1,1,1,1,1,1,,,,,-122.25702,37.78731,10224218046774,2013,,,,0,,0,,,,,,,,,,,
+1258,215,Phase I - Parcel A,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.25702,37.78731,10224218046774,2015,,12,MR,283800,13800,225,1200,own,,,,,,,,,
+1259,216,Phase I - Parcel B,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.25702,37.78731,10224218046774,2015,,12,MR,283800,13800,225,1200,own,,,,,,,,,
+1260,217,Phase I - Parcel C,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.25702,37.78731,10224218046774,2015,,12,MR,283800,13800,225,1200,own,,,,,,,,,
+1261,218,Phase I - Parcel F,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.25702,37.78731,10224218046774,2015,,12,MR,283800,13800,225,1200,own,,,,,,,,,
+1262,219,Phase I - Parcel G,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.25702,37.78731,10224218046774,2015,,12,MR,283800,13800,225,1200,own,,,,,,,,,
+1263,220,Phase I,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.25702,37.78731,10224218046774,2015,,4,OF,12000,12000,0,,,,,,,,,,,
+1264,221,Phase II - Parcel D,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.26079,37.78705,1406001999129,2016,,12,MR,290950,19750,226,1200,own,,,,,,,,,
+1265,222,Phase II - Parcel E,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.26079,37.78705,1406001999129,2016,,12,MR,290950,19750,226,1200,own,,,,,,,,,
+1266,223,Phase II - Parcel H,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.26079,37.78705,1406001999129,2016,,12,MR,290950,19750,226,1200,own,,,,,,,,,
+1267,224,Phase II - Parcel J,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.26079,37.78705,1406001999129,2016,,12,MR,292150,19750,227,1200,own,,,,,,,,,
+1268,225,Phase III - Parcel K - Demolition,Oak to Ninth Mixed Use,demolish,1,1,1,1,1,1,,,,,-122.26079,37.78705,1406001999129,2016,,,,0,,0,1200,,,,,,,,,,
+1269,226,Phase III - Parcel K,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.26079,37.78705,1406001999129,2017,,12,MR,288500,12500,230,1200,own,,,,,,,,,
+1270,227,Phase III - Parcel L,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.26079,37.78705,1406001999129,2017,,12,MR,288500,12500,230,1200,own,,,,,,,,,
+1271,228,Phase IV - Parcel M - Demolition,Oak to Ninth Mixed Use,demolish,1,1,1,1,1,1,,,,,-122.26422,37.78879,49314471615,2017,,,,0,,0,1200,,,,,,,,,,
+1272,229,Phase IV - Parcel M,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.26422,37.78879,49314471615,2018,,12,MR,387000,15000,310,1200,own,,,,,,,,,
+1273,230,Phase V - Parcel N - Demolition,Oak to Ninth Mixed Use,demolish,1,1,1,1,1,1,,,,,-122.26651,37.78979,13744526928192,2018,,,,0,,0,1200,,,,,,,,,,
+1274,231,Phase V - Parcel N,Oak to Ninth Mixed Use,build,1,1,1,1,1,1,,,,,-122.26651,37.78979,13744526928192,2019,,12,MR,375000,15000,300,1200,own,,,,,,,,,
+1275,232,Phase 1B,Fruitvale Transit Village Phase II,build,1,1,1,1,1,1,,,,,-122.22301,37.77482,13654158533195,2017,,3,HM,10144,,16,634,,,4,,,,,,,
+1276,233,Phase 1B,Fruitvale Transit Village Phase II,build,1,1,1,1,1,1,,,,,-122.22301,37.77482,13654158533195,2017,,3,HM,39744,,48,828,,,4,,,,,,,
+1277,234,Phase 1B,Fruitvale Transit Village Phase II,build,1,1,1,1,1,1,,,,,-122.22301,37.77482,13654158533195,2017,,3,HM,33843,,29,1167,,,4,,,,,,,
+1278,235,Phase 2,Fruitvale Transit Village Phase II,build,1,1,1,1,1,1,,,,,-122.22301,37.77482,13654158533195,2019,,3,HM,7608,,12,634,,,4,,,,,,,
+1279,236,Phase 2,Fruitvale Transit Village Phase II,build,1,1,1,1,1,1,,,,,-122.22301,37.77482,13654158533195,2019,,3,HM,37260,,45,828,,,4,,,,,,,
+1280,237,Phase 2,Fruitvale Transit Village Phase II,build,1,1,1,1,1,1,,,,,-122.22301,37.77482,13654158533195,2019,,3,HM,36177,,31,1167,,,4,,,,,,,
+1281,238,Affordable,Fruitvale Transit Village Phase II,build,1,1,1,1,1,1,,,,,-122.22234,37.77428,16129572698441,2018,,3,HM,12914,,22,587,,Affordable,4,,,,,,,
+1282,239,Affordable,Fruitvale Transit Village Phase II,build,1,1,1,1,1,1,,,,,-122.22234,37.77428,16129572698441,2018,,3,HM,39864,,44,906,,Affordable,4,,,,,,,
 1283,290,Kaiser expansion,Kaiser SF,build,1,1,1,1,1,1,,,,,-122.43976,37.78292,16490033292529,2017,,4,OF,37000,37000,0,,,,,,,,,,,
 1284,291,Jacobs Hall,UCB,add,1,1,1,1,1,1,,,,,-122.25902,37.87571,6814479004325,2015,,6,SC,24000,24000,0,,,,,,,,,,,
 1285,292,Berkeley Way West,UCB,add,1,1,1,1,1,1,,,,,-122.26757,37.87358,13043305799943,2017,,6,SC,320000,320000,0,,,,,,,,,,,
@@ -1291,8 +1291,8 @@ development_projects_id,raw_id,building_name,site_name,action,scen0,scen3,scen1,
 1290,297,Exploratorium South,Exploratorium,build,1,1,1,1,1,1,,,,,-122.33468,37.91536,6231721130624,2013,,10,RS,110000,110000,0,,,,,,,,,,,
 1291,298,Concord Residential,Concord Naval,build,1,1,1,1,1,1,,,,,0.00000,0.00000,3218776211100,2018,,3,HM,5325000,,3550,1500,,,,,,,,,,
 1292,299,Concord Afforable Residential,Concord Naval,build,1,1,1,1,1,1,,,,,0.00000,0.00000,257098321118,2020,,3,HM,2175000,,1450,1500,,Affordable,,,,,,,,
-1293,300,Concord Office,Concord Naval,build,1,1,1,1,1,1,,,,,0.00000,0.00000,3218776211100,2026,,4,OF,4700000,5100000,,,,,,,,,,,,
-1294,301,Concord Retail,Concord Naval,build,1,1,1,1,1,1,,,,,0.00000,0.00000,257098321118,2028,,10,RS,2900000,3300000,,,,,,,,,,,,
+1293,300,Concord Office,Concord Naval,build,1,1,1,1,1,1,,,,,0.00000,0.00000,3218776211100,2026,,4,OF,5100000,5100000,,,,,,,,,,,,
+1294,301,Concord Retail,Concord Naval,build,1,1,1,1,1,1,,,,,0.00000,0.00000,257098321118,2028,,10,RS,3300000,3300000,,,,,,,,,,,,
 1295,302,Concord Big Box ,Concord Naval,build,1,1,1,1,1,1,,,,,0.00000,0.00000,3191813576153,2020,,11,RB,30000,30000,,,,,,,,,,,,
 1296,303,Concord Hotel,Concord Naval,build,1,1,1,1,1,1,,,,,0.00000,0.00000,3218776211100,2020,,5,HO,50000,50000,,,,,,,,,,,,
 1297,304,Concord School,Concord Naval,build,1,1,1,1,1,1,,,,,0.00000,0.00000,3218776211100,2022,,6,SC,20000,20000,,,,,,,,,,,,
@@ -1755,395 +1755,395 @@ development_projects_id,raw_id,building_name,site_name,action,scen0,scen3,scen1,
 1754,4005,main mall,SW SF,build,1,1,0,0,1,0,,,,,-122.47673,37.72913,13813830426688,2020,,12,MR,349808,69962,233,1200,,,,,,,,,,
 1755,4006,main mall,SW SF,build,0,1,0,0,0,0,,,,,-122.47819,37.73000,5946202773832,2020,,12,MR,2271622,454324,1514,1200,,,,,,,,,,
 1756,4007,0,SW SF,build,0,1,0,0,0,0,,,,,-122.48148,37.72835,7598400330622,2020,,12,MR,920747,46037,729,1200,,,,,,,,,,
-1757,10000,Sun Garden Retail Center,,build,1,1,1,1,1,1,E/s Monterey  300' sly E. Alma,San Jose,,Santa Clara,-121.8712172,37.31569602,557307546256,2013,,,RS,,206000,0,,,,,,,,,,,ABAG
-1758,10001,Race Street Terrace,,build,1,1,1,1,1,1,Bet. Race & Grand  300' sly Park,San Jose,,Santa Clara,-121.9122138,37.32518016,9969549260852,2013,,,HM,,0,80,,,,,,,,,,,ABAG
-1759,10002,Villa Sport,,build,1,1,1,1,1,1,Betwn N Capitol & Hwy 680  300' nly Berryesa,San Jose,,Santa Clara,-121.8628883,37.38688164,841228298555,2014,,,OF,,88000,0,,,,,,,,,,,ABAG
-1760,10003,Berryessa Crossing (Phase 1),,build,1,1,1,1,1,1,Both sides Berryessa  wly UP railroad,San Jose,,Santa Clara,-121.8800891,37.37133823,12290243629603,2010,,,HS,,0,242,,,,,,,,,,,ABAG
-1761,10004,2890 North 1st Street Office,,build,1,1,1,1,1,1,Bound N 1st  Daggett  Zanker & Plumeria,San Jose,,Santa Clara,-121.930469,37.39356279,10756324623470,2014,,,OF,,42000,0,,,,,,,,,,,ABAG
-1762,10005,Metropolitan Apts,,build,1,1,1,1,1,1,E/s Monterey  700' nly Tully,San Jose,,Santa Clara,-121.8623954,37.30571293,11023466561973,2011,,,HM,,0,102,,,,,,,,,,,ABAG
-1763,10006,Senter Road Family Apts,,build,1,1,1,1,1,1,E/s Senter  600' sly Tully,San Jose,,Santa Clara,-121.8456956,37.30708364,2650462895899,2010,,,HM,,0,102,,,,,,,,,,,ABAG
-1764,10007,Valley Christian Schools,,build,1,1,1,1,1,1,Ely term. Skyway,San Jose,,Santa Clara,-121.8247035,37.27447486,4785876575351,2010,,,SC,,50000,0,,,,,,,,,,,ABAG
-1765,10008,Communication Hill,,build,1,1,1,1,1,1,Hill bet Hwy 87 & Monterey  nly Hillsdale,San Jose,,Santa Clara,-121.857788,37.28508576,2092968530271,2014,,,HM,,308000,2200,,,,,,,,,,,ABAG
-1766,10009,San Jose Airport Terminals,,build,1,1,1,1,1,1,Mineta Airport,San Jose,,Santa Clara,-121.9389179,37.36661268,15104628428806,2014,,,OF,,278500,0,,,,,,,,,,,ABAG
-1767,10010,Westbury Homes,,build,1,1,1,1,1,1,N/s Blossom Hill  250' ely Cahalan,San Jose,,Santa Clara,-121.8456569,37.25261611,7677719281354,2011,,,HS,,0,86,,,,,,,,,,,ABAG
-1768,10011,University Villas Apts,,build,1,1,1,1,1,1,N/s Campbell  250' ely El Camino Real,San Jose,,Santa Clara,-121.9313315,37.34979349,15051239989125,2010,,,HM,,0,138,,,,,,,,,,,ABAG
-1769,10012,Ford Apts,,build,1,1,1,1,1,1,N/s Ford  550' ely Monterey,San Jose,,Santa Clara,-121.7967602,37.25415908,11184911351337,2010,,,HM,,0,95,,,,,,,,,,,ABAG
-1770,10013,Zero Waste Facility,,build,1,1,1,1,1,1,N/s Los Esteros  term Grand,San Jose,,Santa Clara,-121.9522188,37.43643066,2314990167334,2011,,,IL,,283000,0,,,,,,,,,,,ABAG
-1771,10014,River Oaks Apts (East),,build,1,1,1,1,1,1,N/s River Oaks  200' ely Research,San Jose,,Santa Clara,-121.9249005,37.40445868,15021706113960,2012,,,HM,,0,438,,,,,,,,,,,ABAG
-1772,10015,Chinmaya Mission,,build,1,1,1,1,1,1,NE/c Clayton & Hickerson,San Jose,,Santa Clara,-121.8092863,37.35936763,3897825644537,2011,,,OF,,26000,0,,,,,,,,,,,ABAG
-1773,10016,Bellarmine (Life Center/Gym),,build,1,1,1,1,1,1,NE/c Elm & Emory,San Jose,,Santa Clara,-121.9178615,37.34252022,14439107796122,2011,,,OF,,40000,0,,,,,,,,,,,ABAG
-1774,10017,The Meridian at Willow Glen,,build,1,1,1,1,1,1,NE/c Hillsdale & Yucca,San Jose,,Santa Clara,-121.9065932,37.26840811,213050406763,2011,,,HS,,0,51,,,,,,,,,,,ABAG
-1775,10018,North San Pedro Apts,,build,1,1,1,1,1,1,NE/c Hwy 87 & Bassett,San Jose,,Santa Clara,-121.8984824,37.33991817,4796943171858,2011,,,HM,,0,135,,,,,,,,,,,ABAG
-1776,10019,Centered on Capitol Townhomes,,build,1,1,1,1,1,1,NE/c N. Capitol & Sierra,San Jose,,Santa Clara,-121.8655777,37.39243261,1082157672108,2011,,,HM,,0,94,,,,,,,,,,,ABAG
-1777,10020,Foxworthy Retail,,build,1,1,1,1,1,1,NW/c Almaden & Hillsdale,San Jose,,Santa Clara,-121.8809359,37.27619221,277043018674,2011,,,RS,,25000,0,,,,,,,,,,,ABAG
-1778,10021,Coleman Landings,,build,1,1,1,1,1,1,NW/c Coleman & Newhall,San Jose,,Santa Clara,-121.9223939,37.34966612,9331635956288,2012,,,OF,,245000,0,,,,,,,,,,,ABAG
-1779,10022,Coleman Highline Office,,build,1,1,1,1,1,1,NW/c Coleman & Newhall,San Jose,,Santa Clara,-121.9282226,37.35256718,8359129770625,2013,,,OF,,683000,0,,,,,,,,,,,ABAG
-1780,10023,Valley Fair Shopping Center,,build,1,1,1,1,1,1,NW/c Hwy 17 & Stevens Creek,San Jose,,Santa Clara,-121.9425999,37.3250176,17580255408163,2013,,,RS,,525000,0,,,,,,,,,,,ABAG
-1781,10024,Newbury Park Mixed Use,,build,1,1,1,1,1,1,NW/c King & Dobbin,San Jose,,Santa Clara,-121.867455,37.36622827,178546448907,2013,,,MR,,0,230,,,,,,,,,,,ABAG
-1782,10025,Samsung Semiconductor,,build,1,1,1,1,1,1,NW/c N. 1st & Tasman,San Jose,,Santa Clara,-121.9463532,37.4092982,2322862587853,2013,,,IL,,680000,0,,,,,,,,,,,ABAG
-1783,10026,Trammel Crow (R&D and Office Buildings),,build,1,1,1,1,1,1,NW/c Nortech & Disk,San Jose,,Santa Clara,-121.964017,37.4236007,10699773993700,2014,,,IL,,415000,0,,,,,,,,,,,ABAG
-1784,10027,Santana Row (Levare),,build,1,1,1,1,1,1,NW/c Olin & Hatton,San Jose,,Santa Clara,-121.9467176,37.32095843,7973902266520,2010,,,HM,,0,118,,,,,,,,,,,ABAG
-1785,10028,Post & San Pedro Tower,,build,1,1,1,1,1,1,NW/c San Pedro & Post,San Jose,,Santa Clara,-121.8926919,37.33415419,1333479766919,2014,,,HM,,0,182,,,,,,,,,,,ABAG
-1786,10029,Whole Foods Market,,build,1,1,1,1,1,1,NW/c The Alameda & Stockton,San Jose,,Santa Clara,-121.9051054,37.33249087,17490520174758,2013,,,RB,,33000,0,,,,,,,,,,,ABAG
-1787,10030,Tasman Apts,,build,1,1,1,1,1,1,NW/c Vista Montana & W. Tasman,San Jose,,Santa Clara,-121.9552969,37.41475632,2488578699474,2011,,,HM,,0,554,,,,,,,,,,,ABAG
-1788,10031,Balbach Condos,,build,1,1,1,1,1,1,S/s Balbach  100' ely Almaden,San Jose,,Santa Clara,-121.8876877,37.32720079,16084817875279,2014,,,HM,,0,101,,,,,,,,,,,ABAG
-1789,10032,Parc 22 Townhomes,,build,1,1,1,1,1,1,S/s William  350' wly McLaughlin,San Jose,,Santa Clara,-121.8629695,37.33901448,16982901135447,2012,,,HS,,0,67,,,,,,,,,,,ABAG
-1790,10033,M8trix Casino/Hotel (Phase 1),,build,1,1,1,1,1,1,SE/c Airport & Old Bayshore,San Jose,,Santa Clara,-121.9190707,37.37089061,7938493479834,2011,,,OF,,89000,0,,,,,,,,,,,ABAG
-1791,10034,Almaden Ranch / Bass Pro,,build,1,1,1,1,1,1,SE/c Almaden & Chynoweth,San Jose,,Santa Clara,-121.8724115,37.25823213,1908535176695,2012,,,OF,,377000,0,,,,,,,,,,,ABAG
-1792,10035,San Pedro Square,,build,1,1,1,1,1,1,SE/c Bassett & Terraine,San Jose,,Santa Clara,-121.8971682,37.33924285,17135562162557,2014,,,HM,,0,406,,,,,,,,,,,ABAG
-1793,10036,Ajisai Gardens Apts,,build,1,1,1,1,1,1,SE/c E. Taylor & N. 7th,San Jose,,Santa Clara,-121.89295,37.35153204,10223535361428,2012,,,HM,,0,103,,,,,,,,,,,ABAG
-1794,10037,Lincoln Office/Retail,,build,1,1,1,1,1,1,SE/c Lincoln & Willow,San Jose,,Santa Clara,-121.9006114,37.30839232,15978284830248,2010,,,OF,,41000,0,,,,,,,,,,,ABAG
-1795,10038,Self Storage,,build,1,1,1,1,1,1,SE/c N 10th Street & Horning,San Jose,,Santa Clara,-121.8946393,37.35994477,9807350134795,2014,,,IL,,84000,0,,,,,,,,,,,ABAG
-1796,10039,Rosemary Family/Senior Apts,,build,1,1,1,1,1,1,SE/c N. 1st & Rosemary,San Jose,,Santa Clara,-121.9077961,37.35989634,16698842867440,2011,,,HM,,0,290,,,,,,,,,,,ABAG
-1797,10040,Hampton Inn,,build,1,1,1,1,1,1,SE/c W. Santa Clara & Hwy 87,San Jose,,Santa Clara,-121.8960678,37.33317714,11999151377381,2014,,,OF,,128000,0,,,,,,,,,,,ABAG
-1798,10041,Santana Row (Misora),,build,1,1,1,1,1,1,SE/c Winchester & Stevens Creek,San Jose,,Santa Clara,-121.9474733,37.31985905,11486374325420,2012,,,HM,,0,220,,,,,,,,,,,ABAG
-1799,10042,Hyatt House/Hyatt Place,,build,1,1,1,1,1,1,Sly term. Karina,San Jose,,Santa Clara,-121.921595,37.37311143,14770617797816,2014,,,OF,,206000,0,,,,,,,,,,,ABAG
-1800,10043,Earthquakes Soccer Stadium,,build,1,1,1,1,1,1,SW/c Coleman & Newhall,San Jose,,Santa Clara,-121.9253605,37.35115466,216445391403,2012,,,OF,,219000,0,,,,,,,,,,,ABAG
-1801,10044,Orchard Park,,build,1,1,1,1,1,1,SW/c E. Brokaw & Oakland,San Jose,,Santa Clara,-121.897072,37.37977508,3770778410749,2012,,,HS,,0,240,,,,,,,,,,,ABAG
-1802,10045,Edwards Mixed Use,,build,1,1,1,1,1,1,SW/c Edwards & S. 1st,San Jose,,Santa Clara,-121.8797656,37.32126902,11178663235532,2010,,,HM,,0,50,,,,,,,,,,,ABAG
-1803,10046,One South Market Apts,,build,1,1,1,1,1,1,SW/c Market & Santa Clara,San Jose,,Santa Clara,-121.8921343,37.33488771,9589580496633,2013,,,HM,,0,312,,,,,,,,,,,ABAG
-1804,10047,Century Center Mixed Use,,build,1,1,1,1,1,1,SW/c N. 1st & Century Center,San Jose,,Santa Clara,-121.9151777,37.36797331,14874144646500,2014,,,HM,,0,378,,,,,,,,,,,ABAG
-1805,10048,North First Campus,,build,1,1,1,1,1,1,SW/c N. 1st & Component,San Jose,,Santa Clara,-121.9279871,37.38061408,17054960452221,2012,,,IL,,2350000,0,,,,,,,,,,,ABAG
-1806,10049,A-1 Self Storage,,build,1,1,1,1,1,1,SW/c Phelan & Senter,San Jose,,Santa Clara,-121.8590419,37.31734389,5112592194154,2013,,,IL,,107000,0,,,,,,,,,,,ABAG
-1807,10050,SuperMicro,,build,1,1,1,1,1,1,SW/c Ridder Park & Schallenberger,San Jose,,Santa Clara,-121.9004327,37.37634437,16965552667538,2014,,,IL,,182000,0,,,,,,,,,,,ABAG
-1808,10051,Cottages at Mirassou,,build,1,1,1,1,1,1,SW/c Ruby & Aborn,San Jose,,Santa Clara,-121.7767427,37.31515772,7886770966303,2011,,,HM,,0,104,,,,,,,,,,,ABAG
-1809,10052,Public Storage,,build,1,1,1,1,1,1,SW/c Tully & Old Tully,San Jose,,Santa Clara,-121.8564211,37.30295544,10862598817162,2012,,,IL,,115000,0,,,,,,,,,,,ABAG
-1810,10053,Orchard Supply Hardware,,build,1,1,1,1,1,1,SW/c W. San Carlos & Royal,San Jose,,Santa Clara,-121.9013667,37.32325365,13713010365327,2013,,,OF,,49000,0,,,,,,,,,,,ABAG
-1811,10054,Silvery Towers Apts,,build,1,1,1,1,1,1,SW/c W. St. James & N. San Pedro,San Jose,,Santa Clara,-121.8952019,37.33767968,13157310850658,2014,,,HM,,0,643,,,,,,,,,,,ABAG
-1812,10055,Peery Arrillaga,,build,1,1,1,1,1,1,W/ Bering between E Brokaw & Crane,San Jose,,Santa Clara,-121.9130477,37.37197522,9269193034888,2014,,,IL,,1949000,0,,,,,,,,,,,ABAG
-1813,10056,The Plaza at Evergreen,,build,1,1,1,1,1,1,W/s Capitol  1500' sly Quimby,San Jose,,Santa Clara,-121.8104984,37.31985924,16172549694464,2014,,,OF,,200000,0,,,,,,,,,,,ABAG
-1814,10057,Brookside Homes,,build,1,1,1,1,1,1,W/s Guadalupe Mines  2000' sly Camden,San Jose,,Santa Clara,-121.9068593,37.22086564,2692466672615,2011,,,HS,,0,89,,,,,,,,,,,ABAG
-1815,10058,Verona at Montecito Vista,,build,1,1,1,1,1,1,W/s Monterey  300' sly Umbarger,San Jose,,Santa Clara,-121.8532489,37.29161165,10666983939674,2012,,,HM,,0,277,,,,,,,,,,,ABAG
-1816,10059,North Tenth Street Apts,,build,1,1,1,1,1,1,W/s N. 10th  bet Vestal & E. Mission,San Jose,,Santa Clara,-121.8931837,37.35607481,5546407750790,2013,,,HM,,0,166,,,,,,,,,,,ABAG
-1817,10060,Domain Apts,,build,1,1,1,1,1,1,W/s N. 1st  both sides Vista Montana,San Jose,,Santa Clara,-121.9571909,37.41276491,11095293080686,2011,,,HM,,0,444,,,,,,,,,,,ABAG
-1818,10061,Japantown Senior Apts,,build,1,1,1,1,1,1,W/s N. 6th  200' sly E. Taylor,San Jose,,Santa Clara,-121.8946762,37.35083397,7634794324925,2010,,,HM,,0,85,,,,,,,,,,,ABAG
-1819,10062,Silicon Valley Industrial Center,,build,1,1,1,1,1,1,W/s Piercy  2070' nly Silicon Valley,San Jose,,Santa Clara,-121.7753092,37.25601009,6312678460259,2014,,,IL,,243000,0,,,,,,,,,,,ABAG
-1820,10063,Vicino Townhomes,,build,1,1,1,1,1,1,W/s S. Monroe  450' nly Hwy 280,San Jose,,Santa Clara,-121.9447868,37.31885002,8490806159904,2011,,,HS,,0,104,,,,,,,,,,,ABAG
-1821,10064,Oakmont of San Jose,,build,1,1,1,1,1,1,W/s Thorton  260' nly Maywood,San Jose,,Santa Clara,-121.9399744,37.31034822,12399445742591,2014,,,OF,,60000,0,,,,,,,,,,,ABAG
-1822,10065,101 Tech,,build,1,1,1,1,1,1,Wly term. Atmel  200' nly Hwy 101,San Jose,,Santa Clara,-121.9308979,37.37628365,6260187106518,2012,,,IL,,666000,0,,,,,,,,,,,ABAG
-1823,10066,Soutn Village (Hitachi),,build,1,1,1,1,1,1,NE/c Cottle & Hwy 85,San Jose,,Santa Clara,-121.8023334,37.24619372,15786527501368,2012,,,OF,,308000,845,,,,,,,,,,,ABAG
-1824,10067,0,,build,1,1,1,1,1,1,651  655  & 671 West Hamilton Avenue,Campbell,,Santa Clara,-121.9620953,37.29498641,9152288724692,2015,,,HM,,0,108,,,,,,,,,,,ABAG
-1825,10068,0,,build,1,1,1,1,1,1,300 Railway Avenue,Campbell,,Santa Clara,-121.9443014,37.28309723,2427934574584,2015,,,HM,,0,157,,,,,,,,,,,ABAG
-1826,10069,0,,build,1,1,1,1,1,1,1677 South Bascom Avenue,Campbell,,Santa Clara,-121.9327122,37.29222527,1607419491360,2012,,,MR,,15295,168,,,,,,,,,,,ABAG
-1827,10070,0,,build,1,1,1,1,1,1,675 & 705 Creekside Way,Campbell,,Santa Clara,-121.9357136,37.29162198,7382910563612,2015,,,OF,,180125,0,,,,,,,,,,,ABAG
-1828,10071,0,,build,1,1,1,1,1,1,488 Sam Cava Lane,Campbell,,Santa Clara,-121.9416399,37.2846461,6003276994087,2014,,,HM,,0,100,,,,,,,,,,,ABAG
-1829,10072,0,,build,1,1,1,1,1,1,2000 South Bascom Avenue,Campbell,,Santa Clara,-121.9309531,37.28659005,1719331034157,2016,,,RS,,5172,0,,,,,,,,,,,ABAG
-1830,10073,Rose Bowl Mixed Use,,build,1,1,1,1,1,1,Wolfe Road between Stevens Creek Boulevard and I-280,Cupertino,,Santa Clara,-122.0110451,37.32416095,14097042699900,2016,,,MR,,0,204,,,,,,,,,,,ABAG
-1831,10074,Saich Way Station,,build,1,1,1,1,1,1,20803 Stevens Creek,Cupertino,,Santa Clara,-122.0375637,37.32333695,12299786973651,2016,,,RS,,15650,0,,,,,,,,,,,ABAG
-1832,10075,Biltmore Ajacency,,build,1,1,1,1,1,1,20080 Stevens Creek Blvd,Cupertino,,Santa Clara,-122.0246801,37.32227677,10047757702766,2016,,,MR,,7000,90,,,,,,,,,,,ABAG
-1833,10076,Main Street,,build,1,1,1,1,1,1,North side of Stevens Creek Boulevard between Finch Avenue and Tantau Avenue,Cupertino,,Santa Clara,-122.0077255,37.32369508,14546033944954,2016,,,MR,,390000,120,,,,,,,,,,,ABAG
-1834,10077,0,,build,1,1,1,1,1,1,34826 FREMONT BLVD,Fremont,,Alameda,-122.0331348,37.5722008,10764663483332,2014,,,HM,,0,37,,,,,,,,,,,ABAG
-1835,10078,0,,build,1,1,1,1,1,1,40744 FREMONT BLVD,Fremont,,Alameda,-121.9628547,37.53579928,6545398855326,2015,,,HM,,0,67,,,,,,,,,,,ABAG
-1836,10079,0,,build,1,1,1,1,1,1,41152 FREMONT BLVD,Fremont,,Alameda,-121.9579457,37.53081318,14064558786462,2015,,,HM,,0,64,,,,,,,,,,,ABAG
-1837,10080,0,,build,1,1,1,1,1,1,34044 FREMONT BLVD,Fremont,,Alameda,-122.0451681,37.57750813,6226778167439,2015,,,HM,,0,45,,,,,,,,,,,ABAG
-1838,10081,0,,build,1,1,1,1,1,1, ARDENWOOD BLVD,Fremont,,Alameda,-122.0634916,37.5621819,6659762815459,2015,,,HS,,0,58,,,,,,,,,,,ABAG
-1839,10082,0,,build,1,1,1,1,1,1,39439 MISSION BLVD,Fremont,,Alameda,-121.9583378,37.56070893,15371170454108,2015,,,HS,,0,77,,,,,,,,,,,ABAG
-1840,10083,0,,build,1,1,1,1,1,1,44100 CHRISTY ST,Fremont,,Alameda,-121.9637423,37.50180636,6152417352010,2015,,,IL,,50516,0,,,,,,,,,,,ABAG
-1841,10084,0,,build,1,1,1,1,1,1,37350 SEQUOIA RD,Fremont,,Alameda,-122.0014509,37.56260703,6620315296564,2015,,,HM,,0,127,,,,,,,,,,,ABAG
-1842,10085,0,,build,1,1,1,1,1,1,42186 PALM AVE,Fremont,,Alameda,-121.9323827,37.53950824,12401895232992,2013,,,HS,,0,42,,,,,,,,,,,ABAG
-1843,10086,0,,build,1,1,1,1,1,1,37899 NILES BLVD,Fremont,,Alameda,-121.9736101,37.57417974,13538350449713,2013,,,MR,,3620,98,,,,,,,,,,,ABAG
-1844,10087,0,,build,1,1,1,1,1,1, FREMONT BLVD @ LANDING PKWY,Fremont,,Alameda,-121.9486138,37.4879309,10880804116352,2015,,,HO,,96000,0,,,,,,,,,,,ABAG
-1845,10088,0,,build,1,1,1,1,1,1,44009 OSGOOD RD,Fremont,,Alameda,-121.9424494,37.51142162,16371373914675,2014,,,TS,,27226,0,,,,,,,,,,,ABAG
-1846,10089,0,,build,1,1,1,1,1,1, HASTINGS ST,Fremont,,Alameda,-121.9832392,37.55289816,14850891996336,2014,,,MR,,13500,44,,,,,,,,,,,ABAG
-1847,10090,0,,build,1,1,1,1,1,1,45300 FREMONT BLVD,Fremont,,Alameda,-121.9440011,37.50024706,7128489026885,2016,,,MR,,0,290,,,,,,,,,,,ABAG
-1848,10091,0,,build,1,1,1,1,1,1,39311 MISSION BLVD,Fremont,,Alameda,-121.9588986,37.56158983,10426936024645,2015,,,HM,,0,33,,,,,,,,,,,ABAG
-1849,10092,0,,build,1,1,1,1,1,1,37605 FREMONT BLVD,Fremont,,Alameda,-122.003806,37.55615675,12264154137647,2015,,,HM,,0,27,,,,,,,,,,,ABAG
-1850,10093,Imwalle Properties,,build,1,1,1,1,1,1,1st and Santa Teresa,Gilroy,,Santa Clara,-121.5990586,37.0124668,1654348932789,2016,,,HM,,0,202,,,,,,,,,,,ABAG
-1851,10094,Meta Housing Corporation,,build,1,1,1,1,1,1,111 Lewis St,Gilroy,,Santa Clara,-121.56865,37.0108338,12602648753353,2016,,,HM,,0,114,,,,,,,,,,,ABAG
-1852,10095,0,,build,1,1,1,1,1,1,1535 Oak Avenue,Los Altos,,Santa Clara,-122.0702227,37.35702718,13321206839493,2015,,,OF,,2880,0,,,,,,,,,,,ABAG
-1853,10096,0,,build,1,1,1,1,1,1,715 Altos Oaks Drive,Los Altos,,Santa Clara,-122.0954347,37.35950845,9639205629893,2015,,,OF,,8977,0,,,,,,,,,,,ABAG
-1854,10097,0,,add,1,1,1,1,1,1,4940 El Camino Real,Los Altos,,Santa Clara,-122.1071423,37.39755781,3613496884478,2015,,,ME,,3679,0,,,,,,,,,,,ABAG
-1855,10098,0,,build,1,1,1,1,1,1,467 First Street,Los Altos,,Santa Clara,-122.114646,37.37460068,13048021497841,2015,,,OF,,17000,0,,,,,,,,,,,ABAG
-1856,10099,Lennar/Sares-Regis,,build,1,1,1,1,1,1,4750 El Camino Real,Los Altos,,Santa Clara,-122.1124196,37.3988113,17380722697511,2015,,,MR,,7000,205,,,,,,,,,,,ABAG
-1857,10100,0,,add,1,1,1,1,1,1,4700 El Camino Real,Los Altos,,Santa Clara,-122.1120923,37.40001653,12199646327576,2015,,,RS,,3600,0,,,,,,,,,,,ABAG
-1858,10101,0,,add,1,1,1,1,1,1,342 First Street,Los Altos,,Santa Clara,-122.1169744,37.37644004,1338242285702,2015,,,RS,,3000,0,,,,,,,,,,,ABAG
-1859,10102,The Terraces of Los Altos Continuing Care Retirement Community,,build,1,1,1,1,1,1,323 & 373 Pine Lane,Los Altos,,Santa Clara,-122.1213823,37.39258999,6598862643281,2015,,,HM,,0,81,,,,,,,,,,,ABAG
-1860,10103,Pinedera,,build,1,1,1,1,1,1,120 S. El Camino Real,Millbrae,,San Mateo,-122.3858507,37.59755974,4262926261454,2016,,,MR,,11000,54,,,,,,,,,,,ABAG
-1861,10104,Valencia,,build,1,1,1,1,1,1,Butterfield,Morgan Hill,,Santa Clara,-121.6552701,37.13569303,1963588681786,2015,,,HS,,0,80,,,,,,,,,,,ABAG
-1862,10105,Mission Ranch,,build,1,1,1,1,1,1,Mission View and Cochrane,Morgan Hill,,Santa Clara,-121.6461701,37.15358248,10129704417309,2015,,,HS,,0,328,,,,,,,,,,,ABAG
-1863,10106,Madrone Plaza,,build,1,1,1,1,1,1,Monterey Rd and Cochrane Rd,Morgan Hill,,Santa Clara,-121.6658287,37.14510534,9588895981178,2015,,,HM,,0,115,,,,,,,,,,,ABAG
-1864,10107,Connemara,,build,1,1,1,1,1,1,Watsonville Rd,Morgan Hill,,Santa Clara,-121.6387939,37.0999995,7118569650395,2015,,,HS,,0,37,,,,,,,,,,,ABAG
-1865,10108,The Lodge Phase 2,,build,1,1,1,1,1,1,Barrett & Butterfield,Morgan Hill,,Santa Clara,-121.6353342,37.12241187,11408456603504,2015,,,HM,,0,114,,,,,,,,,,,ABAG
-1866,10109,Walnut Grove-UCP,,build,1,1,1,1,1,1,Walnut Grove and San Pedro Ave,Morgan Hill,,Santa Clara,-121.6327265,37.12820846,9627794156866,2015,,,HS,,0,49,,,,,,,,,,,ABAG
-1867,10110,Diamond Creek,,build,1,1,1,1,1,1,15685 Monterey St ,Morgan Hill,,Santa Clara,-121.6390516,37.10939027,14779658016413,2015,,,HM,,0,131,,,,,,,,,,,ABAG
-1868,10111,San Sebastian,,build,1,1,1,1,1,1,Peet Rd between Hslf Rd and Cochrane Rd,Morgan Hill,,Santa Clara,-121.6335052,37.15984287,1529166141793,2015,,,HS,,0,244,,,,,,,,,,,ABAG
-1869,10112,Hale-Meritage Homes,,build,1,1,1,1,1,1,Between Hale and Old Monterey Rd,Morgan Hill,,Santa Clara,-121.6710126,37.14765338,1630371525738,2015,,,HS,,0,108,,,,,,,,,,,ABAG
-1870,10113,Loden Place,,build,1,1,1,1,1,1,Between Hale Ave and Del Monte Ave,Morgan Hill,,Santa Clara,-121.6634671,37.13597174,12712861097917,2015,,,HS,,0,45,,,,,,,,,,,ABAG
-1871,10114,Tilton Park,,build,1,1,1,1,1,1,Tilton,Morgan Hill,,Santa Clara,-121.6792498,37.15457887,12099709665165,2015,,,HS,,0,46,,,,,,,,,,,ABAG
-1872,10115,The Quad / Lovewell,,build,1,1,1,1,1,1,369 N. Whisman Rd.,Mountain View,,Santa Clara,-122.0575271,37.39905685,3041134823739,2011,,,OF,,180773,0,,,,,,,,,,,ABAG
-1873,10116,0,,build,1,1,1,1,1,1,100 Moffett Blvd,Mountain View,,Santa Clara,-122.077681,37.3966111,14015992967672,2013,,,HM,,0,184,,,,,,,,,,,ABAG
-1874,10117,Hetch-Hetchy Property,,build,1,1,1,1,1,1,450 N. Whisman Dr.,Mountain View,,Santa Clara,-122.060883,37.40097612,10455466670213,2014,,,HM,,0,37,,,,,,,,,,,ABAG
-1875,10118,Pulte Homes,,build,1,1,1,1,1,1,100 and 420-430 Ferguson Drive,Mountain View,,Santa Clara,-122.0546319,37.39216762,99278058277,2015,,,HM,,0,198,,,,,,,,,,,ABAG
-1876,10119,Intuit,,build,1,1,1,1,1,1,2600 Marine Way,Mountain View,,Santa Clara,-122.0975639,37.4283575,17564881774729,2014,,,OF,,364000,0,,,,,,,,,,,ABAG
-1877,10120,Austin's -Prometheus,,build,1,1,1,1,1,1,1616 W. El Camino Real,Mountain View,,Santa Clara,-122.0926593,37.39060528,2176929604492,2014,,,HM,,0,66,,,,,,,,,,,ABAG
-1878,10121,Symantec,,build,1,1,1,1,1,1,575 E. Middlefield Rd,Mountain View,,Santa Clara,-122.0543444,37.39507263,8063330947793,2010,,,OF,,102419,0,,,,,,,,,,,ABAG
-1879,10122,Greystar,,build,1,1,1,1,1,1,801 W. El Camino Real,Mountain View,,Santa Clara,-122.0842577,37.385591,848641541357,2016,,,MR,,10800,164,,,,,,,,,,,ABAG
-1880,10123,Residence Inn,,build,1,1,1,1,1,1,1740 W. El Camino Real,Mountain View,,Santa Clara,-122.0947824,37.39190449,3215290549324,2013,,,HO,,22000,0,,,,,,,,,,,ABAG
-1881,10124,William Lyon Homes,,build,1,1,1,1,1,1,1951 Colony St,Mountain View,,Santa Clara,-122.0888125,37.41534163,11883309640452,2014,,,HM,,0,33,,,,,,,,,,,ABAG
-1882,10125,Live Oak Properties,,build,1,1,1,1,1,1,525 East Evelyn Ave,Mountain View,,Santa Clara,-122.0552175,37.3857047,8868703156355,2012,,,HM,,0,70,,,,,,,,,,,ABAG
-1883,10126,UDR,,build,1,1,1,1,1,1,1984 W. El Camino Real,Mountain View,,Santa Clara,-122.0987088,37.39511447,14721292175899,2013,,,MR,,4000,106,,,,,,,,,,,ABAG
-1884,10127,0,,build,1,1,1,1,1,1,133 -149 Fairchild Dr,Mountain View,,Santa Clara,-122.0618402,37.40582434,9917231335675,2015,,,HM,,0,35,,,,,,,,,,,ABAG
-1885,10128,Merlone Geier Partners Phase II,,build,1,1,1,1,1,1,405 San Antonio Rd.,Mountain View,,Santa Clara,-122.1096365,37.40466408,277670017313,2013,,,MT,,1080800,0,,,,,,,,,,,ABAG
-1886,10129,Calvano Development,,build,1,1,1,1,1,1,(1001 N. Shoreline Blvd,Mountain View,,Santa Clara,-122.0773625,37.40952883,6781008107552,2015,,,OF,,111443,0,,,,,,,,,,,ABAG
-1887,10130,Windsor Academy,,build,1,1,1,1,1,1,908 N. Rengstorff Ave,Mountain View,,Santa Clara,-122.0936896,37.4176305,10891405686643,2014,,,OF,,8088,0,,,,,,,,,,,ABAG
-1888,10131,Tropicana Lodge Prometheus,,build,1,1,1,1,1,1,1720 W. El Camino Real,Mountain View,,Santa Clara,-122.0934957,37.39101057,13670682870758,2014,,,OF,,0,162,,,,,,,,,,,ABAG
-1889,10132,Hampton Inn Addition,,add,1,1,1,1,1,1,390 Moffett Blvd.),Mountain View,,Santa Clara,-122.0757708,37.39882703,4118229891422,2014,,,HO,,11630,0,,,,,,,,,,,ABAG
-1890,10133,Harv's Car Wash - Regis Homes,,build,1,1,1,1,1,1,1101 W. El Camino Real,Mountain View,,Santa Clara,-122.0874499,37.38704658,13234217363761,2014,,,HM,,0,52,,,,,,,,,,,ABAG
-1891,10134,0,,build,1,1,1,1,1,1,2345 Broadway,Oakland,,Alameda,-122.2666679,37.81259762,2670669106752,2015,,,HM,,0,105,,,,,,,,,,,ABAG
-1892,10135,0,,build,1,1,1,1,1,1,5227 Claremont Ave.,Oakland,,Alameda,-122.2617408,37.83859904,2181513938994,2015,,,HM,,0,33,,,,,,,,,,,ABAG
-1893,10136,0,,build,1,1,1,1,1,1,612 18th St.,Oakland,,Alameda,-122.2734019,37.80847009,14820904687215,2015,,,HM,,0,84,,,,,,,,,,,ABAG
-1894,10137,0,,build,1,1,1,1,1,1,1417-1431 Jefferson St.,Oakland,,Alameda,-122.2747143,37.80636774,2850448843390,2015,,,MR,,3000,54,,,,,,,,,,,ABAG
-1895,10138,0,,build,1,1,1,1,1,1,2011-2195 Wood St.,Oakland,,Alameda,-122.2941272,37.8183914,6968277298474,2015,,,HM,,0,235,,,,,,,,,,,ABAG
-1896,10139,0,,build,1,1,1,1,1,1,2201 Brush St.,Oakland,,Alameda,-122.2751815,37.81276283,11393998657892,2015,,,HM,,0,59,,,,,,,,,,,ABAG
-1897,10140,0,,build,1,1,1,1,1,1,4690 Tompkins,Oakland,,Alameda,-122.1849003,37.7873193,13218925893709,2015,,,HM,,0,40,,,,,,,,,,,ABAG
-1898,10141,0,,build,1,1,1,1,1,1,3093 Broadway,Oakland,,Alameda,-122.2619451,37.82061068,12756269014477,2015,,,HM,,0,493,,,,,,,,,,,ABAG
-1899,10142,0,,build,1,1,1,1,1,1,4801 Shattuck Ave.,Oakland,,Alameda,-122.2640924,37.83539721,5240846152302,2015,,,HM,,0,44,,,,,,,,,,,ABAG
-1900,10143,0,,build,1,1,1,1,1,1,377 2nd St.,Oakland,,Alameda,-122.274825,37.79502611,7594760531205,2015,,,HM,,0,96,,,,,,,,,,,ABAG
-1901,10144,0,,build,1,1,1,1,1,1,2538 Telegraph Ave.,Oakland,,Alameda,-122.2676199,37.81513189,17046930937861,2015,,,HM,,0,97,,,,,,,,,,,ABAG
-1902,10145,0,,build,1,1,1,1,1,1,460 Grand Ave.,Oakland,,Alameda,-122.252418,37.80898077,4736618251657,2015,,,HM,,0,68,,,,,,,,,,,ABAG
-1903,10146,0,,build,1,1,1,1,1,1,2935 Telegraph Ave.,Oakland,,Alameda,-122.2680908,37.81871742,3710291084961,2015,,,HM,,0,162,,,,,,,,,,,ABAG
-1904,10147,0,,build,1,1,1,1,1,1,64.2-acre area between Embarcadero Road and the Oakland Estuary,Oakland,,Alameda,-122.2618071,37.78926502,8287296964962,2015,,,MR,,200000,3100,,,,,,,,,,,ABAG
-1905,10148,0,,build,1,1,1,1,1,1,2868 Hannah St.,Oakland,,Alameda,-122.286263,37.82279447,8246560007040,2015,,,HM,,0,47,,,,,,,,,,,ABAG
-1906,10149,0,,build,1,1,1,1,1,1,459 23rd St.,Oakland,,Alameda,-122.268004,37.81225861,3331089305341,2015,,,HM,,0,65,,,,,,,,,,,ABAG
-1907,10150,0,,build,1,1,1,1,1,1,Telegraph Avenue  40th Street  MacArthur Boulevard and Highway 24,Oakland,,Alameda,-122.2656727,37.82892552,8437778118860,2015,,,MR,,42000,624,,,,,,,,,,,ABAG
-1908,10151,0,,build,1,1,1,1,1,1,1640 Broadway,Oakland,,Alameda,-122.2695879,37.80628429,4587815454257,2015,,,HM,,0,254,,,,,,,,,,,ABAG
-1909,10152,0,,build,1,1,1,1,1,1,2116 Brush St.,Oakland,,Alameda,-122.2750382,37.81188598,6539159221574,2015,,,HM,,0,150,,,,,,,,,,,ABAG
-1910,10153,0,,build,1,1,1,1,1,1,4901-4939 Broadway,Oakland,,Alameda,-122.2529083,37.83440694,17351641464414,2015,,,HM,,0,150,,,,,,,,,,,ABAG
-1911,10154,0,,build,1,1,1,1,1,1,5107  5117  5175 Broadway,Oakland,,Alameda,-122.2520722,37.83558421,6872283354851,2015,,,HM,,0,127,,,,,,,,,,,ABAG
-1912,10155,0,,build,1,1,1,1,1,1,459 8th St.,Oakland,,Alameda,-122.2743067,37.80013674,2716836599280,2015,,,HM,,0,50,,,,,,,,,,,ABAG
-1913,10156,0,,build,1,1,1,1,1,1,495 22nd St.,Oakland,,Alameda,-122.2687795,37.81089507,7453953525316,2015,,,HM,,0,81,,,,,,,,,,,ABAG
-1914,10157,0,,build,1,1,1,1,1,1,4700 Telegraph Ave,Oakland,,Alameda,-122.2626788,37.83428208,12789791544140,2015,,,HM,,0,48,,,,,,,,,,,ABAG
-1915,10158,0,,build,1,1,1,1,1,1,325 7th St.,Oakland,,Alameda,-122.2712239,37.79807667,7190366198944,2015,,,HM,,0,382,,,,,,,,,,,ABAG
-1916,10159,0,,build,1,1,1,1,1,1,340 29th Ave.,Oakland,,Alameda,-122.2354634,37.7723361,11777404369858,2015,,,HM,,0,41,,,,,,,,,,,ABAG
-1917,10160,0,,build,1,1,1,1,1,1,Block bounded by 35th and 37th avenues  E. 12th Street and BART tracks,Oakland,,Alameda,-122.223014,37.77481827,13654158533195,2015,,,HM,,0,275,,,,,,,,,,,ABAG
-1918,10161,0,,build,1,1,1,1,1,1,9400 International Blvd.,Oakland,,Alameda,-122.172144,37.74710432,9269741744184,2015,,,HM,,0,59,,,,,,,,,,,ABAG
-1919,10162,0,,build,1,1,1,1,1,1,Block bounded by Wood Street  14th Street  16th Street and Frontage Road,Oakland,,Alameda,-122.2981691,37.81439939,2574545588485,2015,,,HM,,0,171,,,,,,,,,,,ABAG
-1920,10163,0,,build,1,1,1,1,1,1,1110 Jackson St.,Oakland,,Alameda,-122.2659803,37.80025371,11968136935350,2015,,,HM,,0,71,,,,,,,,,,,ABAG
-1921,10164,0,,build,1,1,1,1,1,1,1900 Broadway,Oakland,,Alameda,-122.2685272,37.80782206,745144567480,2015,,,MR,,11000,294,,,,,,,,,,,ABAG
-1922,10165,0,,build,1,1,1,1,1,1,3431 Foothill Blvd.,Oakland,,Alameda,-122.2203142,37.78198191,5498647479739,2015,,,HM,,0,137,,,,,,,,,,,ABAG
-1923,10166,0,,build,1,1,1,1,1,1,2400 Filbert St.,Oakland,,Alameda,-122.2796008,37.81681889,9621248480104,2015,,,HM,,0,55,,,,,,,,,,,ABAG
-1924,10167,0,,build,1,1,1,1,1,1,SE/c N. 1st & Hwy 237,San Jose,,Santa Clara,-121.8166441,37.27855567,14112903426942,2011,,,HO,,99000,0,,,,,,,,,,,ABAG
-1925,10168,0,,build,1,1,1,1,1,1,W/s Lincoln 500' sly Auzerais,San Jose,,Santa Clara,-121.909255,37.32065408,5607842674649,2014,,,HM,,0,190,,,,,,,,,,,ABAG
-1926,10169,0,,build,1,1,1,1,1,1,W/s McCreery  230' sly Alum Rock,San Jose,,Santa Clara,-121.8518512,37.35415528,4176196250914,2011,,,HM,,0,93,,,,,,,,,,,ABAG
-1927,10170,0,,build,1,1,1,1,1,1,NW/c N. 1st & Taylor,San Jose,,Santa Clara,-121.9008773,37.34929743,5573783329618,2012,,,HM,,0,433,,,,,,,,,,,ABAG
-1928,10171,0,,build,1,1,1,1,1,1,W/s Monterey  300' sly Umbarger,San Jose,,Santa Clara,-121.8517026,37.30016403,4800333229336,2013,,,HM,,0,198,,,,,,,,,,,ABAG
-1929,10172,0,,build,1,1,1,1,1,1,NW/c Hwy 237 & N 1st,San Jose,,Santa Clara,-121.963673,37.4204145,8427700634015,2014,,,HO,,106000,0,,,,,,,,,,,ABAG
-1930,10173,0,,build,1,1,1,1,1,1,NW/c N. 1st & Hwy 237,San Jose,,Santa Clara,-121.963673,37.4204145,8427700634015,2013,,,IL,,615000,0,,,,,,,,,,,ABAG
-1931,10174,0,,build,1,1,1,1,1,1,SW/c N. Capitol & Mabury,San Jose,,Santa Clara,-121.8514902,37.37746042,96233024879,2011,,,HM,,0,77,,,,,,,,,,,ABAG
-1932,10175,0,,build,1,1,1,1,1,1,SE/c W San Carlos & Sunol,San Jose,,Santa Clara,-121.9052363,37.32316395,5996765447595,2014,,,HM,,0,315,,,,,,,,,,,ABAG
-1933,10176,0,,build,1,1,1,1,1,1,SE/c Winchester & Olsen,San Jose,,Santa Clara,-121.9490485,37.31876637,14855056820769,2012,,,RS,,230000,0,,,,,,,,,,,ABAG
-1934,10177,0,,build,1,1,1,1,1,1,2017 San Ramon Valley Blvd,San Ramon,,Contra Costa,-121.9809127,37.78447139,16838778043630,2015,,,RS,,17000,0,,,,,,,,,,,ABAG
-1935,10178,Sunset Development,,build,1,1,1,1,1,1,Intersection of Bollinger Canyon Rd. and Camino Ramon,San Ramon,,Contra Costa,-121.9567409,37.76419692,2664748939362,2014,,,MR,,2100000,489,,,,,,,,,,,ABAG
-1936,10179,KB Homes,,build,1,1,1,1,1,1,4700 Norris Canyon Road,San Ramon,,Contra Costa,-121.9632286,37.77648336,2361896639270,2015,,,HM,,0,125,,,,,,,,,,,ABAG
-1937,10180,0,,build,1,1,1,1,1,1,3925 Saint Andrews Dr,Santa Rosa,,Sonoma,-122.7173155,38.49938696,15480823444532,2015,,,HS,,0,30,,,,,,,,,,,ABAG
-1938,10181,0,,build,1,1,1,1,1,1,4055 4025 4041 4099 Sebastopol Rd,Santa Rosa,,Sonoma,-122.7685803,38.42517089,10304052954436,2015,,,HT,,23278,139,,,,,,,,,,,ABAG
-1939,10182,0,,build,1,1,1,1,1,1,908 918 922 Aston Ave,Santa Rosa,,Sonoma,-122.7044339,38.42542388,7191046853343,2015,,,HT,,0,33,,,,,,,,,,,ABAG
-1940,10183,0,,build,1,1,1,1,1,1,1846 Meda Ave,Santa Rosa,,Sonoma,-122.6966185,38.42063786,11184756954373,2015,,,HT,,0,65,,,,,,,,,,,ABAG
-1941,10184,0,,build,1,1,1,1,1,1,1865 Meda Ave,Santa Rosa,,Sonoma,-122.6986491,38.42062579,17054677822157,2015,,,HM,,0,30,,,,,,,,,,,ABAG
-1942,10185,0,,build,1,1,1,1,1,1,2875 Dutton Meadow,Santa Rosa,,Sonoma,-122.7307416,38.40676158,12913297249815,2015,,,HM,,0,96,,,,,,,,,,,ABAG
-1943,10186,0,,build,1,1,1,1,1,1,385 West 9th St,Santa Rosa,,Sonoma,-122.7295533,38.4419724,6054217634090,2015,,,IL,,6835,0,,,,,,,,,,,ABAG
-1944,10187,0,,build,1,1,1,1,1,1,1820 Meda Ave,Santa Rosa,,Sonoma,-122.6966219,38.42169395,5215907379022,2015,,,HS,,0,30,,,,,,,,,,,ABAG
-1945,10188,0,,build,1,1,1,1,1,1,2853 Dutton Meadow,Santa Rosa,,Sonoma,-122.7307535,38.4076275,12163619627526,2015,,,HS,,0,82,,,,,,,,,,,ABAG
-1946,10189,0,,build,1,1,1,1,1,1,533 Bellevue Ave,Santa Rosa,,Sonoma,-122.7307862,38.40261952,1592824481113,2015,,,HS,,0,48,,,,,,,,,,,ABAG
-1947,10190,0,,build,1,1,1,1,1,1,3 West Third St,Santa Rosa,,Sonoma,-122.7224114,38.4361381,16119044180687,2015,,,HS,,0,93,,,,,,,,,,,ABAG
-1948,10191,0,,build,1,1,1,1,1,1,3410 Industrial Dr,Santa Rosa,,Sonoma,-122.7394926,38.47650419,12893697632539,2015,,,IL,,10025,0,,,,,,,,,,,ABAG
-1949,10192,0,,build,1,1,1,1,1,1,3300 Industrial Dr,Santa Rosa,,Sonoma,-122.7397011,38.47425501,1058624910911,2015,,,IL,,25558,0,,,,,,,,,,,ABAG
-1950,10193,0,,build,1,1,1,1,1,1,2727 Dutton Meadow,Santa Rosa,,Sonoma,-122.7306654,38.41059708,9957708751186,2015,,,HS,,0,52,,,,,,,,,,,ABAG
-1951,10194,0,,build,1,1,1,1,1,1,440 Dutton Ave,Santa Rosa,,Sonoma,-122.7249402,38.43138816,8157395587026,2015,,,RS,,12000,0,,,,,,,,,,,ABAG
-1952,10195,0,,build,1,1,1,1,1,1,1020 Jennings Ave,Santa Rosa,,Sonoma,-122.7296583,38.452508,10072674231745,2015,,,HM,,0,270,,,,,,,,,,,ABAG
-1953,10196,0,,build,1,1,1,1,1,1,2903 Dutton Meadow,Santa Rosa,,Sonoma,-122.7307448,38.40586893,13021142807975,2015,,,HS,,0,30,,,,,,,,,,,ABAG
-1954,10197,0,,build,1,1,1,1,1,1,1801 Ridley Ave,Santa Rosa,,Sonoma,-122.7468006,38.45402936,16111652051842,2015,,,HT,,0,35,,,,,,,,,,,ABAG
-1955,10198,0,,build,1,1,1,1,1,1,4607  4617 Sonoma Hwy,Santa Rosa,,Sonoma,-122.6729557,38.46020071,10308201282415,2015,,,HT,,0,32,,,,,,,,,,,ABAG
-1956,10199,0,,build,1,1,1,1,1,1,2181  2191 2193 Francisco Ave,Santa Rosa,,Sonoma,-122.761728,38.47828926,10770090409816,2015,,,HS,,0,136,,,,,,,,,,,ABAG
-1957,10200,0,,build,1,1,1,1,1,1,3500 Lake Park Dr,Santa Rosa,,Sonoma,-122.7176081,38.47388076,8180741807193,2015,,,HS,,0,37,,,,,,,,,,,ABAG
-1958,10201,0,,build,1,1,1,1,1,1,3366 Mendocino Ave,Santa Rosa,,Sonoma,-122.7224957,38.47150821,10580021185780,2015,,,RS,,40000,0,,,,,,,,,,,ABAG
-1959,10202,0,,build,1,1,1,1,1,1,8 West 9th St; 806 Donahue St,Santa Rosa,,Sonoma,-122.7239553,38.44033798,169610042353,2015,,,HS,,0,73,,,,,,,,,,,ABAG
-1960,10203,0,,build,1,1,1,1,1,1,2650 2666 2684  Dutton Meadow,Santa Rosa,,Sonoma,-122.7275605,38.41202622,16556500155588,2015,,,HS,,0,160,,,,,,,,,,,ABAG
-1961,10204,0,,build,1,1,1,1,1,1,888 Fourth St,Santa Rosa,,Sonoma,-122.7077867,38.44296423,9630892622085,2015,,,MR,,6146,143,,,,,,,,,,,ABAG
-1962,10205,0,,build,1,1,1,1,1,1,2957 Dutton Meadow,Santa Rosa,,Sonoma,-122.7308185,38.40510676,11430144686025,2015,,,HS,,0,53,,,,,,,,,,,ABAG
-1963,10206,0,,build,1,1,1,1,1,1,2660 2630 Petaluma Hill Rd ,Santa Rosa,,Sonoma,-122.7036551,38.41586602,11237994699741,2015,,,HS,,0,126,,,,,,,,,,,ABAG
-1964,10207,0,,build,1,1,1,1,1,1,1072 Kawana Spring Rd,Santa Rosa,,Sonoma,-122.7027632,38.4160878,12628739229859,2015,,,RS,,98500,0,,,,,,,,,,,ABAG
-1965,10208,0,,build,1,1,1,1,1,1,210 Fifth St,Santa Rosa,,Sonoma,-122.7190303,38.4378284,14366301335469,2015,,,ME,,51292,0,,,,,,,,,,,ABAG
-1966,10209,0,,build,1,1,1,1,1,1,1755 Sebastopol Rd,Santa Rosa,,Sonoma,-122.7394419,38.42865875,10638289227667,2015,,,HT,,22000,198,,,,,,,,,,,ABAG
-1967,10210,0,,build,1,1,1,1,1,1,1598 Becky Ct,Santa Rosa,,Sonoma,-122.739083,38.46223148,14585731849758,2015,,,HM,,0,104,,,,,,,,,,,ABAG
-1968,10211,0,,build,1,1,1,1,1,1,6525  6535 Oakmont Dr,Santa Rosa,,Sonoma,-122.6044868,38.44342309,8087033907348,2015,,,HS,,0,36,,,,,,,,,,,ABAG
-1969,10212,0,,build,1,1,1,1,1,1,2800 Kawana Springs Rd,Santa Rosa,,Sonoma,-122.6907775,38.4174055,2035265366787,2015,,,HM,,0,30,,,,,,,,,,,ABAG
-1970,10213,0,,build,1,1,1,1,1,1,3700 Fir Ridge Dr,Santa Rosa,,Sonoma,-122.7096793,38.49390675,5438161213241,2015,,,HT,,0,36,,,,,,,,,,,ABAG
-1971,10214,0,,build,1,1,1,1,1,1,1810 Sebastopol Rd,Santa Rosa,,Sonoma,-122.7396185,38.42661624,1110104349774,2015,,,IL,,5600,0,,,,,,,,,,,ABAG
-1972,10215,0,,build,1,1,1,1,1,1,2384 2410 Stony Point Rd,Santa Rosa,,Sonoma,-122.7381442,38.41435907,8226549611873,2015,,,HM,,0,56,,,,,,,,,,,ABAG
-1973,10216,0,,build,1,1,1,1,1,1,2786 Dutton Meadow,Santa Rosa,,Sonoma,-122.7276957,38.40953406,6112813535247,2015,,,HT,,0,32,,,,,,,,,,,ABAG
-1974,10217,0,,build,1,1,1,1,1,1,2870 Duke Ct,Santa Rosa,,Sonoma,-122.7225443,38.40792367,15543071026515,2015,,,IL,,16390,0,,,,,,,,,,,ABAG
-1975,10218,Summerhill / Michael Keaney,,build,1,1,1,1,1,1,617 E Arques Ave,Sunnyvale,,Santa Clara,-122.0175139,37.38207559,4028964098857,2013,,,HM,,0,85,,,,,,,,,,,ABAG
-1976,10219,D.R. Horton  Kelly Snider,,build,1,1,1,1,1,1,701-729 E Evelyn Ave,Sunnyvale,,Santa Clara,-122.0166946,37.3722557,10293481029102,2014,,,HM,,0,204,,,,,,,,,,,ABAG
-1977,10220,Midpeninsula Housing Corp,,build,1,1,1,1,1,1,460 Persian Dr.,Sunnyvale,,Santa Clara,-122.0131948,37.40528804,8412716258050,2015,,,HM,,0,66,,,,,,,,,,,ABAG
-1978,10221,Classic Communities  Jim Pollart,,build,1,1,1,1,1,1,1071 Noriega,Sunnyvale,,Santa Clara,-122.0484845,37.3783601,8157652812947,2014,,,HM,,0,10,,,,,,,,,,,ABAG
-1979,10222,Classic Communities  Jim Pollart,,build,1,1,1,1,1,1,423 E. Maude Ave.,Sunnyvale,,Santa Clara,-122.0211967,37.38695073,294987573953,2015,,,HM,,0,11,,,,,,,,,,,ABAG
-1980,10223,Raintree Partners  Jason Check,,build,1,1,1,1,1,1,520-550 E Weddell,Sunnyvale,,Santa Clara,-122.0134409,37.39811265,13551855528031,2013,,,HM,,0,465,,,,,,,,,,,ABAG
-1981,10224,Classics Communities  Jim Pollart,,build,1,1,1,1,1,1,755 E. Evelyn Ave,Sunnyvale,,Santa Clara,-122.0160455,37.37192846,14023195885294,2015,,,HM,,0,42,,,,,,,,,,,ABAG
-1982,10225,Classic Communities  Jim Pollart,,build,1,1,1,1,1,1,238 Carroll St,Sunnyvale,,Santa Clara,-122.0281353,37.37422303,10738483758597,2014,,,HM,,0,24,,,,,,,,,,,ABAG
-1983,10226,SummerHill Homes  Katia Kamangar,,build,1,1,1,1,1,1,660 W El Camino Real,Sunnyvale,,Santa Clara,-122.0394847,37.36928042,5463688905612,2012,,,MR,,0,103,,,,,,,,,,,ABAG
-1984,10227,Quattro Realty Group  LLC,,build,1,1,1,1,1,1,2502 Town Center Ln.,Sunnyvale,,Santa Clara,-122.0303654,37.31838885,1647894540570,2007,,,MR,,1275000,292,,,,,,,,,,,ABAG
-1985,10228,627 Taylor LLC  Samir Sharma,,build,1,1,1,1,1,1,625 E Taylor,Sunnyvale,,Santa Clara,-122.0171051,37.38379406,9013559296357,2014,,,HM,,0,20,,,,,,,,,,,ABAG
-1986,10229,Irvine Company  Kerry Williams,,build,1,1,1,1,1,1,975 Stewart,Sunnyvale,,Santa Clara,-122.0027096,37.38502224,4424488315860,2013,,,HM,,0,57,,,,,,,,,,,ABAG
-1987,10230,Martyn Griffiths,,build,1,1,1,1,1,1,834 Dartshire Way,Sunnyvale,,Santa Clara,-122.0171855,37.34651841,17347697121990,2015,,,HM,,0,36,,,,,,,,,,,ABAG
-1988,10231,SRGNC MF  LLC (Ken Busch/Sares Regis),,build,1,1,1,1,1,1,610 E. Weddell Dr.,Sunnyvale,,Santa Clara,-122.010884,37.39613103,7580318044163,2013,,,HM,,0,205,,,,,,,,,,,ABAG
-1989,10232,Taylor Morrison  Stuart Wagner,,build,1,1,1,1,1,1,680 E Taylor,Sunnyvale,,Santa Clara,-122.0154753,37.38257899,9383730123988,2014,,,HM,,0,18,,,,,,,,,,,ABAG
-1990,10233,Classic Communities  Jim Pollar,,build,1,1,1,1,1,1,300 W. Iowa,Sunnyvale,,Santa Clara,-122.0342133,37.37276076,14662831337548,2014,,,HS,,0,13,,,,,,,,,,,ABAG
-1991,10234,Taylor Morrison,,build,1,1,1,1,1,1,698 E. Taylor Ave,Sunnyvale,,Santa Clara,-122.0149466,37.38246466,17211131516307,2013,,,HM,,0,48,,,,,,,,,,,ABAG
-1992,10235,Watt Investments  Max Frank,,build,1,1,1,1,1,1,915 De Guigne,Sunnyvale,,Santa Clara,-122.0072927,37.38700788,16036871558336,2014,,,HM,,0,450,,,,,,,,,,,ABAG
-1993,10236,Prometheus,,build,1,1,1,1,1,1,457-475 E Evelyn Ave,Sunnyvale,,Santa Clara,-122.0247185,37.37614562,11542045935923,2013,,,HM,,0,117,,,,,,,,,,,ABAG
-1994,10237,Prometheus,,build,1,1,1,1,1,1,388-394 E. Evelyn Ave,Sunnyvale,,Santa Clara,-122.0263038,37.37614059,1875814766831,2012,,,HM,,0,67,,,,,,,,,,,ABAG
-1995,10238,Padus Group/Tom Qualiga,,build,1,1,1,1,1,1,470 Persian Dr,Sunnyvale,,Santa Clara,-122.012518,37.40541124,12522643541975,2012,,,HM,,0,47,,,,,,,,,,,ABAG
-1996,10239,The Sobrato Orginization/Richard Truempler,,build,1,1,1,1,1,1,1095 W El Camino Real,Sunnyvale,,Santa Clara,-122.0512434,37.37322537,5091511533831,2013,,,MR,,40544,156,,,,,,,,,,,ABAG
-1997,10240,0,,build,1,1,1,1,1,1,34800 11th St,Union City,,Alameda,-122.0168479,37.59231753,11763133911567,2015,,,MR,,3000,243,,,,,,,,,,,ABAG
-1998,10241,0,,build,1,1,1,1,1,1,34800 11th St,Union City,,Alameda,-122.0168479,37.59231753,11763133911567,2012,,,MR,,8600,157,,,,,,,,,,,ABAG
-1999,10242,0,,build,1,1,1,1,1,1,2127 South Winchester Boulevard,Campbell,,Santa Clara,-121.9501318,37.28514152,16668020266749,2011,,,MR,,18000,147,,,,,,,,,,,ABAG
-2000,10243,National Avenue Partners,,build,1,1,1,1,1,1,600 National Ave.,Mountain View,,Santa Clara,-122.0549231,37.40164058,11677965756202,2014,,,OF,,140654,0,,,,,,,,,,,ABAG
-2001,10244,Wonder Years Preschool,,build,1,1,1,1,1,1,86 El Camino Real,Mountain View,,Santa Clara,-122.0718684,37.38076151,11329644595962,2015,,,OF,,4800,0,,,,,,,,,,,ABAG
-2002,10245,EFL Development,,build,1,1,1,1,1,1,500 Ferguson Drive,Mountain View,,Santa Clara,-122.0566646,37.38971299,6834537861556,2015,,,MR,,3000,394,,,,,,,,,,,ABAG
-2003,10246,0,,build,1,1,1,1,1,1,Area between Alice  2nd  Harrison Streets and Embarcadero,Oakland,,Alameda,-122.2722273,37.79401397,13413298145683,2015,,,HM,,0,665,,,,,,,,,,,ABAG
-2004,10247,0,,build,1,1,1,1,1,1,70th Avenue and Snell Street,Oakland,,Alameda,-122.1969638,37.75508994,11288692872954,2015,,,HM,,0,110,,,,,,,,,,,ABAG
-2005,10248,0,,build,1,1,1,1,1,1,2300 Valdez St.,Oakland,,Alameda,-122.2638138,37.81198631,13534148926659,2015,,,HM,,0,200,,,,,,,,,,,ABAG
-2006,10249,0,,build,1,1,1,1,1,1,2435 Valdez St.,Oakland,,Alameda,-122.2639488,37.81394316,3961320131636,2015,,,HM,,0,70,,,,,,,,,,,ABAG
-2007,10250,0,,build,1,1,1,1,1,1,3927 Wattling St.,Oakland,,Alameda,-122.2210514,37.77102728,10456597648877,2015,,,HM,,0,79,,,,,,,,,,,ABAG
-2008,10251,0,,build,1,1,1,1,1,1,1396 5th St.,Oakland,,Alameda,-122.2933847,37.80393531,16939282571710,2015,,,HM,,0,119,,,,,,,,,,,ABAG
-2009,10252,0,,build,1,1,1,1,1,1,188 11th St.,Oakland,,Alameda,-122.2660415,37.79998807,12115840796470,2015,,,MR,,18000,99,,,,,,,,,,,ABAG
-2010,10253,0,,build,1,1,1,1,1,1,1100 Clay St.,Oakland,,Alameda,-122.2741304,37.80343747,14791983456985,2015,,,HM,,0,200,,,,,,,,,,,ABAG
-2011,10254,0,,build,1,1,1,1,1,1,2301 Valdez St.,Oakland,,Alameda,-122.2643958,37.81216527,10359044275928,2015,,,HM,,0,235,,,,,,,,,,,ABAG
-2012,10255,0,,build,1,1,1,1,1,1,7100 Mountain Blvd.,Oakland,,Alameda,-122.1623362,37.77670848,12252616902902,2015,,,HM,,0,123,,,,,,,,,,,ABAG
-2013,10256,0,,build,1,1,1,1,1,1,NW/c Hwy 237 & Gold,San Jose,,Santa Clara,-121.9751082,37.41879211,5600244407675,2013,,,HO,,82000,0,,,,,,,,,,,ABAG
-2014,10257,0,,build,1,1,1,1,1,1,2406 Fulton Rd,Santa Rosa,,Sonoma,-122.7565169,38.42400474,16821827446532,2015,,,HT,,0,112,,,,,,,,,,,ABAG
-2015,10258,0,,build,1,1,1,1,1,1,1301 Ludwig Ave,Santa Rosa,,Sonoma,-122.7565169,38.42400474,16821827446532,2015,,,HS,,0,133,,,,,,,,,,,ABAG
-2016,10259,0,,build,1,1,1,1,1,1,533 Bellevue Ave,Santa Rosa,,Sonoma,-122.7298806,38.40145958,11396368299529,2015,,,HS,,0,48,,,,,,,,,,,ABAG
-2017,10260,0,,build,1,1,1,1,1,1,1549 Fulton Rd,Santa Rosa,,Sonoma,-122.7724356,38.46401965,6078778038024,2015,,,HS,,0,57,,,,,,,,,,,ABAG
-2018,10261,0,,build,1,1,1,1,1,1,1835 Kawana Springs Rd,Santa Rosa,,Sonoma,-122.7001276,38.41755946,1407007785353,2015,,,HS,,0,94,,,,,,,,,,,ABAG
-2019,10262,0,,build,1,1,1,1,1,1,2450 Brookwood Ave,Santa Rosa,,Sonoma,-122.698969,38.43231496,4466284808676,2015,,,HT,,0,139,,,,,,,,,,,ABAG
-2020,10263,0,,build,1,1,1,1,1,1,2740 Dutton Meadow,Santa Rosa,,Sonoma,-122.728104,38.4102554,7059423845489,2015,,,HT,,0,60,,,,,,,,,,,ABAG
-2021,10264,0,,build,1,1,1,1,1,1,3625 Sebastopol Rd,Santa Rosa,,Sonoma,-122.6875158,38.45274267,15142636028277,2015,,,HS,,0,76,,,,,,,,,,,ABAG
-2022,10265,Urban Housing Group / Kelly Snider,,build,1,1,1,1,1,1,455 Mathilda Ave,Sunnyvale,,Santa Clara,-122.035717,37.37401388,189056159470,2013,,,HM,,0,105,,,,,,,,,,,ABAG
-2023,10266,Mid-peninsula Housing Coalition & Charaties,,build,1,1,1,1,1,1,620 E. Maude,Sunnyvale,,Santa Clara,-122.0163359,37.38442077,6092185435039,2013,,,HM,,0,121,,,,,,,,,,,ABAG
-2024,10267,0,,build,1,1,1,1,1,1,1501 Buena Vista Ave,Alameda,,Alameda,-122.2609674,37.77736284,342554924735,2014,,,MR,,30000,380,,,,,,,,,,,ABAG
-2025,10268,Alameda Point,,build,1,1,1,1,1,1,Alameda Point,Alameda,,Alameda,-122.3132759,37.78050837,14380282381951,2015,,,MR,,0,1425,,,,,,,,,,,ABAG
-2026,10269,Apple 2 (main building),,build,1,1,1,1,1,1,N Tantau Ave,Cupertino,,Santa Clara,-122.0095328,37.33532059,14388951180974,2014,,,OF,,2820000,0,,,,,,,,,,,ABAG
-2027,10270,Apple 2 (phase 2),,build,1,1,1,1,1,1,N Tantau Ave,Cupertino,,Santa Clara,-122.0065577,37.32817012,1870237173499,2015,,,OF,,600000,0,,,,,,,,,,,ABAG
-2028,10271,Edenbridge Homes,,build,1,1,1,1,1,1,2489 Pulgas Ave,East Palo Alto,,San Mateo,-122.1316776,37.47221096,9480707050367,2015,,,HS,,0,51,,,,,,,,,,,ABAG
-2029,10272,0,,build,1,1,1,1,1,1,10848-10860 San Pablo Avenue,El Cerrito,,Contra Costa,-122.3107056,37.91531347,7131481753038,2014,,,MR,,1156,63,,,,,,,,,,,ABAG
-2030,10273,0,,build,1,1,1,1,1,1,Southeastern Corner of the El Cerrito Plaza,El Cerrito,,Contra Costa,-122.2971482,37.89941808,7760468369295,2015,,,HM,,0,128,,,,,,,,,,,ABAG
-2031,10274,San Ysidro Court,,build,1,1,1,1,1,1,10th and Alexander,Gilroy,,Santa Clara,-121.5635575,36.99976077,5345092302591,2104,,,HM,,0,263,,,,,,,,,,,ABAG
-2032,10275,Netflix Expansion,,Build,1,1,1,1,1,1,Albright Way and Winchester Blvd,Los Gatos,,Santa Clara,-121.9652116,37.25513547,7400411025399,2013,,,OF,,300000,0,,,,,,,,,,,ABAG
-2033,10276,Willow Housing Verterans Apartments,,build,1,1,1,1,1,1,605 Willow Road,Menlo Park,,Santa Clara,-122.1601886,37.46629823,9668283250207,2015,,,HM,,0,60,,,,,,,,,,,ABAG
-2034,10277,Traverse Residential,,build,1,1,1,1,1,1,569-625 Trade Zone Blvd,Milpitas,,Santa Clara,-121.8941516,37.4048929,14222205254385,2013,,,HM,,0,207,,,,,,,,,,,ABAG
-2035,10278,0,,build,1,1,1,1,1,1,519 Murphy Ranch Road,Milpitas,,Santa Clara,-121.9283879,37.41787844,15183333404835,2012,,,HM,,0,374,,,,,,,,,,,ABAG
-2036,10279,landmark tower,,build,1,1,1,1,1,1,600 Barber Lane,Milpitas,,Santa Clara,-121.9161068,37.42028825,4552541625652,2016,,,MR,,34000,450,,,,,,,,,,,ABAG
-2037,10280,California Circle Residential,,build,1,1,1,1,1,1,1494-1600 California Circle,Milpitas,,Santa Clara,-121.9199177,37.45262639,9715311737641,2013,,,HS,,0,84,,,,,,,,,,,ABAG
-2038,10281,Lennar,,build,1,1,1,1,1,1,450 Montagues Expressway,Milpitas,,Santa Clara,-121.8941641,37.40890793,14821008375780,2015,,,HM,,0,489,,,,,,,,,,,ABAG
-2039,10282,Walmart Expansion,,build,1,1,1,1,1,1,301 Ranch Drive,Milpitas,,Santa Clara,-121.9206765,37.43121761,13965324507265,2014,,,RS,,18500,0,,,,,,,,,,,ABAG
-2040,10283,0,,build,1,1,1,1,1,1,750 E. Capitol Avenue,Milpitas,,Santa Clara,-121.8904924,37.40758907,3271307896677,2013,,,HM,,0,460,,,,,,,,,,,ABAG
-2041,10284,0,,build,1,1,1,1,1,1,1200 Piper Drive,Milpitas,,Santa Clara,-121.8911729,37.4147099,11948282784996,2011,,,HM,,0,732,,,,,,,,,,,ABAG
-2042,10285,the edge,,build,1,1,1,1,1,1,765 Montagues Expressway,Milpitas,,Santa Clara,-121.889985,37.41203196,2813284520925,2014,,,HM,,0,381,,,,,,,,,,,ABAG
-2043,10286,Contour,,build,1,1,1,1,1,1,300  324-368 Montague Expressway,Milpitas,,Santa Clara,-121.8944278,37.40647012,3618820038318,2016,,,HM,,0,134,,,,,,,,,,,ABAG
-2044,10287,0,,build,1,1,1,1,1,1,1201 S. Main St,Milpitas,,Santa Clara,-121.9024428,37.41229764,9195580738140,2016,,,HM,,0,204,,,,,,,,,,,ABAG
-2045,10288,DR Horton Harmony,,build,1,1,1,1,1,1,1765 McCandless Dr,Milpitas,,Santa Clara,-121.8982001,37.4060915,7247570760515,2011,,,HM,,0,276,,,,,,,,,,,ABAG
-2046,10289,Apex,,build,1,1,1,1,1,1,1102 Abel St,Milpitas,,Santa Clara,-121.903771,37.41424281,15118070807527,2015,,,HM,,0,366,,,,,,,,,,,ABAG
-2047,10290,Robson Single Family,,build,1,1,1,1,1,1,905-980 Los Coches Street,Milpitas,,Santa Clara,-121.8896294,37.43314362,6337347161172,2016,,,HT,,0,83,,,,,,,,,,,ABAG
-2048,10291,Los Coches,,build,1,1,1,1,1,1,Intersection of South Milpitas Boulevard and Los Coches Street,Milpitas,,Santa Clara,-121.89893,37.43013348,11422648555178,2016,,,HS,,0,33,,,,,,,,,,,ABAG
-2049,10292,Pacific Mall & Hotel,,build,1,1,1,1,1,1,11 Ranch Drive,Milpitas,,Santa Clara,-121.922166,37.42849761,10455132445918,2014,,,HO,,28587,0,,,,,,,,,,,ABAG
-2050,10293,Montague Housing,,build,1,1,1,1,1,1,1425 S Milpitas blvd,Milpitas,,Santa Clara,-121.8885258,37.41445898,10789253415324,2010,,,HM,,0,303,,,,,,,,,,,ABAG
-2051,10294,0,,build,1,1,1,1,1,1,1315 McCandless Drive,Milpitas,,Santa Clara,-121.9001723,37.41215935,11346190169971,2015,,,MR,,83842,1167,,,,,,,,,,,ABAG
-2052,10295,Sherimar Ranch,,build,1,1,1,1,1,1,1610 Diana Ave  Morgan Hill  CA 95037,Morgan Hill,,Santa Clara,-121.6277263,37.14070278,9730174644106,2011,,,HS,,0,117,,,,,,,,,,,ABAG
-2053,10296,0,,build,1,1,1,1,1,1,Edmunson/Piazza,Morgan Hill,,Santa Clara,-121.6498227,37.10781921,7565153604228,2015,,,HT,,0,43,,,,,,,,,,,ABAG
-2054,10297,Rose Garden,,build,1,1,1,1,1,1,683 San Gabriel Court,Morgan Hill,,Santa Clara,-121.635972,37.12417228,13644420463465,2013,,,HS,,0,53,,,,,,,,,,,ABAG
-2055,10298,Cochrane Commons,,build,1,1,1,1,1,1,1035 Cochrane Rd,Morgan Hill,,Santa Clara,-121.6506617,37.1239732,5283797637173,2016,,,TS,,393700,0,,,,,,,,,,,ABAG
-2056,10299,Downtown Mix,,build,1,1,1,1,1,1,605 Castro St,Mountain View,,Santa Clara,-122.0821174,37.38801326,930692931353,2014,,,ME,,28000,8,,,,,,,,,,,ABAG
-2057,10300,Lennar,,build,1,1,1,1,1,1,865 El Camino Real East,Mountain View,,Santa Clara,-122.0595183,37.37471779,12249890678760,2013,,,HM,,0,150,,,,,,,,,,,ABAG
-2058,10301,Robson Homes,,build,1,1,1,1,1,1,137 Easy St,Mountain View,,Santa Clara,-122.0672677,37.39354549,11213672107449,2015,,,HM,,0,21,,,,,,,,,,,ABAG
-2059,10302,Dividend Homes,,build,1,1,1,1,1,1,1958 Rock St,Mountain View,,Santa Clara,-122.0900312,37.41292296,4544327303099,2014,,,HM,,0,19,,,,,,,,,,,ABAG
-2060,10303,D.R. Horton,,build,1,1,1,1,1,1,827 N. Rengstorff Ave,Mountain View,,Santa Clara,-122.0923737,37.41554377,13829322617720,2015,,,HM,,0,24,,,,,,,,,,,ABAG
-2061,10304,Medical Office Building,,build,1,1,1,1,1,1,412 El Camino Real W,Mountain View,,Santa Clara,-122.0795985,37.38396214,4316546756705,2015,,,OF,,8582,0,,,,,,,,,,,ABAG
-2062,10305,First Community Housing,,build,1,1,1,1,1,1,1581 El Camino Real W.,Mountain View,,Santa Clara,-122.0926669,37.38957417,3963540508609,2014,,,HM,,0,27,,,,,,,,,,,ABAG
-2063,10306,Northpark Apartments,,build,1,1,1,1,1,1,111 N. Rengstorff Ave,Mountain View,,Santa Clara,-122.0954658,37.40386076,306646477352,2013,,,HM,,0,134,,,,,,,,,,,ABAG
-2064,10307,Mountain View Co-Housing Community,,build,1,1,1,1,1,1,445 Calderon Ave,Mountain View,,Santa Clara,-122.0729349,37.38823016,8382626687127,2015,,,HM,,0,19,,,,,,,,,,,ABAG
-2065,10308,Tripointe Homes,,build,1,1,1,1,1,1,135 Ada Ave,Mountain View,,Santa Clara,-122.0650363,37.39197844,8300501534651,2015,,,HM,,0,59,,,,,,,,,,,ABAG
-2066,10309,Sobrato Organization,,build,1,1,1,1,1,1,1255 Pear Ave,Mountain View,,Santa Clara,-122.0751837,37.41487528,16606654251930,2014,,,OF,,156317,0,,,,,,,,,,,ABAG
-2067,10310,Eden,,build,1,1,1,1,1,1,819 N Rengstorff Ave,Mountain View,,Santa Clara,-122.0922886,37.41492527,2353804864001,2013,,,MR,,1620,49,,,,,,,,,,,ABAG
-2068,10311,Classic Communities,,build,1,1,1,1,1,1,1946 San Luis Ave,Mountain View,,Santa Clara,-122.0911761,37.40815775,11771020962467,2015,,,HM,,0,28,,,,,,,,,,,ABAG
-2069,10312,Bryant/Dana Office,,build,1,1,1,1,1,1,250 Bryant St.,Mountain View,,Santa Clara,-122.0807848,37.39373748,9021033688677,2015,,,OF,,67772,0,,,,,,,,,,,ABAG
-2070,10313,0,,build,1,1,1,1,1,1,Timber St & Cedar Blvd,Newark,,Alameda,-122.0164444,37.53635697,6344506296947,2014,,,HS,,0,164,,,,,,,,,,,ABAG
-2071,10314,0,,build,1,1,1,1,1,1,8375 Enterprise Drive,Newark,,Alameda,-122.0486852,37.52141345,7458962950632,2015,,,HS,,0,244,,,,,,,,,,,ABAG
-2072,10315,0,,build,1,1,1,1,1,1,355 Alma / 101 Lytton Avenue,Palo alto,,San Mateo,-122.1653015,37.4446135,15299031036793,2016,,,ME,,49024,0,,,,,,,,,,,ABAG
-2073,10316,0,,build,1,1,1,1,1,1,4041 El Camino Way:,Palo alto,,San Mateo,-122.1271719,37.41561025,16748998618842,2013,,,MR,,71000,44,,,,,,,,,,,ABAG
-2074,10317,Homewwod Suites,,build,1,1,1,1,1,1,4329 El Camino Real,Palo alto,,San Mateo,-122.1187767,37.40602755,8688210692149,2013,,,HO,,69000,0,,,,,,,,,,,ABAG
-2075,10318,Greysater,,build,1,1,1,1,1,1,103 Wilson St,Redwood,,San Mateo,-122.228979,37.48328352,4451636457796,2015,,,HM,,0,175,,,,,,,,,,,ABAG
-2076,10319,Mariner's Island Condominiums,,build,1,1,1,1,1,1,400 Mariner?s Island Blvd,San Mateo,,San Mateo,-122.285339,37.56977441,6858675577435,2016,,,HM,,0,75,,,,,,,,,,,ABAG
-2077,10320,Midtown Village,,build,1,1,1,1,1,1,90 N Winchester Boulevard,Santa Clara,,Santa Clara,-121.9525817,37.32620258,14846411151876,2015,,,HS,,0,110,,,,,,,,,,,ABAG
-2078,10321,Alexis,,build,1,1,1,1,1,1,2585 El Camino Real,Santa Clara,,Santa Clara,-121.9727478,37.35291886,16264077318386,2015,,,HM,,0,60,,,,,,,,,,,ABAG
-2079,10322,Tuscany Apartments,,build,1,1,1,1,1,1,3229 El Camino Real,Santa Clara,,Santa Clara,-121.9854268,37.35296928,8152404874864,2014,,,HM,,0,133,,,,,,,,,,,ABAG
-2080,10323,Camino del Rey,,build,1,1,1,1,1,1,2525 El Camino Real,Santa Clara,,Santa Clara,-121.9721334,37.35291967,11341765117387,2013,,,HM,,0,48,,,,,,,,,,,ABAG
-2081,10324,Saratoga Avenue Residential,,build,1,1,1,1,1,1,166 Saratoga Avenue,Santa Clara,,Santa Clara,-121.967468,37.32684003,14694260924466,2016,,,HM,,0,33,,,,,,,,,,,ABAG
-2082,10325,Madison Place,,build,1,1,1,1,1,1,1460 Monroe Street,Santa Clara,,Santa Clara,-121.9508906,37.35269246,12336770336775,2016,,,ME,,638958,28,,,,,,,,,,,ABAG
-2083,10326,Scott Boulevard Office Campus,,build,1,1,1,1,1,1,3333 Scott Boulevard,Santa Clara,,Santa Clara,-121.982247,37.38146362,4789841579715,2016,,,OF,,1350713,0,,,,,,,,,,,ABAG
-2084,10327,The Gallery at Central Park,,build,1,1,1,1,1,1,900 Kiely Boulevard,Santa Clara,,Santa Clara,-121.9789547,37.34224326,5422390564523,2015,,,HM,,0,793,,,,,,,,,,,ABAG
-2085,10328,Downtown Gateway,,build,1,1,1,1,1,1,1313 Franklin Street,Santa Clara,,Santa Clara,-121.9487256,37.34877444,3671452648449,2016,,,MR,,14477,44,,,,,,,,,,,ABAG
-2086,10329,Stevens Creek Boulevard Office Campus,,build,1,1,1,1,1,1,5409 Stevens Creek Boulevard,Santa Clara,,Santa Clara,-122.0032061,37.32401434,16510247247378,2014,,,OF,,295000,0,,,,,,,,,,,ABAG
-2087,10330,Santa Clara Gateway,,build,1,1,1,1,1,1,5451  5453  and 5455 Great America Parkway,Santa Clara,,Santa Clara,-121.9763128,37.41162082,1175188528499,2014,,,OF,,911115,0,,,,,,,,,,,ABAG
-2088,10331,Cobalt Apartments,,build,1,1,1,1,1,1,45 Buckingham Drive and 66 North Saratoga Avenue,Santa Clara,,Santa Clara,-121.9700186,37.32410042,13272685859049,2016,,,HM,,0,222,,,,,,,,,,,ABAG
-2089,10332,El Presidio Santa Clara,,build,1,1,1,1,1,1,1450 El Camino Real,Santa Clara,,Santa Clara,-121.9521901,37.35243016,8349168429591,2012,,,MR,,3025,40,,,,,,,,,,,ABAG
-2090,10333,Villas on the Boulevard,,build,1,1,1,1,1,1,2611-2655 El Camino Real,Santa Clara,,Santa Clara,-121.9750974,37.35299952,5015327999968,2016,,,HM,,0,186,,,,,,,,,,,ABAG
-2091,10334,NVIDIA,,build,1,1,1,1,1,1,2600  2800 San Tomas Expressway 2400 Condensa Street,Santa Clara,,Santa Clara,-121.9671215,37.37061948,3569251802203,2013,,,OF,,1950000,0,,,,,,,,,,,ABAG
-2092,10335,Santa Clara Town Centre,,build,1,1,1,1,1,1,2082 El Camino Real,Santa Clara,,Santa Clara,-121.9613637,37.35040697,2221347774439,2014,,,RS,,283917,0,,,,,,,,,,,ABAG
-2093,10336,Monticello Village,,build,1,1,1,1,1,1,3515-3585 Monroe Street,Santa Clara,,Santa Clara,-121.9940299,37.36792633,11975528524085,2016,,,MR,,43849,825,,,,,,,,,,,ABAG
-2094,10337,Gateway Village,,build,1,1,1,1,1,1,3610 and 3700 El Camino Real,Santa Clara,,Santa Clara,-121.9978987,37.35076292,3037235062861,2016,,,MR,,108600,476,,,,,,,,,,,ABAG
-2095,10338,Mission & McLellan,,build,1,1,1,1,1,1,1309 Mission Road,South San Francisco,,San Mateo,-122.4462885,37.66622297,4572013926845,2011,,,MR,,6000,20,,,,,,,,,,,ABAG
-2096,10339,Juniper Networks,,build,1,1,1,1,1,1,1061 Innovation Way,Sunnyvale,,Santa Clara,-122.0300029,37.40810726,5821398374373,2015,,,OF,,636000,0,,,,,,,,,,,ABAG
-2097,10340,Landbank Central/Wolfe Campus,,build,1,1,1,1,1,1,280 Santa Ana Ct,Sunnyvale,,Santa Clara,-122.0111228,37.37949087,9658109565143,2014,,,OF,,77710,0,,,,,,,,,,,ABAG
-2098,10341,Mofferr Place Office Development,,build,1,1,1,1,1,1,1152 Bordeaux,Sunnyvale,,Santa Clara,-122.0212986,37.40604503,17251260263018,2013,,,OF,,1900000,0,,,,,,,,,,,ABAG
-2099,10342,Garden Village,,build,1,1,1,1,1,1,2201 Dwight Way at Fulton Street,Berkeley,,Alameda,-122.2649614,37.86461362,13003777007328,2015,,,HM,,0,84,,,,,,,,,,,ABAG
-2100,10343,Telegraph Gardens,,build,1,1,1,1,1,1,3001 Telegraph Ave,Berkeley,,Alameda,-122.2593734,37.85592866,10534607686242,2013,,,HM,,0,38,,,,,,,,,,,ABAG
-2101,10344,Acheson Commons?,,build,1,1,1,1,1,1,1979 - 1987 Shattuck Avenue; 2101 - 2113 University Avenue; 2125 - 2145 University Avenue  1922 & 1930 Walnut Street,Berkeley,,Alameda,-122.2671496,37.87261163,13371804580331,2013,,,MR,,35000,205,,,,,,,,,,,ABAG
-2102,10345,The Residences at Berkeley Plaza,,build,1,1,1,1,1,1,2211 Harold Way,Berkeley,,Alameda,-122.2686437,37.86883792,5974690467017,2015,,,MR,,13885,355,,,,,,,,,,,ABAG
-2103,10346,Berkeley central,,build,1,1,1,1,1,1,2055 Center Street,Berkeley,,Alameda,-122.2692867,37.87041717,6464299936240,2012,,,HM,,0,143,,,,,,,,,,,ABAG
-2104,10347,Lion?s Hall?,,build,1,1,1,1,1,1,2300 Bancroft ave,Berkeley,,Alameda,-122.2632261,37.86776594,7659174290598,2011,,,HM,,0,44,,,,,,,,,,,ABAG
-2105,10348,Parker Place,,build,1,1,1,1,1,1,2658-2660 Shattuck Ave,Berkeley,,Alameda,-122.2676346,37.86229164,422610499590,2012,,,MR,,23000,156,,,,,,,,,,,ABAG
-2106,10349, ,,build,1,1,1,1,1,1,2441 Haste St,Berkeley,,Alameda,-122.2590293,37.86619237,10773821448900,2015,,,MR,,5791,42,,,,,,,,,,,ABAG
-2107,10350,The Higby,,build,1,1,1,1,1,1,3015 San Pablo Ave,Berkeley,,Alameda,-122.2861367,37.85189001,15124692227158,2015,,,MR,,6500,98,,,,,,,,,,,ABAG
-2108,10351, ,,build,1,1,1,1,1,1,burbank and Filbert Street,Hayward,,Alameda,-122.0941946,37.66450873,1962684943614,2015,,,HM,,0,157,,,,,,,,,,,ABAG
-2109,10352,The Durant,,build,1,1,1,1,1,1,2024 Durant and 2025 Channing Way,Berkeley,,Alameda,-122.2689867,37.86620814,2863825032102,2014,,,HM,,0,96,,,,,,,,,,,ABAG
-2110,10353,The Aquatic,,build,1,1,1,1,1,1,800 University Ave,Berkeley,,Alameda,-122.2984158,37.86748709,11764068625830,2015,,,MR,,1175,58,,,,,,,,,,,ABAG
-2111,10354, ,,build,1,1,1,1,1,1,1931 Addison,Berkeley,,Alameda,-122.2715567,37.87100842,6965532111033,2013,,,MR,,7240,69,,,,,,,,,,,ABAG
-2112,10355,The Overture,,build,1,1,1,1,1,1,1808 - 1814 University Ave,Berkeley,,Alameda,-122.2715567,37.87100842,6965532111033,2015,,,MR,,4151,44,,,,,,,,,,,ABAG
-2113,10356,StoneFire,,build,1,1,1,1,1,1,1974 University Ave,Berkeley,,Alameda,-122.2710379,37.87145828,8400556859107,2014,,,MR,,8700,119,,,,,,,,,,,ABAG
-2114,10357,Fidelity Apartments,,build,1,1,1,1,1,1,2300 Shattuck Ave,Berkeley,,Alameda,-122.2682514,37.86712264,11022790491202,2014,,,MR,,2580,16,,,,,,,,,,,ABAG
-2115,10358,Landbank Central/Wolfe Campus,,build,1,1,1,1,1,1,280 Santa Ana Ct,Sunnyvale,,Santa Clara,-122.0111228,37.37949087,9658109565143,2014,,,OF,,77710,0,,,,,,,,,,,ABAG
-2116,10359,Mofferr Place Office Development,,build,1,1,1,1,1,1,1152 Bordeaux,Sunnyvale,,Santa Clara,-122.0212986,37.40604503,17251260263018,2013,,,OF,,1900000,0,,,,,,,,,,,ABAG
-2117,10360, ,,build,1,1,1,1,1,1,2107 Dwight Way,Berkeley,,Alameda,-122.2668389,37.8643099,13022127570144,2012,,,MR,,5607,99,,,,,,,,,,,ABAG
-2118,10361,Sonoma Mountain Village ,,build,1,1,1,1,1,1,0,0,,0,0,0,13026320805699,2018,,,HM,,0,2200,,,,,,,,,,,ABAG
-2119,10362,Sonoma Mountain Village 2,,build,1,1,1,1,1,1,0,0,,0,0,0,10010628924630,2020,,,RS,,275000,0,,,,,,,,,,,ABAG
-2120,10363,Alameda NAS (ABAG version),,build,1,1,1,1,1,1,0,0,,0,0,0,10333620162438,2018,,,HM,,0,3000,,,,,,,,,,,ABAG
-2121,10364,Alameda NAS (ABAG version)comm,,add,1,1,1,1,1,1,0,0,,0,0,0,15929099812790,2018,,,OF,,2500000,0,,,,,,,,,,,ABAG
-2122,10365,Richmond BART,,build,1,1,1,1,1,1,0,0,,0,0,0,10074736064118,2017,,,HM,,0,1567,,,,,,,,,,,ABAG
-2123,10366,Richmond BART 2,,build,1,1,1,1,1,1,0,0,,0,0,0,922983410262,2018,,,HM,,0,1567,,,,,,,,,,,ABAG
-2124,10367,Richmond BART 3,,build,1,1,1,1,1,1,0,0,,0,0,0,513414154856,2020,,,HM,,0,1567,,,,,,,,,,,ABAG
-2125,10368,Milpitas Cisco,,add,1,1,1,1,1,1,0,0,,0,0,0,2283276852886,2018,,,HM,,0,1100,,,,,,,,,,,ABAG
-2126,10369,Oakridge,,add,1,1,1,1,1,1,0,0,,0,0,0,15540613703470,2020,,,MR,,120000,425,,,,,,,,,,,ABAG
-2127,10370,Oakridge 2,,add,1,1,1,1,1,1,0,0,,0,0,0,5195276833190,2022,,,MR,,120000,425,,,,,,,,,,,ABAG
-2128,10371,Oakridge 3,,add,1,1,1,1,1,1,0,0,,0,0,0,14412338229342,2024,,,MR,,120000,425,,,,,,,,,,,ABAG
-2129,10372,Almaden,,add,1,1,1,1,1,1,0,0,,0,0,0,10453741927272,2026,,,MR,,120000,425,,,,,,,,,,,ABAG
-2130,10373,Almaden 2,,add,1,1,1,1,1,1,0,0,,0,0,0,9186685909144,2028,,,MR,,120000,425,,,,,,,,,,,ABAG
-2131,10374,Almaden 3,,add,1,1,1,1,1,1,0,0,,0,0,0,11322711730131,2030,,,MR,,120000,425,,,,,,,,,,,ABAG
-2132,10375,Dublin base,,build,1,1,1,1,1,1,0,0,,0,0,0,16749804684003,2030,,,OF,,2450000,0,,,,,,,,,,,ABAG
-2133,10376,Millbrae BART res,,build,1,1,1,1,1,1,0,0,,0,0,0,14941172520187,2033,,,HM,,0,2325,,,,,,,,,,,ABAG
-2134,10377,Millbrae BART emp,,build,1,1,1,1,1,1,0,0,,0,0,0,11958360540898,2037,,,OF,,1650000,0,,,,,,,,,,,ABAG
-2135,10378,UCB Golden Bear expansion,,add,1,1,1,1,1,1,0,0,,0,0,0,688933574394,0,,,OF,,210000,0,,,,,,,,,,,0
-2136,10379,UCB Univ Hall expansion (120ft),,add,1,1,1,1,1,1,0,0,,0,0,0,6554011269047,0,,,OF,,300000,0,,,,,,,,,,,0
-2137,10380,Berkeley Way pkg lot,,build,1,1,1,1,1,1,0,0,,0,0,0,6635332985661,0,,,OF,,150000,0,,,,,,,,,,,0
-2138,10381,Berkeley hotel,,add,1,1,1,1,1,1,0,0,,0,0,0,8264821056911,0,,,OF,,228000,0,,,,,,,,,,,0
-2139,10382,Berkeley tall res in core (180ft),,add,1,1,1,1,1,1,0,0,,0,0,0,10174939648859,0,,,HM,,0,315,,,,,,,,,,,0
-2140,10383,Berkeley tall res in core (180ft),,add,1,1,1,1,1,1,0,0,,0,0,0,13496428242848,0,,,HM,,0,255,,,,,,,,,,,0
-2141,10384,Berkeley medtall res in core/outer core (120ft),,add,1,1,1,1,1,1,0,0,,0,0,0,7849046446761,0,,,HM,,0,313,,,,,,,,,,,0
-2142,10385,Berkeley medtall res in core/outer core (120ft),,add,1,1,1,1,1,1,0,0,,0,0,0,12434182054458,0,,,HM,,0,200,,,,,,,,,,,0
-2143,10386,oak childrens hospital expansion,,add,1,1,1,1,1,1,0,0,,0,0,0,12728733418474,0,,,OF,,333000,0,,,,,,,,,,,0
-2144,10387,kaiser admin,,build,1,1,1,1,1,1,0,0,,0,0,0,15646009917828,0,,,OF,,700000,0,,,,,,,,,,,0
-2145,10388,more kaiser,,build,1,1,1,1,1,1,0,0,,0,0,0,12457329376267,0,,,OF,,700000,0,,,,,,,,,,,0
-2146,10389,uber,,build,1,1,1,1,1,1,0,0,,0,0,0,14314009487362,0,,,OF,,424000,0,,,,,,,,,,,0
-2147,10390,hacienda res,,add,1,1,1,1,1,1,0,0,,0,0,0,1323753255261,0,,,HM,,0,1245,,,,,,,,,,,0
-2148,10391,hacienda of,,add,1,1,1,1,1,1,0,0,,0,0,0,9713560872330,0,,,OF,,1800000,0,,,,,,,,,,,0
+1757,10000,Sun Garden Retail Center,,build,1,1,1,1,1,1,E/s Monterey  300' sly E. Alma,San Jose,,Santa Clara,-121.8712172,37.31569602,557307546256,2013,,,RS,206000,206000,0,,,,,,,,,,,ABAG
+1758,10001,Race Street Terrace,,build,1,1,1,1,1,1,Bet. Race & Grand  300' sly Park,San Jose,,Santa Clara,-121.9122138,37.32518016,9969549260852,2013,,,HM,96000,0,80,,,,,,,,,,,ABAG
+1759,10002,Villa Sport,,build,1,1,1,1,1,1,Betwn N Capitol & Hwy 680  300' nly Berryesa,San Jose,,Santa Clara,-121.8628883,37.38688164,841228298555,2014,,,OF,88000,88000,0,,,,,,,,,,,ABAG
+1760,10003,Berryessa Crossing (Phase 1),,build,1,1,1,1,1,1,Both sides Berryessa  wly UP railroad,San Jose,,Santa Clara,-121.8800891,37.37133823,12290243629603,2010,,,HS,290400,0,242,,,,,,,,,,,ABAG
+1761,10004,2890 North 1st Street Office,,build,1,1,1,1,1,1,Bound N 1st  Daggett  Zanker & Plumeria,San Jose,,Santa Clara,-121.930469,37.39356279,10756324623470,2014,,,OF,42000,42000,0,,,,,,,,,,,ABAG
+1762,10005,Metropolitan Apts,,build,1,1,1,1,1,1,E/s Monterey  700' nly Tully,San Jose,,Santa Clara,-121.8623954,37.30571293,11023466561973,2011,,,HM,122400,0,102,,,,,,,,,,,ABAG
+1763,10006,Senter Road Family Apts,,build,1,1,1,1,1,1,E/s Senter  600' sly Tully,San Jose,,Santa Clara,-121.8456956,37.30708364,2650462895899,2010,,,HM,122400,0,102,,,,,,,,,,,ABAG
+1764,10007,Valley Christian Schools,,build,1,1,1,1,1,1,Ely term. Skyway,San Jose,,Santa Clara,-121.8247035,37.27447486,4785876575351,2010,,,SC,50000,50000,0,,,,,,,,,,,ABAG
+1765,10008,Communication Hill,,build,1,1,1,1,1,1,Hill bet Hwy 87 & Monterey  nly Hillsdale,San Jose,,Santa Clara,-121.857788,37.28508576,2092968530271,2014,,,HM,2948000,308000,2200,,,,,,,,,,,ABAG
+1766,10009,San Jose Airport Terminals,,build,1,1,1,1,1,1,Mineta Airport,San Jose,,Santa Clara,-121.9389179,37.36661268,15104628428806,2014,,,OF,278500,278500,0,,,,,,,,,,,ABAG
+1767,10010,Westbury Homes,,build,1,1,1,1,1,1,N/s Blossom Hill  250' ely Cahalan,San Jose,,Santa Clara,-121.8456569,37.25261611,7677719281354,2011,,,HS,103200,0,86,,,,,,,,,,,ABAG
+1768,10011,University Villas Apts,,build,1,1,1,1,1,1,N/s Campbell  250' ely El Camino Real,San Jose,,Santa Clara,-121.9313315,37.34979349,15051239989125,2010,,,HM,165600,0,138,,,,,,,,,,,ABAG
+1769,10012,Ford Apts,,build,1,1,1,1,1,1,N/s Ford  550' ely Monterey,San Jose,,Santa Clara,-121.7967602,37.25415908,11184911351337,2010,,,HM,114000,0,95,,,,,,,,,,,ABAG
+1770,10013,Zero Waste Facility,,build,1,1,1,1,1,1,N/s Los Esteros  term Grand,San Jose,,Santa Clara,-121.9522188,37.43643066,2314990167334,2011,,,IL,283000,283000,0,,,,,,,,,,,ABAG
+1771,10014,River Oaks Apts (East),,build,1,1,1,1,1,1,N/s River Oaks  200' ely Research,San Jose,,Santa Clara,-121.9249005,37.40445868,15021706113960,2012,,,HM,525600,0,438,,,,,,,,,,,ABAG
+1772,10015,Chinmaya Mission,,build,1,1,1,1,1,1,NE/c Clayton & Hickerson,San Jose,,Santa Clara,-121.8092863,37.35936763,3897825644537,2011,,,OF,26000,26000,0,,,,,,,,,,,ABAG
+1773,10016,Bellarmine (Life Center/Gym),,build,1,1,1,1,1,1,NE/c Elm & Emory,San Jose,,Santa Clara,-121.9178615,37.34252022,14439107796122,2011,,,OF,40000,40000,0,,,,,,,,,,,ABAG
+1774,10017,The Meridian at Willow Glen,,build,1,1,1,1,1,1,NE/c Hillsdale & Yucca,San Jose,,Santa Clara,-121.9065932,37.26840811,213050406763,2011,,,HS,61200,0,51,,,,,,,,,,,ABAG
+1775,10018,North San Pedro Apts,,build,1,1,1,1,1,1,NE/c Hwy 87 & Bassett,San Jose,,Santa Clara,-121.8984824,37.33991817,4796943171858,2011,,,HM,162000,0,135,,,,,,,,,,,ABAG
+1776,10019,Centered on Capitol Townhomes,,build,1,1,1,1,1,1,NE/c N. Capitol & Sierra,San Jose,,Santa Clara,-121.8655777,37.39243261,1082157672108,2011,,,HM,112800,0,94,,,,,,,,,,,ABAG
+1777,10020,Foxworthy Retail,,build,1,1,1,1,1,1,NW/c Almaden & Hillsdale,San Jose,,Santa Clara,-121.8809359,37.27619221,277043018674,2011,,,RS,25000,25000,0,,,,,,,,,,,ABAG
+1778,10021,Coleman Landings,,build,1,1,1,1,1,1,NW/c Coleman & Newhall,San Jose,,Santa Clara,-121.9223939,37.34966612,9331635956288,2012,,,OF,245000,245000,0,,,,,,,,,,,ABAG
+1779,10022,Coleman Highline Office,,build,1,1,1,1,1,1,NW/c Coleman & Newhall,San Jose,,Santa Clara,-121.9282226,37.35256718,8359129770625,2013,,,OF,683000,683000,0,,,,,,,,,,,ABAG
+1780,10023,Valley Fair Shopping Center,,build,1,1,1,1,1,1,NW/c Hwy 17 & Stevens Creek,San Jose,,Santa Clara,-121.9425999,37.3250176,17580255408163,2013,,,RS,525000,525000,0,,,,,,,,,,,ABAG
+1781,10024,Newbury Park Mixed Use,,build,1,1,1,1,1,1,NW/c King & Dobbin,San Jose,,Santa Clara,-121.867455,37.36622827,178546448907,2013,,,MR,276000,0,230,,,,,,,,,,,ABAG
+1782,10025,Samsung Semiconductor,,build,1,1,1,1,1,1,NW/c N. 1st & Tasman,San Jose,,Santa Clara,-121.9463532,37.4092982,2322862587853,2013,,,IL,680000,680000,0,,,,,,,,,,,ABAG
+1783,10026,Trammel Crow (R&D and Office Buildings),,build,1,1,1,1,1,1,NW/c Nortech & Disk,San Jose,,Santa Clara,-121.964017,37.4236007,10699773993700,2014,,,IL,415000,415000,0,,,,,,,,,,,ABAG
+1784,10027,Santana Row (Levare),,build,1,1,1,1,1,1,NW/c Olin & Hatton,San Jose,,Santa Clara,-121.9467176,37.32095843,7973902266520,2010,,,HM,141600,0,118,,,,,,,,,,,ABAG
+1785,10028,Post & San Pedro Tower,,build,1,1,1,1,1,1,NW/c San Pedro & Post,San Jose,,Santa Clara,-121.8926919,37.33415419,1333479766919,2014,,,HM,218400,0,182,,,,,,,,,,,ABAG
+1786,10029,Whole Foods Market,,build,1,1,1,1,1,1,NW/c The Alameda & Stockton,San Jose,,Santa Clara,-121.9051054,37.33249087,17490520174758,2013,,,RB,33000,33000,0,,,,,,,,,,,ABAG
+1787,10030,Tasman Apts,,build,1,1,1,1,1,1,NW/c Vista Montana & W. Tasman,San Jose,,Santa Clara,-121.9552969,37.41475632,2488578699474,2011,,,HM,664800,0,554,,,,,,,,,,,ABAG
+1788,10031,Balbach Condos,,build,1,1,1,1,1,1,S/s Balbach  100' ely Almaden,San Jose,,Santa Clara,-121.8876877,37.32720079,16084817875279,2014,,,HM,121200,0,101,,,,,,,,,,,ABAG
+1789,10032,Parc 22 Townhomes,,build,1,1,1,1,1,1,S/s William  350' wly McLaughlin,San Jose,,Santa Clara,-121.8629695,37.33901448,16982901135447,2012,,,HS,80400,0,67,,,,,,,,,,,ABAG
+1790,10033,M8trix Casino/Hotel (Phase 1),,build,1,1,1,1,1,1,SE/c Airport & Old Bayshore,San Jose,,Santa Clara,-121.9190707,37.37089061,7938493479834,2011,,,OF,89000,89000,0,,,,,,,,,,,ABAG
+1791,10034,Almaden Ranch / Bass Pro,,build,1,1,1,1,1,1,SE/c Almaden & Chynoweth,San Jose,,Santa Clara,-121.8724115,37.25823213,1908535176695,2012,,,OF,377000,377000,0,,,,,,,,,,,ABAG
+1792,10035,San Pedro Square,,build,1,1,1,1,1,1,SE/c Bassett & Terraine,San Jose,,Santa Clara,-121.8971682,37.33924285,17135562162557,2014,,,HM,487200,0,406,,,,,,,,,,,ABAG
+1793,10036,Ajisai Gardens Apts,,build,1,1,1,1,1,1,SE/c E. Taylor & N. 7th,San Jose,,Santa Clara,-121.89295,37.35153204,10223535361428,2012,,,HM,123600,0,103,,,,,,,,,,,ABAG
+1794,10037,Lincoln Office/Retail,,build,1,1,1,1,1,1,SE/c Lincoln & Willow,San Jose,,Santa Clara,-121.9006114,37.30839232,15978284830248,2010,,,OF,41000,41000,0,,,,,,,,,,,ABAG
+1795,10038,Self Storage,,build,1,1,1,1,1,1,SE/c N 10th Street & Horning,San Jose,,Santa Clara,-121.8946393,37.35994477,9807350134795,2014,,,IL,84000,84000,0,,,,,,,,,,,ABAG
+1796,10039,Rosemary Family/Senior Apts,,build,1,1,1,1,1,1,SE/c N. 1st & Rosemary,San Jose,,Santa Clara,-121.9077961,37.35989634,16698842867440,2011,,,HM,348000,0,290,,,,,,,,,,,ABAG
+1797,10040,Hampton Inn,,build,1,1,1,1,1,1,SE/c W. Santa Clara & Hwy 87,San Jose,,Santa Clara,-121.8960678,37.33317714,11999151377381,2014,,,OF,128000,128000,0,,,,,,,,,,,ABAG
+1798,10041,Santana Row (Misora),,build,1,1,1,1,1,1,SE/c Winchester & Stevens Creek,San Jose,,Santa Clara,-121.9474733,37.31985905,11486374325420,2012,,,HM,264000,0,220,,,,,,,,,,,ABAG
+1799,10042,Hyatt House/Hyatt Place,,build,1,1,1,1,1,1,Sly term. Karina,San Jose,,Santa Clara,-121.921595,37.37311143,14770617797816,2014,,,OF,206000,206000,0,,,,,,,,,,,ABAG
+1800,10043,Earthquakes Soccer Stadium,,build,1,1,1,1,1,1,SW/c Coleman & Newhall,San Jose,,Santa Clara,-121.9253605,37.35115466,216445391403,2012,,,OF,219000,219000,0,,,,,,,,,,,ABAG
+1801,10044,Orchard Park,,build,1,1,1,1,1,1,SW/c E. Brokaw & Oakland,San Jose,,Santa Clara,-121.897072,37.37977508,3770778410749,2012,,,HS,288000,0,240,,,,,,,,,,,ABAG
+1802,10045,Edwards Mixed Use,,build,1,1,1,1,1,1,SW/c Edwards & S. 1st,San Jose,,Santa Clara,-121.8797656,37.32126902,11178663235532,2010,,,HM,60000,0,50,,,,,,,,,,,ABAG
+1803,10046,One South Market Apts,,build,1,1,1,1,1,1,SW/c Market & Santa Clara,San Jose,,Santa Clara,-121.8921343,37.33488771,9589580496633,2013,,,HM,374400,0,312,,,,,,,,,,,ABAG
+1804,10047,Century Center Mixed Use,,build,1,1,1,1,1,1,SW/c N. 1st & Century Center,San Jose,,Santa Clara,-121.9151777,37.36797331,14874144646500,2014,,,HM,453600,0,378,,,,,,,,,,,ABAG
+1805,10048,North First Campus,,build,1,1,1,1,1,1,SW/c N. 1st & Component,San Jose,,Santa Clara,-121.9279871,37.38061408,17054960452221,2012,,,IL,2350000,2350000,0,,,,,,,,,,,ABAG
+1806,10049,A-1 Self Storage,,build,1,1,1,1,1,1,SW/c Phelan & Senter,San Jose,,Santa Clara,-121.8590419,37.31734389,5112592194154,2013,,,IL,107000,107000,0,,,,,,,,,,,ABAG
+1807,10050,SuperMicro,,build,1,1,1,1,1,1,SW/c Ridder Park & Schallenberger,San Jose,,Santa Clara,-121.9004327,37.37634437,16965552667538,2014,,,IL,182000,182000,0,,,,,,,,,,,ABAG
+1808,10051,Cottages at Mirassou,,build,1,1,1,1,1,1,SW/c Ruby & Aborn,San Jose,,Santa Clara,-121.7767427,37.31515772,7886770966303,2011,,,HM,124800,0,104,,,,,,,,,,,ABAG
+1809,10052,Public Storage,,build,1,1,1,1,1,1,SW/c Tully & Old Tully,San Jose,,Santa Clara,-121.8564211,37.30295544,10862598817162,2012,,,IL,115000,115000,0,,,,,,,,,,,ABAG
+1810,10053,Orchard Supply Hardware,,build,1,1,1,1,1,1,SW/c W. San Carlos & Royal,San Jose,,Santa Clara,-121.9013667,37.32325365,13713010365327,2013,,,OF,49000,49000,0,,,,,,,,,,,ABAG
+1811,10054,Silvery Towers Apts,,build,1,1,1,1,1,1,SW/c W. St. James & N. San Pedro,San Jose,,Santa Clara,-121.8952019,37.33767968,13157310850658,2014,,,HM,771600,0,643,,,,,,,,,,,ABAG
+1812,10055,Peery Arrillaga,,build,1,1,1,1,1,1,W/ Bering between E Brokaw & Crane,San Jose,,Santa Clara,-121.9130477,37.37197522,9269193034888,2014,,,IL,1949000,1949000,0,,,,,,,,,,,ABAG
+1813,10056,The Plaza at Evergreen,,build,1,1,1,1,1,1,W/s Capitol  1500' sly Quimby,San Jose,,Santa Clara,-121.8104984,37.31985924,16172549694464,2014,,,OF,200000,200000,0,,,,,,,,,,,ABAG
+1814,10057,Brookside Homes,,build,1,1,1,1,1,1,W/s Guadalupe Mines  2000' sly Camden,San Jose,,Santa Clara,-121.9068593,37.22086564,2692466672615,2011,,,HS,106800,0,89,,,,,,,,,,,ABAG
+1815,10058,Verona at Montecito Vista,,build,1,1,1,1,1,1,W/s Monterey  300' sly Umbarger,San Jose,,Santa Clara,-121.8532489,37.29161165,10666983939674,2012,,,HM,332400,0,277,,,,,,,,,,,ABAG
+1816,10059,North Tenth Street Apts,,build,1,1,1,1,1,1,W/s N. 10th  bet Vestal & E. Mission,San Jose,,Santa Clara,-121.8931837,37.35607481,5546407750790,2013,,,HM,199200,0,166,,,,,,,,,,,ABAG
+1817,10060,Domain Apts,,build,1,1,1,1,1,1,W/s N. 1st  both sides Vista Montana,San Jose,,Santa Clara,-121.9571909,37.41276491,11095293080686,2011,,,HM,532800,0,444,,,,,,,,,,,ABAG
+1818,10061,Japantown Senior Apts,,build,1,1,1,1,1,1,W/s N. 6th  200' sly E. Taylor,San Jose,,Santa Clara,-121.8946762,37.35083397,7634794324925,2010,,,HM,102000,0,85,,,,,,,,,,,ABAG
+1819,10062,Silicon Valley Industrial Center,,build,1,1,1,1,1,1,W/s Piercy  2070' nly Silicon Valley,San Jose,,Santa Clara,-121.7753092,37.25601009,6312678460259,2014,,,IL,243000,243000,0,,,,,,,,,,,ABAG
+1820,10063,Vicino Townhomes,,build,1,1,1,1,1,1,W/s S. Monroe  450' nly Hwy 280,San Jose,,Santa Clara,-121.9447868,37.31885002,8490806159904,2011,,,HS,124800,0,104,,,,,,,,,,,ABAG
+1821,10064,Oakmont of San Jose,,build,1,1,1,1,1,1,W/s Thorton  260' nly Maywood,San Jose,,Santa Clara,-121.9399744,37.31034822,12399445742591,2014,,,OF,60000,60000,0,,,,,,,,,,,ABAG
+1822,10065,101 Tech,,build,1,1,1,1,1,1,Wly term. Atmel  200' nly Hwy 101,San Jose,,Santa Clara,-121.9308979,37.37628365,6260187106518,2012,,,IL,666000,666000,0,,,,,,,,,,,ABAG
+1823,10066,Soutn Village (Hitachi),,build,1,1,1,1,1,1,NE/c Cottle & Hwy 85,San Jose,,Santa Clara,-121.8023334,37.24619372,15786527501368,2012,,,OF,1322000,308000,845,,,,,,,,,,,ABAG
+1824,10067,0,,build,1,1,1,1,1,1,651  655  & 671 West Hamilton Avenue,Campbell,,Santa Clara,-121.9620953,37.29498641,9152288724692,2015,,,HM,129600,0,108,,,,,,,,,,,ABAG
+1825,10068,0,,build,1,1,1,1,1,1,300 Railway Avenue,Campbell,,Santa Clara,-121.9443014,37.28309723,2427934574584,2015,,,HM,188400,0,157,,,,,,,,,,,ABAG
+1826,10069,0,,build,1,1,1,1,1,1,1677 South Bascom Avenue,Campbell,,Santa Clara,-121.9327122,37.29222527,1607419491360,2012,,,MR,216895,15295,168,,,,,,,,,,,ABAG
+1827,10070,0,,build,1,1,1,1,1,1,675 & 705 Creekside Way,Campbell,,Santa Clara,-121.9357136,37.29162198,7382910563612,2015,,,OF,180125,180125,0,,,,,,,,,,,ABAG
+1828,10071,0,,build,1,1,1,1,1,1,488 Sam Cava Lane,Campbell,,Santa Clara,-121.9416399,37.2846461,6003276994087,2014,,,HM,120000,0,100,,,,,,,,,,,ABAG
+1829,10072,0,,build,1,1,1,1,1,1,2000 South Bascom Avenue,Campbell,,Santa Clara,-121.9309531,37.28659005,1719331034157,2016,,,RS,5172,5172,0,,,,,,,,,,,ABAG
+1830,10073,Rose Bowl Mixed Use,,build,1,1,1,1,1,1,Wolfe Road between Stevens Creek Boulevard and I-280,Cupertino,,Santa Clara,-122.0110451,37.32416095,14097042699900,2016,,,MR,244800,0,204,,,,,,,,,,,ABAG
+1831,10074,Saich Way Station,,build,1,1,1,1,1,1,20803 Stevens Creek,Cupertino,,Santa Clara,-122.0375637,37.32333695,12299786973651,2016,,,RS,15650,15650,0,,,,,,,,,,,ABAG
+1832,10075,Biltmore Ajacency,,build,1,1,1,1,1,1,20080 Stevens Creek Blvd,Cupertino,,Santa Clara,-122.0246801,37.32227677,10047757702766,2016,,,MR,115000,7000,90,,,,,,,,,,,ABAG
+1833,10076,Main Street,,build,1,1,1,1,1,1,North side of Stevens Creek Boulevard between Finch Avenue and Tantau Avenue,Cupertino,,Santa Clara,-122.0077255,37.32369508,14546033944954,2016,,,MR,534000,390000,120,,,,,,,,,,,ABAG
+1834,10077,0,,build,1,1,1,1,1,1,34826 FREMONT BLVD,Fremont,,Alameda,-122.0331348,37.5722008,10764663483332,2014,,,HM,44400,0,37,,,,,,,,,,,ABAG
+1835,10078,0,,build,1,1,1,1,1,1,40744 FREMONT BLVD,Fremont,,Alameda,-121.9628547,37.53579928,6545398855326,2015,,,HM,80400,0,67,,,,,,,,,,,ABAG
+1836,10079,0,,build,1,1,1,1,1,1,41152 FREMONT BLVD,Fremont,,Alameda,-121.9579457,37.53081318,14064558786462,2015,,,HM,76800,0,64,,,,,,,,,,,ABAG
+1837,10080,0,,build,1,1,1,1,1,1,34044 FREMONT BLVD,Fremont,,Alameda,-122.0451681,37.57750813,6226778167439,2015,,,HM,54000,0,45,,,,,,,,,,,ABAG
+1838,10081,0,,build,1,1,1,1,1,1, ARDENWOOD BLVD,Fremont,,Alameda,-122.0634916,37.5621819,6659762815459,2015,,,HS,69600,0,58,,,,,,,,,,,ABAG
+1839,10082,0,,build,1,1,1,1,1,1,39439 MISSION BLVD,Fremont,,Alameda,-121.9583378,37.56070893,15371170454108,2015,,,HS,92400,0,77,,,,,,,,,,,ABAG
+1840,10083,0,,build,1,1,1,1,1,1,44100 CHRISTY ST,Fremont,,Alameda,-121.9637423,37.50180636,6152417352010,2015,,,IL,50516,50516,0,,,,,,,,,,,ABAG
+1841,10084,0,,build,1,1,1,1,1,1,37350 SEQUOIA RD,Fremont,,Alameda,-122.0014509,37.56260703,6620315296564,2015,,,HM,152400,0,127,,,,,,,,,,,ABAG
+1842,10085,0,,build,1,1,1,1,1,1,42186 PALM AVE,Fremont,,Alameda,-121.9323827,37.53950824,12401895232992,2013,,,HS,50400,0,42,,,,,,,,,,,ABAG
+1843,10086,0,,build,1,1,1,1,1,1,37899 NILES BLVD,Fremont,,Alameda,-121.9736101,37.57417974,13538350449713,2013,,,MR,121220,3620,98,,,,,,,,,,,ABAG
+1844,10087,0,,build,1,1,1,1,1,1, FREMONT BLVD @ LANDING PKWY,Fremont,,Alameda,-121.9486138,37.4879309,10880804116352,2015,,,HO,96000,96000,0,,,,,,,,,,,ABAG
+1845,10088,0,,build,1,1,1,1,1,1,44009 OSGOOD RD,Fremont,,Alameda,-121.9424494,37.51142162,16371373914675,2014,,,TS,27226,27226,0,,,,,,,,,,,ABAG
+1846,10089,0,,build,1,1,1,1,1,1, HASTINGS ST,Fremont,,Alameda,-121.9832392,37.55289816,14850891996336,2014,,,MR,66300,13500,44,,,,,,,,,,,ABAG
+1847,10090,0,,build,1,1,1,1,1,1,45300 FREMONT BLVD,Fremont,,Alameda,-121.9440011,37.50024706,7128489026885,2016,,,MR,348000,0,290,,,,,,,,,,,ABAG
+1848,10091,0,,build,1,1,1,1,1,1,39311 MISSION BLVD,Fremont,,Alameda,-121.9588986,37.56158983,10426936024645,2015,,,HM,39600,0,33,,,,,,,,,,,ABAG
+1849,10092,0,,build,1,1,1,1,1,1,37605 FREMONT BLVD,Fremont,,Alameda,-122.003806,37.55615675,12264154137647,2015,,,HM,32400,0,27,,,,,,,,,,,ABAG
+1850,10093,Imwalle Properties,,build,1,1,1,1,1,1,1st and Santa Teresa,Gilroy,,Santa Clara,-121.5990586,37.0124668,1654348932789,2016,,,HM,242400,0,202,,,,,,,,,,,ABAG
+1851,10094,Meta Housing Corporation,,build,1,1,1,1,1,1,111 Lewis St,Gilroy,,Santa Clara,-121.56865,37.0108338,12602648753353,2016,,,HM,136800,0,114,,,,,,,,,,,ABAG
+1852,10095,0,,build,1,1,1,1,1,1,1535 Oak Avenue,Los Altos,,Santa Clara,-122.0702227,37.35702718,13321206839493,2015,,,OF,2880,2880,0,,,,,,,,,,,ABAG
+1853,10096,0,,build,1,1,1,1,1,1,715 Altos Oaks Drive,Los Altos,,Santa Clara,-122.0954347,37.35950845,9639205629893,2015,,,OF,8977,8977,0,,,,,,,,,,,ABAG
+1854,10097,0,,add,1,1,1,1,1,1,4940 El Camino Real,Los Altos,,Santa Clara,-122.1071423,37.39755781,3613496884478,2015,,,ME,3679,3679,0,,,,,,,,,,,ABAG
+1855,10098,0,,build,1,1,1,1,1,1,467 First Street,Los Altos,,Santa Clara,-122.114646,37.37460068,13048021497841,2015,,,OF,17000,17000,0,,,,,,,,,,,ABAG
+1856,10099,Lennar/Sares-Regis,,build,1,1,1,1,1,1,4750 El Camino Real,Los Altos,,Santa Clara,-122.1124196,37.3988113,17380722697511,2015,,,MR,253000,7000,205,,,,,,,,,,,ABAG
+1857,10100,0,,add,1,1,1,1,1,1,4700 El Camino Real,Los Altos,,Santa Clara,-122.1120923,37.40001653,12199646327576,2015,,,RS,3600,3600,0,,,,,,,,,,,ABAG
+1858,10101,0,,add,1,1,1,1,1,1,342 First Street,Los Altos,,Santa Clara,-122.1169744,37.37644004,1338242285702,2015,,,RS,3000,3000,0,,,,,,,,,,,ABAG
+1859,10102,The Terraces of Los Altos Continuing Care Retirement Community,,build,1,1,1,1,1,1,323 & 373 Pine Lane,Los Altos,,Santa Clara,-122.1213823,37.39258999,6598862643281,2015,,,HM,97200,0,81,,,,,,,,,,,ABAG
+1860,10103,Pinedera,,build,1,1,1,1,1,1,120 S. El Camino Real,Millbrae,,San Mateo,-122.3858507,37.59755974,4262926261454,2016,,,MR,75800,11000,54,,,,,,,,,,,ABAG
+1861,10104,Valencia,,build,1,1,1,1,1,1,Butterfield,Morgan Hill,,Santa Clara,-121.6552701,37.13569303,1963588681786,2015,,,HS,96000,0,80,,,,,,,,,,,ABAG
+1862,10105,Mission Ranch,,build,1,1,1,1,1,1,Mission View and Cochrane,Morgan Hill,,Santa Clara,-121.6461701,37.15358248,10129704417309,2015,,,HS,393600,0,328,,,,,,,,,,,ABAG
+1863,10106,Madrone Plaza,,build,1,1,1,1,1,1,Monterey Rd and Cochrane Rd,Morgan Hill,,Santa Clara,-121.6658287,37.14510534,9588895981178,2015,,,HM,138000,0,115,,,,,,,,,,,ABAG
+1864,10107,Connemara,,build,1,1,1,1,1,1,Watsonville Rd,Morgan Hill,,Santa Clara,-121.6387939,37.0999995,7118569650395,2015,,,HS,44400,0,37,,,,,,,,,,,ABAG
+1865,10108,The Lodge Phase 2,,build,1,1,1,1,1,1,Barrett & Butterfield,Morgan Hill,,Santa Clara,-121.6353342,37.12241187,11408456603504,2015,,,HM,136800,0,114,,,,,,,,,,,ABAG
+1866,10109,Walnut Grove-UCP,,build,1,1,1,1,1,1,Walnut Grove and San Pedro Ave,Morgan Hill,,Santa Clara,-121.6327265,37.12820846,9627794156866,2015,,,HS,58800,0,49,,,,,,,,,,,ABAG
+1867,10110,Diamond Creek,,build,1,1,1,1,1,1,15685 Monterey St ,Morgan Hill,,Santa Clara,-121.6390516,37.10939027,14779658016413,2015,,,HM,157200,0,131,,,,,,,,,,,ABAG
+1868,10111,San Sebastian,,build,1,1,1,1,1,1,Peet Rd between Hslf Rd and Cochrane Rd,Morgan Hill,,Santa Clara,-121.6335052,37.15984287,1529166141793,2015,,,HS,292800,0,244,,,,,,,,,,,ABAG
+1869,10112,Hale-Meritage Homes,,build,1,1,1,1,1,1,Between Hale and Old Monterey Rd,Morgan Hill,,Santa Clara,-121.6710126,37.14765338,1630371525738,2015,,,HS,129600,0,108,,,,,,,,,,,ABAG
+1870,10113,Loden Place,,build,1,1,1,1,1,1,Between Hale Ave and Del Monte Ave,Morgan Hill,,Santa Clara,-121.6634671,37.13597174,12712861097917,2015,,,HS,54000,0,45,,,,,,,,,,,ABAG
+1871,10114,Tilton Park,,build,1,1,1,1,1,1,Tilton,Morgan Hill,,Santa Clara,-121.6792498,37.15457887,12099709665165,2015,,,HS,55200,0,46,,,,,,,,,,,ABAG
+1872,10115,The Quad / Lovewell,,build,1,1,1,1,1,1,369 N. Whisman Rd.,Mountain View,,Santa Clara,-122.0575271,37.39905685,3041134823739,2011,,,OF,180773,180773,0,,,,,,,,,,,ABAG
+1873,10116,0,,build,1,1,1,1,1,1,100 Moffett Blvd,Mountain View,,Santa Clara,-122.077681,37.3966111,14015992967672,2013,,,HM,220800,0,184,,,,,,,,,,,ABAG
+1874,10117,Hetch-Hetchy Property,,build,1,1,1,1,1,1,450 N. Whisman Dr.,Mountain View,,Santa Clara,-122.060883,37.40097612,10455466670213,2014,,,HM,44400,0,37,,,,,,,,,,,ABAG
+1875,10118,Pulte Homes,,build,1,1,1,1,1,1,100 and 420-430 Ferguson Drive,Mountain View,,Santa Clara,-122.0546319,37.39216762,99278058277,2015,,,HM,237600,0,198,,,,,,,,,,,ABAG
+1876,10119,Intuit,,build,1,1,1,1,1,1,2600 Marine Way,Mountain View,,Santa Clara,-122.0975639,37.4283575,17564881774729,2014,,,OF,364000,364000,0,,,,,,,,,,,ABAG
+1877,10120,Austin's -Prometheus,,build,1,1,1,1,1,1,1616 W. El Camino Real,Mountain View,,Santa Clara,-122.0926593,37.39060528,2176929604492,2014,,,HM,79200,0,66,,,,,,,,,,,ABAG
+1878,10121,Symantec,,build,1,1,1,1,1,1,575 E. Middlefield Rd,Mountain View,,Santa Clara,-122.0543444,37.39507263,8063330947793,2010,,,OF,102419,102419,0,,,,,,,,,,,ABAG
+1879,10122,Greystar,,build,1,1,1,1,1,1,801 W. El Camino Real,Mountain View,,Santa Clara,-122.0842577,37.385591,848641541357,2016,,,MR,207600,10800,164,,,,,,,,,,,ABAG
+1880,10123,Residence Inn,,build,1,1,1,1,1,1,1740 W. El Camino Real,Mountain View,,Santa Clara,-122.0947824,37.39190449,3215290549324,2013,,,HO,22000,22000,0,,,,,,,,,,,ABAG
+1881,10124,William Lyon Homes,,build,1,1,1,1,1,1,1951 Colony St,Mountain View,,Santa Clara,-122.0888125,37.41534163,11883309640452,2014,,,HM,39600,0,33,,,,,,,,,,,ABAG
+1882,10125,Live Oak Properties,,build,1,1,1,1,1,1,525 East Evelyn Ave,Mountain View,,Santa Clara,-122.0552175,37.3857047,8868703156355,2012,,,HM,84000,0,70,,,,,,,,,,,ABAG
+1883,10126,UDR,,build,1,1,1,1,1,1,1984 W. El Camino Real,Mountain View,,Santa Clara,-122.0987088,37.39511447,14721292175899,2013,,,MR,131200,4000,106,,,,,,,,,,,ABAG
+1884,10127,0,,build,1,1,1,1,1,1,133 -149 Fairchild Dr,Mountain View,,Santa Clara,-122.0618402,37.40582434,9917231335675,2015,,,HM,42000,0,35,,,,,,,,,,,ABAG
+1885,10128,Merlone Geier Partners Phase II,,build,1,1,1,1,1,1,405 San Antonio Rd.,Mountain View,,Santa Clara,-122.1096365,37.40466408,277670017313,2013,,,MT,1080800,1080800,0,,,,,,,,,,,ABAG
+1886,10129,Calvano Development,,build,1,1,1,1,1,1,(1001 N. Shoreline Blvd,Mountain View,,Santa Clara,-122.0773625,37.40952883,6781008107552,2015,,,OF,111443,111443,0,,,,,,,,,,,ABAG
+1887,10130,Windsor Academy,,build,1,1,1,1,1,1,908 N. Rengstorff Ave,Mountain View,,Santa Clara,-122.0936896,37.4176305,10891405686643,2014,,,OF,8088,8088,0,,,,,,,,,,,ABAG
+1888,10131,Tropicana Lodge Prometheus,,build,1,1,1,1,1,1,1720 W. El Camino Real,Mountain View,,Santa Clara,-122.0934957,37.39101057,13670682870758,2014,,,OF,194400,0,162,,,,,,,,,,,ABAG
+1889,10132,Hampton Inn Addition,,add,1,1,1,1,1,1,390 Moffett Blvd.),Mountain View,,Santa Clara,-122.0757708,37.39882703,4118229891422,2014,,,HO,11630,11630,0,,,,,,,,,,,ABAG
+1890,10133,Harv's Car Wash - Regis Homes,,build,1,1,1,1,1,1,1101 W. El Camino Real,Mountain View,,Santa Clara,-122.0874499,37.38704658,13234217363761,2014,,,HM,62400,0,52,,,,,,,,,,,ABAG
+1891,10134,0,,build,1,1,1,1,1,1,2345 Broadway,Oakland,,Alameda,-122.2666679,37.81259762,2670669106752,2015,,,HM,126000,0,105,,,,,,,,,,,ABAG
+1892,10135,0,,build,1,1,1,1,1,1,5227 Claremont Ave.,Oakland,,Alameda,-122.2617408,37.83859904,2181513938994,2015,,,HM,39600,0,33,,,,,,,,,,,ABAG
+1893,10136,0,,build,1,1,1,1,1,1,612 18th St.,Oakland,,Alameda,-122.2734019,37.80847009,14820904687215,2015,,,HM,100800,0,84,,,,,,,,,,,ABAG
+1894,10137,0,,build,1,1,1,1,1,1,1417-1431 Jefferson St.,Oakland,,Alameda,-122.2747143,37.80636774,2850448843390,2015,,,MR,67800,3000,54,,,,,,,,,,,ABAG
+1895,10138,0,,build,1,1,1,1,1,1,2011-2195 Wood St.,Oakland,,Alameda,-122.2941272,37.8183914,6968277298474,2015,,,HM,282000,0,235,,,,,,,,,,,ABAG
+1896,10139,0,,build,1,1,1,1,1,1,2201 Brush St.,Oakland,,Alameda,-122.2751815,37.81276283,11393998657892,2015,,,HM,70800,0,59,,,,,,,,,,,ABAG
+1897,10140,0,,build,1,1,1,1,1,1,4690 Tompkins,Oakland,,Alameda,-122.1849003,37.7873193,13218925893709,2015,,,HM,48000,0,40,,,,,,,,,,,ABAG
+1898,10141,0,,build,1,1,1,1,1,1,3093 Broadway,Oakland,,Alameda,-122.2619451,37.82061068,12756269014477,2015,,,HM,591600,0,493,,,,,,,,,,,ABAG
+1899,10142,0,,build,1,1,1,1,1,1,4801 Shattuck Ave.,Oakland,,Alameda,-122.2640924,37.83539721,5240846152302,2015,,,HM,52800,0,44,,,,,,,,,,,ABAG
+1900,10143,0,,build,1,1,1,1,1,1,377 2nd St.,Oakland,,Alameda,-122.274825,37.79502611,7594760531205,2015,,,HM,115200,0,96,,,,,,,,,,,ABAG
+1901,10144,0,,build,1,1,1,1,1,1,2538 Telegraph Ave.,Oakland,,Alameda,-122.2676199,37.81513189,17046930937861,2015,,,HM,116400,0,97,,,,,,,,,,,ABAG
+1902,10145,0,,build,1,1,1,1,1,1,460 Grand Ave.,Oakland,,Alameda,-122.252418,37.80898077,4736618251657,2015,,,HM,81600,0,68,,,,,,,,,,,ABAG
+1903,10146,0,,build,1,1,1,1,1,1,2935 Telegraph Ave.,Oakland,,Alameda,-122.2680908,37.81871742,3710291084961,2015,,,HM,194400,0,162,,,,,,,,,,,ABAG
+1904,10147,0,,build,1,1,1,1,1,1,64.2-acre area between Embarcadero Road and the Oakland Estuary,Oakland,,Alameda,-122.2618071,37.78926502,8287296964962,2015,,,MR,3920000,200000,3100,,,,,,,,,,,ABAG
+1905,10148,0,,build,1,1,1,1,1,1,2868 Hannah St.,Oakland,,Alameda,-122.286263,37.82279447,8246560007040,2015,,,HM,56400,0,47,,,,,,,,,,,ABAG
+1906,10149,0,,build,1,1,1,1,1,1,459 23rd St.,Oakland,,Alameda,-122.268004,37.81225861,3331089305341,2015,,,HM,78000,0,65,,,,,,,,,,,ABAG
+1907,10150,0,,build,1,1,1,1,1,1,Telegraph Avenue  40th Street  MacArthur Boulevard and Highway 24,Oakland,,Alameda,-122.2656727,37.82892552,8437778118860,2015,,,MR,790800,42000,624,,,,,,,,,,,ABAG
+1908,10151,0,,build,1,1,1,1,1,1,1640 Broadway,Oakland,,Alameda,-122.2695879,37.80628429,4587815454257,2015,,,HM,304800,0,254,,,,,,,,,,,ABAG
+1909,10152,0,,build,1,1,1,1,1,1,2116 Brush St.,Oakland,,Alameda,-122.2750382,37.81188598,6539159221574,2015,,,HM,180000,0,150,,,,,,,,,,,ABAG
+1910,10153,0,,build,1,1,1,1,1,1,4901-4939 Broadway,Oakland,,Alameda,-122.2529083,37.83440694,17351641464414,2015,,,HM,180000,0,150,,,,,,,,,,,ABAG
+1911,10154,0,,build,1,1,1,1,1,1,5107  5117  5175 Broadway,Oakland,,Alameda,-122.2520722,37.83558421,6872283354851,2015,,,HM,152400,0,127,,,,,,,,,,,ABAG
+1912,10155,0,,build,1,1,1,1,1,1,459 8th St.,Oakland,,Alameda,-122.2743067,37.80013674,2716836599280,2015,,,HM,60000,0,50,,,,,,,,,,,ABAG
+1913,10156,0,,build,1,1,1,1,1,1,495 22nd St.,Oakland,,Alameda,-122.2687795,37.81089507,7453953525316,2015,,,HM,97200,0,81,,,,,,,,,,,ABAG
+1914,10157,0,,build,1,1,1,1,1,1,4700 Telegraph Ave,Oakland,,Alameda,-122.2626788,37.83428208,12789791544140,2015,,,HM,57600,0,48,,,,,,,,,,,ABAG
+1915,10158,0,,build,1,1,1,1,1,1,325 7th St.,Oakland,,Alameda,-122.2712239,37.79807667,7190366198944,2015,,,HM,458400,0,382,,,,,,,,,,,ABAG
+1916,10159,0,,build,1,1,1,1,1,1,340 29th Ave.,Oakland,,Alameda,-122.2354634,37.7723361,11777404369858,2015,,,HM,49200,0,41,,,,,,,,,,,ABAG
+1917,10160,0,,build,1,1,1,1,1,1,Block bounded by 35th and 37th avenues  E. 12th Street and BART tracks,Oakland,,Alameda,-122.223014,37.77481827,13654158533195,2015,,,HM,330000,0,275,,,,,,,,,,,ABAG
+1918,10161,0,,build,1,1,1,1,1,1,9400 International Blvd.,Oakland,,Alameda,-122.172144,37.74710432,9269741744184,2015,,,HM,70800,0,59,,,,,,,,,,,ABAG
+1919,10162,0,,build,1,1,1,1,1,1,Block bounded by Wood Street  14th Street  16th Street and Frontage Road,Oakland,,Alameda,-122.2981691,37.81439939,2574545588485,2015,,,HM,205200,0,171,,,,,,,,,,,ABAG
+1920,10163,0,,build,1,1,1,1,1,1,1110 Jackson St.,Oakland,,Alameda,-122.2659803,37.80025371,11968136935350,2015,,,HM,85200,0,71,,,,,,,,,,,ABAG
+1921,10164,0,,build,1,1,1,1,1,1,1900 Broadway,Oakland,,Alameda,-122.2685272,37.80782206,745144567480,2015,,,MR,363800,11000,294,,,,,,,,,,,ABAG
+1922,10165,0,,build,1,1,1,1,1,1,3431 Foothill Blvd.,Oakland,,Alameda,-122.2203142,37.78198191,5498647479739,2015,,,HM,164400,0,137,,,,,,,,,,,ABAG
+1923,10166,0,,build,1,1,1,1,1,1,2400 Filbert St.,Oakland,,Alameda,-122.2796008,37.81681889,9621248480104,2015,,,HM,66000,0,55,,,,,,,,,,,ABAG
+1924,10167,0,,build,1,1,1,1,1,1,SE/c N. 1st & Hwy 237,San Jose,,Santa Clara,-121.8166441,37.27855567,14112903426942,2011,,,HO,99000,99000,0,,,,,,,,,,,ABAG
+1925,10168,0,,build,1,1,1,1,1,1,W/s Lincoln 500' sly Auzerais,San Jose,,Santa Clara,-121.909255,37.32065408,5607842674649,2014,,,HM,228000,0,190,,,,,,,,,,,ABAG
+1926,10169,0,,build,1,1,1,1,1,1,W/s McCreery  230' sly Alum Rock,San Jose,,Santa Clara,-121.8518512,37.35415528,4176196250914,2011,,,HM,111600,0,93,,,,,,,,,,,ABAG
+1927,10170,0,,build,1,1,1,1,1,1,NW/c N. 1st & Taylor,San Jose,,Santa Clara,-121.9008773,37.34929743,5573783329618,2012,,,HM,519600,0,433,,,,,,,,,,,ABAG
+1928,10171,0,,build,1,1,1,1,1,1,W/s Monterey  300' sly Umbarger,San Jose,,Santa Clara,-121.8517026,37.30016403,4800333229336,2013,,,HM,237600,0,198,,,,,,,,,,,ABAG
+1929,10172,0,,build,1,1,1,1,1,1,NW/c Hwy 237 & N 1st,San Jose,,Santa Clara,-121.963673,37.4204145,8427700634015,2014,,,HO,106000,106000,0,,,,,,,,,,,ABAG
+1930,10173,0,,build,1,1,1,1,1,1,NW/c N. 1st & Hwy 237,San Jose,,Santa Clara,-121.963673,37.4204145,8427700634015,2013,,,IL,615000,615000,0,,,,,,,,,,,ABAG
+1931,10174,0,,build,1,1,1,1,1,1,SW/c N. Capitol & Mabury,San Jose,,Santa Clara,-121.8514902,37.37746042,96233024879,2011,,,HM,92400,0,77,,,,,,,,,,,ABAG
+1932,10175,0,,build,1,1,1,1,1,1,SE/c W San Carlos & Sunol,San Jose,,Santa Clara,-121.9052363,37.32316395,5996765447595,2014,,,HM,378000,0,315,,,,,,,,,,,ABAG
+1933,10176,0,,build,1,1,1,1,1,1,SE/c Winchester & Olsen,San Jose,,Santa Clara,-121.9490485,37.31876637,14855056820769,2012,,,RS,230000,230000,0,,,,,,,,,,,ABAG
+1934,10177,0,,build,1,1,1,1,1,1,2017 San Ramon Valley Blvd,San Ramon,,Contra Costa,-121.9809127,37.78447139,16838778043630,2015,,,RS,17000,17000,0,,,,,,,,,,,ABAG
+1935,10178,Sunset Development,,build,1,1,1,1,1,1,Intersection of Bollinger Canyon Rd. and Camino Ramon,San Ramon,,Contra Costa,-121.9567409,37.76419692,2664748939362,2014,,,MR,2686800,2100000,489,,,,,,,,,,,ABAG
+1936,10179,KB Homes,,build,1,1,1,1,1,1,4700 Norris Canyon Road,San Ramon,,Contra Costa,-121.9632286,37.77648336,2361896639270,2015,,,HM,150000,0,125,,,,,,,,,,,ABAG
+1937,10180,0,,build,1,1,1,1,1,1,3925 Saint Andrews Dr,Santa Rosa,,Sonoma,-122.7173155,38.49938696,15480823444532,2015,,,HS,36000,0,30,,,,,,,,,,,ABAG
+1938,10181,0,,build,1,1,1,1,1,1,4055 4025 4041 4099 Sebastopol Rd,Santa Rosa,,Sonoma,-122.7685803,38.42517089,10304052954436,2015,,,HT,190078,23278,139,,,,,,,,,,,ABAG
+1939,10182,0,,build,1,1,1,1,1,1,908 918 922 Aston Ave,Santa Rosa,,Sonoma,-122.7044339,38.42542388,7191046853343,2015,,,HT,39600,0,33,,,,,,,,,,,ABAG
+1940,10183,0,,build,1,1,1,1,1,1,1846 Meda Ave,Santa Rosa,,Sonoma,-122.6966185,38.42063786,11184756954373,2015,,,HT,78000,0,65,,,,,,,,,,,ABAG
+1941,10184,0,,build,1,1,1,1,1,1,1865 Meda Ave,Santa Rosa,,Sonoma,-122.6986491,38.42062579,17054677822157,2015,,,HM,36000,0,30,,,,,,,,,,,ABAG
+1942,10185,0,,build,1,1,1,1,1,1,2875 Dutton Meadow,Santa Rosa,,Sonoma,-122.7307416,38.40676158,12913297249815,2015,,,HM,115200,0,96,,,,,,,,,,,ABAG
+1943,10186,0,,build,1,1,1,1,1,1,385 West 9th St,Santa Rosa,,Sonoma,-122.7295533,38.4419724,6054217634090,2015,,,IL,6835,6835,0,,,,,,,,,,,ABAG
+1944,10187,0,,build,1,1,1,1,1,1,1820 Meda Ave,Santa Rosa,,Sonoma,-122.6966219,38.42169395,5215907379022,2015,,,HS,36000,0,30,,,,,,,,,,,ABAG
+1945,10188,0,,build,1,1,1,1,1,1,2853 Dutton Meadow,Santa Rosa,,Sonoma,-122.7307535,38.4076275,12163619627526,2015,,,HS,98400,0,82,,,,,,,,,,,ABAG
+1946,10189,0,,build,1,1,1,1,1,1,533 Bellevue Ave,Santa Rosa,,Sonoma,-122.7307862,38.40261952,1592824481113,2015,,,HS,57600,0,48,,,,,,,,,,,ABAG
+1947,10190,0,,build,1,1,1,1,1,1,3 West Third St,Santa Rosa,,Sonoma,-122.7224114,38.4361381,16119044180687,2015,,,HS,111600,0,93,,,,,,,,,,,ABAG
+1948,10191,0,,build,1,1,1,1,1,1,3410 Industrial Dr,Santa Rosa,,Sonoma,-122.7394926,38.47650419,12893697632539,2015,,,IL,10025,10025,0,,,,,,,,,,,ABAG
+1949,10192,0,,build,1,1,1,1,1,1,3300 Industrial Dr,Santa Rosa,,Sonoma,-122.7397011,38.47425501,1058624910911,2015,,,IL,25558,25558,0,,,,,,,,,,,ABAG
+1950,10193,0,,build,1,1,1,1,1,1,2727 Dutton Meadow,Santa Rosa,,Sonoma,-122.7306654,38.41059708,9957708751186,2015,,,HS,62400,0,52,,,,,,,,,,,ABAG
+1951,10194,0,,build,1,1,1,1,1,1,440 Dutton Ave,Santa Rosa,,Sonoma,-122.7249402,38.43138816,8157395587026,2015,,,RS,12000,12000,0,,,,,,,,,,,ABAG
+1952,10195,0,,build,1,1,1,1,1,1,1020 Jennings Ave,Santa Rosa,,Sonoma,-122.7296583,38.452508,10072674231745,2015,,,HM,324000,0,270,,,,,,,,,,,ABAG
+1953,10196,0,,build,1,1,1,1,1,1,2903 Dutton Meadow,Santa Rosa,,Sonoma,-122.7307448,38.40586893,13021142807975,2015,,,HS,36000,0,30,,,,,,,,,,,ABAG
+1954,10197,0,,build,1,1,1,1,1,1,1801 Ridley Ave,Santa Rosa,,Sonoma,-122.7468006,38.45402936,16111652051842,2015,,,HT,42000,0,35,,,,,,,,,,,ABAG
+1955,10198,0,,build,1,1,1,1,1,1,4607  4617 Sonoma Hwy,Santa Rosa,,Sonoma,-122.6729557,38.46020071,10308201282415,2015,,,HT,38400,0,32,,,,,,,,,,,ABAG
+1956,10199,0,,build,1,1,1,1,1,1,2181  2191 2193 Francisco Ave,Santa Rosa,,Sonoma,-122.761728,38.47828926,10770090409816,2015,,,HS,163200,0,136,,,,,,,,,,,ABAG
+1957,10200,0,,build,1,1,1,1,1,1,3500 Lake Park Dr,Santa Rosa,,Sonoma,-122.7176081,38.47388076,8180741807193,2015,,,HS,44400,0,37,,,,,,,,,,,ABAG
+1958,10201,0,,build,1,1,1,1,1,1,3366 Mendocino Ave,Santa Rosa,,Sonoma,-122.7224957,38.47150821,10580021185780,2015,,,RS,40000,40000,0,,,,,,,,,,,ABAG
+1959,10202,0,,build,1,1,1,1,1,1,8 West 9th St; 806 Donahue St,Santa Rosa,,Sonoma,-122.7239553,38.44033798,169610042353,2015,,,HS,87600,0,73,,,,,,,,,,,ABAG
+1960,10203,0,,build,1,1,1,1,1,1,2650 2666 2684  Dutton Meadow,Santa Rosa,,Sonoma,-122.7275605,38.41202622,16556500155588,2015,,,HS,192000,0,160,,,,,,,,,,,ABAG
+1961,10204,0,,build,1,1,1,1,1,1,888 Fourth St,Santa Rosa,,Sonoma,-122.7077867,38.44296423,9630892622085,2015,,,MR,177746,6146,143,,,,,,,,,,,ABAG
+1962,10205,0,,build,1,1,1,1,1,1,2957 Dutton Meadow,Santa Rosa,,Sonoma,-122.7308185,38.40510676,11430144686025,2015,,,HS,63600,0,53,,,,,,,,,,,ABAG
+1963,10206,0,,build,1,1,1,1,1,1,2660 2630 Petaluma Hill Rd ,Santa Rosa,,Sonoma,-122.7036551,38.41586602,11237994699741,2015,,,HS,151200,0,126,,,,,,,,,,,ABAG
+1964,10207,0,,build,1,1,1,1,1,1,1072 Kawana Spring Rd,Santa Rosa,,Sonoma,-122.7027632,38.4160878,12628739229859,2015,,,RS,98500,98500,0,,,,,,,,,,,ABAG
+1965,10208,0,,build,1,1,1,1,1,1,210 Fifth St,Santa Rosa,,Sonoma,-122.7190303,38.4378284,14366301335469,2015,,,ME,51292,51292,0,,,,,,,,,,,ABAG
+1966,10209,0,,build,1,1,1,1,1,1,1755 Sebastopol Rd,Santa Rosa,,Sonoma,-122.7394419,38.42865875,10638289227667,2015,,,HT,259600,22000,198,,,,,,,,,,,ABAG
+1967,10210,0,,build,1,1,1,1,1,1,1598 Becky Ct,Santa Rosa,,Sonoma,-122.739083,38.46223148,14585731849758,2015,,,HM,124800,0,104,,,,,,,,,,,ABAG
+1968,10211,0,,build,1,1,1,1,1,1,6525  6535 Oakmont Dr,Santa Rosa,,Sonoma,-122.6044868,38.44342309,8087033907348,2015,,,HS,43200,0,36,,,,,,,,,,,ABAG
+1969,10212,0,,build,1,1,1,1,1,1,2800 Kawana Springs Rd,Santa Rosa,,Sonoma,-122.6907775,38.4174055,2035265366787,2015,,,HM,36000,0,30,,,,,,,,,,,ABAG
+1970,10213,0,,build,1,1,1,1,1,1,3700 Fir Ridge Dr,Santa Rosa,,Sonoma,-122.7096793,38.49390675,5438161213241,2015,,,HT,43200,0,36,,,,,,,,,,,ABAG
+1971,10214,0,,build,1,1,1,1,1,1,1810 Sebastopol Rd,Santa Rosa,,Sonoma,-122.7396185,38.42661624,1110104349774,2015,,,IL,5600,5600,0,,,,,,,,,,,ABAG
+1972,10215,0,,build,1,1,1,1,1,1,2384 2410 Stony Point Rd,Santa Rosa,,Sonoma,-122.7381442,38.41435907,8226549611873,2015,,,HM,67200,0,56,,,,,,,,,,,ABAG
+1973,10216,0,,build,1,1,1,1,1,1,2786 Dutton Meadow,Santa Rosa,,Sonoma,-122.7276957,38.40953406,6112813535247,2015,,,HT,38400,0,32,,,,,,,,,,,ABAG
+1974,10217,0,,build,1,1,1,1,1,1,2870 Duke Ct,Santa Rosa,,Sonoma,-122.7225443,38.40792367,15543071026515,2015,,,IL,16390,16390,0,,,,,,,,,,,ABAG
+1975,10218,Summerhill / Michael Keaney,,build,1,1,1,1,1,1,617 E Arques Ave,Sunnyvale,,Santa Clara,-122.0175139,37.38207559,4028964098857,2013,,,HM,102000,0,85,,,,,,,,,,,ABAG
+1976,10219,D.R. Horton  Kelly Snider,,build,1,1,1,1,1,1,701-729 E Evelyn Ave,Sunnyvale,,Santa Clara,-122.0166946,37.3722557,10293481029102,2014,,,HM,244800,0,204,,,,,,,,,,,ABAG
+1977,10220,Midpeninsula Housing Corp,,build,1,1,1,1,1,1,460 Persian Dr.,Sunnyvale,,Santa Clara,-122.0131948,37.40528804,8412716258050,2015,,,HM,79200,0,66,,,,,,,,,,,ABAG
+1978,10221,Classic Communities  Jim Pollart,,build,1,1,1,1,1,1,1071 Noriega,Sunnyvale,,Santa Clara,-122.0484845,37.3783601,8157652812947,2014,,,HM,12000,0,10,,,,,,,,,,,ABAG
+1979,10222,Classic Communities  Jim Pollart,,build,1,1,1,1,1,1,423 E. Maude Ave.,Sunnyvale,,Santa Clara,-122.0211967,37.38695073,294987573953,2015,,,HM,13200,0,11,,,,,,,,,,,ABAG
+1980,10223,Raintree Partners  Jason Check,,build,1,1,1,1,1,1,520-550 E Weddell,Sunnyvale,,Santa Clara,-122.0134409,37.39811265,13551855528031,2013,,,HM,558000,0,465,,,,,,,,,,,ABAG
+1981,10224,Classics Communities  Jim Pollart,,build,1,1,1,1,1,1,755 E. Evelyn Ave,Sunnyvale,,Santa Clara,-122.0160455,37.37192846,14023195885294,2015,,,HM,50400,0,42,,,,,,,,,,,ABAG
+1982,10225,Classic Communities  Jim Pollart,,build,1,1,1,1,1,1,238 Carroll St,Sunnyvale,,Santa Clara,-122.0281353,37.37422303,10738483758597,2014,,,HM,28800,0,24,,,,,,,,,,,ABAG
+1983,10226,SummerHill Homes  Katia Kamangar,,build,1,1,1,1,1,1,660 W El Camino Real,Sunnyvale,,Santa Clara,-122.0394847,37.36928042,5463688905612,2012,,,MR,123600,0,103,,,,,,,,,,,ABAG
+1984,10227,Quattro Realty Group  LLC,,build,1,1,1,1,1,1,2502 Town Center Ln.,Sunnyvale,,Santa Clara,-122.0303654,37.31838885,1647894540570,2007,,,MR,1625400,1275000,292,,,,,,,,,,,ABAG
+1985,10228,627 Taylor LLC  Samir Sharma,,build,1,1,1,1,1,1,625 E Taylor,Sunnyvale,,Santa Clara,-122.0171051,37.38379406,9013559296357,2014,,,HM,24000,0,20,,,,,,,,,,,ABAG
+1986,10229,Irvine Company  Kerry Williams,,build,1,1,1,1,1,1,975 Stewart,Sunnyvale,,Santa Clara,-122.0027096,37.38502224,4424488315860,2013,,,HM,68400,0,57,,,,,,,,,,,ABAG
+1987,10230,Martyn Griffiths,,build,1,1,1,1,1,1,834 Dartshire Way,Sunnyvale,,Santa Clara,-122.0171855,37.34651841,17347697121990,2015,,,HM,43200,0,36,,,,,,,,,,,ABAG
+1988,10231,SRGNC MF  LLC (Ken Busch/Sares Regis),,build,1,1,1,1,1,1,610 E. Weddell Dr.,Sunnyvale,,Santa Clara,-122.010884,37.39613103,7580318044163,2013,,,HM,246000,0,205,,,,,,,,,,,ABAG
+1989,10232,Taylor Morrison  Stuart Wagner,,build,1,1,1,1,1,1,680 E Taylor,Sunnyvale,,Santa Clara,-122.0154753,37.38257899,9383730123988,2014,,,HM,21600,0,18,,,,,,,,,,,ABAG
+1990,10233,Classic Communities  Jim Pollar,,build,1,1,1,1,1,1,300 W. Iowa,Sunnyvale,,Santa Clara,-122.0342133,37.37276076,14662831337548,2014,,,HS,15600,0,13,,,,,,,,,,,ABAG
+1991,10234,Taylor Morrison,,build,1,1,1,1,1,1,698 E. Taylor Ave,Sunnyvale,,Santa Clara,-122.0149466,37.38246466,17211131516307,2013,,,HM,57600,0,48,,,,,,,,,,,ABAG
+1992,10235,Watt Investments  Max Frank,,build,1,1,1,1,1,1,915 De Guigne,Sunnyvale,,Santa Clara,-122.0072927,37.38700788,16036871558336,2014,,,HM,540000,0,450,,,,,,,,,,,ABAG
+1993,10236,Prometheus,,build,1,1,1,1,1,1,457-475 E Evelyn Ave,Sunnyvale,,Santa Clara,-122.0247185,37.37614562,11542045935923,2013,,,HM,140400,0,117,,,,,,,,,,,ABAG
+1994,10237,Prometheus,,build,1,1,1,1,1,1,388-394 E. Evelyn Ave,Sunnyvale,,Santa Clara,-122.0263038,37.37614059,1875814766831,2012,,,HM,80400,0,67,,,,,,,,,,,ABAG
+1995,10238,Padus Group/Tom Qualiga,,build,1,1,1,1,1,1,470 Persian Dr,Sunnyvale,,Santa Clara,-122.012518,37.40541124,12522643541975,2012,,,HM,56400,0,47,,,,,,,,,,,ABAG
+1996,10239,The Sobrato Orginization/Richard Truempler,,build,1,1,1,1,1,1,1095 W El Camino Real,Sunnyvale,,Santa Clara,-122.0512434,37.37322537,5091511533831,2013,,,MR,227744,40544,156,,,,,,,,,,,ABAG
+1997,10240,0,,build,1,1,1,1,1,1,34800 11th St,Union City,,Alameda,-122.0168479,37.59231753,11763133911567,2015,,,MR,294600,3000,243,,,,,,,,,,,ABAG
+1998,10241,0,,build,1,1,1,1,1,1,34800 11th St,Union City,,Alameda,-122.0168479,37.59231753,11763133911567,2012,,,MR,197000,8600,157,,,,,,,,,,,ABAG
+1999,10242,0,,build,1,1,1,1,1,1,2127 South Winchester Boulevard,Campbell,,Santa Clara,-121.9501318,37.28514152,16668020266749,2011,,,MR,194400,18000,147,,,,,,,,,,,ABAG
+2000,10243,National Avenue Partners,,build,1,1,1,1,1,1,600 National Ave.,Mountain View,,Santa Clara,-122.0549231,37.40164058,11677965756202,2014,,,OF,140654,140654,0,,,,,,,,,,,ABAG
+2001,10244,Wonder Years Preschool,,build,1,1,1,1,1,1,86 El Camino Real,Mountain View,,Santa Clara,-122.0718684,37.38076151,11329644595962,2015,,,OF,4800,4800,0,,,,,,,,,,,ABAG
+2002,10245,EFL Development,,build,1,1,1,1,1,1,500 Ferguson Drive,Mountain View,,Santa Clara,-122.0566646,37.38971299,6834537861556,2015,,,MR,475800,3000,394,,,,,,,,,,,ABAG
+2003,10246,0,,build,1,1,1,1,1,1,Area between Alice  2nd  Harrison Streets and Embarcadero,Oakland,,Alameda,-122.2722273,37.79401397,13413298145683,2015,,,HM,798000,0,665,,,,,,,,,,,ABAG
+2004,10247,0,,build,1,1,1,1,1,1,70th Avenue and Snell Street,Oakland,,Alameda,-122.1969638,37.75508994,11288692872954,2015,,,HM,132000,0,110,,,,,,,,,,,ABAG
+2005,10248,0,,build,1,1,1,1,1,1,2300 Valdez St.,Oakland,,Alameda,-122.2638138,37.81198631,13534148926659,2015,,,HM,240000,0,200,,,,,,,,,,,ABAG
+2006,10249,0,,build,1,1,1,1,1,1,2435 Valdez St.,Oakland,,Alameda,-122.2639488,37.81394316,3961320131636,2015,,,HM,84000,0,70,,,,,,,,,,,ABAG
+2007,10250,0,,build,1,1,1,1,1,1,3927 Wattling St.,Oakland,,Alameda,-122.2210514,37.77102728,10456597648877,2015,,,HM,94800,0,79,,,,,,,,,,,ABAG
+2008,10251,0,,build,1,1,1,1,1,1,1396 5th St.,Oakland,,Alameda,-122.2933847,37.80393531,16939282571710,2015,,,HM,142800,0,119,,,,,,,,,,,ABAG
+2009,10252,0,,build,1,1,1,1,1,1,188 11th St.,Oakland,,Alameda,-122.2660415,37.79998807,12115840796470,2015,,,MR,136800,18000,99,,,,,,,,,,,ABAG
+2010,10253,0,,build,1,1,1,1,1,1,1100 Clay St.,Oakland,,Alameda,-122.2741304,37.80343747,14791983456985,2015,,,HM,240000,0,200,,,,,,,,,,,ABAG
+2011,10254,0,,build,1,1,1,1,1,1,2301 Valdez St.,Oakland,,Alameda,-122.2643958,37.81216527,10359044275928,2015,,,HM,282000,0,235,,,,,,,,,,,ABAG
+2012,10255,0,,build,1,1,1,1,1,1,7100 Mountain Blvd.,Oakland,,Alameda,-122.1623362,37.77670848,12252616902902,2015,,,HM,147600,0,123,,,,,,,,,,,ABAG
+2013,10256,0,,build,1,1,1,1,1,1,NW/c Hwy 237 & Gold,San Jose,,Santa Clara,-121.9751082,37.41879211,5600244407675,2013,,,HO,82000,82000,0,,,,,,,,,,,ABAG
+2014,10257,0,,build,1,1,1,1,1,1,2406 Fulton Rd,Santa Rosa,,Sonoma,-122.7565169,38.42400474,16821827446532,2015,,,HT,134400,0,112,,,,,,,,,,,ABAG
+2015,10258,0,,build,1,1,1,1,1,1,1301 Ludwig Ave,Santa Rosa,,Sonoma,-122.7565169,38.42400474,16821827446532,2015,,,HS,159600,0,133,,,,,,,,,,,ABAG
+2016,10259,0,,build,1,1,1,1,1,1,533 Bellevue Ave,Santa Rosa,,Sonoma,-122.7298806,38.40145958,11396368299529,2015,,,HS,57600,0,48,,,,,,,,,,,ABAG
+2017,10260,0,,build,1,1,1,1,1,1,1549 Fulton Rd,Santa Rosa,,Sonoma,-122.7724356,38.46401965,6078778038024,2015,,,HS,68400,0,57,,,,,,,,,,,ABAG
+2018,10261,0,,build,1,1,1,1,1,1,1835 Kawana Springs Rd,Santa Rosa,,Sonoma,-122.7001276,38.41755946,1407007785353,2015,,,HS,112800,0,94,,,,,,,,,,,ABAG
+2019,10262,0,,build,1,1,1,1,1,1,2450 Brookwood Ave,Santa Rosa,,Sonoma,-122.698969,38.43231496,4466284808676,2015,,,HT,166800,0,139,,,,,,,,,,,ABAG
+2020,10263,0,,build,1,1,1,1,1,1,2740 Dutton Meadow,Santa Rosa,,Sonoma,-122.728104,38.4102554,7059423845489,2015,,,HT,72000,0,60,,,,,,,,,,,ABAG
+2021,10264,0,,build,1,1,1,1,1,1,3625 Sebastopol Rd,Santa Rosa,,Sonoma,-122.6875158,38.45274267,15142636028277,2015,,,HS,91200,0,76,,,,,,,,,,,ABAG
+2022,10265,Urban Housing Group / Kelly Snider,,build,1,1,1,1,1,1,455 Mathilda Ave,Sunnyvale,,Santa Clara,-122.035717,37.37401388,189056159470,2013,,,HM,126000,0,105,,,,,,,,,,,ABAG
+2023,10266,Mid-peninsula Housing Coalition & Charaties,,build,1,1,1,1,1,1,620 E. Maude,Sunnyvale,,Santa Clara,-122.0163359,37.38442077,6092185435039,2013,,,HM,145200,0,121,,,,,,,,,,,ABAG
+2024,10267,0,,build,1,1,1,1,1,1,1501 Buena Vista Ave,Alameda,,Alameda,-122.2609674,37.77736284,342554924735,2014,,,MR,486000,30000,380,,,,,,,,,,,ABAG
+2025,10268,Alameda Point,,build,1,1,1,1,1,1,Alameda Point,Alameda,,Alameda,-122.3132759,37.78050837,14380282381951,2015,,,MR,1710000,0,1425,,,,,,,,,,,ABAG
+2026,10269,Apple 2 (main building),,build,1,1,1,1,1,1,N Tantau Ave,Cupertino,,Santa Clara,-122.0095328,37.33532059,14388951180974,2014,,,OF,2820000,2820000,0,,,,,,,,,,,ABAG
+2027,10270,Apple 2 (phase 2),,build,1,1,1,1,1,1,N Tantau Ave,Cupertino,,Santa Clara,-122.0065577,37.32817012,1870237173499,2015,,,OF,600000,600000,0,,,,,,,,,,,ABAG
+2028,10271,Edenbridge Homes,,build,1,1,1,1,1,1,2489 Pulgas Ave,East Palo Alto,,San Mateo,-122.1316776,37.47221096,9480707050367,2015,,,HS,61200,0,51,,,,,,,,,,,ABAG
+2029,10272,0,,build,1,1,1,1,1,1,10848-10860 San Pablo Avenue,El Cerrito,,Contra Costa,-122.3107056,37.91531347,7131481753038,2014,,,MR,76756,1156,63,,,,,,,,,,,ABAG
+2030,10273,0,,build,1,1,1,1,1,1,Southeastern Corner of the El Cerrito Plaza,El Cerrito,,Contra Costa,-122.2971482,37.89941808,7760468369295,2015,,,HM,153600,0,128,,,,,,,,,,,ABAG
+2031,10274,San Ysidro Court,,build,1,1,1,1,1,1,10th and Alexander,Gilroy,,Santa Clara,-121.5635575,36.99976077,5345092302591,2104,,,HM,315600,0,263,,,,,,,,,,,ABAG
+2032,10275,Netflix Expansion,,Build,1,1,1,1,1,1,Albright Way and Winchester Blvd,Los Gatos,,Santa Clara,-121.9652116,37.25513547,7400411025399,2013,,,OF,300000,300000,0,,,,,,,,,,,ABAG
+2033,10276,Willow Housing Verterans Apartments,,build,1,1,1,1,1,1,605 Willow Road,Menlo Park,,Santa Clara,-122.1601886,37.46629823,9668283250207,2015,,,HM,72000,0,60,,,,,,,,,,,ABAG
+2034,10277,Traverse Residential,,build,1,1,1,1,1,1,569-625 Trade Zone Blvd,Milpitas,,Santa Clara,-121.8941516,37.4048929,14222205254385,2013,,,HM,248400,0,207,,,,,,,,,,,ABAG
+2035,10278,0,,build,1,1,1,1,1,1,519 Murphy Ranch Road,Milpitas,,Santa Clara,-121.9283879,37.41787844,15183333404835,2012,,,HM,448800,0,374,,,,,,,,,,,ABAG
+2036,10279,landmark tower,,build,1,1,1,1,1,1,600 Barber Lane,Milpitas,,Santa Clara,-121.9161068,37.42028825,4552541625652,2016,,,MR,574000,34000,450,,,,,,,,,,,ABAG
+2037,10280,California Circle Residential,,build,1,1,1,1,1,1,1494-1600 California Circle,Milpitas,,Santa Clara,-121.9199177,37.45262639,9715311737641,2013,,,HS,100800,0,84,,,,,,,,,,,ABAG
+2038,10281,Lennar,,build,1,1,1,1,1,1,450 Montagues Expressway,Milpitas,,Santa Clara,-121.8941641,37.40890793,14821008375780,2015,,,HM,586800,0,489,,,,,,,,,,,ABAG
+2039,10282,Walmart Expansion,,build,1,1,1,1,1,1,301 Ranch Drive,Milpitas,,Santa Clara,-121.9206765,37.43121761,13965324507265,2014,,,RS,18500,18500,0,,,,,,,,,,,ABAG
+2040,10283,0,,build,1,1,1,1,1,1,750 E. Capitol Avenue,Milpitas,,Santa Clara,-121.8904924,37.40758907,3271307896677,2013,,,HM,552000,0,460,,,,,,,,,,,ABAG
+2041,10284,0,,build,1,1,1,1,1,1,1200 Piper Drive,Milpitas,,Santa Clara,-121.8911729,37.4147099,11948282784996,2011,,,HM,878400,0,732,,,,,,,,,,,ABAG
+2042,10285,the edge,,build,1,1,1,1,1,1,765 Montagues Expressway,Milpitas,,Santa Clara,-121.889985,37.41203196,2813284520925,2014,,,HM,457200,0,381,,,,,,,,,,,ABAG
+2043,10286,Contour,,build,1,1,1,1,1,1,300  324-368 Montague Expressway,Milpitas,,Santa Clara,-121.8944278,37.40647012,3618820038318,2016,,,HM,160800,0,134,,,,,,,,,,,ABAG
+2044,10287,0,,build,1,1,1,1,1,1,1201 S. Main St,Milpitas,,Santa Clara,-121.9024428,37.41229764,9195580738140,2016,,,HM,244800,0,204,,,,,,,,,,,ABAG
+2045,10288,DR Horton Harmony,,build,1,1,1,1,1,1,1765 McCandless Dr,Milpitas,,Santa Clara,-121.8982001,37.4060915,7247570760515,2011,,,HM,331200,0,276,,,,,,,,,,,ABAG
+2046,10289,Apex,,build,1,1,1,1,1,1,1102 Abel St,Milpitas,,Santa Clara,-121.903771,37.41424281,15118070807527,2015,,,HM,439200,0,366,,,,,,,,,,,ABAG
+2047,10290,Robson Single Family,,build,1,1,1,1,1,1,905-980 Los Coches Street,Milpitas,,Santa Clara,-121.8896294,37.43314362,6337347161172,2016,,,HT,99600,0,83,,,,,,,,,,,ABAG
+2048,10291,Los Coches,,build,1,1,1,1,1,1,Intersection of South Milpitas Boulevard and Los Coches Street,Milpitas,,Santa Clara,-121.89893,37.43013348,11422648555178,2016,,,HS,39600,0,33,,,,,,,,,,,ABAG
+2049,10292,Pacific Mall & Hotel,,build,1,1,1,1,1,1,11 Ranch Drive,Milpitas,,Santa Clara,-121.922166,37.42849761,10455132445918,2014,,,HO,28587,28587,0,,,,,,,,,,,ABAG
+2050,10293,Montague Housing,,build,1,1,1,1,1,1,1425 S Milpitas blvd,Milpitas,,Santa Clara,-121.8885258,37.41445898,10789253415324,2010,,,HM,363600,0,303,,,,,,,,,,,ABAG
+2051,10294,0,,build,1,1,1,1,1,1,1315 McCandless Drive,Milpitas,,Santa Clara,-121.9001723,37.41215935,11346190169971,2015,,,MR,1484242,83842,1167,,,,,,,,,,,ABAG
+2052,10295,Sherimar Ranch,,build,1,1,1,1,1,1,1610 Diana Ave  Morgan Hill  CA 95037,Morgan Hill,,Santa Clara,-121.6277263,37.14070278,9730174644106,2011,,,HS,140400,0,117,,,,,,,,,,,ABAG
+2053,10296,0,,build,1,1,1,1,1,1,Edmunson/Piazza,Morgan Hill,,Santa Clara,-121.6498227,37.10781921,7565153604228,2015,,,HT,51600,0,43,,,,,,,,,,,ABAG
+2054,10297,Rose Garden,,build,1,1,1,1,1,1,683 San Gabriel Court,Morgan Hill,,Santa Clara,-121.635972,37.12417228,13644420463465,2013,,,HS,63600,0,53,,,,,,,,,,,ABAG
+2055,10298,Cochrane Commons,,build,1,1,1,1,1,1,1035 Cochrane Rd,Morgan Hill,,Santa Clara,-121.6506617,37.1239732,5283797637173,2016,,,TS,393700,393700,0,,,,,,,,,,,ABAG
+2056,10299,Downtown Mix,,build,1,1,1,1,1,1,605 Castro St,Mountain View,,Santa Clara,-122.0821174,37.38801326,930692931353,2014,,,ME,37600,28000,8,,,,,,,,,,,ABAG
+2057,10300,Lennar,,build,1,1,1,1,1,1,865 El Camino Real East,Mountain View,,Santa Clara,-122.0595183,37.37471779,12249890678760,2013,,,HM,180000,0,150,,,,,,,,,,,ABAG
+2058,10301,Robson Homes,,build,1,1,1,1,1,1,137 Easy St,Mountain View,,Santa Clara,-122.0672677,37.39354549,11213672107449,2015,,,HM,25200,0,21,,,,,,,,,,,ABAG
+2059,10302,Dividend Homes,,build,1,1,1,1,1,1,1958 Rock St,Mountain View,,Santa Clara,-122.0900312,37.41292296,4544327303099,2014,,,HM,22800,0,19,,,,,,,,,,,ABAG
+2060,10303,D.R. Horton,,build,1,1,1,1,1,1,827 N. Rengstorff Ave,Mountain View,,Santa Clara,-122.0923737,37.41554377,13829322617720,2015,,,HM,28800,0,24,,,,,,,,,,,ABAG
+2061,10304,Medical Office Building,,build,1,1,1,1,1,1,412 El Camino Real W,Mountain View,,Santa Clara,-122.0795985,37.38396214,4316546756705,2015,,,OF,8582,8582,0,,,,,,,,,,,ABAG
+2062,10305,First Community Housing,,build,1,1,1,1,1,1,1581 El Camino Real W.,Mountain View,,Santa Clara,-122.0926669,37.38957417,3963540508609,2014,,,HM,32400,0,27,,,,,,,,,,,ABAG
+2063,10306,Northpark Apartments,,build,1,1,1,1,1,1,111 N. Rengstorff Ave,Mountain View,,Santa Clara,-122.0954658,37.40386076,306646477352,2013,,,HM,160800,0,134,,,,,,,,,,,ABAG
+2064,10307,Mountain View Co-Housing Community,,build,1,1,1,1,1,1,445 Calderon Ave,Mountain View,,Santa Clara,-122.0729349,37.38823016,8382626687127,2015,,,HM,22800,0,19,,,,,,,,,,,ABAG
+2065,10308,Tripointe Homes,,build,1,1,1,1,1,1,135 Ada Ave,Mountain View,,Santa Clara,-122.0650363,37.39197844,8300501534651,2015,,,HM,70800,0,59,,,,,,,,,,,ABAG
+2066,10309,Sobrato Organization,,build,1,1,1,1,1,1,1255 Pear Ave,Mountain View,,Santa Clara,-122.0751837,37.41487528,16606654251930,2014,,,OF,156317,156317,0,,,,,,,,,,,ABAG
+2067,10310,Eden,,build,1,1,1,1,1,1,819 N Rengstorff Ave,Mountain View,,Santa Clara,-122.0922886,37.41492527,2353804864001,2013,,,MR,60420,1620,49,,,,,,,,,,,ABAG
+2068,10311,Classic Communities,,build,1,1,1,1,1,1,1946 San Luis Ave,Mountain View,,Santa Clara,-122.0911761,37.40815775,11771020962467,2015,,,HM,33600,0,28,,,,,,,,,,,ABAG
+2069,10312,Bryant/Dana Office,,build,1,1,1,1,1,1,250 Bryant St.,Mountain View,,Santa Clara,-122.0807848,37.39373748,9021033688677,2015,,,OF,67772,67772,0,,,,,,,,,,,ABAG
+2070,10313,0,,build,1,1,1,1,1,1,Timber St & Cedar Blvd,Newark,,Alameda,-122.0164444,37.53635697,6344506296947,2014,,,HS,196800,0,164,,,,,,,,,,,ABAG
+2071,10314,0,,build,1,1,1,1,1,1,8375 Enterprise Drive,Newark,,Alameda,-122.0486852,37.52141345,7458962950632,2015,,,HS,292800,0,244,,,,,,,,,,,ABAG
+2072,10315,0,,build,1,1,1,1,1,1,355 Alma / 101 Lytton Avenue,Palo alto,,San Mateo,-122.1653015,37.4446135,15299031036793,2016,,,ME,49024,49024,0,,,,,,,,,,,ABAG
+2073,10316,0,,build,1,1,1,1,1,1,4041 El Camino Way:,Palo alto,,San Mateo,-122.1271719,37.41561025,16748998618842,2013,,,MR,123800,71000,44,,,,,,,,,,,ABAG
+2074,10317,Homewwod Suites,,build,1,1,1,1,1,1,4329 El Camino Real,Palo alto,,San Mateo,-122.1187767,37.40602755,8688210692149,2013,,,HO,69000,69000,0,,,,,,,,,,,ABAG
+2075,10318,Greysater,,build,1,1,1,1,1,1,103 Wilson St,Redwood,,San Mateo,-122.228979,37.48328352,4451636457796,2015,,,HM,210000,0,175,,,,,,,,,,,ABAG
+2076,10319,Mariner's Island Condominiums,,build,1,1,1,1,1,1,400 Mariner?s Island Blvd,San Mateo,,San Mateo,-122.285339,37.56977441,6858675577435,2016,,,HM,90000,0,75,,,,,,,,,,,ABAG
+2077,10320,Midtown Village,,build,1,1,1,1,1,1,90 N Winchester Boulevard,Santa Clara,,Santa Clara,-121.9525817,37.32620258,14846411151876,2015,,,HS,132000,0,110,,,,,,,,,,,ABAG
+2078,10321,Alexis,,build,1,1,1,1,1,1,2585 El Camino Real,Santa Clara,,Santa Clara,-121.9727478,37.35291886,16264077318386,2015,,,HM,72000,0,60,,,,,,,,,,,ABAG
+2079,10322,Tuscany Apartments,,build,1,1,1,1,1,1,3229 El Camino Real,Santa Clara,,Santa Clara,-121.9854268,37.35296928,8152404874864,2014,,,HM,159600,0,133,,,,,,,,,,,ABAG
+2080,10323,Camino del Rey,,build,1,1,1,1,1,1,2525 El Camino Real,Santa Clara,,Santa Clara,-121.9721334,37.35291967,11341765117387,2013,,,HM,57600,0,48,,,,,,,,,,,ABAG
+2081,10324,Saratoga Avenue Residential,,build,1,1,1,1,1,1,166 Saratoga Avenue,Santa Clara,,Santa Clara,-121.967468,37.32684003,14694260924466,2016,,,HM,39600,0,33,,,,,,,,,,,ABAG
+2082,10325,Madison Place,,build,1,1,1,1,1,1,1460 Monroe Street,Santa Clara,,Santa Clara,-121.9508906,37.35269246,12336770336775,2016,,,ME,672558,638958,28,,,,,,,,,,,ABAG
+2083,10326,Scott Boulevard Office Campus,,build,1,1,1,1,1,1,3333 Scott Boulevard,Santa Clara,,Santa Clara,-121.982247,37.38146362,4789841579715,2016,,,OF,1350713,1350713,0,,,,,,,,,,,ABAG
+2084,10327,The Gallery at Central Park,,build,1,1,1,1,1,1,900 Kiely Boulevard,Santa Clara,,Santa Clara,-121.9789547,37.34224326,5422390564523,2015,,,HM,951600,0,793,,,,,,,,,,,ABAG
+2085,10328,Downtown Gateway,,build,1,1,1,1,1,1,1313 Franklin Street,Santa Clara,,Santa Clara,-121.9487256,37.34877444,3671452648449,2016,,,MR,67277,14477,44,,,,,,,,,,,ABAG
+2086,10329,Stevens Creek Boulevard Office Campus,,build,1,1,1,1,1,1,5409 Stevens Creek Boulevard,Santa Clara,,Santa Clara,-122.0032061,37.32401434,16510247247378,2014,,,OF,295000,295000,0,,,,,,,,,,,ABAG
+2087,10330,Santa Clara Gateway,,build,1,1,1,1,1,1,5451  5453  and 5455 Great America Parkway,Santa Clara,,Santa Clara,-121.9763128,37.41162082,1175188528499,2014,,,OF,911115,911115,0,,,,,,,,,,,ABAG
+2088,10331,Cobalt Apartments,,build,1,1,1,1,1,1,45 Buckingham Drive and 66 North Saratoga Avenue,Santa Clara,,Santa Clara,-121.9700186,37.32410042,13272685859049,2016,,,HM,266400,0,222,,,,,,,,,,,ABAG
+2089,10332,El Presidio Santa Clara,,build,1,1,1,1,1,1,1450 El Camino Real,Santa Clara,,Santa Clara,-121.9521901,37.35243016,8349168429591,2012,,,MR,51025,3025,40,,,,,,,,,,,ABAG
+2090,10333,Villas on the Boulevard,,build,1,1,1,1,1,1,2611-2655 El Camino Real,Santa Clara,,Santa Clara,-121.9750974,37.35299952,5015327999968,2016,,,HM,223200,0,186,,,,,,,,,,,ABAG
+2091,10334,NVIDIA,,build,1,1,1,1,1,1,2600  2800 San Tomas Expressway 2400 Condensa Street,Santa Clara,,Santa Clara,-121.9671215,37.37061948,3569251802203,2013,,,OF,1950000,1950000,0,,,,,,,,,,,ABAG
+2092,10335,Santa Clara Town Centre,,build,1,1,1,1,1,1,2082 El Camino Real,Santa Clara,,Santa Clara,-121.9613637,37.35040697,2221347774439,2014,,,RS,283917,283917,0,,,,,,,,,,,ABAG
+2093,10336,Monticello Village,,build,1,1,1,1,1,1,3515-3585 Monroe Street,Santa Clara,,Santa Clara,-121.9940299,37.36792633,11975528524085,2016,,,MR,1033849,43849,825,,,,,,,,,,,ABAG
+2094,10337,Gateway Village,,build,1,1,1,1,1,1,3610 and 3700 El Camino Real,Santa Clara,,Santa Clara,-121.9978987,37.35076292,3037235062861,2016,,,MR,679800,108600,476,,,,,,,,,,,ABAG
+2095,10338,Mission & McLellan,,build,1,1,1,1,1,1,1309 Mission Road,South San Francisco,,San Mateo,-122.4462885,37.66622297,4572013926845,2011,,,MR,30000,6000,20,,,,,,,,,,,ABAG
+2096,10339,Juniper Networks,,build,1,1,1,1,1,1,1061 Innovation Way,Sunnyvale,,Santa Clara,-122.0300029,37.40810726,5821398374373,2015,,,OF,636000,636000,0,,,,,,,,,,,ABAG
+2097,10340,Landbank Central/Wolfe Campus,,build,1,1,1,1,1,1,280 Santa Ana Ct,Sunnyvale,,Santa Clara,-122.0111228,37.37949087,9658109565143,2014,,,OF,77710,77710,0,,,,,,,,,,,ABAG
+2098,10341,Mofferr Place Office Development,,build,1,1,1,1,1,1,1152 Bordeaux,Sunnyvale,,Santa Clara,-122.0212986,37.40604503,17251260263018,2013,,,OF,1900000,1900000,0,,,,,,,,,,,ABAG
+2099,10342,Garden Village,,build,1,1,1,1,1,1,2201 Dwight Way at Fulton Street,Berkeley,,Alameda,-122.2649614,37.86461362,13003777007328,2015,,,HM,100800,0,84,,,,,,,,,,,ABAG
+2100,10343,Telegraph Gardens,,build,1,1,1,1,1,1,3001 Telegraph Ave,Berkeley,,Alameda,-122.2593734,37.85592866,10534607686242,2013,,,HM,45600,0,38,,,,,,,,,,,ABAG
+2101,10344,Acheson Commons?,,build,1,1,1,1,1,1,1979 - 1987 Shattuck Avenue; 2101 - 2113 University Avenue; 2125 - 2145 University Avenue  1922 & 1930 Walnut Street,Berkeley,,Alameda,-122.2671496,37.87261163,13371804580331,2013,,,MR,281000,35000,205,,,,,,,,,,,ABAG
+2102,10345,The Residences at Berkeley Plaza,,build,1,1,1,1,1,1,2211 Harold Way,Berkeley,,Alameda,-122.2686437,37.86883792,5974690467017,2015,,,MR,439885,13885,355,,,,,,,,,,,ABAG
+2103,10346,Berkeley central,,build,1,1,1,1,1,1,2055 Center Street,Berkeley,,Alameda,-122.2692867,37.87041717,6464299936240,2012,,,HM,171600,0,143,,,,,,,,,,,ABAG
+2104,10347,Lion?s Hall?,,build,1,1,1,1,1,1,2300 Bancroft ave,Berkeley,,Alameda,-122.2632261,37.86776594,7659174290598,2011,,,HM,52800,0,44,,,,,,,,,,,ABAG
+2105,10348,Parker Place,,build,1,1,1,1,1,1,2658-2660 Shattuck Ave,Berkeley,,Alameda,-122.2676346,37.86229164,422610499590,2012,,,MR,210200,23000,156,,,,,,,,,,,ABAG
+2106,10349, ,,build,1,1,1,1,1,1,2441 Haste St,Berkeley,,Alameda,-122.2590293,37.86619237,10773821448900,2015,,,MR,56191,5791,42,,,,,,,,,,,ABAG
+2107,10350,The Higby,,build,1,1,1,1,1,1,3015 San Pablo Ave,Berkeley,,Alameda,-122.2861367,37.85189001,15124692227158,2015,,,MR,124100,6500,98,,,,,,,,,,,ABAG
+2108,10351, ,,build,1,1,1,1,1,1,burbank and Filbert Street,Hayward,,Alameda,-122.0941946,37.66450873,1962684943614,2015,,,HM,188400,0,157,,,,,,,,,,,ABAG
+2109,10352,The Durant,,build,1,1,1,1,1,1,2024 Durant and 2025 Channing Way,Berkeley,,Alameda,-122.2689867,37.86620814,2863825032102,2014,,,HM,115200,0,96,,,,,,,,,,,ABAG
+2110,10353,The Aquatic,,build,1,1,1,1,1,1,800 University Ave,Berkeley,,Alameda,-122.2984158,37.86748709,11764068625830,2015,,,MR,70775,1175,58,,,,,,,,,,,ABAG
+2111,10354, ,,build,1,1,1,1,1,1,1931 Addison,Berkeley,,Alameda,-122.2715567,37.87100842,6965532111033,2013,,,MR,90040,7240,69,,,,,,,,,,,ABAG
+2112,10355,The Overture,,build,1,1,1,1,1,1,1808 - 1814 University Ave,Berkeley,,Alameda,-122.2715567,37.87100842,6965532111033,2015,,,MR,56951,4151,44,,,,,,,,,,,ABAG
+2113,10356,StoneFire,,build,1,1,1,1,1,1,1974 University Ave,Berkeley,,Alameda,-122.2710379,37.87145828,8400556859107,2014,,,MR,151500,8700,119,,,,,,,,,,,ABAG
+2114,10357,Fidelity Apartments,,build,1,1,1,1,1,1,2300 Shattuck Ave,Berkeley,,Alameda,-122.2682514,37.86712264,11022790491202,2014,,,MR,21780,2580,16,,,,,,,,,,,ABAG
+2115,10358,Landbank Central/Wolfe Campus,,build,1,1,1,1,1,1,280 Santa Ana Ct,Sunnyvale,,Santa Clara,-122.0111228,37.37949087,9658109565143,2014,,,OF,77710,77710,0,,,,,,,,,,,ABAG
+2116,10359,Mofferr Place Office Development,,build,1,1,1,1,1,1,1152 Bordeaux,Sunnyvale,,Santa Clara,-122.0212986,37.40604503,17251260263018,2013,,,OF,1900000,1900000,0,,,,,,,,,,,ABAG
+2117,10360, ,,build,1,1,1,1,1,1,2107 Dwight Way,Berkeley,,Alameda,-122.2668389,37.8643099,13022127570144,2012,,,MR,124407,5607,99,,,,,,,,,,,ABAG
+2118,10361,Sonoma Mountain Village ,,build,1,1,1,1,1,1,0,0,,0,0,0,13026320805699,2018,,,HM,2640000,0,2200,,,,,,,,,,,ABAG
+2119,10362,Sonoma Mountain Village 2,,build,1,1,1,1,1,1,0,0,,0,0,0,10010628924630,2020,,,RS,275000,275000,0,,,,,,,,,,,ABAG
+2120,10363,Alameda NAS (ABAG version),,build,1,1,1,1,1,1,0,0,,0,0,0,10333620162438,2018,,,HM,3600000,0,3000,,,,,,,,,,,ABAG
+2121,10364,Alameda NAS (ABAG version)comm,,add,1,1,1,1,1,1,0,0,,0,0,0,15929099812790,2018,,,OF,2500000,2500000,0,,,,,,,,,,,ABAG
+2122,10365,Richmond BART,,build,1,1,1,1,1,1,0,0,,0,0,0,10074736064118,2017,,,HM,1880400,0,1567,,,,,,,,,,,ABAG
+2123,10366,Richmond BART 2,,build,1,1,1,1,1,1,0,0,,0,0,0,922983410262,2018,,,HM,1880400,0,1567,,,,,,,,,,,ABAG
+2124,10367,Richmond BART 3,,build,1,1,1,1,1,1,0,0,,0,0,0,513414154856,2020,,,HM,1880400,0,1567,,,,,,,,,,,ABAG
+2125,10368,Milpitas Cisco,,add,1,1,1,1,1,1,0,0,,0,0,0,2283276852886,2018,,,HM,1320000,0,1100,,,,,,,,,,,ABAG
+2126,10369,Oakridge,,add,1,1,1,1,1,1,0,0,,0,0,0,15540613703470,2020,,,MR,630000,120000,425,,,,,,,,,,,ABAG
+2127,10370,Oakridge 2,,add,1,1,1,1,1,1,0,0,,0,0,0,5195276833190,2022,,,MR,630000,120000,425,,,,,,,,,,,ABAG
+2128,10371,Oakridge 3,,add,1,1,1,1,1,1,0,0,,0,0,0,14412338229342,2024,,,MR,630000,120000,425,,,,,,,,,,,ABAG
+2129,10372,Almaden,,add,1,1,1,1,1,1,0,0,,0,0,0,10453741927272,2026,,,MR,630000,120000,425,,,,,,,,,,,ABAG
+2130,10373,Almaden 2,,add,1,1,1,1,1,1,0,0,,0,0,0,9186685909144,2028,,,MR,630000,120000,425,,,,,,,,,,,ABAG
+2131,10374,Almaden 3,,add,1,1,1,1,1,1,0,0,,0,0,0,11322711730131,2030,,,MR,630000,120000,425,,,,,,,,,,,ABAG
+2132,10375,Dublin base,,build,1,1,1,1,1,1,0,0,,0,0,0,16749804684003,2030,,,OF,2450000,2450000,0,,,,,,,,,,,ABAG
+2133,10376,Millbrae BART res,,build,1,1,1,1,1,1,0,0,,0,0,0,14941172520187,2033,,,HM,2790000,0,2325,,,,,,,,,,,ABAG
+2134,10377,Millbrae BART emp,,build,1,1,1,1,1,1,0,0,,0,0,0,11958360540898,2037,,,OF,1650000,1650000,0,,,,,,,,,,,ABAG
+2135,10378,UCB Golden Bear expansion,,add,1,1,1,1,1,1,0,0,,0,0,0,688933574394,2020,,,OF,210000,210000,0,,,,,,,,,,,0
+2136,10379,UCB Univ Hall expansion (120ft),,add,1,1,1,1,1,1,0,0,,0,0,0,6554011269047,2030,,,OF,300000,300000,0,,,,,,,,,,,0
+2137,10380,Berkeley Way pkg lot,,build,1,1,1,1,1,1,0,0,,0,0,0,6635332985661,2020,,,OF,150000,150000,0,,,,,,,,,,,0
+2138,10381,Berkeley hotel,,add,1,1,1,1,1,1,0,0,,0,0,0,8264821056911,2030,,,OF,228000,228000,0,,,,,,,,,,,0
+2139,10382,Berkeley tall res in core (180ft),,add,1,1,1,1,1,1,0,0,,0,0,0,10174939648859,2020,,,HM,378000,0,315,,,,,,,,,,,0
+2140,10383,Berkeley tall res in core (180ft),,add,1,1,1,1,1,1,0,0,,0,0,0,13496428242848,2030,,,HM,306000,0,255,,,,,,,,,,,0
+2141,10384,Berkeley medtall res in core/outer core (120ft),,add,1,1,1,1,1,1,0,0,,0,0,0,7849046446761,2020,,,HM,375600,0,313,,,,,,,,,,,0
+2142,10385,Berkeley medtall res in core/outer core (120ft),,add,1,1,1,1,1,1,0,0,,0,0,0,12434182054458,2030,,,HM,240000,0,200,,,,,,,,,,,0
+2143,10386,oak childrens hospital expansion,,add,1,1,1,1,1,1,0,0,,0,0,0,12728733418474,2020,,,OF,333000,333000,0,,,,,,,,,,,0
+2144,10387,kaiser admin,,build,1,1,1,1,1,1,0,0,,0,0,0,15646009917828,2030,,,OF,700000,700000,0,,,,,,,,,,,0
+2145,10388,more kaiser,,build,1,1,1,1,1,1,0,0,,0,0,0,12457329376267,2020,,,OF,700000,700000,0,,,,,,,,,,,0
+2146,10389,uber,,build,1,1,1,1,1,1,0,0,,0,0,0,14314009487362,2030,,,OF,424000,424000,0,,,,,,,,,,,0
+2147,10390,hacienda res,,add,1,1,1,1,1,1,0,0,,0,0,0,1323753255261,2020,,,HM,1494000,0,1245,,,,,,,,,,,0
+2148,10391,hacienda of,,add,1,1,1,1,1,1,0,0,,0,0,0,9713560872330,2030,,,OF,1800000,1800000,0,,,,,,,,,,,0
