@@ -454,10 +454,10 @@ acct_settings:
       MH: 12
       M: 6
     com_for_com_fee_amounts:  # commercial fee subsidizing commercial devs
-      VH: 85
-      H: 50
-      MH: 25
-      M: 12
+      VH: 80
+      H: 40
+      MH: 20
+      M: 10
   sb743_settings:
     enable: true
     sb743_pcts:
@@ -801,6 +801,7 @@ development_limits:
       'Calistoga': 5
       'Cloverdale': 1
       'Los Gatos': 0
+      'Livermore': 400
       'Monte Sereno': 0
       'Piedmont': 0
       'Portola Valley': 0
