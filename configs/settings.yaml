@@ -41,7 +41,6 @@ eliminate_retail_zoning_from_juris:
   - 'Antioch'
   - 'Yountville'
   - 'Woodside'
-  - 'Piedmont'
   - 'Monte Sereno'
   - 'Los Altos Hills'
   - 'Half Moon Bay'
@@ -49,7 +48,6 @@ eliminate_retail_zoning_from_juris:
   - 'Saratoga'
   - 'Cloverdale'
   - 'Livermore'
-  - 'St. Helena'
   - 'Los Gatos'
 
 
@@ -799,7 +797,7 @@ development_limits:
       'Woodside': 0
       'Atherton': 0
       'Calistoga': 5
-      'Cloverdale': 1
+      'Cloverdale': 3
       'Los Gatos': 0
       'Livermore': 10
       'Monte Sereno': 0
