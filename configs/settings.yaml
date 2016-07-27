@@ -816,9 +816,9 @@ development_limits:
       'Half Moon Bay': 1
       'San Jose': 3900
       'Brisbane': 180
-      'Petaluma': 90
+      'Petaluma': 45
       'Mill Valley': 16
-      'Lafayette': 40
+      'Lafayette': 35
       'Belvedere': 2
       'Marin County': 1
       'San Rafael': 140
@@ -832,12 +832,12 @@ development_limits:
       'Los Altos': 30
       'Belvedere': 2
       'Alameda': 100
-      'Contra Costa County': 600
+      'Contra Costa County': 300
       'Napa County': 45
       'Marin County': 50
       'Santa Clara County': 50
       'Solano County': 2
-      'Sonoma County': 75
+      'Sonoma County': 40
     Industrial:
       'Benicia': 50
       'Contra Costa County': 50
