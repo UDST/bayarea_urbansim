@@ -807,12 +807,14 @@ development_limits:
       'Portola Valley': 0
       'St. Helena': 0
       'Saratoga': 0
+      'Alameda': 200
       'Contra Costa County': 130
       'San Mateo County': 150
       'Solano County': 30
       'Sonoma County': 2
     Residential:
       'Half Moon Bay': 1
+      'San Jose': 3900
       'Brisbane': 180
       'Petaluma': 90
       'Mill Valley': 16
