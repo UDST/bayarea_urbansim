@@ -807,7 +807,6 @@ development_limits:
       'Portola Valley': 0
       'St. Helena': 0
       'Saratoga': 0
-      'Alameda': 250
       'Contra Costa County': 130
       'San Mateo County': 150
       'Solano County': 30
@@ -816,7 +815,6 @@ development_limits:
       'Half Moon Bay': 1
       'Brisbane': 180
       'Petaluma': 90
-      'San Jose': 4000
       'Mill Valley': 16
       'Lafayette': 40
       'Belvedere': 2
