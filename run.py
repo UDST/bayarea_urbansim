@@ -89,8 +89,8 @@ def get_simulation_models(SCENARIO):
 
         "residential_developer",
         "developer_reprocess",
-        "retail_developer",
         "office_developer",
+        "retail_developer",
 
         "hlcm_simulate",                 # put these last so they don't get
         "elcm_simulate",                 # displaced by new dev
