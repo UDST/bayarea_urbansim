@@ -311,7 +311,6 @@ feasibility:
     - land_cost
     - residential
     - min_max_fars
-    - max_far_from_dua
     - max_height
     - max_far_from_heights
     - building_purchase_price
