@@ -25,8 +25,19 @@ def year():
 
 
 @orca.injectable()
+def initial_year():
+    return 2010
+
+
+@orca.injectable()
 def final_year():
     return 2040
+
+
+@orca.injectable('store', cache=True)
+def hdfstore(settings):
+    return pd.HDFStore(
+        os.path.join(misc.data_dir(), settings["store"]))
 
 
 @orca.injectable(cache=True)
@@ -90,8 +101,120 @@ def landmarks():
 
 @orca.table('jobs', cache=True)
 def jobs(store):
-    df = store['jobs']
-    return df
+
+    if 'jobs_urbansim_allocated' not in store:
+        # if jobs allocation hasn't been done, then do it
+        # (this should only happen once)
+        orca.run(["allocate_jobs"])
+
+    return store['jobs_urbansim_allocated']
+
+
+# the way this works is there is an orca step to do jobs allocation, which
+# reads base year totals and creates jobs and allocates them to buildings,
+# and writes it back to the h5.  then the actual jobs table above just reads
+# the auto-allocated version from the h5.  was hoping to just do allocation
+# on the fly but it takes about 4 minutes so way to long to do on the fly
+@orca.step('allocate_jobs')
+def jobs(store, baseyear_taz_controls, settings, parcels):
+
+    # this isn't pretty, but can't use orca table because there would
+    # be a circular dependenct - I mean jobs dependent on buildings and
+    # buildings on jobs, so we have to grab from the store directly
+    buildings = store['buildings']
+    buildings["non_residential_sqft"][
+        buildings.building_type_id.isin([15, 16])] = 0
+    buildings["building_sqft"][buildings.building_type_id.isin([15, 16])] = 0
+    buildings["zone_id"] = misc.reindex(parcels.zone_id, buildings.parcel_id)
+
+    # we need to do a new assignment from the controls to the buildings
+
+    # first disaggregate the job totals
+    sector_map = settings["naics_to_empsix"]
+    jobs = []
+    for taz, row in baseyear_taz_controls.local.iterrows():
+        for sector_col, num in row.iteritems():
+
+            # not a sector total
+            if not sector_col.startswith("emp_sec"):
+                continue
+
+            # get integer sector id
+            sector_id = int(''.join(c for c in sector_col if c.isdigit()))
+            sector_name = sector_map[sector_id]
+
+            jobs += [[sector_id, sector_name, taz, -1]] * num
+
+    # df is now the
+    df = pd.DataFrame(jobs, columns=[
+        'sector_id', 'empsix', 'taz', 'building_id'])
+
+    # just do random assignment weighted by job spaces - we'll then
+    # fill in the job_spaces if overfilled in the next step (code
+    # has existed in urbansim for a while)
+    for taz, cnt in df.groupby('taz').size().iteritems():
+
+        potential_add_locations = buildings.non_residential_sqft[
+            (buildings.zone_id == taz) &
+            (buildings.non_residential_sqft > 0)]
+
+        if len(potential_add_locations) == 0:
+            # if no non-res buildings, put jobs in res buildings
+            potential_add_locations = buildings.building_sqft[
+                buildings.zone_id == taz]
+
+        weights = potential_add_locations / potential_add_locations.sum()
+
+        print taz, len(potential_add_locations),\
+            potential_add_locations.sum(), cnt
+
+        buildings_ids = potential_add_locations.sample(
+            cnt, replace=True, weights=weights)
+
+        df["building_id"][df.taz == taz] = buildings_ids.index.values
+
+    s = buildings.zone_id.loc[df.building_id].value_counts()
+    t = baseyear_taz_controls.emp_tot - s
+    # assert we matched the totals exactly
+    assert t.sum() == 0
+
+    # this is some exploratory diagnostics comparing the job controls to
+    # the buildings table - in other words, comparing non-residential space
+    # to the number of jobs
+    '''
+    old_jobs = store['jobs']
+    old_jobs_cnt = old_jobs.groupby('taz').si ze()
+
+    emp_tot = baseyear_taz_controls.emp_tot
+    print buildings.job_spaces.groupby(buildings.building_type_id).sum()
+    supply = buildings.job_spaces.groupby(buildings.zone_id).sum()
+    non_residential_sqft = buildings.non_residential_sqft.\
+        groupby(buildings.zone_id).sum()
+    s = (supply-emp_tot).order()
+    df = pd.DataFrame({
+        "job_spaces": supply,
+        "jobs": emp_tot,
+        "non_residential_sqft": non_residential_sqft
+    }, index=s.index)
+    df["vacant_spaces"] = supply-emp_tot
+    df["vacancy_rate"] = df.vacant_spaces/supply.astype('float')
+    df["old_jobs"] = old_jobs_cnt
+    df["old_vacant_spaces"] = supply-old_jobs_cnt
+    df["old_vacancy_rate"] = df.old_vacant_spaces/supply.astype('float')
+    df["sqft_per_job"] = df.non_residential_sqft / df.jobs
+    df["old_sqft_per_job"] = df.non_residential_sqft / df.old_jobs
+    df.index.name = "zone_id"
+    print df[["jobs", "old_jobs", "job_spaces", "non_residential_sqft"]].corr()
+    df.sort("sqft_per_job").to_csv("job_demand.csv")
+    '''
+
+    store['jobs_urbansim_allocated'] = df
+
+
+@orca.table(cache=True)
+def baseyear_taz_controls():
+    return pd.read_csv(os.path.join("data",
+                       "baseyear_taz_controls.csv"), index_col="taz1454")
 
 
 @orca.table(cache=True)
@@ -99,7 +222,6 @@ def base_year_summary_taz():
     return pd.read_csv(os.path.join('output',
                        'baseyear_taz_summaries_2010.csv'),
                        index_col="zone_id")
-    return df
 
 
 # the estimation data is not in the buildings table - they are the same
@@ -188,7 +310,11 @@ def zoning_scenario(parcels_geography, scenario, settings):
     d = {k: "type%d" % v for k, v in settings["building_type_map2"].items()}
 
     for k, v in d.items():
-        scenario_zoning[v] = scenario_zoning.add_bldg.str.contains(k)
+        scenario_zoning['add-'+v] = scenario_zoning.add_bldg.str.contains(k)
+
+    for k, v in d.items():
+        scenario_zoning['drop-'+v] = scenario_zoning.drop_bldg.\
+            astype(str).str.contains(k)
 
     return pd.merge(parcels_geography.to_frame().reset_index(),
                     scenario_zoning,
@@ -262,6 +388,11 @@ def parcels_geography(parcels):
     df["pda_id"] = df.pda_id.str.lower()
 
     return df
+
+
+@orca.table(cache=True)
+def manual_edits():
+    return pd.read_csv(os.path.join(misc.data_dir(), "manual_edits.csv"))
 
 
 def reprocess_dev_projects(df):
@@ -370,7 +501,9 @@ def households(store, settings):
 
 
 @orca.table('buildings', cache=True)
-def buildings(store, households, jobs, building_sqft_per_job, settings):
+def buildings(store, parcels, households, jobs, building_sqft_per_job,
+              settings, manual_edits):
+
     # start with buildings from urbansim_defaults
     df = datasources.buildings(store, households, jobs,
                                building_sqft_per_job, settings)
@@ -380,6 +513,12 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
                   'res_price_per_sqft', 'redfin_sale_price',
                   'redfin_home_type', 'costar_property_type',
                   'costar_rent'], axis=1)
+
+    edits = manual_edits.local
+    edits = edits[edits.table == 'buildings']
+    for index, row, col, val in \
+            edits[["id", "attribute", "new_value"]].itertuples():
+        df.set_value(row, col, val)
 
     # set the vacancy rate in each building to 5% for testing purposes
     df["residential_units"] = df.residential_units.fillna(0)
@@ -402,8 +541,41 @@ def buildings(store, households, jobs, building_sqft_per_job, settings):
 
     # hope we get more data on this soon
     df["deed_restricted_units"] = 0
-    df.loc[df.sample(n=50000, weights="residential_units").index,
-           "deed_restricted_units"] = 1
+    zone_ids = misc.reindex(parcels.zone_id, df.parcel_id).\
+        reindex(df.index).fillna(-1)
+
+    # sample deed restricted units to match current deed restricted unit
+    # zone totals
+    for taz, row in pd.read_csv('data/deed_restricted_zone_totals.csv',
+                                index_col='taz_key').iterrows():
+
+        cnt = row["units"]
+
+        if cnt <= 0:
+            continue
+
+        potential_add_locations = df.residential_units[
+            (zone_ids == taz) &
+            (df.residential_units > 0)]
+
+        assert len(potential_add_locations) > 0
+
+        weights = potential_add_locations / potential_add_locations.sum()
+
+        buildings_ids = potential_add_locations.sample(
+            cnt, replace=True, weights=weights)
+
+        units = pd.Series(buildings_ids.index.values).value_counts()
+        df.loc[units.index, "deed_restricted_units"] += units.values
+
+    print "Total deed restricted units after random selection: %d" % \
+        df.deed_restricted_units.sum()
+
+    df["deed_restricted_units"] = \
+        df[["deed_restricted_units", "residential_units"]].min(axis=1)
+
+    print "Total deed restricted units after truncating to res units: %d" % \
+        df.deed_restricted_units.sum()
 
     return df
 

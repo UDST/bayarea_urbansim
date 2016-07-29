@@ -174,7 +174,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 2616,6,Foster City,607 - Parks,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 2617,6,Foster City,607 - Public/Semi Public,,,,,0,0,0,1,0,0,0,0,0,0,0,0,0,0,
 2618,6,Foster City,607 - Water,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-2701,7,Half Moon Bay,608 - Low Density Residential,0.5,28,8.7,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+2701,7,Half Moon Bay,608 - Low Density Residential,0.5,28,4,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 2702,7,Half Moon Bay,608 - Medium Density Residential,0.5,28,8.7,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,
 2703,7,Half Moon Bay,608 - High Density Residential,,40,29,,0,1,1,0,0,0,0,0,0,0,0,0,0,0,
 2704,7,Half Moon Bay,608 - Commercial Downtown,,36,,,0,0,0,1,0,0,0,0,0,1,0,0,0,0,
@@ -1106,7 +1106,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 8016,60,Larkspur,304 - Educational/Environmental Resources Area,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 8017,60,Larkspur,304 - Open Residential,,,0.2,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 8018,60,Larkspur,304 - Water Area,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-8101,61,Mill Valley,R-P,,,11.616,,1,1,0,0,0,1,0,0,0,0,0,0,0,0,
+8101,61,Mill Valley,R-P,,,1,,1,1,0,0,0,1,0,0,0,0,0,0,0,0,
 8102,61,Mill Valley,RS-6,,25,7.26,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
 8103,61,Mill Valley,RS-7.5,,25,5.808,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
 8104,61,Mill Valley,RS-10,,25,4.356,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
@@ -3486,7 +3486,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 60315,,Antioch,201 - Open Space (Antioch Dunes),,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,x99
 60316,,Antioch,201 - Public/ Institutional,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,x99
 60317,,Antioch,201 - Rivertown/Urban Waterfront,1.5,,20,,0,1,1,0,0,0,0,0,0,0,0,0,0,0,x99
-60318,,Antioch,201 - Sand Creek,0.5,,20,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,x99
+60318,,Antioch,201 - Sand Creek,0.5,,4,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,x99
 60319,,Antioch,201 - Somersville Road Corridor,0.5,,,,0,0,0,1,1,0,0,0,0,1,1,0,1,1,x99
 60320,,Antioch,201 - State Route 4 Industrial Frontage,1.25,,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,x99
 60321,,Antioch,201 - Western Gateway,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,x99

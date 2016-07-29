@@ -13,7 +13,7 @@ warnings.filterwarnings("ignore")
 
 args = sys.argv[1:]
 
-SLACK = MAPS = True
+SLACK = MAPS = "URBANSIM_SLACK" in os.environ
 LOGS = True
 INTERACT = False
 SCENARIO = None
@@ -29,7 +29,9 @@ LAST_KNOWN_GOOD_RUNS = {
     "0": 1057,
     "1": 1058,
     "2": 1059,
-    "3": 1060
+    "3": 1060,
+    "4": 1059,
+    "5": 1059
 }
 
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
@@ -57,7 +59,7 @@ if LOGS:
 
 if SLACK:
     from slacker import Slacker
-    slack = Slacker('xoxp-7025187590-7026053537-7111663091-9eeeb6')
+    slack = Slacker(os.environ["SLACK_TOKEN"])
     host = socket.gethostname()
 
 
@@ -80,6 +82,9 @@ def get_simulation_models(SCENARIO):
 
         "scheduled_development_events",  # scheduled buildings additions
 
+        "lump_sum_accounts",             # run the subsidized acct system
+        "subsidized_residential_developer_lump_sum_accts",
+
         "alt_feasibility",
 
         "residential_developer",
@@ -91,20 +96,15 @@ def get_simulation_models(SCENARIO):
         "elcm_simulate",                 # displaced by new dev
 
         "topsheet",
+        "parcel_summary",
+        "building_summary",
         "diagnostic_output",
         "geographic_summary",
         "travel_model_output"
     ]
 
-    # compute feasibility for all negative profit residential devs
-    # will get subsidized in various ways by the next few steps
-    if SCENARIO in ["1", "2", "3"]:
-        pass
-        # models.insert(models.index("alt_feasibility"),
-        #              "subsidized_residential_feasibility")
-
     # calculate VMT taxes
-    if SCENARIO in ["1", "3"]:
+    if SCENARIO in ["1", "3", "4"]:
         # calculate the vmt fees at the end of the year
 
         # note that you might also have to change the fees that get
@@ -113,6 +113,8 @@ def get_simulation_models(SCENARIO):
             orca.get_injectable("settings")["vmt_fee_res"] = True
         if SCENARIO == "1":
             orca.get_injectable("settings")["vmt_fee_com"] = True
+        if SCENARIO == "4":
+            orca.get_injectable("settings")["vmt_fee_com"] = True
         models.insert(models.index("diagnostic_output"),
                       "calculate_vmt_fees")
         models.insert(models.index("alt_feasibility"),
@@ -120,19 +122,12 @@ def get_simulation_models(SCENARIO):
         models.insert(models.index("alt_feasibility"),
                       "subsidized_residential_developer_vmt")
 
-    # add obag funds to the coffer
-    if SCENARIO in ["1", "2", "3"]:
-        models.insert(models.index("alt_feasibility"),
-                      "add_obag_funds")
-        models.insert(models.index("alt_feasibility"),
-                      "subsidized_residential_feasibility")
-        models.insert(models.index("alt_feasibility"),
-                      "subsidized_residential_developer_obag")
-
     return models
 
 
 def run_models(MODE, SCENARIO):
+
+    orca.run(["correct_baseyear_data"])
 
     if MODE == "simulation":
 
@@ -163,14 +158,10 @@ def run_models(MODE, SCENARIO):
             "regional_vars",                # regional accessibility vars
 
             "rsh_simulate",                 # residential sales hedonic
-            "nrh_simulate",                 # non-residential rent hedonic
 
             "households_transition",
 
-            "jobs_transition",
-
             "hlcm_simulate",                 # put these last so they don't get
-            "elcm_simulate",                 # displaced by new dev
 
             "geographic_summary",
             "travel_model_output"
@@ -217,7 +208,7 @@ if SLACK:
     slack.chat.post_message(
         '#sim_updates',
         'Starting simulation %d on host %s (scenario: %s)' %
-        (run_num, host, SCENARIO))
+        (run_num, host, SCENARIO), as_user=True)
 
 try:
 
@@ -229,7 +220,7 @@ except Exception as e:
         slack.chat.post_message(
             '#sim_updates',
             'DANG!  Simulation failed for %d on host %s'
-            % (run_num, host))
+            % (run_num, host), as_user=True)
     else:
         raise e
     sys.exit(0)
@@ -248,22 +239,25 @@ if MAPS:
 if SLACK:
     slack.chat.post_message(
         '#sim_updates',
-        'Completed simulation %d on host %s' % (run_num, host))
+        'Completed simulation %d on host %s' % (run_num, host), as_user=True)
 
     slack.chat.post_message(
         '#sim_updates',
         'UrbanSim explorer is available at ' +
-        'http://urbanforecast.com/sim_explorer%d.html' % run_num)
+        'http://urbanforecast.com/sim_explorer%d.html' % run_num, as_user=True)
 
     slack.chat.post_message(
         '#sim_updates',
         'Final topsheet is available at ' +
-        'http://urbanforecast.com/runs/run%d_topsheet_2040.log' % run_num)
+        'http://urbanforecast.com/runs/run%d_topsheet_2040.log' % run_num,
+        as_user=True)
 
 if MODE == "simulation":
     # compute and write the difference report at the superdistrict level
     prev_run = LAST_KNOWN_GOOD_RUNS[SCENARIO]
-    df1 = pd.read_csv("runs/run%d_superdistrict_summaries_2040.csv" % prev_run)
+    # fetch the previous run off of the internet for comparison - the "last
+    # known good run" should always be available on EC2
+    df1 = pd.read_csv("http://urbanforecast.com/runs/run%d_superdistrict_summaries_2040.csv" % prev_run)
     df1 = df1.set_index(df1.columns[0]).sort_index()
 
     df2 = pd.read_csv("runs/run%d_superdistrict_summaries_2040.csv" % run_num)
@@ -284,10 +278,11 @@ if SLACK and MODE == "simulation":
             '#sim_updates',
             ('Difference report is available at ' +
              'http://urbanforecast.com/runs/run%d_difference_report.log ' +
-             '- %d line(s)') % (run_num, sum_lines))
+             '- %d line(s)') % (run_num, sum_lines),
+            as_user=True)
     else:
         slack.chat.post_message(
-            '#sim_updates', "No differences with reference run.")
+            '#sim_updates', "No differences with reference run.", as_user=True)
 
 if S3:
     try:

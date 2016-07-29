@@ -171,9 +171,9 @@ def naics(jobs):
     return jobs.sector_id
 
 
-@orca.column('jobs', 'empsix', cache=True)
-def empsix(jobs, settings):
-    return jobs.naics.map(settings['naics_to_empsix'])
+# @orca.column('jobs', 'empsix', cache=True)
+# def empsix(jobs, settings):
+#    return jobs.naics.map(settings['naics_to_empsix'])
 
 
 @orca.column('jobs', 'empsix_id', cache=True)
@@ -383,7 +383,7 @@ def fees_per_unit(parcels, settings, scenario):
 def fees_per_sqft(parcels, settings, scenario):
     s = pd.Series(0, index=parcels.index)
 
-    if scenario == "1":
+    if scenario == "1" or scenario == "4":
         s += parcels.vmt_com_fees
 
     return s
@@ -394,23 +394,48 @@ def pda(parcels, parcels_geography):
     return parcels_geography.pda_id.reindex(parcels.index)
 
 
+@orca.column('parcels', cache=True)
+def superdistrict(parcels, taz):
+    return misc.reindex(taz.sd, parcels.zone_id)
+
+
 # perffoot is a dummy indicating the FOOTprint for the PERFormance targets
 @orca.column('parcels', cache=True)
 def urban_footprint(parcels, parcels_geography):
     return parcels_geography.perffoot.reindex(parcels.index)
 
 
+# perfzone is a dummy for geography for a performance target
+@orca.column('parcels', cache=True)
+def performance_zone(parcels, parcels_geography):
+    return parcels_geography.perfarea.reindex(parcels.index)
+
+
 @orca.column('parcels', cache=True)
 def juris(parcels, parcels_geography):
-    return parcels_geography.juris_name.reindex(parcels.index)
+    s = parcels_geography.juris_name.reindex(parcels.index)
+    s.loc[2054504] = "Marin County"
+    s.loc[2054505] = "Santa Clara County"
+    s.loc[2054506] = "Marin County"
+    s.loc[572927] = "Contra Costa County"
+    # assert no empty juris values
+    assert True not in s.isnull().value_counts()
+    return s
 
 
-@orca.column('parcels', 'ave_sqft_per_unit')
+@orca.column('parcels', 'ave_sqft_per_unit', cache=True)
 def ave_sqft_per_unit(parcels, zones, settings):
     s = misc.reindex(zones.ave_unit_sqft, parcels.zone_id)
+
     clip = settings.get("ave_sqft_per_unit_clip", None)
     if clip is not None:
         s = s.clip(lower=clip['lower'], upper=clip['upper'])
+
+    cfg = settings.get("clip_sqft_per_unit_based_on_dua", None)
+    if cfg is not None:
+        for clip in cfg:
+            s[parcels.max_dua >= clip["threshold"]] = clip["max"]
+
     return s
 
 
@@ -474,14 +499,29 @@ def parcel_is_allowed(form):
 
     # also check if the scenario based zoning adds the building type
     allowed2 = [orca.get_table('zoning_scenario')
-                ['type%d' % typ] > 0 for typ in form_to_btype[form]]
+                ['add-type%d' % typ] > 0 for typ in form_to_btype[form]]
 
     allowed = allowed + allowed2
 
-    s = pd.concat(allowed, axis=1).max(axis=1).\
+    allowed = pd.concat(allowed, axis=1).max(axis=1).\
         reindex(orca.get_table('parcels').index).fillna(False)
 
-    return s.astype("bool")
+    # also check if the scenario based zoning drops the building type
+    # NOTE THAT DROPPING OVERRIDES ADDING!
+    disallowed = [orca.get_table('zoning_scenario')
+                  ['drop-type%d' % typ] > 0 for typ in form_to_btype[form]]
+
+    disallowed = pd.concat(disallowed, axis=1).max(axis=1).\
+        reindex(orca.get_table('parcels').index).fillna(False)
+
+    allowed = allowed.astype('bool') & ~disallowed
+
+    settings = orca.get_injectable("settings")
+    if "eliminate_retail_zoning_from_juris" in settings and form == "retail":
+        allowed *= ~orca.get_table("parcels").juris.isin(
+            settings["eliminate_retail_zoning_from_juris"])
+
+    return allowed.astype("bool")
 
 
 @orca.column('parcels', 'first_building_type_id')
@@ -804,10 +844,36 @@ def is_sanfran(parcels_geography, buildings, parcels):
         reindex(parcels.index).fillna(False).astype('int')
 
 
+@orca.column('parcels')
+def built_far(parcels):
+    # compute the actually built farn on a parcel
+    s = parcels.total_sqft / parcels.parcel_size
+    # if the parcel size is too small to get an accurate reading, remove it
+    s[parcels.parcel_acres < .1] = np.nan
+    return s
+
+
 # actual columns start here
-@orca.column('parcels', 'max_far', cache=True)
-def max_far(parcels_zoning_calculations, parcels):
-    return parcels_zoning_calculations.effective_max_far * ~parcels.nodev
+@orca.column('parcels')
+def max_far(parcels_zoning_calculations, parcels, scenario, settings):
+    # first we combine the zoning columns
+    s = parcels_zoning_calculations.effective_max_far * ~parcels.nodev
+
+    if scenario in ["2", "3", "4", "5"]:
+        # we had trouble with the zoning outside of the footprint
+        # make sure we have rural zoning outside of the footprint
+        s2 = parcels.urban_footprint.map({0: 0, 1: np.nan})
+        s = pd.concat([s, s2], axis=1).min(axis=1)
+
+    if settings["dont_build_most_dense_building"]:
+        # in this case we shrink the zoning such that we don't built the
+        # tallest building in a given zone
+        # if there no building in the zone currently, we make the max_far = .2
+        s2 = parcels.built_far.groupby(parcels.zone_id).max()
+        s2 = misc.reindex(s2, parcels.zone_id).fillna(.2)
+        s = pd.concat([s, s2], axis=1).min(axis=1)
+
+    return s
 
 
 # returns a vector where parcels are ALLOWED to be built
@@ -830,14 +896,44 @@ def total_non_residential_sqft(parcels, buildings):
 
 
 @orca.column('parcels')
-def nodev(zoning_baseline, parcels):
-    return zoning_baseline.nodev.reindex(parcels.index).\
+def nodev(zoning_baseline, parcels, static_parcels):
+    # nodev from zoning
+    s1 = zoning_baseline.nodev.reindex(parcels.index).\
         fillna(0).astype('bool')
+    # nodev from static parcels
+    s2 = parcels.index.isin(static_parcels)
+    return s1 | s2
 
 
-@orca.column('parcels', 'max_dua', cache=True)
-def max_dua(parcels_zoning_calculations, parcels):
-    return parcels_zoning_calculations.effective_max_dua * ~parcels.nodev
+@orca.column('parcels')
+def built_dua(parcels):
+    # compute the actually built dua on a parcel
+    s = parcels.total_residential_units / parcels.parcel_acres
+    # if the parcel size is too small to get an accurate reading, remove it
+    s[parcels.parcel_acres < .1] = np.nan
+    return s
+
+
+@orca.column('parcels', 'max_dua')
+def max_dua(parcels_zoning_calculations, parcels, scenario, settings):
+    # first we combine the zoning columns
+    s = parcels_zoning_calculations.effective_max_dua * ~parcels.nodev
+
+    if scenario in ["2", "3", "4", "5"]:
+        # we had trouble with the zoning outside of the footprint
+        # make sure we have rural zoning outside of the footprint
+        s2 = parcels.urban_footprint.map({0: .01, 1: np.nan})
+        s = pd.concat([s, s2], axis=1).min(axis=1)
+
+    if settings["dont_build_most_dense_building"]:
+        # in this case we shrink the zoning such that we don't built the
+        # tallest building in a given zone
+        # if there no building in the zone currently, we make the max_dua = 4
+        s2 = parcels.built_dua.groupby(parcels.zone_id).max()
+        s2 = misc.reindex(s2, parcels.zone_id).fillna(4)
+        s = pd.concat([s, s2], axis=1).min(axis=1)
+
+    return s
 
 
 # these next two are just indicators put into the output
@@ -998,12 +1094,25 @@ def effective_max_dua(zoning_baseline, parcels, scenario):
         max_dua_from_height
     ], axis=1).min(axis=1)
 
+    # take the max dua IFF the upzone value is greater than the current value
+    # i.e. don't let the upzoning operation accidentally downzone
+
     scenario_max_dua = orca.get_table("zoning_scenario").dua_up
 
     s = pd.concat([
         s,
         scenario_max_dua
     ], axis=1).max(axis=1)
+
+    # take the min dua IFF the upzone value is less than the current value
+    # i.e. don't let the downzoning operation accidentally upzone
+
+    scenario_min_dua = orca.get_table("zoning_scenario").dua_down
+
+    s = pd.concat([
+        s,
+        scenario_min_dua
+    ], axis=1).min(axis=1)
 
     s3 = parcel_is_allowed('residential')
 
@@ -1022,12 +1131,25 @@ def effective_max_far(zoning_baseline, parcels, scenario):
         max_far_from_height
     ], axis=1).min(axis=1)
 
+    # take the max far IFF the upzone value is greater than the current value
+    # i.e. don't let the upzoning operation accidentally downzone
+
     scenario_max_far = orca.get_table("zoning_scenario").far_up
 
     s = pd.concat([
         s,
         scenario_max_far
     ], axis=1).max(axis=1)
+
+    # take the max far IFF the downzone value is less than the current value
+    # i.e. don't let the downzoning operation accidentally upzone
+
+    scenario_min_far = orca.get_table("zoning_scenario").far_down
+
+    s = pd.concat([
+        s,
+        scenario_min_far
+    ], axis=1).min(axis=1)
 
     return s.reindex(parcels.index).fillna(0).astype('float')
 
@@ -1059,6 +1181,31 @@ def zoned_du_underbuild(parcels, parcels_zoning_calculations):
     # 11 story building
     s = s[ratio > .5].reindex(parcels.index).fillna(0)
     return s.astype('int')
+
+
+@orca.column('parcels_zoning_calculations')
+def zoned_du_build_ratio(parcels, parcels_zoning_calculations):
+    # ratio of existing res built space to zoned res built space
+    s = parcels.total_residential_units / \
+       (parcels_zoning_calculations.effective_max_dua * parcels.parcel_acres)
+    return s.replace(np.inf, 1).clip(0, 1)
+
+
+@orca.column('parcels_zoning_calculations')
+def zoned_far_build_ratio(parcels, parcels_zoning_calculations):
+    # ratio of existing nonres built space to zoned nonres built space
+    s = parcels.total_non_residential_sqft / \
+        (parcels_zoning_calculations.effective_max_far *
+         parcels.parcel_size)
+    return s.replace(np.inf, 1).clip(0, 1)
+
+
+@orca.column('parcels_zoning_calculations')
+def zoned_build_ratio(parcels_zoning_calculations):
+    # add them together in order to get the sum of residential and commercial
+    # build space
+    return parcels_zoning_calculations.zoned_du_build_ratio + \
+        parcels_zoning_calculations.zoned_far_build_ratio
 
 
 @orca.column('parcels_zoning_calculations')

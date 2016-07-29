@@ -4,6 +4,8 @@ aggregation_tables:
   - logsums
 
 
+dont_build_most_dense_building: True
+
 
 set_nan_price_to_zero: True
 
@@ -14,7 +16,7 @@ remove_invalid_building_ids: True
 reconcile_residential_units_and_households: False
 
 
-reconcile_non_residential_sqft_and_jobs: False
+reconcile_non_residential_sqft_and_jobs: True
 
 
 set_nan_price_to_zero: True
@@ -22,6 +24,22 @@ set_nan_price_to_zero: True
 
 parcel_size_factor: 10.764
 
+
+# this is really because we don't have limits right now for retail
+eliminate_retail_zoning_from_juris:
+  - 'Sonoma County'
+  - 'Contra Costa County'
+  - 'San Mateo County'
+  - 'Benicia'
+
+
+clip_sqft_per_unit_based_on_dua:
+  - threshold: 50
+    max: 1000
+  - threshold: 100
+    max: 900
+  - threshold: 150
+    max: 800
 
 ave_sqft_per_unit_clip:
   lower: 800
@@ -181,14 +199,221 @@ inclusionary_housing_settings:
       - San Jose
       - Oakland
       - San Francisco
+  "4":
+    - type: jurisdictions
+      description: medium setting
+      amount: .1
+      values:
+      - Alameda
+      - Alameda County
+      - Albany
+      - American Canyon
+      - Antioch
+      - Belmont
+      - Benicia
+      - Berkeley
+      - Brisbane
+      - Burlingame
+      - Campbell
+      - Cloverdale
+      - Colma
+      - Concord
+      - Contra Costa County
+      - Cotati
+      - Cupertino
+      - Daly City
+      - Danville
+      - Dixon
+      - Dublin
+      - East Palo Alto
+      - El Cerrito
+      - Emeryville
+      - Fairfield
+      - Fremont
+      - Gilroy
+      - Hayward
+      - Hercules
+      - Lafayette
+      - Livermore
+      - Los Altos
+      - Martinez
+      - Menlo Park
+      - Millbrae
+      - Milpitas
+      - Moraga
+      - Morgan Hill
+      - Mountain View
+      - Napa
+      - Newark
+      - Oakland
+      - Oakley
+      - Orinda
+      - Palo Alto
+      - Petaluma
+      - Pinole
+      - Pittsburg
+      - Pleasant Hill
+      - Pleasanton
+      - Redwood City
+      - Richmond
+      - Rohnert Park
+      - San Bruno
+      - San Carlos
+      - San Francisco
+      - San Jose
+      - San Leandro
+      - San Mateo
+      - San Mateo County
+      - San Pablo
+      - San Rafael
+      - San Ramon
+      - Santa Clara
+      - Santa Rosa
+      - Sebastopol
+      - South San Francisco
+      - Suisun City
+      - Sunnyvale
+      - Union City
+      - Vacaville
+      - Vallejo
+      - Walnut Creek
+      - Windsor
+  "5":
+    - type: jurisdictions
+      description: medium setting
+      amount: .1
+      values:
+      - Alameda
+      - Alameda County
+      - Albany
+      - American Canyon
+      - Antioch
+      - Belmont
+      - Benicia
+      - Berkeley
+      - Brisbane
+      - Burlingame
+      - Campbell
+      - Cloverdale
+      - Colma
+      - Concord
+      - Contra Costa County
+      - Cotati
+      - Cupertino
+      - Daly City
+      - Danville
+      - Dixon
+      - Dublin
+      - East Palo Alto
+      - El Cerrito
+      - Emeryville
+      - Fairfield
+      - Fremont
+      - Gilroy
+      - Hayward
+      - Hercules
+      - Lafayette
+      - Livermore
+      - Los Altos
+      - Martinez
+      - Menlo Park
+      - Millbrae
+      - Milpitas
+      - Moraga
+      - Morgan Hill
+      - Mountain View
+      - Napa
+      - Newark
+      - Oakland
+      - Oakley
+      - Orinda
+      - Palo Alto
+      - Petaluma
+      - Pinole
+      - Pittsburg
+      - Pleasant Hill
+      - Pleasanton
+      - Redwood City
+      - Richmond
+      - Rohnert Park
+      - San Bruno
+      - San Carlos
+      - San Francisco
+      - San Jose
+      - San Leandro
+      - San Mateo
+      - San Mateo County
+      - San Pablo
+      - San Rafael
+      - San Ramon
+      - Santa Clara
+      - Santa Rosa
+      - Sebastopol
+      - South San Francisco
+      - Suisun City
+      - Sunnyvale
+      - Union City
+      - Vacaville
+      - Vallejo
+      - Walnut Creek
+      - Windsor       
 
 
 acct_settings:
   disable: False
-  obag_settings:
-    sending_buildings_subaccount_def: regional
-    total_amount: 50000000
-    receiving_buildings_filter: pda_id > 0
+
+  lump_sum_accounts:
+
+    obag_settings:
+      name: "OBAG"
+      sending_buildings_subaccount_def: regional
+      total_amount: 40000000
+      receiving_buildings_filter: pda_id > 0
+      subsidize_affordable: False
+      enable_in_scenarios: ["1", "2", "3", "4", "5"]
+
+    parcel_tax_settings:
+      name: "Parcel Tax"
+      sending_buildings_subaccount_def: regional
+      total_amount: 500000000
+      receiving_buildings_filter: pda_id > 0
+      subsidize_affordable: True
+      enable_in_scenarios: ["1"]
+
+    capital_gains_tax_settings:
+      name: "Capital Gains Tax"
+      sending_buildings_subaccount_def: regional
+      total_amount: 42000000
+      receiving_buildings_filter: pda_id > 0
+      subsidize_affordable: True
+      enable_in_scenarios: ["1"]
+
+  profitability_adjustment_policies:  
+
+    ceqa_tiering:
+      name: "CEQA"
+      enable_in_scenarios: ["1", "2", "3", "4"]
+      # any parcel in a tpa
+      profitability_adjustment_formula: "(tpp_id > 0) * .01"
+
+    parking_requirements_tpps:
+      name: "Reduce Parking Requirements in TPPs"
+      enable_in_scenarios: ["3"]
+      # any parcel in a tpa   
+      profitability_adjustment_formula: "(tpp_id > 0) * .01"
+
+    parking_requirements_pdas:
+      name: "Reduce Parking Requirements in PDAs"
+      enable_in_scenarios: ["1", "2", "4", "5"]
+      # any parcel in a tpa
+      profitability_adjustment_formula: "(pda_id > 0) * .01"
+
+  land_value_tax_settings:
+    enable_in_scenarios: ["3"]
+    bins:
+      pcts: [0.05, 0.02, 0.01, 0.0]
+      breaks: [0.1, 0.3, 0.5]
+
   sales_tax_settings:
     sending_buildings_filter: general_type != 'Residential'
     # this is the method used to compute the property tax - the 20 here is a cap rate
@@ -199,15 +424,15 @@ acct_settings:
     receiving_buildings_filter: pda_id > 0 and residential_units > 1
   vmt_settings:
     sending_buildings_subaccount_def: regional
-    receiving_buildings_filter: vmt_res_cat == 'S'
+    receiving_buildings_filter: pda_id>0
     res_fee_amounts:
       VH: 25000
       H: 15000
       MH: 5000
     com_fee_amounts:
-      VH: 20
-      H: 10
-      MH: 6
+      VH: 30
+      H: 15
+      MH: 9
   sb743_settings:
     enable: true
     sb743_pcts:
@@ -216,10 +441,7 @@ acct_settings:
       MH: -0.005
       M: 0.0
       S: 0.02
-  ceqa_tiering_settings:
-    enable: ["1", "2", "3"]
-    # any parcel in a tpa
-    profitability_adjustment_formula: "(tpp_id > 0) * .01"
+
 
 low_income_for_hlcm: 30000
 
@@ -265,9 +487,6 @@ table_reprocess:
 
 rates:
   households_relocation: .07
-  jobs_relocation: .07
-  simple_households_transition: .02
-  simple_jobs_transition: .02
 
 
 build_networks:
@@ -299,7 +518,7 @@ rsh_simulate:
 
 
 feasibility:
-  parcel_filter: nodev != 1 and manual_nodev != 1 and sdem != 1 and oldest_building > 1940 and oldest_building_age > 20  and (total_residential_units != 1 or parcel_acres > 1.0) and first_building_type_id != 5 and first_building_type_id != 6
+  parcel_filter: nodev != 1 and manual_nodev != 1 and sdem != 1 and oldest_building > 1906 and oldest_building_age > 20  and (total_residential_units != 1 or parcel_acres > 1.0) and first_building_type_id != 5 and first_building_type_id != 6
   residential_to_yearly: True
   simple_zoning: True
   pass_through:
@@ -311,13 +530,13 @@ feasibility:
     - land_cost
     - residential
     - min_max_fars
-    - max_far_from_dua
     - max_height
-    - max_far_from_heights
     - building_purchase_price
     - building_purchase_price_sqft
     - residential_sales_price_sqft
     - pda
+    - juris
+    - superdistrict
     - geom_id
     - vmt_res_cat
 
@@ -354,6 +573,7 @@ scenario: "0"
 # the six major employment categories traditionally
 # used by MTC and ABAG for use in output to the Travel Model
 naics_to_empsix:
+  10: AGREMPN
   11: AGREMPN
   21: AGREMPN
   22: MWTEMPN
@@ -380,6 +600,7 @@ naics_to_empsix:
   71: HEREMPN
   72: HEREMPN
   81: OTHEMPN
+  91: OTHEMPN
   92: OTHEMPN
   99: OTHEMPN
   3133: MWTEMPN
@@ -542,10 +763,41 @@ development_limits:
       'San Francisco': 3000
     Residential:
       'Half Moon Bay': 43
+  "2":
+    Office:
+      'San Francisco': 4500
+    Residential:
+      'Half Moon Bay': 43
   "3":
     Residential:
       'Half Moon Bay': 43
-  "2":
+  "4":
+    Office:
+      'San Francisco': 3000
+      'Sonoma County': 1
+      'Half Moon Bay': 1
+      'Yountville': 1
+    Residential:
+      'Half Moon Bay': 43
+      'Brisbane': 180
+      'Petaluma': 100
+      'San Jose': 5000
+      'Mill Valley': 16
+      'Sonoma County': 75
+      'Napa County': 50
+      'Lafayette': 50
+      'Belvedere': 2
+      'Marin County': 55
+      'San Rafael': 140
+      'Calistoga': 5
+      'Woodside': 5
+    Retail:
+      'Sonoma County': 1
+      'Half Moon Bay': 1
+      'Yountville': 1
+    Industrial:
+      'Sonoma County': 1
+  "5":
     Office:
       'San Francisco': 4500
     Residential:
@@ -575,3 +827,23 @@ zoning_column_dictionary:
   mr: "residential-focus mixed"
   mt: "retail-focus mixed"
   me: "employment-focus mixed"
+
+
+static_parcels:
+  - 11280465768398 # city hall
+  - 2240580234395 # sf state
+  - 7299494955245 # sj state
+  - 13202883289710 # sj state
+  - 6193503633797 # sj state
+  - 8603860488630 # sj state
+  - 8173572322083 # ucb
+  - 14259504015679 # labs
+  - 3473860030354 # sfo
+  - 14512305680993 # sonoma state
+  - 15424804982410 # cal state east bay
+  - 7414256675266 # cal state east bay
+  - 8817315949318 # san quentin
+  - 12668875358422 # san quentin
+  
+  
+  

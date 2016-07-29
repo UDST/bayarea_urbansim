@@ -165,6 +165,8 @@ def small_vals(df):
 
 
 def compare_dfs_excel(df1, df2, excelname="out.xlsx"):
+    import palettable
+    import xlsxwriter
 
     writer = pd.ExcelWriter(excelname, engine='xlsxwriter')
 
