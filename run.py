@@ -17,8 +17,7 @@ args = sys.argv[1:]
 # Suppress scientific notation in pandas output
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
 
-SLACK = False
-MAPS = True
+SLACK = MAPS = "URBANSIM_SLACK" in os.environ
 LOGS = True
 INTERACT = False
 SCENARIO = None
