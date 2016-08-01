@@ -5,7 +5,7 @@ import orca
 import yaml
 import datasources
 import variables
-from utils import parcel_id_to_geom_id, add_buildings
+from utils import parcel_id_to_geom_id, geom_id_to_parcel_id, add_buildings
 from urbansim.utils import networks
 import pandana.network as pdna
 from urbansim_defaults import models
@@ -82,11 +82,57 @@ def households_relocation(households, settings, years_per_iter):
     return utils.simple_relocation(households, rate, "building_id")
 
 
-@orca.step('jobs_relocation')
-def jobs_relocation(jobs, settings, years_per_iter):
-    rate = settings['rates']['jobs_relocation']
-    rate = min(rate * years_per_iter, 1.0)
-    return utils.simple_relocation(jobs, rate, "building_id")
+@orca.table(cache=True)
+def employment_relocation_rates():
+
+    df = pd.read_csv(os.path.join("data", "employment_relocation_rates.csv"))
+
+    df = df.set_index("zone_id").stack().reset_index()
+
+    df.columns = ["zone_id", "empsix", "rate"]
+
+    return df
+
+
+# this is a list of parcel_ids which are to be treated as static
+@orca.injectable()
+def static_parcels(settings, parcels):
+    # list of geom_ids to not relocate
+    static_parcels = settings["static_parcels"]
+    # geom_ids -> parcel_ids
+    return geom_id_to_parcel_id(
+        pd.DataFrame(index=static_parcels), parcels).index.values
+
+
+@orca.step()
+def jobs_relocation(jobs, employment_relocation_rates, years_per_iter,
+                    settings, static_parcels, buildings):
+
+    # get buildings that are on those parcels
+    static_buildings = buildings.index[
+        buildings.parcel_id.isin(static_parcels)]
+
+    df = pd.merge(jobs.to_frame(["zone_id", "empsix"]),
+                  employment_relocation_rates.local,
+                  on=["zone_id", "empsix"],
+                  how="left")
+
+    df.index = jobs.index
+
+    # get the move rate for each job
+    rate = (df.rate * years_per_iter).clip(0, 1.0)
+    # get random floats and move jobs if they're less than the rate
+    move = np.random.random(len(rate)) < rate
+
+    # also don't move jobs that are on static parcels
+    move &= ~jobs.building_id.isin(static_buildings)
+
+    # get the index of the moving jobs
+    index = jobs.index[move]
+
+    # set jobs that are moving to a building_id of -1 (means unplaced)
+    jobs.update_col_from_series("building_id",
+                                pd.Series(-1, index=index))
 
 
 # this deviates from the step in urbansim_defaults only in how it deals with
@@ -316,13 +362,17 @@ def residential_developer(feasibility, households, buildings, parcels, year,
         if new_buildings is not None:
             new_buildings["subsidized"] = False
 
-        if final_target is not None:
+        if final_target is not None and new_buildings is not None:
             # make sure we don't overbuild the target for the whole simulation
             overshoot = new_buildings.net_units.sum() - max_target
 
             if overshoot > 0:
                 index = new_buildings.tail(1).index[0]
                 index = int(index)
+                # make sure we don't get into a negative unit situation
+                overshoot = min(overshoot,
+                                buildings.local.loc[index,
+                                                    "residential_units"])
                 buildings.local.loc[index, "residential_units"] -= overshoot
 
         summary.add_parcel_output(new_buildings)
@@ -524,11 +574,13 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
     res_units = buildings.residential_units[s].sum()
     job_spaces = buildings.job_spaces[s].sum()
 
-    to_add = res_units * .20 - job_spaces
+    to_add = res_units * .05 - job_spaces
     if to_add > 0:
         print "Adding %d job_spaces" % to_add
         res_units = buildings.residential_units[s]
         # bias selection of places to put job spaces based on res units
+        print res_units.describe()
+        print res_units[res_units < 0]
         add_indexes = np.random.choice(res_units.index.values, size=to_add,
                                        replace=True,
                                        p=(res_units/res_units.sum()))
@@ -596,6 +648,54 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
         groupby('general_type').building_sqft.sum()
     print "New square feet by general type in millions:\n",\
         sqft_by_gtype / 1000000.0
+
+
+def proportional_job_allocation(parcel_id):
+    # this method takes a parcel and increases the number of jobs on the
+    # parcel in proportion to the ratio of sectors that existed in the base yr
+    # this is because elcms can't get the distribution right in some cases, eg
+    # to keep mostly gov't jobs in city hall, etc - these are largely
+    # institutions and not subject to the market
+
+    # get buildings on this parcel
+    buildings = orca.get_table("buildings").to_frame(
+        ["parcel_id", "job_spaces", "zone_id", "year_built"]).\
+        query("parcel_id == %d" % parcel_id)
+
+    # get jobs in those buildings
+    all_jobs = orca.get_table("jobs").local
+    jobs = all_jobs[
+        all_jobs.building_id.isin(buildings.query("year_built <= 2015").index)]
+
+    # get job distribution by sector for this parcel
+    job_dist = jobs.empsix.value_counts()
+
+    # only add jobs to new buildings records
+    for index, building in buildings.query("year_built > 2015").iterrows():
+
+        num_new_jobs = building.job_spaces - len(
+            all_jobs.query("building_id == %d" % index))
+
+        if num_new_jobs == 0:
+            continue
+
+        sectors = np.random.choice(job_dist.index, size=num_new_jobs,
+                                   p=job_dist/job_dist.sum())
+        new_jobs = pd.DataFrame({"empsix": sectors, "building_id": index})
+        # make sure index is incrementing
+        new_jobs.index = new_jobs.index + 1 + np.max(all_jobs.index.values)
+
+        print "Adding {} new jobs to parcel {} with proportional model".format(
+            num_new_jobs, parcel_id)
+        print new_jobs.head()
+        all_jobs = all_jobs.append(new_jobs)
+        orca.add_table("jobs", all_jobs)
+
+
+@orca.step()
+def static_parcel_proportional_job_allocation(static_parcels):
+    for parcel_id in static_parcels:
+        proportional_job_allocation(parcel_id)
 
 
 def make_network(name, weight_col, max_distance):
@@ -758,3 +858,85 @@ def mls_appreciation(homesales, year, summary):
 
     summary.add_zone_output(zones, "appreciation", year)
     summary.write_zone_output()
+
+
+@orca.step()
+def correct_baseyear_data(buildings, parcels, jobs):
+    # sonoma county has too much vacancy in the buildings so we're
+    # going to lower it a bit to match job totals - I'm doing it here
+    # as opposed to in datasources as it requires registered orca
+    # variables
+
+    '''
+    These are the original vacancies
+    Alameda          0.607865
+    Contra Costa     0.464277
+    Marin            0.326655
+    Napa             0.427900
+    San Francisco    0.714938
+    San Mateo        0.285090
+    Santa Clara      0.368031
+    Solano           0.383663
+    Sonoma           0.434263
+    '''
+
+    '''
+    After round one of changes
+    Alameda          0.392677
+    Contra Costa     0.289937
+    Marin            0.183273
+    Napa             0.280621
+    San Francisco    0.468813
+    San Mateo        0.137320
+    Santa Clara      0.185758
+    Solano           0.211494
+    Sonoma           0.144422
+    '''
+
+    '''
+    After round two of changes
+    '''
+
+    # get buildings by county
+    buildings_county = misc.reindex(parcels.county, buildings.parcel_id)
+
+    # making sure we have no more than 10% vacancy
+    # this is the maximum vacancy you can have any a building so it NOT the
+    # same thing as setting the vacancy for the entire county
+    SURPLUS_VACANCY = buildings_county.map({
+       "Alameda": .9,  # down .2
+       "Contra Costa": .7,  # down .17
+       "Marin": .5,  # down .14
+       "Napa": .7,  # down .15
+       "San Francisco": .9,  # down .25
+       "San Mateo": .28,  # down .15
+       "Santa Clara": .35,  # down .18
+       "Solano": .7,  # down .17
+       "Sonoma": .25,  # down .3 letting this go lower cause it's the problem
+    }).fillna(.2)
+
+    # count of jobs by building
+    job_counts_by_building = jobs.building_id.value_counts().\
+        reindex(buildings.index).fillna(0)
+    # with a 10% vacancy
+    job_counts_by_building_surplus = \
+        (job_counts_by_building * (SURPLUS_VACANCY+1)).astype('int')
+    # min of job spaces and 10% greater than number of jobs
+    correct_job_spaces = pd.DataFrame([
+        job_counts_by_building_surplus, buildings.job_spaces]).min()
+    # convert back to non res sqft because job spaces is computed
+    correct_non_res_sqft = correct_job_spaces * buildings.sqft_per_job
+
+    buildings.update_col("non_residential_sqft", correct_non_res_sqft)
+
+    jobs_county = misc.reindex(buildings_county, jobs.building_id)
+
+    print "Vacancy rate by county:\n", \
+        buildings.job_spaces.groupby(buildings_county).sum() / \
+        jobs_county.value_counts() - 1.0
+
+    buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
+    jobs_juris = misc.reindex(buildings_juris, jobs.building_id)
+    s = buildings.job_spaces.groupby(buildings_juris).sum() / \
+        jobs_juris.value_counts() - 1.0
+    print "Vacancy rate by juris:\n", s.to_string()

@@ -12,17 +12,22 @@ from scripts.output_csv_utils import format_df
 @orca.step("topsheet")
 def topsheet(households, jobs, buildings, parcels, zones, year,
              run_number, taz_geography, parcels_zoning_calculations,
-             summary, settings):
+             summary, settings, parcels_geography):
 
     hh_by_subregion = misc.reindex(taz_geography.subregion,
                                    households.zone_id).value_counts()
 
     households_df = orca.merge_tables(
         'households',
-        [parcels, buildings, households],
-        columns=['pda'])
+        [parcels_geography, buildings, households],
+        columns=['pda_id', 'tpp_id', 'income'])
 
-    hh_by_inpda = households_df.pda.notnull().value_counts()
+    hh_by_inpda = households_df.pda_id.notnull().value_counts()
+
+    hhincome_by_intpp = households_df.income.groupby(
+        households_df.tpp_id.notnull()).mean()
+    # round to nearest 100s
+    hhincome_by_intpp = (hhincome_by_intpp/100).round()*100
 
     jobs_by_subregion = misc.reindex(taz_geography.subregion,
                                      jobs.zone_id).value_counts()
@@ -44,6 +49,7 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
             "jobs_by_subregion": jobs_by_subregion,
             "hh_by_inpda": hh_by_inpda,
             "jobs_by_inpda": jobs_by_inpda,
+            "hhincome_by_intpp": hhincome_by_intpp,
             "capacity": capacity
         })
 
@@ -77,6 +83,15 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
     du = buildings.residential_units.sum()
     write("Number of residential units = %d" % du)
     write("Residential vacancy rate = %.2f" % (1-0 - float(nhh)/du))
+
+    du = buildings.deed_restricted_units.sum()
+    write("Number of deed restricted units = %d" % du)
+
+    write("Base year mean income by whether household is in tpp:\n%s" %
+          base_year_measures["hhincome_by_intpp"])
+
+    write("Horizon year mean income by whether household is in tpp:\n%s" %
+          hhincome_by_intpp)
 
     jsp = buildings.job_spaces.sum()
     write("Number of job spaces = %d" % jsp)
@@ -223,9 +238,9 @@ def diagnostic_output(households, buildings, parcels, taz, jobs,
         )
 
 
-@orca.step("geographic_summary")
-def pda_output(parcels, households, jobs, buildings, taz_geography,
-               run_number, year):
+@orca.step()
+def geographic_summary(parcels, households, jobs, buildings, taz_geography,
+                       run_number, year, summary, final_year):
     # using the following conditional b/c `year` is used to pull a column
     # from a csv based on a string of the year in add_population()
     # and in add_employment() and 2009 is the
@@ -238,21 +253,23 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
 
     households_df = orca.merge_tables(
         'households',
-        [parcels, taz_geography, buildings, households],
-        columns=['pda', 'zone_id', 'juris', 'superdistrict', 'puma5',
+        [parcels, buildings, households],
+        columns=['pda', 'zone_id', 'juris', 'superdistrict',
                  'persons', 'income', 'base_income_quartile'])
 
     jobs_df = orca.merge_tables(
         'jobs',
-        [parcels, taz_geography, buildings, jobs],
+        [parcels, buildings, jobs],
         columns=['pda', 'superdistrict', 'juris', 'zone_id', 'empsix'])
 
     buildings_df = orca.merge_tables(
         'buildings',
-        [parcels, taz_geography, buildings],
+        [parcels, buildings],
         columns=['pda', 'superdistrict', 'juris', 'building_type_id',
                  'zone_id', 'residential_units', 'building_sqft',
                  'non_residential_sqft'])
+
+    parcel_output = summary.parcel_output
 
     # because merge_tables returns multiple zone_id_'s, but not the one we need
     buildings_df = buildings_df.rename(columns={'zone_id_x': 'zone_id'})
@@ -318,6 +335,32 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
             summary_table['sq_ft_per_employee'] = \
                 summary_table['non_residential_sqft'] / summary_table['totemp']
 
+            if parcel_output is not None:
+                parcel_output['subsidized_units'] = \
+                    parcel_output.deed_restricted_units - \
+                    parcel_output.inclusionary_units
+
+                # columns re: affordable housing
+                summary_table['deed_restricted_units'] = \
+                    parcel_output.groupby(geography).\
+                    deed_restricted_units.sum()
+                summary_table['inclusionary_units'] = \
+                    parcel_output.groupby(geography).inclusionary_units.sum()
+                summary_table['subsidized_units'] = \
+                    parcel_output.groupby(geography).subsidized_units.sum()
+                summary_table['inclusionary_revenue_reduction'] = \
+                    parcel_output.groupby(geography).\
+                    policy_based_revenue_reduction.sum()
+                summary_table['inclusionary_revenue_reduction_per_unit'] = \
+                    summary_table.inclusionary_revenue_reduction / \
+                    summary_table.inclusionary_units
+                summary_table['total_subsidy'] = \
+                    parcel_output[parcel_output.subsidized_units > 0].\
+                    groupby(geography).max_profit.sum() * -1
+                summary_table['subsidy_per_unit'] = \
+                    summary_table.total_subsidy / \
+                    summary_table.subsidized_units
+
             # fill in 0 values where there are NA's so that summary table
             # outputs are the same over the years otherwise a PDA or summary
             # geography would be dropped if it had no employment or housing
@@ -338,6 +381,18 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
 
     # ##############################
     # ##############################
+    # ##Write Summary of Accounts###
+    # ##############################
+    # ##############################
+
+    if year == final_year:
+        for acct_name, acct in orca.get_injectable("coffer").iteritems():
+            fname = "runs/run{}_acctlog_{}_{}.csv".\
+                format(run_number, acct_name, year)
+            acct.to_frame().to_csv(fname)
+
+    # ##############################
+    # ##############################
     # ####Write Urban Footprint#####
     # #########Summary##############
     # ##############################
@@ -352,11 +407,22 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
 
         buildings_uf_df['count'] = 1
 
+        s1 = buildings_uf_df['residential_units'] / buildings_uf_df['acres']
+        s2 = s1 > 1
+        s3 = (buildings_uf_df['urban_footprint'] == 0) * 1
+        buildings_uf_df['denser_greenfield'] = s3 * s2
+
         df = buildings_uf_df.\
             loc[buildings_uf_df['year_built'] > 2010].\
             groupby('urban_footprint').sum()
-        df = df[['count', 'residential_units',
-                 'non_residential_sqft', 'acres']]
+        df = df[['count', 'residential_units', 'non_residential_sqft',
+                 'acres']]
+
+        df2 = buildings_uf_df.\
+            loc[buildings_uf_df['year_built'] > 2010].\
+            groupby('denser_greenfield').sum()
+        df2 = df2[['count', 'residential_units', 'non_residential_sqft',
+                   'acres']]
 
         formatters = {'count': '{:.0f}',
                       'residential_units': '{:.0f}',
@@ -365,12 +431,89 @@ def pda_output(parcels, households, jobs, buildings, taz_geography,
 
         df = format_df(df, formatters)
 
+        df2 = format_df(df2, formatters)
+
         df = df.transpose()
 
-        df.columns = ['urban_footprint_0', 'urban_footprint_1']
+        df2 = df2.transpose()
+
+        df[2] = df2[1]
+
+        df.columns = ['urban_footprint_0', 'urban_footprint_1',
+                      'denser_greenfield']
         uf_summary_csv = "runs/run{}_urban_footprint_summary_{}.csv".\
             format(run_number, year)
         df.to_csv(uf_summary_csv)
+
+
+@orca.step()
+def building_summary(parcels, run_number, year,
+                     buildings,
+                     initial_year, final_year):
+
+    if year not in [initial_year, final_year]:
+        return
+
+    df = orca.merge_tables(
+        'buildings',
+        [parcels, buildings],
+        columns=['performance_zone', 'year_built', 'residential_units',
+                 'unit_price', 'zone_id', 'non_residential_sqft',
+                 'deed_restricted_units', 'job_spaces', 'x', 'y'])
+
+    df.to_csv(
+        os.path.join("runs", "run%d_building_data_%d.csv" %
+                     (run_number, year))
+    )
+
+
+@orca.step()
+def parcel_summary(parcels, run_number, year,
+                   parcels_zoning_calculations,
+                   initial_year, final_year):
+
+    if year not in [initial_year, final_year]:
+        return
+
+    df = parcels.to_frame([
+        "x", "y",
+        "total_residential_units",
+        "total_job_spaces",
+        "first_building_type_id"
+    ])
+
+    df2 = parcels_zoning_calculations.to_frame([
+        "zoned_du",
+        "zoned_du_underbuild",
+        "zoned_du_underbuild_nodev"
+    ])
+
+    df = df.join(df2)
+
+    df.to_csv(
+        os.path.join("runs", "run%d_parcel_data_%d.csv" %
+                     (run_number, year))
+    )
+
+    if year == final_year:
+
+        # do diff with initial year
+
+        df2 = pd.read_csv(
+            os.path.join("runs", "run%d_parcel_data_%d.csv" %
+                         (run_number, initial_year)), index_col="parcel_id")
+
+        for col in df.columns:
+
+            if col in ["x", "y", "first_building_type_id"]:
+                continue
+
+            df[col] = df[col] - df2[col]
+
+        df.to_csv(
+            os.path.join("runs", "run%d_parcel_data_diff.csv" %
+                         run_number)
+        )
 
 
 @orca.step("travel_model_output")
@@ -414,10 +557,10 @@ def travel_model_output(parcels, households, jobs, buildings,
         taz_df["ciacre_unweighted"] = df.ciacre
         taz_df["resacre_unweighted"] = df.resacre
         taz_df["ciacre"] = scaled_ciacre(
-                           base_year_summary_taz.CIACRE,
+                           base_year_summary_taz.CIACRE_UNWEIGHTED,
                            df.ciacre)
         taz_df["resacre"] = scaled_resacre(
-                            base_year_summary_taz.RESACRE,
+                            base_year_summary_taz.RESACRE_UNWEIGHTED,
                             df.resacre)
         taz_df["totacre"] = df.totacre
         taz_df["totemp"] = df.totemp
