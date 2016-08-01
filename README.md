@@ -1,7 +1,7 @@
 DRAFT Bay Area Urbansim Implementation
 =======
 
-This is the full UrbanSim implementation for the Bay Area. Documenation for the Bay Area model is available at http://metropolitantransportationcommission.github.io/baus_docs/ and documentation for the generic UrbanSim model is at https://udst.github.io/urbansim/index.html
+This is the DRAFT UrbanSim implementation for the Bay Area. Documenation for the Bay Area model is available at http://metropolitantransportationcommission.github.io/baus_docs/ and documentation for the generic UrbanSim model is at https://udst.github.io/urbansim/index.html
 
 UAL research fork
 -----------------
@@ -46,11 +46,27 @@ The following setup procedure seems reliable for OS X and Linux. See [ual_baus_i
 * Copy the appropriate data files into the `data` directory (or add symbolic links)
 * Try running `python run.py`
 
+### Subsequent README content is from the master branch
 
-Subsequent README content is from the master branch
----------------------------------------------------
+Install Overview
+----------------
 
-###Data
+* https://mtcdrive.account.box.com/login
+* get anaconda (version as indicated in reqs below)
+* bash Anaconda2-4.0.0-Linux-x86_64.sh
+* yes to prepend install location to .bashrc
+* open new terminal
+* sudo apt-get update
+* sudo apt-get -y install git g++ python-dev unzip
+* git clone https://github.com/MetropolitanTransportationCommission/bayarea_urbansim.git
+* pip install -r requirements.txt (comment out pandana)
+* pip install pandana
+* get data
+* change RUNNUM so in 5000s etc
+* python run.py -s 4 & OR python all.py &
+
+Data
+----
 
 We track the data for this project in the Makefile in this repository. The makefile will generally be the most up to date list of which data is needed, where it goes in the directory, etc.
 
@@ -105,7 +121,7 @@ In the repository directory edit `run.py` and set `MODE` to "baseyearsim" and ty
 
 #####Runs Directory
 
-First, some vocabulary.
+ALL OUTPUT IN THIS DIRECTORY IS CONSIDERED DRAFT. PLEASE CONTACT MTC FOR OFFICIAL FINAL OUTPUTS.
 
 `#` = a number that is updated in the RUNNUM file in the bayarea_urbansim directory each time you run Simulation.py.
 
@@ -115,7 +131,7 @@ filename |description
 ----------------------------|-----------
 run#_topsheet_2040 | An overall summary of various housing, employment, etc by regional planning area types
 run#_parcel_output.csv 		|csv of parcels that are built for review in Explorer
-run#_subsidy_summary.csv 	|currently empty
+run#_parcel_data_diff.csv 			|A CSV with parcel level output for *all* parcels with lat, lng and includes change in total_residential_units and change in total_job_spaces, as well as zoned capacity measures
 run#_simulation_output.json |summary by TAZ for review in Explorer (unix only)
 run#_taz_summaries 			|A CSV for [input to the MTC travel model](http://analytics.mtc.ca.gov/foswiki/UrbanSimTwo/OutputToTravelModel)
 run#_urban_footprint_summary | A CSV with A Summary of how close the scenario is to meeting [Performance Target 4](http://planbayarea.org/the-plan/plan-details/goals-and-targets.html)
@@ -148,6 +164,10 @@ Parcel geometries are available at the following link:
 https://s3.amazonaws.com/bayarea_urbansim/data/09_01_2015_parcel_shareable.zip
 
 #####Geom ID
+
+Please be aware that many ArcGIS users have found that ArcGIS automatically converts and then rounds the `geom_id` column, effectively making it unusable. Therefore we recommend using QGIS, which does not exhibit this behavior with delimited files by default. 
+
+Also, in Microsoft Excel, you will need to make sure that the data type of the `geom_id` column is set to `number` and that the number of decimal points is set to 0. Otherwise when you save the CSV again the `geom_id`s will be unusable.
 
 What is the `geom_id` field and why does it exist? 
 
