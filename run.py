@@ -13,8 +13,7 @@ warnings.filterwarnings("ignore")
 
 args = sys.argv[1:]
 
-SLACK = False
-MAPS = True
+SLACK = MAPS = "URBANSIM_SLACK" in os.environ
 LOGS = True
 INTERACT = False
 SCENARIO = None
