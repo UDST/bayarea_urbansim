@@ -809,7 +809,7 @@ development_limits:
       'Contra Costa County': 130
       'San Mateo County': 150
       'Solano County': 30
-      'Sonoma County': 1
+      'Sonoma County': 0
     Residential:
       'Half Moon Bay': 4
       'San Jose': 3900
@@ -835,7 +835,7 @@ development_limits:
       'Marin County': 40
       'Santa Clara County': 50
       'Solano County': 1
-      'Sonoma County': 30
+      'Sonoma County': 25
     Industrial:
       'Benicia': 50
       'Contra Costa County': 50
