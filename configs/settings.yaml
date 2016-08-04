@@ -834,8 +834,8 @@ development_limits:
       'Napa County': 40
       'Marin County': 40
       'Santa Clara County': 50
-      'Solano County': 1
-      'Sonoma County': 1
+      'Solano County': 0
+      'Sonoma County': 0
     Industrial:
       'Benicia': 50
       'Contra Costa County': 50
