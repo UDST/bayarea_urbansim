@@ -835,7 +835,7 @@ development_limits:
       'Marin County': 40
       'Santa Clara County': 50
       'Solano County': 1
-      'Sonoma County': 15
+      'Sonoma County': 1
     Industrial:
       'Benicia': 50
       'Contra Costa County': 50
