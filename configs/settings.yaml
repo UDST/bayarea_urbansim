@@ -46,7 +46,6 @@ eliminate_retail_zoning_from_juris:
   - 'Half Moon Bay'
   - 'Portola Valley'
   - 'Saratoga'
-  - 'Cloverdale'
   - 'Livermore'
   - 'Los Gatos'
 
@@ -797,13 +796,13 @@ development_limits:
       'Woodside': 0
       'Atherton': 0
       'Calistoga': 5
-      'Cloverdale': 5
+      'Cloverdale': 15
       'Los Gatos': 0
       'Livermore': 10
       'Monte Sereno': 0
-      'Piedmont': 4
+      'Piedmont': 15
       'Portola Valley': 0
-      'St. Helena': 4
+      'St. Helena': 15
       'Saratoga': 0
       'Alameda': 200
       'Contra Costa County': 130
