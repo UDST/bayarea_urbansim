@@ -3,6 +3,7 @@ from urbansim_defaults import utils
 from urbansim.utils import misc
 from urbansim.models.relocation import RelocationModel
 from urbansim.developer.developer import Developer as dev
+import orca_test as ot
 import os
 import yaml
 import numpy as np
@@ -96,6 +97,15 @@ def ual_initialize_residential_units(buildings, ual_settings):
     - initializes a 'unit_aggregations' injectable containing tables as specified in 
         'ual_settings' -> 'unit_aggregation_tables'
     """
+    # Test for data requirements
+    ot.assert_orca_spec(yaml.load(
+    """
+    - table_name: buildings
+      columns:
+      - building_id: [index]
+      - residential_units: [numeric, no_missing_val]
+      - zone_id: [numeric, no_missing_val]
+    """))
 
     @orca.table('residential_units', cache=True)
     def residential_units(buildings):
@@ -141,6 +151,21 @@ def ual_match_households_to_units(households, residential_units):
         - 'unit_id' (int, '-1'-filled, corresponds to index of 'residential_units' table)
     - adds a broadcast linking 'households' to 'residential_units'
     """
+    # Test for data requirements
+    ot.assert_orca_spec(yaml.load(
+    """
+    - table_name: households
+      columns:
+      - unit_id: [not_registered]
+      - building_id: [numeric, missing_val=-1]
+      
+    - table_name: residential_units
+      columns:
+      - unit_id: [index]
+      - building_id: [numeric, no_missing_val]
+      - unit_num: [numeric, no_missing_val, min=0]
+    """))
+
     hh = households.to_frame(households.local_columns)
     units = residential_units.to_frame(['building_id', 'unit_num'])
     
@@ -179,6 +204,19 @@ def ual_assign_tenure_to_units(residential_units, households):
     - adds following column to 'residential_units' table:
         - 'hownrent' (int in range [1,2], non-missing)
     """
+    # Test for data requirements
+    ot.assert_orca_spec(yaml.load(
+    """
+    - table_name: residential_units
+      columns:
+      - hownrent: [not_registered]
+      
+    - table_name: households
+      columns:
+      - hownrent: [numeric]
+      - unit_id: [numeric, missing_val=-1]
+    """))
+
     units = residential_units.to_frame(residential_units.local_columns)
     hh = households.to_frame(['hownrent', 'unit_id'])
     
@@ -285,6 +323,21 @@ def reconcile_placed_households(households, residential_units):
     - updates the 'households' table:
         - 'building_id' updated where it was -1 but 'unit_id' wasn't
     """
+    # Test for data requirements
+    ot.assert_orca_spec(yaml.load(
+    """
+    - table_name: households
+      columns: 
+      - household_id: [index]
+      - unit_id: [numeric, missing_val=-1]
+      - building_id: [numeric, missing_val=-1]
+      
+    - table_name: residential_units
+      columns:
+      - unit_id: [index]
+      - building_id: [numeric, no_missing_val]
+    """))
+
     print "Reconciling placed households..."
     hh = households.to_frame(['unit_id', 'building_id']).reset_index()
     units = residential_units.to_frame(['building_id']).reset_index()
@@ -323,8 +376,17 @@ def reconcile_unplaced_households(households):
     -------
     - updates the 'households' table:
         - 'unit_id' = 'building_id' = -1 for the superset of rows where either column
-          initially had this vaue
+          initially had this vaue       
     """
+    # Test for data requirements
+    ot.assert_orca_spec(yaml.load(
+    """
+    - table_name: households
+      columns:
+      - unit_id: [numeric, missing_val=-1]
+      - building_id: [numeric, missing_val=-1]
+    """))
+
     def _print_status():
         print "Households not in a unit: %d" % (households.unit_id == -1).sum()
         print "Househing missing a unit: %d" % households.unit_id.isnull().sum()
@@ -370,8 +432,23 @@ def ual_update_building_residential_price(buildings, residential_units, ual_sett
     Results
     -------
     - updates the 'buildings' table:
-        - 'residential_price' = max avg of unit prices or rents
+        - 'residential_price' = max avg of unit prices or rents        
     """
+    # Test for data requirements
+    ot.assert_orca_spec(yaml.load(
+    """
+    - table_name: residential_units
+      columns:
+      - unit_residential_price: [numeric, missing_val=0]
+      - unit_residential_rent: [numeric, missing_val=0]
+      - building_id: [numeric, no_missing_val]
+      
+    - table_name: buildings
+      columns:
+      - building_id: [index]
+      - residential_price: [numeric, missing_val=0]
+    """))
+
     cols = ['building_id', 'unit_residential_price', 'unit_residential_rent']
     means = residential_units.to_frame(cols).groupby(['building_id']).mean()
     
@@ -408,6 +485,18 @@ def ual_remove_old_units(buildings, residential_units):
     - removes rows from the 'residential_units' table if their 'building_id' no longer
       exists in the 'buildings' table
     """
+    # Test for data requirements
+    ot.assert_orca_spec(yaml.load(
+    """
+    - table_name: buildings
+      columns:
+      - building_id: [index]
+    
+    - table_name: residential_units
+      columns:
+      - building_id: [numeric]
+    """))
+    
     units = residential_units.to_frame(residential_units.local_columns)
     current_units = units[units.building_id.isin(buildings.index)]
     
@@ -439,6 +528,20 @@ def ual_initialize_new_units(buildings, residential_units):
     - extends the 'residential_units' table, following the same schema as the
       'ual_initialize_residential_units' model step
     """
+    # Test for data requirements
+    ot.assert_orca_spec(yaml.load(
+    """
+    - table_name: buildings
+      columns:
+      - building_id: [index]
+      - residential_units: [numeric, min=0]
+
+    - table_name: residential_units
+      columns:
+      - unit_id: [index]
+      - building_id: [numeric]    
+    """))
+    
     old_units = residential_units.to_frame(residential_units.local_columns)
     bldgs = buildings.to_frame(['residential_units'])
     
@@ -480,6 +583,16 @@ def ual_assign_tenure_to_new_units(residential_units, ual_settings):
     -------
     - fills missing values of 'hownrent'
     """
+    # Test for data requirements
+    ot.assert_orca_spec(yaml.load(
+    """
+    - table_name: residential_units
+      columns:
+      - hownrent: [numeric, min=1, max=2]
+      - unit_residential_price: [numeric, no_missing_val]
+      - unit_residential_rent: [numeric, no_missing_val]
+    """))
+
     cols = ['hownrent', 'unit_residential_price', 'unit_residential_rent']
     units = residential_units.to_frame(cols)
     
@@ -601,6 +714,16 @@ def ual_households_relocation(households, ual_settings):
     -------
     - assigns households for relocation by setting their 'building_id' and 'unit_id' to -1
     """
+    # Test for data requirements
+    ot.assert_orca_spec(yaml.load(
+    """
+    - table_name: households
+      columns:
+      - hownrent: [numeric, no_missing_val, min=1, max=2]
+      - building_id: [numeric, missing_val=-1]
+      - unit_id: [numeric, missing_val=-1]
+    """))
+    
     rates = pd.DataFrame.from_dict(ual_settings['relocation_rates'])
 
     print "Total agents: %d" % len(households)
