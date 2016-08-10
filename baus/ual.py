@@ -6,7 +6,7 @@ import pandas as pd
 
 import orca
 import orca_test as ot
-from orca_test import OrcaSpec, TableSpec, ColumnSpec
+from orca_test import OrcaSpec, TableSpec, ColumnSpec, InjectableSpec
 from urbansim.developer.developer import Developer as dev
 from urbansim.models.relocation import RelocationModel
 from urbansim.utils import misc
@@ -93,7 +93,6 @@ def ual_initialize_residential_units(buildings, ual_settings):
         - 'unit_residential_rent' (float, 0-filled)
         - 'building_id' (int, non-missing, corresponds to index of 'buildings' table)
         - 'unit_num' (int, non-missing, unique within building) 
-        - 'vacant_units' (int, 0 or 1, computed)
         - 'submarket_id' (int, non-missing, computed, corresponds to index of 'zones' table)
     - adds broadcasts linking 'residential_units' table to:
         - 'buildings' table
@@ -106,17 +105,14 @@ def ual_initialize_residential_units(buildings, ual_settings):
         TableSpec('buildings',
             ColumnSpec('building_id', primary_key=True),
             ColumnSpec('residential_units', numeric=True, missing_val=False),
-            ColumnSpec('zone_id', numeric=True, missing_val=False))))
+            ColumnSpec('zone_id', numeric=True, missing_val=False)),
+        TableSpec('residential_units', registered=False),
+        InjectableSpec('ual_settings', has_key='unit_aggregation_tables')))
 
     @orca.table('residential_units', cache=True)
     def residential_units(buildings):
         return _ual_create_empty_units(buildings)
     
-    @orca.column('residential_units', 'vacant_units')
-    def vacant_units(residential_units, households):
-        return residential_units.num_units.sub(
-            households.unit_id[households.unit_id != -1].value_counts(), fill_value=0)
-
     @orca.column('residential_units', 'submarket_id')
     def submarket_id(residential_units, buildings):
         # The submarket is used for supply/demand equilibration. It's the same as the 
@@ -125,17 +121,31 @@ def ual_initialize_residential_units(buildings, ual_settings):
 
     orca.broadcast('buildings', 'residential_units', cast_index=True, onto_on='building_id')
     
+    # This injectable provides a list of tables needed for hedonic and LCM model steps, 
+    # but it cannot be evaluated until the network aggregation steps are run
     @orca.injectable('unit_aggregations')
     def unit_aggregations(ual_settings):
-        # This injectable provides a list of tables needed for hedonic and LCM model steps
         return [orca.get_table(tbl) for tbl in ual_settings['unit_aggregation_tables']]
+
+    # Verify expected changes to data characteristics
+    ot.assert_orca_spec(OrcaSpec('', 
+        TableSpec('residential_units',
+            ColumnSpec('unit_id', primary_key=True),
+            ColumnSpec('num_units', missing_val=False, min=1, max=1),
+            ColumnSpec('unit_residential_price', numeric=True, missing_val_coding=0),
+            ColumnSpec('unit_residential_rent', numeric=True, missing_val_coding=0),
+            ColumnSpec('building_id', numeric=True, missing=False),
+            ColumnSpec('unit_num', numeric=True, missing=False),
+            ColumnSpec('submarket_id', numeric=True, missing=False))))
+    return
 
         
 @orca.step('ual_match_households_to_units')
 def ual_match_households_to_units(households, residential_units):
     """
-    This initialization step adds a unit_id to the households table and populates it
-    based on existing assignments of households to buildings.
+    This initialization step adds a 'unit_id' to the households table and populates it
+    based on existing assignments of households to buildings. This also allows us to add
+    a 'vacant_units' count to the residential_units table. 
     
     Data expectations
     -----------------
@@ -150,6 +160,8 @@ def ual_match_households_to_units(households, residential_units):
     -------
     - adds following column to 'households' table:
         - 'unit_id' (int, '-1'-filled, corresponds to index of 'residential_units' table)
+    - adds following column to 'residential_units' table:
+        - 'vacant_units' (int, 0 or 1, computed)
     - adds a broadcast linking 'households' to 'residential_units'
     """
     
@@ -178,12 +190,19 @@ def ual_match_households_to_units(households, residential_units):
     hh.loc[unplaced, 'unit_id'] = -1
     orca.add_table('households', hh)
     
+    @orca.column('residential_units', 'vacant_units')
+    def vacant_units(residential_units, households):
+        return residential_units.num_units.sub(
+            households.unit_id[households.unit_id != -1].value_counts(), fill_value=0)
+
     orca.broadcast('residential_units', 'households', cast_index=True, onto_on='unit_id')
 
     # Verify expected changes to data characteristics
     ot.assert_orca_spec(OrcaSpec('',
         TableSpec('households',
-            ColumnSpec('unit_id', numeric=True, missing_val_coding=-1))))
+            ColumnSpec('unit_id', numeric=True, missing_val_coding=-1)),
+        TableSpec('residential_units',
+            ColumnSpec('vacant_units', numeric=True, min=0, max=1))))
     return
 
 
