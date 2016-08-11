@@ -100,12 +100,12 @@ def ual_initialize_residential_units(buildings, ual_settings):
         'ual_settings' -> 'unit_aggregation_tables'
     """
     
-    # Verify expected data characteristics
+    # Verify initial data characteristics
     ot.assert_orca_spec(OrcaSpec('',
         TableSpec('buildings',
             ColumnSpec('building_id', primary_key=True),
-            ColumnSpec('residential_units', numeric=True, missing_val=False),
-            ColumnSpec('zone_id', numeric=True, missing_val=False)),
+            ColumnSpec('residential_units', min=0, missing=False),
+            ColumnSpec('zone_id', foreign_key='zones.zone_id', missing=False)),
         TableSpec('residential_units', registered=False),
         InjectableSpec('ual_settings', has_key='unit_aggregation_tables')))
 
@@ -127,16 +127,16 @@ def ual_initialize_residential_units(buildings, ual_settings):
     def unit_aggregations(ual_settings):
         return [orca.get_table(tbl) for tbl in ual_settings['unit_aggregation_tables']]
 
-    # Verify expected changes to data characteristics
+    # Verify final data characteristics
     ot.assert_orca_spec(OrcaSpec('', 
         TableSpec('residential_units',
             ColumnSpec('unit_id', primary_key=True),
-            ColumnSpec('num_units', missing_val=False, min=1, max=1),
-            ColumnSpec('unit_residential_price', numeric=True, missing_val_coding=0),
-            ColumnSpec('unit_residential_rent', numeric=True, missing_val_coding=0),
-            ColumnSpec('building_id', numeric=True, missing=False),
-            ColumnSpec('unit_num', numeric=True, missing=False),
-            ColumnSpec('submarket_id', numeric=True, missing=False))))
+            ColumnSpec('num_units', min=1, max=1, missing=False),
+            ColumnSpec('unit_residential_price', min=0, missing=False),
+            ColumnSpec('unit_residential_rent', min=0, missing=False),
+            ColumnSpec('building_id', foreign_key='buildings.building_id', missing=False),
+            ColumnSpec('unit_num', min=0, missing=False),
+            ColumnSpec('submarket_id', foreign_key='zones.zone_id', missing=False))))
     return
 
         
@@ -165,15 +165,15 @@ def ual_match_households_to_units(households, residential_units):
     - adds a broadcast linking 'households' to 'residential_units'
     """
     
-    # Verify expected data characteristics
+    # Verify initial data characteristics
     ot.assert_orca_spec(OrcaSpec('',
         TableSpec('households',
             ColumnSpec('unit_id', registered=False),
-            ColumnSpec('building_id', numeric=True, missing_val_coding=-1)),
+            ColumnSpec('building_id', foreign_key='buildings.building_id', missing_val_coding=-1)),
         TableSpec('residential_units',
             ColumnSpec('unit_id', primary_key=True),
-            ColumnSpec('building_id', numeric=True, missing_val=False),
-            ColumnSpec('unit_num', missing_val=False, min=0))))
+            ColumnSpec('building_id', foreign_key='buildings.building_id', missing=False),
+            ColumnSpec('unit_num', min=0, missing=False))))
     
     hh = households.to_frame(households.local_columns)
     units = residential_units.to_frame(['building_id', 'unit_num'])
@@ -197,12 +197,12 @@ def ual_match_households_to_units(households, residential_units):
 
     orca.broadcast('residential_units', 'households', cast_index=True, onto_on='unit_id')
 
-    # Verify expected changes to data characteristics
+    # Verify final data characteristics
     ot.assert_orca_spec(OrcaSpec('',
         TableSpec('households',
-            ColumnSpec('unit_id', numeric=True, missing_val_coding=-1)),
+            ColumnSpec('unit_id', foreign_key='residential_units.unit_id', missing_val_coding=-1)),
         TableSpec('residential_units',
-            ColumnSpec('vacant_units', numeric=True, min=0, max=1))))
+            ColumnSpec('vacant_units', min=0, max=1))))
     return
 
 
@@ -226,13 +226,13 @@ def ual_assign_tenure_to_units(residential_units, households):
         - 'hownrent' (int in range [1,2], non-missing)
     """
     
-    # Verify expected data characteristics
+    # Verify initial data characteristics
     ot.assert_orca_spec(OrcaSpec('',
         TableSpec('residential_units',
             ColumnSpec('hownrent', registered=False)),
         TableSpec('households',
-            ColumnSpec('hownrent', numeric=True),
-            ColumnSpec('unit_id', numeric=True, missing_val_coding=-1))))
+            ColumnSpec('hownrent', min=1, max=2, missing_val_coding=np.nan),
+            ColumnSpec('unit_id', foreign_key='residential_units.unit_id', missing_val_coding=-1))))
     
     units = residential_units.to_frame(residential_units.local_columns)
     hh = households.to_frame(['hownrent', 'unit_id'])
@@ -257,6 +257,11 @@ def ual_assign_tenure_to_units(residential_units, households):
     units.loc[unfilled, 'hownrent'] = np.random.randint(1, 3, len(unfilled))
     
     orca.add_table('residential_units', units)
+    
+    # Verify final data characteristics
+    ot.assert_orca_spec(OrcaSpec('',
+        TableSpec('residential_units',
+            ColumnSpec('hownrent', min=1, max=2, missing_val_coding=np.nan))))
     return
 
 
@@ -341,15 +346,15 @@ def reconcile_placed_households(households, residential_units):
         - 'building_id' updated where it was -1 but 'unit_id' wasn't
     """
     
-    # Verify expected data characteristics
+    # Verify initial data characteristics
     ot.assert_orca_spec(OrcaSpec('',
         TableSpec('households',
             ColumnSpec('household_id', primary_key=True),
-            ColumnSpec('unit_id', numeric=True, missing_val_coding=-1),
-            ColumnSpec('building_id', numeric=True, missing_val_coding=-1)),
+            ColumnSpec('unit_id', foreign_key='residential_units.unit_id', missing_val_coding=-1),
+            ColumnSpec('building_id', foreign_key='buildings.building_id', missing_val_coding=-1)),
         TableSpec('residential_units',
             ColumnSpec('unit_id', primary_key=True),
-            ColumnSpec('building_id', numeric=True, missing_val=False))))
+            ColumnSpec('building_id', foreign_key='buildings.building_id', missing=False))))
 
     print "Reconciling placed households..."
     hh = households.to_frame(['unit_id', 'building_id']).reset_index()
@@ -364,6 +369,11 @@ def reconcile_placed_households(households, residential_units):
     
     print "%d movers updated" % len(hh)
     households.update_col_from_series('building_id', hh.building_id)
+    
+    # Verify final data characteristics
+    ot.assert_orca_spec(OrcaSpec('',
+        TableSpec('households',
+            ColumnSpec('building_id', foreign_key='buildings.building_id', missing_val_coding=-1))))
     return
     
 
@@ -392,7 +402,7 @@ def reconcile_unplaced_households(households):
           initially had this vaue       
     """
     
-    # Verify expected data characteristics
+    # Verify initial data characteristics
     ot.assert_orca_spec(OrcaSpec('',
         TableSpec('households',
             ColumnSpec('unit_id', numeric=True, missing_val_coding=-1),
@@ -416,6 +426,12 @@ def reconcile_unplaced_households(households):
     households.update_col_from_series('building_id', unit_unplaced)
     households.update_col_from_series('unit_id', bldg_unplaced)
     _print_status()
+
+    # Verify final data characteristics
+    ot.assert_orca_spec(OrcaSpec('',
+        TableSpec('households',
+            ColumnSpec('unit_id', foreign_key='residential_units.unit_id', missing_val_coding=-1),
+            ColumnSpec('building_id', foreign_key='buildings.building_id', missing_val_coding=-1))))
     return
     
 
@@ -446,15 +462,16 @@ def ual_update_building_residential_price(buildings, residential_units, ual_sett
         - 'residential_price' = max avg of unit prices or rents        
     """
     
-    # Verify expected data characteristics
+    # Verify initial data characteristics
     ot.assert_orca_spec(OrcaSpec('',
         TableSpec('residential_units',
-            ColumnSpec('unit_residential_price', numeric=True, missing_val_coding=0),
-            ColumnSpec('unit_residential_rent', numeric=True, missing_val_coding=0),
-            ColumnSpec('building_id', numeric=True, missing_val=False)),
+            ColumnSpec('unit_residential_price', min=0),
+            ColumnSpec('unit_residential_rent', min=0),
+            ColumnSpec('building_id', foreign_key='buildings.building_id', missing=False)),
         TableSpec('buildings',
             ColumnSpec('building_id', primary_key=True),
-            ColumnSpec('residential_price', numeric=True, missing_val_coding=0))))
+            ColumnSpec('residential_price', min=0)),
+        InjectableSpec('ual_settings', min=0, max=1)))
 
     cols = ['building_id', 'unit_residential_price', 'unit_residential_rent']
     means = residential_units.to_frame(cols).groupby(['building_id']).mean()
@@ -469,6 +486,11 @@ def ual_update_building_residential_price(buildings, residential_units, ual_sett
     
     # Update the buildings table
     buildings.update_col_from_series('residential_price', means.max_potential)
+    
+    # Verify final data characteristics
+    ot.assert_orca_spec(OrcaSpec('',
+        TableSpec('buildings',
+            ColumnSpec('residential_price', min=0))))
     return
     
 
@@ -493,7 +515,7 @@ def ual_remove_old_units(buildings, residential_units):
       exists in the 'buildings' table
     """
     
-    # Verify expected data characteristics
+    # Verify initial data characteristics
     ot.assert_orca_spec(OrcaSpec('',
         TableSpec('buildings',
             ColumnSpec('building_id', primary_key=True)),
@@ -508,6 +530,11 @@ def ual_remove_old_units(buildings, residential_units):
             (len(units.groupby('building_id')) - len(current_units.groupby('building_id'))))
     
     orca.add_table('residential_units', current_units) 
+
+    # Verify final data characteristics
+    ot.assert_orca_spec(OrcaSpec('',
+        TableSpec('residential_units',
+            ColumnSpec('building_id', foreign_key='buildings.building_id'))))
     return
 
 
@@ -532,14 +559,14 @@ def ual_initialize_new_units(buildings, residential_units):
       'ual_initialize_residential_units' model step
     """
     
-    # Verify expected data characteristics
+    # Verify initial data characteristics
     ot.assert_orca_spec(OrcaSpec('',
         TableSpec('buildings',
             ColumnSpec('building_id', primary_key=True),
-            ColumnSpec('residential_units', numeric=True, min=0)),
+            ColumnSpec('residential_units', min=0)),
         TableSpec('residential_units',
             ColumnSpec('unit_id', primary_key=True),
-            ColumnSpec('building_id', numeric=True))))
+            ColumnSpec('building_id', foreign_key='buildings.building_id'))))
     
     old_units = residential_units.to_frame(residential_units.local_columns)
     bldgs = buildings.to_frame(['residential_units'])
@@ -557,6 +584,11 @@ def ual_initialize_new_units(buildings, residential_units):
             (len(new_units), len(new_bldgs))
     
     orca.add_table('residential_units', all_units)
+
+    # Verify final data characteristics
+    ot.assert_orca_spec(OrcaSpec('',
+        TableSpec('residential_units',
+            ColumnSpec('unit_id', primary_key=True))))
     return
     
 
@@ -583,12 +615,12 @@ def ual_assign_tenure_to_new_units(residential_units, ual_settings):
     - fills missing values of 'hownrent'
     """
     
-    # Verify expected data characteristics
+    # Verify initial data characteristics
     ot.assert_orca_spec(OrcaSpec('',
         TableSpec('residential_units',
-            ColumnSpec('hownrent', numeric=True, min=1, max=2),
-            ColumnSpec('unit_residential_price', numeric=True, missing_val_coding=0),
-            ColumnSpec('unit_residential_rent', numeric=True, missing_val_coding=0))))
+            ColumnSpec('hownrent', min=1, max=2, missing_val_coding=np.nan),
+            ColumnSpec('unit_residential_price', min=0),
+            ColumnSpec('unit_residential_rent', min=0))))
 
     cols = ['hownrent', 'unit_residential_price', 'unit_residential_rent']
     units = residential_units.to_frame(cols)
@@ -608,7 +640,8 @@ def ual_assign_tenure_to_new_units(residential_units, ual_settings):
     print "Adding tenure assignment to %d new residential units" % len(units)
     print units.describe()
 
-    residential_units.update_col_from_series('hownrent', units.hownrent)    
+    residential_units.update_col_from_series('hownrent', units.hownrent)
+    return
     
 
 @orca.step('ual_save_intermediate_tables')
@@ -715,7 +748,7 @@ def ual_households_relocation(households, ual_settings):
     # Verify expected data characteristics
     ot.assert_orca_spec(OrcaSpec('',
         TableSpec('households',
-            ColumnSpec('hownrent', numeric=True, min=1, max=2, missing_val=False),
+            ColumnSpec('hownrent', numeric=True, min=1, max=2, missing=False),
             ColumnSpec('building_id', numeric=True, missing_val_coding=-1),
             ColumnSpec('unit_id', numeric=True, missing_val_coding=-1))))
     
