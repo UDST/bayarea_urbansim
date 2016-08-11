@@ -2,6 +2,7 @@
 
 # This script sets up bayarea_urbansim on a clean instance of OS X or Linux.
 # Developed by Sam Maurer, June 2016, tested on OS X v10.11 and Ubuntu v16.
+# Updated August 2016
 
 cd ~/Documents  # or whatever directory you want to use
 
@@ -25,8 +26,8 @@ git clone git://github.com/ual/bayarea_urbansim.git
 git clone git://github.com/udst/orca.git
 git clone git://github.com/udst/orca_test.git
 git clone git://github.com/udst/pandana.git
-git clone git://github.com/ual/urbansim.git
-git clone git://github.com/ual/urbansim_defaults.git
+git clone git://github.com/udst/urbansim.git
+git clone git://github.com/udst/urbansim_defaults.git
 
 # Set up the libraries
 cd orca; python setup.py develop; cd ..
