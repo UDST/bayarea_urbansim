@@ -23,19 +23,20 @@ git clone git://github.com/ual/bayarea_urbansim.git
 
 # Download the other urbansim libraries
 git clone git://github.com/udst/orca.git
+git clone git://github.com/udst/orca_test.git
 git clone git://github.com/udst/pandana.git
 git clone git://github.com/ual/urbansim.git
 git clone git://github.com/ual/urbansim_defaults.git
 
 # Set up the libraries
 cd orca; python setup.py develop; cd ..
+cd orca_test; python setup.py develop; cd ..
 cd pandana; python setup.py develop; cd ..
 cd urbansim; python setup.py develop; cd ..
 cd urbansim_defaults; python setup.py develop; cd ..
 
 # Switch to development branches as needed
 cd bayarea_urbansim; git checkout ual-development; cd ..
-cd urbansim; git checkout return-on-cost; cd ..
 
 # Download the bayarea_urbansim data files. URL's are redacted here; contact Sam. 
 cd bayarea_urbansim/data

@@ -25,24 +25,24 @@ Modifications include:
 * Household location choice is modeled separately for renters and owners, and includes race/ethnicity measures as explanatory variables
 * Developer models are updated to produce both rental and ownership housing stock
 
-Other work is in progress; see [wiki](https://github.com/ual/bayarea_urbansim_work/wiki). Notebooks, work history, code samples, etc are kept in a separate [bayarea_urbansim_work](https://github.com/ual/bayarea_urbansim_work) repository. 
+Notebooks, work history, code samples, etc are kept in a separate [bayarea_urbansim_work](https://github.com/ual/bayarea_urbansim_work) repository. 
 
-#### Current status (June 2016)
+#### Current status (August 2016)
 
 * All of the UAL alterations have been refactored as modular orca steps
 * This code is contained in `baus/ual.py`, `configs/ual_settings.yaml` and individual `yaml` files as needed for regression models that have been re-estimated
 * There are *no* changes to `urbansim`, `urbansim_defaults`, or MTC's orca initialization and model steps
 * MTC and UAL model steps can be mixed and matched by passing different lists to orca; see `run.py` for examples
-* Note that MTC's developer model code requires using the `return-on-cost` branch of `urbansim` to avoid crashing when unprofitable subsidized buildings appear to have negative probability of being chosen
+* The UAL model steps document and test for required data characteristics, using the [orca_test](https://github.com/udst/orca_test) library
 
 #### Installation
 
 The following setup procedure seems reliable for OS X and Linux. See [ual_baus_install.sh](https://github.com/ual/bayarea_urbansim/blob/ual-development/ual_baus_install_template.sh) for a programmatic version. 
 
 * Install Anaconda
-* Git-clone the repositories for `orca`, `pandana`, `urbansim`, `urbansim_defaults`, and `bayarea_urbansim`
+* Git-clone the repositories for `orca`, `urbansim`, `pandana`, `orca_test`, `urbansim_defaults`, and `bayarea_urbansim`
 * Run `python setup.py develop` for all of them (except `bayarea_urbansim`)
-* Switch to the `return-on-cost` branch of `urbansim` and the `ual-development` branch of `bayarea_urbansim`
+* Switch to the `ual-development` branch of `bayarea_urbansim`
 * Copy the appropriate data files into the `data` directory (or add symbolic links)
 * Try running `python run.py`
 
