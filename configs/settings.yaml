@@ -41,14 +41,12 @@ eliminate_retail_zoning_from_juris:
   - 'Antioch'
   - 'Yountville'
   - 'Woodside'
-  - 'Piedmont'
   - 'Monte Sereno'
   - 'Los Altos Hills'
   - 'Half Moon Bay'
   - 'Portola Valley'
   - 'Saratoga'
-  - 'Cloverdale'
-  - 'St. Helena'
+  - 'Livermore'
   - 'Los Gatos'
 
 
@@ -454,10 +452,9 @@ acct_settings:
       MH: 12
       M: 6
     com_for_com_fee_amounts:  # commercial fee subsidizing commercial devs
-      VH: 85
-      H: 50
-      MH: 25
-      M: 12
+      VH: 40
+      H: 20
+      MH: 10
   sb743_settings:
     enable: true
     sb743_pcts:
@@ -799,44 +796,45 @@ development_limits:
       'Woodside': 0
       'Atherton': 0
       'Calistoga': 5
-      'Cloverdale': 1
+      'Cloverdale': 15
       'Los Gatos': 0
+      'Livermore': 10
       'Monte Sereno': 0
-      'Piedmont': 0
+      'Piedmont': 15
       'Portola Valley': 0
-      'St. Helena': 0
+      'St. Helena': 15
       'Saratoga': 0
-      'Alameda': 250
+      'Alameda': 200
       'Contra Costa County': 130
       'San Mateo County': 150
       'Solano County': 30
-      'Sonoma County': 2
+      'Sonoma County': 0
     Residential:
-      'Half Moon Bay': 2
+      'Half Moon Bay': 4
+      'San Jose': 3900
       'Brisbane': 180
-      'Petaluma': 90
-      'San Jose': 4500
+      'Petaluma': 45
       'Mill Valley': 16
       'Lafayette': 40
       'Belvedere': 2
       'Marin County': 1
       'San Rafael': 140
       'Calistoga': 5
-      'Cloverdale': 25
+      'Cloverdale': 30
       'Woodside': 0
       'Moraga': 25
       'Saratoga': 2
-      'St. Helena': 3
+      'St. Helena': 4
       'Yountville': 0
       'Los Altos': 30
       'Belvedere': 2
-      'Alameda': 150
-      'Contra Costa County': 600
-      'Napa County': 45
-      'Marin County': 50
+      'Alameda': 100
+      'Contra Costa County': 300
+      'Napa County': 40
+      'Marin County': 40
       'Santa Clara County': 50
-      'Solano County': 2
-      'Sonoma County': 75
+      'Solano County': 0
+      'Sonoma County': 0
     Industrial:
       'Benicia': 50
       'Contra Costa County': 50

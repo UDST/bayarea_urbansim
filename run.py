@@ -89,8 +89,8 @@ def get_simulation_models(SCENARIO):
 
         "residential_developer",
         "developer_reprocess",
-        "retail_developer",
         "office_developer",
+        "retail_developer",
 
         "hlcm_simulate",                 # put these last so they don't get
         "elcm_simulate",                 # displaced by new dev
@@ -117,8 +117,8 @@ def get_simulation_models(SCENARIO):
             orca.get_injectable("settings")["vmt_com_for_res"] = True
 
         if SCENARIO == "4":
-            orca.get_injectable("settings")["vmt_com_for_res"] = True
-            orca.get_injectable("settings")["vmt_com_for_com"] = True
+            orca.get_injectable("settings")["vmt_com_for_res"] = False
+            orca.get_injectable("settings")["vmt_com_for_com"] = False
 
             models.insert(models.index("office_developer"),
                           "subsidized_office_developer")

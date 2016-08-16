@@ -912,13 +912,14 @@ def correct_baseyear_data(buildings, parcels, jobs):
        "Monte Sereno": 0,
        "Portola Valley": 0,
        "Berkeley": .75,
-       "St. Helena": 0,
+       "St. Helena": .01,
        "Saratoga": .05,
-       "Piedmont": 0,
+       "Piedmont": .01,
        "Portola Valley": 0,
        "Los Gatos": .05,
        "Cloverdale": 0,
        "Alameda": .2,
+       "Walnut Creek": .9,
        "Half Moon Bay": 0
     })
 
