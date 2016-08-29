@@ -46,7 +46,6 @@ eliminate_retail_zoning_from_juris:
   - 'Half Moon Bay'
   - 'Portola Valley'
   - 'Saratoga'
-  - 'Cloverdale'
   - 'Livermore'
   - 'Los Gatos'
 
@@ -797,19 +796,19 @@ development_limits:
       'Woodside': 0
       'Atherton': 0
       'Calistoga': 5
-      'Cloverdale': 5
+      'Cloverdale': 15
       'Los Gatos': 0
       'Livermore': 10
       'Monte Sereno': 0
-      'Piedmont': 1
+      'Piedmont': 15
       'Portola Valley': 0
-      'St. Helena': 1
+      'St. Helena': 15
       'Saratoga': 0
       'Alameda': 200
       'Contra Costa County': 130
       'San Mateo County': 150
       'Solano County': 30
-      'Sonoma County': 1
+      'Sonoma County': 0
     Residential:
       'Half Moon Bay': 4
       'San Jose': 3900
@@ -834,8 +833,8 @@ development_limits:
       'Napa County': 40
       'Marin County': 40
       'Santa Clara County': 50
-      'Solano County': 1
-      'Sonoma County': 30
+      'Solano County': 0
+      'Sonoma County': 0
     Industrial:
       'Benicia': 50
       'Contra Costa County': 50
