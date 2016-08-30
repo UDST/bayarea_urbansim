@@ -5,7 +5,8 @@ import baus.models
 import pandas as pd
 import numpy as np
 
-orca.add_injectable("scenario", "1")
+orca.add_injectable("scenario", "baseline")
+orca.get_injectable("settings")["dont_build_most_dense_building"] = False
 
 '''
 orca.run([
@@ -42,6 +43,8 @@ fnames = [
 ]
 
 df = orca.get_table("parcels").to_frame(fnames)
+
+df["zoningmodcat"] = orca.get_table("parcels_geography").zoningmodcat
 
 for use in ["retail", "residential"]:
     df[use+"_is_allowed"] = orca.get_injectable("parcel_is_allowed_func")(use)

@@ -508,6 +508,10 @@ def parcel_is_allowed(form):
     allowed = [orca.get_table('zoning_baseline')
                ['type%d' % typ] > 0 for typ in form_to_btype[form]]
 
+    if orca.get_injectable("scenario") == "baseline":
+        return pd.concat(allowed, axis=1).max(axis=1).\
+            reindex(orca.get_table('parcels').index).fillna(False)
+
     # also check if the scenario based zoning adds the building type
     allowed2 = [orca.get_table('zoning_scenario')
                 ['add-type%d' % typ] > 0 for typ in form_to_btype[form]]
@@ -1105,6 +1109,9 @@ def effective_max_dua(zoning_baseline, parcels, scenario):
         max_dua_from_height
     ], axis=1).min(axis=1)
 
+    if scenario == "baseline":
+        return s
+
     # take the max dua IFF the upzone value is greater than the current value
     # i.e. don't let the upzoning operation accidentally downzone
 
@@ -1141,6 +1148,9 @@ def effective_max_far(zoning_baseline, parcels, scenario):
         zoning_baseline.max_far,
         max_far_from_height
     ], axis=1).min(axis=1)
+
+    if scenario == "baseline":
+        return s
 
     # take the max far IFF the upzone value is greater than the current value
     # i.e. don't let the upzoning operation accidentally downzone
