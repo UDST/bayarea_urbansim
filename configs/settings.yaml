@@ -4,6 +4,9 @@ aggregation_tables:
   - logsums
 
 
+profit_vs_return_on_cost_combination_factor: 0.5
+
+
 dont_build_most_dense_building: True
 
 
@@ -30,7 +33,21 @@ eliminate_retail_zoning_from_juris:
   - 'Sonoma County'
   - 'Contra Costa County'
   - 'San Mateo County'
+  - 'Solano County'
+  - 'Napa County'
+  - 'Marin County'
   - 'Benicia'
+  - 'Brentwood'
+  - 'Antioch'
+  - 'Yountville'
+  - 'Woodside'
+  - 'Monte Sereno'
+  - 'Los Altos Hills'
+  - 'Half Moon Bay'
+  - 'Portola Valley'
+  - 'Saratoga'
+  - 'Livermore'
+  - 'Los Gatos'
 
 
 clip_sqft_per_unit_based_on_dua:
@@ -425,14 +442,19 @@ acct_settings:
   vmt_settings:
     sending_buildings_subaccount_def: regional
     receiving_buildings_filter: pda_id>0
-    res_fee_amounts:
+    res_for_res_fee_amounts:
       VH: 25000
       H: 15000
       MH: 5000
-    com_fee_amounts:
-      VH: 30
-      H: 15
-      MH: 9
+    com_for_res_fee_amounts:
+      VH: 50
+      H: 25
+      MH: 12
+      M: 6
+    com_for_com_fee_amounts:  # commercial fee subsidizing commercial devs
+      VH: 40
+      H: 20
+      MH: 10
   sb743_settings:
     enable: true
     sb743_pcts:
@@ -549,7 +571,7 @@ residential_developer:
 
 non_residential_developer:
   kwargs:
-    target_vacancy: 0.15
+    target_vacancy: 0.05
     bldg_sqft_per_job: 400
   type_splits:
     Industrial: 0.0
@@ -760,48 +782,73 @@ cost_shifters:
 development_limits:
   default:
     Office:
-      'San Francisco': 3000
+      'San Francisco': 3500
+      'San Jose': 7250
+      'Half Moon Bay': 0
+      'Yountville': 0
+      'Berkeley': 1000
+      'Benicia': 200
+      'Brentwood': 85
+      'Antioch': 250
+      'Brisbane': 225
+      'Los Altos Hills': 0
+      'Pacifica': 1
+      'Woodside': 0
+      'Atherton': 0
+      'Calistoga': 5
+      'Cloverdale': 15
+      'Los Gatos': 0
+      'Livermore': 10
+      'Monte Sereno': 0
+      'Piedmont': 15
+      'Portola Valley': 0
+      'St. Helena': 15
+      'Saratoga': 0
+      'Alameda': 200
+      'Contra Costa County': 130
+      'San Mateo County': 150
+      'Solano County': 30
+      'Sonoma County': 0
     Residential:
-      'Half Moon Bay': 43
-  "2":
-    Office:
-      'San Francisco': 4500
-    Residential:
-      'Half Moon Bay': 43
-  "3":
-    Residential:
-      'Half Moon Bay': 43
-  "4":
-    Office:
-      'San Francisco': 3000
-      'Sonoma County': 1
-      'Half Moon Bay': 1
-      'Yountville': 1
-    Residential:
-      'Half Moon Bay': 43
+      'Half Moon Bay': 4
+      'San Jose': 3900
       'Brisbane': 180
-      'Petaluma': 100
-      'San Jose': 5000
+      'Petaluma': 45
       'Mill Valley': 16
-      'Sonoma County': 75
-      'Napa County': 50
-      'Lafayette': 50
+      'Lafayette': 40
       'Belvedere': 2
-      'Marin County': 55
+      'Marin County': 1
       'San Rafael': 140
       'Calistoga': 5
-      'Woodside': 5
-    Retail:
-      'Sonoma County': 1
-      'Half Moon Bay': 1
-      'Yountville': 1
+      'Cloverdale': 30
+      'Woodside': 0
+      'Moraga': 25
+      'Saratoga': 2
+      'St. Helena': 4
+      'Yountville': 0
+      'Los Altos': 30
+      'Belvedere': 2
+      'Alameda': 100
+      'Contra Costa County': 300
+      'Napa County': 40
+      'Marin County': 40
+      'Santa Clara County': 50
+      'Solano County': 0
+      'Sonoma County': 0
     Industrial:
+      'Benicia': 50
+      'Contra Costa County': 50
+      'San Mateo County': 50
       'Sonoma County': 1
+  "2":
+    Office:
+      'San Francisco': 5250
+  "4":
+    Office:
+      'San Francisco': 4375
   "5":
     Office:
-      'San Francisco': 4500
-    Residential:
-      'Half Moon Bay': 43
+      'San Francisco': 5250
 
 
 zoning_column_dictionary: 
@@ -839,6 +886,11 @@ static_parcels:
   - 8173572322083 # ucb
   - 14259504015679 # labs
   - 3473860030354 # sfo
+  - 11976417381057 # sf general
+  - 5600199824880 # more sf gen
+  - 9143399820283
+  - 2161358104676
+  - 15636310238820
   - 14512305680993 # sonoma state
   - 15424804982410 # cal state east bay
   - 7414256675266 # cal state east bay
