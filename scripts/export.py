@@ -32,6 +32,7 @@ fnames = [
     "juris",
     "county",
     "pda",
+    "vmt_res_cat",
     "max_dua",
     "max_far",
     "parcel_size",
@@ -45,6 +46,7 @@ fnames = [
 df = orca.get_table("parcels").to_frame(fnames)
 
 df["zoningmodcat"] = orca.get_table("parcels_geography").zoningmodcat
+df["tpp"] = orca.get_table("parcels_geography").tpp_id
 
 for use in ["retail", "residential"]:
     df[use+"_is_allowed"] = orca.get_injectable("parcel_is_allowed_func")(use)
