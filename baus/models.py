@@ -172,7 +172,7 @@ def scheduled_development_events(buildings, development_projects,
         unplace_agents=['households', 'jobs'])
     new_buildings["form"] = new_buildings.building_type_id.map(
         settings['building_type_map']).str.lower()
-    new_buildings["job_spaces"] = new_buildings.building_sqft / \
+    new_buildings["job_spaces"] = new_buildings.non_residential_sqft / \
         new_buildings.building_type_id.fillna(-1).map(building_sqft_per_job)
     new_buildings["job_spaces"] = new_buildings.job_spaces.astype('int')
     new_buildings["geom_id"] = parcel_id_to_geom_id(new_buildings.parcel_id)
@@ -263,6 +263,8 @@ def alt_feasibility(parcels, settings,
     config = sqftproforma.SqFtProFormaConfig()
     config.parking_rates["office"] = 1.5
     config.parking_rates["retail"] = 1.5
+    config.building_efficiency = .85
+    config.parcel_coverage = .85
 
     utils.run_feasibility(parcels,
                           parcel_sales_price_sqft_func,
@@ -355,6 +357,7 @@ def residential_developer(feasibility, households, buildings, parcels, year,
             form_to_btype_callback=form_to_btype_func,
             add_more_columns_callback=add_extra_columns_func,
             num_units_to_build=target,
+            profit_to_prob_func=subsidies.profit_to_prob_func,
             **kwargs)
 
         buildings = orca.get_table('buildings')
@@ -551,6 +554,7 @@ def office_developer(feasibility, jobs, buildings, parcels, year,
                 add_more_columns_callback=add_extra_columns_func,
                 residential=False,
                 num_units_to_build=target,
+                profit_to_prob_func=subsidies.profit_to_prob_func,
                 **dev_settings['kwargs'])
 
             if new_buildings is not None:
@@ -880,40 +884,47 @@ def correct_baseyear_data(buildings, parcels, jobs):
     Sonoma           0.434263
     '''
 
-    '''
-    After round one of changes
-    Alameda          0.392677
-    Contra Costa     0.289937
-    Marin            0.183273
-    Napa             0.280621
-    San Francisco    0.468813
-    San Mateo        0.137320
-    Santa Clara      0.185758
-    Solano           0.211494
-    Sonoma           0.144422
-    '''
-
-    '''
-    After round two of changes
-    '''
-
     # get buildings by county
     buildings_county = misc.reindex(parcels.county, buildings.parcel_id)
+    buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
 
     # making sure we have no more than 10% vacancy
     # this is the maximum vacancy you can have any a building so it NOT the
     # same thing as setting the vacancy for the entire county
-    SURPLUS_VACANCY = buildings_county.map({
-       "Alameda": .9,  # down .2
-       "Contra Costa": .7,  # down .17
-       "Marin": .5,  # down .14
-       "Napa": .7,  # down .15
-       "San Francisco": .9,  # down .25
-       "San Mateo": .28,  # down .15
-       "Santa Clara": .35,  # down .18
-       "Solano": .7,  # down .17
-       "Sonoma": .25,  # down .3 letting this go lower cause it's the problem
+    SURPLUS_VACANCY_COUNTY = buildings_county.map({
+       "Alameda": .83,
+       "Contra Costa": .63,
+       "Marin": .3,
+       "Napa": .7,
+       "San Francisco": .68,
+       "San Mateo": .4,
+       "Santa Clara": .32,
+       "Solano": .53,
+       "Sonoma": .5,
     }).fillna(.2)
+
+    SURPLUS_VACANCY_JURIS = buildings_juris.map({
+       "Yountville": .001,
+       "Benicia": .2,
+       "Woodside": .05,
+       "Atherton": .05,
+       "Los Altos Hills": 0,
+       "Monte Sereno": 0,
+       "Portola Valley": 0,
+       "Berkeley": .75,
+       "St. Helena": .01,
+       "Saratoga": .05,
+       "Piedmont": .01,
+       "Portola Valley": 0,
+       "Los Gatos": .05,
+       "Cloverdale": 0,
+       "Alameda": .2,
+       "Walnut Creek": .9,
+       "Half Moon Bay": 0
+    })
+
+    SURPLUS_VACANCY = pd.DataFrame([
+       SURPLUS_VACANCY_COUNTY, SURPLUS_VACANCY_JURIS]).min()
 
     # count of jobs by building
     job_counts_by_building = jobs.building_id.value_counts().\
@@ -935,8 +946,8 @@ def correct_baseyear_data(buildings, parcels, jobs):
         buildings.job_spaces.groupby(buildings_county).sum() / \
         jobs_county.value_counts() - 1.0
 
-    buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
     jobs_juris = misc.reindex(buildings_juris, jobs.building_id)
+
     s = buildings.job_spaces.groupby(buildings_juris).sum() / \
         jobs_juris.value_counts() - 1.0
     print "Vacancy rate by juris:\n", s.to_string()

@@ -191,9 +191,19 @@ def empsix_id(jobs, settings):
 # be underfilled and othersoverfilled which should yield an average of
 # the sqft_per_job table
 @orca.column('buildings', 'job_spaces', cache=False)
-def job_spaces(buildings):
+def job_spaces(buildings, superdistricts, taz):
+
+    superdistrict = misc.reindex(taz.sd, buildings.zone_id)
+
+    # this factor changes all sqft per job according to which superdistrict
+    # the building is in - this is so denser areas can have lower sqft
+    # per job - this is a simple multiple so a number 1.1 increases the
+    # sqft per job by 10% and .9 decreases it by 10%
+    sqft_per_job = buildings.sqft_per_job * \
+        superdistrict.map(superdistricts.sqft_per_job_factor)
+
     return (buildings.non_residential_sqft /
-            buildings.sqft_per_job).fillna(0).round().astype('int')
+            sqft_per_job).fillna(0).round().astype('int')
 
 
 @orca.column('buildings')
@@ -357,13 +367,14 @@ def vmt_res_cat(parcels, vmt_fee_categories):
 @orca.column('parcels', cache=True)
 def vmt_res_fees(parcels, settings):
     vmt_settings = settings["acct_settings"]["vmt_settings"]
-    return parcels.vmt_res_cat.map(vmt_settings["res_fee_amounts"])
+    return parcels.vmt_res_cat.map(vmt_settings["res_for_res_fee_amounts"])
 
 
 @orca.column('parcels', cache=True)
 def vmt_com_fees(parcels, settings):
     vmt_settings = settings["acct_settings"]["vmt_settings"]
-    return parcels.vmt_res_cat.map(vmt_settings["com_fee_amounts"])
+    return parcels.vmt_res_cat.map(vmt_settings["com_for_res_fee_amounts"]) + \
+        parcels.vmt_res_cat.map(vmt_settings["com_for_com_fee_amounts"])
 
 
 # compute the fees per unit for each parcel
@@ -496,6 +507,10 @@ def parcel_is_allowed(form):
     # to know if specific forms are allowed
     allowed = [orca.get_table('zoning_baseline')
                ['type%d' % typ] > 0 for typ in form_to_btype[form]]
+
+    if orca.get_injectable("scenario") == "baseline":
+        return pd.concat(allowed, axis=1).max(axis=1).\
+            reindex(orca.get_table('parcels').index).fillna(False)
 
     # also check if the scenario based zoning adds the building type
     allowed2 = [orca.get_table('zoning_scenario')
@@ -1094,6 +1109,9 @@ def effective_max_dua(zoning_baseline, parcels, scenario):
         max_dua_from_height
     ], axis=1).min(axis=1)
 
+    if scenario == "baseline":
+        return s
+
     # take the max dua IFF the upzone value is greater than the current value
     # i.e. don't let the upzoning operation accidentally downzone
 
@@ -1130,6 +1148,9 @@ def effective_max_far(zoning_baseline, parcels, scenario):
         zoning_baseline.max_far,
         max_far_from_height
     ], axis=1).min(axis=1)
+
+    if scenario == "baseline":
+        return s
 
     # take the max far IFF the upzone value is greater than the current value
     # i.e. don't let the upzoning operation accidentally downzone

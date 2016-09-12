@@ -89,8 +89,8 @@ def get_simulation_models(SCENARIO):
 
         "residential_developer",
         "developer_reprocess",
-        "retail_developer",
         "office_developer",
+        "retail_developer",
 
         "hlcm_simulate",                 # put these last so they don't get
         "elcm_simulate",                 # displaced by new dev
@@ -109,12 +109,20 @@ def get_simulation_models(SCENARIO):
 
         # note that you might also have to change the fees that get
         # imposed - look for fees_per_unit column in variables.py
+
         if SCENARIO == "3":
-            orca.get_injectable("settings")["vmt_fee_res"] = True
+            orca.get_injectable("settings")["vmt_res_for_res"] = True
+
         if SCENARIO == "1":
-            orca.get_injectable("settings")["vmt_fee_com"] = True
+            orca.get_injectable("settings")["vmt_com_for_res"] = True
+
         if SCENARIO == "4":
-            orca.get_injectable("settings")["vmt_fee_com"] = True
+            orca.get_injectable("settings")["vmt_com_for_res"] = False
+            orca.get_injectable("settings")["vmt_com_for_com"] = False
+
+            models.insert(models.index("office_developer"),
+                          "subsidized_office_developer")
+
         models.insert(models.index("diagnostic_output"),
                       "calculate_vmt_fees")
         models.insert(models.index("alt_feasibility"),
@@ -252,12 +260,19 @@ if SLACK:
         'http://urbanforecast.com/runs/run%d_topsheet_2040.log' % run_num,
         as_user=True)
 
+    slack.chat.post_message(
+        '#sim_updates',
+        'Targets comparison is available at ' +
+        'http://urbanforecast.com/runs/run%d_targets_comparison_2040.csv' %
+        run_num, as_user=True)
+
 if MODE == "simulation":
     # compute and write the difference report at the superdistrict level
     prev_run = LAST_KNOWN_GOOD_RUNS[SCENARIO]
     # fetch the previous run off of the internet for comparison - the "last
     # known good run" should always be available on EC2
-    df1 = pd.read_csv("http://urbanforecast.com/runs/run%d_superdistrict_summaries_2040.csv" % prev_run)
+    df1 = pd.read_csv(("http://urbanforecast.com/runs/run%d_superdistrict" +
+                       "_summaries_2040.csv") % prev_run)
     df1 = df1.set_index(df1.columns[0]).sort_index()
 
     df2 = pd.read_csv("runs/run%d_superdistrict_summaries_2040.csv" % run_num)
