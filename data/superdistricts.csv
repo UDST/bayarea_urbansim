@@ -1,24 +1,24 @@
 number,name,subregion,sqft_per_job_factor
-1,SF NE,1,0.875
-2,SF NW,1,0.937
-3,SF S SE,1,0.937
-4,SF SW,1,0.937
-5,Daly City Millbrae,2,0.875
-6,San Mateo,2,0.875
-7,Redwood City,2,0.875
-8,Santa Clara,2,0.937
-9,Golden Triangle,1,0.875
-10,West San Jose,1,0.937
-11,San Jose CBD,1,0.875
-12,East San Jose,1,0.937
-13,South San Jose,1,0.937
+1,SF NE,1,0.937
+2,SF NW,1,1
+3,SF S SE,1,1
+4,SF SW,1,1
+5,Daly City Millbrae,2,1
+6,San Mateo,2,1
+7,Redwood City,2,1
+8,Palo Alto,2,0.937
+9,Golden Triangle,1,0.937
+10,West San Jose,1,1
+11,San Jose CBD,1,0.937
+12,East San Jose,1,1
+13,South San Jose,1,1
 14,SE Snta Clara Cnty,4,1
 15,Tri Valley,3,1
-16,Fremont,2,0.937
-17,S Leandro Hayward,2,0.937
-18,Oakland Alameda,1,0.937
-19,Berkeley Eville,2,0.937
-20,Richmond Pinole,2,0.937
+16,Fremont,2,1
+17,S Leandro Hayward,2,1
+18,Oakland Alameda,1,1
+19,Berkeley Eville,2,1
+20,Richmond Pinole,2,1
 21,Martinez Concord,3,1
 22,Lamorinda WC,3,1
 23,S Ramon Danville,3,1
