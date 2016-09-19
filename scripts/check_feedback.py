@@ -1,7 +1,8 @@
 import pandas as pd
+import sys
 
-baserunnum = 1540
-newrunnum = 1568
+baserunnum = 5080
+newrunnum = int(sys.argv[1])
 
 df = pd.read_csv("https://docs.google.com/spreadsheets/d/1Mocmry8CcmEABiSS1otSjYSpps765bgIXA67QIUpygs/pub?gid=0&single=true&output=csv")
 

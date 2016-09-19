@@ -266,6 +266,11 @@ if SLACK:
         'http://urbanforecast.com/runs/run%d_targets_comparison_2040.csv' %
         run_num, as_user=True)
 
+if MODE =="simulation":
+
+    # check feedback for this run number
+    os.system("scripts/check_feedback.py {}".format(run_num))
+
 if MODE == "simulation":
 
     # copy base year into runs so as to avoid confusion
