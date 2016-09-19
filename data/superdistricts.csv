@@ -12,21 +12,21 @@ number,name,subregion,sqft_per_job_factor
 11,San Jose CBD,1,0.937
 12,East San Jose,1,1
 13,South San Jose,1,1
-14,SE Snta Clara Cnty,4,1
-15,Tri Valley,3,1
+14,SE Snta Clara Cnty,4,1.063
+15,Tri Valley,3,1.063
 16,Fremont,2,1
 17,S Leandro Hayward,2,1
 18,Oakland Alameda,1,1
 19,Berkeley Eville,2,1
-20,Richmond Pinole,2,1
-21,Martinez Concord,3,1
+20,Richmond Pinole,2,1.063
+21,Martinez Concord,3,1.063
 22,Lamorinda WC,3,1
 23,S Ramon Danville,3,1
-24,East Contra Costa,4,1
-25,Vallejo Benicia,3,1
-26,Solano Remainder,4,1
+24,East Contra Costa,4,1.063
+25,Vallejo Benicia,3,1.063
+26,Solano Remainder,4,1.063
 27,Napa City and S,3,1
-28,Napa Remainder,4,1
+28,Napa Remainder,4,1.063
 29,Southern Sonoma,4,1
 30,Santa Rosa Area,3,1
 31,Northern Sonoma,4,1
