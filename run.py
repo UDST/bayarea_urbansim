@@ -267,6 +267,24 @@ if SLACK:
         run_num, as_user=True)
 
 if MODE == "simulation":
+
+    # copy base year into runs so as to avoid confusion
+
+    import shutil
+
+    for fname in [
+        "baseyear_juris_summaries_2010.csv",
+        "baseyear_pda_summaries_2010.csv",
+        "baseyear_superdistrict_summaries_2010.csv",
+        "baseyear_taz_summaries_2010.csv"
+    ]:
+
+        shutil.copy(
+            os.path.join("output", fname),
+            os.path.join("runs", "run{}_".format(run_num) + fname)
+        )
+
+if MODE == "simulation":
     # compute and write the difference report at the superdistrict level
     prev_run = LAST_KNOWN_GOOD_RUNS[SCENARIO]
     # fetch the previous run off of the internet for comparison - the "last
