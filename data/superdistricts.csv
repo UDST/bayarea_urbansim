@@ -1,8 +1,8 @@
 number,name,subregion,sqft_per_job_factor
-1,SF NE,1,0.937
-2,SF NW,1,1
-3,SF S SE,1,1
-4,SF SW,1,1
+1,SF NE,1,0.875
+2,SF NW,1,0.937
+3,SF S SE,1,0.937
+4,SF SW,1,0.937
 5,Daly City Millbrae,2,1
 6,San Mateo,2,1
 7,Redwood City,2,1
@@ -25,11 +25,11 @@ number,name,subregion,sqft_per_job_factor
 24,East Contra Costa,4,1.063
 25,Vallejo Benicia,3,1.063
 26,Solano Remainder,4,1.063
-27,Napa City and S,3,1
-28,Napa Remainder,4,1.126
+27,Napa City and S,3,1.126
+28,Napa Remainder,4,1.25
 29,Southern Sonoma,4,1
 30,Santa Rosa Area,3,1
 31,Northern Sonoma,4,1
-32,Northern Marin,4,1
-33,Central Marin,3,1
-34,Southern Marin,3,1
+32,Northern Marin,4,1.063
+33,Central Marin,3,1.063
+34,Southern Marin,3,1.063
