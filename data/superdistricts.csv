@@ -16,10 +16,10 @@ number,name,subregion,sqft_per_job_factor
 15,Tri Valley,3,1.063
 16,Fremont,2,1
 17,S Leandro Hayward,2,1
-18,Oakland Alameda,1,1
-19,Berkeley Eville,2,1
-20,Richmond Pinole,2,1.063
-21,Martinez Concord,3,1.063
+18,Oakland Alameda,1,0.937
+19,Berkeley Eville,2,0.937
+20,Richmond Pinole,2,1
+21,Martinez Concord,3,1
 22,Lamorinda WC,3,1
 23,S Ramon Danville,3,1
 24,East Contra Costa,4,1.063
