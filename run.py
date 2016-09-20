@@ -8,6 +8,7 @@ import orca
 import socket
 import warnings
 from baus.utils import compare_summary
+from scripts.check_feedback import check_feedback
 
 warnings.filterwarnings("ignore")
 
@@ -266,11 +267,6 @@ if SLACK:
         'http://urbanforecast.com/runs/run%d_targets_comparison_2040.csv' %
         run_num, as_user=True)
 
-if MODE =="simulation":
-
-    # check feedback for this run number
-    os.system("scripts/check_feedback.py {}".format(run_num))
-
 if MODE == "simulation":
 
     # copy base year into runs so as to avoid confusion
@@ -307,6 +303,10 @@ if MODE == "simulation":
     summary = compare_summary(df1, df2, supnames)
     with open("runs/run%d_difference_report.log" % run_num, "w") as f:
         f.write(summary)
+
+if MODE == "simulation":
+    with open("runs/run%d_check_feedback.log" % run_num, "w") as f:
+        f.write(check_feedback(run_num))
 
 if SLACK and MODE == "simulation":
 
