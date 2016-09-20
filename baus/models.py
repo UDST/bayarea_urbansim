@@ -896,7 +896,7 @@ def correct_baseyear_data(buildings, parcels, jobs):
        "Contra Costa": .61,
        "Marin": .3,
        "Napa": .7,
-       "San Francisco": .61,
+       "San Francisco": .55,
        "San Mateo": .4,
        "Santa Clara": .32,
        "Solano": .53,
