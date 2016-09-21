@@ -6,6 +6,7 @@ import yaml
 import datasources
 import variables
 from utils import parcel_id_to_geom_id, geom_id_to_parcel_id, add_buildings
+from utils import round_series_match_target, groupby_random_choice
 from urbansim.utils import networks
 import pandana.network as pdna
 from urbansim_defaults import models
@@ -102,6 +103,88 @@ def static_parcels(settings, parcels):
     # geom_ids -> parcel_ids
     return geom_id_to_parcel_id(
         pd.DataFrame(index=static_parcels), parcels).index.values
+
+
+def proportional_jobs_model(
+    target_ratio,  # ratio of jobs of this sector to households
+    sector,        # empsix sector
+    groupby_col,   # ratio will be matched at this level of geog
+    sum_df,
+    hh_df,
+    jobs_df
+):
+    # FOR DEBUGGING
+    FACTOR = 5
+
+    target_jobs = hh_df[groupby_col].value_counts() * target_ratio * FACTOR
+    current_jobs = jobs_df[
+        jobs_df.empsix == sector][groupby_col].value_counts()
+    need_more_jobs = target_jobs - current_jobs
+    need_more_jobs = need_more_jobs[need_more_jobs > 0]
+    need_more_jobs_total = need_more_jobs.sum()
+    print need_more_jobs
+
+    available_jobs = \
+        jobs_df.query("empsix == '%s' and building_id == -1" % sector)
+
+    if len(available_jobs) >= need_more_jobs_total:
+
+        # have enough jobs to assign, truncate available jobs
+        available_jobs = available_jobs.head(need_more_jobs_total)
+
+    else:
+
+        # don't have enough jobs - random sample locations
+        need_more_jobs = round_series_match_target(
+            need_more_jobs, len(available_jobs), 0)
+
+    assert len(need_more_jobs) == len(available_jobs)
+
+    # choose random locations within jurises to match need_more_jobs totals
+    return pd.Series(
+        groupby_random_choice(buildings.juris, need_more_jobs),
+        available_jobs.index)
+
+
+@orca.step()
+def proportional_jobs_model(jobs, households, buildings, parcels,
+                            year, run_num):
+
+    # can't run in the base year since we compare to baseyear numbers
+    if(year == 2010):
+        return
+
+    sum_df = pd.read_csv(
+        os.path.join(
+            "runs",
+            "run%d_juris_summaries_2010.csv" % run_num
+        ),
+        index_col="juris"
+    )
+
+    jobs_df = orca.merge_tables(
+        target='jobs',
+        tables=[jobs, buildings, parcels],
+        columns=['juris', 'empsix', 'building_id'])
+
+    hh_df = orca.merge_tables(
+        target='households',
+        tables=[households, buildings, parcels],
+        columns=['juris'])
+
+    # the idea here is to make sure we don't lose local retail and gov't
+    # jobs - there has to be some amount of basic services to support an
+    # increase in population
+
+    s = proportional_jobs_model(
+        sum_df.eval("retempn * .33 / tothh"),
+        "RETEMPN",
+        sum_df,
+        hh_df,
+        jobs_df
+    )
+
+    print s
 
 
 @orca.step()

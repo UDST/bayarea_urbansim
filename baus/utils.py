@@ -63,6 +63,17 @@ def random_indexes(s, num):
     return np.random.choice(s.index.values, num, replace=False)
 
 
+# This is best described by example. Imagine s is a series where the
+# index is parcel ids and the values are cities, while counts is a
+# series where the index is cities and the values are counts.  Yo
+# want to end up with "counts" many parcel ids from s.  This can be
+# thought of as grouping the dataframe "s" came from and sampling
+# count number of rows from each group.  To my knowledge there's no
+# Pandas function for this yet, and so it's pretty slow
+def groupby_random_choice(s, counts):
+    pass
+
+
 # This method takes a series of floating point numbers, rounds to
 # integers (e.g. to while number households), while making sure to
 # meet the given target for the sum.  We're obviously going to lose
