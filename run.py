@@ -94,6 +94,7 @@ def get_simulation_models(SCENARIO):
         "retail_developer",
 
         "hlcm_simulate",                 # put these last so they don't get
+        "proportional_elcm",             # start with a proportional jobs model
         "elcm_simulate",                 # displaced by new dev
 
         "topsheet",

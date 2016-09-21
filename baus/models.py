@@ -105,27 +105,30 @@ def static_parcels(settings, parcels):
         pd.DataFrame(index=static_parcels), parcels).index.values
 
 
-def proportional_jobs_model(
+def _proportional_jobs_model(
     target_ratio,  # ratio of jobs of this sector to households
     sector,        # empsix sector
     groupby_col,   # ratio will be matched at this level of geog
     sum_df,
     hh_df,
-    jobs_df
+    jobs_df,
+    locations_series
 ):
-    # FOR DEBUGGING
-    FACTOR = 5
 
-    target_jobs = hh_df[groupby_col].value_counts() * target_ratio * FACTOR
+    target_jobs = hh_df[groupby_col].value_counts() * target_ratio
+    target_jobs = target_jobs.astype('int')
     current_jobs = jobs_df[
         jobs_df.empsix == sector][groupby_col].value_counts()
     need_more_jobs = target_jobs - current_jobs
     need_more_jobs = need_more_jobs[need_more_jobs > 0]
-    need_more_jobs_total = need_more_jobs.sum()
-    print need_more_jobs
+    need_more_jobs_total = int(need_more_jobs.sum())
 
     available_jobs = \
         jobs_df.query("empsix == '%s' and building_id == -1" % sector)
+
+    if len(available_jobs) == 0:
+        # corner case
+        return pd.Series()
 
     if len(available_jobs) >= need_more_jobs_total:
 
@@ -134,21 +137,24 @@ def proportional_jobs_model(
 
     else:
 
-        # don't have enough jobs - random sample locations
+        # don't have enough jobs - random sample locations to partially
+        # match the need (won't succed matching the entire need)
         need_more_jobs = round_series_match_target(
             need_more_jobs, len(available_jobs), 0)
+        need_more_jobs_total = need_more_jobs.sum()
+        print need_more_jobs_total
 
-    assert len(need_more_jobs) == len(available_jobs)
+    assert need_more_jobs_total == len(available_jobs)
+
+    choices = groupby_random_choice(locations_series, need_more_jobs)
 
     # choose random locations within jurises to match need_more_jobs totals
-    return pd.Series(
-        groupby_random_choice(buildings.juris, need_more_jobs),
-        available_jobs.index)
+    return pd.Series(choices.index, available_jobs.index)
 
 
 @orca.step()
-def proportional_jobs_model(jobs, households, buildings, parcels,
-                            year, run_num):
+def proportional_elcm(jobs, households, buildings, parcels,
+                      year, run_num):
 
     # can't run in the base year since we compare to baseyear numbers
     if(year == 2010):
@@ -162,10 +168,14 @@ def proportional_jobs_model(jobs, households, buildings, parcels,
         index_col="juris"
     )
 
-    jobs_df = orca.merge_tables(
+    # not a big fan of this - jobs with building_ids of -1 get dropped
+    # by the merge so you have to grab the columns first and fill in
+    # juris iff and building_id is != -1
+    jobs_df = jobs.to_frame(["building_id", "empsix"])
+    jobs_df["juris"] = orca.merge_tables(
         target='jobs',
         tables=[jobs, buildings, parcels],
-        columns=['juris', 'empsix', 'building_id'])
+        columns=['juris']).juris
 
     hh_df = orca.merge_tables(
         target='households',
@@ -176,15 +186,31 @@ def proportional_jobs_model(jobs, households, buildings, parcels,
     # jobs - there has to be some amount of basic services to support an
     # increase in population
 
-    s = proportional_jobs_model(
+    buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
+
+    s = _proportional_jobs_model(
         sum_df.eval("retempn * .33 / tothh"),
         "RETEMPN",
+        "juris",
         sum_df,
         hh_df,
-        jobs_df
+        jobs_df,
+        buildings_juris
     )
 
-    print s
+    jobs.update_col_from_series("building_id", s)
+
+    s = _proportional_jobs_model(
+        sum_df.eval("othempn * .66 / tothh"),
+        "OTHEMPN",
+        "juris",
+        sum_df,
+        hh_df,
+        jobs_df,
+        buildings_juris
+    )
+
+    jobs.update_col_from_series("building_id", s)
 
 
 @orca.step()
