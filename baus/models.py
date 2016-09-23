@@ -6,6 +6,7 @@ import yaml
 import datasources
 import variables
 from utils import parcel_id_to_geom_id, geom_id_to_parcel_id, add_buildings
+from utils import round_series_match_target, groupby_random_choice
 from urbansim.utils import networks
 import pandana.network as pdna
 from urbansim_defaults import models
@@ -102,6 +103,121 @@ def static_parcels(settings, parcels):
     # geom_ids -> parcel_ids
     return geom_id_to_parcel_id(
         pd.DataFrame(index=static_parcels), parcels).index.values
+
+
+def _proportional_jobs_model(
+    target_ratio,  # ratio of jobs of this sector to households
+    sector,        # empsix sector
+    groupby_col,   # ratio will be matched at this level of geog
+    sum_df,
+    hh_df,
+    jobs_df,
+    locations_series
+):
+
+    target_jobs = hh_df[groupby_col].value_counts() * target_ratio
+    target_jobs = target_jobs.astype('int')
+    current_jobs = jobs_df[
+        jobs_df.empsix == sector][groupby_col].value_counts()
+    need_more_jobs = target_jobs - current_jobs
+    need_more_jobs = need_more_jobs[need_more_jobs > 0]
+    need_more_jobs_total = int(need_more_jobs.sum())
+
+    available_jobs = \
+        jobs_df.query("empsix == '%s' and building_id == -1" % sector)
+
+    print "Need more jobs total: %d" % need_more_jobs_total
+    print "Available jobs: %d" % len(available_jobs)
+
+    if len(available_jobs) == 0:
+        # corner case
+        return pd.Series()
+
+    if len(available_jobs) >= need_more_jobs_total:
+
+        # have enough jobs to assign, truncate available jobs
+        available_jobs = available_jobs.head(need_more_jobs_total)
+
+    else:
+
+        # don't have enough jobs - random sample locations to partially
+        # match the need (won't succed matching the entire need)
+        need_more_jobs = round_series_match_target(
+            need_more_jobs, len(available_jobs), 0)
+        need_more_jobs_total = need_more_jobs.sum()
+
+    assert need_more_jobs_total == len(available_jobs)
+
+    if need_more_jobs_total <= 0:
+        return pd.Series()
+
+    print "Need more jobs\n", need_more_jobs
+
+    choices = groupby_random_choice(locations_series, need_more_jobs)
+
+    # choose random locations within jurises to match need_more_jobs totals
+    return pd.Series(choices.index, available_jobs.index)
+
+
+@orca.step()
+def proportional_elcm(jobs, households, buildings, parcels,
+                      year, run_number):
+
+    # can't run in the base year since we compare to baseyear numbers
+    if(year == 2010):
+        return
+
+    sum_df = pd.read_csv(
+        os.path.join(
+            "runs",
+            "run%d_juris_summaries_2010.csv" % run_number
+        ),
+        index_col="juris"
+    )
+
+    # not a big fan of this - jobs with building_ids of -1 get dropped
+    # by the merge so you have to grab the columns first and fill in
+    # juris iff and building_id is != -1
+    jobs_df = jobs.to_frame(["building_id", "empsix"])
+    jobs_df["juris"] = orca.merge_tables(
+        target='jobs',
+        tables=[jobs, buildings, parcels],
+        columns=['juris']).juris
+
+    hh_df = orca.merge_tables(
+        target='households',
+        tables=[households, buildings, parcels],
+        columns=['juris'])
+
+    # the idea here is to make sure we don't lose local retail and gov't
+    # jobs - there has to be some amount of basic services to support an
+    # increase in population
+
+    buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
+
+    s = _proportional_jobs_model(
+        sum_df.eval("retempn * .33 / tothh"),
+        "RETEMPN",
+        "juris",
+        sum_df,
+        hh_df,
+        jobs_df,
+        buildings_juris
+    )
+
+    jobs.update_col_from_series("building_id", s)
+
+    s = _proportional_jobs_model(
+        sum_df.eval("othempn * .66 / tothh"),
+        "OTHEMPN",
+        "juris",
+        sum_df,
+        hh_df,
+        jobs_df,
+        buildings_juris
+    )
+
+    jobs.update_col_from_series("building_id", s)
 
 
 @orca.step()

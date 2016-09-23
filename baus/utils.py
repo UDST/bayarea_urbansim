@@ -58,9 +58,28 @@ def parcel_id_to_geom_id(s):
     return pd.Series(g.loc[s.values].values, index=s.index)
 
 
+# This is best described by example. Imagine s is a series where the
+# index is parcel ids and the values are cities, while counts is a
+# series where the index is cities and the values are counts.  You
+# want to end up with "counts" many parcel ids from s (like 40 from
+# Oakland, 60 from SF, and 20 from San Jose).  This can be
+# thought of as grouping the dataframe "s" came from and sampling
+# count number of rows from each group.  I mean, you group the
+# dataframe and then counts gives you the count you want to sample
+# from each group.
+def groupby_random_choice(s, counts):
+    return pd.concat([
+        s[s == grp].sample(cnt, replace=True)
+        for grp, cnt in counts.iteritems()
+    ])
+
+
 # pick random indexes from s without replacement
-def random_indexes(s, num):
-    return np.random.choice(s.index.values, num, replace=False)
+def random_indexes(s, num, replace=False):
+    return np.random.choice(
+        np.repeat(s.index.values, s.values),
+        num,
+        replace=replace)
 
 
 # This method takes a series of floating point numbers, rounds to
@@ -69,12 +88,21 @@ def random_indexes(s, num):
 # some resolution on the distrbution implied by s in order to meet
 # the target exactly
 def round_series_match_target(s, target, fillna):
+
+    if target == 0 or s.sum() == 0:
+        return s
+
     s = s.fillna(fillna).round().astype('int')
     diff = target - s.sum()
+
     if diff > 0:
-        s.loc[random_indexes(s, diff)] += 1
+        # replace=True allows us to add even more than we have now
+        indexes = random_indexes(s, abs(diff), replace=True)
+        s = s.add(pd.Series(indexes).value_counts(), fill_value=0)
     elif diff < 0:
-        s.loc[random_indexes(s, diff*-1)] -= 1
+        # this makes sure we can only subtract until all rows are zero
+        indexes = random_indexes(s, abs(diff))
+        s = s.sub(pd.Series(indexes).value_counts(), fill_value=0)
 
     assert s.sum() == target
     return s
