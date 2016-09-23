@@ -69,17 +69,17 @@ def parcel_id_to_geom_id(s):
 # from each group.
 def groupby_random_choice(s, counts):
     return pd.concat([
-        s[s == grp].sample(cnt)
+        s[s == grp].sample(cnt, replace=True)
         for grp, cnt in counts.iteritems()
     ])
 
 
 # pick random indexes from s without replacement
-def random_indexes(s, num):
+def random_indexes(s, num, replace=False):
     return np.random.choice(
         np.repeat(s.index.values, s.values),
         num,
-        replace=False)
+        replace=replace)
 
 
 # This method takes a series of floating point numbers, rounds to
@@ -88,12 +88,20 @@ def random_indexes(s, num):
 # some resolution on the distrbution implied by s in order to meet
 # the target exactly
 def round_series_match_target(s, target, fillna):
+
+    if target == 0 or s.sum() == 0:
+        return s
+
     s = s.fillna(fillna).round().astype('int')
     diff = target - s.sum()
-    indexes = random_indexes(s, abs(diff))
+
     if diff > 0:
+        # replace=True allows us to add even more than we have now
+        indexes = random_indexes(s, abs(diff), replace=True)
         s = s.add(pd.Series(indexes).value_counts(), fill_value=0)
     elif diff < 0:
+        # this makes sure we can only subtract until all rows are zero
+        indexes = random_indexes(s, abs(diff))
         s = s.sub(pd.Series(indexes).value_counts(), fill_value=0)
 
     assert s.sum() == target

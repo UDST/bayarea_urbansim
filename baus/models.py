@@ -126,6 +126,9 @@ def _proportional_jobs_model(
     available_jobs = \
         jobs_df.query("empsix == '%s' and building_id == -1" % sector)
 
+    print "Need more jobs total: %d" % need_more_jobs_total
+    print "Available jobs: %d" % len(available_jobs)
+
     if len(available_jobs) == 0:
         # corner case
         return pd.Series()
@@ -142,9 +145,13 @@ def _proportional_jobs_model(
         need_more_jobs = round_series_match_target(
             need_more_jobs, len(available_jobs), 0)
         need_more_jobs_total = need_more_jobs.sum()
-        print need_more_jobs_total
 
     assert need_more_jobs_total == len(available_jobs)
+
+    if need_more_jobs_total <= 0:
+        return pd.Series()
+
+    print "Need more jobs\n", need_more_jobs
 
     choices = groupby_random_choice(locations_series, need_more_jobs)
 
@@ -154,7 +161,7 @@ def _proportional_jobs_model(
 
 @orca.step()
 def proportional_elcm(jobs, households, buildings, parcels,
-                      year, run_num):
+                      year, run_number):
 
     # can't run in the base year since we compare to baseyear numbers
     if(year == 2010):
@@ -163,7 +170,7 @@ def proportional_elcm(jobs, households, buildings, parcels,
     sum_df = pd.read_csv(
         os.path.join(
             "runs",
-            "run%d_juris_summaries_2010.csv" % run_num
+            "run%d_juris_summaries_2010.csv" % run_number
         ),
         index_col="juris"
     )
