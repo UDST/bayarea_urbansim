@@ -387,6 +387,8 @@ def parcels_geography(parcels):
 
     df["pda_id"] = df.pda_id.str.lower()
 
+    df["pda_id"] = df.pda_id.replace("dan1", np.nan)
+
     return df
 
 
