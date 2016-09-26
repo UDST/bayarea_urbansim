@@ -51,8 +51,17 @@ def limits_settings(settings, scenario):
     d = settings['development_limits']
 
     if scenario in d.keys():
+        assert "default" in d
+
+        d_scen = d[scenario]
+        d = d["default"]
+        for branch in d_scen.keys():
+            for leaf, val in d_scen[branch].iteritems():
+                print branch, leaf, val
+                d[branch][leaf] = val
+
         print "Using limits for scenario: %s" % scenario
-        return d[scenario]
+        return d
 
     if "default" in d.keys():
         print "Using default limits"
