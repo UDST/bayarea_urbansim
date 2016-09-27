@@ -163,21 +163,9 @@ def _proportional_jobs_model(
 def proportional_elcm(jobs, households, buildings, parcels,
                       year, run_number):
 
-    # can't run in the base year since we compare to baseyear numbers
-    if(year == 2010):
-        return
-
-    sum_df = pd.read_csv(
-        os.path.join(
-            "runs",
-            "run%d_juris_summaries_2010.csv" % run_number
-        ),
-        index_col="juris"
-    )
-
     # not a big fan of this - jobs with building_ids of -1 get dropped
     # by the merge so you have to grab the columns first and fill in
-    # juris iff and building_id is != -1
+    # juris iff the building_id is != -1
     jobs_df = jobs.to_frame(["building_id", "empsix"])
     jobs_df["juris"] = orca.merge_tables(
         target='jobs',
@@ -196,7 +184,12 @@ def proportional_elcm(jobs, households, buildings, parcels,
     buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
 
     s = _proportional_jobs_model(
-        sum_df.eval("retempn * .33 / tothh"),
+        # this is the base year region-wide ratio of retail employment
+        # to households - we think .33 is local serving and we don't
+        # want any jurises count of retail jobs to drop below this
+        # amount of jobs, assuming every place needs local-serving
+        # retail jobs
+        325645 / 2608019 * .33, 
         "RETEMPN",
         "juris",
         sum_df,
@@ -208,7 +201,9 @@ def proportional_elcm(jobs, households, buildings, parcels,
     jobs.update_col_from_series("building_id", s)
 
     s = _proportional_jobs_model(
-        sum_df.eval("othempn * .66 / tothh"),
+        # same as above but for a different sector - 2/3rds of other
+        # jobs are government and should be in every city
+        733179 / 2608019 * .66,
         "OTHEMPN",
         "juris",
         sum_df,
