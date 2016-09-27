@@ -783,58 +783,9 @@ cost_shifters:
 development_limits:
   default:
     Office:
-      'Alameda': 200
-      'Antioch': 250
-      'Atherton': 0
-      'Berkeley': 1000
-      'Benicia': 200
-      'Brentwood': 85
-      'Brisbane': 225
-      'Calistoga': 5
-      'Cloverdale': 5
-      'Half Moon Bay': 0
-      'Livermore': 10
-      'Los Altos Hills': 0
-      'Los Gatos': 0
-      'Monte Sereno': 0
-      'Pacifica': 1
-      'Palo Alto': 250
-      'Piedmont': 4
-      'Portola Valley': 0
       'San Francisco': 3500
-      'San Jose': 7250
-      'St. Helena': 4
-      'Saratoga': 0
-      'Woodside': 0
-      'Yountville': 0
-      'Contra Costa County': 130
-      'San Mateo County': 150
-      'Solano County': 30
-      'Sonoma County': 0
     Residential:
-      'Alameda': 100
-      'Belvedere': 2
-      'Brisbane': 180
-      'Calistoga': 5
-      'Cloverdale': 30
-      'Half Moon Bay': 4
-      'Lafayette': 40
-      'Los Altos': 30
-      'Mill Valley': 16
-      'Moraga': 25
-      'Petaluma': 45
-      'San Jose': 3900
-      'San Rafael': 140
-      'Saratoga': 2
-      'St. Helena': 4
-      'Woodside': 0
-      'Yountville': 0
-      'Contra Costa County': 300
-      'Napa County': 40
-      'Marin County': 1
-      'Santa Clara County': 50
-      'Solano County': 0
-      'Sonoma County': 0
+      'Half Moon Bay': 40
   "2":
     Office:
       'San Francisco': 5250
