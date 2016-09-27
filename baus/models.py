@@ -109,7 +109,6 @@ def _proportional_jobs_model(
     target_ratio,  # ratio of jobs of this sector to households
     sector,        # empsix sector
     groupby_col,   # ratio will be matched at this level of geog
-    sum_df,
     hh_df,
     jobs_df,
     locations_series
@@ -192,7 +191,6 @@ def proportional_elcm(jobs, households, buildings, parcels,
         325645 / 2608019 * .33, 
         "RETEMPN",
         "juris",
-        sum_df,
         hh_df,
         jobs_df,
         buildings_juris
@@ -206,7 +204,6 @@ def proportional_elcm(jobs, households, buildings, parcels,
         733179 / 2608019 * .66,
         "OTHEMPN",
         "juris",
-        sum_df,
         hh_df,
         jobs_df,
         buildings_juris
