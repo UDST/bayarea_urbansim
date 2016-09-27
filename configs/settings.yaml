@@ -783,15 +783,14 @@ cost_shifters:
 development_limits:
   default:
     Office:
+      'Palo Alto': 250
       'San Francisco': 3500
     Residential:
       'Half Moon Bay': 40
+      'Petaluma': 45
   "2":
     Office:
       'San Francisco': 5250
-  "4":
-    Office:
-      'San Francisco': 4375
   "5":
     Office:
       'San Francisco': 5250
