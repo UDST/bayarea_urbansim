@@ -188,7 +188,7 @@ def proportional_elcm(jobs, households, buildings, parcels,
         # want any jurises count of retail jobs to drop below this
         # amount of jobs, assuming every place needs local-serving
         # retail jobs
-        325645 / 2608019 * .33, 
+        325645.0 / 2608019 * .33,
         "RETEMPN",
         "juris",
         hh_df,
@@ -201,7 +201,7 @@ def proportional_elcm(jobs, households, buildings, parcels,
     s = _proportional_jobs_model(
         # same as above but for a different sector - 2/3rds of other
         # jobs are government and should be in every city
-        733179 / 2608019 * .66,
+        733179.0 / 2608019 * .66,
         "OTHEMPN",
         "juris",
         hh_df,
