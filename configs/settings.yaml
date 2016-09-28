@@ -785,9 +785,15 @@ development_limits:
     Office:
       'Palo Alto': 250
       'San Francisco': 3500
+      'St. Helena': 1
+      'Sonoma County': 400
     Residential:
       'Half Moon Bay': 40
       'Petaluma': 45
+      'St. Helena': 6
+      'Woodside': 5
+      'Yountville': 2
+      'Sonoma County': 345
   "2":
     Office:
       'San Francisco': 5250
