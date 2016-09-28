@@ -475,7 +475,7 @@ def residential_developer(feasibility, households, buildings, parcels, year,
 
         if final_target is not None and new_buildings is not None:
             # make sure we don't overbuild the target for the whole simulation
-            overshoot = new_buildings.net_units.sum() - max_target
+            overshoot = new_buildings.net_units.sum() - final_target
 
             if overshoot > 0:
                 index = new_buildings.tail(1).index[0]
