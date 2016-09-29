@@ -1,4 +1,4 @@
-taz1454,target_units,target_vacancy,target_sf,target_mf,emp_sec11,emp_sec10,emp_sec22,emp_sec23,emp_sec3133,emp_sec42,emp_sec4445,emp_sec4849,emp_sec51,emp_sec52,emp_sec53,emp_sec54,emp_sec55,emp_sec56,emp_sec61,emp_sec62,emp_sec71,emp_sec72,emp_sec81,emp_sec91,emp_tot,target_nonres_sqft
+taz1454,target_units,target_ltvacancy,target_sf,target_mf,emp_sec11,emp_sec10,emp_sec22,emp_sec23,emp_sec3133,emp_sec42,emp_sec4445,emp_sec4849,emp_sec51,emp_sec52,emp_sec53,emp_sec54,emp_sec55,emp_sec56,emp_sec61,emp_sec62,emp_sec71,emp_sec72,emp_sec81,emp_sec91,emp_tot,target_nonres_sqft
 
 1,61,0.164,1,60,4,5,225,267,249,323,267,8,1520,6096,941,3623,7,4821,105,298,53,444,359,64,19679,8100540
 
