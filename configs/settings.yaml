@@ -39,6 +39,8 @@ eliminate_retail_zoning_from_juris:
   - 'Benicia'
   - 'Brentwood'
   - 'Antioch'
+  - 'Atherton'
+  - 'Belvedere'
   - 'Yountville'
   - 'Woodside'
   - 'Monte Sereno'
@@ -49,6 +51,8 @@ eliminate_retail_zoning_from_juris:
   - 'Cloverdale'
   - 'Livermore'
   - 'Los Gatos'
+  - 'Tiburon'
+  - 'Piedmont'
 
 
 clip_sqft_per_unit_based_on_dua:
@@ -785,23 +789,28 @@ development_limits:
     Office:
       'Atherton': 0
       'Belvedere': 1
-      'Cupertino': 400
-      'Fairfax': 3
-      'Hillsborough': 5
-      'Los Altos Hills': 3
+      'Cupertino': 200
+      'Fairfax': 0
+      'Half Moon Bay': 0
+      'Healdsburg': 25
+      'Hillsborough': 0
+      'Larkspur': 25
+      'Los Altos Hills': 0
       'Mill Valley': 0
       'Monte Sereno': 0
-      'Palo Alto': 250
+      'Palo Alto': 200
       'Piedmont': 0
       'Ross': 0
+      'San Anselmo': 0
       'San Francisco': 3500
       'St. Helena': 5
+      'Saratoga': 0
       'Tiburon': 0
-      'Alameda County': 125
-      'Contra Costa County': 190
-      'Marin County': 100
+      'Alameda County': 75
+      'Contra Costa County': 100
+      'Marin County': 0
       'Solano County': 3
-      'Sonoma County': 150
+      'Sonoma County': 0
     Residential:
       'Half Moon Bay': 44
       'Petaluma': 75
