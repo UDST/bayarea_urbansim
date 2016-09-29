@@ -239,6 +239,45 @@ def vacant_market_rate_units(buildings, households, settings, low_income):
         sub(s1, fill_value=0).sub(s2, fill_value=0).clip(lower=0)
 
 
+@orca.column('buildings')
+def vacant_market_rate_units_minus_structural_vacancy(buildings,
+                                                      baseyear_taz_controls):
+
+    # first sum the residential units by zone and multiple by structural
+    # vacancy rate in order to get the required vacancies
+    required_vacant_units_by_zone = \
+        (buildings.residential_units.groupby(buildings.zone_id).sum() *
+         baseyear_taz_controls.target_vacancy).astype("int")
+
+    print "required_vacant_units_by_zone", required_vacant_units_by_zone
+
+    # this will take vacant_market_rate_units above and remove the number of
+    # units that we require to be vacant because of the structural vacancy rate
+    print len(buildings)
+    print buildings.zone_id.isnull().value_counts()
+    print buildings.vacant_market_rate_units.isnull().value_counts()
+    unit_zone_ids = \
+        buildings.zone_id.repeat(
+            buildings.vacant_market_rate_units.astype("int"))
+
+    print "unit_zone_ids", unit_zone_ids
+
+    remove_unit_zone_ids =\
+        groupby_random_choice(unit_zone_ids, required_vacant_units_by_zone)
+
+    print "remove_unit_zone_ids", remove_unit_zone_ids
+
+    remove_building_zone_ids = pd.Series(remove_unit_zone_ids).value_counts()
+
+    print "remove_building_zone_ids", remove_building_zone_ids
+
+    s = buildings.vacant_market_rate_units - remove_building_zone_ids
+
+    print "return", s
+
+    return s
+
+
 @orca.column('buildings', cache=True)
 def building_age(buildings, year):
     return (year or 2014) - buildings.year_built

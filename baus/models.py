@@ -58,7 +58,7 @@ def hlcm_simulate(households, buildings, aggregations, settings, low_income):
     utils.lcm_simulate("hlcm.yaml", households, buildings,
                        aggregations,
                        "building_id", "residential_units",
-                       "vacant_market_rate_units",
+                       "vacant_market_rate_units_minus_structural_vacancy",
                        settings.get("enable_supply_correction", None))
 
 
@@ -189,7 +189,7 @@ def proportional_elcm(jobs, households, buildings, parcels,
         # want any jurises count of retail jobs to drop below this
         # amount of jobs, assuming every place needs local-serving
         # retail jobs
-        325645 / 2608019 * .33, 
+        325645 / 2608019 * .33,
         "RETEMPN",
         "juris",
         sum_df,
