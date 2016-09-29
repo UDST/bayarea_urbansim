@@ -783,25 +783,34 @@ cost_shifters:
 development_limits:
   default:
     Office:
+      'Atherton': 0
       'Belvedere': 1
       'Cupertino': 400
+      'Fairfax': 3
+      'Hillsborough': 5
+      'Los Altos Hills': 3
+      'Mill Valley': 0
+      'Monte Sereno': 0
       'Palo Alto': 250
+      'Piedmont': 0
+      'Ross': 0
       'San Francisco': 3500
-      'St. Helena': 3
-      'Tiburon': 3
-      'Alameda County': 150
+      'St. Helena': 5
+      'Tiburon': 0
+      'Alameda County': 125
       'Contra Costa County': 190
-      'Solano County': 5
-      'Sonoma County': 200
+      'Marin County': 100
+      'Solano County': 3
+      'Sonoma County': 150
     Residential:
       'Half Moon Bay': 44
       'Petaluma': 75
-      'St. Helena': 12
+      'St. Helena': 10
       'Woodside': 5
       'Yountville': 2
       'Alameda County': 205
-      'Napa County': 55
-      'Sonoma County': 175
+      'Napa County': 50
+      'Sonoma County': 180
   "2":
     Office:
       'San Francisco': 5250
