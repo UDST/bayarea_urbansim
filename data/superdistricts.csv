@@ -1,7 +1,7 @@
 number,name,subregion,sqft_per_job_factor
-1,SF NE,1,0.875
+1,SF NE,1,0.937
 2,SF NW,1,0.937
-3,SF S SE,1,1
+3,SF S SE,1,0.875
 4,SF SW,1,1
 5,Daly City Millbrae,2,1
 6,San Mateo,2,0.937
