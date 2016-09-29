@@ -783,17 +783,25 @@ cost_shifters:
 development_limits:
   default:
     Office:
+      'Belvedere': 1
+      'Cupertino': 400
       'Palo Alto': 250
       'San Francisco': 3500
-      'St. Helena': 1
-      'Sonoma County': 400
+      'St. Helena': 3
+      'Tiburon': 3
+      'Alameda County': 150
+      'Contra Costa County': 190
+      'Solano County': 5
+      'Sonoma County': 200
     Residential:
-      'Half Moon Bay': 40
-      'Petaluma': 45
+      'Half Moon Bay': 44
+      'Petaluma': 75
       'St. Helena': 12
       'Woodside': 5
       'Yountville': 2
-      'Sonoma County': 345
+      'Alameda County': 205
+      'Napa County': 55
+      'Sonoma County': 175
   "2":
     Office:
       'San Francisco': 5250
