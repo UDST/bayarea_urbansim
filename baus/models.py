@@ -109,7 +109,6 @@ def _proportional_jobs_model(
     target_ratio,  # ratio of jobs of this sector to households
     sector,        # empsix sector
     groupby_col,   # ratio will be matched at this level of geog
-    sum_df,
     hh_df,
     jobs_df,
     locations_series
@@ -189,10 +188,9 @@ def proportional_elcm(jobs, households, buildings, parcels,
         # want any jurises count of retail jobs to drop below this
         # amount of jobs, assuming every place needs local-serving
         # retail jobs
-        325645 / 2608019 * .33,
+        325645.0 / 2608019 * .33,
         "RETEMPN",
         "juris",
-        sum_df,
         hh_df,
         jobs_df,
         buildings_juris
@@ -203,10 +201,9 @@ def proportional_elcm(jobs, households, buildings, parcels,
     s = _proportional_jobs_model(
         # same as above but for a different sector - 2/3rds of other
         # jobs are government and should be in every city
-        733179 / 2608019 * .66,
+        733179.0 / 2608019 * .66,
         "OTHEMPN",
         "juris",
-        sum_df,
         hh_df,
         jobs_df,
         buildings_juris
