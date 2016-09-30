@@ -1014,20 +1014,19 @@ def correct_baseyear_data(buildings, parcels, jobs):
     SURPLUS_VACANCY_JURIS = buildings_juris.map({
        "Yountville": .001,
        "Benicia": .2,
-       "Woodside": .05,
-       "Atherton": .05,
+       "Woodside": 0,
+       "Atherton": 0,
        "Los Altos Hills": 0,
        "Monte Sereno": 0,
        "Portola Valley": 0,
        "Berkeley": .75,
        "St. Helena": .01,
        "Saratoga": .05,
-       "Piedmont": .01,
+       "Piedmont": 0,
        "Portola Valley": 0,
-       "Los Gatos": .05,
+       "Los Gatos": 0,
        "Cloverdale": 0,
        "Alameda": .2,
-       "Walnut Creek": .9,
        "Half Moon Bay": 0
     })
 
