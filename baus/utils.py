@@ -67,10 +67,10 @@ def parcel_id_to_geom_id(s):
 # count number of rows from each group.  I mean, you group the
 # dataframe and then counts gives you the count you want to sample
 # from each group.
-def groupby_random_choice(s, counts):
+def groupby_random_choice(s, counts, replace=True):
     return pd.concat([
-        s[s == grp].sample(cnt, replace=True)
-        for grp, cnt in counts.iteritems()
+        s[s == grp].sample(cnt, replace=False)
+        for grp, cnt in counts[counts > 0].iteritems()
     ])
 
 
