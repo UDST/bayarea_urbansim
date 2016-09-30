@@ -40,12 +40,15 @@ eliminate_retail_zoning_from_juris:
   - 'Brentwood'
   - 'Antioch'
   - 'Atherton'
+  - 'Fairfax'
+  - 'Hillsborough'
   - 'Belvedere'
   - 'Yountville'
   - 'Woodside'
   - 'Monte Sereno'
   - 'Los Altos Hills'
   - 'Half Moon Bay'
+  - 'Larkspur'
   - 'Portola Valley'
   - 'Saratoga'
   - 'Cloverdale'
@@ -53,6 +56,8 @@ eliminate_retail_zoning_from_juris:
   - 'Los Gatos'
   - 'Tiburon'
   - 'Piedmont'
+  - 'Ross'
+  - 'Atherton'
 
 
 clip_sqft_per_unit_based_on_dua:
@@ -794,7 +799,7 @@ development_limits:
       'Half Moon Bay': 0
       'Healdsburg': 25
       'Hillsborough': 0
-      'Larkspur': 25
+      'Larkspur': 0
       'Los Altos Hills': 0
       'Mill Valley': 0
       'Monte Sereno': 0
