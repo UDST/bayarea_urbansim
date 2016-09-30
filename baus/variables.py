@@ -243,9 +243,7 @@ def vacant_market_rate_units(buildings, households, settings, low_income):
         # -1 means unplaced - it's not a building id
         del s[-1]
 
-    s = s.reindex(buildings.index).fillna(0)
-
-    return s
+    return s.reindex(buildings.index).fillna(0)
 
 
 @orca.column('buildings')
