@@ -811,10 +811,10 @@ development_limits:
       'St. Helena': 5
       'Saratoga': 0
       'Tiburon': 0
-      'Alameda County': 75
-      'Contra Costa County': 100
+      'Alameda County': 0
+      'Contra Costa County': 0
       'Marin County': 0
-      'Solano County': 3
+      'Solano County': 0
       'Sonoma County': 0
     Residential:
       'Half Moon Bay': 44
@@ -823,8 +823,8 @@ development_limits:
       'Woodside': 5
       'Yountville': 2
       'Alameda County': 205
-      'Napa County': 50
-      'Sonoma County': 180
+      'Napa County': 25
+      'Sonoma County': 50
   "2":
     Office:
       'San Francisco': 5250
