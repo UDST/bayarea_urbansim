@@ -3,7 +3,7 @@ import pandas as pd
 from urbansim.utils import misc
 import orca
 import datasources
-from utils import nearest_neighbor
+from utils import nearest_neighbor, groupby_random_choice
 from urbansim_defaults import utils
 from urbansim_defaults import variables
 
@@ -229,14 +229,67 @@ def vacant_affordable_units(buildings):
 
 @orca.column('buildings')
 def vacant_market_rate_units(buildings, households, settings, low_income):
+
     # this is market rate households per building
     s1 = households.building_id[households.income > low_income].value_counts()
     # this is low income households in market rate units - a negative number
     # in vacant affordable units indicates the number of households in market
     # rate units
     s2 = buildings.vacant_affordable_units_neg.clip(upper=0)*-1
-    return buildings.market_rate_units.\
+    s = buildings.market_rate_units.\
         sub(s1, fill_value=0).sub(s2, fill_value=0).clip(lower=0)
+
+    if -1 in s:
+        # -1 means unplaced - it's not a building id
+        del s[-1]
+
+    return s.reindex(buildings.index).fillna(0)
+
+
+@orca.column('buildings')
+def vacant_market_rate_units_minus_structural_vacancy(buildings,
+                                                      baseyear_taz_controls):
+    # this will take vacant_market_rate_units above and remove the number of
+    # units that we require to be vacant because of the structural vacancy rate
+
+    # first sum the residential units by zone and multiply by structural
+    # vacancy rate in order to get the required vacancies
+    residential_units_by_zone = \
+        buildings.residential_units.groupby(buildings.zone_id).sum()
+
+    required_vacant_units_by_zone = \
+        (residential_units_by_zone *
+         baseyear_taz_controls.target_ltvacancy).astype("int")
+
+    # repeat building ids according to the number of vacant units
+    unit_zone_ids = \
+        buildings.zone_id.repeat(
+            buildings.vacant_market_rate_units.astype("int"))
+
+    # this is some convoluted pandas for the next two lines!
+    # but the concept is simple:
+    # can't require more vacancy units than we have
+    s = unit_zone_ids.value_counts().reindex(
+        required_vacant_units_by_zone.index).fillna(0)
+
+    required_vacant_units_by_zone = \
+        required_vacant_units_by_zone.clip(upper=s).astype('int')
+
+    # select among units to remove from the choice and leave vacant
+    remove_unit_zone_ids =\
+        groupby_random_choice(unit_zone_ids,
+                              required_vacant_units_by_zone,
+                              replace=False)
+
+    # the building ids are the index, so count em up
+    remove_building_zone_ids = pd.Series(
+        remove_unit_zone_ids.index).value_counts()
+
+    # subtract the ones we want to stay vacant from the vacant ones
+    s = buildings.vacant_market_rate_units.sub(
+        remove_building_zone_ids, fill_value=0)
+
+    return s
 
 
 @orca.column('buildings', cache=True)

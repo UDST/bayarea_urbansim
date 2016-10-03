@@ -58,7 +58,7 @@ def hlcm_simulate(households, buildings, aggregations, settings, low_income):
     utils.lcm_simulate("hlcm.yaml", households, buildings,
                        aggregations,
                        "building_id", "residential_units",
-                       "vacant_market_rate_units",
+                       "vacant_market_rate_units_minus_structural_vacancy",
                        settings.get("enable_supply_correction", None))
 
 
