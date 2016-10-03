@@ -109,7 +109,6 @@ def _proportional_jobs_model(
     target_ratio,  # ratio of jobs of this sector to households
     sector,        # empsix sector
     groupby_col,   # ratio will be matched at this level of geog
-    sum_df,
     hh_df,
     jobs_df,
     locations_series
@@ -189,10 +188,9 @@ def proportional_elcm(jobs, households, buildings, parcels,
         # want any jurises count of retail jobs to drop below this
         # amount of jobs, assuming every place needs local-serving
         # retail jobs
-        325645 / 2608019 * .33,
+        325645.0 / 2608019 * .01,
         "RETEMPN",
         "juris",
-        sum_df,
         hh_df,
         jobs_df,
         buildings_juris
@@ -203,10 +201,9 @@ def proportional_elcm(jobs, households, buildings, parcels,
     s = _proportional_jobs_model(
         # same as above but for a different sector - 2/3rds of other
         # jobs are government and should be in every city
-        733179 / 2608019 * .66,
+        733179.0 / 2608019 * .02,
         "OTHEMPN",
         "juris",
-        sum_df,
         hh_df,
         jobs_df,
         buildings_juris
@@ -1003,11 +1000,11 @@ def correct_baseyear_data(buildings, parcels, jobs):
     # this is the maximum vacancy you can have any a building so it NOT the
     # same thing as setting the vacancy for the entire county
     SURPLUS_VACANCY_COUNTY = buildings_county.map({
-       "Alameda": .73,
+       "Alameda": .55,
        "Contra Costa": .61,
        "Marin": .3,
        "Napa": .7,
-       "San Francisco": .51,
+       "San Francisco": .30,
        "San Mateo": .4,
        "Santa Clara": .32,
        "Solano": .53,
@@ -1017,20 +1014,19 @@ def correct_baseyear_data(buildings, parcels, jobs):
     SURPLUS_VACANCY_JURIS = buildings_juris.map({
        "Yountville": .001,
        "Benicia": .2,
-       "Woodside": .05,
-       "Atherton": .05,
+       "Woodside": 0,
+       "Atherton": 0,
        "Los Altos Hills": 0,
        "Monte Sereno": 0,
        "Portola Valley": 0,
        "Berkeley": .75,
        "St. Helena": .01,
        "Saratoga": .05,
-       "Piedmont": .01,
+       "Piedmont": 0,
        "Portola Valley": 0,
-       "Los Gatos": .05,
+       "Los Gatos": 0,
        "Cloverdale": 0,
        "Alameda": .2,
-       "Walnut Creek": .9,
        "Half Moon Bay": 0
     })
 

@@ -39,16 +39,25 @@ eliminate_retail_zoning_from_juris:
   - 'Benicia'
   - 'Brentwood'
   - 'Antioch'
+  - 'Atherton'
+  - 'Fairfax'
+  - 'Hillsborough'
+  - 'Belvedere'
   - 'Yountville'
   - 'Woodside'
   - 'Monte Sereno'
   - 'Los Altos Hills'
   - 'Half Moon Bay'
+  - 'Larkspur'
   - 'Portola Valley'
   - 'Saratoga'
   - 'Cloverdale'
   - 'Livermore'
   - 'Los Gatos'
+  - 'Tiburon'
+  - 'Piedmont'
+  - 'Ross'
+  - 'Atherton'
 
 
 clip_sqft_per_unit_based_on_dua:
@@ -758,15 +767,15 @@ county_id_tm_map:
   7: Napa
 
 pda_price_shifters:
-  "ber1": 1.5
-  "ber2": 1.5
-  "ber3": 1.5
-  "ber4": 1.5
-  "ber5": 1.5
-  "ber6": 1.5
-  "sfo3": 1.25
-  "sfo5": 1.25
-  "sfo11": 1.25
+  "ber1": 1
+  "ber2": 1
+  "ber3": 1
+  "ber4": 1
+  "ber5": 1
+  "ber6": 1
+  "sfo3": 1
+  "sfo5": 1
+  "sfo11": 1
 
 cost_shifters:
   "Santa Clara": 1.3
@@ -783,64 +792,42 @@ cost_shifters:
 development_limits:
   default:
     Office:
-      'Alameda': 200
-      'Antioch': 250
       'Atherton': 0
-      'Berkeley': 1000
-      'Benicia': 200
-      'Brentwood': 85
-      'Brisbane': 225
-      'Calistoga': 5
-      'Cloverdale': 5
+      'Belvedere': 1
+      'Cupertino': 200
+      'Fairfax': 0
       'Half Moon Bay': 0
-      'Livermore': 10
+      'Healdsburg': 25
+      'Hillsborough': 0
+      'Larkspur': 0
       'Los Altos Hills': 0
-      'Los Gatos': 0
+      'Mill Valley': 0
       'Monte Sereno': 0
-      'Pacifica': 1
-      'Palo Alto': 250
-      'Piedmont': 4
-      'Portola Valley': 0
+      'Palo Alto': 200
+      'Piedmont': 0
+      'Ross': 0
+      'San Anselmo': 0
       'San Francisco': 3500
-      'San Jose': 7250
-      'St. Helena': 4
+      'St. Helena': 5
       'Saratoga': 0
-      'Woodside': 0
-      'Yountville': 0
-      'Contra Costa County': 130
-      'San Mateo County': 150
-      'Solano County': 30
-      'Sonoma County': 0
-    Residential:
-      'Alameda': 100
-      'Belvedere': 2
-      'Brisbane': 180
-      'Calistoga': 5
-      'Cloverdale': 30
-      'Half Moon Bay': 4
-      'Lafayette': 40
-      'Los Altos': 30
-      'Mill Valley': 16
-      'Moraga': 25
-      'Petaluma': 45
-      'San Jose': 3900
-      'San Rafael': 140
-      'Saratoga': 2
-      'St. Helena': 4
-      'Woodside': 0
-      'Yountville': 0
-      'Contra Costa County': 300
-      'Napa County': 40
-      'Marin County': 1
-      'Santa Clara County': 50
+      'Tiburon': 0
+      'Alameda County': 0
+      'Contra Costa County': 0
+      'Marin County': 0
       'Solano County': 0
       'Sonoma County': 0
+    Residential:
+      'Half Moon Bay': 44
+      'Petaluma': 75
+      'St. Helena': 10
+      'Woodside': 5
+      'Yountville': 2
+      'Alameda County': 205
+      'Napa County': 25
+      'Sonoma County': 50
   "2":
     Office:
       'San Francisco': 5250
-  "4":
-    Office:
-      'San Francisco': 4375
   "5":
     Office:
       'San Francisco': 5250
