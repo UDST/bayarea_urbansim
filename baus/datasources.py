@@ -495,8 +495,41 @@ def development_projects(parcels, settings, scenario):
     return df
 
 
+def modify_placed_households(households_df, store, parcels):
+    # this method unplaces households because we got the base year total
+    # incorrect for a geography - for instance, our number is incorrect
+    # for baseyear Colma households
+
+    # I really hate this about how orca works - there are circular dependencies
+    # here - I mean households depends on buildings and buildings depend on
+    # households.  It's not really a circular dependency though since
+    # households depends on certain columns in buildings and vice versa, but
+    # orca doesn't know how to do that.  Anyway, to fix this we go in and get
+    # the relationship of building_ids to parcel_ids from the store directly
+    # which isn't the most elegant approach
+
+    buildings = store["buildings"]
+
+    households_df["parcel_id"] = misc.reindex(buildings.parcel_id,
+                                              households_df.building_id)
+
+    households_df["juris"] = misc.reindex(parcels.juris_name,
+                                          households_df.parcel_id)
+
+    # we need 456 households in Colma
+    colma_hh = households_df.query("juris == 'Colma'")
+
+    correct_hh_in_colma = 456
+
+    # sample rows to unplace
+    to_remove = colma_hh.sample(len(colma_hh) - correct_hh_in_colma)
+
+    # unplace them
+    households_df.loc[to_remove.index, "building_id"] = -1
+
+
 @orca.table('households', cache=True)
-def households(store, settings):
+def households(store, settings, parcels_geography):
     # start with households from urbansim_defaults
     df = datasources.households(store, settings)
 
@@ -508,6 +541,9 @@ def households(store, settings):
                                            index=df.index).add(1)
     df["base_income_octile"] = pd.Series(pd.qcut(df.income, 8, labels=False),
                                          index=df.index).add(1)
+
+    modify_placed_households(df, store, parcels_geography)
+
     return df
 
 
