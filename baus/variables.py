@@ -229,7 +229,7 @@ def vacant_affordable_units(buildings):
 
 @orca.column('buildings')
 def vacant_market_rate_units(buildings, households, settings, low_income):
- 
+
     # this is market rate households per building
     s1 = households.building_id[households.income > low_income].value_counts()
     # this is low income households in market rate units - a negative number
@@ -243,9 +243,7 @@ def vacant_market_rate_units(buildings, households, settings, low_income):
         # -1 means unplaced - it's not a building id
         del s[-1]
 
-    s = s.reindex(buildings.index).fillna(0)
-
-    return s
+    return s.reindex(buildings.index).fillna(0)
 
 
 @orca.column('buildings')
@@ -269,7 +267,7 @@ def vacant_market_rate_units_minus_structural_vacancy(buildings,
             buildings.vacant_market_rate_units.astype("int"))
 
     # this is some convoluted pandas for the next two lines!
-    # but the concept is simple: 
+    # but the concept is simple:
     # can't require more vacancy units than we have
     s = unit_zone_ids.value_counts().reindex(
         required_vacant_units_by_zone.index).fillna(0)
