@@ -527,6 +527,10 @@ def modify_placed_households(households_df, store, parcels):
     # unplace them
     households_df.loc[to_remove.index, "building_id"] = -1
 
+    # clean up
+    del households_df["juris"]
+    del households_df["parcel_id"]
+
 
 @orca.table('households', cache=True)
 def households(store, settings, parcels_geography):
