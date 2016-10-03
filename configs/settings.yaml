@@ -794,6 +794,7 @@ development_limits:
     Office:
       'Atherton': 0
       'Belvedere': 1
+      'Concord': 1000
       'Cupertino': 200
       'Fairfax': 0
       'Half Moon Bay': 0
@@ -803,7 +804,7 @@ development_limits:
       'Los Altos Hills': 0
       'Mill Valley': 0
       'Monte Sereno': 0
-      'Palo Alto': 200
+      'Palo Alto': 175
       'Piedmont': 0
       'Ross': 0
       'San Anselmo': 0
