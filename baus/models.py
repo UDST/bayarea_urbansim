@@ -1020,8 +1020,8 @@ def correct_baseyear_data(buildings, parcels, jobs):
        "Monte Sereno": 0,
        "Portola Valley": 0,
        "Berkeley": .65,
-       "St. Helena": 0
-       "Saratoga": 0
+       "St. Helena": 0,
+       "Saratoga": 0,
        "Piedmont": 0,
        "Portola Valley": 0,
        "Los Gatos": 0,
