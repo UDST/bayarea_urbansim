@@ -820,6 +820,7 @@ development_limits:
     Residential:
       'Half Moon Bay': 44
       'Petaluma': 75
+      'San Mateo': 400
       'St. Helena': 10
       'Woodside': 5
       'Yountville': 2
