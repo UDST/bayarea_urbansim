@@ -1012,22 +1012,8 @@ def correct_baseyear_data(buildings, parcels, jobs):
     }).fillna(.2)
 
     SURPLUS_VACANCY_JURIS = buildings_juris.map({
-       "Yountville": 0,
-       "Benicia": 0,
-       "Woodside": 0,
-       "Atherton": 0,
-       "Los Altos Hills": 0,
-       "Monte Sereno": 0,
-       "Portola Valley": 0,
        "Berkeley": .65,
-       "St. Helena": 0,
-       "Saratoga": 0,
-       "Piedmont": 0,
-       "Portola Valley": 0,
-       "Los Gatos": 0,
-       "Cloverdale": 0,
-       "Alameda": .2,
-       "Half Moon Bay": 0
+       "Alameda": .2
     })
 
     SURPLUS_VACANCY = pd.DataFrame([
