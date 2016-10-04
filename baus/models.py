@@ -1008,20 +1008,20 @@ def correct_baseyear_data(buildings, parcels, jobs):
        "San Mateo": .4,
        "Santa Clara": .32,
        "Solano": .53,
-       "Sonoma": .5,
+       "Sonoma": .4
     }).fillna(.2)
 
     SURPLUS_VACANCY_JURIS = buildings_juris.map({
-       "Yountville": .001,
-       "Benicia": .2,
+       "Yountville": 0,
+       "Benicia": 0,
        "Woodside": 0,
        "Atherton": 0,
        "Los Altos Hills": 0,
        "Monte Sereno": 0,
        "Portola Valley": 0,
-       "Berkeley": .75,
-       "St. Helena": .01,
-       "Saratoga": .05,
+       "Berkeley": .65,
+       "St. Helena": 0
+       "Saratoga": 0
        "Piedmont": 0,
        "Portola Valley": 0,
        "Los Gatos": 0,
