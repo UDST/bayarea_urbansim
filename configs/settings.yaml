@@ -458,9 +458,9 @@ acct_settings:
       MH: 5000
     com_for_res_fee_amounts:
       VH: 50
-      H: 25
-      MH: 12
-      M: 6
+      H: 30
+      MH: 20
+      M: 3
     com_for_com_fee_amounts:  # commercial fee subsidizing commercial devs
       VH: 40
       H: 20
@@ -820,6 +820,7 @@ development_limits:
     Residential:
       'Half Moon Bay': 44
       'Petaluma': 75
+      'San Mateo': 400
       'St. Helena': 10
       'Woodside': 5
       'Yountville': 2
