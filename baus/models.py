@@ -1000,7 +1000,7 @@ def correct_baseyear_data(buildings, parcels, jobs):
     # this is the maximum vacancy you can have any a building so it NOT the
     # same thing as setting the vacancy for the entire county
     SURPLUS_VACANCY_COUNTY = buildings_county.map({
-       "Alameda": .45,
+       "Alameda": .42,
        "Contra Costa": .57,
        "Marin": .28,
        "Napa": .7,
