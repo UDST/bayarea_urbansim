@@ -548,7 +548,8 @@ def building_summary(parcels, run_number, year,
 
 
 @orca.step()
-def parcel_summary(parcels, run_number, year,
+def parcel_summary(parcels, buildings, households, jobs,
+                   run_number, year,
                    parcels_zoning_calculations,
                    initial_year, final_year):
 
@@ -569,6 +570,27 @@ def parcel_summary(parcels, run_number, year,
     ])
 
     df = df.join(df2)
+
+    households_df = orca.merge_tables(
+        'households',
+        [buildings, households],
+        columns=['parcel_id', 'base_income_quartile'])
+
+    # add households by quartile on each parcel
+    for i in range(1, 5):
+        df['hhq%d' % i] = households_df[
+            households_df.base_income_quartile == i].\
+            parcel_id.value_counts()
+
+    jobs_df = orca.merge_tables(
+        'jobs',
+        [buildings, jobs],
+        columns=['parcel_id', 'empsix'])
+
+    # add jobs by empsix category on each parcel
+    for cat in jobs_df.empsix.unique():
+        df[cat] = jobs_df[jobs_df.empsix == cat].\
+            parcel_id.value_counts()
 
     df.to_csv(
         os.path.join("runs", "run%d_parcel_data_%d.csv" %
