@@ -795,7 +795,7 @@ development_limits:
       'Atherton': 0
       'Belvedere': 1
       'Concord': 1000
-      'Cupertino': 200
+      'Cupertino': 50
       'Fairfax': 0
       'Half Moon Bay': 0
       'Healdsburg': 25
