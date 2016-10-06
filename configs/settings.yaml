@@ -795,7 +795,7 @@ development_limits:
       'Atherton': 0
       'Belvedere': 1
       'Concord': 1000
-      'Cupertino': 200
+      'Cupertino': 50
       'Fairfax': 0
       'Half Moon Bay': 0
       'Healdsburg': 25
@@ -818,6 +818,7 @@ development_limits:
       'Solano County': 0
       'Sonoma County': 0
     Residential:
+      'Fairfax': 8
       'Half Moon Bay': 44
       'Petaluma': 75
       'San Mateo': 400
@@ -826,6 +827,7 @@ development_limits:
       'Yountville': 2
       'Alameda County': 205
       'Napa County': 25
+      'Solano County': 230
       'Sonoma County': 50
   "2":
     Office:

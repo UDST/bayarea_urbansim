@@ -205,7 +205,7 @@ def proportional_elcm(jobs, households, buildings, parcels,
     s = _proportional_jobs_model(
         # same as above but for a different sector - 2/3rds of other
         # jobs are government and should be in every city
-        733179.0 / 2608019 * .02,
+        733179.0 / 2608019 * .005,
         "OTHEMPN",
         "juris",
         hh_df,
@@ -1005,7 +1005,7 @@ def correct_baseyear_data(buildings, parcels, jobs):
     # this is the maximum vacancy you can have any a building so it NOT the
     # same thing as setting the vacancy for the entire county
     SURPLUS_VACANCY_COUNTY = buildings_county.map({
-       "Alameda": .45,
+       "Alameda": .42,
        "Contra Costa": .57,
        "Marin": .28,
        "Napa": .7,
