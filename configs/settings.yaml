@@ -794,8 +794,9 @@ development_limits:
     Office:
       'Atherton': 0
       'Belvedere': 1
+      'Colma': 9
       'Concord': 1000
-      'Cupertino': 50
+      'Cupertino': 0
       'Fairfax': 0
       'Half Moon Bay': 0
       'Healdsburg': 25
@@ -809,6 +810,8 @@ development_limits:
       'Ross': 0
       'San Anselmo': 0
       'San Francisco': 3500
+      'San Mateo': 554
+      'San Rafael': 155
       'St. Helena': 5
       'Saratoga': 0
       'Tiburon': 0
