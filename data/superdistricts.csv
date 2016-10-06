@@ -1,15 +1,15 @@
 number,name,subregion,sqft_per_job_factor
-1,SF NE,1,0.75
+1,SF NE,1,0.72
 2,SF NW,1,0.937
-3,SF S SE,1,0.65
+3,SF S SE,1,0.61
 4,SF SW,1,1
 5,Daly City Millbrae,2,1
 6,San Mateo,2,0.937
 7,Redwood City,2,1
 8,Palo Alto,2,0.937
-9,Golden Triangle,1,0.937
+9,Golden Triangle,1,0.91
 10,West San Jose,1,0.937
-11,San Jose CBD,1,0.9
+11,San Jose CBD,1,0.88
 12,East San Jose,1,0.937
 13,South San Jose,1,1
 14,SE Snta Clara Cnty,4,1.063
