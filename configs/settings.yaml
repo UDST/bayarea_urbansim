@@ -793,16 +793,17 @@ development_limits:
   default:
     Office:
       'Atherton': 0
-      'Belvedere': 1
-      'Colma': 9
+      'Belvedere': 0
+      'Colma': 1
       'Concord': 1000
       'Cupertino': 0
       'Fairfax': 0
       'Half Moon Bay': 0
-      'Healdsburg': 25
+      'Healdsburg': 0
       'Hillsborough': 0
       'Larkspur': 0
       'Los Altos Hills': 0
+      'Los Gatos': 0
       'Mill Valley': 0
       'Monte Sereno': 0
       'Palo Alto': 175
@@ -810,11 +811,13 @@ development_limits:
       'Ross': 0
       'San Anselmo': 0
       'San Francisco': 3500
-      'San Mateo': 554
+      'San Mateo': 275
       'San Rafael': 155
       'St. Helena': 5
       'Saratoga': 0
+      'Sonoma': 0
       'Tiburon': 0
+      'Woodside': 0 
       'Alameda County': 0
       'Contra Costa County': 0
       'Marin County': 0
