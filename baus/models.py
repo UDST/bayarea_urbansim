@@ -193,6 +193,8 @@ def proportional_elcm(jobs, households, buildings, parcels,
 
     buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
 
+    print "Running proportional jobs model for retail"
+
     s = _proportional_jobs_model(
         # we now take the ratio of retail jobs to households as an input
         # that is manipulable by the modeler - this is stored in a csv
@@ -241,6 +243,8 @@ def proportional_elcm(jobs, households, buildings, parcels,
                         mapping_d[mult] * pop_to_hh).fillna(0)
 
     target_jobs = target_jobs.astype('int')
+
+    print "Running proportional jobs model for gov/edu"
 
     # now do the same thing for gov't jobs
     s = _proportional_jobs_model(
