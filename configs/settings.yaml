@@ -794,7 +794,8 @@ development_limits:
     Office:
       'Atherton': 0
       'Belvedere': 0
-      'Colma': 1
+      'Benicia': 66
+      'Colma': 0
       'Concord': 1000
       'Cupertino': 0
       'Fairfax': 0
@@ -805,6 +806,7 @@ development_limits:
       'Los Altos Hills': 0
       'Los Gatos': 0
       'Mill Valley': 0
+      'Millbrae': 200
       'Monte Sereno': 0
       'Palo Alto': 175
       'Piedmont': 0
@@ -812,7 +814,7 @@ development_limits:
       'San Anselmo': 0
       'San Francisco': 3500
       'San Mateo': 275
-      'San Rafael': 155
+      'San Rafael': 50
       'St. Helena': 5
       'Saratoga': 0
       'Sonoma': 0
