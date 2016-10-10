@@ -238,8 +238,8 @@ def proportional_elcm(jobs, households, buildings, parcels,
     # this is weird but Pandas was giving me a strange error when I tried
     # to change the type of the index directly
     taz_assumptions_df = taz_assumptions_df.reset_index()
-    taz_assumptions_df["TAZ"] = taz_assumptions_df.TAZ.astype("int")
-    taz_assumptions_df = taz_assumptions_df.set_index("TAZ")
+    taz_assumptions_df["Taz"] = taz_assumptions_df.Taz.astype("int")
+    taz_assumptions_df = taz_assumptions_df.set_index("Taz")
 
     # now go through and multiply each factor by the aggregation it applied to
     target_jobs = pd.Series(0, taz_assumptions_df.index)
