@@ -1,4 +1,5 @@
-County,Taz,Local Govt Jobs per TAZ pop,ed_k12 Jobs per TAZ pop,County Govt Jobs per County Pop,State Govt Jobs per Reg Pop,Federal Govt Jobs per Reg Pop,ed_high Jobs per Reg Pop
+County,Taz,Local Govt Jobs per,ed_k12 Jobs per,County Govt Jobs per,State Govt Jobs per,Federal Govt Jobs per,ed_high Jobs per
+,,TAZ Pop,TAZ Pop,County Pop,Reg Pop,Reg Pop,Reg Pop
 San Francisco,1,0.0000713,0.0084413,0,0.0000148,0.0000116,0
 San Francisco,2,0.0000713,0.0084413,0,0,0.0000082,0
 San Francisco,3,0.0000713,0.0084413,0,0,0.0000003,0
