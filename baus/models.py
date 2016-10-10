@@ -111,11 +111,15 @@ def _proportional_jobs_model(
     groupby_col,   # ratio will be matched at this level of geog
     hh_df,
     jobs_df,
-    locations_series
+    locations_series,
+    target_jobs=None  # pass this if you want to compute target jobs
 ):
 
-    target_jobs = hh_df[groupby_col].value_counts() * target_ratio
-    target_jobs = target_jobs.astype('int')
+    if target_jobs is None:
+        # compute it if not passed
+        target_jobs = hh_df[groupby_col].value_counts() * target_ratio
+        target_jobs = target_jobs.astype('int')
+
     current_jobs = jobs_df[
         jobs_df.empsix == sector][groupby_col].value_counts()
     need_more_jobs = target_jobs - current_jobs
@@ -171,21 +175,25 @@ def proportional_elcm(jobs, households, buildings, parcels,
     # by the merge so you have to grab the columns first and fill in
     # juris iff the building_id is != -1
     jobs_df = jobs.to_frame(["building_id", "empsix"])
-    jobs_df["juris"] = orca.merge_tables(
+    df = orca.merge_tables(
         target='jobs',
         tables=[jobs, buildings, parcels],
-        columns=['juris']).juris
+        columns=['juris', 'zone_id'])
+    jobs_df["juris"] = df["juris"]
+    jobs_df["zone_id"] = df["zone_id"]
 
     hh_df = orca.merge_tables(
         target='households',
         tables=[households, buildings, parcels],
-        columns=['juris'])
+        columns=['juris', 'zone_id', 'county'])
 
     # the idea here is to make sure we don't lose local retail and gov't
     # jobs - there has to be some amount of basic services to support an
     # increase in population
 
     buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
+
+    print "Running proportional jobs model for retail"
 
     s = _proportional_jobs_model(
         # we now take the ratio of retail jobs to households as an input
@@ -201,20 +209,55 @@ def proportional_elcm(jobs, households, buildings, parcels,
 
     jobs.update_col_from_series("building_id", s)
 
-    '''
+    # first read the file from disk - it's small so no table source
+    taz_assumptions_df = pd.read_csv(os.path.join(
+        "data",
+        "taz_growth_rates_gov_ed.csv"
+    ), index_col="Taz")
+
+    # we're going to multiple various aggregations of populations by factors
+    # e.g. high school jobs are multiplied by county pop and so forth - this
+    # is the dict of the aggregations of household counts
+    mapping_d = {
+        "TAZ Pop": hh_df["zone_id"].dropna().astype('int').value_counts(),
+        "County Pop": taz_assumptions_df.County.map(
+            hh_df["county"].value_counts()),
+        "Reg Pop": len(hh_df)
+    }
+    # the factors are set up in relation to pop, not hh count
+    pop_to_hh = .43
+
+    # don't need county anymore
+    del taz_assumptions_df["County"]
+
+    # multipliers are in first row (not counting the headers)
+    multipliers = taz_assumptions_df.iloc[0]
+    # done with the row
+    taz_assumptions_df = taz_assumptions_df.iloc[1:]
+    taz_assumptions_df.index = taz_assumptions_df.index.astype('int')
+
+    # now go through and multiply each factor by the aggregation it applied to
+    target_jobs = pd.Series(0, taz_assumptions_df.index)
+    for col, mult in zip(taz_assumptions_df.columns, multipliers):
+        target_jobs += (taz_assumptions_df[col].astype('float') *
+                        mapping_d[mult] * pop_to_hh).fillna(0)
+
+    target_jobs = target_jobs.astype('int')
+
+    print "Running proportional jobs model for gov/edu"
+
+    # now do the same thing for gov't jobs
     s = _proportional_jobs_model(
-        # same as above but for a different sector - 2/3rds of other
-        # jobs are government and should be in every city
-        733179.0 / 2608019 * .005,
+        None,  # computing jobs directly
         "OTHEMPN",
-        "juris",
+        "zone_id",
         hh_df,
         jobs_df,
-        buildings_juris
+        buildings.zone_id,
+        target_jobs=target_jobs
     )
 
     jobs.update_col_from_series("building_id", s)
-    '''
 
 
 @orca.step()
