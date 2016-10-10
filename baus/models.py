@@ -234,7 +234,7 @@ def proportional_elcm(jobs, households, buildings, parcels,
     multipliers = taz_assumptions_df.iloc[0]
     # done with the row
     taz_assumptions_df = taz_assumptions_df.iloc[1:]
-    taz_assumptions_df.index = taz_assumptions_df.index.astype('int')
+    taz_assumptions_df.index = taz_assumptions_df.index.astype('float').astype('int')
 
     # now go through and multiply each factor by the aggregation it applied to
     target_jobs = pd.Series(0, taz_assumptions_df.index)
