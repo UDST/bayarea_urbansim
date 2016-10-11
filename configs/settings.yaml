@@ -792,6 +792,7 @@ cost_shifters:
 development_limits:
   default:
     Office:
+      'Alameda': 200
       'Atherton': 0
       'Belvedere': 0
       'Benicia': 66
@@ -814,7 +815,7 @@ development_limits:
       'San Anselmo': 0
       'San Francisco': 3500
       'San Mateo': 275
-      'San Rafael': 50
+      'San Rafael': 25
       'St. Helena': 5
       'Saratoga': 0
       'Sonoma': 0
@@ -827,6 +828,7 @@ development_limits:
       'Solano County': 0
       'Sonoma County': 0
     Residential:
+      'Cloverdale': 50
       'Fairfax': 8
       'Half Moon Bay': 44
       'Petaluma': 75
