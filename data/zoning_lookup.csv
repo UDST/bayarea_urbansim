@@ -7,7 +7,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 2106,1,Albany,SPC,2.25,38,63,,1,0,1,1,0,1,0,0,0,1,0,0,1,0,
 2107,1,Albany,SC,1.25,35,63,,1,0,1,1,0,1,0,0,0,1,0,0,1,0,
 2108,1,Albany,CMX,0.5,45,,,0,0,0,1,0,1,1,0,0,1,0,0,1,0,
-2109,1,Albany,PF,,40,,,0,0,0,0,0,1,1,0,0,0,0,0,0,0,
+2109,1,Albany,PF,,40,0,,0,0,0,0,0,1,1,0,0,0,0,0,0,0,
 2110,1,Albany,WF,0.5,,,,0,0,0,0,0,0,0,0,0,1,0,0,0,0,
 2111,1,Albany,U,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 2201,2,Berkeley,R-1,1.2,35,8.712,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
@@ -185,8 +185,8 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 2709,7,Half Moon Bay,608 - Light Industrial,,40,4.35,,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
 2710,7,Half Moon Bay,608 - Urban Reserve,,28,0.07,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 2711,7,Half Moon Bay,608 - Open Space Reserve,,28,0.02,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
-2712,7,Half Moon Bay,608 - Regional Public Recreation,,16,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-2713,7,Half Moon Bay,608 - Greenbelt - Stream Corridor,,16,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+2712,7,Half Moon Bay,608 - Regional Public Recreation,,16,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+2713,7,Half Moon Bay,608 - Greenbelt - Stream Corridor,,16,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 2714,7,Half Moon Bay,608 - Horticultural Business,,35,,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 2715,7,Half Moon Bay,608 - Planned Development District,,,,,1,1,1,1,0,1,1,1,1,1,1,0,0,0,
 2716,7,Half Moon Bay,608 - Mobile Home Park,,,21.8,,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -273,7 +273,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 3206,12,Cotati,902 - General Commercial,0.75,50,15,,0,0,1,1,0,0,0,0,0,0,0,1,0,1,
 3207,12,Cotati,902 - Highway Commercial,1,50,15,,0,0,1,0,1,0,0,0,0,1,1,1,1,0,
 3208,12,Cotati,902 - Office Commercial,0.25,28,15,,0,0,1,1,0,0,0,0,0,1,0,1,1,1,
-3209,12,Cotati,902 - General Industrial,,40,,,0,0,0,0,0,0,1,1,1,0,0,0,0,0,
+3209,12,Cotati,902 - General Industrial,,40,0,,0,0,0,0,0,0,1,1,1,0,0,0,0,0,
 3210,12,Cotati,902 - Commercial Industrial,1,40,15,,0,0,1,0,0,0,1,1,0,1,1,0,0,0,
 3211,12,Cotati,902 - Parks,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 3212,12,Cotati,902 - Public Facilities,,,,,0,0,0,1,0,1,0,0,0,0,0,0,0,0,
@@ -305,11 +305,11 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 3410,14,Petaluma,MU,2.5,45,30,,0,0,1,0,0,0,0,0,0,0,0,1,1,1,
 3411,14,Petaluma,BP,3,40,,,0,0,0,1,0,0,1,0,0,1,0,0,0,0,
 3412,14,Petaluma,I,0.6,40,,,0,0,0,0,0,0,1,1,1,1,0,0,0,0,
-3413,14,Petaluma,AG,,25,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-3414,14,Petaluma,AG S,,40,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,
-3415,14,Petaluma,RDI,,40,,,0,0,0,0,0,0,0,0,1,0,0,0,0,0,
+3413,14,Petaluma,AG,,25,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+3414,14,Petaluma,AG S,,40,0,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,
+3415,14,Petaluma,RDI,,40,0,,0,0,0,0,0,0,0,0,1,0,0,0,0,0,
 3416,14,Petaluma,P S-P,0.2,25,,,0,0,0,1,0,0,0,0,0,0,0,0,0,0,
-3417,14,Petaluma,ED,,25,,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,
+3417,14,Petaluma,ED,,25,0,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,
 3418,14,Petaluma,PARK,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 3419,14,Petaluma,CO PARK,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 3420,14,Petaluma,PROP PARK,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -327,8 +327,8 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 3511,15,Rohnert Park,I-L,1,45,,,0,0,0,1,0,0,1,1,0,0,0,0,0,0,
 3512,15,Rohnert Park,P-I,0.5,45,,,0,0,0,1,0,1,0,0,0,0,0,0,0,0,
 3513,15,Rohnert Park,OS-ARM,,35,1,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
-3514,15,Rohnert Park,OS-EC,,35,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-3515,15,Rohnert Park,REC,,35,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+3514,15,Rohnert Park,OS-EC,,35,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+3515,15,Rohnert Park,REC,,35,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 3601,16,Santa Rosa,Country Residential,0.75,35,0.2,,1,0,0,0,0,1,0,0,0,1,0,0,0,0,
 3602,16,Santa Rosa,Very Low Residential,0.75,35,2,,1,1,1,0,0,1,0,0,0,1,0,0,0,0,
 3603,16,Santa Rosa,Low/Open Space,0.75,35,8,,1,1,1,0,0,1,0,0,0,1,0,0,0,0,
@@ -614,10 +614,10 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 5015,30,San Carlos,IL,0.5,75,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,
 5016,30,San Carlos,IH,2,50,,,0,0,0,0,0,0,1,1,1,0,0,0,0,0,
 5017,30,San Carlos,IP,2,100,,,0,0,0,1,0,0,1,1,0,0,0,0,0,0,
-5018,30,San Carlos,P,,30,,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,
-5019,30,San Carlos,A,,50,,,0,0,0,0,1,0,1,1,0,0,0,0,0,0,
-5020,30,San Carlos,OS,,30,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-5021,30,San Carlos,PK,,30,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+5018,30,San Carlos,P,,30,0,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,
+5019,30,San Carlos,A,,50,0,,0,0,0,0,1,0,1,1,0,0,0,0,0,0,
+5020,30,San Carlos,OS,,30,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+5021,30,San Carlos,PK,,30,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 5101,31,San Mateo,Single Family,,24,9,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 5102,31,San Mateo,Low Density Multi-Family,,24,17,,0,1,0,0,0,0,0,0,0,0,0,0,0,0,
 5103,31,San Mateo,Medium Density Multi-Family,,55,35,,0,1,1,0,0,0,0,0,0,0,0,0,0,0,
@@ -635,9 +635,9 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 5115,31,San Mateo,Neighborhood Commercial/ Medium-High Density Multi-Family,1,35,50,,0,1,1,1,0,0,0,0,0,1,0,1,1,1,
 5116,31,San Mateo,Regional/Community Commercial/ High Density Multi-Family,2.5,55,50,,0,0,1,1,1,0,1,0,0,1,1,1,1,1,
 5117,31,San Mateo,Public Facility,0.75,75,,,0,0,0,1,0,0,0,0,0,0,0,0,0,0,
-5118,31,San Mateo,Parks/ Open Space,,32,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+5118,31,San Mateo,Parks/ Open Space,,32,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 5119,31,San Mateo,Utilities,0.25,32,,,0,0,0,1,0,0,0,0,0,0,0,0,0,0,
-5120,31,San Mateo,Transportation Corridor,,32,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+5120,31,San Mateo,Transportation Corridor,,32,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 5121,31,San Mateo,Major Institution/ Special Facility,1,90,,,0,0,0,1,0,1,0,0,0,0,0,0,0,0,
 5201,32,South San Francisco,618 - Low Density Residential,0.5,28,8,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 5202,32,South San Francisco,618 - Medium Density Residential,1,35,18,,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -662,9 +662,9 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 5221,32,South San Francisco,618 - Business and Technology Park/ Coastal Commercial,1,,,,0,0,0,1,1,0,1,0,0,1,1,0,0,0,
 5222,32,South San Francisco,618 - Mixed Industrial,0.6,65,,,0,0,0,1,0,0,1,1,1,0,0,0,0,0,
 5223,32,South San Francisco,618 - Mixed Industrial/ Coastal Commercial,2,65,,,0,0,0,1,1,0,1,1,1,1,0,0,0,0,
-5224,32,South San Francisco,618 - Public,,30,,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,
+5224,32,South San Francisco,618 - Public,,30,0,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,
 5225,32,South San Francisco,618 - Transportation Center,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-5226,32,South San Francisco,618 - Park and Recreation,,30,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+5226,32,South San Francisco,618 - Park and Recreation,,30,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 5227,32,South San Francisco,618 - Open Space,,30,0.000001147,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 5301,33,Woodside,619 - Residential,,28,2.18,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 5302,33,Woodside,619 - Suburban Residential,,30,1,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -674,10 +674,10 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 5306,33,Woodside,619 - Special Conservation Planning - 7.5,,30,0.13,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 5307,33,Woodside,619 - Commercial,0.75,40,,,0,0,0,1,0,0,0,0,0,1,0,0,0,0,
 5308,33,Woodside,619 - Public Quasi-Public,,,,,0,0,0,1,0,1,0,0,0,0,0,0,0,0,
-5309,33,Woodside,619 - General Open Space,,24,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-5310,33,Woodside,619 - Open Space for Health and Safety,,24,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-5311,33,Woodside,619 - Open Space for Preservation of Natural Resources,,24,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-5312,33,Woodside,619 - Open Space for Low Intensity Outdoor Recreation,,24,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+5309,33,Woodside,619 - General Open Space,,24,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+5310,33,Woodside,619 - Open Space for Health and Safety,,24,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+5311,33,Woodside,619 - Open Space for Preservation of Natural Resources,,24,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+5312,33,Woodside,619 - Open Space for Low Intensity Outdoor Recreation,,24,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 5401,34,Millbrae,Very Low Density Residential,,30,4,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
 5402,34,Millbrae,Low Density Residential,,30,8,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
 5403,34,Millbrae,Medium Density Residential,,30,17,,1,1,1,0,0,1,0,0,0,0,0,0,0,0,
@@ -705,7 +705,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 5507,35,Pacifica,Commercial,0.3,35,21.78,,0,0,1,1,1,0,1,1,0,1,1,1,1,1,
 5508,35,Pacifica,Public/Institutional,,,,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,
 5509,35,Pacifica,Utilities,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-5510,35,Pacifica,Parking,,35,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+5510,35,Pacifica,Parking,,35,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 5511,35,Pacifica,Park,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 5512,35,Pacifica,Greenbelt,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 5513,35,Pacifica,Ridge,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -773,11 +773,11 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 5742,37,Redwood City,IP-10,2,50,,,0,0,0,1,1,0,1,1,1,0,1,0,0,0,
 5743,37,Redwood City,IP-T,2,50,,,0,0,0,1,1,0,1,1,1,0,1,0,0,0,
 5744,37,Redwood City,IP-V,2,50,,,0,0,0,1,1,0,1,1,1,0,1,0,0,0,
-5745,37,Redwood City,GI,,100,,,0,0,0,0,0,0,1,1,1,0,0,0,0,0,
+5745,37,Redwood City,GI,,100,0,,0,0,0,0,0,0,1,1,1,0,0,0,0,0,
 5746,37,Redwood City,PF,1,35,,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,
 5747,37,Redwood City,TP,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 5748,37,Redwood City,TP-W,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-5749,37,Redwood City,RSB,,30,,,0,0,0,0,0,0,0,1,0,0,0,0,0,0,
+5749,37,Redwood City,RSB,,30,0,,0,0,0,0,0,0,0,1,0,0,0,0,0,0,
 5750,37,Redwood City,ROW,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 5802,38,San Bruno,Low Density Residential,,30,8,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,
 5803,38,San Bruno,Medium Density Residential,,50,24,,1,1,1,0,0,1,0,0,0,0,0,0,0,0,
@@ -824,10 +824,10 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 6114,41,Los Altos,704 - Other Open Space,0.6,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 6115,41,Los Altos,704 - Planned Community,0.9,,16,,1,1,1,1,0,1,0,0,0,0,0,1,0,0,
 6201,42,Los Altos Hills,705 - Very Low to Low Density Residential,0.13774104,32,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-6203,42,Los Altos Hills,705 - Open Space Preserve,,32,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+6203,42,Los Altos Hills,705 - Open Space Preserve,,32,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 6204,42,Los Altos Hills,705 - Open Space Conservation Area,,32,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-6205,42,Los Altos Hills,705 - Recreation Area-Public,,32,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-6206,42,Los Altos Hills,705 - Recreation Area-Private,,32,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+6205,42,Los Altos Hills,705 - Recreation Area-Public,,32,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+6206,42,Los Altos Hills,705 - Recreation Area-Private,,32,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 6207,42,Los Altos Hills,705 - Institutions,0.13774104,32,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 6301,43,Los Gatos,Hillside Residential,,30,1,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 6302,43,Los Gatos,Low Density Residential,,30,5,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -835,7 +835,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 6304,43,Los Gatos,High Density Residential,,35,20,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 6306,43,Los Gatos,Office Professional,0.8,35,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 6307,43,Los Gatos,Central Business District,0.6,45,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-6308,43,Los Gatos,Mixed Use Commercial,,35,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+6308,43,Los Gatos,Mixed Use Commercial,,35,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 6309,43,Los Gatos,Neighborhood Commercial,1,35,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 6310,43,Los Gatos,Service Commercial,1,35,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 6311,43,Los Gatos,Light Industrial,1,35,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -872,7 +872,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 6427,44,Milpitas,ROW,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 6501,45,Atherton,601 - Low Density Single Family,0.18,34,1,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 6503,45,Atherton,601 - Public Facilities or School,0.25,34,,,0,0,0,1,0,1,0,0,0,0,0,0,0,0,
-6504,45,Atherton,601 - Parks or Open Space,,34,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+6504,45,Atherton,601 - Parks or Open Space,,34,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 6601,46,Belmont,602 - Hilltop Residential Open Space,0.533,28,1.5,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 6602,46,Belmont,602 - Residential Low Density,0.533,28,7,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 6603,46,Belmont,602 - Residential Medium Density,0.6,35,20,,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -1068,7 +1068,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 7810,58,Corte Madera,MU,1,30,31,,0,0,1,0,0,0,0,0,0,0,0,0,1,0,
 7811,58,Corte Madera,MUG,0.34,35,40,,0,0,1,1,0,0,1,1,0,0,0,0,1,1,
 7812,58,Corte Madera,MURSC,0.47,35,9.4,,0,0,1,1,0,0,0,0,0,1,1,1,1,0,
-7813,58,Corte Madera,POS,,35,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+7813,58,Corte Madera,POS,,35,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 7814,58,Corte Madera,HOS,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 7815,58,Corte Madera,WM,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 7816,58,Corte Madera,PF,0.35,35,,,0,0,0,0,0,1,1,0,0,0,0,0,0,0,
@@ -1080,7 +1080,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 7905,59,Fairfax,Central Commercial,0.25,28,,,0,0,0,1,0,0,0,0,0,1,1,1,1,1,
 7906,59,Fairfax,Highway Commercial,0.25,28,,,0,0,0,1,1,0,0,0,0,1,1,0,0,1,
 7907,59,Fairfax,Light Commercial,0.2,28,,,0,0,0,1,1,1,0,0,0,0,0,0,0,0,
-7908,59,Fairfax,Service Commercial,,15,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,
+7908,59,Fairfax,Service Commercial,,15,0,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,
 7909,59,Fairfax,Recreational Commercial,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 7910,59,Fairfax,COMMERCIAL - CL,0.2,28,,,0,0,0,1,1,1,0,0,0,0,0,0,0,0,
 7911,59,Fairfax,Open Space,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -1303,13 +1303,13 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 9009,70,Suisun City,805 - Service Commercial,0.5,35,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,
 9010,70,Suisun City,805 - Limited Industrial/Business Park,0.6,50,,,0,0,0,1,0,0,1,1,0,0,0,0,0,0,
 9011,70,Suisun City,805 - Limited Industrial/Commercial Service,0.6,50,,,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
-9012,70,Suisun City,805 - Historic Limited Commercial,,35,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+9012,70,Suisun City,805 - Historic Limited Commercial,,35,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 9013,70,Suisun City,805 - Main Street Commercial,0.5,40,,,0,0,0,0,0,0,0,0,0,1,0,0,0,0,
 9014,70,Suisun City,805 - Marina,0.75,30,,,0,0,0,0,0,0,0,0,0,1,0,0,0,0,
 9015,70,Suisun City,805 - Mixed Use/PUD,,,,,1,1,0,1,0,0,0,0,0,1,0,0,0,0,
 9016,70,Suisun City,805 - School,,,,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,
 9017,70,Suisun City,805 - Public/Quasi-Public Facilities,,,,,0,0,0,1,0,0,0,0,0,0,0,0,0,0,
-9018,70,Suisun City,805 - Park,,35,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+9018,70,Suisun City,805 - Park,,35,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 9019,70,Suisun City,805 - Agriculture-Open Space,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 9020,70,Suisun City,805 - Common Parking,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 9021,70,Suisun City,805 - Fairfield Streams Project,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -1356,8 +1356,8 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 9205,72,Vallejo,807 - Retail Commercial,2,75,,,0,0,0,0,0,0,0,0,0,1,1,0,0,0,
 9206,72,Vallejo,807 - Neighborhood Commercial,1,45,,,0,0,0,1,0,0,0,0,0,1,0,0,0,0,
 9207,72,Vallejo,807 - Highway Commercial,0.75,35,,,0,0,0,0,1,0,0,0,0,1,1,0,0,0,
-9208,72,Vallejo,807 - Waterfront Commercial,,35,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-9209,72,Vallejo,807 - Medical,,75,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+9208,72,Vallejo,807 - Waterfront Commercial,,35,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+9209,72,Vallejo,807 - Medical,,75,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 9210,72,Vallejo,807 - Employment,0.75,75,,,0,0,0,1,0,0,1,0,1,0,0,0,0,0,
 9211,72,Vallejo,807 - Open Space,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 9212,72,Vallejo,807 - Wetland,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -1636,7 +1636,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 10557,85,Brentwood,PD34,0.25,30,,,0,0,0,1,0,0,0,0,0,1,0,0,0,0,
 10558,85,Brentwood,PD-35,0.75,30,5.44,,1,1,0,0,0,0,0,0,0,1,0,0,0,0,
 10559,85,Brentwood,PD-36,1.5,60,8.7,,1,0,0,1,0,0,1,0,0,1,0,0,0,0,
-10560,85,Brentwood,PD-37,,35,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+10560,85,Brentwood,PD-37,,35,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 10561,85,Brentwood,PD-38,1,45,30,,0,1,1,1,0,0,1,0,0,1,0,0,0,0,
 10562,85,Brentwood,PD-39,,35,2.14,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 10563,85,Brentwood,PD-40,0.3,39,,,0,0,0,1,0,0,1,1,0,0,0,0,0,0,
@@ -1813,7 +1813,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 11241,92,Martinez,L-I,0.25,30,,,0,0,0,1,0,0,1,0,0,0,0,0,0,0,
 11242,92,Martinez,H-1,0.25,30,,,0,0,0,1,0,0,1,1,1,0,0,0,0,0,
 11243,92,Martinez,H-I,0.25,30,,,0,0,0,1,0,0,1,1,1,0,0,0,0,0,
-11244,92,Martinez,C-I,,30,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+11244,92,Martinez,C-I,,30,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 11245,92,Martinez,ECD-R-100,,,,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 11246,92,Martinez,ECD-R-40,,,,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 11247,92,Martinez,ECD-R-6.0,,,,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -1854,7 +1854,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 11411,94,Oakland,Regional Commercial,4,160,125,,0,0,1,1,1,1,0,0,0,1,0,1,1,1,
 11412,94,Oakland,Estuary Plan Area,7,1000,125,,0,0,1,1,1,0,1,1,0,0,0,1,1,1,
 11413,94,Oakland,Institutional,8,1000,,,0,0,0,1,0,0,0,0,0,1,0,0,0,0,
-11414,94,Oakland,Resource Conservation,,30,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+11414,94,Oakland,Resource Conservation,,30,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 11415,94,Oakland,Urban Open Space,,,,1,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
 11501,95,Piedmont,ER,,35,2,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 11502,95,Piedmont,LDR,,35,8,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -1870,8 +1870,8 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 11606,96,Pleasanton,HIGH DENSITY,,40,29,,1,1,1,0,0,1,0,0,0,0,0,0,0,0,
 11607,96,Pleasanton,COMMERCIAL,0.6,40,,,0,0,1,1,1,1,1,0,0,1,1,1,1,0,
 11608,96,Pleasanton,GENERAL AND LIMITED INDUSTRIAL,0.5,40,,,0,0,0,0,0,0,1,1,1,0,0,0,0,0,
-11609,96,Pleasanton,SAND AND GRAVEL HARVESTING,,40,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-11610,96,Pleasanton,LAKE-SAND AND GRAVEL HARVESTIN,,40,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+11609,96,Pleasanton,SAND AND GRAVEL HARVESTING,,40,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+11610,96,Pleasanton,LAKE-SAND AND GRAVEL HARVESTIN,,40,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 11611,96,Pleasanton,BUSINESS PARK,0.6,30,,,0,0,0,1,0,1,0,0,0,0,0,0,0,0,
 11612,96,Pleasanton,BUSINESS PARK / MIXED USE,0.6,30,,,0,0,0,1,0,1,0,0,0,0,0,1,1,1,
 11613,96,Pleasanton,MIXED USE,1.5,,,,0,0,1,1,1,0,1,0,0,0,0,1,1,1,
@@ -1880,7 +1880,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 11616,96,Pleasanton,SCHOOL-MS,,,,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,
 11617,96,Pleasanton,PUBLIC AND INSTITUTIONAL,0.6,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 11618,96,Pleasanton,PARKS AND RECREATION,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-11619,96,Pleasanton,AGRICULTURE AND GRAZING,,30,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+11619,96,Pleasanton,AGRICULTURE AND GRAZING,,30,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 11620,96,Pleasanton,PUBLIC HEALTH AND SAFETY,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 11621,96,Pleasanton,WILDLAND OVERLAY,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 11622,96,Pleasanton,WATER MANAGEMENT & RECREATION,0.6,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -1917,7 +1917,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 11810,98,Hayward,CC-HDR,1.5,55,65,,0,0,1,1,0,1,0,0,0,1,0,1,1,1,
 11811,98,Hayward,CC-ROC,1.5,55,65,,0,0,0,1,0,1,0,0,0,1,0,0,1,1,
 11812,98,Hayward,IC,,,,,0,0,0,1,0,0,1,1,1,0,1,0,0,0,
-11813,98,Hayward,MI,,40,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,
+11813,98,Hayward,MI,,40,0,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,
 11814,98,Hayward,PR,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 11815,98,Hayward,LOS,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 11816,98,Hayward,BL,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -2203,9 +2203,9 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 12510,105,Unincorporated Napa,CL,1,35,,,0,0,0,0,1,1,0,0,0,1,0,0,0,0,
 12511,105,Unincorporated Napa,CL:AC,1,35,,,0,0,0,0,1,1,0,0,0,1,0,0,0,0,
 12512,105,Unincorporated Napa,CL:AH,1.75,35,20,,0,1,1,0,1,1,0,0,0,1,0,0,0,0,
-12513,105,Unincorporated Napa,CL:HR,,35,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+12513,105,Unincorporated Napa,CL:HR,,35,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 12514,105,Unincorporated Napa,CN,0.11,35,,,0,0,0,0,0,1,0,0,0,1,0,0,0,0,
-12515,105,Unincorporated Napa,CN:UR,,35,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+12515,105,Unincorporated Napa,CN:UR,,35,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 12516,105,Unincorporated Napa,GI:AC,1,35,,,0,0,0,1,0,0,1,1,0,0,0,0,0,0,
 12517,105,Unincorporated Napa,I,0.7,35,,,0,0,0,1,0,0,1,1,0,0,0,0,0,0,
 12518,105,Unincorporated Napa,I:AC,0.7,35,,,0,0,0,1,0,0,1,1,0,0,0,0,0,0,
@@ -2213,8 +2213,8 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 12520,105,Unincorporated Napa,MC,0.8,35,,,0,0,0,0,0,0,0,1,0,1,0,0,0,0,
 12521,105,Unincorporated Napa,MC:AC,0.8,35,,,0,0,0,0,0,0,0,1,0,1,0,0,0,0,
 12522,105,Unincorporated Napa,MC:AH,1.75,35,20,,0,1,1,0,0,0,0,1,0,1,0,0,0,0,
-12523,105,Unincorporated Napa,PD,,35,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-12524,105,Unincorporated Napa,PD:AC,,35,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+12523,105,Unincorporated Napa,PD,,35,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+12524,105,Unincorporated Napa,PD:AC,,35,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 12525,105,Unincorporated Napa,PD:AH,,35,20,,0,1,1,0,0,0,0,0,0,0,0,0,0,0,
 12526,105,Unincorporated Napa,PD:AH:AC,,35,20,,0,1,1,0,0,0,0,0,0,0,0,0,0,0,
 12527,105,Unincorporated Napa,PL,1,35,,,0,0,0,1,0,1,1,1,0,0,0,0,0,0,
@@ -2227,7 +2227,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 12534,105,Unincorporated Napa,RS:B-10,,35,0.1,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 12535,105,Unincorporated Napa,RS:B-2,,35,0.5,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 12536,105,Unincorporated Napa,RS:B-5,,35,0.2,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-12537,105,Unincorporated Napa,RS:UR,,35,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+12537,105,Unincorporated Napa,RS:UR,,35,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 12601,106,Unincorporated Santa Clara,Agriculture Large Scale,,,0.025,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 12602,106,Unincorporated Santa Clara,Agriculture Medium Scale,,,0.05,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 12603,106,Unincorporated Santa Clara,Baylands,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -2455,9 +2455,9 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 13775,107,Unincorporated San Mateo,H-1/S-3/CD,0.75,36,34.848,,0,0,0,1,1,0,0,0,0,1,0,0,0,0,
 13776,107,Unincorporated San Mateo,O,,,,,1,1,1,1,0,0,0,0,0,0,0,1,0,1,
 13777,107,Unincorporated San Mateo,O/S-7,0.25,36,5.808,,0,0,1,1,0,0,0,0,0,0,0,1,0,0,
-13778,107,Unincorporated San Mateo,M-1,,75,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,
-13779,107,Unincorporated San Mateo,M-1/AO/DR/CD,,75,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,
-13780,107,Unincorporated San Mateo,M-1/DR/CD,,75,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,
+13778,107,Unincorporated San Mateo,M-1,,75,0,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,
+13779,107,Unincorporated San Mateo,M-1/AO/DR/CD,,75,0,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,
+13780,107,Unincorporated San Mateo,M-1/DR/CD,,75,0,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,
 13781,107,Unincorporated San Mateo,M-1/EDISON/NFO,1.5,37,,,0,0,0,1,0,0,1,1,0,0,0,0,0,0,
 13782,107,Unincorporated San Mateo,M-1/NFO,1.5,37,,,0,0,0,1,0,0,1,1,0,0,0,0,0,0,
 13783,107,Unincorporated San Mateo,M-1/NFO/DR,1.5,37,,,0,0,0,1,0,0,1,1,0,0,0,0,0,0,
@@ -2467,8 +2467,8 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 13787,107,Unincorporated San Mateo,W/DR/CD,1,36,,,0,0,0,0,0,0,1,1,0,1,0,0,0,0,
 13788,107,Unincorporated San Mateo,A-1/S-10,,36,2.178,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 13789,107,Unincorporated San Mateo,A-1/S-9,,36,4.356,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-13790,107,Unincorporated San Mateo,COSC,,16,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-13791,107,Unincorporated San Mateo,COSC/DR/CD,,16,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+13790,107,Unincorporated San Mateo,COSC,,16,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+13791,107,Unincorporated San Mateo,COSC/DR/CD,,16,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 13792,107,Unincorporated San Mateo,RM,,36,0.2,,1,1,1,0,1,1,0,0,0,0,0,0,0,0,
 13793,107,Unincorporated San Mateo,RM-CZ,,36,0.2,,1,1,1,0,1,1,0,0,0,0,0,0,0,0,
 13794,107,Unincorporated San Mateo,RM-CZ/AO/DR/CD,,36,0.2,,1,1,1,0,1,1,0,0,0,0,0,0,0,0,
@@ -2604,8 +2604,8 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 20215,101,San Francisco,HEAVY INDUSTRIAL-65-X,5,65,,,0,1,1,1,0,0,1,1,1,0,0,0,0,0,
 20216,101,San Francisco,HEAVY INDUSTRIAL-80-E,5,80,,,0,1,1,1,0,0,1,1,1,0,0,0,0,0,
 20217,101,San Francisco,HEAVY INDUSTRIAL-HP,,,,,0,1,1,1,0,0,1,1,1,0,0,0,0,0,
-20219,101,San Francisco,MISSION BAY OFFICE DISTRICT-110,,110,,,0,0,0,1,0,1,1,1,0,0,0,0,0,0,
-20220,101,San Francisco,MISSION BAY OPEN SPACE-40-X,,40,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+20219,101,San Francisco,MISSION BAY OFFICE DISTRICT-110,,110,0,,0,0,0,1,0,1,1,1,0,0,0,0,0,0,
+20220,101,San Francisco,MISSION BAY OPEN SPACE-40-X,,40,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 20221,101,San Francisco,SEE MISSION BAY SOUTH REDEVELOPMENT PLAN-110,,110,,,0,1,1,1,0,1,0,0,0,0,0,1,1,1,
 20222,101,San Francisco,SEE MISSION BAY SOUTH REDEVELOPMENT PLAN-40-X,,40,,,0,1,1,1,0,1,0,0,0,0,0,1,1,1,
 20223,101,San Francisco,SEE MISSION BAY SOUTH REDEVELOPMENT PLAN-MB-RA,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -2754,47 +2754,47 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 20367,101,San Francisco,MODERATE SCALE NEIGHBORHOOD COMMERCIAL TRANSIT DISTRICT-68-X,3.6,68,,,0,1,1,0,0,1,0,0,0,1,0,1,1,0,
 20368,101,San Francisco,MODERATE SCALE NEIGHBORHOOD COMMERCIAL TRANSIT DISTRICT-85-X,3.6,85,,,0,1,1,0,0,1,0,0,0,1,0,1,1,0,
 20369,101,San Francisco,MODERATE SCALE NEIGHBORHOOD COMMERCIAL TRANSIT DISTRICT-OS,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-20371,101,San Francisco,PUBLIC-105-E,,105,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20372,101,San Francisco,PUBLIC-105-K,,105,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20373,101,San Francisco,PUBLIC-110-X,,110,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20374,101,San Francisco,PUBLIC-130-D,,130,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20375,101,San Francisco,PUBLIC-130-E,,130,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20376,101,San Francisco,PUBLIC-130-V,,130,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20377,101,San Francisco,PUBLIC-160-E,,160,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20378,101,San Francisco,PUBLIC-160-H,,160,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20379,101,San Francisco,PUBLIC-200-S,,200,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20380,101,San Francisco,PUBLIC-220-F,,220,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20381,101,San Francisco,PUBLIC-240-H,,240,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20382,101,San Francisco,PUBLIC-28-X,,28,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20383,101,San Francisco,PUBLIC-300-S,,300,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20384,101,San Francisco,PUBLIC-30-X,,30,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20385,101,San Francisco,PUBLIC-320-I,,320,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20386,101,San Francisco,PUBLIC-340-I,,340,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20387,101,San Francisco,PUBLIC-350-S,,350,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20388,101,San Francisco,PUBLIC-40-X,,40,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20389,101,San Francisco,PUBLIC-450-S,,450,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20390,101,San Francisco,PUBLIC-45-X,,45,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20391,101,San Francisco,PUBLIC-48-X,,48,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20393,101,San Francisco,PUBLIC-500-S,,500,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20394,101,San Francisco,PUBLIC-50-X,,50,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20395,101,San Francisco,PUBLIC-55-X,,55,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20396,101,San Francisco,PUBLIC-58-X,,58,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20397,101,San Francisco,PUBLIC-65-85-N,,65,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20398,101,San Francisco,PUBLIC-65-A,,65,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20399,101,San Francisco,PUBLIC-65-J,,65,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20400,101,San Francisco,PUBLIC-65-N,,65,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20402,101,San Francisco,PUBLIC-65-X,,65,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20403,101,San Francisco,PUBLIC-68-X,,68,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20404,101,San Francisco,PUBLIC-70-X,,70,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20405,101,San Francisco,PUBLIC-80-130-F,,130,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20406,101,San Francisco,PUBLIC-80-B,,80,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20407,101,San Francisco,PUBLIC-80-D,,80,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20408,101,San Francisco,PUBLIC-80-T,,80,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20409,101,San Francisco,PUBLIC-80-X,,80,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20410,101,San Francisco,PUBLIC-84-E,,84,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20411,101,San Francisco,PUBLIC-85-X,,85,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20371,101,San Francisco,PUBLIC-105-E,,105,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20372,101,San Francisco,PUBLIC-105-K,,105,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20373,101,San Francisco,PUBLIC-110-X,,110,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20374,101,San Francisco,PUBLIC-130-D,,130,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20375,101,San Francisco,PUBLIC-130-E,,130,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20376,101,San Francisco,PUBLIC-130-V,,130,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20377,101,San Francisco,PUBLIC-160-E,,160,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20378,101,San Francisco,PUBLIC-160-H,,160,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20379,101,San Francisco,PUBLIC-200-S,,200,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20380,101,San Francisco,PUBLIC-220-F,,220,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20381,101,San Francisco,PUBLIC-240-H,,240,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20382,101,San Francisco,PUBLIC-28-X,,28,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20383,101,San Francisco,PUBLIC-300-S,,300,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20384,101,San Francisco,PUBLIC-30-X,,30,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20385,101,San Francisco,PUBLIC-320-I,,320,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20386,101,San Francisco,PUBLIC-340-I,,340,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20387,101,San Francisco,PUBLIC-350-S,,350,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20388,101,San Francisco,PUBLIC-40-X,,40,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20389,101,San Francisco,PUBLIC-450-S,,450,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20390,101,San Francisco,PUBLIC-45-X,,45,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20391,101,San Francisco,PUBLIC-48-X,,48,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20393,101,San Francisco,PUBLIC-500-S,,500,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20394,101,San Francisco,PUBLIC-50-X,,50,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20395,101,San Francisco,PUBLIC-55-X,,55,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20396,101,San Francisco,PUBLIC-58-X,,58,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20397,101,San Francisco,PUBLIC-65-85-N,,65,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20398,101,San Francisco,PUBLIC-65-A,,65,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20399,101,San Francisco,PUBLIC-65-J,,65,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20400,101,San Francisco,PUBLIC-65-N,,65,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20402,101,San Francisco,PUBLIC-65-X,,65,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20403,101,San Francisco,PUBLIC-68-X,,68,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20404,101,San Francisco,PUBLIC-70-X,,70,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20405,101,San Francisco,PUBLIC-80-130-F,,130,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20406,101,San Francisco,PUBLIC-80-B,,80,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20407,101,San Francisco,PUBLIC-80-D,,80,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20408,101,San Francisco,PUBLIC-80-T,,80,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20409,101,San Francisco,PUBLIC-80-X,,80,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20410,101,San Francisco,PUBLIC-84-E,,84,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20411,101,San Francisco,PUBLIC-85-X,,85,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
 20412,101,San Francisco,PUBLIC-90-X,1,90,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
-20413,101,San Francisco,PUBLIC-96-X,,96,,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
+20413,101,San Francisco,PUBLIC-96-X,,96,0,,0,0,0,1,0,1,0,0,0,0,0,0,1,1,
 20414,101,San Francisco,PUBLIC-CP,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 20415,101,San Francisco,PUBLIC-HP,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 20416,101,San Francisco,PUBLIC-OS,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -2818,18 +2818,18 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 20434,101,San Francisco,"PDR PRODUCTION, DISTRIBUTION, AND REPAIR-65-J",5,65,,,0,0,0,1,0,0,0,0,0,0,0,0,0,0,
 20435,101,San Francisco,"PDR PRODUCTION, DISTRIBUTION, AND REPAIR-80-E",5,80,,,0,0,0,1,0,0,0,0,0,0,0,0,0,0,
 20436,101,San Francisco,"PDR PRODUCTION, DISTRIBUTION, AND REPAIR-OS",,,,,0,0,0,1,0,0,0,0,0,0,0,0,0,0,
-20437,101,San Francisco,PARKMERCED-COMMUNITY/FITNESS-40-OS-PM,,40,,,0,0,0,1,0,0,0,0,0,0,0,0,0,0,
-20439,101,San Francisco,PARKMERCED-MIXED USE-SOCIAL HEART-65-PM,,65,,,0,0,0,1,0,0,0,0,0,1,0,0,1,0,
-20441,101,San Francisco,PARKMERCED-MIXED USE-NEIGHBORHOOD COMMONS-65-PM,,65,,,0,0,0,0,0,0,0,0,0,1,0,0,1,0,
-20442,101,San Francisco,PARKMERCED-OPEN SPACE-40-OS-PM,,40,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-20443,101,San Francisco,PARKMERCED-OPEN SPACE-40-X,,40,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-20444,101,San Francisco,PARKMERCED-OPEN SPACE-45-PM,,45,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-20445,101,San Francisco,PARKMERCED-OPEN SPACE-65-PM,,65,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+20437,101,San Francisco,PARKMERCED-COMMUNITY/FITNESS-40-OS-PM,,40,0,,0,0,0,1,0,0,0,0,0,0,0,0,0,0,
+20439,101,San Francisco,PARKMERCED-MIXED USE-SOCIAL HEART-65-PM,,65,0,,0,0,0,1,0,0,0,0,0,1,0,0,1,0,
+20441,101,San Francisco,PARKMERCED-MIXED USE-NEIGHBORHOOD COMMONS-65-PM,,65,0,,0,0,0,0,0,0,0,0,0,1,0,0,1,0,
+20442,101,San Francisco,PARKMERCED-OPEN SPACE-40-OS-PM,,40,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+20443,101,San Francisco,PARKMERCED-OPEN SPACE-40-X,,40,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+20444,101,San Francisco,PARKMERCED-OPEN SPACE-45-PM,,45,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+20445,101,San Francisco,PARKMERCED-OPEN SPACE-65-PM,,65,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 20448,101,San Francisco,PARKMERCED-RESIDENTIAL-45-PM,,45,,,0,0,1,0,0,0,0,0,0,0,0,0,0,0,
 20449,101,San Francisco,PARKMERCED-RESIDENTIAL-65-PM,,65,,,0,0,1,0,0,0,0,0,0,0,0,0,0,0,
 20450,101,San Francisco,PARKMERCED-RESIDENTIAL-85-PM,,85,,,0,0,1,0,0,0,0,0,0,0,0,0,0,0,
-20451,101,San Francisco,PARKMERCED-SCHOOL-65-PM,,65,,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,
-20452,101,San Francisco,PUBLIC- WATER-40-X,,40,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+20451,101,San Francisco,PARKMERCED-SCHOOL-65-PM,,65,0,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,
+20452,101,San Francisco,PUBLIC- WATER-40-X,,40,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 20453,101,San Francisco,PUBLIC- WATER-OS,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 20454,101,San Francisco,"RESIDENTIAL- COMMERCIAL, MEDIUM DENSITY-40-X",3.6,40,108.9,,0,1,1,0,1,1,0,0,0,0,0,1,1,0,
 20455,101,San Francisco,"RESIDENTIAL- COMMERCIAL, MEDIUM DENSITY-65/240-EP",3.6,240,108.9,,0,1,1,0,1,1,0,0,0,0,0,1,1,0,
@@ -3246,7 +3246,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 60089,,Hayward,106 - Limited Open Space,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Post22
 60090,,Hayward,106 - Low Density Residential,,30,8.7,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,Post22
 60091,,Hayward,106 - Medium Density Residential,,40,17,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,Post22
-60092,,Hayward,106 - Mixed Industrial,,40,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,Post22
+60092,,Hayward,106 - Mixed Industrial,,40,0,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,Post22
 60093,,Hayward,106 - Parks and Recreation,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Post22
 60094,,Hayward,106 - Public and Quasi-Public,,,,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,Post22
 60095,,Hayward,106 - Public and Quasi-Public/Industrial Corridor,,,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,Post22
@@ -3501,7 +3501,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 60344,,Clayton,203 - Cultural Center,,,,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,Pre22
 60345,,Clayton,203 - High Density Residential,,35,7.5,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
 60346,,Clayton,203 - Institutional Density Residential,,35,,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
-60347,,Clayton,203 - Kirker Corridor,,35,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
+60347,,Clayton,203 - Kirker Corridor,,35,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
 60348,,Clayton,203 - Low Density Residential,,35,3,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
 60349,,Clayton,203 - Medium Density Residential,,35,5,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
 60350,,Clayton,203 - Multi-Family Low Density Residential,0.5,35,7.6,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,Pre22
@@ -4296,7 +4296,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 61139,,Half Moon Bay,608 - Greenbelt - Stream Corridor,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
 61140,,Half Moon Bay,608 - High Density Residential,,40,29,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,Pre22
 61141,,Half Moon Bay,608 - Horticultural Business,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
-61142,,Half Moon Bay,608 - Light Industrial,,40,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,Pre22
+61142,,Half Moon Bay,608 - Light Industrial,,40,0,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,Pre22
 61143,,Half Moon Bay,608 - Low Density Residential,0.5,28,8.7,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
 61144,,Half Moon Bay,608 - Medium Density Residential,0.5,28,8.7,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,Pre22
 61145,,Half Moon Bay,608 - Open Space Reserve,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
@@ -4312,7 +4312,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 61155,,Hillsborough,609 - Residential,0.25,32,2,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,x/x/x994
 61156,,Menlo Park,610 - ElCaminoReal Professional/Retail Commercial,0.3,35,,,0,0,0,1,1,1,0,0,0,1,1,0,1,1,Pre22
 61157,,Menlo Park,610 - Landscaped Greenways,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
-61158,,Menlo Park,610 - Limited Industry,,35,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,Pre22
+61158,,Menlo Park,610 - Limited Industry,,35,0,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,Pre22
 61159,,Menlo Park,610 - Low Density Residential,,,6.2,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
 61160,,Menlo Park,610 - Marshes,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
 61161,,Menlo Park,610 - Medium Density Residential,,,18.5,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,Pre22
@@ -4324,7 +4324,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 61167,,Menlo Park,610 - Very Low Density Residential,,,2.9,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
 61168,,Millbrae,611 - General Commercial,0.5,40,,,0,0,0,1,1,1,0,0,0,1,1,0,1,1,x99x
 61169,,Millbrae,611 - High Density Residential,,40,,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,x99x
-61170,,Millbrae,611 - Industrial and Utility,,40,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,x99x
+61170,,Millbrae,611 - Industrial and Utility,,40,0,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,x99x
 61171,,Millbrae,611 - Low Density Residential,,30,,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,x99x
 61172,,Millbrae,611 - Medium Density Residential,,30,,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,x99x
 61173,,Millbrae,611 - Park and Open Space,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,x99x
@@ -4386,7 +4386,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 61229,,San Bruno,615 - Public and Quasi-Public,,,,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,6/x/x984
 61230,,San Bruno,615 - Regional Community/Office Commercial,1.2,50,,,0,0,0,1,1,1,0,0,0,1,1,0,1,1,6/x/x984
 61231,,San Bruno,615 - Very Low Density Residential,,,1,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,6/x/x984
-61232,,San Carlos,616 - Airport,,50,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,x992
+61232,,San Carlos,616 - Airport,,50,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,x992
 61233,,San Carlos,616 - Highway Service,,,,,0,0,0,1,1,1,0,0,0,1,1,0,1,1,x992
 61234,,San Carlos,616 - Industrial-Planned,2,100,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,x992
 61235,,San Carlos,616 - Industrial-Special Use,,,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,x992
@@ -4980,7 +4980,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 61823,,Cloverdale,901 - Service Commercial,1,35,,,0,0,0,1,1,1,0,0,0,1,1,0,1,1,Pre22
 61824,,Cotati,902 - Commercial Industrial,0.75,40,15,,0,0,1,1,1,0,1,1,0,1,1,0,1,1,Pre22
 61825,,Cotati,902 - General Commercial,1,50,15,,0,1,1,1,1,1,0,0,0,1,1,0,1,1,Pre22
-61826,,Cotati,902 - General Industrial,,40,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,Pre22
+61826,,Cotati,902 - General Industrial,,40,0,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,Pre22
 61827,,Cotati,902 - High Density Residential,,28,15,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,Pre22
 61828,,Cotati,902 - Highway Commercial,1,50,15,,0,1,1,1,1,1,0,0,0,1,1,0,1,1,Pre22
 61829,,Cotati,902 - Low-Medium Density Residential,,28,6,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
@@ -5019,7 +5019,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 61862,,Petaluma,904 - Open Space,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7/6/2x5
 61863,,Petaluma,904 - Public Institutional,,,,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,7/6/2x5
 61864,,Petaluma,904 - Public Parks,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7/6/2x5
-61865,,Petaluma,904 - River Dependant Industrial,,40,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,7/6/2x5
+61865,,Petaluma,904 - River Dependant Industrial,,40,0,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,7/6/2x5
 61866,,Petaluma,904 - Rural (0.0 - 0.5 du/ac),,25,0.5,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,7/6/2x5
 61867,,Petaluma,904 - School District Lands,,,,,0,0,0,0,0,1,0,0,0,0,0,0,0,0,7/6/2x5
 61868,,Petaluma,904 - Special Commercial,,,,,0,0,0,1,1,1,0,0,0,1,1,0,1,1,7/6/2x5
@@ -5049,8 +5049,8 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 61892,,Santa Rosa,906 - Business Park,1.5,55,,,0,0,0,1,1,1,0,0,0,1,1,0,1,1,Pre22
 61893,,Santa Rosa,906 - Country Residential,,35,0.2,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
 61894,,Santa Rosa,906 - Downtown Mixed,,,40,,0,1,1,1,1,1,0,0,0,1,1,1,1,1,Pre22
-61895,,Santa Rosa,906 - General Industry,,55,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,Pre22
-61896,,Santa Rosa,906 - Light Industry,,55,,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,Pre22
+61895,,Santa Rosa,906 - General Industry,,55,0,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,Pre22
+61896,,Santa Rosa,906 - Light Industry,,55,0,,0,0,0,0,0,0,1,1,0,0,0,0,0,0,Pre22
 61897,,Santa Rosa,906 - Low Density Residential,,35,8,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
 61898,,Santa Rosa,906 - Low Density Residential/Open Space,,35,8,,1,0,0,0,0,0,0,0,0,0,0,0,0,0,Pre22
 61899,,Santa Rosa,906 - Medium-High Density Residential,,45,30,,1,1,1,0,0,0,0,0,0,0,0,0,0,0,Pre22
