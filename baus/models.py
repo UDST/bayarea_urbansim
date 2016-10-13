@@ -448,10 +448,13 @@ def residential_developer(feasibility, households, buildings, parcels, year,
 
     kwargs = settings['residential_developer']
 
+    target_vacancy = pd.read_csv("data/regional_controls.csv",
+                                 index_col="year").loc[year].st_res_vac
+
     num_units = dev.compute_units_to_build(
         len(households),
         buildings["residential_units"].sum(),
-        kwargs['target_vacancy'])
+        target_vacancy)
 
     targets = []
     typ = "Residential"
