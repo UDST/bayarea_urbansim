@@ -124,7 +124,8 @@ def jobs(store, parcels):
     buildings = store.buildings
 
     # need to move jobs from portola valley to san mateo county
-    jobs_df["parcel_id"] = misc.reindex(buildings.parcel_id, jobs_df.building_id)
+    jobs_df["parcel_id"] = misc.reindex(buildings.parcel_id,
+                                        jobs_df.building_id)
     jobs_df["juris"] = misc.reindex(parcels.juris, jobs_df.parcel_id)
 
     portola = jobs_df[jobs_df.juris == "Portola Valley"]
@@ -136,7 +137,8 @@ def jobs(store, parcels):
 
     jobs_df.loc[move.index, "building_id"] = move_to.building_id.values
 
-    jobs_df["parcel_id"] = misc.reindex(buildings.parcel_id, jobs_df.building_id)
+    jobs_df["parcel_id"] = misc.reindex(buildings.parcel_id,
+                                        jobs_df.building_id)
     jobs_df["juris"] = misc.reindex(parcels.juris, jobs_df.parcel_id)
 
     del jobs_df["parcel_id"]
