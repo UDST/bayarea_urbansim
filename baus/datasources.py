@@ -109,14 +109,40 @@ def landmarks():
 
 
 @orca.table('jobs', cache=True)
-def jobs(store):
+def jobs(store, parcels):
 
     if 'jobs_urbansim_allocated' not in store:
         # if jobs allocation hasn't been done, then do it
         # (this should only happen once)
         orca.run(["allocate_jobs"])
 
-    return store['jobs_urbansim_allocated']
+    jobs_df = store['jobs_urbansim_allocated']
+
+    # grab it from store in order to avoid circular reference - if you
+    # use the orca buildings table it depends on jobs so in jobs we can't
+    # depend on buildings
+    buildings = store.buildings
+
+    # need to move jobs from portola valley to san mateo county
+    jobs_df["parcel_id"] = misc.reindex(buildings.parcel_id, jobs_df.building_id)
+    jobs_df["juris"] = misc.reindex(parcels.juris, jobs_df.parcel_id)
+
+    portola = jobs_df[jobs_df.juris == "Portola Valley"]
+    num_keep = 1500
+    move = portola.sample(len(portola) - num_keep)
+
+    san_mateo = jobs_df[jobs_df.juris == "San Mateo County"]
+    move_to = san_mateo.sample(len(move))
+
+    jobs_df.loc[move.index, "building_id"] = move_to.building_id.values
+
+    jobs_df["parcel_id"] = misc.reindex(buildings.parcel_id, jobs_df.building_id)
+    jobs_df["juris"] = misc.reindex(parcels.juris, jobs_df.parcel_id)
+
+    del jobs_df["parcel_id"]
+    del jobs_df["juris"]
+
+    return jobs_df
 
 
 # the way this works is there is an orca step to do jobs allocation, which
