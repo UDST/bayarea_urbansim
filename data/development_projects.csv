@@ -1831,11 +1831,11 @@ development_projects_id,raw_id,building_name,site_name,action,scen0,scen3,scen1,
 1830,4005,main mall,SW SF,build,0,1,0,0,1,0,,,,,-122.47673,37.72913,13813830426688,2020,,12,MR,349808,69962,233,1200,,,,,,,,,,
 1831,4006,main mall,SW SF,build,0,1,0,0,0,0,,,,,-122.47819,37.73000,5946202773832,2020,,12,MR,2271622,454324,1514,1200,,,,,,,,,,
 1832,4007,0,SW SF,build,0,1,0,0,0,0,,,,,-122.48148,37.72835,7598400330622,2020,,12,MR,920747,46037,729,1200,,,,,,,,,,
-1833,10000,Sun Garden Retail Center,,build,1,1,1,1,1,1,E/s Monterey  300' sly E. Alma,San Jose,,Santa Clara,-121.8712172,37.31569602,557307546256,2013,,,RS,206000,206000,0,,,,,,,,,,,ABAG
+1833,10000,Sun Garden Retail Center,,build,0,0,0,0,0,0,E/s Monterey  300' sly E. Alma,San Jose,,Santa Clara,-121.8712172,37.31569602,557307546256,2013,,,RS,206000,206000,0,,,,,,,,,,,ABAG
 1834,10001,Race Street Terrace,,build,1,1,1,1,1,1,Bet. Race & Grand  300' sly Park,San Jose,,Santa Clara,-121.9122138,37.32518016,9969549260852,2013,,,HM,96000,0,80,,,,,,,,,,,ABAG
-1835,10002,Villa Sport,,build,1,1,1,1,1,1,Betwn N Capitol & Hwy 680  300' nly Berryesa,San Jose,,Santa Clara,-121.8628883,37.38688164,841228298555,2014,,,OF,88000,88000,0,,,,,,,,,,,ABAG
+1835,10002,Villa Sport,,build,0,0,0,0,0,0,Betwn N Capitol & Hwy 680  300' nly Berryesa,San Jose,,Santa Clara,-121.8628883,37.38688164,841228298555,2014,,,OF,88000,88000,0,,,,,,,,,,,ABAG
 1836,10003,Berryessa Crossing (Phase 1),,build,1,1,1,1,1,1,Both sides Berryessa  wly UP railroad,San Jose,,Santa Clara,-121.8800891,37.37133823,12290243629603,2010,,,HS,290400,0,242,,,,,,,,,,,ABAG
-1837,10004,2890 North 1st Street Office,,build,1,1,1,1,1,1,Bound N 1st  Daggett  Zanker & Plumeria,San Jose,,Santa Clara,-121.930469,37.39356279,10756324623470,2014,,,OF,42000,42000,0,,,,,,,,,,,ABAG
+1837,10004,2890 North 1st Street Office,,build,0,0,0,0,0,0,Bound N 1st  Daggett  Zanker & Plumeria,San Jose,,Santa Clara,-121.930469,37.39356279,10756324623470,2014,,,OF,42000,42000,0,,,,,,,,,,,ABAG
 1838,10005,Metropolitan Apts,,build,1,1,1,1,1,1,E/s Monterey  700' nly Tully,San Jose,,Santa Clara,-121.8623954,37.30571293,11023466561973,2011,,,HM,122400,0,102,,,,,,,,,,,ABAG
 1839,10006,Senter Road Family Apts,,build,1,1,1,1,1,1,E/s Senter  600' sly Tully,San Jose,,Santa Clara,-121.8456956,37.30708364,2650462895899,2010,,,HM,122400,0,102,,,,,,,,,,,ABAG
 1840,10007,Valley Christian Schools,,build,1,1,1,1,1,1,Ely term. Skyway,San Jose,,Santa Clara,-121.8247035,37.27447486,4785876575351,2010,,,SC,50000,50000,0,,,,,,,,,,,ABAG
@@ -1846,57 +1846,57 @@ development_projects_id,raw_id,building_name,site_name,action,scen0,scen3,scen1,
 1845,10012,Ford Apts,,build,1,1,1,1,1,1,N/s Ford  550' ely Monterey,San Jose,,Santa Clara,-121.7967602,37.25415908,11184911351337,2010,,,HM,114000,0,95,,,,,,,,,,,ABAG
 1846,10013,Zero Waste Facility,,build,1,1,1,1,1,1,N/s Los Esteros  term Grand,San Jose,,Santa Clara,-121.9522188,37.43643066,2314990167334,2011,,,IL,283000,283000,0,,,,,,,,,,,ABAG
 1847,10014,River Oaks Apts (East),,build,1,1,1,1,1,1,N/s River Oaks  200' ely Research,San Jose,,Santa Clara,-121.9249005,37.40445868,15021706113960,2012,,,HM,525600,0,438,,,,,,,,,,,ABAG
-1848,10015,Chinmaya Mission,,build,1,1,1,1,1,1,NE/c Clayton & Hickerson,San Jose,,Santa Clara,-121.8092863,37.35936763,3897825644537,2011,,,OF,26000,26000,0,,,,,,,,,,,ABAG
+1848,10015,Chinmaya Mission,,build,0,0,0,0,0,0,NE/c Clayton & Hickerson,San Jose,,Santa Clara,-121.8092863,37.35936763,3897825644537,2011,,,OF,26000,26000,0,,,,,,,,,,,ABAG
 1849,10016,Bellarmine (Life Center/Gym),,build,1,1,1,1,1,1,NE/c Elm & Emory,San Jose,,Santa Clara,-121.9178615,37.34252022,14439107796122,2011,,,OF,40000,40000,0,,,,,,,,,,,ABAG
 1850,10017,The Meridian at Willow Glen,,build,1,1,1,1,1,1,NE/c Hillsdale & Yucca,San Jose,,Santa Clara,-121.9065932,37.26840811,213050406763,2011,,,HS,61200,0,51,,,,,,,,,,,ABAG
 1851,10018,North San Pedro Apts,,build,1,1,1,1,1,1,NE/c Hwy 87 & Bassett,San Jose,,Santa Clara,-121.8984824,37.33991817,4796943171858,2011,,,HM,162000,0,135,,,,,,,,,,,ABAG
 1852,10019,Centered on Capitol Townhomes,,build,1,1,1,1,1,1,NE/c N. Capitol & Sierra,San Jose,,Santa Clara,-121.8655777,37.39243261,1082157672108,2011,,,HM,112800,0,94,,,,,,,,,,,ABAG
-1853,10020,Foxworthy Retail,,build,1,1,1,1,1,1,NW/c Almaden & Hillsdale,San Jose,,Santa Clara,-121.8809359,37.27619221,277043018674,2011,,,RS,25000,25000,0,,,,,,,,,,,ABAG
-1854,10021,Coleman Landings,,build,1,1,1,1,1,1,NW/c Coleman & Newhall,San Jose,,Santa Clara,-121.9223939,37.34966612,9331635956288,2012,,,OF,245000,245000,0,,,,,,,,,,,ABAG
-1855,10022,Coleman Highline Office,,build,1,1,1,1,1,1,NW/c Coleman & Newhall,San Jose,,Santa Clara,-121.9282226,37.35256718,8359129770625,2013,,,OF,683000,683000,0,,,,,,,,,,,ABAG
-1856,10023,Valley Fair Shopping Center,,build,1,1,1,1,1,1,NW/c Hwy 17 & Stevens Creek,San Jose,,Santa Clara,-121.9425999,37.3250176,17580255408163,2013,,,RS,525000,525000,0,,,,,,,,,,,ABAG
+1853,10020,Foxworthy Retail,,build,0,0,0,0,0,0,NW/c Almaden & Hillsdale,San Jose,,Santa Clara,-121.8809359,37.27619221,277043018674,2011,,,RS,25000,25000,0,,,,,,,,,,,ABAG
+1854,10021,Coleman Landings,,build,0,0,0,0,0,0,NW/c Coleman & Newhall,San Jose,,Santa Clara,-121.9223939,37.34966612,9331635956288,2012,,,OF,245000,245000,0,,,,,,,,,,,ABAG
+1855,10022,Coleman Highline Office,,build,0,0,0,0,0,0,NW/c Coleman & Newhall,San Jose,,Santa Clara,-121.9282226,37.35256718,8359129770625,2013,,,OF,683000,683000,0,,,,,,,,,,,ABAG
+1856,10023,Valley Fair Shopping Center,,build,0,0,0,0,0,0,NW/c Hwy 17 & Stevens Creek,San Jose,,Santa Clara,-121.9425999,37.3250176,17580255408163,2013,,,RS,525000,525000,0,,,,,,,,,,,ABAG
 1857,10024,Newbury Park Mixed Use,,build,1,1,1,1,1,1,NW/c King & Dobbin,San Jose,,Santa Clara,-121.867455,37.36622827,178546448907,2013,,,MR,276000,0,230,,,,,,,,,,,ABAG
-1858,10025,Samsung Semiconductor,,build,1,1,1,1,1,1,NW/c N. 1st & Tasman,San Jose,,Santa Clara,-121.9463532,37.4092982,2322862587853,2013,,,IL,680000,680000,0,,,,,,,,,,,ABAG
-1859,10026,Trammel Crow (R&D and Office Buildings),,build,1,1,1,1,1,1,NW/c Nortech & Disk,San Jose,,Santa Clara,-121.964017,37.4236007,10699773993700,2014,,,IL,415000,415000,0,,,,,,,,,,,ABAG
+1858,10025,Samsung Semiconductor,,build,0,0,0,0,0,0,NW/c N. 1st & Tasman,San Jose,,Santa Clara,-121.9463532,37.4092982,2322862587853,2013,,,IL,680000,680000,0,,,,,,,,,,,ABAG
+1859,10026,Trammel Crow (R&D and Office Buildings),,build,0,0,0,0,0,0,NW/c Nortech & Disk,San Jose,,Santa Clara,-121.964017,37.4236007,10699773993700,2014,,,IL,415000,415000,0,,,,,,,,,,,ABAG
 1860,10027,Santana Row (Levare),,build,1,1,1,1,1,1,NW/c Olin & Hatton,San Jose,,Santa Clara,-121.9467176,37.32095843,7973902266520,2010,,,HM,141600,0,118,,,,,,,,,,,ABAG
 1861,10028,Post & San Pedro Tower,,build,1,1,1,1,1,1,NW/c San Pedro & Post,San Jose,,Santa Clara,-121.8926919,37.33415419,1333479766919,2014,,,HM,218400,0,182,,,,,,,,,,,ABAG
-1862,10029,Whole Foods Market,,build,1,1,1,1,1,1,NW/c The Alameda & Stockton,San Jose,,Santa Clara,-121.9051054,37.33249087,17490520174758,2013,,,RB,33000,33000,0,,,,,,,,,,,ABAG
+1862,10029,Whole Foods Market,,build,0,0,0,0,0,0,NW/c The Alameda & Stockton,San Jose,,Santa Clara,-121.9051054,37.33249087,17490520174758,2013,,,RB,33000,33000,0,,,,,,,,,,,ABAG
 1863,10030,Tasman Apts,,build,1,1,1,1,1,1,NW/c Vista Montana & W. Tasman,San Jose,,Santa Clara,-121.9552969,37.41475632,2488578699474,2011,,,HM,664800,0,554,,,,,,,,,,,ABAG
 1864,10031,Balbach Condos,,build,1,1,1,1,1,1,S/s Balbach  100' ely Almaden,San Jose,,Santa Clara,-121.8876877,37.32720079,16084817875279,2014,,,HM,121200,0,101,,,,,,,,,,,ABAG
 1865,10032,Parc 22 Townhomes,,build,1,1,1,1,1,1,S/s William  350' wly McLaughlin,San Jose,,Santa Clara,-121.8629695,37.33901448,16982901135447,2012,,,HS,80400,0,67,,,,,,,,,,,ABAG
-1866,10033,M8trix Casino/Hotel (Phase 1),,build,1,1,1,1,1,1,SE/c Airport & Old Bayshore,San Jose,,Santa Clara,-121.9190707,37.37089061,7938493479834,2011,,,OF,89000,89000,0,,,,,,,,,,,ABAG
-1867,10034,Almaden Ranch / Bass Pro,,build,1,1,1,1,1,1,SE/c Almaden & Chynoweth,San Jose,,Santa Clara,-121.8724115,37.25823213,1908535176695,2012,,,OF,377000,377000,0,,,,,,,,,,,ABAG
+1866,10033,M8trix Casino/Hotel (Phase 1),,build,0,0,0,0,0,0,SE/c Airport & Old Bayshore,San Jose,,Santa Clara,-121.9190707,37.37089061,7938493479834,2011,,,OF,89000,89000,0,,,,,,,,,,,ABAG
+1867,10034,Almaden Ranch / Bass Pro,,build,0,0,0,0,0,0,SE/c Almaden & Chynoweth,San Jose,,Santa Clara,-121.8724115,37.25823213,1908535176695,2012,,,OF,377000,377000,0,,,,,,,,,,,ABAG
 1868,10035,San Pedro Square,,build,1,1,1,1,1,1,SE/c Bassett & Terraine,San Jose,,Santa Clara,-121.8971682,37.33924285,17135562162557,2014,,,HM,487200,0,406,,,,,,,,,,,ABAG
 1869,10036,Ajisai Gardens Apts,,build,1,1,1,1,1,1,SE/c E. Taylor & N. 7th,San Jose,,Santa Clara,-121.89295,37.35153204,10223535361428,2012,,,HM,123600,0,103,,,,,,,,,,,ABAG
-1870,10037,Lincoln Office/Retail,,build,1,1,1,1,1,1,SE/c Lincoln & Willow,San Jose,,Santa Clara,-121.9006114,37.30839232,15978284830248,2010,,,OF,41000,41000,0,,,,,,,,,,,ABAG
-1871,10038,Self Storage,,build,1,1,1,1,1,1,SE/c N 10th Street & Horning,San Jose,,Santa Clara,-121.8946393,37.35994477,9807350134795,2014,,,IL,84000,84000,0,,,,,,,,,,,ABAG
+1870,10037,Lincoln Office/Retail,,build,0,0,0,0,0,0,SE/c Lincoln & Willow,San Jose,,Santa Clara,-121.9006114,37.30839232,15978284830248,2010,,,OF,41000,41000,0,,,,,,,,,,,ABAG
+1871,10038,Self Storage,,build,0,0,0,0,0,0,SE/c N 10th Street & Horning,San Jose,,Santa Clara,-121.8946393,37.35994477,9807350134795,2014,,,IL,84000,84000,0,,,,,,,,,,,ABAG
 1872,10039,Rosemary Family/Senior Apts,,build,1,1,1,1,1,1,SE/c N. 1st & Rosemary,San Jose,,Santa Clara,-121.9077961,37.35989634,16698842867440,2011,,,HM,348000,0,290,,,,,,,,,,,ABAG
-1873,10040,Hampton Inn,,build,1,1,1,1,1,1,SE/c W. Santa Clara & Hwy 87,San Jose,,Santa Clara,-121.8960678,37.33317714,11999151377381,2014,,,OF,128000,128000,0,,,,,,,,,,,ABAG
+1873,10040,Hampton Inn,,build,0,0,0,0,0,0,SE/c W. Santa Clara & Hwy 87,San Jose,,Santa Clara,-121.8960678,37.33317714,11999151377381,2014,,,OF,128000,128000,0,,,,,,,,,,,ABAG
 1874,10041,Santana Row (Misora),,build,1,1,1,1,1,1,SE/c Winchester & Stevens Creek,San Jose,,Santa Clara,-121.9474733,37.31985905,11486374325420,2012,,,HM,264000,0,220,,,,,,,,,,,ABAG
-1875,10042,Hyatt House/Hyatt Place,,build,1,1,1,1,1,1,Sly term. Karina,San Jose,,Santa Clara,-121.921595,37.37311143,14770617797816,2014,,,OF,206000,206000,0,,,,,,,,,,,ABAG
-1876,10043,Earthquakes Soccer Stadium,,build,1,1,1,1,1,1,SW/c Coleman & Newhall,San Jose,,Santa Clara,-121.9253605,37.35115466,216445391403,2012,,,OF,219000,219000,0,,,,,,,,,,,ABAG
+1875,10042,Hyatt House/Hyatt Place,,build,0,0,0,0,0,0,Sly term. Karina,San Jose,,Santa Clara,-121.921595,37.37311143,14770617797816,2014,,,OF,206000,206000,0,,,,,,,,,,,ABAG
+1876,10043,Earthquakes Soccer Stadium,,build,0,0,0,0,0,0,SW/c Coleman & Newhall,San Jose,,Santa Clara,-121.9253605,37.35115466,216445391403,2012,,,OF,219000,219000,0,,,,,,,,,,,ABAG
 1877,10044,Orchard Park,,build,1,1,1,1,1,1,SW/c E. Brokaw & Oakland,San Jose,,Santa Clara,-121.897072,37.37977508,3770778410749,2012,,,HS,288000,0,240,,,,,,,,,,,ABAG
 1878,10045,Edwards Mixed Use,,build,1,1,1,1,1,1,SW/c Edwards & S. 1st,San Jose,,Santa Clara,-121.8797656,37.32126902,11178663235532,2010,,,HM,60000,0,50,,,,,,,,,,,ABAG
 1879,10046,One South Market Apts,,build,1,1,1,1,1,1,SW/c Market & Santa Clara,San Jose,,Santa Clara,-121.8921343,37.33488771,9589580496633,2013,,,HM,374400,0,312,,,,,,,,,,,ABAG
 1880,10047,Century Center Mixed Use,,build,1,1,1,1,1,1,SW/c N. 1st & Century Center,San Jose,,Santa Clara,-121.9151777,37.36797331,14874144646500,2014,,,HM,453600,0,378,,,,,,,,,,,ABAG
 1881,10048,North First Campus,,build,1,1,1,1,1,1,SW/c N. 1st & Component,San Jose,,Santa Clara,-121.9279871,37.38061408,17054960452221,2012,,,IL,2350000,2350000,0,,,,,,,,,,,ABAG
-1882,10049,A-1 Self Storage,,build,1,1,1,1,1,1,SW/c Phelan & Senter,San Jose,,Santa Clara,-121.8590419,37.31734389,5112592194154,2013,,,IL,107000,107000,0,,,,,,,,,,,ABAG
-1883,10050,SuperMicro,,build,1,1,1,1,1,1,SW/c Ridder Park & Schallenberger,San Jose,,Santa Clara,-121.9004327,37.37634437,16965552667538,2014,,,IL,182000,182000,0,,,,,,,,,,,ABAG
+1882,10049,A-1 Self Storage,,build,0,0,0,0,0,0,SW/c Phelan & Senter,San Jose,,Santa Clara,-121.8590419,37.31734389,5112592194154,2013,,,IL,107000,107000,0,,,,,,,,,,,ABAG
+1883,10050,SuperMicro,,build,0,0,0,0,0,0,SW/c Ridder Park & Schallenberger,San Jose,,Santa Clara,-121.9004327,37.37634437,16965552667538,2014,,,IL,182000,182000,0,,,,,,,,,,,ABAG
 1884,10051,Cottages at Mirassou,,build,1,1,1,1,1,1,SW/c Ruby & Aborn,San Jose,,Santa Clara,-121.7767427,37.31515772,7886770966303,2011,,,HM,124800,0,104,,,,,,,,,,,ABAG
-1885,10052,Public Storage,,build,1,1,1,1,1,1,SW/c Tully & Old Tully,San Jose,,Santa Clara,-121.8564211,37.30295544,10862598817162,2012,,,IL,115000,115000,0,,,,,,,,,,,ABAG
-1886,10053,Orchard Supply Hardware,,build,1,1,1,1,1,1,SW/c W. San Carlos & Royal,San Jose,,Santa Clara,-121.9013667,37.32325365,13713010365327,2013,,,OF,49000,49000,0,,,,,,,,,,,ABAG
+1885,10052,Public Storage,,build,0,0,0,0,0,0,SW/c Tully & Old Tully,San Jose,,Santa Clara,-121.8564211,37.30295544,10862598817162,2012,,,IL,115000,115000,0,,,,,,,,,,,ABAG
+1886,10053,Orchard Supply Hardware,,build,0,0,0,0,0,0,SW/c W. San Carlos & Royal,San Jose,,Santa Clara,-121.9013667,37.32325365,13713010365327,2013,,,OF,49000,49000,0,,,,,,,,,,,ABAG
 1887,10054,Silvery Towers Apts,,build,1,1,1,1,1,1,SW/c W. St. James & N. San Pedro,San Jose,,Santa Clara,-121.8952019,37.33767968,13157310850658,2014,,,HM,771600,0,643,,,,,,,,,,,ABAG
 1888,10055,Peery Arrillaga,,build,1,1,1,1,1,1,W/ Bering between E Brokaw & Crane,San Jose,,Santa Clara,-121.9130477,37.37197522,9269193034888,2014,,,IL,1949000,1949000,0,,,,,,,,,,,ABAG
-1889,10056,The Plaza at Evergreen,,build,1,1,1,1,1,1,W/s Capitol  1500' sly Quimby,San Jose,,Santa Clara,-121.8104984,37.31985924,16172549694464,2014,,,OF,200000,200000,0,,,,,,,,,,,ABAG
+1889,10056,The Plaza at Evergreen,,build,0,0,0,0,0,0,W/s Capitol  1500' sly Quimby,San Jose,,Santa Clara,-121.8104984,37.31985924,16172549694464,2014,,,OF,200000,200000,0,,,,,,,,,,,ABAG
 1890,10057,Brookside Homes,,build,1,1,1,1,1,1,W/s Guadalupe Mines  2000' sly Camden,San Jose,,Santa Clara,-121.9068593,37.22086564,2692466672615,2011,,,HS,106800,0,89,,,,,,,,,,,ABAG
 1891,10058,Verona at Montecito Vista,,build,1,1,1,1,1,1,W/s Monterey  300' sly Umbarger,San Jose,,Santa Clara,-121.8532489,37.29161165,10666983939674,2012,,,HM,332400,0,277,,,,,,,,,,,ABAG
 1892,10059,North Tenth Street Apts,,build,1,1,1,1,1,1,W/s N. 10th  bet Vestal & E. Mission,San Jose,,Santa Clara,-121.8931837,37.35607481,5546407750790,2013,,,HM,199200,0,166,,,,,,,,,,,ABAG
 1893,10060,Domain Apts,,build,1,1,1,1,1,1,W/s N. 1st  both sides Vista Montana,San Jose,,Santa Clara,-121.9571909,37.41276491,11095293080686,2011,,,HM,532800,0,444,,,,,,,,,,,ABAG
 1894,10061,Japantown Senior Apts,,build,1,1,1,1,1,1,W/s N. 6th  200' sly E. Taylor,San Jose,,Santa Clara,-121.8946762,37.35083397,7634794324925,2010,,,HM,102000,0,85,,,,,,,,,,,ABAG
-1895,10062,Silicon Valley Industrial Center,,build,1,1,1,1,1,1,W/s Piercy  2070' nly Silicon Valley,San Jose,,Santa Clara,-121.7753092,37.25601009,6312678460259,2014,,,IL,243000,243000,0,,,,,,,,,,,ABAG
+1895,10062,Silicon Valley Industrial Center,,build,0,0,0,0,0,0,W/s Piercy  2070' nly Silicon Valley,San Jose,,Santa Clara,-121.7753092,37.25601009,6312678460259,2014,,,IL,243000,243000,0,,,,,,,,,,,ABAG
 1896,10063,Vicino Townhomes,,build,1,1,1,1,1,1,W/s S. Monroe  450' nly Hwy 280,San Jose,,Santa Clara,-121.9447868,37.31885002,8490806159904,2011,,,HS,124800,0,104,,,,,,,,,,,ABAG
-1897,10064,Oakmont of San Jose,,build,1,1,1,1,1,1,W/s Thorton  260' nly Maywood,San Jose,,Santa Clara,-121.9399744,37.31034822,12399445742591,2014,,,OF,60000,60000,0,,,,,,,,,,,ABAG
-1898,10065,101 Tech,,build,1,1,1,1,1,1,Wly term. Atmel  200' nly Hwy 101,San Jose,,Santa Clara,-121.9308979,37.37628365,6260187106518,2012,,,IL,666000,666000,0,,,,,,,,,,,ABAG
+1897,10064,Oakmont of San Jose,,build,0,0,0,0,0,0,W/s Thorton  260' nly Maywood,San Jose,,Santa Clara,-121.9399744,37.31034822,12399445742591,2014,,,OF,60000,60000,0,,,,,,,,,,,ABAG
+1898,10065,101 Tech,,build,0,0,0,0,0,0,Wly term. Atmel  200' nly Hwy 101,San Jose,,Santa Clara,-121.9308979,37.37628365,6260187106518,2012,,,IL,666000,666000,0,,,,,,,,,,,ABAG
 1899,10066,Soutn Village (Hitachi),,build,1,1,1,1,1,1,NE/c Cottle & Hwy 85,San Jose,,Santa Clara,-121.8023334,37.24619372,15786527501368,2012,,,OF,1322000,308000,845,,,,,,,,,,,ABAG
 1900,10067,0,,build,1,1,1,1,1,1,651  655  & 671 West Hamilton Avenue,Campbell,,Santa Clara,-121.9620953,37.29498641,9152288724692,2015,,,HM,129600,0,108,,,,,,,,,,,ABAG
 1901,10068,0,,build,1,1,1,1,1,1,300 Railway Avenue,Campbell,,Santa Clara,-121.9443014,37.28309723,2427934574584,2015,,,HM,188400,0,157,,,,,,,,,,,ABAG
@@ -2009,7 +2009,7 @@ development_projects_id,raw_id,building_name,site_name,action,scen0,scen3,scen1,
 2008,10175,0,,build,1,1,1,1,1,1,SE/c W San Carlos & Sunol,San Jose,,Santa Clara,-121.9052363,37.32316395,5996765447595,2014,,,HM,378000,0,315,,,,,,,,,,,ABAG
 2009,10176,0,,build,0,0,0,0,0,0,SE/c Winchester & Olsen,San Jose,,Santa Clara,-121.9490485,37.31876637,14855056820769,2012,,,RS,230000,230000,0,,,,,,,,,,,ABAG
 2010,10177,0,,build,0,0,0,0,0,0,2017 San Ramon Valley Blvd,San Ramon,,Contra Costa,-121.9809127,37.78447139,16838778043630,2015,,,RS,17000,17000,0,,,,,,,,,,,ABAG
-2011,10178,Sunset Development,,build,1,1,1,1,1,1,Intersection of Bollinger Canyon Rd. and Camino Ramon,San Ramon,,Contra Costa,-121.9567409,37.76419692,2664748939362,2018,,,MR,1286800,700000,489,,,,,,,,,,,ABAG
+2011,10178,Sunset Development,,build,1,1,1,1,1,1,Intersection of Bollinger Canyon Rd. and Camino Ramon,San Ramon,,Contra Costa,-121.9567409,37.76419692,2664748939362,2020,,,MR,2286800,1700000,489,,,,,,,,,,,ABAG
 2012,10179,KB Homes,,build,1,1,1,1,1,1,4700 Norris Canyon Road,San Ramon,,Contra Costa,-121.9632286,37.77648336,2361896639270,2015,,,HM,150000,0,125,,,,,,,,,,,ABAG
 2013,10180,0,,build,1,1,1,1,1,1,3925 Saint Andrews Dr,Santa Rosa,,Sonoma,-122.7173155,38.49938696,15480823444532,2015,,,HS,36000,0,30,,,,,,,,,,,ABAG
 2014,10181,0,,build,1,1,1,1,1,1,4055 4025 4041 4099 Sebastopol Rd,Santa Rosa,,Sonoma,-122.7685803,38.42517089,10304052954436,2015,,,HT,190078,23278,139,,,,,,,,,,,ABAG
