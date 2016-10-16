@@ -548,7 +548,7 @@ def households(store, settings, parcels_geography):
     new_households = df.loc[
         [1132542, 1306618, 950630, 886585]].reset_index()
     # keep unique index
-    new_households.index += len(df)
+    new_households.index += pd.Series(df.index).max() + 1
     df = df.append(new_households)
 
     return df
