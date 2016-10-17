@@ -803,6 +803,7 @@ development_limits:
       'Colma': 0
       'Concord': 1000
       'Cupertino': 0
+      'Daly City': 125
       'Fairfax': 0
       'Half Moon Bay': 0
       'Healdsburg': 0
@@ -810,24 +811,25 @@ development_limits:
       'Larkspur': 0
       'Los Altos Hills': 0
       'Los Gatos': 0
+      'Milpitas': 400
       'Mill Valley': 0
       'Millbrae': 200
       'Monte Sereno': 0
       'Orinda': 0
       'Palo Alto': 175
       'Piedmont': 0
-      'Pleasanton': 450
+      'Pleasanton': 350
       'Portola Valley': 0
       'Ross': 0
       'San Anselmo': 0
       'San Francisco': 3500
-      'San Mateo': 275
-      'San Rafael': 5
+      'San Mateo': 200
+      'San Rafael': 2
       'St. Helena': 5
       'Saratoga': 0
       'Sonoma': 0
       'Tiburon': 0
-      'Union City': 10
+      'Union City': 5
       'Woodside': 0 
       'Alameda County': 0
       'Contra Costa County': 0
