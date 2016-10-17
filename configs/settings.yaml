@@ -58,6 +58,8 @@ eliminate_retail_zoning_from_juris:
   - 'Piedmont'
   - 'Ross'
   - 'Atherton'
+  - 'Belmont'
+  - 'Clayton'
 
 
 clip_sqft_per_unit_based_on_dua:
