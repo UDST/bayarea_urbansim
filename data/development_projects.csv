@@ -2009,7 +2009,7 @@ development_projects_id,raw_id,building_name,site_name,action,scen0,scen3,scen1,
 2008,10175,0,,build,1,1,1,1,1,1,SE/c W San Carlos & Sunol,San Jose,,Santa Clara,-121.9052363,37.32316395,5996765447595,2014,,,HM,378000,0,315,,,,,,,,,,,ABAG
 2009,10176,0,,build,0,0,0,0,0,0,SE/c Winchester & Olsen,San Jose,,Santa Clara,-121.9490485,37.31876637,14855056820769,2012,,,RS,230000,230000,0,,,,,,,,,,,ABAG
 2010,10177,0,,build,0,0,0,0,0,0,2017 San Ramon Valley Blvd,San Ramon,,Contra Costa,-121.9809127,37.78447139,16838778043630,2015,,,RS,17000,17000,0,,,,,,,,,,,ABAG
-2011,10178,Sunset Development,,build,1,1,1,1,1,1,Intersection of Bollinger Canyon Rd. and Camino Ramon,San Ramon,,Contra Costa,-121.9567409,37.76419692,2664748939362,2020,,,MR,2286800,1700000,489,,,,,,,,,,,ABAG
+2011,10178,Sunset Development,,build,1,1,1,1,1,1,Intersection of Bollinger Canyon Rd. and Camino Ramon,San Ramon,,Contra Costa,-121.9567409,37.76419692,2664748939362,2020,,,MR,2836800,2250000,489,,,,,,,,,,,ABAG
 2012,10179,KB Homes,,build,1,1,1,1,1,1,4700 Norris Canyon Road,San Ramon,,Contra Costa,-121.9632286,37.77648336,2361896639270,2015,,,HM,150000,0,125,,,,,,,,,,,ABAG
 2013,10180,0,,build,1,1,1,1,1,1,3925 Saint Andrews Dr,Santa Rosa,,Sonoma,-122.7173155,38.49938696,15480823444532,2015,,,HS,36000,0,30,,,,,,,,,,,ABAG
 2014,10181,0,,build,1,1,1,1,1,1,4055 4025 4041 4099 Sebastopol Rd,Santa Rosa,,Sonoma,-122.7685803,38.42517089,10304052954436,2015,,,HT,190078,23278,139,,,,,,,,,,,ABAG
@@ -2223,7 +2223,7 @@ development_projects_id,raw_id,building_name,site_name,action,scen0,scen3,scen1,
 2222,10389,uber,,build,1,1,1,1,1,1,0,0,,Alameda,0,0,14314009487362,2030,,,OF,424000,424000,0,,,,,,,,,,,ABAG
 2223,10390,hacienda res,,add,1,1,1,1,1,1,0,0,,Alameda,0,0,1323753255261,2020,,,HM,1494000,0,1245,,,,,,,,,,,ABAG
 2224,10391,hacienda of,,add,0,1,0,0,1,0,0,0,,Alameda,0,0,9713560872330,2030,,,OF,1800000,1800000,0,,,,,,,,,,,ABAG
-2225,10392,benicia gateway,,build,0,1,0,0,1,0,0,0,,Solano,0,0,13384641814683,2020,,,OF,700000,700000,0,,,,,,,,,,,ABAG
+2225,10392,benicia gateway,,build,0,1,0,0,1,0,0,0,,Solano,0,0,13384641814683,2020,,,OF,500000,500000,0,,,,,,,,,,,ABAG
 2226,10393,facebook housing 1,,build,0,1,0,0,1,0,0,0,,San Mateo,0,0,919721471992,2020,,,MR,1850000,50000,1500,,,,,,,,,,,ABAG
 2227,10394,facebook housing 2,,build,0,1,0,0,1,0,0,0,,San Mateo,0,0,14561177475526,2025,,,MR,925000,25000,750,,,,,,,,,,,ABAG
 2228,10395,facebook housing 3,,build,0,1,0,0,1,0,0,0,,San Mateo,0,0,3110753412363,2030,,,MR,902500,2500,750,,,,,,,,,,,ABAG
