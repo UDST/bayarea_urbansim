@@ -799,11 +799,12 @@ development_limits:
       'Belvedere': 0
       'Belmont': 0
       'Benicia': 25
+      'Burlingame': 275
       'Clayton': 0
       'Colma': 0
       'Concord': 1000
       'Cupertino': 0
-      'Daly City': 75
+      'Daly City': 50
       'Fairfax': 0
       'Half Moon Bay': 0
       'Healdsburg': 0
@@ -821,7 +822,7 @@ development_limits:
       'Piedmont': 0
       'Pleasanton': 275
       'Portola Valley': 0
-      'Redwood City': 650
+      'Redwood City': 550
       'Ross': 0
       'San Anselmo': 0
       'San Francisco': 3500
