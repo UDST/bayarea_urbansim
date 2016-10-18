@@ -1914,7 +1914,7 @@ development_projects_id,raw_id,building_name,site_name,action,scen0,scen3,scen1,
 1913,10073,Rose Bowl Mixed Use,,build,1,1,1,1,1,1,Wolfe Road between Stevens Creek Boulevard and I-280,Cupertino,,Santa Clara,-122.0110451,37.32416095,14097042699900,2016,,,MR,244800,0,204,,,,,,,,,,,ABAG
 1914,10074,Saich Way Station,,build,0,0,0,0,0,0,20803 Stevens Creek,Cupertino,,Santa Clara,-122.0375637,37.32333695,12299786973651,2016,,,RS,15650,15650,0,,,,,,,,,,,ABAG
 1915,10075,Biltmore Ajacency,,build,1,1,1,1,1,1,20080 Stevens Creek Blvd,Cupertino,,Santa Clara,-122.0246801,37.32227677,10047757702766,2016,,,MR,115000,7000,90,,,,,,,,,,,ABAG
-1916,10076,Main Street,,build,1,1,1,1,1,1,North side of Stevens Creek Boulevard between Finch Avenue and Tantau Avenue,Cupertino,,Santa Clara,-122.0077255,37.32369508,14546033944954,2016,,,MR,534000,390000,120,,,,,,,,,,,ABAG
+1916,10076,Main Street,,build,1,1,1,1,1,1,North side of Stevens Creek Boulevard between Finch Avenue and Tantau Avenue,Cupertino,,Santa Clara,-122.0077255,37.32369508,14546033944954,2016,,,MR,144000,0,120,,,,,,,,,,,ABAG
 1917,10077,0,,build,1,1,1,1,1,1,34826 FREMONT BLVD,Fremont,,Alameda,-122.0331348,37.5722008,10764663483332,2014,,,HM,44400,0,37,,,,,,,,,,,ABAG
 1918,10078,0,,build,1,1,1,1,1,1,40744 FREMONT BLVD,Fremont,,Alameda,-121.9628547,37.53579928,6545398855326,2015,,,HM,80400,0,67,,,,,,,,,,,ABAG
 1919,10079,0,,build,1,1,1,1,1,1,41152 FREMONT BLVD,Fremont,,Alameda,-121.9579457,37.53081318,14064558786462,2015,,,HM,76800,0,64,,,,,,,,,,,ABAG
@@ -2473,3 +2473,7 @@ development_projects_id,raw_id,building_name,site_name,action,scen0,scen3,scen1,
 2472,10632,0,,build,1,1,1,1,1,1,782 Del Mar Cir,Vacaville,,Solano,38.3983,-121.9392,6848443025116,2015,,,HS,4800,0,4,,,,,,,,,,,ABAG
 2473,10633,0,,build,1,1,1,1,1,1,37950 Cedar Blvd,Newark,,Alameda,37.535,-122.0159,8719825111212,2015,,,HM,43200,0,36,,,,,,,,,,,ABAG
 2474,10634,0,,build,1,1,1,1,1,1,38000 Luma Terrace,Newark,,Alameda,37.5359,-122.0153,9157040955853,2015,,,HM,48000,0,40,,,,,,,,,,,ABAG
+2475,10635,Dublin base res,,add,1,1,1,1,1,1,0,0,,Alameda,0,0,16749804684003,2030,,,HM,2640000,0,2200,,,,,,,,,,,0
+2476,10636,Dub3 res,,build,1,1,1,1,1,1,0,0,,Alameda,0,0,10375850838978,2025,,,HM,960000,0,800,,,,,,,,,,,0
+2477,10637,Dub3 res,,build,1,1,1,1,1,1,0,0,,Alameda,0,0,16787188815091,2035,,,HM,480000,0,400,,,,,,,,,,,0
+2478,10638,hillsdale expansion,,add,1,1,1,1,1,1,0,0,,San Mateo,0,0,5400946640845,2030,,,OF,700000,700000,0,,,,,,,,,,,0
