@@ -794,7 +794,7 @@ cost_shifters:
 development_limits:
   default:
     Office:
-      'Alameda': 175
+      'Alameda': 100
       'Atherton': 0
       'Belvedere': 0
       'Belmont': 0
@@ -811,16 +811,17 @@ development_limits:
       'Larkspur': 0
       'Los Altos Hills': 0
       'Los Gatos': 0
-      'Milpitas': 350
+      'Milpitas': 325
       'Mill Valley': 0
       'Millbrae': 200
       'Monte Sereno': 0
       'Orinda': 0
       'Palo Alto': 175
+      'Petaluma': 150
       'Piedmont': 0
-      'Pleasanton': 350
+      'Pleasanton': 275
       'Portola Valley': 0
-      'Redwood City': 750
+      'Redwood City': 650
       'Ross': 0
       'San Anselmo': 0
       'San Francisco': 3500
