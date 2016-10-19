@@ -602,6 +602,7 @@ feasibility:
     - residential_sales_price_sqft
     - pda
     - juris
+    - county
     - superdistrict
     - geom_id
     - vmt_res_cat
