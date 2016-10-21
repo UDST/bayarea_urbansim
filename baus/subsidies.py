@@ -786,5 +786,7 @@ def subsidized_residential_developer_lump_sum_accts(
                                     "subsidize_affordable"],
                                  policy_name=acct["name"])
 
+        buildings = orca.get_table("buildings")
+
         # set to an empty dataframe to save memory
         orca.add_table("feasibility", pd.DataFrame())
