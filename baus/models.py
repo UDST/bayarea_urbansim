@@ -1084,6 +1084,7 @@ def correct_baseyear_data(buildings, parcels, jobs):
        "San Anselmo": 0,
        "Saratoga": 0,
        "Woodside": 0,
+       "Union City": .05, 
        "Alameda": .2
     })
 
