@@ -765,7 +765,6 @@ def subsidized_residential_developer_lump_sum_accts(
         # need to rerun the subsidized feasibility every time and get new
         # results - this is not ideal and is a story to fix in pivotal, but the
         # only cost is in time - the results should be the same
-        orca.clear_cache('iteration')
         orca.eval_step("subsidized_residential_feasibility")
         feasibility = orca.get_table("feasibility").to_frame()
         feasibility = feasibility.stack(level=0).\
@@ -785,6 +784,8 @@ def subsidized_residential_developer_lump_sum_accts(
                                  create_deed_restricted=acct[
                                     "subsidize_affordable"],
                                  policy_name=acct["name"])
+
+        buildings = orca.get_table("buildings")
 
         # set to an empty dataframe to save memory
         orca.add_table("feasibility", pd.DataFrame())
