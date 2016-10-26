@@ -752,11 +752,20 @@ def resvacancy(taz):
     return s
 
 
-@orca.table('jobs_subset')
-def jobs_subset(jobs):
-    zone_id = jobs.zone_id
-    empsix = jobs.empsix
-    df = pd.DataFrame(data={'zone_id': zone_id, 'empsix': empsix})
+@orca.table('jobs_subset', cache=True)
+def jobs_subset(jobs, parcels, buildings):
+
+    df = orca.merge_tables(
+        'jobs',
+        [parcels, buildings, jobs],
+        columns=['zone_id', 'empsix'])
+
+    # totally baffled by this - after joining the three tables we have three
+    # zone_ids, one from the parcel table, one from buildings, and one from jobs
+    # and the one called zone_id has null values while there others do not
+    # going to change this while I think about this
+    df["zone_id"] = df.zone_id_x
+
     return df
 
 
