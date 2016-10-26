@@ -519,7 +519,7 @@ id,juris,city,name,max_far,max_height,max_dua,max_du_per_parcel,HS,HT,HM,OF,HO,S
 4522,25,Palo Alto,Streamside Open Space,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 4523,25,Palo Alto,Open Space/Controlled Development,,,2,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 4601,26,San Jose,Transit Residential,12,45,250,,0,1,1,1,1,1,0,0,0,0,0,1,1,1,
-4602,26,San Jose,Urban Residential,4,45,95,,0,1,1,1,0,1,0,0,0,1,0,0,0,0,
+4602,26,San Jose,Urban Residential,4,45,95,,0,1,1,0,0,1,0,0,0,0,0,0,0,0,
 4603,26,San Jose,Mixed Use Neighborhood,2,45,30,,1,1,1,0,0,1,0,0,0,0,0,1,1,0,
 4604,26,San Jose,Residential Neighborhood,0.7,35,,,1,1,0,0,0,1,0,0,0,1,0,0,0,0,
 4605,26,San Jose,Rural Residential,0.35,35,2,,1,0,0,0,0,1,0,0,0,0,0,0,0,0,
