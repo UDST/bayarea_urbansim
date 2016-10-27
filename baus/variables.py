@@ -752,7 +752,7 @@ def resvacancy(taz):
     return s
 
 
-@orca.table('jobs_subset', cache=True)
+@orca.table('jobs_subset')
 def jobs_subset(jobs, parcels, buildings):
 
     df = orca.merge_tables(
