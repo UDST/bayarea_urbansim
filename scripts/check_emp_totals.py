@@ -22,3 +22,5 @@ for year in range(2010, 2045, 5):
         # assert that the totals equal the control totals
         if col != "TOTEMP":
             assert taz_df[col].sum() == controls_df.loc[year, col]
+        else:
+            assert taz_df[col].sum() == controls_df.loc[year].sum()
