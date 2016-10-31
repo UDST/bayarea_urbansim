@@ -163,6 +163,22 @@ def _proportional_jobs_model(
 
 
 @orca.step()
+def additional_units(year, buildings, parcels):
+
+    add_units = pd.read_csv("data/additional_units.csv", index_col="juris")[str(year)]
+
+    buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
+
+    res_buildings = buildings_juris[buildings.general_type == "Residential"]
+
+    add_buildings = groupby_random_choice(res_buildings, add_units)
+
+    add_buildings = pd.Series(add_buildings.index).value_counts()
+
+    buildings.local.loc[add_buildings.index, "residential_units"] += add_buildings.values
+
+
+@orca.step()
 def proportional_elcm(jobs, households, buildings, parcels,
                       year, run_number):
 
