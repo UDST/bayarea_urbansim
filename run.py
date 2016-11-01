@@ -92,6 +92,7 @@ def get_simulation_models(SCENARIO):
         "developer_reprocess",
         "office_developer",
         "retail_developer",
+        "additional_units",
 
         "hlcm_simulate",                 # put these last so they don't get
         "proportional_elcm",             # start with a proportional jobs model
