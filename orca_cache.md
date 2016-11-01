@@ -20,13 +20,13 @@ Easy.  There is a zone_id defined on parcels, buildings, and jobs.  We need a co
 
 ### Sort of, but one of those zone_ids was different from the others - it had nulls where the other two were defined.
 
-This was the original problem that led us to look into this - our job summaries were incorrect.  This is caused because the ELCM runs last in order to place unplaced jobs after new buildings get built.  But when the jobs get new building ids from the ELCM, the zone_id isn't updated because it is cached.  Thus all the unplaced jobs still have a null zone_id because unplaced jobs don't have zones.
+This was the original problem that led us to look into this - our job summaries were incorrect.  This is caused because the ELCM runs last in order to place unplaced jobs after new buildings get built.  But when the jobs get new building ids from the ELCM, the zone_id isn't updated because it is cached.  Thus all the unplaced jobs still have a null zone_id because unplaced jobs don't have zones.  (Incidentally zone_id_x and zone_id_y were both correct because they were merged after the ELCM ran - only zone_id was incorrect cause it was stuck in the cache.)
 
 ### And the first thing you tried didn't work - just clearing the orca cache - why not?!?
 
-At first I tried clearing the "forever" cache and this doesn't work because the Pandana global memory is stored in the forever cache.  Pandana can't be reinitialized and this was the first error I got.  When I cleared the "iteration" cache instead, which I thought would work, it did NOT because the default is "forever" not "iteration" as I had thought.
+At first I tried clearing the "forever" cache and this doesn't work because the Pandana global memory is stored in the forever cache.  Pandana can't be reinitialized and this was the first error I got.  When I cleared the "iteration" cache instead, which I thought would work, it did NOT because the default is "forever" not "iteration" as I had thought, so the columns I needed to clear were defined as "forever" and still in the cache.
 
-### OK is there a way out of this madness?  Like a simple solution?
+### OK is there a way out of this madness?  Like, a simple solution?
 
 Yeah, setting the orca default cache_scope to "iteration" instead of "forever" should do the trick.
 
