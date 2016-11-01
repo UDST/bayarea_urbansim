@@ -34,6 +34,6 @@ Yeah, setting the orca default cache_scope to "iteration" instead of "forever" s
 
 Because it involves all of us getting on the same page and updating our code at the same time to make sure this pretty significant change doesn't break things in the middle of an important planning process.  Given that we're all on different cycles, this is a challenge.
 
-### And how did this ever work at all.  Presumably this worked and then stopped working (we checked into past summaries)?
+### And how did this ever work at all?  Presumably this worked and then stopped working (we checked past summaries which were ok)?
 
 Yeah, now there's an excellent question!
