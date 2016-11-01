@@ -1087,6 +1087,7 @@ def correct_baseyear_data(buildings, parcels, jobs):
        "Berkeley": .65,
        "Atherton": 0.05,
        "Belvedere": 0,
+       "Colma": 0.05,
        "Corte Madera": 0,
        "Cupertino": .1,
        "Healdsburg": 0,
