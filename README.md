@@ -14,7 +14,7 @@ This is the DRAFT UrbanSim implementation for the Bay Area. Documenation for the
 * git clone https://github.com/MetropolitanTransportationCommission/bayarea_urbansim.git
 * pip install -r requirements.txt
 * pip install pandana
-* get data: 1) pip install awscli 2) aws configure 3) test w aws s3 ls 4) make data
+* get data: 1) pip install awscli 2) aws configure 3) test w aws s3 ls 4) make data (or aws s3 cp cp://bayarea_urbansim/remote_filename local_filename)
 * change RUNNUM so in 5000s etc
 * python run.py -s 4 & OR python all.py &
 
