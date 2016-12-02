@@ -12,9 +12,9 @@ This is the DRAFT UrbanSim implementation for the Bay Area. Documenation for the
 * sudo apt-get update
 * sudo apt-get -y install git g++ python-dev unzip
 * git clone https://github.com/MetropolitanTransportationCommission/bayarea_urbansim.git
-* pip install -r requirements.txt (comment out pandana)
+* pip install -r requirements.txt
 * pip install pandana
-* get data
+* get data: 1) 
 * change RUNNUM so in 5000s etc
 * python run.py -s 4 & OR python all.py &
 
