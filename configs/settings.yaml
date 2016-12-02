@@ -407,7 +407,7 @@ acct_settings:
       total_amount: 40000000
       receiving_buildings_filter: county == 'San Mateo'
       subsidize_affordable: True
-      enable_in_scenarios: ["0", "1", "2", "3", "4", "5"]
+      enable_in_scenarios: []
 
     alameda_bond_settings:
       name: "Alameda Affordable Housing Bond"
@@ -415,7 +415,7 @@ acct_settings:
       total_amount: 20000000
       receiving_buildings_filter: county == 'Alameda'
       subsidize_affordable: True
-      enable_in_scenarios: ["0", "1", "2", "3", "4", "5"]
+      enable_in_scenarios: []
 
     santa_clara_bond_settings:
       name: "Santa Clara Affordable Housing Bond"
@@ -423,7 +423,7 @@ acct_settings:
       total_amount: 31000000
       receiving_buildings_filter: county == 'Santa Clara'
       subsidize_affordable: True
-      enable_in_scenarios: ["0", "1", "2", "3", "4", "5"]
+      enable_in_scenarios: []
 
     santa_francisco_bond_settings:
       name: "San Francisco Affordable Housing Bond"
@@ -431,7 +431,7 @@ acct_settings:
       total_amount: 19000000
       receiving_buildings_filter: county == 'San Francisco'
       subsidize_affordable: True
-      enable_in_scenarios: ["0", "1", "2", "3", "4", "5"]
+      enable_in_scenarios: []
 
     parcel_tax_settings:
       name: "Parcel Tax"
