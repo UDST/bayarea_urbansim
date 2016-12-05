@@ -833,12 +833,12 @@ development_limits:
       'Belmont': 0
       'Benicia': 25
       'Brisbane': 300
-      'Burlingame': 250
+      'Burlingame': 275
       'Clayton': 0
       'Colma': 0
       'Concord': 1000
       'Cupertino': 0
-      'Daly City': 20
+      'Daly City': 50
       'Fairfax': 0
       'Fremont': 750
       'Half Moon Bay': 0
@@ -863,7 +863,6 @@ development_limits:
       'San Francisco': 3500
       'San Mateo': 200
       'San Rafael': 0
-      'San Ramon': 200
       'St. Helena': 5
       'Saratoga': 0
       'Sonoma': 0
