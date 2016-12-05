@@ -832,7 +832,6 @@ development_limits:
       'Belvedere': 0
       'Belmont': 0
       'Benicia': 25
-      'Brisbane': 300
       'Burlingame': 275
       'Clayton': 0
       'Colma': 0
@@ -848,13 +847,13 @@ development_limits:
       'Los Gatos': 0
       'Milpitas': 325
       'Mill Valley': 0
-      'Millbrae': 210
+      'Millbrae': 200
       'Monte Sereno': 0
       'Orinda': 0
       'Palo Alto': 175
       'Petaluma': 150
       'Piedmont': 0
-      'Pleasanton': 285
+      'Pleasanton': 275
       'Portola Valley': 0
       'Redwood City': 550
       'Ross': 0
@@ -866,7 +865,7 @@ development_limits:
       'Saratoga': 0
       'Sonoma': 0
       'Tiburon': 0
-      'Union City': 7
+      'Union City': 5
       'Woodside': 0 
       'Alameda County': 0
       'Contra Costa County': 0
