@@ -123,6 +123,11 @@ def get_simulation_models(SCENARIO):
             orca.get_injectable("settings")["vmt_com_for_res"] = True
             orca.get_injectable("settings")["vmt_com_for_com"] = False
 
+        if SCENARIO == "5":
+            orca.get_injectable("settings")["vmt_com_for_res"] = True
+            orca.get_injectable("settings")["vmt_com_for_com"] = False
+            
+            
             models.insert(models.index("office_developer"),
                           "subsidized_office_developer")
 
