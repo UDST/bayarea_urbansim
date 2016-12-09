@@ -310,14 +310,16 @@ inclusionary_housing_settings:
   "5":
     - type: jurisdictions
       description: higher setting
-      amount: .25
+      amount: .2
       values:
       - Alameda
       - Alameda County
       - Albany
       - American Canyon
       - Antioch
+      - Atherton
       - Belmont
+      - Belvedere
       - Benicia
       - Berkeley
       - Brisbane
@@ -327,6 +329,7 @@ inclusionary_housing_settings:
       - Colma
       - Concord
       - Contra Costa County
+      - Corte Madera
       - Cotati
       - Cupertino
       - Daly City
@@ -341,9 +344,12 @@ inclusionary_housing_settings:
       - Gilroy
       - Hayward
       - Hercules
+      - Hillsborough
       - Lafayette
+      - Larkspur
       - Livermore
       - Los Altos
+      - Los Gatos
       - Martinez
       - Menlo Park
       - Millbrae
@@ -353,11 +359,14 @@ inclusionary_housing_settings:
       - Mountain View
       - Napa
       - Newark
+      - Novato
       - Oakland
       - Oakley
       - Orinda
+      - Pacifica
       - Palo Alto
       - Petaluma
+      - Piedmont
       - Pinole
       - Pittsburg
       - Pleasant Hill
@@ -377,6 +386,7 @@ inclusionary_housing_settings:
       - San Ramon
       - Santa Clara
       - Santa Rosa
+      - Sausalito 
       - Sebastopol
       - South San Francisco
       - Suisun City
