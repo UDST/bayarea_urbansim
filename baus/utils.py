@@ -91,7 +91,7 @@ def random_indexes(s, num, replace=False):
 # meet the given target for the sum.  We're obviously going to lose
 # some resolution on the distrbution implied by s in order to meet
 # the target exactly
-def round_series_match_target(s, target, fillna):
+def round_series_match_target(s, target, fillna=np.nan):
 
     if target == 0 or s.sum() == 0:
         return s
@@ -120,6 +120,39 @@ def scale_by_target(s, target, check_close=None):
     if check_close:
         assert 1.0-check_close < ratio < 1.0+check_close
     return s * ratio
+
+
+def constrained_normalization(marginals, constraint, total):
+    # this method increases the marginals to match the total while
+    # also meeting the matching constraint.  marginals should be
+    # scaled up proportionally.  it is possible that this method
+    # will fail if the sum of the constraint is less than the total
+
+    assert constraint.sum() >= total
+
+    while 1:
+
+        # where do we exceed the total
+        constrained = marginals >= constraint
+        exceeds = marginals > constraint
+        unconstrained = ~constrained
+
+        num_constrained = len(constrained[constrained == True])
+        num_exceeds = len(exceeds[exceeds == True])
+
+        print "Len constrained = %d, exceeds = %d" % (num_constrained, num_exceeds)
+
+        if num_exceeds == 0:
+            return marginals
+
+        marginals[constrained] = constraint[constrained]
+
+        # scale up where unconstrained
+        unconstrained_total = total - marginals[constrained].sum()
+        marginals[unconstrained] *= unconstrained_total / marginals[unconstrained].sum()
+
+        # should have scaled up
+        assert np.isclose(marginals.sum(), total)
 
 
 # this should be fairly self explanitory if you know ipf
