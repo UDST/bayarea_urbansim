@@ -336,6 +336,12 @@ def zoning_baseline(parcels, zoning_lookup, settings):
     return df
 
 
+@orca.table(cache=True)
+def new_tpp_id():
+    return pd.read_csv(os.path.join(misc.data_dir(), "tpp_id_2016.zip"),
+                       index_col="parcel_id")
+
+
 @orca.table('zoning_scenario', cache=True)
 def zoning_scenario(parcels_geography, scenario, settings):
 
