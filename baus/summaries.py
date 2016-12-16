@@ -12,7 +12,7 @@ from scripts.output_csv_utils import format_df
 @orca.step("topsheet")
 def topsheet(households, jobs, buildings, parcels, zones, year,
              run_number, taz_geography, parcels_zoning_calculations,
-             summary, settings, parcels_geography, abag_targets):
+             summary, settings, parcels_geography, abag_targets, new_tpp_id):
 
     hh_by_subregion = misc.reindex(taz_geography.subregion,
                                    households.zone_id).value_counts()
@@ -22,7 +22,13 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
         [parcels_geography, buildings, households],
         columns=['pda_id', 'tpp_id', 'income'])
 
+    if settings["use_new_tpp_id_in_topsheet"]:
+        del households_df["tpp_id"]
+        households_df["tpp_id"] = misc.reindex(new_tpp_id.tpp_id,
+                                               households_df.parcel_id)
+
     hh_by_inpda = households_df.pda_id.notnull().value_counts()
+    hh_by_intpp = households_df.tpp_id.notnull().value_counts()
 
     hhincome_by_intpp = households_df.income.groupby(
         households_df.tpp_id.notnull()).mean()
@@ -37,7 +43,12 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
         [parcels, buildings, jobs],
         columns=['pda'])
 
+    if settings["use_new_tpp_id_in_topsheet"]:
+        jobs_df["tpp_id"] = misc.reindex(new_tpp_id.tpp_id,
+                                         jobs_df.parcel_id)
+
     jobs_by_inpda = jobs_df.pda.notnull().value_counts()
+    jobs_by_intpp = jobs_df.tpp_id.notnull().value_counts()
 
     capacity = parcels_zoning_calculations.\
         zoned_du_underbuild_nodev.groupby(parcels.subregion).sum()
@@ -49,6 +60,8 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
             "jobs_by_subregion": jobs_by_subregion,
             "hh_by_inpda": hh_by_inpda,
             "jobs_by_inpda": jobs_by_inpda,
+            "hh_by_intpp": hh_by_intpp,
+            "jobs_by_intpp": jobs_by_intpp,
             "hhincome_by_intpp": hhincome_by_intpp,
             "capacity": capacity
         })
@@ -125,8 +138,8 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
 
     write("Households share in pdas:\n%s" %
           norm_and_round(hh_by_inpda))
-    diff = hh_by_inpda - base_year_measures["hh_by_inpda"]
 
+    diff = hh_by_inpda - base_year_measures["hh_by_inpda"]
     write("Households pct of regional growth in pdas:\n%s" %
           norm_and_round(diff))
 
@@ -136,9 +149,31 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
 
     write("Jobs share in pdas:\n%s" %
           norm_and_round(jobs_by_inpda))
-    diff = jobs_by_inpda - base_year_measures["jobs_by_inpda"]
 
+    diff = jobs_by_inpda - base_year_measures["jobs_by_inpda"]
     write("Jobs pct of regional growth in pdas:\n%s" %
+          norm_and_round(diff))
+
+    tmp = base_year_measures["hh_by_intpp"]
+    write("Households base year share in tpps:\n%s" %
+          norm_and_round(tmp))
+
+    write("Households share in tpps:\n%s" %
+          norm_and_round(hh_by_intpp))
+
+    diff = hh_by_intpp - base_year_measures["hh_by_intpp"]
+    write("Households pct of regional growth in tpps:\n%s" %
+          norm_and_round(diff))
+
+    tmp = base_year_measures["jobs_by_intpp"]
+    write("Jobs base year share in tpps:\n%s" %
+          norm_and_round(tmp))
+
+    write("Jobs share in tpps:\n%s" %
+          norm_and_round(jobs_by_intpp))
+
+    diff = jobs_by_intpp - base_year_measures["jobs_by_intpp"]
+    write("Jobs pct of regional growth in tpps:\n%s" %
           norm_and_round(diff))
 
     write("Base year dwelling unit raw capacity:\n%s" %

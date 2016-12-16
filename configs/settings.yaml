@@ -4,6 +4,9 @@ aggregation_tables:
   - logsums
 
 
+use_new_tpp_id_in_topsheet: True
+
+
 profit_vs_return_on_cost_combination_factor: 0.5
 
 
