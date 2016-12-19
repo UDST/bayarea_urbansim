@@ -4,7 +4,7 @@ import numpy as np
 
 # run a full package of scenarios
 
-for num in [0, 1, 2, 3, 4]:
+for num in [0, 1, 3, 4, 5]:
     os.system('python run.py -s %d' % num)
 
 with open('RUNNUM', 'r') as f:

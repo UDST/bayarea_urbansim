@@ -1329,7 +1329,7 @@ zoningmodcat,count,jurisdiction_id,pda_id,tpp_id,exp_id,opp_id,add_bldg,drop_bld
 75630SUI1b3NANA,7,75630,SUI1,b3,NA,NA,HM MR,,75,,,,,ttc,,,,,,,,,,,,,,,,,,,
 75630SUI1NANANA,917,75630,SUI1,NA,NA,NA,HM MR,,75,,,,,ttc,,,,,,,,,,,,,,,,,,,
 77000SUN1b3NANA,14,77000,SUN1,b3,NA,NA,HM MR,,275,2,,,,tn,,,,,,,,,,,,,,,,,,,
-77000SUN1cr3NANA,412,77000,SUN1,cr3,NA,NA,HM MR,,200,2,,,,tn,,,,,,,,,,,,,,,,,,,
+77000SUN1cr3NANA,412,77000,SUN1,cr3,NA,NA,HM MR,,325,2,,,,tn,,,,,,,,,,,,,,,,,,,
 77000SUN1NANANA,68,77000,SUN1,NA,NA,NA,HM MR,,225,2,,,,tn,,,,,,,,,,,,,,,,,,,
 77000SUN2brt2NANA,48,77000,SUN2,brt2,NA,NA,HM MR,,275,2.5,,,,ttc,,,,,,,,,,,,,,,,,,,
 77000SUN2cr3NANA,543,77000,SUN2,cr3,NA,NA,HM MR,,300,3.75,,,,ttc,,,,,,,,,,,,,,,,,,,
