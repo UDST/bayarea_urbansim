@@ -885,9 +885,6 @@ development_limits:
   "2":
     Office:
       'San Francisco': 5250
-  "5":
-    Office:
-      'San Francisco': 5250
 
 
 zoning_column_dictionary: 
