@@ -58,9 +58,32 @@ def parcel_id_to_geom_id(s):
     return pd.Series(g.loc[s.values].values, index=s.index)
 
 
+# This is best described by example. Imagine s is a series where the
+# index is parcel ids and the values are cities, while counts is a
+# series where the index is cities and the values are counts.  You
+# want to end up with "counts" many parcel ids from s (like 40 from
+# Oakland, 60 from SF, and 20 from San Jose).  This can be
+# thought of as grouping the dataframe "s" came from and sampling
+# count number of rows from each group.  I mean, you group the
+# dataframe and then counts gives you the count you want to sample
+# from each group.
+def groupby_random_choice(s, counts, replace=True):
+
+    if counts.sum() == 0:
+        return pd.Series()
+
+    return pd.concat([
+        s[s == grp].sample(cnt, replace=replace)
+        for grp, cnt in counts[counts > 0].iteritems()
+    ])
+
+
 # pick random indexes from s without replacement
-def random_indexes(s, num):
-    return np.random.choice(s.index.values, num, replace=False)
+def random_indexes(s, num, replace=False):
+    return np.random.choice(
+        np.repeat(s.index.values, s.values),
+        num,
+        replace=replace)
 
 
 # This method takes a series of floating point numbers, rounds to
@@ -68,13 +91,22 @@ def random_indexes(s, num):
 # meet the given target for the sum.  We're obviously going to lose
 # some resolution on the distrbution implied by s in order to meet
 # the target exactly
-def round_series_match_target(s, target, fillna):
+def round_series_match_target(s, target, fillna=np.nan):
+
+    if target == 0 or s.sum() == 0:
+        return s
+
     s = s.fillna(fillna).round().astype('int')
     diff = target - s.sum()
+
     if diff > 0:
-        s.loc[random_indexes(s, diff)] += 1
+        # replace=True allows us to add even more than we have now
+        indexes = random_indexes(s, abs(diff), replace=True)
+        s = s.add(pd.Series(indexes).value_counts(), fill_value=0)
     elif diff < 0:
-        s.loc[random_indexes(s, diff*-1)] -= 1
+        # this makes sure we can only subtract until all rows are zero
+        indexes = random_indexes(s, abs(diff))
+        s = s.sub(pd.Series(indexes).value_counts(), fill_value=0)
 
     assert s.sum() == target
     return s
@@ -88,6 +120,39 @@ def scale_by_target(s, target, check_close=None):
     if check_close:
         assert 1.0-check_close < ratio < 1.0+check_close
     return s * ratio
+
+
+def constrained_normalization(marginals, constraint, total):
+    # this method increases the marginals to match the total while
+    # also meeting the matching constraint.  marginals should be
+    # scaled up proportionally.  it is possible that this method
+    # will fail if the sum of the constraint is less than the total
+
+    assert constraint.sum() >= total
+
+    while 1:
+
+        # where do we exceed the total
+        constrained = marginals >= constraint
+        exceeds = marginals > constraint
+        unconstrained = ~constrained
+
+        num_constrained = len(constrained[constrained == True])
+        num_exceeds = len(exceeds[exceeds == True])
+
+        print "Len constrained = %d, exceeds = %d" % (num_constrained, num_exceeds)
+
+        if num_exceeds == 0:
+            return marginals
+
+        marginals[constrained] = constraint[constrained]
+
+        # scale up where unconstrained
+        unconstrained_total = total - marginals[constrained].sum()
+        marginals[unconstrained] *= unconstrained_total / marginals[unconstrained].sum()
+
+        # should have scaled up
+        assert np.isclose(marginals.sum(), total)
 
 
 # this should be fairly self explanitory if you know ipf

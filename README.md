@@ -1,7 +1,7 @@
 DRAFT Bay Area Urbansim Implementation
 =======
 
-This is the DRAFT UrbanSim implementation for the Bay Area. Documenation for the Bay Area model is available at http://metropolitantransportationcommission.github.io/baus_docs/ and documentation for the generic UrbanSim model is at https://udst.github.io/urbansim/index.html
+This is the DRAFT UrbanSim implementation for the Bay Area. Documenation for the Bay Area model is available at http://metropolitantransportationcommission.github.io/bayarea_urbansim and documentation for the generic UrbanSim model is at https://udst.github.io/urbansim/index.html
 
 ###Install Overview
 * https://mtcdrive.account.box.com/login
@@ -12,9 +12,9 @@ This is the DRAFT UrbanSim implementation for the Bay Area. Documenation for the
 * sudo apt-get update
 * sudo apt-get -y install git g++ python-dev unzip
 * git clone https://github.com/MetropolitanTransportationCommission/bayarea_urbansim.git
-* pip install -r requirements.txt (comment out pandana)
+* pip install -r requirements.txt
 * pip install pandana
-* get data
+* get data: 1) pip install awscli 2) aws configure 3) test w aws s3 ls 4) make data (or aws s3 cp cp://bayarea_urbansim/remote_filename local_filename)
 * change RUNNUM so in 5000s etc
 * python run.py -s 4 & OR python all.py &
 

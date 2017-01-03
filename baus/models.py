@@ -6,6 +6,7 @@ import yaml
 import datasources
 import variables
 from utils import parcel_id_to_geom_id, geom_id_to_parcel_id, add_buildings
+from utils import round_series_match_target, groupby_random_choice
 from urbansim.utils import networks
 import pandana.network as pdna
 from urbansim_defaults import models
@@ -57,7 +58,7 @@ def hlcm_simulate(households, buildings, aggregations, settings, low_income):
     utils.lcm_simulate("hlcm.yaml", households, buildings,
                        aggregations,
                        "building_id", "residential_units",
-                       "vacant_market_rate_units",
+                       "vacant_market_rate_units_minus_structural_vacancy",
                        settings.get("enable_supply_correction", None))
 
 
@@ -102,6 +103,182 @@ def static_parcels(settings, parcels):
     # geom_ids -> parcel_ids
     return geom_id_to_parcel_id(
         pd.DataFrame(index=static_parcels), parcels).index.values
+
+
+def _proportional_jobs_model(
+    target_ratio,  # ratio of jobs of this sector to households
+    sector,        # empsix sector
+    groupby_col,   # ratio will be matched at this level of geog
+    hh_df,
+    jobs_df,
+    locations_series,
+    target_jobs=None  # pass this if you want to compute target jobs
+):
+
+    if target_jobs is None:
+        # compute it if not passed
+        target_jobs = hh_df[groupby_col].value_counts() * target_ratio
+        target_jobs = target_jobs.astype('int')
+
+    current_jobs = jobs_df[
+        jobs_df.empsix == sector][groupby_col].value_counts()
+    need_more_jobs = target_jobs - current_jobs
+    need_more_jobs = need_more_jobs[need_more_jobs > 0]
+    need_more_jobs_total = int(need_more_jobs.sum())
+
+    available_jobs = \
+        jobs_df.query("empsix == '%s' and building_id == -1" % sector)
+
+    print "Need more jobs total: %d" % need_more_jobs_total
+    print "Available jobs: %d" % len(available_jobs)
+
+    if len(available_jobs) == 0:
+        # corner case
+        return pd.Series()
+
+    if len(available_jobs) >= need_more_jobs_total:
+
+        # have enough jobs to assign, truncate available jobs
+        available_jobs = available_jobs.head(need_more_jobs_total)
+
+    else:
+
+        # don't have enough jobs - random sample locations to partially
+        # match the need (won't succed matching the entire need)
+        need_more_jobs = round_series_match_target(
+            need_more_jobs, len(available_jobs), 0)
+        need_more_jobs_total = need_more_jobs.sum()
+
+    assert need_more_jobs_total == len(available_jobs)
+
+    if need_more_jobs_total <= 0:
+        return pd.Series()
+
+    print "Need more jobs\n", need_more_jobs
+
+    choices = groupby_random_choice(locations_series, need_more_jobs)
+
+    # choose random locations within jurises to match need_more_jobs totals
+    return pd.Series(choices.index, available_jobs.index)
+
+
+@orca.step()
+def additional_units(year, buildings, parcels):
+
+    add_units = pd.read_csv("data/additional_units.csv", index_col="juris")[str(year)]
+
+    buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
+
+    res_buildings = buildings_juris[buildings.general_type == "Residential"]
+
+    add_buildings = groupby_random_choice(res_buildings, add_units)
+
+    add_buildings = pd.Series(add_buildings.index).value_counts()
+
+    buildings.local.loc[add_buildings.index, "residential_units"] += add_buildings.values
+
+
+@orca.step()
+def proportional_elcm(jobs, households, buildings, parcels,
+                      year, run_number):
+
+    juris_assumptions_df = pd.read_csv(os.path.join(
+        "data",
+        "juris_assumptions.csv"
+    ), index_col="juris")
+
+    # not a big fan of this - jobs with building_ids of -1 get dropped
+    # by the merge so you have to grab the columns first and fill in
+    # juris iff the building_id is != -1
+    jobs_df = jobs.to_frame(["building_id", "empsix"])
+    df = orca.merge_tables(
+        target='jobs',
+        tables=[jobs, buildings, parcels],
+        columns=['juris', 'zone_id'])
+    jobs_df["juris"] = df["juris"]
+    jobs_df["zone_id"] = df["zone_id"]
+
+    hh_df = orca.merge_tables(
+        target='households',
+        tables=[households, buildings, parcels],
+        columns=['juris', 'zone_id', 'county'])
+
+    # the idea here is to make sure we don't lose local retail and gov't
+    # jobs - there has to be some amount of basic services to support an
+    # increase in population
+
+    buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
+
+    print "Running proportional jobs model for retail"
+
+    s = _proportional_jobs_model(
+        # we now take the ratio of retail jobs to households as an input
+        # that is manipulable by the modeler - this is stored in a csv
+        # per jurisdiction
+        juris_assumptions_df.minimum_forecast_retail_jobs_per_household,
+        "RETEMPN",
+        "juris",
+        hh_df,
+        jobs_df,
+        buildings_juris
+    )
+
+    jobs.update_col_from_series("building_id", s)
+
+    # first read the file from disk - it's small so no table source
+    taz_assumptions_df = pd.read_csv(os.path.join(
+        "data",
+        "taz_growth_rates_gov_ed.csv"
+    ), index_col="Taz")
+
+    # we're going to multiple various aggregations of populations by factors
+    # e.g. high school jobs are multiplied by county pop and so forth - this
+    # is the dict of the aggregations of household counts
+    mapping_d = {
+        "TAZ Pop": hh_df["zone_id"].dropna().astype('int').value_counts(),
+        "County Pop": taz_assumptions_df.County.map(
+            hh_df["county"].value_counts()),
+        "Reg Pop": len(hh_df)
+    }
+    # the factors are set up in relation to pop, not hh count
+    pop_to_hh = .43
+
+    # don't need county anymore
+    del taz_assumptions_df["County"]
+
+    # multipliers are in first row (not counting the headers)
+    multipliers = taz_assumptions_df.iloc[0]
+    # done with the row
+    taz_assumptions_df = taz_assumptions_df.iloc[1:]
+
+    # this is weird but Pandas was giving me a strange error when I tried
+    # to change the type of the index directly
+    taz_assumptions_df = taz_assumptions_df.reset_index()
+    taz_assumptions_df["Taz"] = taz_assumptions_df.Taz.astype("int")
+    taz_assumptions_df = taz_assumptions_df.set_index("Taz")
+
+    # now go through and multiply each factor by the aggregation it applied to
+    target_jobs = pd.Series(0, taz_assumptions_df.index)
+    for col, mult in zip(taz_assumptions_df.columns, multipliers):
+        target_jobs += (taz_assumptions_df[col].astype('float') *
+                        mapping_d[mult] * pop_to_hh).fillna(0)
+
+    target_jobs = target_jobs.astype('int')
+
+    print "Running proportional jobs model for gov/edu"
+
+    # now do the same thing for gov't jobs
+    s = _proportional_jobs_model(
+        None,  # computing jobs directly
+        "OTHEMPN",
+        "zone_id",
+        hh_df,
+        jobs_df,
+        buildings.zone_id,
+        target_jobs=target_jobs
+    )
+
+    jobs.update_col_from_series("building_id", s)
 
 
 @orca.step()
@@ -287,10 +464,13 @@ def residential_developer(feasibility, households, buildings, parcels, year,
 
     kwargs = settings['residential_developer']
 
+    target_vacancy = pd.read_csv("data/regional_controls.csv",
+                                 index_col="year").loc[year].st_res_vac
+
     num_units = dev.compute_units_to_build(
         len(households),
         buildings["residential_units"].sum(),
-        kwargs['target_vacancy'])
+        target_vacancy)
 
     targets = []
     typ = "Residential"
@@ -367,7 +547,7 @@ def residential_developer(feasibility, households, buildings, parcels, year,
 
         if final_target is not None and new_buildings is not None:
             # make sure we don't overbuild the target for the whole simulation
-            overshoot = new_buildings.net_units.sum() - max_target
+            overshoot = new_buildings.net_units.sum() - final_target
 
             if overshoot > 0:
                 index = new_buildings.tail(1).index[0]
@@ -892,35 +1072,35 @@ def correct_baseyear_data(buildings, parcels, jobs):
     # this is the maximum vacancy you can have any a building so it NOT the
     # same thing as setting the vacancy for the entire county
     SURPLUS_VACANCY_COUNTY = buildings_county.map({
-       "Alameda": .83,
-       "Contra Costa": .63,
-       "Marin": .3,
+       "Alameda": .42,
+       "Contra Costa": .57,
+       "Marin": .28,
        "Napa": .7,
-       "San Francisco": .68,
+       "San Francisco": .08,
        "San Mateo": .4,
        "Santa Clara": .32,
        "Solano": .53,
-       "Sonoma": .5,
+       "Sonoma": .4
     }).fillna(.2)
 
     SURPLUS_VACANCY_JURIS = buildings_juris.map({
-       "Yountville": .001,
-       "Benicia": .2,
-       "Woodside": .05,
-       "Atherton": .05,
+       "Berkeley": .65,
+       "Atherton": 0.05,
+       "Belvedere": 0,
+       "Corte Madera": 0,
+       "Cupertino": .1,
+       "Healdsburg": 0,
+       "Larkspur": 0,
        "Los Altos Hills": 0,
+       "Los Gatos": 0,
        "Monte Sereno": 0,
+       "Piedmont": 0,
        "Portola Valley": 0,
-       "Berkeley": .75,
-       "St. Helena": .01,
-       "Saratoga": .05,
-       "Piedmont": .01,
-       "Portola Valley": 0,
-       "Los Gatos": .05,
-       "Cloverdale": 0,
-       "Alameda": .2,
-       "Walnut Creek": .9,
-       "Half Moon Bay": 0
+       "Ross": 0,
+       "San Anselmo": 0,
+       "Saratoga": 0,
+       "Woodside": 0,
+       "Alameda": .2
     })
 
     SURPLUS_VACANCY = pd.DataFrame([

@@ -8,6 +8,7 @@ import orca
 import socket
 import warnings
 from baus.utils import compare_summary
+from scripts.check_feedback import check_feedback
 
 warnings.filterwarnings("ignore")
 
@@ -91,8 +92,10 @@ def get_simulation_models(SCENARIO):
         "developer_reprocess",
         "office_developer",
         "retail_developer",
+        "additional_units",
 
         "hlcm_simulate",                 # put these last so they don't get
+        "proportional_elcm",             # start with a proportional jobs model
         "elcm_simulate",                 # displaced by new dev
 
         "topsheet",
@@ -104,7 +107,7 @@ def get_simulation_models(SCENARIO):
     ]
 
     # calculate VMT taxes
-    if SCENARIO in ["1", "3", "4"]:
+    if SCENARIO in ["1", "3", "4", "5"]:
         # calculate the vmt fees at the end of the year
 
         # note that you might also have to change the fees that get
@@ -117,9 +120,14 @@ def get_simulation_models(SCENARIO):
             orca.get_injectable("settings")["vmt_com_for_res"] = True
 
         if SCENARIO == "4":
-            orca.get_injectable("settings")["vmt_com_for_res"] = False
+            orca.get_injectable("settings")["vmt_com_for_res"] = True
             orca.get_injectable("settings")["vmt_com_for_com"] = False
 
+        if SCENARIO == "5":
+            orca.get_injectable("settings")["vmt_com_for_res"] = True
+            orca.get_injectable("settings")["vmt_com_for_com"] = False
+            
+            
             models.insert(models.index("office_developer"),
                           "subsidized_office_developer")
 
@@ -267,6 +275,24 @@ if SLACK:
         run_num, as_user=True)
 
 if MODE == "simulation":
+
+    # copy base year into runs so as to avoid confusion
+
+    import shutil
+
+    for fname in [
+        "baseyear_juris_summaries_2010.csv",
+        "baseyear_pda_summaries_2010.csv",
+        "baseyear_superdistrict_summaries_2010.csv",
+        "baseyear_taz_summaries_2010.csv"
+    ]:
+
+        shutil.copy(
+            os.path.join("output", fname),
+            os.path.join("runs", "run{}_".format(run_num) + fname)
+        )
+
+if MODE == "simulation":
     # compute and write the difference report at the superdistrict level
     prev_run = LAST_KNOWN_GOOD_RUNS[SCENARIO]
     # fetch the previous run off of the internet for comparison - the "last
@@ -284,6 +310,10 @@ if MODE == "simulation":
     summary = compare_summary(df1, df2, supnames)
     with open("runs/run%d_difference_report.log" % run_num, "w") as f:
         f.write(summary)
+
+if MODE == "simulation":
+    with open("runs/run%d_check_feedback.log" % run_num, "w") as f:
+        f.write(check_feedback(run_num))
 
 if SLACK and MODE == "simulation":
 
