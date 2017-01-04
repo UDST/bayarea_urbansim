@@ -312,16 +312,14 @@ inclusionary_housing_settings:
       - Windsor
   "5":
     - type: jurisdictions
-      description: medium setting
-      amount: .1
+      description: higher setting
+      amount: .2
       values:
       - Alameda
       - Alameda County
       - Albany
       - American Canyon
-      - Antioch
       - Belmont
-      - Benicia
       - Berkeley
       - Brisbane
       - Burlingame
@@ -334,7 +332,6 @@ inclusionary_housing_settings:
       - Cupertino
       - Daly City
       - Danville
-      - Dixon
       - Dublin
       - East Palo Alto
       - El Cerrito
@@ -357,17 +354,14 @@ inclusionary_housing_settings:
       - Napa
       - Newark
       - Oakland
-      - Oakley
       - Orinda
       - Palo Alto
       - Petaluma
       - Pinole
-      - Pittsburg
       - Pleasant Hill
       - Pleasanton
       - Redwood City
       - Richmond
-      - Rohnert Park
       - San Bruno
       - San Carlos
       - San Francisco
@@ -379,7 +373,7 @@ inclusionary_housing_settings:
       - San Rafael
       - San Ramon
       - Santa Clara
-      - Santa Rosa
+      - Santa Rosa 
       - Sebastopol
       - South San Francisco
       - Suisun City
@@ -388,8 +382,7 @@ inclusionary_housing_settings:
       - Vacaville
       - Vallejo
       - Walnut Creek
-      - Windsor       
-
+      - Windsor
 
 acct_settings:
   disable: False
@@ -410,7 +403,7 @@ acct_settings:
       total_amount: 40000000
       receiving_buildings_filter: county == 'San Mateo'
       subsidize_affordable: True
-      enable_in_scenarios: ["0", "1", "2", "3", "4", "5"]
+      enable_in_scenarios: []
 
     alameda_bond_settings:
       name: "Alameda Affordable Housing Bond"
@@ -418,7 +411,7 @@ acct_settings:
       total_amount: 20000000
       receiving_buildings_filter: county == 'Alameda'
       subsidize_affordable: True
-      enable_in_scenarios: ["0", "1", "2", "3", "4", "5"]
+      enable_in_scenarios: []
 
     santa_clara_bond_settings:
       name: "Santa Clara Affordable Housing Bond"
@@ -426,7 +419,7 @@ acct_settings:
       total_amount: 31000000
       receiving_buildings_filter: county == 'Santa Clara'
       subsidize_affordable: True
-      enable_in_scenarios: ["0", "1", "2", "3", "4", "5"]
+      enable_in_scenarios: []
 
     santa_francisco_bond_settings:
       name: "San Francisco Affordable Housing Bond"
@@ -434,7 +427,7 @@ acct_settings:
       total_amount: 19000000
       receiving_buildings_filter: county == 'San Francisco'
       subsidize_affordable: True
-      enable_in_scenarios: ["0", "1", "2", "3", "4", "5"]
+      enable_in_scenarios: []
 
     parcel_tax_settings:
       name: "Parcel Tax"
@@ -835,15 +828,13 @@ development_limits:
       'Belvedere': 0
       'Belmont': 0
       'Benicia': 25
-      'Brisbane': 300
-      'Burlingame': 250
+      'Burlingame': 275
       'Clayton': 0
       'Colma': 0
       'Concord': 1000
       'Cupertino': 0
-      'Daly City': 20
+      'Daly City': 50
       'Fairfax': 0
-      'Fremont': 750
       'Half Moon Bay': 0
       'Healdsburg': 0
       'Hillsborough': 0
@@ -852,13 +843,13 @@ development_limits:
       'Los Gatos': 0
       'Milpitas': 325
       'Mill Valley': 0
-      'Millbrae': 210
+      'Millbrae': 200
       'Monte Sereno': 0
       'Orinda': 0
       'Palo Alto': 175
       'Petaluma': 150
       'Piedmont': 0
-      'Pleasanton': 285
+      'Pleasanton': 275
       'Portola Valley': 0
       'Redwood City': 550
       'Ross': 0
@@ -866,12 +857,11 @@ development_limits:
       'San Francisco': 3500
       'San Mateo': 200
       'San Rafael': 0
-      'San Ramon': 200
       'St. Helena': 5
       'Saratoga': 0
       'Sonoma': 0
       'Tiburon': 0
-      'Union City': 7
+      'Union City': 5
       'Woodside': 0 
       'Alameda County': 0
       'Contra Costa County': 0
@@ -893,9 +883,6 @@ development_limits:
       'Solano County': 230
       'Sonoma County': 50
   "2":
-    Office:
-      'San Francisco': 5250
-  "5":
     Office:
       'San Francisco': 5250
 
