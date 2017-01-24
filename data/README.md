@@ -96,7 +96,7 @@ These are the res/non-res fee categories, which actually identify the low and hi
 
 ### zone_forecast_inputs.csv
 
-
+This is closely related to regional_controls.csv.  Both are only used in the summary step to create output variables used by the travel model which are not endogenously created in UrbanSim.  These are zone level inputs for that process, the other file contains regional-level controls.
 
 ### zoning_lookup.csv
 
@@ -116,10 +116,6 @@ Note that a blank value in the csv means that there is no constraint for that at
 
 *By convention a 0 in dua, far, and height is discouraged.  It is preferred to use the "building type not allowed" columns for this*
 
-### zoning_mods_0.csv
-zoning_mods_1.csv
-zoning_mods_2.csv
-zoning_mods_3.csv
-zoning_mods_4.csv
-zoning_mods_5.csv
-zoning_table_city_lookup.csv
+### zoning_mods_[0-5].csv
+
+This is where the magic happens.  These are the files which contain scenario-based zoning.  They are typically used to upzone dua and far in pdas.  Parcels are joined to this file using the field `zoningmodcat` which are "policy zones" which are the cross product of jurisdiction, tpp, expansion zone, and opportunity site areas.  `dua_up` and `far_up` are used to do the upzoning (these can never result in a downzoning), and building types can also be added.
