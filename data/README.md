@@ -4,37 +4,67 @@ These are the households and jobs expected per pda and non-pda jurisdiction as a
 
 ### additional_units.csv
 
+Additional units is a way to hard code the addition of units by city in order to force capacity.  It's a similar model to the "refiner" models common for UrbanSim praxis, but doesn't actually affect household/job totals, just the supply side.
+
 ### bart_stations.csv
 
 This is a list of BART stations and their locations so that distance to BART can be used in the modeling.
 
 ### baseyear_taz_controls.csv
 
+This contains our expected base year control totals by taz - number of units, vacancy rates, employment by sector (but not households).
+
 ### census_id_to_name.csv
+
+For some reason the current parcels_geography file uses census id instead of name.  This is the file that maps those ids to names so we can use it within UrbanSim.
 
 ### deed_restricted_zone_totals.csv	
 
+This is the number of deed restricted units per taz.  We don't have a great idea of exactly where those units are, but we have an aggregate idea, so we usually do a random assignment within that taz.
+
 ### development_projects.csv	
 
-### employment_controls.csv		
+This is the list of projects that have happened since the base data, or that we think will happen in the future.  It is the development pipeline.  This file tends to have more attributes than we actually use in UrbanSim.
 
-### employment_relocation_rates.csv	
+### employment_controls.csv
+
+The number of jobs by sector for 5 year increments over the duration of the Plan.
+
+### employment_relocation_rates.csv
+
+Relocation rates by sector by zone so we can e.g. leave City Hall populated by civic sector jobs. 
 
 ### household_building_id_overrides.csv
 
-### household_controls.csv		
+This is used to move households around to match new city household totals.  When we have a new assignment process and a new assignment this file should go away.  (We needed to update household locations for a small number of households very late in the planning process.)
 
-### juris_assumptions.csv		
+### household_controls.csv
 
-### juris_controls.csv		
+Number of households by category (quartile) for each year over the duration of the Plan.
 
-### landmarks.csv			
+### juris_assumptions.csv
 
-### logsums.csv			
+These are simulation assumptions that apply per jurisdiction.  Currently, the only attribute used is `minimum_forecast_retail_jobs_per_household` which is used to keep local serving retail appropriate for each jurisdiction.
 
-### manual_edits.csv		
+### juris_controls.csv
+
+This is the revised set of household numbers which we needed to match late in the planning process.  A few small cities correctly alerted us to the fact that our TAZ data had the wrong population in some cases (in a few cases the census was even petitioned to be changed).
+
+### landmarks.csv
+
+The lat-lng locations of a few major landmarks in the region, which are avialable for use in the modeling.
+
+### logsums.csv
+
+This is the set of baseyear logsums from the MTC travel model.  This is available for use in the modeling and is a key compoenent of the integrated modeling effort.
+
+### manual_edits.csv
+
+A csv of manual edits so we don't have to create a new H5 every time we want to edit a single parcel or building.  Simply give the table name, attribute name, and new value, and BAUS will override current data using edits form this file.
 
 ### parcel_egs.csv
+
+
 
 ### pdatargets.csv
 
