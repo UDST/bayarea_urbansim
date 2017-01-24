@@ -62,32 +62,41 @@ This is the set of baseyear logsums from the MTC travel model.  This is availabl
 
 A csv of manual edits so we don't have to create a new H5 every time we want to edit a single parcel or building.  Simply give the table name, attribute name, and new value, and BAUS will override current data using edits form this file.
 
-### parcel_egs.csv
-
-
-
-### pdatargets.csv
-
-
 ### regional_controls.csv
+
+These are regional level controls which give us employed residents and the age distribution, which are used to provide inputs to the travel model which UrabanSim is not natively simulating at this time.
 
 ### regional_poi_distances.csv
 
+These are the distances from each travel model node to each landmark.  It's precomputed and stored in this file because it never changes.  It could be recomputed every time, with the only cost being performance.
+
 ### rhna_by_juris.csv
+
+These are the RHNA numbers by jurisdiction for the time period between 2014 and 2022.
 
 ### superdistricts.csv
 
+These are superdistrict attributes, including name, subregion (the superdistricts are aggregated even further), and sqft_per_job which varies by superdistrict and is used to create an appropriate vacancy rate.
+
 ### taz_geography.csv
+
+Mapping of tazs to superdistricts and counties (by id).
 
 ### taz_growth_rates_gov_ed.csv
 
-### tpp_id_2016.csv
+Ratios of gov't and education employment per population (sometimes at the TAZ level, sometimes for each county, and sometimes regionally).  This csv actually has two header rows - this first row is what the outcome attribute is, and the second is the geography at which the ratio acts (taz / county / regional).
 
 ### tpp_id_2016.zip
 
+This is a mapping of parcel ids to new tpp_ids, which are used for analyzing output.  It's a large file so is stored as a zipfile (Pandas can now read_csv on a zip file).  This can go away when we have a new parcels_geography file with new tpps.
+
 ### vmt_fee_zonecats.csv
 
+These are the res/non-res fee categories, which actually identify the low and high VMT zones (technically there are 4 categories).  The VMT zones get mapped to fees in settings.yaml.
+
 ### zone_forecast_inputs.csv
+
+
 
 ### zoning_lookup.csv
 
