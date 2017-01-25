@@ -244,23 +244,6 @@ def base_year_summary_taz():
                        index_col="zone_id")
 
 
-# the estimation data is not in the buildings table - they are the same
-@orca.table('homesales', cache=True)
-def homesales(store):
-    # we need to read directly from the store here.  Why?  The buildings
-    # table itself drops a bunch of columns we need - most notably the
-    # redfin_sales_price column.  Why?  Because the developer model will
-    # append rows (new buildings) to the buildings table and we don't want
-    # the developer model to know about redfin_sales_price (which is
-    # meaningless for forecast buildings)
-    df = store['buildings']
-    df = df.dropna(subset=["redfin_sale_price"])
-    df["price_per_sqft"] = df.eval('redfin_sale_price / sqft_per_unit')
-    df = df.query("sqft_per_unit > 200")
-    df = df.dropna(subset=["price_per_sqft"])
-    return df
-
-
 # non-residential rent data
 @orca.table('costar', cache=True)
 def costar(store, parcels):
@@ -568,7 +551,7 @@ def buildings(store, parcels, households, jobs, building_sqft_per_job,
 
     df = df.drop(['development_type_id', 'improvement_value',
                   'sqft_per_unit', 'nonres_rent_per_sqft',
-                  'res_price_per_sqft', 'redfin_sale_price',
+                  'res_price_per_sqft',
                   'redfin_home_type', 'costar_property_type',
                   'costar_rent'], axis=1)
 
@@ -738,12 +721,8 @@ def zones(store):
 orca.broadcast('parcels_geography', 'buildings', cast_index=True,
                onto_on='parcel_id')
 orca.broadcast('tmnodes', 'buildings', cast_index=True, onto_on='tmnode_id')
-orca.broadcast('parcels', 'homesales', cast_index=True, onto_on='parcel_id')
-orca.broadcast('nodes', 'homesales', cast_index=True, onto_on='node_id')
-orca.broadcast('tmnodes', 'homesales', cast_index=True, onto_on='tmnode_id')
 orca.broadcast('nodes', 'costar', cast_index=True, onto_on='node_id')
 orca.broadcast('tmnodes', 'costar', cast_index=True, onto_on='tmnode_id')
-orca.broadcast('logsums', 'homesales', cast_index=True, onto_on='zone_id')
 orca.broadcast('logsums', 'costar', cast_index=True, onto_on='zone_id')
 orca.broadcast('taz_geography', 'parcels', cast_index=True,
                onto_on='zone_id')

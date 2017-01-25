@@ -655,7 +655,7 @@ def parcel_summary(parcels, buildings, households, jobs,
 
 @orca.step("travel_model_output")
 def travel_model_output(parcels, households, jobs, buildings,
-                        zones, homesales, year, summary, coffer,
+                        zones, year, summary, coffer,
                         zone_forecast_inputs, run_number,
                         taz, base_year_summary_taz):
     # using the following conditional b/c `year` is used to pull a column

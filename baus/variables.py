@@ -19,97 +19,6 @@ def tmnode_id(households, buildings):
 
 
 #####################
-# HOMESALES VARIABLES
-#####################
-
-
-@orca.column('homesales', cache=True)
-def general_type(buildings):
-    return buildings.general_type
-
-
-BUILDING_AGE_BREAK = 40
-
-
-@orca.column('homesales', cache=True)
-def building_age(homesales):
-    return 2014 - homesales.year_built
-
-
-@orca.column('homesales', cache=True)
-def building_age_recent(homesales):
-    s = homesales.building_age
-    return s * (s < BUILDING_AGE_BREAK)
-
-
-@orca.column('homesales', cache=True)
-def building_age_old(homesales):
-    s = homesales.building_age
-    return s * (s >= BUILDING_AGE_BREAK)
-
-
-@orca.column('homesales', cache=True)
-def juris_ave_income(parcels, homesales):
-    return misc.reindex(parcels.juris_ave_income, homesales.parcel_id)
-
-
-@orca.column('homesales', cache=True)
-def zonal_veryhighinc(homesales, taz):
-    return misc.reindex(taz.veryhighinc, homesales.zone_id).\
-        reindex(homesales.index).fillna(0)
-
-
-@orca.column('homesales', cache=True)
-def is_sanfran(parcels, homesales):
-    return misc.reindex(parcels.is_sanfran, homesales.parcel_id)
-
-
-@orca.column('homesales', cache=True)
-def node_id(homesales, parcels):
-    return misc.reindex(parcels.node_id, homesales.parcel_id)
-
-
-@orca.column('homesales', cache=True)
-def tmnode_id(homesales, parcels):
-    return misc.reindex(parcels.tmnode_id, homesales.parcel_id)
-
-
-@orca.column('homesales', cache=True)
-def zone_id(homesales, parcels):
-    return misc.reindex(parcels.zone_id, homesales.parcel_id)
-
-
-@orca.column('homesales', cache=True)
-def modern_condo(homesales):
-    # this is to try and differentiate between new
-    # construction in the city vs in the burbs
-    return ((homesales.year_built > 2000) *
-            (homesales.building_type_id == 3)).astype('int')
-
-
-@orca.column('homesales', cache=True)
-def new_construction(homesales):
-    return (homesales.year_built > 2000).astype('int')
-
-
-@orca.column('homesales', cache=True)
-def historic(homesales):
-    return (homesales.year_built < 1940).astype('int')
-
-
-@orca.column('homesales', cache=True)
-def base_price_per_sqft(homesales):
-    s = homesales.price_per_sqft.groupby(homesales.zone_id).quantile()
-    return misc.reindex(s, homesales.zone_id)
-
-
-@orca.column('homesales', cache=True)
-def transit_type(homesales, parcels_geography):
-    return misc.reindex(parcels_geography.tpp_id, homesales.parcel_id).\
-        reindex(homesales.index).fillna('none')
-
-
-#####################
 # COSTAR VARIABLES
 #####################
 
@@ -304,6 +213,10 @@ def zonal_veryhighinc(buildings, taz):
         reindex(buildings.index).fillna(0)
 
 
+@orca.column('buildings')
+def price_per_sqft(buildings):
+    return buildings.redfin_sale_price / buildings.sqft_per_unit
+
 @orca.column('buildings', cache=True)
 def transit_type(buildings, parcels_geography):
     return misc.reindex(parcels_geography.tpp_id, buildings.parcel_id).\
@@ -316,29 +229,22 @@ def unit_price(buildings):
 
 
 @orca.column('buildings', cache=True)
-def base_price_per_sqft(homesales, buildings):
-    s = homesales.price_per_sqft.groupby(homesales.zone_id).quantile()
-    return misc.reindex(s, buildings.zone_id).reindex(buildings.index)\
-        .fillna(s.quantile())
-
-
-@orca.column('buildings', 'tmnode_id', cache=True)
 def tmnode_id(buildings, parcels):
     return misc.reindex(parcels.tmnode_id, buildings.parcel_id)
 
 
-@orca.column('buildings', 'juris_ave_income', cache=True)
+@orca.column('buildings', cache=True)
 def juris_ave_income(parcels, buildings):
     return misc.reindex(parcels.juris_ave_income, buildings.parcel_id)
 
 
-@orca.column('buildings', 'is_sanfran', cache=True)
+@orca.column('buildings', cache=True)
 def is_sanfran(parcels, buildings):
     return misc.reindex(parcels.is_sanfran, buildings.parcel_id)
 
 
-@orca.column('buildings', 'sqft_per_unit', cache=True)
-def unit_sqft(buildings):
+@orca.column('buildings', cache=True)
+def sqft_per_unit(buildings):
     return (buildings.building_sqft /
             buildings.residential_units.replace(0, 1)).clip(400, 6000)
 

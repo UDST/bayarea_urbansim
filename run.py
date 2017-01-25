@@ -18,7 +18,7 @@ SLACK = MAPS = "URBANSIM_SLACK" in os.environ
 LOGS = True
 INTERACT = False
 SCENARIO = None
-MODE = "simulation"
+MODE = "estimation"
 S3 = False
 EVERY_NTH_YEAR = 5
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
@@ -143,7 +143,7 @@ def get_simulation_models(SCENARIO):
 
 def run_models(MODE, SCENARIO):
 
-    orca.run(["correct_baseyear_data"])
+    # orca.run(["correct_baseyear_data"])
 
     if MODE == "simulation":
 
@@ -158,11 +158,11 @@ def run_models(MODE, SCENARIO):
             "neighborhood_vars",         # local accessibility variables
             "regional_vars",             # regional accessibility variables
             "rsh_estimate",              # residential sales hedonic
-            "nrh_estimate",              # non-res rent hedonic
-            "rsh_simulate",
-            "nrh_simulate",
-            "hlcm_estimate",             # household lcm
-            "elcm_estimate",             # employment lcm
+            #"nrh_estimate",              # non-res rent hedonic
+            #"rsh_simulate",
+            #"nrh_simulate",
+            #"hlcm_estimate",             # household lcm
+            #"elcm_estimate",             # employment lcm
 
         ], iter_vars=[2010])
 

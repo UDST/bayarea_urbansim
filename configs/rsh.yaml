@@ -4,7 +4,7 @@ model_type: regression
 
 fit_filters:
 - general_type == 'Residential'
-- sqft_per_unit > 100
+- sqft_per_unit > 200
 - sqft_per_unit < 4000
 - price_per_sqft > 100
 - price_per_sqft < 1500

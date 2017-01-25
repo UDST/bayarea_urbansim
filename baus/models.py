@@ -19,6 +19,11 @@ import numpy as np
 import pandas as pd
 
 
+@orca.step('rsh_estimate')
+def rsh_estimate(buildings, aggregations):
+    return utils.hedonic_estimate("rsh.yaml", buildings, aggregations)
+
+
 @orca.step('rsh_simulate')
 def rsh_simulate(buildings, aggregations, settings):
     utils.hedonic_simulate("rsh.yaml", buildings, aggregations,
@@ -1006,42 +1011,6 @@ def price_vars(net):
     nodes = orca.get_table('nodes')
     nodes = nodes.to_frame().join(nodes2)
     orca.add_table("nodes", nodes)
-
-
-# this is not really simulation - just writing a method to get average
-# appreciation per zone over the past X number of years
-@orca.step("mls_appreciation")
-def mls_appreciation(homesales, year, summary):
-    buildings = homesales
-
-    years = buildings.redfin_sale_year
-    zone_ids = buildings.zone_id
-    price = buildings.redfin_sale_price
-
-    # minimum observations
-    min_obs = 10
-
-    def aggregate_year(year):
-        mask = years == year
-        s = price[mask].groupby(zone_ids[mask]).median()
-        size = price[mask].groupby(zone_ids[mask]).size()
-        return s, size
-
-    current, current_size = aggregate_year(2013)
-
-    zones = pd.DataFrame(index=zone_ids.unique())
-
-    past, past_size = aggregate_year(year)
-    appreciation = (current / past).pow(1.0/(2013-year))
-    # zero out the zones with too few observations
-    appreciation = appreciation * (current_size > min_obs).astype('int')
-    appreciation = appreciation * (past_size > min_obs).astype('int')
-    zones["appreciation"] = appreciation
-
-    print zones.describe()
-
-    summary.add_zone_output(zones, "appreciation", year)
-    summary.write_zone_output()
 
 
 @orca.step()
