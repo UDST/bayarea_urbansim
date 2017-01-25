@@ -13,14 +13,8 @@ from urbansim_defaults import variables
 #####################
 
 
-# used to pretent a segmented choice model isn't actually segmented
-@orca.column('households', 'ones', cache=True)
-def income_decile(households):
-    return pd.Series(1, households.index)
-
-
-@orca.column('households', 'tmnode_id', cache=True)
-def node_id(households, buildings):
+@orca.column('households', cache=True)
+def tmnode_id(households, buildings):
     return misc.reindex(buildings.tmnode_id, households.building_id)
 
 
@@ -54,7 +48,7 @@ def building_age_old(homesales):
     return s * (s >= BUILDING_AGE_BREAK)
 
 
-@orca.column('homesales', 'juris_ave_income', cache=True)
+@orca.column('homesales', cache=True)
 def juris_ave_income(parcels, homesales):
     return misc.reindex(parcels.juris_ave_income, homesales.parcel_id)
 
@@ -65,22 +59,22 @@ def zonal_veryhighinc(homesales, taz):
         reindex(homesales.index).fillna(0)
 
 
-@orca.column('homesales', 'is_sanfran', cache=True)
+@orca.column('homesales', cache=True)
 def is_sanfran(parcels, homesales):
     return misc.reindex(parcels.is_sanfran, homesales.parcel_id)
 
 
-@orca.column('homesales', 'node_id', cache=True)
+@orca.column('homesales', cache=True)
 def node_id(homesales, parcels):
     return misc.reindex(parcels.node_id, homesales.parcel_id)
 
 
-@orca.column('homesales', 'tmnode_id', cache=True)
+@orca.column('homesales', cache=True)
 def tmnode_id(homesales, parcels):
     return misc.reindex(parcels.tmnode_id, homesales.parcel_id)
 
 
-@orca.column('homesales', 'zone_id', cache=True)
+@orca.column('homesales', cache=True)
 def zone_id(homesales, parcels):
     return misc.reindex(parcels.zone_id, homesales.parcel_id)
 
@@ -120,37 +114,37 @@ def transit_type(homesales, parcels_geography):
 #####################
 
 
-@orca.column('costar', 'juris_ave_income', cache=True)
+@orca.column('costar')
 def juris_ave_income(parcels, costar):
     return misc.reindex(parcels.juris_ave_income, costar.parcel_id)
 
 
-@orca.column('costar', 'is_sanfran', cache=True)
+@orca.column('costar')
 def is_sanfran(parcels, costar):
     return misc.reindex(parcels.is_sanfran, costar.parcel_id)
 
 
-@orca.column('costar', 'general_type')
+@orca.column('costar')
 def general_type(costar):
     return costar.PropertyType
 
 
-@orca.column('costar', 'node_id')
+@orca.column('costar')
 def node_id(parcels, costar):
     return misc.reindex(parcels.node_id, costar.parcel_id)
 
 
-@orca.column('costar', 'tmnode_id')
+@orca.column('costar')
 def tmnode_id(parcels, costar):
     return misc.reindex(parcels.tmnode_id, costar.parcel_id)
 
 
-@orca.column('costar', 'zone_id')
+@orca.column('costar')
 def zone_id(parcels, costar):
     return misc.reindex(parcels.zone_id, costar.parcel_id)
 
 
-@orca.column('costar', cache=True)
+@orca.column('costar')
 def transit_type(costar, parcels_geography):
     return misc.reindex(parcels_geography.tpp_id, costar.parcel_id).\
         reindex(costar.index).fillna('none')
@@ -161,22 +155,17 @@ def transit_type(costar, parcels_geography):
 #####################
 
 
-@orca.column('jobs', 'tmnode_id', cache=True)
+@orca.column('jobs', cache=True)
 def tmnode_id(jobs, buildings):
     return misc.reindex(buildings.tmnode_id, jobs.building_id)
 
 
-@orca.column('jobs', 'naics', cache=True)
+@orca.column('jobs', cache=True)
 def naics(jobs):
     return jobs.sector_id
 
 
-# @orca.column('jobs', 'empsix', cache=True)
-# def empsix(jobs, settings):
-#    return jobs.naics.map(settings['naics_to_empsix'])
-
-
-@orca.column('jobs', 'empsix_id', cache=True)
+@orca.column('jobs', cache=True)
 def empsix_id(jobs, settings):
     return jobs.empsix.map(settings['empsix_name_to_id'])
 

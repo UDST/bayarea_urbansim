@@ -25,6 +25,14 @@ def year():
 
 
 @orca.injectable()
+def recompute_cached_tables():
+    # we cache the four major tables - parcels, buildngs, jobs, and households
+    # in order to save computation time on reading tables - set this to true
+    # in order to recompute all the cached tables
+    return False
+
+
+@orca.injectable()
 def initial_year():
     return 2010
 
@@ -109,7 +117,10 @@ def landmarks():
 
 
 @orca.table('jobs', cache=True)
-def jobs(store, parcels):
+def jobs(store, parcels, recompute_cached_tables):
+
+    if 'jobs_cached' in store and not recompute_cached_tables:
+        return store['jobs_cached']
 
     if 'jobs_urbansim_allocated' not in store:
         # if jobs allocation hasn't been done, then do it
@@ -143,6 +154,8 @@ def jobs(store, parcels):
 
     del jobs_df["parcel_id"]
     del jobs_df["juris"]
+
+    store['jobs_cached'] = jobs_df
 
     return jobs_df
 
@@ -214,36 +227,6 @@ def jobs(store, baseyear_taz_controls, settings, parcels):
     t = baseyear_taz_controls.emp_tot - s
     # assert we matched the totals exactly
     assert t.sum() == 0
-
-    # this is some exploratory diagnostics comparing the job controls to
-    # the buildings table - in other words, comparing non-residential space
-    # to the number of jobs
-    '''
-    old_jobs = store['jobs']
-    old_jobs_cnt = old_jobs.groupby('taz').si ze()
-
-    emp_tot = baseyear_taz_controls.emp_tot
-    print buildings.job_spaces.groupby(buildings.building_type_id).sum()
-    supply = buildings.job_spaces.groupby(buildings.zone_id).sum()
-    non_residential_sqft = buildings.non_residential_sqft.\
-        groupby(buildings.zone_id).sum()
-    s = (supply-emp_tot).order()
-    df = pd.DataFrame({
-        "job_spaces": supply,
-        "jobs": emp_tot,
-        "non_residential_sqft": non_residential_sqft
-    }, index=s.index)
-    df["vacant_spaces"] = supply-emp_tot
-    df["vacancy_rate"] = df.vacant_spaces/supply.astype('float')
-    df["old_jobs"] = old_jobs_cnt
-    df["old_vacant_spaces"] = supply-old_jobs_cnt
-    df["old_vacancy_rate"] = df.old_vacant_spaces/supply.astype('float')
-    df["sqft_per_job"] = df.non_residential_sqft / df.jobs
-    df["old_sqft_per_job"] = df.non_residential_sqft / df.old_jobs
-    df.index.name = "zone_id"
-    print df[["jobs", "old_jobs", "job_spaces", "non_residential_sqft"]].corr()
-    df.sort("sqft_per_job").to_csv("job_demand.csv")
-    '''
 
     store['jobs_urbansim_allocated'] = df
 
@@ -369,7 +352,11 @@ def zoning_scenario(parcels_geography, scenario, settings):
 # zone_ids for a few parcels.  Not enough to worry about so just filling with
 # the mode
 @orca.table('parcels', cache=True)
-def parcels(store):
+def parcels(store, recompute_cached_tables):
+
+    if 'parcels_cached' in store and not recompute_cached_tables:
+        return store['parcels_cached']
+
     df = store['parcels']
     df["zone_id"] = df.zone_id.replace(0, 1)
 
@@ -392,6 +379,8 @@ def parcels(store):
                                     "development_projects.csv"))
     # mark parcels that are going to be developed by the sdem
     df["sdem"] = df.geom_id.isin(sdem.geom_id).astype('int')
+
+    store['parcels_cached'] = df
 
     return df
 
@@ -530,7 +519,11 @@ def development_projects(parcels, settings, scenario):
 
 
 @orca.table('households', cache=True)
-def households(store, settings, parcels_geography):
+def households(store, settings, parcels_geography, recompute_cached_tables):
+
+    if 'households_cached' in store and not recompute_cached_tables:
+        return store['households_cached']
+
     # start with households from urbansim_defaults
     df = datasources.households(store, settings)
 
@@ -557,12 +550,17 @@ def households(store, settings, parcels_geography):
     new_households.index += pd.Series(df.index).max() + 1
     df = df.append(new_households)
 
+    store['households_cached'] = df
+
     return df
 
 
 @orca.table('buildings', cache=True)
 def buildings(store, parcels, households, jobs, building_sqft_per_job,
-              settings, manual_edits):
+              settings, manual_edits, recompute_cached_tables):
+
+    if 'buildings_cached' in store and not recompute_cached_tables:
+        return store['buildings_cached']
 
     # start with buildings from urbansim_defaults
     df = datasources.buildings(store, households, jobs,
@@ -640,6 +638,8 @@ def buildings(store, parcels, households, jobs, building_sqft_per_job,
 
     print "Total deed restricted units after truncating to res units: %d" % \
         df.deed_restricted_units.sum()
+
+    store['buildings_cached'] = df
 
     return df
 
