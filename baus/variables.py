@@ -215,7 +215,11 @@ def zonal_veryhighinc(buildings, taz):
 
 @orca.column('buildings')
 def price_per_sqft(buildings):
-    return buildings.redfin_sale_price / buildings.sqft_per_unit
+    s = buildings.redfin_sale_price / buildings.sqft_per_unit
+    # not a huge fan of this.  it's an error to have nas in rsh_estimate even
+    # though nas will be filtered out by the hedonic - error should happen
+    # after filters are applied
+    return s.reindex(buildings.index).fillna(-1)
 
 @orca.column('buildings', cache=True)
 def transit_type(buildings, parcels_geography):

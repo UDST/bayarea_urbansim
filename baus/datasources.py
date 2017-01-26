@@ -467,7 +467,7 @@ def development_projects(parcels, settings, scenario):
     for fld in ['residential_sqft', 'residential_price',
                 'non_residential_price']:
         df[fld] = 0
-    df["redfin_sale_year"] = 2012  # hedonic doesn't tolerate nans
+    df["redfin_sale_year"] = 2012  # default base year
     df["stories"] = df.stories.fillna(1)
     df["building_sqft"] = df.building_sqft.fillna(0)
     df["non_residential_sqft"] = df.non_residential_sqft.fillna(0)
@@ -576,9 +576,7 @@ def buildings(store, parcels, households, jobs, building_sqft_per_job,
     # don't know what a 0 building type id, set to office
     df["building_type_id"] = df.building_type_id.replace(0, 4)
 
-    # we should only be using the "buildings" table during simulation, and in
-    # simulation we want to normalize the prices to 2012 style prices
-    df["redfin_sale_year"] = 2012
+    df["redfin_sale_year"] = df.redfin_sale_year.fillna(2012)
 
     # hope we get more data on this soon
     df["deed_restricted_units"] = 0
