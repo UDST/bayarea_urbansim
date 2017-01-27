@@ -221,6 +221,7 @@ def price_per_sqft(buildings):
     # after filters are applied
     return s.reindex(buildings.index).fillna(-1)
 
+
 @orca.column('buildings', cache=True)
 def transit_type(buildings, parcels_geography):
     return misc.reindex(parcels_geography.tpp_id, buildings.parcel_id).\
@@ -660,8 +661,8 @@ def jobs_subset(jobs, parcels, buildings):
         columns=['zone_id', 'empsix'])
 
     # totally baffled by this - after joining the three tables we have three
-    # zone_ids, one from the parcel table, one from buildings, and one from jobs
-    # and the one called zone_id has null values while there others do not
+    # zone_ids, one from the parcel table, one from buildings, and one from
+    # jobs and the one called zone_id has null values while there others do not
     # going to change this while I think about this
     df["zone_id"] = df.zone_id_x
 

@@ -170,7 +170,8 @@ def _proportional_jobs_model(
 @orca.step()
 def additional_units(year, buildings, parcels):
 
-    add_units = pd.read_csv("data/additional_units.csv", index_col="juris")[str(year)]
+    add_units = pd.read_csv("data/additional_units.csv",
+                            index_col="juris")[str(year)]
 
     buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
 
@@ -180,7 +181,8 @@ def additional_units(year, buildings, parcels):
 
     add_buildings = pd.Series(add_buildings.index).value_counts()
 
-    buildings.local.loc[add_buildings.index, "residential_units"] += add_buildings.values
+    buildings.local.loc[add_buildings.index, "residential_units"] += \
+        add_buildings.values
 
 
 @orca.step()

@@ -137,10 +137,11 @@ def constrained_normalization(marginals, constraint, total):
         exceeds = marginals > constraint
         unconstrained = ~constrained
 
-        num_constrained = len(constrained[constrained == True])
-        num_exceeds = len(exceeds[exceeds == True])
+        num_constrained = len(constrained[constrained is True])
+        num_exceeds = len(exceeds[exceeds is True])
 
-        print "Len constrained = %d, exceeds = %d" % (num_constrained, num_exceeds)
+        print "Len constrained = %d, exceeds = %d" %\
+            (num_constrained, num_exceeds)
 
         if num_exceeds == 0:
             return marginals
@@ -149,7 +150,8 @@ def constrained_normalization(marginals, constraint, total):
 
         # scale up where unconstrained
         unconstrained_total = total - marginals[constrained].sum()
-        marginals[unconstrained] *= unconstrained_total / marginals[unconstrained].sum()
+        marginals[unconstrained] *= \
+            unconstrained_total / marginals[unconstrained].sum()
 
         # should have scaled up
         assert np.isclose(marginals.sum(), total)

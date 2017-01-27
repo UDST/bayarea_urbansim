@@ -5,6 +5,7 @@ from urbansim_defaults import datasources
 from urbansim_defaults import utils
 from urbansim.utils import misc
 import orca
+import allocation
 from utils import geom_id_to_parcel_id, parcel_id_to_geom_id
 from utils import nearest_neighbor
 
@@ -42,45 +43,40 @@ def final_year():
     return 2040
 
 
-@orca.injectable('store', cache=True)
-def hdfstore(settings):
-    return pd.HDFStore(
-        os.path.join(misc.data_dir(), settings["store"]))
-
-
 @orca.injectable(cache=True)
+def store(settings):
+    return pd.HDFStore(os.path.join(misc.data_dir(), settings["store"]))
+
+
+@orca.injectable()
 def low_income(settings):
     return int(settings["low_income_for_hlcm"])
 
 
-@orca.injectable("limits_settings", cache=True)
+@orca.injectable(cache=True)
 def limits_settings(settings, scenario):
+    # for limits, we inherit from the default
 
     d = settings['development_limits']
 
     if scenario in d.keys():
+        print "Using limits for scenario: %s" % scenario
         assert "default" in d
 
         d_scen = d[scenario]
         d = d["default"]
-        for branch in d_scen.keys():
-            for leaf, val in d_scen[branch].iteritems():
-                print branch, leaf, val
-                d[branch][leaf] = val
+        for key, value in d_scen.iteritems():
+            d[key].update(value)
 
-        print "Using limits for scenario: %s" % scenario
         return d
 
-    if "default" in d.keys():
-        print "Using default limits"
-        return d["default"]
-
-    # assume there's no scenario-based limits and the dict is the limits
-    return d
+    print "Using default limits"
+    return d["default"]
 
 
 @orca.injectable(cache=True)
 def inclusionary_housing_settings(settings, scenario):
+    # for inclustionary housing, each scenario is different
 
     s = settings['inclusionary_housing_settings']
 
@@ -94,6 +90,8 @@ def inclusionary_housing_settings(settings, scenario):
 
     d = {}
     for item in s:
+        # this is a list of cities with an inclusionary rate that is the
+        # same for all the cities in the list
         print "Setting inclusionary rates for %d cities to %.2f" %\
             (len(item["values"]), item["amount"])
         # this is a list of inclusionary rates and the cities they apply
@@ -104,7 +102,7 @@ def inclusionary_housing_settings(settings, scenario):
     return d
 
 
-@orca.injectable('building_sqft_per_job', cache=True)
+@orca.injectable(cache=True)
 def building_sqft_per_job(settings):
     return settings['building_sqft_per_job']
 
@@ -116,7 +114,7 @@ def landmarks():
                        index_col="name")
 
 
-@orca.table('jobs', cache=True)
+@orca.table(cache=True)
 def jobs(store, parcels, recompute_cached_tables):
 
     if 'jobs_cached' in store and not recompute_cached_tables:
@@ -158,77 +156,6 @@ def jobs(store, parcels, recompute_cached_tables):
     store['jobs_cached'] = jobs_df
 
     return jobs_df
-
-
-# the way this works is there is an orca step to do jobs allocation, which
-# reads base year totals and creates jobs and allocates them to buildings,
-# and writes it back to the h5.  then the actual jobs table above just reads
-# the auto-allocated version from the h5.  was hoping to just do allocation
-# on the fly but it takes about 4 minutes so way to long to do on the fly
-@orca.step('allocate_jobs')
-def jobs(store, baseyear_taz_controls, settings, parcels):
-
-    # this isn't pretty, but can't use orca table because there would
-    # be a circular dependenct - I mean jobs dependent on buildings and
-    # buildings on jobs, so we have to grab from the store directly
-    buildings = store['buildings']
-    buildings["non_residential_sqft"][
-        buildings.building_type_id.isin([15, 16])] = 0
-    buildings["building_sqft"][buildings.building_type_id.isin([15, 16])] = 0
-    buildings["zone_id"] = misc.reindex(parcels.zone_id, buildings.parcel_id)
-
-    # we need to do a new assignment from the controls to the buildings
-
-    # first disaggregate the job totals
-    sector_map = settings["naics_to_empsix"]
-    jobs = []
-    for taz, row in baseyear_taz_controls.local.iterrows():
-        for sector_col, num in row.iteritems():
-
-            # not a sector total
-            if not sector_col.startswith("emp_sec"):
-                continue
-
-            # get integer sector id
-            sector_id = int(''.join(c for c in sector_col if c.isdigit()))
-            sector_name = sector_map[sector_id]
-
-            jobs += [[sector_id, sector_name, taz, -1]] * num
-
-    # df is now the
-    df = pd.DataFrame(jobs, columns=[
-        'sector_id', 'empsix', 'taz', 'building_id'])
-
-    # just do random assignment weighted by job spaces - we'll then
-    # fill in the job_spaces if overfilled in the next step (code
-    # has existed in urbansim for a while)
-    for taz, cnt in df.groupby('taz').size().iteritems():
-
-        potential_add_locations = buildings.non_residential_sqft[
-            (buildings.zone_id == taz) &
-            (buildings.non_residential_sqft > 0)]
-
-        if len(potential_add_locations) == 0:
-            # if no non-res buildings, put jobs in res buildings
-            potential_add_locations = buildings.building_sqft[
-                buildings.zone_id == taz]
-
-        weights = potential_add_locations / potential_add_locations.sum()
-
-        print taz, len(potential_add_locations),\
-            potential_add_locations.sum(), cnt
-
-        buildings_ids = potential_add_locations.sample(
-            cnt, replace=True, weights=weights)
-
-        df["building_id"][df.taz == taz] = buildings_ids.index.values
-
-    s = buildings.zone_id.loc[df.building_id].value_counts()
-    t = baseyear_taz_controls.emp_tot - s
-    # assert we matched the totals exactly
-    assert t.sum() == 0
-
-    store['jobs_urbansim_allocated'] = df
 
 
 @orca.table(cache=True)
