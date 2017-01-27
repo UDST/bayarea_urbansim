@@ -119,6 +119,25 @@ def landmarks():
                        index_col="name")
 
 
+def move_jobs_from_portola_to_san_mateo_county(parcels, buildings, jobs_df):
+    # need to move jobs from portola valley to san mateo county
+    NUM_IN_PORTOLA = 1500
+
+    jobs_df["parcel_id"] = misc.reindex(buildings.parcel_id,
+                                        jobs_df.building_id)
+    jobs_df["juris"] = misc.reindex(parcels.juris, jobs_df.parcel_id)
+
+    portola = jobs_df[jobs_df.juris == "Portola Valley"]
+    move = portola.sample(len(portola) - NUM_IN_PORTOLA)
+
+    san_mateo = jobs_df[jobs_df.juris == "San Mateo County"]
+    move_to = san_mateo.sample(len(move))
+
+    jobs_df.loc[move.index, "building_id"] = move_to.building_id.values
+
+    return jobs_df
+
+
 @orca.table(cache=True)
 def jobs(store, parcels, recompute_cached_tables):
 
@@ -136,27 +155,8 @@ def jobs(store, parcels, recompute_cached_tables):
     # use the orca buildings table it depends on jobs so in jobs we can't
     # depend on buildings
     buildings = store.buildings
-
-    # need to move jobs from portola valley to san mateo county
-    jobs_df["parcel_id"] = misc.reindex(buildings.parcel_id,
-                                        jobs_df.building_id)
-    jobs_df["juris"] = misc.reindex(parcels.juris, jobs_df.parcel_id)
-
-    portola = jobs_df[jobs_df.juris == "Portola Valley"]
-    num_keep = 1500
-    move = portola.sample(len(portola) - num_keep)
-
-    san_mateo = jobs_df[jobs_df.juris == "San Mateo County"]
-    move_to = san_mateo.sample(len(move))
-
-    jobs_df.loc[move.index, "building_id"] = move_to.building_id.values
-
-    jobs_df["parcel_id"] = misc.reindex(buildings.parcel_id,
-                                        jobs_df.building_id)
-    jobs_df["juris"] = misc.reindex(parcels.juris, jobs_df.parcel_id)
-
-    del jobs_df["parcel_id"]
-    del jobs_df["juris"]
+    jobs_df = move_jobs_from_portola_to_san_mateo_county(
+        parcels, buildings, jobs_df)
 
     store['jobs_cached'] = jobs_df
 
@@ -199,26 +199,17 @@ def costar(store, parcels):
 def zoning_lookup():
     df = pd.read_csv(os.path.join(misc.data_dir(), "zoning_lookup.csv"))
     # this part is a bit strange - we do string matching on the names of zoning
-    # in order ot link parcels and zoning and some of the strings have small
+    # in order to link parcels and zoning and some of the strings have small
     # differences, so we copy the row and have different strings for the same
     # lookup row.  for now we drop duplicates of the id field in order to run
     # in urbansim (all the attributes of rows that share an id are the same -
     # only the name is different)
-    df = df.drop_duplicates(subset='id').set_index('id')
-    return df
-
-
-@orca.table('zoning_table_city_lookup', cache=True)
-def zoning_table_city_lookup():
-    df = pd.read_csv(os.path.join(misc.data_dir(),
-                     "zoning_table_city_lookup.csv"),
-                     index_col="juris")
-    return df
+    return df.drop_duplicates(subset='id').set_index('id')
 
 
 # zoning for use in the "baseline" scenario
 # comes in the hdf5
-@orca.table('zoning_baseline', cache=True)
+@orca.table(cache=True)
 def zoning_baseline(parcels, zoning_lookup, settings):
     df = pd.read_csv(os.path.join(misc.data_dir(),
                      "2015_12_21_zoning_parcels.csv"),
@@ -240,7 +231,7 @@ def new_tpp_id():
                        index_col="parcel_id")
 
 
-@orca.table('zoning_scenario', cache=True)
+@orca.table(cache=True)
 def zoning_scenario(parcels_geography, scenario, settings):
 
     scenario_zoning = pd.read_csv(
@@ -263,44 +254,12 @@ def zoning_scenario(parcels_geography, scenario, settings):
                     how='left').set_index('parcel_id')
 
 
-# this is really bizarre, but the parcel table I have right now has empty
-# zone_ids for a few parcels.  Not enough to worry about so just filling with
-# the mode
-@orca.table('parcels', cache=True)
-def parcels(store, recompute_cached_tables):
-
-    if 'parcels_cached' in store and not recompute_cached_tables:
-        return store['parcels_cached']
-
-    df = store['parcels']
-    df["zone_id"] = df.zone_id.replace(0, 1)
-
-    cfg = {
-        "fill_nas": {
-            "zone_id": {
-                "how": "mode",
-                "type": "int"
-            },
-            "shape_area": {
-                "how": "median",
-                "type": "float"
-            }
-        }
-    }
-    df = utils.table_reprocess(cfg, df)
-
-    # have to do it this way because otherwise it's a circular reference
-    sdem = pd.read_csv(os.path.join(misc.data_dir(),
-                                    "development_projects.csv"))
-    # mark parcels that are going to be developed by the sdem
-    df["sdem"] = df.geom_id.isin(sdem.geom_id).astype('int')
-
-    store['parcels_cached'] = df
-
-    return df
+@orca.table(cache=True)
+def parcels(store):
+    return store['parcels']
 
 
-@orca.table('parcels_zoning_calculations', cache=True)
+@orca.table(cache=True)
 def parcels_zoning_calculations(parcels):
     return pd.DataFrame(data=parcels.to_frame(
                         columns=['geom_id',
@@ -308,7 +267,7 @@ def parcels_zoning_calculations(parcels):
                         index=parcels.index)
 
 
-@orca.table('taz')
+@orca.table()
 def taz(zones):
     return zones
 
@@ -433,7 +392,7 @@ def development_projects(parcels, settings, scenario):
     return df
 
 
-@orca.table('households', cache=True)
+@orca.table(cache=True)
 def households(store, settings, parcels_geography, recompute_cached_tables):
 
     if 'households_cached' in store and not recompute_cached_tables:
@@ -470,7 +429,7 @@ def households(store, settings, parcels_geography, recompute_cached_tables):
     return df
 
 
-@orca.table('buildings', cache=True)
+@orca.table(cache=True)
 def buildings(store, parcels, households, jobs, building_sqft_per_job,
               settings, manual_edits, recompute_cached_tables):
 
@@ -557,14 +516,14 @@ def buildings(store, parcels, households, jobs, building_sqft_per_job,
     return df
 
 
-@orca.table('household_controls_unstacked', cache=True)
+@orca.table(cache=True)
 def household_controls_unstacked():
     df = pd.read_csv(os.path.join(misc.data_dir(), "household_controls.csv"))
     return df.set_index('year')
 
 
 # the following overrides household_controls table defined in urbansim_defaults
-@orca.table('household_controls', cache=True)
+@orca.table(cache=True)
 def household_controls(household_controls_unstacked):
     df = household_controls_unstacked.to_frame()
     # rename to match legacy table
@@ -584,7 +543,7 @@ def employment_controls_unstacked():
 
 # the following overrides employment_controls
 # table defined in urbansim_defaults
-@orca.table('employment_controls', cache=True)
+@orca.table(cache=True)
 def employment_controls(employment_controls_unstacked):
     df = employment_controls_unstacked.to_frame()
     # rename to match legacy table
@@ -596,7 +555,7 @@ def employment_controls(employment_controls_unstacked):
     return df
 
 
-@orca.table('zone_forecast_inputs', cache=True)
+@orca.table(cache=True)
 def zone_forecast_inputs():
     return pd.read_csv(os.path.join(misc.data_dir(),
                                     "zone_forecast_inputs.csv"),
@@ -605,7 +564,7 @@ def zone_forecast_inputs():
 
 # this is the set of categories by zone of sending and receiving zones
 # in terms of vmt fees
-@orca.table("vmt_fee_categories", cache=True)
+@orca.table(cache=True)
 def vmt_fee_categories():
     return pd.read_csv(os.path.join(misc.data_dir(), "vmt_fee_zonecats.csv"),
                        index_col="taz")
@@ -622,7 +581,7 @@ def abag_targets():
     return pd.read_csv(os.path.join(misc.data_dir(), "abag_targets.csv"))
 
 
-@orca.table('taz_geography', cache=True)
+@orca.table(cache=True)
 def taz_geography(superdistricts):
     tg = pd.read_csv(os.path.join(misc.data_dir(),
                      "taz_geography.csv"), index_col="zone")
@@ -638,13 +597,9 @@ def taz_geography(superdistricts):
 
 
 # these are shapes - "zones" in the bay area
-
-
-@orca.table('zones', cache=True)
+@orca.table(cache=True)
 def zones(store):
-    df = store['zones']
-    df = df.sort_index()
-    return df
+    return store['zones'].sort_index()
 
 
 # this specifies the relationships between tables

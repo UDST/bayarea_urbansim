@@ -296,6 +296,11 @@ def retail_ratio(nodes):
 
 
 @orca.column('parcels')
+def sdem(development_projects, parcels):
+    return parcels.geom_id.isin(development_projects.geom_id).astype('int')
+
+
+@orca.column('parcels')
 def retail_ratio(parcels, nodes):
     return misc.reindex(nodes.retail_ratio, parcels.node_id)
 
