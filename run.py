@@ -38,6 +38,9 @@ orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 
 parser = argparse.ArgumentParser(description='Run UrbanSim models.')
 
+parser.add_argument('-c', action='store_true', dest='console',
+                    help='run from the console (logs to stdout), no slack or maps')
+
 parser.add_argument('-i', action='store_true', dest='interactive',
                     help='enter interactive mode after imports')
 
@@ -51,6 +54,9 @@ parser.add_argument('--disable-slack', action='store_true', dest='noslack',
                     help='disable slack outputs')
 
 options = parser.parse_args()
+
+if options.console:
+    SLACK = MAPS = LOGS = False
 
 if options.interactive:
     SLACK = MAPS = LOGS = False
@@ -164,9 +170,15 @@ def get_simulation_models(SCENARIO):
 
 def run_models(MODE, SCENARIO):
 
-    # orca.run(["correct_baseyear_data"])
+    if MODE == "preprocessing":
 
-    if MODE == "simulation":
+        orca.run([
+            "preproc_jobs",
+            "preproc_households",
+            "preproc_buildings"
+        ])
+
+    elif MODE == "simulation":
 
         years_to_run = range(IN_YEAR, OUT_YEAR+1, EVERY_NTH_YEAR)
         models = get_simulation_models(SCENARIO)

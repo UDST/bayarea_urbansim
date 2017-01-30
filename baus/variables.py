@@ -86,7 +86,7 @@ def empsix_id(jobs, settings):
 
 # I want to round this cause otherwise we'll be underfilling job spaces
 # in the aggregate because of rounding errors - this way some spaces will
-# be underfilled and othersoverfilled which should yield an average of
+# be underfilled and others overfilled which should yield an average of
 # the sqft_per_job table
 @orca.column('buildings', 'job_spaces', cache=False)
 def job_spaces(buildings, superdistricts, taz):
