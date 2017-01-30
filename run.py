@@ -6,19 +6,18 @@ from baus import models
 import pandas as pd
 import orca
 import socket
+import argparse
 import warnings
 from baus.utils import compare_summary
 from scripts.check_feedback import check_feedback
 
 warnings.filterwarnings("ignore")
 
-args = sys.argv[1:]
-
 SLACK = MAPS = "URBANSIM_SLACK" in os.environ
 LOGS = True
 INTERACT = False
 SCENARIO = None
-MODE = "estimation"
+MODE = "simulation"
 S3 = False
 EVERY_NTH_YEAR = 5
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
@@ -37,12 +36,34 @@ LAST_KNOWN_GOOD_RUNS = {
 
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 
-if len(args) and args[0] == "-i":
+parser = argparse.ArgumentParser(description='Run UrbanSim models.')
+
+parser.add_argument('-i', action='store_true', dest='interactive',
+                    help='enter interactive mode after imports')
+
+parser.add_argument('-s', action='store', dest='scenario',
+                    help='specify which scenario to run')
+
+parser.add_argument('--mode', action='store', dest='mode',
+                    help='which mode to run (see code for mode options)')
+
+parser.add_argument('--disable-slack', action='store_true', dest='noslack',
+                    help='disable slack outputs')
+
+options = parser.parse_args()
+
+if options.interactive:
     SLACK = MAPS = LOGS = False
     INTERACT = True
 
-if len(args) and args[0] == "-s":
-    orca.add_injectable("scenario", args[1])
+if options.scenario:
+    orca.add_injectable("scenario", options.scenario)
+
+if options.mode:
+    MODE = options.mode
+
+if options.noslack:
+    SLACK = False
 
 SCENARIO = orca.get_injectable("scenario")
 
