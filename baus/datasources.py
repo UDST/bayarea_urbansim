@@ -82,6 +82,7 @@ def limits_settings(settings, scenario):
 @orca.injectable(cache=True)
 def inclusionary_housing_settings(settings, scenario):
     # for inclustionary housing, each scenario is different
+    # there is no inheritance
 
     s = settings['inclusionary_housing_settings']
 
@@ -100,7 +101,7 @@ def inclusionary_housing_settings(settings, scenario):
         print "Setting inclusionary rates for %d cities to %.2f" %\
             (len(item["values"]), item["amount"])
         # this is a list of inclusionary rates and the cities they apply
-        # to - need to turn it in a map of city names to rates
+        # to - need tro turn it in a map of city names to rates
         for juris in item["values"]:
             d[juris] = item["amount"]
 
@@ -153,12 +154,11 @@ def costar(store, parcels):
 
 @orca.table(cache=True)
 def zoning_lookup():
-    df = pd.read_csv(os.path.join(misc.data_dir(), "zoning_lookup.csv"),
-                     index_col='id')
+    return pd.read_csv(os.path.join(misc.data_dir(), "zoning_lookup.csv"),
+                       index_col='id')
 
 
 # zoning for use in the "baseline" scenario
-# comes in the hdf5
 @orca.table(cache=True)
 def zoning_baseline(parcels, zoning_lookup, settings):
     df = pd.read_csv(os.path.join(misc.data_dir(),
@@ -185,9 +185,7 @@ def new_tpp_id():
 def zoning_scenario(parcels_geography, scenario, settings):
 
     scenario_zoning = pd.read_csv(
-        os.path.join(misc.data_dir(),
-                     'zoning_mods_%s.csv' % scenario),
-        dtype={'jurisdiction': 'str'})
+        os.path.join(misc.data_dir(), 'zoning_mods_%s.csv' % scenario))
 
     d = {k: "type%d" % v for k, v in settings["building_type_map2"].items()}
 
@@ -211,10 +209,7 @@ def parcels(store):
 
 @orca.table(cache=True)
 def parcels_zoning_calculations(parcels):
-    return pd.DataFrame(data=parcels.to_frame(
-                        columns=['geom_id',
-                                 'total_residential_units']),
-                        index=parcels.index)
+    return pd.DataFrame(index=parcels.index)
 
 
 @orca.table()
@@ -230,19 +225,21 @@ def parcel_rejections():
 
 @orca.table(cache=True)
 def parcels_geography(parcels):
-    df = pd.read_csv(os.path.join(misc.data_dir(),
-                                  "02_01_2016_parcels_geography.csv"),
-                     index_col="geom_id", dtype={'jurisdiction': 'str'})
+    df = pd.read_csv(
+        os.path.join(misc.data_dir(), "02_01_2016_parcels_geography.csv"),
+        index_col="geom_id")
     df = geom_id_to_parcel_id(df, parcels)
 
-    juris_name = pd.read_csv(os.path.join(misc.data_dir(),
-                                          "census_id_to_name.csv"),
-                             index_col="census_id").name10
+    # this will be used to map juris id to name
+    juris_name = pd.read_csv(
+        os.path.join(misc.data_dir(),"census_id_to_name.csv"),
+        index_col="census_id").name10
 
     df["juris_name"] = df.jurisdiction_id.map(juris_name)
 
     df["pda_id"] = df.pda_id.str.lower()
 
+    # danville wasn't supposed to be a pda
     df["pda_id"] = df.pda_id.replace("dan1", np.nan)
 
     return df

@@ -71,8 +71,8 @@ def move_jobs_from_portola_to_san_mateo_county(parcels, buildings, jobs_df):
     # need to move jobs from portola valley to san mateo county
     NUM_IN_PORTOLA = 1500
 
-    juris = misc.reindex(parcels.juris,
-        misc.reindex(buildings.parcel_id, jobs_df.building_id))
+    juris = misc.reindex(
+        parcels.juris, misc.reindex(buildings.parcel_id, jobs_df.building_id))
 
     # find jobs in portols valley to move
     portola = jobs_df[juris == "Portola Valley"]
@@ -83,7 +83,7 @@ def move_jobs_from_portola_to_san_mateo_county(parcels, buildings, jobs_df):
     move_to = san_mateo.sample(len(move))
 
     jobs_df.loc[move.index, "building_id"] = move_to.building_id.values
-    
+
     return jobs_df
 
 
