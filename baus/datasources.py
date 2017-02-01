@@ -188,13 +188,13 @@ def zoning_scenario(parcels_geography, scenario, settings):
 
     def add_drop_helper(col, val):
         for ind, item in scenario_zoning[col].iteritems():
+            if not isinstance(item, str): continue
+            print item
             for btype in item.split():
-                scenario_zoning.loc[ind][btype] = val
+                scenario_zoning.loc[ind, btype] = val
 
     add_drop_helper("add_bldg", 1)
     add_drop_helper("drop_bldg", 0)
-
-    print scenario_zoning
 
     return pd.merge(parcels_geography.to_frame().reset_index(),
                     scenario_zoning,
@@ -327,7 +327,7 @@ def development_projects(parcels, settings, scenario):
     df["geom_id"] = geom_id.values  # add it back again cause it goes away
 
     # we don't predict prices for schools and hotels right now
-    df = df.query("building_type_id <= 4 or building_type_id >= 7")
+    df = df[~df.building_type.isin(["SC", "HO"])]
 
     df["deed_restricted_units"] = 0
 

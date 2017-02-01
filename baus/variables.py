@@ -258,7 +258,7 @@ def sqft_per_unit(buildings):
 def modern_condo(buildings):
     # this is to try and differentiate between new construction
     # in the city vs in the burbs
-    return ((buildings.year_built > 2000) * (buildings.building_type_id == 3))\
+    return ((buildings.year_built > 2000) * (buildings.building_type == "HM"))\
         .astype('int')
 
 
@@ -497,20 +497,20 @@ def parcel_is_allowed(form):
     return allowed.astype("bool")
 
 
-@orca.column('parcels', 'first_building_type_id')
-def first_building_type_id(buildings, parcels):
-    df = buildings.to_frame(
-        columns=['building_type_id', 'parcel_id'])
-    return df.groupby('parcel_id').building_type_id.first()
+@orca.column('parcels')
+def first_building_type(buildings, parcels):
+    df = buildings.to_frame(columns=['building_type', 'parcel_id'])
+    return df.groupby('parcel_id').building_type.first()
 
 
-@orca.injectable('parcel_first_building_type_is', autocall=False)
+@orca.injectable(autocall=False)
 def parcel_first_building_type_is(form):
     settings = orca.get_injectable('settings')
     form_to_btype = settings["form_to_btype"]
     parcels = orca.get_table('parcels')
-    s = parcels.first_building_type_id.isin(form_to_btype[form])
+    s = parcels.first_building_type.isin(form_to_btype[form])
     return s
+
 
 #############################
 # Summary by TAZ for
@@ -550,7 +550,7 @@ def shpop62p(zone_forecast_inputs):
 @orca.table('buildings_subset')
 def buildings_subset(buildings):
     df = buildings.to_frame(columns=['zone_id',
-                                     'building_type_id',
+                                     'building_type',
                                      'residential_units',
                                      'building_sqft',
                                      'lot_size_per_unit'])
@@ -575,7 +575,7 @@ def resunits(buildings_subset):
 @orca.column('taz', 'mfdu')
 def mfdu(buildings_subset):
     df = buildings_subset.to_frame()
-    s = df.query("building_type_id == 3 or building_type_id == 12").\
+    s = df.query("building_type == 'HM' or building_type == 'MR'").\
         groupby('zone_id').residential_units.sum()
     return s
 
@@ -583,7 +583,7 @@ def mfdu(buildings_subset):
 @orca.column('taz', 'sfdu')
 def sfdu(buildings_subset):
     df = buildings_subset.to_frame()
-    s = df.query("building_type_id == 1 or building_type_id == 2").\
+    s = df.query("building_type == 'HS' or building_type == 'HT'").\
         groupby('zone_id').residential_units.sum()
     return s
 

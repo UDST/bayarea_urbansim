@@ -354,10 +354,10 @@ def scheduled_development_events(buildings, development_projects,
         buildings, dps,
         remove_developed_buildings=False,
         unplace_agents=['households', 'jobs'])
-    new_buildings["form"] = new_buildings.building_type_id.map(
+    new_buildings["form"] = new_buildings.building_type.map(
         settings['building_type_map']).str.lower()
     new_buildings["job_spaces"] = new_buildings.non_residential_sqft / \
-        new_buildings.building_type_id.fillna(-1).map(building_sqft_per_job)
+        new_buildings.building_type.fillna(-1).map(building_sqft_per_job)
     new_buildings["job_spaces"] = new_buildings.job_spaces.astype('int')
     new_buildings["geom_id"] = parcel_id_to_geom_id(new_buildings.parcel_id)
     new_buildings["SDEM"] = True
@@ -393,7 +393,7 @@ def supply_and_demand_multiplier_func(demand, supply):
 
 # this if the function for mapping a specific building that we build to a
 # specific building type
-@orca.injectable("form_to_btype_func", autocall=False)
+@orca.injectable(autocall=False)
 def form_to_btype_func(building):
     settings = orca.get_injectable('settings')
     form = building.form
@@ -401,15 +401,15 @@ def form_to_btype_func(building):
     # precise mapping of form to building type for residential
     if form is None or form == "residential":
         if dua < 16:
-            return 1
+            return "HS"
         elif dua < 32:
-            return 2
-        return 3
+            return "HT"
+        return "HM"
     return settings["form_to_btype"][form][0]
 
 
-@orca.injectable("add_extra_columns_func", autocall=False)
-def add_extra_columns(df):
+@orca.injectable(autocall=False)
+def add_extra_columns_func(df):
     for col in ["residential_price", "non_residential_price"]:
         df[col] = 0
 
@@ -432,9 +432,9 @@ def add_extra_columns(df):
         df["year_built"] = orca.get_injectable("year")
 
     if "form_to_btype_func" in orca.orca._INJECTABLES and \
-            "building_type_id" not in df:
+            "building_type" not in df:
         form_to_btype_func = orca.get_injectable("form_to_btype_func")
-        df["building_type_id"] = df.apply(form_to_btype_func, axis=1)
+        df["building_type"] = df.apply(form_to_btype_func, axis=1)
 
     return df
 
@@ -808,7 +808,7 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
     new_buildings["residential_sqft"] = 0
     new_buildings["building_sqft"] = new_buildings.non_residential_sqft
     new_buildings["stories"] = 1
-    new_buildings["building_type_id"] = 10
+    new_buildings["building_type"] = "RB"
 
     # this is a fairly arbitrary rule, but we're only adding ground floor
     # retail in areas that are underserved right now - this is defined as
