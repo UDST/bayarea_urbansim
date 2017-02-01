@@ -188,8 +188,8 @@ def zoning_scenario(parcels_geography, scenario, settings):
 
     def add_drop_helper(col, val):
         for ind, item in scenario_zoning[col].iteritems():
-            if not isinstance(item, str): continue
-            print item
+            if not isinstance(item, str):
+                continue
             for btype in item.split():
                 scenario_zoning.loc[ind, btype] = val
 
@@ -232,7 +232,7 @@ def parcels_geography(parcels):
 
     # this will be used to map juris id to name
     juris_name = pd.read_csv(
-        os.path.join(misc.data_dir(),"census_id_to_name.csv"),
+        os.path.join(misc.data_dir(), "census_id_to_name.csv"),
         index_col="census_id").name10
 
     df["juris_name"] = df.jurisdiction_id.map(juris_name)
@@ -330,6 +330,7 @@ def development_projects(parcels, settings, scenario):
     df = df[~df.building_type.isin(["SC", "HO"])]
 
     df["deed_restricted_units"] = 0
+    df["redfin_sale_price"] = np.nan
 
     print "Describe of development projects"
     print df[orca.get_table('buildings').local_columns].describe()
@@ -337,19 +338,27 @@ def development_projects(parcels, settings, scenario):
     return df
 
 
+def print_error_if_not_available(store, table):
+    if table not in store:
+        raise Exception(
+            "%s not found in store - you need to preprocess" % table +
+            " the data with:\n  python run.py --mode preprocessing -c")
+    return store[table]
+
+
 @orca.table(cache=True)
 def jobs(store):
-    return store['jobs_preproc']
+    return print_error_if_not_available(store, 'jobs_preproc')
 
 
 @orca.table(cache=True)
 def households(store):
-    return store['households_preproc']
+    return print_error_if_not_available(store, 'households_preproc')
 
 
 @orca.table(cache=True)
 def buildings(store):
-    return store['buildings_preproc']
+    return print_error_if_not_available(store, 'buildings_preproc')
 
 
 @orca.table(cache=True)

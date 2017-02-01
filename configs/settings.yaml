@@ -657,7 +657,6 @@ empsix_name_to_id:
 # this maps building type ids to general building types
 # basically just reduces dimensionality
 building_type_map:
-  O: Other
   HS: Residential
   HT: Residential
   HM: Residential
@@ -714,7 +713,6 @@ form_to_btype:
     - MR
 
 building_sqft_per_job:
-  O: 400
   HS: 400
   HT: 400
   HM: 400

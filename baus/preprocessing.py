@@ -289,6 +289,28 @@ def preproc_buildings(store, parcels, manual_edits):
         "one": df.building_sqft,
         "two": df.residential_sqft + df.non_residential_sqft}).max(axis=1)
 
+    df["building_type"] = df.building_type_id.map({
+      0: "O",
+      1: "HS",
+      2: "HT",
+      3: "HM",
+      4: "OF",
+      5: "HO",
+      6: "SC",
+      7: "IL",
+      8: "IW",
+      9: "IH",
+      10: "RS",
+      11: "RB",
+      12: "MR",
+      13: "MT",
+      14: "ME",
+      15: "PA",
+      16: "PA2"
+    })
+
+    del df["building_type_id"]  # we won't use building type ids anymore
+
     # keeps parking lots from getting redeveloped
     df["building_sqft"][df.building_type.isin(["PA", "PA2"])] = 0
     df["non_residential_sqft"][df.building_type.isin(["PA", "PA2"])] = 0

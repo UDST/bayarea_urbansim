@@ -47,7 +47,7 @@ parser.add_argument('-i', action='store_true', dest='interactive',
 parser.add_argument('-s', action='store', dest='scenario',
                     help='specify which scenario to run')
 
-parser.add_argument('-y', action='store', dest='out_year',
+parser.add_argument('-y', action='store', dest='out_year', type=int,
                     help='The year to which to run the simualtion.')
 
 parser.add_argument('--mode', action='store', dest='mode',

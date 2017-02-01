@@ -84,6 +84,16 @@ def empsix_id(jobs, settings):
 #####################
 
 
+@orca.column('buildings', 'general_type', cache=True)
+def general_type(buildings, building_type_map):
+    return buildings.building_type.map(building_type_map)
+
+
+@orca.column('buildings', 'sqft_per_job', cache=True)
+def sqft_per_job(buildings, building_sqft_per_job):
+    return buildings.building_type.fillna("O").map(building_sqft_per_job)
+
+
 # I want to round this cause otherwise we'll be underfilling job spaces
 # in the aggregate because of rounding errors - this way some spaces will
 # be underfilled and others overfilled which should yield an average of
@@ -459,42 +469,36 @@ def residential_sales_price_sqft(parcel_sales_price_sqft_func):
 
 @orca.injectable('parcel_is_allowed_func', autocall=False)
 def parcel_is_allowed(form):
-    settings = orca.get_injectable('settings')
+    settings = orca.get_injectable("settings")
     form_to_btype = settings["form_to_btype"]
+
     # we have zoning by building type but want
     # to know if specific forms are allowed
-    allowed = [orca.get_table('zoning_baseline')
-               ['type%d' % typ] > 0 for typ in form_to_btype[form]]
+    zoning_baseline = orca.get_table("zoning_baseline")
+    zoning_scenario = orca.get_table("zoning_scenario")
 
-    if orca.get_injectable("scenario") == "baseline":
-        return pd.concat(allowed, axis=1).max(axis=1).\
-            reindex(orca.get_table('parcels').index).fillna(False)
+    allowed = pd.Series(False, index=zoning_baseline.index)
 
-    # also check if the scenario based zoning adds the building type
-    allowed2 = [orca.get_table('zoning_scenario')
-                ['add-type%d' % typ] > 0 for typ in form_to_btype[form]]
+    # first, it's allowed if any building type that matches
+    # the form is allowed 
+    for typ in form_to_btype[form]:
+        allowed |= zoning_baseline[typ]
 
-    allowed = allowed + allowed2
+    # then we override it with any values that are specified in the scenarios
+    # i.e. they come from the add_bldg and drop_bldg columns
+    for typ in form_to_btype[form]:
+        allowed = zoning_scenario[typ].fillna(allowed)
 
-    allowed = pd.concat(allowed, axis=1).max(axis=1).\
-        reindex(orca.get_table('parcels').index).fillna(False)
+    # notice there is some dependence on ordering here.  basically values take
+    # precedent that occur LAST in the form_to_btype mapping
 
-    # also check if the scenario based zoning drops the building type
-    # NOTE THAT DROPPING OVERRIDES ADDING!
-    disallowed = [orca.get_table('zoning_scenario')
-                  ['drop-type%d' % typ] > 0 for typ in form_to_btype[form]]
-
-    disallowed = pd.concat(disallowed, axis=1).max(axis=1).\
-        reindex(orca.get_table('parcels').index).fillna(False)
-
-    allowed = allowed.astype('bool') & ~disallowed
-
-    settings = orca.get_injectable("settings")
+    # this is a fun modification - when we get too much retail in jurisdictions
+    # we can just eliminate them all
     if "eliminate_retail_zoning_from_juris" in settings and form == "retail":
         allowed *= ~orca.get_table("parcels").juris.isin(
             settings["eliminate_retail_zoning_from_juris"])
 
-    return allowed.astype("bool")
+    return allowed
 
 
 @orca.column('parcels')
