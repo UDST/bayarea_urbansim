@@ -682,43 +682,24 @@ empsix_name_to_id:
 # this maps building type ids to general building types
 # basically just reduces dimensionality
 building_type_map:
-  0: Other
-  1: Residential
-  2: Residential
-  3: Residential
-  4: Office
-  5: Hotel
-  6: School
-  7: Industrial
-  8: Industrial
-  9: Industrial
-  10: Retail
-  11: Retail
-  12: Residential
-  13: Retail
-  14: Office
-  15: Parking
-  16: Parking
-
-
-building_type_map2:
-  O: 0
-  HS: 1
-  HT: 2
-  HM: 3
-  OF: 4
-  HO: 5
-  SC: 6
-  IL: 7
-  IW: 8
-  IH: 9
-  RS: 10
-  RB: 11
-  MR: 12
-  MT: 13
-  ME: 14
-  PA: 15
-  PA2: 16
+  O: Other
+  HS: Residential
+  HT: Residential
+  HM: Residential
+  OF: Office
+  HO: Hotel
+  SC: School
+  IL: Industrial
+  IW: Industrial
+  IH: Industrial
+  RS: Retail
+  RB: Retail
+  MR: Residential
+  MT: Retail
+  ME: Office
+  PA: Parking
+  PA2: Parking
+  
 
 # this maps building "forms" from the developer model
 # to building types so that when the developer builds a

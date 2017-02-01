@@ -168,10 +168,6 @@ def zoning_baseline(parcels, zoning_lookup, settings):
                   left_on="zoning_id", right_index=True)
     df = geom_id_to_parcel_id(df, parcels)
 
-    # change column names
-    d = {k: "type%d" % v for k, v in settings["building_type_map2"].items()}
-    df.columns = [d.get(x, x) for x in df.columns]
-
     return df
 
 
@@ -187,14 +183,18 @@ def zoning_scenario(parcels_geography, scenario, settings):
     scenario_zoning = pd.read_csv(
         os.path.join(misc.data_dir(), 'zoning_mods_%s.csv' % scenario))
 
-    d = {k: "type%d" % v for k, v in settings["building_type_map2"].items()}
+    for k in settings["building_type_map"].keys():
+        scenario_zoning[k] = np.nan
 
-    for k, v in d.items():
-        scenario_zoning['add-'+v] = scenario_zoning.add_bldg.str.contains(k)
+    def add_drop_helper(col, val):
+        for ind, item in scenario_zoning[col].iteritems():
+            for btype in item.split():
+                scenario_zoning.loc[ind][btype] = val
 
-    for k, v in d.items():
-        scenario_zoning['drop-'+v] = scenario_zoning.drop_bldg.\
-            astype(str).str.contains(k)
+    add_drop_helper("add_bldg", 1)
+    add_drop_helper("drop_bldg", 0)
+
+    print scenario_zoning
 
     return pd.merge(parcels_geography.to_frame().reset_index(),
                     scenario_zoning,
@@ -313,8 +313,6 @@ def development_projects(parcels, settings, scenario):
     df["building_type"] = df.building_type.replace("HP", "OF")
     df["building_type"] = df.building_type.replace("GV", "OF")
     df["building_type"] = df.building_type.replace("SC", "OF")
-    df["building_type_id"] = \
-        df.building_type.map(settings["building_type_map2"])
 
     df = df.dropna(subset=["geom_id"])  # need a geom_id to link to parcel_id
 
