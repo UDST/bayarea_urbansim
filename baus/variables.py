@@ -205,6 +205,9 @@ def building_age(buildings, year):
     return (year or 2014) - buildings.year_built
 
 
+BUILDING_AGE_BREAK = 40
+
+
 @orca.column('buildings', cache=True)
 def building_age_recent(buildings):
     s = buildings.building_age
@@ -476,18 +479,19 @@ def parcel_is_allowed(form):
     # to know if specific forms are allowed
     zoning_baseline = orca.get_table("zoning_baseline")
     zoning_scenario = orca.get_table("zoning_scenario")
+    parcels = orca.get_table("parcels")
 
-    allowed = pd.Series(False, index=zoning_baseline.index)
+    allowed = pd.Series(0, index=parcels.index)
 
     # first, it's allowed if any building type that matches
-    # the form is allowed 
+    # the form is allowed
     for typ in form_to_btype[form]:
         allowed |= zoning_baseline[typ]
 
     # then we override it with any values that are specified in the scenarios
     # i.e. they come from the add_bldg and drop_bldg columns
     for typ in form_to_btype[form]:
-        allowed = zoning_scenario[typ].fillna(allowed)
+        allowed = zoning_scenario[typ].combine_first(allowed)
 
     # notice there is some dependence on ordering here.  basically values take
     # precedent that occur LAST in the form_to_btype mapping
@@ -498,7 +502,7 @@ def parcel_is_allowed(form):
         allowed *= ~orca.get_table("parcels").juris.isin(
             settings["eliminate_retail_zoning_from_juris"])
 
-    return allowed
+    return allowed.astype("bool")
 
 
 @orca.column('parcels')
@@ -928,12 +932,12 @@ def residential_purchase_price_sqft(parcels):
     return parcels.building_purchase_price_sqft
 
 
-@orca.column('parcels', 'residential_sales_price_sqft')
+@orca.column('parcels')
 def residential_sales_price_sqft(parcel_sales_price_sqft_func):
     return parcel_sales_price_sqft_func("residential")
 
 
-@orca.column('parcels', 'general_type')
+@orca.column('parcels')
 def general_type(parcels, buildings):
     s = buildings.general_type.groupby(buildings.parcel_id).first()
     return s.reindex(parcels.index).fillna("Vacant")

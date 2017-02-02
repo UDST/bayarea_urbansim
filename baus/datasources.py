@@ -255,7 +255,7 @@ def reprocess_dev_projects(df):
     # record, we change the later ones to add records - we don't want to
     # constantly be redeveloping projects, but it's a common error for users
     # to make in their development project configuration
-    df = df.sort(["geom_id", "year_built"])
+    df = df.sort_values(["geom_id", "year_built"])
     prev_geom_id = None
     for index, rec in df.iterrows():
         if rec.geom_id == prev_geom_id:
@@ -313,6 +313,8 @@ def development_projects(parcels, settings, scenario):
     df["building_type"] = df.building_type.replace("HP", "OF")
     df["building_type"] = df.building_type.replace("GV", "OF")
     df["building_type"] = df.building_type.replace("SC", "OF")
+    building_types = settings["building_type_map"].keys()
+    df = df[df.building_type.isin(building_types)]
 
     df = df.dropna(subset=["geom_id"])  # need a geom_id to link to parcel_id
 

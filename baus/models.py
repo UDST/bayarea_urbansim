@@ -19,12 +19,12 @@ import numpy as np
 import pandas as pd
 
 
-@orca.step('rsh_estimate')
+@orca.step()
 def rsh_estimate(buildings, aggregations):
     return utils.hedonic_estimate("rsh.yaml", buildings, aggregations)
 
 
-@orca.step('rsh_simulate')
+@orca.step()
 def rsh_simulate(buildings, aggregations, settings):
     utils.hedonic_simulate("rsh.yaml", buildings, aggregations,
                            "residential_price")
@@ -65,6 +65,15 @@ def hlcm_simulate(households, buildings, aggregations, settings, low_income):
                        "building_id", "residential_units",
                        "vacant_market_rate_units_minus_structural_vacancy",
                        settings.get("enable_supply_correction", None))
+
+
+@orca.step('elcm_simulate')
+def elcm_simulate(jobs, buildings, aggregations):
+    buildings.local["non_residential_price"] = \
+        buildings.local.non_residential_price.fillna(0)
+    return utils.lcm_simulate("elcm.yaml", jobs, buildings, aggregations,
+                              "building_id", "job_spaces",
+                              "vacant_job_spaces")
 
 
 @orca.step('households_transition')
@@ -421,6 +430,7 @@ def add_extra_columns_func(df):
             df.deed_restricted_units.sum()
 
     df["redfin_sale_year"] = 2012
+    df["redfin_sale_price"] = np.nan
 
     if "residential_units" not in df:
         df["residential_units"] = 0
@@ -581,7 +591,7 @@ def retail_developer(jobs, buildings, parcels, nodes, feasibility,
 
     target = all_units * float(dev_settings['type_splits']["Retail"])
     # target here is in sqft
-    target *= settings["building_sqft_per_job"][10]
+    target *= settings["building_sqft_per_job"]["HS"]
 
     feasibility = feasibility.to_frame().loc[:, "retail"]
     feasibility = feasibility.dropna(subset=["max_profit"])
