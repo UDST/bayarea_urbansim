@@ -106,7 +106,7 @@ variable_definitions:
   - name: sfdu
     dataframe: buildings
     filters:
-    - building_type_id == 1
+    - building_type == 'HS'
     radius: 1500
     apply: np.log1p
 

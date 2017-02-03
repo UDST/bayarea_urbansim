@@ -374,7 +374,7 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
     buildings_df = orca.merge_tables(
         'buildings',
         [parcels, buildings],
-        columns=['pda', 'superdistrict', 'juris', 'building_type_id',
+        columns=['pda', 'superdistrict', 'juris', 'building_type',
                  'zone_id', 'residential_units', 'building_sqft',
                  'non_residential_sqft'])
 
@@ -430,10 +430,10 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
 
             # residential buildings by type
             summary_table['sfdu'] = buildings_df.\
-                query("building_type_id == 1 or building_type_id == 2").\
+                query("building_type == 'HS' or building_type == 'HT'").\
                 groupby(geography).residential_units.sum()
             summary_table['mfdu'] = buildings_df.\
-                query("building_type_id == 3 or building_type_id == 12").\
+                query("building_type == 'HM' or building_type == 'MR'").\
                 groupby(geography).residential_units.sum()
 
             # employees by sector
@@ -595,7 +595,7 @@ def parcel_summary(parcels, buildings, households, jobs,
         "x", "y",
         "total_residential_units",
         "total_job_spaces",
-        "first_building_type_id"
+        "first_building_type"
     ])
 
     df2 = parcels_zoning_calculations.to_frame([
@@ -642,7 +642,7 @@ def parcel_summary(parcels, buildings, households, jobs,
 
         for col in df.columns:
 
-            if col in ["x", "y", "first_building_type_id"]:
+            if col in ["x", "y", "first_building_type"]:
                 continue
 
             df[col] = df[col] - df2[col]

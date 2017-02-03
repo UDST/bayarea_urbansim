@@ -522,31 +522,6 @@ enable_supply_correction:
     iterations: 8
 
 
-table_reprocess:
-  jobs:
-    fill_nas:
-      empsix:
-        how: "mode"
-        type: "int"
-  buildings:
-    fill_nas:
-      building_type_id:
-        how: "drop"
-        type: "int"
-      residential_units:
-        how: "zero"
-        type: "int"
-      non_residential_sqft:
-        how: "zero"
-        type: "int"
-      year_built:
-        how: "median"
-        type: "int"
-      building_type_id:
-        how: "mode"
-        type: "int"
-
-
 rates:
   households_relocation: .07
 
@@ -580,7 +555,7 @@ rsh_simulate:
 
 
 feasibility:
-  parcel_filter: nodev != 1 and manual_nodev != 1 and sdem != 1 and oldest_building > 1906 and oldest_building_age > 20  and (total_residential_units != 1 or parcel_acres > 1.0) and first_building_type_id != 5 and first_building_type_id != 6
+  parcel_filter: nodev != 1 and manual_nodev != 1 and sdem != 1 and oldest_building > 1906 and oldest_building_age > 20  and (total_residential_units != 1 or parcel_acres > 1.0) and first_building_type != 'HO' and first_building_type != 'SC'
   residential_to_yearly: True
   simple_zoning: True
   pass_through:
@@ -682,43 +657,23 @@ empsix_name_to_id:
 # this maps building type ids to general building types
 # basically just reduces dimensionality
 building_type_map:
-  0: Other
-  1: Residential
-  2: Residential
-  3: Residential
-  4: Office
-  5: Hotel
-  6: School
-  7: Industrial
-  8: Industrial
-  9: Industrial
-  10: Retail
-  11: Retail
-  12: Residential
-  13: Retail
-  14: Office
-  15: Parking
-  16: Parking
-
-
-building_type_map2:
-  O: 0
-  HS: 1
-  HT: 2
-  HM: 3
-  OF: 4
-  HO: 5
-  SC: 6
-  IL: 7
-  IW: 8
-  IH: 9
-  RS: 10
-  RB: 11
-  MR: 12
-  MT: 13
-  ME: 14
-  PA: 15
-  PA2: 16
+  HS: Residential
+  HT: Residential
+  HM: Residential
+  OF: Office
+  HO: Hotel
+  SC: School
+  IL: Industrial
+  IW: Industrial
+  IH: Industrial
+  RS: Retail
+  RB: Retail
+  MR: Residential
+  MT: Retail
+  ME: Office
+  PA: Parking
+  PA2: Parking
+  
 
 # this maps building "forms" from the developer model
 # to building types so that when the developer builds a
@@ -729,51 +684,48 @@ building_type_map2:
 # travel_model_ variables are for the travel_model_summary step.
 form_to_btype:
   residential:
-    - 1
-    - 2
-    - 3
+    - HS
+    - HT
+    - HM
   industrial:
-    - 7
-    - 8
-    - 9
+    - IL
+    - IW
+    - IH
   retail:
-    - 10
-    - 11
+    - RS
+    - RB
   office:
-    - 4
+    - OF
   mixedresidential:
-    - 12
+    - MR
   mixedoffice:
-    - 14
+    - ME
   select_non_residential:
-    - 4
-    - 5
-    - 6 
-    - 7
-    - 8
-    - 9
-    - 10
-    - 11
-    - 13
-    - 14
+    - OF
+    - HO
+    - SC
+    - IL
+    - IW
+    - IH
+    - RS
+    - RB
+    - MR
 
 building_sqft_per_job:
-  -1: 400
-  0: 400
-  1: 400
-  2: 400
-  3: 400
-  4: 355
-  5: 1161
-  6: 470
-  7: 661
-  8: 960
-  9: 825
-  10: 445
-  11: 445
-  12: 383
-  13: 383
-  14: 383
+  HS: 400
+  HT: 400
+  HM: 400
+  OF: 355
+  HO: 1161
+  SC: 470
+  IL: 661
+  IW: 960
+  IH: 825
+  RS: 445
+  RB: 445
+  MR: 383
+  MT: 383
+  ME: 383
 
 county_id_map:
   85: Santa Clara

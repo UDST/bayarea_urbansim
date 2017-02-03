@@ -47,6 +47,9 @@ parser.add_argument('-i', action='store_true', dest='interactive',
 parser.add_argument('-s', action='store', dest='scenario',
                     help='specify which scenario to run')
 
+parser.add_argument('-y', action='store', dest='out_year', type=int,
+                    help='The year to which to run the simualtion.')
+
 parser.add_argument('--mode', action='store', dest='mode',
                     help='which mode to run (see code for mode options)')
 
@@ -61,6 +64,9 @@ if options.console:
 if options.interactive:
     SLACK = MAPS = LOGS = False
     INTERACT = True
+
+if options.out_year:
+    OUT_YEAR = options.out_year
 
 if options.scenario:
     orca.add_injectable("scenario", options.scenario)
