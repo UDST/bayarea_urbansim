@@ -26,14 +26,6 @@ def year():
 
 
 @orca.injectable()
-def recompute_cached_tables():
-    # we cache the four major tables - parcels, buildngs, jobs, and households
-    # in order to save computation time on reading tables - set this to true
-    # in order to recompute all the cached tables
-    return False
-
-
-@orca.injectable()
 def initial_year():
     return 2010
 
@@ -137,10 +129,13 @@ def base_year_summary_taz():
 @orca.table(cache=True)
 def costar(store, parcels):
     df = pd.read_csv(os.path.join(misc.data_dir(), '2015_08_29_costar.csv'))
+
     df["PropertyType"] = df.PropertyType.replace("General Retail", "Retail")
     df = df[df.PropertyType.isin(["Office", "Retail", "Industrial"])]
+
     df["costar_rent"] = df["Average Weighted Rent"].astype('float')
     df["year_built"] = df["Year Built"].fillna(1980)
+
     df = df.dropna(subset=["costar_rent", "Latitude", "Longitude"])
 
     # now assign parcel id
@@ -179,7 +174,6 @@ def new_tpp_id():
 
 @orca.table(cache=True)
 def zoning_scenario(parcels_geography, scenario, settings):
-
     scenario_zoning = pd.read_csv(
         os.path.join(misc.data_dir(), 'zoning_mods_%s.csv' % scenario))
 
@@ -265,8 +259,8 @@ def reprocess_dev_projects(df):
     return df
 
 
-@orca.table(cache=True)
-def demolish_events(parcels, settings, scenario):
+# shared between demolish and build tables below
+def get_dev_projects_table(scenario, parcels):
     df = pd.read_csv(os.path.join(misc.data_dir(), "development_projects.csv"))
     df = reprocess_dev_projects(df)
 
@@ -274,9 +268,6 @@ def demolish_events(parcels, settings, scenario):
     if scenario in df:
         # df[scenario] is 1s and 0s indicating whether to include it
         df = df[df[scenario].astype('bool')]
-
-    # keep demolish and build records
-    df = df[df.action.isin(["demolish", "build"])]
 
     df = df.dropna(subset=['geom_id'])
     df = df.set_index("geom_id")
@@ -286,55 +277,47 @@ def demolish_events(parcels, settings, scenario):
 
 
 @orca.table(cache=True)
+def demolish_events(parcels, settings, scenario):
+    df = get_dev_projects_table(scenario, parcels)
+
+    # keep demolish and build records
+    return df[df.action.isin(["demolish", "build"])]
+
+
+@orca.table(cache=True)
 def development_projects(parcels, settings, scenario):
-    df = pd.read_csv(os.path.join(misc.data_dir(), "development_projects.csv"))
-    df = reprocess_dev_projects(df)
+    df = get_dev_projects_table(scenario, parcels)
 
-    df = df[df.action.isin(["add", "build"])]
-
-    # this filters project by scenario
-    colname = "scen%s" % scenario
-    # df[colname] is 1s and 0s indicating whether to include it
-    # this used to be an optional filter but now I'm going to require it so
-    # that we don't accidentally include all the development projects since
-    # we've started using scenario-based dev projects pretty extensively
-    df = df[df[colname].astype('bool')]
-
-    df = df.dropna(subset=['geom_id'])
-
-    for fld in ['residential_sqft', 'residential_price',
-                'non_residential_price']:
-        df[fld] = 0
+    for col in [
+            'residential_sqft', 'residential_price', 'non_residential_price']:
+        df[col] = 0
     df["redfin_sale_year"] = 2012  # default base year
+    df["redfin_sale_price"] = np.nan  # null sales price
     df["stories"] = df.stories.fillna(1)
     df["building_sqft"] = df.building_sqft.fillna(0)
     df["non_residential_sqft"] = df.non_residential_sqft.fillna(0)
+    df["residential_units"] = df.residential_units.fillna(0).astype("int")
+    df["deed_restricted_units"] = 0
 
     df["building_type"] = df.building_type.replace("HP", "OF")
     df["building_type"] = df.building_type.replace("GV", "OF")
     df["building_type"] = df.building_type.replace("SC", "OF")
+
     building_types = settings["building_type_map"].keys()
+    # only deal with building types we recorgnize
+    # otherwise hedonics break
     df = df[df.building_type.isin(building_types)]
-
-    df = df.dropna(subset=["geom_id"])  # need a geom_id to link to parcel_id
-
-    df = df.dropna(subset=["year_built"])  # need a year built to get built
-
-    df["geom_id"] = df.geom_id.astype("int")
-    df = df.query('residential_units != "rent"')
-    df["residential_units"] = df.residential_units.fillna(0).astype("int")
-    geom_id = df.geom_id
-    df = df.set_index("geom_id")
-    df = geom_id_to_parcel_id(df, parcels).reset_index()  # use parcel id
-    df["geom_id"] = geom_id.values  # add it back again cause it goes away
 
     # we don't predict prices for schools and hotels right now
     df = df[~df.building_type.isin(["SC", "HO"])]
 
-    df["deed_restricted_units"] = 0
-    df["redfin_sale_price"] = np.nan
+    # need a year built to get built
+    df = df.dropna(subset=["year_built"])
+    df = df[df.action.isin(["add", "build"])]
 
     print "Describe of development projects"
+    # this makes sure dev projects has all the same columns as buildings
+    # which is the point of this method
     print df[orca.get_table('buildings').local_columns].describe()
 
     return df
@@ -365,11 +348,12 @@ def buildings(store):
 
 @orca.table(cache=True)
 def household_controls_unstacked():
-    df = pd.read_csv(os.path.join(misc.data_dir(), "household_controls.csv"))
-    return df.set_index('year')
+    return pd.read_csv(os.path.join(misc.data_dir(), "household_controls.csv"),
+                       index_col='year')
 
 
-# the following overrides household_controls table defined in urbansim_defaults
+# the following overrides household_controls
+# table defined in urbansim_defaults
 @orca.table(cache=True)
 def household_controls(household_controls_unstacked):
     df = household_controls_unstacked.to_frame()
@@ -384,8 +368,9 @@ def household_controls(household_controls_unstacked):
 
 @orca.table(cache=True)
 def employment_controls_unstacked():
-    df = pd.read_csv(os.path.join(misc.data_dir(), "employment_controls.csv"))
-    return df.set_index('year')
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "employment_controls.csv"),
+        index_col='year')
 
 
 # the following overrides employment_controls
@@ -404,23 +389,25 @@ def employment_controls(employment_controls_unstacked):
 
 @orca.table(cache=True)
 def zone_forecast_inputs():
-    return pd.read_csv(os.path.join(misc.data_dir(),
-                                    "zone_forecast_inputs.csv"),
-                       index_col="zone_id")
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "zone_forecast_inputs.csv"),
+        index_col="zone_id")
 
 
 # this is the set of categories by zone of sending and receiving zones
 # in terms of vmt fees
 @orca.table(cache=True)
 def vmt_fee_categories():
-    return pd.read_csv(os.path.join(misc.data_dir(), "vmt_fee_zonecats.csv"),
-                       index_col="taz")
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "vmt_fee_zonecats.csv"),
+        index_col="taz")
 
 
 @orca.table(cache=True)
 def superdistricts():
-    return pd.read_csv(os.path.join(misc.data_dir(),
-                       "superdistricts.csv"), index_col="number")
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "superdistricts.csv"),
+        index_col="number")
 
 
 @orca.table(cache=True)
@@ -430,8 +417,13 @@ def abag_targets():
 
 @orca.table(cache=True)
 def taz_geography(superdistricts):
-    tg = pd.read_csv(os.path.join(misc.data_dir(),
-                     "taz_geography.csv"), index_col="zone")
+    tg = pd.read_csv(
+        os.path.join(misc.data_dir(), "taz_geography.csv"),
+        index_col="zone")
+
+    # we want "subregion" geography on the taz_geography table
+    # we have to go get it from the superdistricts table and join
+    # using the superdistrcit id
     tg["subregion_id"] = \
         superdistricts.subregion.loc[tg.superdistrict].values
     tg["subregion"] = tg.subregion_id.map({
@@ -446,15 +438,14 @@ def taz_geography(superdistricts):
 # these are shapes - "zones" in the bay area
 @orca.table(cache=True)
 def zones(store):
+    # sort index so it prints out nicely when we want it to
     return store['zones'].sort_index()
 
 
 # this specifies the relationships between tables
 orca.broadcast('parcels_geography', 'buildings', cast_index=True,
                onto_on='parcel_id')
+# not defined in urbansim_Defaults
 orca.broadcast('tmnodes', 'buildings', cast_index=True, onto_on='tmnode_id')
-orca.broadcast('nodes', 'costar', cast_index=True, onto_on='node_id')
-orca.broadcast('tmnodes', 'costar', cast_index=True, onto_on='tmnode_id')
-orca.broadcast('logsums', 'costar', cast_index=True, onto_on='zone_id')
 orca.broadcast('taz_geography', 'parcels', cast_index=True,
                onto_on='zone_id')
