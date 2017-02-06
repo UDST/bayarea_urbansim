@@ -68,7 +68,6 @@ def parcel_id_to_geom_id(s):
 # dataframe and then counts gives you the count you want to sample
 # from each group.
 def groupby_random_choice(s, counts, replace=True):
-
     if counts.sum() == 0:
         return pd.Series()
 
@@ -92,7 +91,6 @@ def random_indexes(s, num, replace=False):
 # some resolution on the distrbution implied by s in order to meet
 # the target exactly
 def round_series_match_target(s, target, fillna=np.nan):
-
     if target == 0 or s.sum() == 0:
         return s
 
@@ -187,6 +185,7 @@ def simple_ipf(seed_matrix, col_marginals, row_marginals, tolerance=1, cnt=0):
 
     return simple_ipf(seed_matrix, col_marginals, row_marginals,
                       tolerance, cnt+1)
+
 
 """
 BELOW IS A SET OF UTITLIES TO COMPARE TWO SUMMARY DATAFRAMES, MAINLY LOOKING
