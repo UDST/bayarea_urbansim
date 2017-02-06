@@ -68,6 +68,8 @@
 
 * Price shifters and cost shifters
 
+* Rules to not consider certain parcels for development, like parcels which contain historical buildings, or have single family homes on small lots
+
 ## Accounts system and subsidies for affordable housing
 
 * "Lump sump accounts" which are regional accounts that get a certain subsidy per year and are used to subsidize development in parcels that pass a certain filter and can create affordable housing or not
