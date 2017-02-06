@@ -66,6 +66,8 @@
 
 * Add (large) factors to land which is industrial to account for expensive land preparation
 
+* Price shifters and cost shifters
+
 ## Accounts system and subsidies for affordable housing
 
 * "Lump sump accounts" which are regional accounts that get a certain subsidy per year and are used to subsidize development in parcels that pass a certain filter and can create affordable housing or not
