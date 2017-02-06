@@ -429,12 +429,9 @@ def ave_sqft_per_unit(parcels, zones, settings):
 @orca.injectable("parcel_sales_price_sqft_func", autocall=False)
 def parcel_sales_price(use, quantile=.5):
     if use == "residential":
-        # for residential, we multiply by 1.3 to increase the competitiveness
-        # of residential (per expert judgement, which could be removed)
-
         # get node price average and put it on parcels
         s = misc.reindex(orca.get_table('nodes')[use],
-                         orca.get_table('parcels').node_id) * 1.3
+                         orca.get_table('parcels').node_id)
 
         # apply shifters
         cost_shifters = orca.get_table("parcels").cost_shifters
@@ -502,22 +499,28 @@ def first_building_type(buildings, parcels):
 
 @orca.column('parcels', cache=True)
 def juris_ave_income(households, buildings, parcels_geography, parcels):
+    # get frame of income and jurisdiction
     h = orca.merge_tables("households",
                           [households, buildings, parcels_geography],
                           columns=["jurisdiction_id", "income"])
+    # get median income by jurisdiction
     s = h.groupby(h.jurisdiction_id).income.quantile(.5)
+    # map it to parcels - fill na with median for all areas
+    # should probably remove the log transform and do that in the models
     return misc.reindex(s, parcels_geography.jurisdiction_id).\
         reindex(parcels.index).fillna(s.median()).apply(np.log1p)
 
 
-# returns the newest building on the land and fills missing values with 1800 -
-# for use with development limits
+# returns the newest building on the land and fills
+# missing values with 1800 - for use with development limits
 @orca.column('parcels')
 def newest_building(parcels, buildings):
     return buildings.year_built.groupby(buildings.parcel_id).max().\
         reindex(parcels.index).fillna(1800)
 
 
+# this returns the set of parcels which have been marked as
+# disapproved by "the button" - only equals true when disallowed
 @orca.column('parcels', cache=True)
 def manual_nodev(parcel_rejections, parcels):
     df1 = parcels.to_frame(['x', 'y']).dropna(subset=['x', 'y'])
@@ -542,6 +545,37 @@ def is_sanfran(parcels_geography, buildings, parcels):
         reindex(parcels.index).fillna(False).astype('int')
 
 
+# returns a vector where parcels are ALLOWED to be built
+@orca.column('parcels')
+def parcel_rules(parcels):
+    # removes parcels with buildings < 1940,
+    # and single family homes on less then half an acre
+    s = (parcels.oldest_building < 1940) | \
+        ((parcels.total_residential_units == 1) &
+         (parcels.parcel_acres < .5)) | \
+        (parcels.parcel_size < 2000)
+    return (~s.reindex(parcels.index).fillna(False)).astype('int')
+
+
+@orca.column('parcels', cache=True)
+def total_non_residential_sqft(parcels, buildings):
+    return buildings.non_residential_sqft.groupby(buildings.parcel_id).sum().\
+        reindex(parcels.index).fillna(0)
+
+
+@orca.column('parcels')
+def nodev(zoning_baseline, parcels, static_parcels):
+    # nodev from zoning
+    s1 = zoning_baseline.nodev.reindex(parcels.index).\
+        fillna(0).astype('bool')
+    # nodev from static parcels - this marks nodev those parcels which are
+    # marked as "static" - any parcels which should not be considered by the
+    # developer model may be marked as static
+    s2 = parcels.index.isin(static_parcels)
+    return s1 | s2
+
+
+# get built far but set to nan for small parcels
 @orca.column('parcels')
 def built_far(parcels):
     # compute the actually built farn on a parcel
@@ -557,7 +591,7 @@ def max_far(parcels_zoning_calculations, parcels, scenario, settings):
     # first we combine the zoning columns
     s = parcels_zoning_calculations.effective_max_far * ~parcels.nodev
 
-    if scenario in ["2", "3", "4", "5"]:
+    if scenario != "1":
         # we had trouble with the zoning outside of the footprint
         # make sure we have rural zoning outside of the footprint
         s2 = parcels.urban_footprint.map({0: 0, 1: np.nan})
@@ -574,35 +608,7 @@ def max_far(parcels_zoning_calculations, parcels, scenario, settings):
     return s
 
 
-# returns a vector where parcels are ALLOWED to be built
-@orca.column('parcels')
-def parcel_rules(parcels):
-    # removes parcels with buildings < 1940,
-    # and single family homes on less then half an acre
-    s = (parcels.oldest_building < 1940) | \
-        ((parcels.total_residential_units == 1) &
-         (parcels.parcel_acres < .5)) | \
-        (parcels.parcel_size < 2000)
-    s = (~s.reindex(parcels.index).fillna(False)).astype('int')
-    return s
-
-
-@orca.column('parcels', cache=True)
-def total_non_residential_sqft(parcels, buildings):
-    return buildings.non_residential_sqft.groupby(buildings.parcel_id).sum().\
-        reindex(parcels.index).fillna(0)
-
-
-@orca.column('parcels')
-def nodev(zoning_baseline, parcels, static_parcels):
-    # nodev from zoning
-    s1 = zoning_baseline.nodev.reindex(parcels.index).\
-        fillna(0).astype('bool')
-    # nodev from static parcels
-    s2 = parcels.index.isin(static_parcels)
-    return s1 | s2
-
-
+# compute built dua and set to nan if small parcels
 @orca.column('parcels')
 def built_dua(parcels):
     # compute the actually built dua on a parcel
@@ -617,7 +623,7 @@ def max_dua(parcels_zoning_calculations, parcels, scenario, settings):
     # first we combine the zoning columns
     s = parcels_zoning_calculations.effective_max_dua * ~parcels.nodev
 
-    if scenario in ["2", "3", "4", "5"]:
+    if scenario != ["1"]:
         # we had trouble with the zoning outside of the footprint
         # make sure we have rural zoning outside of the footprint
         s2 = parcels.urban_footprint.map({0: .01, 1: np.nan})
@@ -645,8 +651,12 @@ def general_type(parcels, buildings):
 def building_purchase_price_sqft(parcels):
     price = pd.Series(0, parcels.index)
     gentype = parcels.general_type
+    # all of these factors are above one which does some discouraging of
+    # redevelopment - this will need to be recalibrated when the new
+    # developer model comes into play
     for form in ["Office", "Retail", "Industrial", "Residential"]:
-        # convert to yearly
+        # convert to price per sqft from yearly rent per sqft
+        # assumes a caprate of .05 (reciprocal equals 20.0)
         factor = 1.4 if form == "Residential" else 20.0
         # raise cost to convert from industrial
         if form == "Industrial":
@@ -658,6 +668,7 @@ def building_purchase_price_sqft(parcels):
         tmp = parcel_average_price(form.lower())
         price += tmp * (gentype == form) * factor
 
+    # this is not a very constraining clip
     return price.clip(150, 2500)
 
 
@@ -665,7 +676,7 @@ def building_purchase_price_sqft(parcels):
 def building_purchase_price(parcels):
     # the .8 is because we assume the building only charges for 80% of the
     # space - when a good portion of the building is parking, this probably
-    # overestimates the part of the building that you can charge for
+    # overestimates the part of the building that you can charge for.
     # the second .85 is because the price is likely to be lower for existing
     # buildings than for one that is newly built
     return (parcels.total_sqft * parcels.building_purchase_price_sqft *
@@ -674,6 +685,12 @@ def building_purchase_price(parcels):
 
 @orca.column('parcels')
 def land_cost(parcels):
+    # would be much nicer to have a model on land price, but we make an
+    # assumption that the price is a ratio the prevailing rate for floor
+    # area.  this does not take into account the zoning, which would mean
+    # land which can be developer more fully would be more valuable.
+    # generally this is not as strong an indicator of valueable land as
+    # high prices (see dense zoning in downtown oakland)
     s = (parcels.building_purchase_price_sqft / 40).clip(5, 20)
     # industrial is an exception as cleanup is likely to be done - would
     # be nice to have data on superfund sites and such
