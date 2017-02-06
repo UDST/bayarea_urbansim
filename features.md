@@ -16,7 +16,7 @@
 
 ## Standard (or extensions to) UrbanSim features
 
-* Housheold and job control totals by year
+* Houshold and job control totals by year
 
 * Standard UrbanSim models - hedonic, location choice, transition, relocation models
 
@@ -57,6 +57,14 @@
 * We still need a better way to determine the uses that get built between office / retail / industrial / whatever else
 
 * A reprocessing of the developer results which adds job spaces to residential buildings at an appropriate rate, a second part of this adds ground floor retail by policy for tall buildings in order to create retail where people live
+
+## Tweaks to get more reasonable results
+
+* A setting which allows a user to disable building a more dense buiding that currently exists in a taz (used when we don't trust zoning much) - we minimize the max_dua or far on each parcel with the max built_dua or far near to that parcel
+
+* For lack of better land price data, we use land prices proportional to the prevailing price per sqft
+
+* Add (large) factors to land which is industrial to account for expensive land preparation
 
 ## Accounts system and subsidies for affordable housing
 
