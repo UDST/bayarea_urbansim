@@ -270,8 +270,17 @@ def get_dev_projects_table(scenario, parcels):
         df = df[df[scenario].astype('bool')]
 
     df = df.dropna(subset=['geom_id'])
+
+    cnts = df.geom_id.isin(parcels.geom_id).value_counts()
+    if False in cnts.index:
+        print "%d MISSING GEOMIDS!" % cnts.loc[False]
+
+    df = df[df.geom_id.isin(parcels.geom_id)]
+
+    geom_id = df.geom_id  # save for later
     df = df.set_index("geom_id")
     df = geom_id_to_parcel_id(df, parcels).reset_index()  # use parcel id
+    df["geom_id"] = geom_id.values  # add it back again cause it goes away
 
     return df
 

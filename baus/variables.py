@@ -206,12 +206,6 @@ def building_age(buildings, year):
     return (year or 2014) - buildings.year_built
 
 
-@orca.column('buildings', cache=True)
-def zonal_veryhighinc(buildings, taz):
-    return misc.reindex(taz.veryhighinc, buildings.zone_id).\
-        reindex(buildings.index).fillna(0)
-
-
 @orca.column('buildings')
 def price_per_sqft(buildings):
     s = buildings.redfin_sale_price / buildings.sqft_per_unit
@@ -292,6 +286,11 @@ def retail_ratio(nodes):
 #####################
 # PARCELS VARIABLES
 #####################
+
+
+@orca.column("parcels")
+def residential_sales_price_sqft(parcel_sales_price_sqft_func):
+    return parcel_sales_price_sqft_func("residential")
 
 
 @orca.column('parcels')
@@ -382,7 +381,7 @@ def performance_zone(parcels, parcels_geography):
     return parcels_geography.perfarea.reindex(parcels.index)
 
 
-# XX move this to data sources
+# XXX move this to data sources
 @orca.column('parcels', cache=True)
 def juris(parcels, parcels_geography):
     s = parcels_geography.juris_name.reindex(parcels.index)
@@ -427,7 +426,7 @@ def ave_sqft_per_unit(parcels, zones, settings):
 # these are actually functions that take parameters,
 # but are parcel-related so are defined here
 @orca.injectable("parcel_sales_price_sqft_func", autocall=False)
-def parcel_sales_price(use, quantile=.5):
+def parcel_average_price(use, quantile=.5):
     if use == "residential":
         # get node price average and put it on parcels
         s = misc.reindex(orca.get_table('nodes')[use],
@@ -439,7 +438,7 @@ def parcel_sales_price(use, quantile=.5):
         s = s / cost_shifters * price_shifters
 
         # just to make sure we're in a reasonable range
-        return.fillna(0).clip(150, 1250)
+        return s.fillna(0).clip(150, 1250)
 
     if 'nodes' not in orca.list_tables():
         # just to keep from erroring
@@ -456,8 +455,8 @@ def parcel_sales_price(use, quantile=.5):
 #############################
 
 
-@orca.injectable(autocall=False)
-def parcel_is_allowed_func(form):
+@orca.injectable("parcel_is_allowed_func", autocall=False)
+def parcel_is_allowed(form):
     settings = orca.get_injectable("settings")
     form_to_btype = settings["form_to_btype"]
 
@@ -495,6 +494,13 @@ def parcel_is_allowed_func(form):
 def first_building_type(buildings, parcels):
     df = buildings.to_frame(columns=['building_type', 'parcel_id'])
     return df.groupby('parcel_id').building_type.first()
+
+
+@orca.injectable(autocall=False)
+def parcel_first_building_type_is(form):
+    form_to_btype = orca.get_injectable('settings')["form_to_btype"]
+    parcels = orca.get_table('parcels')
+    return parcels.first_building_type_id.isin(form_to_btype[form])
 
 
 @orca.column('parcels', cache=True)
@@ -722,7 +728,7 @@ def node_id(parcels, net):
 
 
 @orca.column('parcels', cache=True)
-def tm_node_id(parcels, net):
+def tmnode_id(parcels, net):
     s = net["drive"].get_node_ids(parcels.x, parcels.y)
     fill_val = s.value_counts().index[0]
     s = s.reindex(parcels.index).fillna(fill_val).astype('int')
@@ -766,6 +772,11 @@ def parcels_zoning_by_scenario(parcels, parcels_zoning_calculations,
         df["non_res_cat_%s" % scenario] = z.non_res_categories
 
     return df
+
+
+@orca.column('zones')
+def ave_unit_sqft(buildings):
+    return buildings.sqft_per_unit.groupby(buildings.zone_id).quantile(.6)
 
 
 GROSS_AVE_UNIT_SIZE = 1000.0
