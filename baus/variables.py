@@ -100,7 +100,8 @@ def job_spaces(buildings):
 
 
 @orca.column('buildings', cache=True)
-def sqft_per_job(buildings, building_sqft_per_job, superdistricts, taz):
+def sqft_per_job(buildings, building_sqft_per_job, superdistricts,
+                 taz_geography):
     sqft_per_job = buildings.\
         building_type.fillna("O").map(building_sqft_per_job)
 
@@ -108,7 +109,8 @@ def sqft_per_job(buildings, building_sqft_per_job, superdistricts, taz):
     # the building is in - this is so denser areas can have lower sqft
     # per job - this is a simple multiply so a number 1.1 increases the
     # sqft per job by 10% and .9 decreases it by 10%
-    superdistrict = misc.reindex(taz.sd, buildings.zone_id)
+    superdistrict = misc.reindex(
+        taz_geography.superdistrict, buildings.zone_id)
     sqft_per_job = sqft_per_job * \
         superdistrict.map(superdistricts.sqft_per_job_factor)
 
@@ -365,8 +367,8 @@ def pda(parcels, parcels_geography):
 
 
 @orca.column('parcels', cache=True)
-def superdistrict(parcels, taz):
-    return misc.reindex(taz.sd, parcels.zone_id)
+def superdistrict(parcels, taz_geography):
+    return misc.reindex(taz_geography.superdistrict, parcels.zone_id)
 
 
 # perffoot is a dummy indicating the FOOTprint for the PERFormance targets
@@ -500,7 +502,7 @@ def first_building_type(buildings, parcels):
 def parcel_first_building_type_is(form):
     form_to_btype = orca.get_injectable('settings')["form_to_btype"]
     parcels = orca.get_table('parcels')
-    return parcels.first_building_type_id.isin(form_to_btype[form])
+    return parcels.first_building_type.isin(form_to_btype[form])
 
 
 @orca.column('parcels', cache=True)

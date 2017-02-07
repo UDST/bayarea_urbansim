@@ -657,16 +657,6 @@ def travel_model_output(parcels, households, jobs, buildings,
                         zone_forecast_inputs, run_number,
                         taz, base_year_summary_taz, taz_geography):
 
-    # using the following conditional b/c `year` is used to pull a column
-    # from a csv based on a string of the year in add_population()
-    # and in add_employment() and 2009 is the
-    # 'base'/pre-simulation year, as is the 2010 value in the csv.
-    if year == 2009:
-        year = 2010
-        base = True
-    else:
-        base = False
-
     if year not in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
         # only summarize for years which are multiples of 5
         return
@@ -674,7 +664,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     taz_df = pd.DataFrame(index=zones.index)
 
     taz_df["sd"] = taz_geography.superdistrict
-    taz_df["zone"] = df.index
+    taz_df["zone"] = zones.index
     taz_df["county"] = taz_geography.county
 
     jobs_df = orca.merge_tables(
@@ -718,9 +708,11 @@ def travel_model_output(parcels, households, jobs, buildings,
     taz_df["tothh"] = households_df.groupby('zone_id').size()
 
     taz_df["shpop62p"] = zone_forecast_inputs.sh_62plus
-    taz_df["gqpop"] = zone_forecast_inputs["gqpop%d" % year].fillna(0)
+    taz_df["gqpop"] = zone_forecast_inputs["gqpop" + str(year)[-2:]].fillna(0)
 
     taz_df["totacre"] = zone_forecast_inputs.totacre_abag
+    # total population = group quarters plus households population
+    taz_df["totpop"] = (taz_df.hhpop + taz_df.gqpop).fillna(0)
     taz_df["density"] = \
         (taz_df.totpop + (2.5 * taz_df.totemp)) / taz_df.totacre
     taz_df["areatype"] = pd.cut(
@@ -759,47 +751,36 @@ def travel_model_output(parcels, households, jobs, buildings,
         f('select_non_residential'))
 
     taz_df["ciacre"] = scaled_ciacre(
-        base_year_summary_taz.CIACRE_UNWEIGHTED, df.ciacre)
+        base_year_summary_taz.CIACRE_UNWEIGHTED, taz_df.ciacre_unweighted)
     taz_df["resacre"] = scaled_resacre(
-        base_year_summary_taz.RESACRE_UNWEIGHTED, df.resacre)
+        base_year_summary_taz.RESACRE_UNWEIGHTED, taz_df.resacre_unweighted)
 
     taz_df = add_population(taz_df, year)
-    # total population = group quarters plus households population
-    taz_df["totpop"] = (taz_df.hhpop + taz_df.gqpop).fillna(0)
     taz_df = add_employment(taz_df, year)
     taz_df = add_age_categories(taz_df, year)
 
-    orca.add_table("travel_model_output", taz_df, year)
     summary.add_zone_output(taz_df, "travel_model_output", year)
-    if sys.platform != 'win32':
-        summary.write_zone_output()
+    summary.write_zone_output()
 
-    add_xy_config = {
+    # otherwise it loses precision
+    if summary.parcel_output is not None\
+            and "geom_id" in summary.parcel_output:
+        summary.parcel_output["geom_id"] = \
+            summary.parcel_output.geom_id.astype('str')
+
+    summary.write_parcel_output(add_xy={
         "xy_table": "parcels",
         "foreign_key": "parcel_id",
         "x_col": "x",
         "y_col": "y"
-    }
-    # otherwise it loses precision
-    if summary.parcel_output is not None and \
-            "geom_id" in summary.parcel_output:
-        summary.parcel_output["geom_id"] = \
-            summary.parcel_output.geom_id.astype('str')
-    summary.write_parcel_output(add_xy=add_xy_config)
-
-    # travel model csv
-    if base is False:
-        travel_model_csv = \
-            "runs/run{}_taz_summaries_{}.csv".format(run_number, year)
-    elif base is True:
-        travel_model_csv = \
-            "runs/run{}_taz_summaries_{}.csv".format(run_number, 2009)
+    })
 
     # uppercase columns to match travel model template
     taz_df.columns = \
         [x.upper() for x in taz_df.columns]
 
-    taz_df.fillna(0).to_csv(travel_model_csv)
+    taz_df.fillna(0).to_csv(
+        "runs/run{}_taz_summaries_{}.csv".format(run_number, year))
 
 
 def scaled_ciacre(mtcc, us_outc):
