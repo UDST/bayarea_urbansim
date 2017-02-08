@@ -37,7 +37,7 @@ def rsh_simulate(buildings, aggregations, settings):
             buildings.residential_price.describe()
 
 
-@orca.step('hlcm_simulate')
+@orca.step()
 def hlcm_simulate(households, buildings, aggregations, settings, low_income):
 
     fname = misc.config("hlcm.yaml")
@@ -67,7 +67,7 @@ def hlcm_simulate(households, buildings, aggregations, settings, low_income):
                        settings.get("enable_supply_correction", None))
 
 
-@orca.step('elcm_simulate')
+@orca.step()
 def elcm_simulate(jobs, buildings, aggregations):
     buildings.local["non_residential_price"] = \
         buildings.local.non_residential_price.fillna(0)
@@ -76,7 +76,7 @@ def elcm_simulate(jobs, buildings, aggregations):
                               "vacant_job_spaces")
 
 
-@orca.step('households_transition')
+@orca.step()
 def households_transition(households, household_controls, year, settings):
     s = orca.get_table('households').base_income_quartile.value_counts()
     print "Distribution by income before:\n", (s/s.sum())
@@ -90,7 +90,7 @@ def households_transition(households, household_controls, year, settings):
     return ret
 
 
-@orca.step('households_relocation')
+@orca.step()
 def households_relocation(households, settings, years_per_iter):
     rate = settings['rates']['households_relocation']
     rate = min(rate * years_per_iter, 1.0)
@@ -99,13 +99,9 @@ def households_relocation(households, settings, years_per_iter):
 
 @orca.table(cache=True)
 def employment_relocation_rates():
-
     df = pd.read_csv(os.path.join("data", "employment_relocation_rates.csv"))
-
     df = df.set_index("zone_id").stack().reset_index()
-
     df.columns = ["zone_id", "empsix", "rate"]
-
     return df
 
 
@@ -178,18 +174,12 @@ def _proportional_jobs_model(
 
 @orca.step()
 def additional_units(year, buildings, parcels):
-
     add_units = pd.read_csv("data/additional_units.csv",
                             index_col="juris")[str(year)]
-
     buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
-
     res_buildings = buildings_juris[buildings.general_type == "Residential"]
-
     add_buildings = groupby_random_choice(res_buildings, add_units)
-
     add_buildings = pd.Series(add_buildings.index).value_counts()
-
     buildings.local.loc[add_buildings.index, "residential_units"] += \
         add_buildings.values
 
@@ -332,7 +322,7 @@ def jobs_relocation(jobs, employment_relocation_rates, years_per_iter,
 # demolished buildings - this version only demolishes when there is a row to
 # demolish in the csv file - this also allows building multiple buildings and
 # just adding capacity on an existing parcel, by adding one building at a time
-@orca.step("scheduled_development_events")
+@orca.step()
 def scheduled_development_events(buildings, development_projects,
                                  demolish_events, summary, year, parcels,
                                  settings, years_per_iter, parcels_geography,
@@ -384,7 +374,7 @@ def scheduled_development_events(buildings, development_projects,
     summary.add_parcel_output(new_buildings)
 
 
-@orca.injectable("supply_and_demand_multiplier_func", autocall=False)
+@orca.injectable(autocall=False)
 def supply_and_demand_multiplier_func(demand, supply):
     s = demand / supply
     settings = orca.get_injectable('settings')
@@ -397,7 +387,6 @@ def supply_and_demand_multiplier_func(demand, supply):
     t = t / t.max() * (clip_change_high-1)
     t += 1.0
     s.loc[s > 1.0] = t.loc[s > 1.0]
-    # print "Shifters for current iteration\n", s.describe()
     return s, (s <= 1.0).all()
 
 
@@ -450,7 +439,7 @@ def add_extra_columns_func(df):
     return df
 
 
-@orca.step('alt_feasibility')
+@orca.step()
 def alt_feasibility(parcels, settings,
                     parcel_sales_price_sqft_func,
                     parcel_is_allowed_func):
@@ -474,7 +463,7 @@ def alt_feasibility(parcels, settings,
     orca.add_table("feasibility", f)
 
 
-@orca.step('residential_developer')
+@orca.step()
 def residential_developer(feasibility, households, buildings, parcels, year,
                           settings, summary, form_to_btype_func,
                           add_extra_columns_func, parcels_geography,
@@ -917,8 +906,8 @@ def make_network_from_settings(settings):
     )
 
 
-@orca.injectable('net', cache=True)
-def build_networks(settings):
+@orca.injectable(cache=True)
+def net(settings):
     nets = {}
     pdna.reserve_num_graphs(len(settings["build_networks"]))
 
@@ -933,7 +922,7 @@ def build_networks(settings):
     return nets
 
 
-@orca.step('local_pois')
+@orca.step()
 def local_pois(settings):
     # because of the aforementioned limit of one netowrk at a time for the
     # POIS, as well as the large amount of memory used, this is now a
@@ -963,21 +952,18 @@ def local_pois(settings):
     df.to_csv('local_poi_distances.csv')
 
 
-@orca.step('neighborhood_vars')
+@orca.step()
 def neighborhood_vars(net):
     nodes = networks.from_yaml(net["walk"], "neighborhood_vars.yaml")
     nodes = nodes.replace(-np.inf, np.nan)
     nodes = nodes.replace(np.inf, np.nan)
     nodes = nodes.fillna(0)
 
-    # nodes2 = pd.read_csv('data/local_poi_distances.csv', index_col="node_id")
-    # nodes = pd.concat([nodes, nodes2], axis=1)
-
     print nodes.describe()
     orca.add_table("nodes", nodes)
 
 
-@orca.step('regional_vars')
+@orca.step()
 def regional_vars(net):
     nodes = networks.from_yaml(net["drive"], "regional_vars.yaml")
     nodes = nodes.fillna(0)
@@ -990,7 +976,7 @@ def regional_vars(net):
     orca.add_table("tmnodes", nodes)
 
 
-@orca.step('regional_pois')
+@orca.step()
 def regional_pois(settings, landmarks):
     # because of the aforementioned limit of one netowrk at a time for the
     # POIS, as well as the large amount of memory used, this is now a
@@ -1016,7 +1002,7 @@ def regional_pois(settings, landmarks):
     df.to_csv('regional_poi_distances.csv')
 
 
-@orca.step('price_vars')
+@orca.step()
 def price_vars(net):
     nodes2 = networks.from_yaml(net["walk"], "price_vars.yaml")
     nodes2 = nodes2.fillna(0)

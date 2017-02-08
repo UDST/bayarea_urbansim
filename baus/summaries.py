@@ -66,9 +66,6 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
             "capacity": capacity
         })
 
-    # if year != 2040:
-    #    return
-
     base_year_measures = orca.get_injectable("base_year_measures")
 
     f = open(os.path.join("runs", "run%d_topsheet_%d.log" %
@@ -492,25 +489,15 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
                     format(run_number, geography, 2009)
             summary_table.to_csv(summary_csv)
 
-    # ##############################
-    # ##############################
-    # ##Write Summary of Accounts###
-    # ##############################
-    # ##############################
-
     if year == final_year:
+
+        # Write Summary of Accounts
         for acct_name, acct in orca.get_injectable("coffer").iteritems():
             fname = "runs/run{}_acctlog_{}_{}.csv".\
                 format(run_number, acct_name, year)
             acct.to_frame().to_csv(fname)
 
-    # ##############################
-    # ##############################
-    # ####Write Urban Footprint#####
-    # #########Summary##############
-    # ##############################
-    # ##############################
-
+        # Write Urban Footprint Summary
         buildings_uf_df = orca.merge_tables(
             'buildings',
             [parcels, buildings],
