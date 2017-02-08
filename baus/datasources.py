@@ -231,6 +231,13 @@ def parcels_geography(parcels):
 
     df["juris_name"] = df.jurisdiction_id.map(juris_name)
 
+    df.loc["juris_name", 2054504] = "Marin County"
+    df.loc["juris_name", 2054505] = "Santa Clara County"
+    df.loc["juris_name", 2054506] = "Marin County"
+    df.loc["juris_name", 572927] = "Contra Costa County"
+    # assert no empty juris values
+    assert True not in s.isnull().value_counts()
+
     df["pda_id"] = df.pda_id.str.lower()
 
     # danville wasn't supposed to be a pda

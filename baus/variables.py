@@ -385,17 +385,9 @@ def performance_zone(parcels, parcels_geography):
     return parcels_geography.perfarea.reindex(parcels.index)
 
 
-# XXX move this to data sources
 @orca.column('parcels', cache=True)
 def juris(parcels, parcels_geography):
-    s = parcels_geography.juris_name.reindex(parcels.index)
-    s.loc[2054504] = "Marin County"
-    s.loc[2054505] = "Santa Clara County"
-    s.loc[2054506] = "Marin County"
-    s.loc[572927] = "Contra Costa County"
-    # assert no empty juris values
-    assert True not in s.isnull().value_counts()
-    return s
+    return parcels_geography.juris_name
 
 
 @orca.column('parcels', cache=True)
