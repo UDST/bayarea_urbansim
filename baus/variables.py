@@ -337,14 +337,15 @@ def vmt_com_fees(parcels, settings):
         parcels.vmt_res_cat.map(vmt_settings["com_for_com_fee_amounts"])
 
 
-# XXX don't hardcode scenario names / numbers
 # compute the fees per unit for each parcel
 # (since feees are specified spatially)
 @orca.column('parcels', cache=True)
 def fees_per_unit(parcels, settings, scenario):
     s = pd.Series(0, index=parcels.index)
 
-    if scenario == "3":
+    vmt_settings = settings["acct_settings"]["vmt_settings"]
+    if scenario in vmt_settings["com_for_res_scenarios"] or \
+        scenario in vmt_settings["res_for_res_scenarios"]
         s += parcels.vmt_res_fees
 
     return s
@@ -355,7 +356,8 @@ def fees_per_unit(parcels, settings, scenario):
 def fees_per_sqft(parcels, settings, scenario):
     s = pd.Series(0, index=parcels.index)
 
-    if scenario == "1" or scenario == "4":
+    vmt_settings = settings["acct_settings"]["vmt_settings"]
+    if scenario in vmt_settings["com_for_com_scenarios"]:
         s += parcels.vmt_com_fees
 
     return s

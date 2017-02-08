@@ -306,7 +306,7 @@ def policy_modifications_of_profit(feasibility, parcels):
 
 @orca.step("calculate_vmt_fees")
 def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
-                       summary, years_per_iter):
+                       summary, years_per_iter, scenario):
 
     vmt_settings = settings["acct_settings"]["vmt_settings"]
 
@@ -323,14 +323,14 @@ def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
 
     total_fees = 0
 
-    if settings.get("vmt_res_for_res", False):
+    if scenario in vmt_settings["res_for_res_scenarios"]:
 
         df["res_for_res_fees"] = df.vmt_res_cat.map(
             vmt_settings["res_for_res_fee_amounts"])
         total_fees += (df.res_for_res_fees * df.residential_units).sum()
         print "Applying vmt fees to %d units" % df.residential_units.sum()
 
-    if settings.get("vmt_com_for_res", False):
+    if scenario in vmt_settings["com_for_res_scenarios"]:
 
         df["com_for_res_fees"] = df.vmt_res_cat.map(
             vmt_settings["com_for_res_fee_amounts"])
@@ -351,7 +351,7 @@ def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
 
     total_fees = 0
 
-    if settings.get("vmt_com_for_com", False):
+     if scenario in vmt_settings["com_for_com_scenarios"]:
 
         df["com_for_com_fees"] = df.vmt_res_cat.map(
             vmt_settings["com_for_com_fee_amounts"])
