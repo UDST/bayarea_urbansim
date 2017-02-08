@@ -24,6 +24,7 @@ CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
 COMPARE_TO_NO_PROJECT = True
 NO_PROJECT = 611
 IN_YEAR, OUT_YEAR = 2010, 2040
+COMPARE_AGAINST_LAST_KNOWN_GOOD = False
 
 LAST_KNOWN_GOOD_RUNS = {
     "0": 1057,
@@ -38,8 +39,9 @@ orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 
 parser = argparse.ArgumentParser(description='Run UrbanSim models.')
 
-parser.add_argument('-c', action='store_true', dest='console',
-                    help='run from the console (logs to stdout), no slack or maps')
+parser.add_argument(
+    '-c', action='store_true', dest='console',
+    help='run from the console (logs to stdout), no slack or maps')
 
 parser.add_argument('-i', action='store_true', dest='interactive',
                     help='enter interactive mode after imports')
@@ -140,13 +142,14 @@ def get_simulation_models(SCENARIO):
     ]
 
     # calculate VMT taxes
-    vmt_settings = orca.get_injectable("settings")["acct_settings"]["vmt_settings"]
+    vmt_settings = \
+        orca.get_injectable("settings")["acct_settings"]["vmt_settings"]
     if SCENARIO in vmt_settings["com_for_com_scenarios"]:
         models.insert(models.index("office_developer"),
                       "subsidized_office_developer")
 
     if SCENARIO in vmt_settings["com_for_res_scenarios"] or \
-        SCENARIO in vmt_settings["res_for_res_scenarios"]:
+            SCENARIO in vmt_settings["res_for_res_scenarios"]:
 
         models.insert(models.index("diagnostic_output"),
                       "calculate_vmt_fees")
@@ -181,11 +184,11 @@ def run_models(MODE, SCENARIO):
             "neighborhood_vars",         # local accessibility variables
             "regional_vars",             # regional accessibility variables
             "rsh_estimate",              # residential sales hedonic
-            #"nrh_estimate",              # non-res rent hedonic
-            #"rsh_simulate",
-            #"nrh_simulate",
-            #"hlcm_estimate",             # household lcm
-            #"elcm_estimate",             # employment lcm
+            "nrh_estimate",              # non-res rent hedonic
+            "rsh_simulate",
+            "nrh_simulate",
+            "hlcm_estimate",             # household lcm
+            "elcm_estimate",             # employment lcm
 
         ], iter_vars=[2010])
 
@@ -315,7 +318,8 @@ if MODE == "simulation":
             os.path.join("runs", "run{}_".format(run_num) + fname)
         )
 
-if MODE == "simulation":
+
+if MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
     # compute and write the difference report at the superdistrict level
     prev_run = LAST_KNOWN_GOOD_RUNS[SCENARIO]
     # fetch the previous run off of the internet for comparison - the "last
@@ -334,9 +338,6 @@ if MODE == "simulation":
     with open("runs/run%d_difference_report.log" % run_num, "w") as f:
         f.write(summary)
 
-if MODE == "simulation":
-    with open("runs/run%d_check_feedback.log" % run_num, "w") as f:
-        f.write(check_feedback(run_num))
 
 if SLACK and MODE == "simulation":
 
@@ -353,11 +354,6 @@ if SLACK and MODE == "simulation":
             '#sim_updates', "No differences with reference run.", as_user=True)
 
 if S3:
-    try:
-        os.system(
-            'ls runs/run%d_* ' % run_num +
-            '| xargs -I file aws s3 cp file ' +
-            's3://bayarea-urbansim-results')
-    except Exception as e:
-        raise e
-    sys.exit(0)
+    os.system('ls runs/run%d_* ' % run_num +
+              '| xargs -I file aws s3 cp file ' +
+              's3://bayarea-urbansim-results')
