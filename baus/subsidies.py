@@ -351,7 +351,7 @@ def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
 
     total_fees = 0
 
-     if scenario in vmt_settings["com_for_com_scenarios"]:
+    if scenario in vmt_settings["com_for_com_scenarios"]:
 
         df["com_for_com_fees"] = df.vmt_res_cat.map(
             vmt_settings["com_for_com_fee_amounts"])

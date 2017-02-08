@@ -231,12 +231,13 @@ def parcels_geography(parcels):
 
     df["juris_name"] = df.jurisdiction_id.map(juris_name)
 
-    df.loc["juris_name", 2054504] = "Marin County"
-    df.loc["juris_name", 2054505] = "Santa Clara County"
-    df.loc["juris_name", 2054506] = "Marin County"
-    df.loc["juris_name", 572927] = "Contra Costa County"
+    df.loc[2054504, "juris_name"] = "Marin County"
+    df.loc[2054505, "juris_name"] = "Santa Clara County"
+    df.loc[2054506, "juris_name"] = "Marin County"
+    df.loc[572927, "juris_name"] = "Contra Costa County"
     # assert no empty juris values
-    assert True not in s.isnull().value_counts()
+    print df.juris_name[df.juris_name.isnull()]
+    assert True not in df.juris_name.isnull().value_counts()
 
     df["pda_id"] = df.pda_id.str.lower()
 

@@ -483,14 +483,14 @@ acct_settings:
     sending_buildings_subaccount_def: regional
     receiving_buildings_filter: pda_id>0
     res_for_res_scenarios:
-      "3"
+      - "3"
     com_for_com_scenarios:
-      "4"
-      "5"
+      - "4"
+      - "5"
     com_for_res_scenarios:
-      "1"
-      "4"
-      "5"
+      - "1"
+      - "4"
+      - "5"
     res_for_res_fee_amounts:
       VH: 25000
       H: 15000

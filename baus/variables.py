@@ -345,7 +345,7 @@ def fees_per_unit(parcels, settings, scenario):
 
     vmt_settings = settings["acct_settings"]["vmt_settings"]
     if scenario in vmt_settings["com_for_res_scenarios"] or \
-        scenario in vmt_settings["res_for_res_scenarios"]
+            scenario in vmt_settings["res_for_res_scenarios"]:
         s += parcels.vmt_res_fees
 
     return s
@@ -927,70 +927,3 @@ def zoned_build_ratio(parcels_zoning_calculations):
 def zoned_du_underbuild_nodev(parcels, parcels_zoning_calculations):
     return (parcels_zoning_calculations.zoned_du_underbuild *
             parcels.parcel_rules).astype('int')
-
-
-@orca.column('parcels_zoning_calculations')
-def office_allowed(parcels):
-    office_allowed = parcel_is_allowed('office')
-    return office_allowed
-
-
-@orca.column('parcels_zoning_calculations')
-def retail_allowed(parcels):
-    retail_allowed = parcel_is_allowed('retail')
-    return retail_allowed
-
-
-@orca.column('parcels_zoning_calculations')
-def industrial_allowed(parcels):
-    industrial_allowed = parcel_is_allowed('industrial')
-    return industrial_allowed
-
-
-@orca.column('parcels_zoning_calculations')
-def cat_r(parcels_zoning_calculations):
-    s = ~parcels_zoning_calculations.office_allowed &\
-        parcels_zoning_calculations.retail_allowed
-    s2 = pd.Series(index=parcels_zoning_calculations.index).fillna('R')
-    return s * s2
-
-
-@orca.column('parcels_zoning_calculations')
-def cat_ind(parcels_zoning_calculations):
-    s = ~parcels_zoning_calculations.office_allowed &\
-        ~parcels_zoning_calculations.retail_allowed &\
-        parcels_zoning_calculations.industrial_allowed
-    s2 = pd.Series(index=parcels_zoning_calculations.index).fillna('I')
-    return s * s2
-
-
-@orca.column('parcels_zoning_calculations')
-def office_high(parcels_zoning_calculations):
-    s = parcels_zoning_calculations.effective_max_office_far > 4
-    s2 = pd.Series(index=parcels_zoning_calculations.index).fillna('OH')
-    s3 = s * s2
-    return s3
-
-
-@orca.column('parcels_zoning_calculations')
-def office_medium(parcels_zoning_calculations):
-    s = parcels_zoning_calculations.effective_max_office_far > 1
-    s2 = parcels_zoning_calculations.effective_max_office_far <= 4
-    s3 = pd.Series(index=parcels_zoning_calculations.index).fillna('OM')
-    return (s & s2) * s3
-
-
-@orca.column('parcels_zoning_calculations')
-def office_low(parcels_zoning_calculations):
-    s = parcels_zoning_calculations.effective_max_office_far < 1
-    s2 = parcels_zoning_calculations.office_allowed
-    s3 = pd.Series(index=parcels_zoning_calculations.index).fillna('OL')
-    return (s & s2) * s3
-
-
-@orca.column('parcels_zoning_calculations')
-def non_res_categories(parcels_zoning_calculations):
-    pzc = parcels_zoning_calculations
-    s = pzc.office_high + pzc.office_medium + \
-        pzc.office_low + pzc.cat_r + pzc.cat_ind
-    return s

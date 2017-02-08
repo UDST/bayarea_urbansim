@@ -140,13 +140,13 @@ def get_simulation_models(SCENARIO):
     ]
 
     # calculate VMT taxes
-    vmt_settings = orca.get_injectable("settings")["vmt_settings"]
+    vmt_settings = orca.get_injectable("settings")["acct_settings"]["vmt_settings"]
     if SCENARIO in vmt_settings["com_for_com_scenarios"]:
         models.insert(models.index("office_developer"),
                       "subsidized_office_developer")
 
     if SCENARIO in vmt_settings["com_for_res_scenarios"] or \
-        SCENARIO in vmt_settings["res_for_res_scenarios"]
+        SCENARIO in vmt_settings["res_for_res_scenarios"]:
 
         models.insert(models.index("diagnostic_output"),
                       "calculate_vmt_fees")
