@@ -1,6 +1,8 @@
 DRAFT Bay Area Urbansim Implementation
 =======
 
+[![Build Status](https://travis-ci.org/MetropolitanTransportationCommission/bayarea_urbansim.svg?branch=master)](https://travis-ci.org/MetropolitanTransportationCommission/bayarea_urbansim)
+
 This is the DRAFT UrbanSim implementation for the Bay Area. Documenation for the Bay Area model is available at http://metropolitantransportationcommission.github.io/bayarea_urbansim and documentation for the generic UrbanSim model is at https://udst.github.io/urbansim/index.html
 
 ###Install Overview
