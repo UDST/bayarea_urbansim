@@ -8,6 +8,14 @@ from urbansim_defaults import utils
 from urbansim_defaults import variables
 
 
+'''
+There's some really interesting side-effects of orca cache behavior which
+affects how the cache is used here - see this for more info
+https://github.com/UDST/orca/issues/16
+In general I try to be very conservative on when to use the cache
+I don't trust myself to be able to use it right
+'''
+
 #####################
 # HOUSEHOLDS VARIABLES
 #####################
@@ -93,7 +101,7 @@ def general_type(buildings, building_type_map):
 # in the aggregate because of rounding errors - this way some spaces will
 # be underfilled and others overfilled which should yield an average of
 # the sqft_per_job table
-@orca.column('buildings', cache=False)
+@orca.column('buildings', cache=True)
 def job_spaces(buildings):
     return (buildings.non_residential_sqft /
             buildings.sqft_per_job).fillna(0).round().astype('int')
@@ -223,7 +231,7 @@ def transit_type(buildings, parcels_geography):
         reindex(buildings.index).fillna('none')
 
 
-@orca.column('buildings', cache=False)
+@orca.column('buildings')
 def unit_price(buildings):
     return buildings.residential_price * buildings.sqft_per_unit
 
@@ -233,7 +241,7 @@ def tmnode_id(buildings, parcels):
     return misc.reindex(parcels.tmnode_id, buildings.parcel_id)
 
 
-@orca.column('buildings', cache=True)
+@orca.column('buildings')
 def juris_ave_income(parcels, buildings):
     return misc.reindex(parcels.juris_ave_income, buildings.parcel_id)
 
@@ -499,7 +507,7 @@ def parcel_first_building_type_is(form):
     return parcels.first_building_type.isin(form_to_btype[form])
 
 
-@orca.column('parcels', cache=True)
+@orca.column('parcels')
 def juris_ave_income(households, buildings, parcels_geography, parcels):
     # get frame of income and jurisdiction
     h = orca.merge_tables("households",
@@ -700,17 +708,17 @@ def land_cost(parcels):
     return parcels.building_purchase_price + parcels.parcel_size * s
 
 
-@orca.column('parcels')
+@orca.column('parcels', cache=True)
 def county(parcels, settings):
     return parcels.county_id.map(settings["county_id_map"])
 
 
-@orca.column('parcels')
+@orca.column('parcels', cache=True)
 def cost_shifters(parcels, settings):
     return parcels.county.map(settings["cost_shifters"])
 
 
-@orca.column('parcels')
+@orca.column('parcels', cache=True)
 def price_shifters(parcels, settings):
     return parcels.pda.map(settings["pda_price_shifters"]).fillna(1.0)
 
