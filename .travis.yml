@@ -20,8 +20,9 @@ install:
   conda create -q -c synthicity -n test-environment
   python=$TRAVIS_PYTHON_VERSION
   cytoolz ipython-notebook jinja2 matplotlib numpy pandas patsy pip scipy
-  statsmodels pytables pytest pyyaml
+  statsmodels pytables pytest pyyaml pandana
 - source activate test-environment
+- pip install pep8
 - pip install -r requirements.txt
 script:
 - pep8 baus
