@@ -6,13 +6,12 @@ from baus import models
 import pandas as pd
 import orca
 import socket
+import argparse
 import warnings
 from baus.utils import compare_summary
 from scripts.check_feedback import check_feedback
 
 warnings.filterwarnings("ignore")
-
-args = sys.argv[1:]
 
 SLACK = MAPS = "URBANSIM_SLACK" in os.environ
 LOGS = True
@@ -25,6 +24,7 @@ CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
 COMPARE_TO_NO_PROJECT = True
 NO_PROJECT = 611
 IN_YEAR, OUT_YEAR = 2010, 2040
+COMPARE_AGAINST_LAST_KNOWN_GOOD = False
 
 LAST_KNOWN_GOOD_RUNS = {
     "0": 1057,
@@ -37,12 +37,47 @@ LAST_KNOWN_GOOD_RUNS = {
 
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 
-if len(args) and args[0] == "-i":
+parser = argparse.ArgumentParser(description='Run UrbanSim models.')
+
+parser.add_argument(
+    '-c', action='store_true', dest='console',
+    help='run from the console (logs to stdout), no slack or maps')
+
+parser.add_argument('-i', action='store_true', dest='interactive',
+                    help='enter interactive mode after imports')
+
+parser.add_argument('-s', action='store', dest='scenario',
+                    help='specify which scenario to run')
+
+parser.add_argument('-y', action='store', dest='out_year', type=int,
+                    help='The year to which to run the simualtion.')
+
+parser.add_argument('--mode', action='store', dest='mode',
+                    help='which mode to run (see code for mode options)')
+
+parser.add_argument('--disable-slack', action='store_true', dest='noslack',
+                    help='disable slack outputs')
+
+options = parser.parse_args()
+
+if options.console:
+    SLACK = MAPS = LOGS = False
+
+if options.interactive:
     SLACK = MAPS = LOGS = False
     INTERACT = True
 
-if len(args) and args[0] == "-s":
-    orca.add_injectable("scenario", args[1])
+if options.out_year:
+    OUT_YEAR = options.out_year
+
+if options.scenario:
+    orca.add_injectable("scenario", options.scenario)
+
+if options.mode:
+    MODE = options.mode
+
+if options.noslack:
+    SLACK = False
 
 SCENARIO = orca.get_injectable("scenario")
 
@@ -107,29 +142,14 @@ def get_simulation_models(SCENARIO):
     ]
 
     # calculate VMT taxes
-    if SCENARIO in ["1", "3", "4", "5"]:
-        # calculate the vmt fees at the end of the year
+    vmt_settings = \
+        orca.get_injectable("settings")["acct_settings"]["vmt_settings"]
+    if SCENARIO in vmt_settings["com_for_com_scenarios"]:
+        models.insert(models.index("office_developer"),
+                      "subsidized_office_developer")
 
-        # note that you might also have to change the fees that get
-        # imposed - look for fees_per_unit column in variables.py
-
-        if SCENARIO == "3":
-            orca.get_injectable("settings")["vmt_res_for_res"] = True
-
-        if SCENARIO == "1":
-            orca.get_injectable("settings")["vmt_com_for_res"] = True
-
-        if SCENARIO == "4":
-            orca.get_injectable("settings")["vmt_com_for_res"] = True
-            orca.get_injectable("settings")["vmt_com_for_com"] = False
-
-        if SCENARIO == "5":
-            orca.get_injectable("settings")["vmt_com_for_res"] = True
-            orca.get_injectable("settings")["vmt_com_for_com"] = False
-            
-            
-            models.insert(models.index("office_developer"),
-                          "subsidized_office_developer")
+    if SCENARIO in vmt_settings["com_for_res_scenarios"] or \
+            SCENARIO in vmt_settings["res_for_res_scenarios"]:
 
         models.insert(models.index("diagnostic_output"),
                       "calculate_vmt_fees")
@@ -143,9 +163,15 @@ def get_simulation_models(SCENARIO):
 
 def run_models(MODE, SCENARIO):
 
-    orca.run(["correct_baseyear_data"])
+    if MODE == "preprocessing":
 
-    if MODE == "simulation":
+        orca.run([
+            "preproc_jobs",
+            "preproc_households",
+            "preproc_buildings"
+        ])
+
+    elif MODE == "simulation":
 
         years_to_run = range(IN_YEAR, OUT_YEAR+1, EVERY_NTH_YEAR)
         models = get_simulation_models(SCENARIO)
@@ -292,7 +318,8 @@ if MODE == "simulation":
             os.path.join("runs", "run{}_".format(run_num) + fname)
         )
 
-if MODE == "simulation":
+
+if MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
     # compute and write the difference report at the superdistrict level
     prev_run = LAST_KNOWN_GOOD_RUNS[SCENARIO]
     # fetch the previous run off of the internet for comparison - the "last
@@ -311,9 +338,6 @@ if MODE == "simulation":
     with open("runs/run%d_difference_report.log" % run_num, "w") as f:
         f.write(summary)
 
-if MODE == "simulation":
-    with open("runs/run%d_check_feedback.log" % run_num, "w") as f:
-        f.write(check_feedback(run_num))
 
 if SLACK and MODE == "simulation":
 
@@ -330,11 +354,6 @@ if SLACK and MODE == "simulation":
             '#sim_updates', "No differences with reference run.", as_user=True)
 
 if S3:
-    try:
-        os.system(
-            'ls runs/run%d_* ' % run_num +
-            '| xargs -I file aws s3 cp file ' +
-            's3://bayarea-urbansim-results')
-    except Exception as e:
-        raise e
-    sys.exit(0)
+    os.system('ls runs/run%d_* ' % run_num +
+              '| xargs -I file aws s3 cp file ' +
+              's3://bayarea-urbansim-results')

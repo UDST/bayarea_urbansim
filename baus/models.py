@@ -19,7 +19,12 @@ import numpy as np
 import pandas as pd
 
 
-@orca.step('rsh_simulate')
+@orca.step()
+def rsh_estimate(buildings, aggregations):
+    return utils.hedonic_estimate("rsh.yaml", buildings, aggregations)
+
+
+@orca.step()
 def rsh_simulate(buildings, aggregations, settings):
     utils.hedonic_simulate("rsh.yaml", buildings, aggregations,
                            "residential_price")
@@ -32,7 +37,7 @@ def rsh_simulate(buildings, aggregations, settings):
             buildings.residential_price.describe()
 
 
-@orca.step('hlcm_simulate')
+@orca.step()
 def hlcm_simulate(households, buildings, aggregations, settings, low_income):
 
     fname = misc.config("hlcm.yaml")
@@ -62,7 +67,16 @@ def hlcm_simulate(households, buildings, aggregations, settings, low_income):
                        settings.get("enable_supply_correction", None))
 
 
-@orca.step('households_transition')
+@orca.step()
+def elcm_simulate(jobs, buildings, aggregations):
+    buildings.local["non_residential_price"] = \
+        buildings.local.non_residential_price.fillna(0)
+    return utils.lcm_simulate("elcm.yaml", jobs, buildings, aggregations,
+                              "building_id", "job_spaces",
+                              "vacant_job_spaces")
+
+
+@orca.step()
 def households_transition(households, household_controls, year, settings):
     s = orca.get_table('households').base_income_quartile.value_counts()
     print "Distribution by income before:\n", (s/s.sum())
@@ -76,7 +90,7 @@ def households_transition(households, household_controls, year, settings):
     return ret
 
 
-@orca.step('households_relocation')
+@orca.step()
 def households_relocation(households, settings, years_per_iter):
     rate = settings['rates']['households_relocation']
     rate = min(rate * years_per_iter, 1.0)
@@ -85,13 +99,9 @@ def households_relocation(households, settings, years_per_iter):
 
 @orca.table(cache=True)
 def employment_relocation_rates():
-
     df = pd.read_csv(os.path.join("data", "employment_relocation_rates.csv"))
-
     df = df.set_index("zone_id").stack().reset_index()
-
     df.columns = ["zone_id", "empsix", "rate"]
-
     return df
 
 
@@ -164,18 +174,14 @@ def _proportional_jobs_model(
 
 @orca.step()
 def additional_units(year, buildings, parcels):
-
-    add_units = pd.read_csv("data/additional_units.csv", index_col="juris")[str(year)]
-
+    add_units = pd.read_csv("data/additional_units.csv",
+                            index_col="juris")[str(year)]
     buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
-
     res_buildings = buildings_juris[buildings.general_type == "Residential"]
-
     add_buildings = groupby_random_choice(res_buildings, add_units)
-
     add_buildings = pd.Series(add_buildings.index).value_counts()
-
-    buildings.local.loc[add_buildings.index, "residential_units"] += add_buildings.values
+    buildings.local.loc[add_buildings.index, "residential_units"] += \
+        add_buildings.values
 
 
 @orca.step()
@@ -316,7 +322,7 @@ def jobs_relocation(jobs, employment_relocation_rates, years_per_iter,
 # demolished buildings - this version only demolishes when there is a row to
 # demolish in the csv file - this also allows building multiple buildings and
 # just adding capacity on an existing parcel, by adding one building at a time
-@orca.step("scheduled_development_events")
+@orca.step()
 def scheduled_development_events(buildings, development_projects,
                                  demolish_events, summary, year, parcels,
                                  settings, years_per_iter, parcels_geography,
@@ -347,11 +353,12 @@ def scheduled_development_events(buildings, development_projects,
         buildings, dps,
         remove_developed_buildings=False,
         unplace_agents=['households', 'jobs'])
-    new_buildings["form"] = new_buildings.building_type_id.map(
+    new_buildings["form"] = new_buildings.building_type.map(
         settings['building_type_map']).str.lower()
     new_buildings["job_spaces"] = new_buildings.non_residential_sqft / \
-        new_buildings.building_type_id.fillna(-1).map(building_sqft_per_job)
-    new_buildings["job_spaces"] = new_buildings.job_spaces.astype('int')
+        new_buildings.building_type.fillna("OF").map(building_sqft_per_job)
+    new_buildings["job_spaces"] = new_buildings.job_spaces.\
+        fillna(0).astype('int')
     new_buildings["geom_id"] = parcel_id_to_geom_id(new_buildings.parcel_id)
     new_buildings["SDEM"] = True
     new_buildings["subsidized"] = False
@@ -367,7 +374,7 @@ def scheduled_development_events(buildings, development_projects,
     summary.add_parcel_output(new_buildings)
 
 
-@orca.injectable("supply_and_demand_multiplier_func", autocall=False)
+@orca.injectable(autocall=False)
 def supply_and_demand_multiplier_func(demand, supply):
     s = demand / supply
     settings = orca.get_injectable('settings')
@@ -380,13 +387,12 @@ def supply_and_demand_multiplier_func(demand, supply):
     t = t / t.max() * (clip_change_high-1)
     t += 1.0
     s.loc[s > 1.0] = t.loc[s > 1.0]
-    # print "Shifters for current iteration\n", s.describe()
     return s, (s <= 1.0).all()
 
 
 # this if the function for mapping a specific building that we build to a
 # specific building type
-@orca.injectable("form_to_btype_func", autocall=False)
+@orca.injectable(autocall=False)
 def form_to_btype_func(building):
     settings = orca.get_injectable('settings')
     form = building.form
@@ -394,15 +400,15 @@ def form_to_btype_func(building):
     # precise mapping of form to building type for residential
     if form is None or form == "residential":
         if dua < 16:
-            return 1
+            return "HS"
         elif dua < 32:
-            return 2
-        return 3
+            return "HT"
+        return "HM"
     return settings["form_to_btype"][form][0]
 
 
-@orca.injectable("add_extra_columns_func", autocall=False)
-def add_extra_columns(df):
+@orca.injectable(autocall=False)
+def add_extra_columns_func(df):
     for col in ["residential_price", "non_residential_price"]:
         df[col] = 0
 
@@ -413,6 +419,7 @@ def add_extra_columns(df):
             df.deed_restricted_units.sum()
 
     df["redfin_sale_year"] = 2012
+    df["redfin_sale_price"] = np.nan
 
     if "residential_units" not in df:
         df["residential_units"] = 0
@@ -425,14 +432,14 @@ def add_extra_columns(df):
         df["year_built"] = orca.get_injectable("year")
 
     if "form_to_btype_func" in orca.orca._INJECTABLES and \
-            "building_type_id" not in df:
+            "building_type" not in df:
         form_to_btype_func = orca.get_injectable("form_to_btype_func")
-        df["building_type_id"] = df.apply(form_to_btype_func, axis=1)
+        df["building_type"] = df.apply(form_to_btype_func, axis=1)
 
     return df
 
 
-@orca.step('alt_feasibility')
+@orca.step()
 def alt_feasibility(parcels, settings,
                     parcel_sales_price_sqft_func,
                     parcel_is_allowed_func):
@@ -456,7 +463,7 @@ def alt_feasibility(parcels, settings,
     orca.add_table("feasibility", f)
 
 
-@orca.step('residential_developer')
+@orca.step()
 def residential_developer(feasibility, households, buildings, parcels, year,
                           settings, summary, form_to_btype_func,
                           add_extra_columns_func, parcels_geography,
@@ -573,7 +580,7 @@ def retail_developer(jobs, buildings, parcels, nodes, feasibility,
 
     target = all_units * float(dev_settings['type_splits']["Retail"])
     # target here is in sqft
-    target *= settings["building_sqft_per_job"][10]
+    target *= settings["building_sqft_per_job"]["HS"]
 
     feasibility = feasibility.to_frame().loc[:, "retail"]
     feasibility = feasibility.dropna(subset=["max_profit"])
@@ -801,7 +808,7 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
     new_buildings["residential_sqft"] = 0
     new_buildings["building_sqft"] = new_buildings.non_residential_sqft
     new_buildings["stories"] = 1
-    new_buildings["building_type_id"] = 10
+    new_buildings["building_type"] = "RB"
 
     # this is a fairly arbitrary rule, but we're only adding ground floor
     # retail in areas that are underserved right now - this is defined as
@@ -899,8 +906,8 @@ def make_network_from_settings(settings):
     )
 
 
-@orca.injectable('net', cache=True)
-def build_networks(settings):
+@orca.injectable(cache=True)
+def net(settings):
     nets = {}
     pdna.reserve_num_graphs(len(settings["build_networks"]))
 
@@ -915,7 +922,7 @@ def build_networks(settings):
     return nets
 
 
-@orca.step('local_pois')
+@orca.step()
 def local_pois(settings):
     # because of the aforementioned limit of one netowrk at a time for the
     # POIS, as well as the large amount of memory used, this is now a
@@ -945,21 +952,18 @@ def local_pois(settings):
     df.to_csv('local_poi_distances.csv')
 
 
-@orca.step('neighborhood_vars')
+@orca.step()
 def neighborhood_vars(net):
     nodes = networks.from_yaml(net["walk"], "neighborhood_vars.yaml")
     nodes = nodes.replace(-np.inf, np.nan)
     nodes = nodes.replace(np.inf, np.nan)
     nodes = nodes.fillna(0)
 
-    # nodes2 = pd.read_csv('data/local_poi_distances.csv', index_col="node_id")
-    # nodes = pd.concat([nodes, nodes2], axis=1)
-
     print nodes.describe()
     orca.add_table("nodes", nodes)
 
 
-@orca.step('regional_vars')
+@orca.step()
 def regional_vars(net):
     nodes = networks.from_yaml(net["drive"], "regional_vars.yaml")
     nodes = nodes.fillna(0)
@@ -972,7 +976,7 @@ def regional_vars(net):
     orca.add_table("tmnodes", nodes)
 
 
-@orca.step('regional_pois')
+@orca.step()
 def regional_pois(settings, landmarks):
     # because of the aforementioned limit of one netowrk at a time for the
     # POIS, as well as the large amount of memory used, this is now a
@@ -998,7 +1002,7 @@ def regional_pois(settings, landmarks):
     df.to_csv('regional_poi_distances.csv')
 
 
-@orca.step('price_vars')
+@orca.step()
 def price_vars(net):
     nodes2 = networks.from_yaml(net["walk"], "price_vars.yaml")
     nodes2 = nodes2.fillna(0)
@@ -1006,128 +1010,3 @@ def price_vars(net):
     nodes = orca.get_table('nodes')
     nodes = nodes.to_frame().join(nodes2)
     orca.add_table("nodes", nodes)
-
-
-# this is not really simulation - just writing a method to get average
-# appreciation per zone over the past X number of years
-@orca.step("mls_appreciation")
-def mls_appreciation(homesales, year, summary):
-    buildings = homesales
-
-    years = buildings.redfin_sale_year
-    zone_ids = buildings.zone_id
-    price = buildings.redfin_sale_price
-
-    # minimum observations
-    min_obs = 10
-
-    def aggregate_year(year):
-        mask = years == year
-        s = price[mask].groupby(zone_ids[mask]).median()
-        size = price[mask].groupby(zone_ids[mask]).size()
-        return s, size
-
-    current, current_size = aggregate_year(2013)
-
-    zones = pd.DataFrame(index=zone_ids.unique())
-
-    past, past_size = aggregate_year(year)
-    appreciation = (current / past).pow(1.0/(2013-year))
-    # zero out the zones with too few observations
-    appreciation = appreciation * (current_size > min_obs).astype('int')
-    appreciation = appreciation * (past_size > min_obs).astype('int')
-    zones["appreciation"] = appreciation
-
-    print zones.describe()
-
-    summary.add_zone_output(zones, "appreciation", year)
-    summary.write_zone_output()
-
-
-@orca.step()
-def correct_baseyear_data(buildings, parcels, jobs):
-    # sonoma county has too much vacancy in the buildings so we're
-    # going to lower it a bit to match job totals - I'm doing it here
-    # as opposed to in datasources as it requires registered orca
-    # variables
-
-    '''
-    These are the original vacancies
-    Alameda          0.607865
-    Contra Costa     0.464277
-    Marin            0.326655
-    Napa             0.427900
-    San Francisco    0.714938
-    San Mateo        0.285090
-    Santa Clara      0.368031
-    Solano           0.383663
-    Sonoma           0.434263
-    '''
-
-    # get buildings by county
-    buildings_county = misc.reindex(parcels.county, buildings.parcel_id)
-    buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
-
-    # making sure we have no more than 10% vacancy
-    # this is the maximum vacancy you can have any a building so it NOT the
-    # same thing as setting the vacancy for the entire county
-    SURPLUS_VACANCY_COUNTY = buildings_county.map({
-       "Alameda": .42,
-       "Contra Costa": .57,
-       "Marin": .28,
-       "Napa": .7,
-       "San Francisco": .08,
-       "San Mateo": .4,
-       "Santa Clara": .32,
-       "Solano": .53,
-       "Sonoma": .4
-    }).fillna(.2)
-
-    SURPLUS_VACANCY_JURIS = buildings_juris.map({
-       "Berkeley": .65,
-       "Atherton": 0.05,
-       "Belvedere": 0,
-       "Corte Madera": 0,
-       "Cupertino": .1,
-       "Healdsburg": 0,
-       "Larkspur": 0,
-       "Los Altos Hills": 0,
-       "Los Gatos": 0,
-       "Monte Sereno": 0,
-       "Piedmont": 0,
-       "Portola Valley": 0,
-       "Ross": 0,
-       "San Anselmo": 0,
-       "Saratoga": 0,
-       "Woodside": 0,
-       "Alameda": .2
-    })
-
-    SURPLUS_VACANCY = pd.DataFrame([
-       SURPLUS_VACANCY_COUNTY, SURPLUS_VACANCY_JURIS]).min()
-
-    # count of jobs by building
-    job_counts_by_building = jobs.building_id.value_counts().\
-        reindex(buildings.index).fillna(0)
-    # with a 10% vacancy
-    job_counts_by_building_surplus = \
-        (job_counts_by_building * (SURPLUS_VACANCY+1)).astype('int')
-    # min of job spaces and 10% greater than number of jobs
-    correct_job_spaces = pd.DataFrame([
-        job_counts_by_building_surplus, buildings.job_spaces]).min()
-    # convert back to non res sqft because job spaces is computed
-    correct_non_res_sqft = correct_job_spaces * buildings.sqft_per_job
-
-    buildings.update_col("non_residential_sqft", correct_non_res_sqft)
-
-    jobs_county = misc.reindex(buildings_county, jobs.building_id)
-
-    print "Vacancy rate by county:\n", \
-        buildings.job_spaces.groupby(buildings_county).sum() / \
-        jobs_county.value_counts() - 1.0
-
-    jobs_juris = misc.reindex(buildings_juris, jobs.building_id)
-
-    s = buildings.job_spaces.groupby(buildings_juris).sum() / \
-        jobs_juris.value_counts() - 1.0
-    print "Vacancy rate by juris:\n", s.to_string()

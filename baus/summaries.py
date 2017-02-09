@@ -66,9 +66,6 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
             "capacity": capacity
         })
 
-    # if year != 2040:
-    #    return
-
     base_year_measures = orca.get_injectable("base_year_measures")
 
     f = open(os.path.join("runs", "run%d_topsheet_%d.log" %
@@ -285,8 +282,6 @@ def diagnostic_output(households, buildings, parcels, taz, jobs,
     parcels = parcels.to_frame()
     zones = zones.to_frame()
 
-    zones['ave_unit_sqft'] = zones.ave_unit_sqft
-
     zones['zoned_du'] = parcels.groupby('zone_id').zoned_du.sum()
     zones['zoned_du_underbuild'] = parcels.groupby('zone_id').\
         zoned_du_underbuild.sum()
@@ -374,7 +369,7 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
     buildings_df = orca.merge_tables(
         'buildings',
         [parcels, buildings],
-        columns=['pda', 'superdistrict', 'juris', 'building_type_id',
+        columns=['pda', 'superdistrict', 'juris', 'building_type',
                  'zone_id', 'residential_units', 'building_sqft',
                  'non_residential_sqft'])
 
@@ -430,10 +425,10 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
 
             # residential buildings by type
             summary_table['sfdu'] = buildings_df.\
-                query("building_type_id == 1 or building_type_id == 2").\
+                query("building_type == 'HS' or building_type == 'HT'").\
                 groupby(geography).residential_units.sum()
             summary_table['mfdu'] = buildings_df.\
-                query("building_type_id == 3 or building_type_id == 12").\
+                query("building_type == 'HM' or building_type == 'MR'").\
                 groupby(geography).residential_units.sum()
 
             # employees by sector
@@ -494,25 +489,15 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
                     format(run_number, geography, 2009)
             summary_table.to_csv(summary_csv)
 
-    # ##############################
-    # ##############################
-    # ##Write Summary of Accounts###
-    # ##############################
-    # ##############################
-
     if year == final_year:
+
+        # Write Summary of Accounts
         for acct_name, acct in orca.get_injectable("coffer").iteritems():
             fname = "runs/run{}_acctlog_{}_{}.csv".\
                 format(run_number, acct_name, year)
             acct.to_frame().to_csv(fname)
 
-    # ##############################
-    # ##############################
-    # ####Write Urban Footprint#####
-    # #########Summary##############
-    # ##############################
-    # ##############################
-
+        # Write Urban Footprint Summary
         buildings_uf_df = orca.merge_tables(
             'buildings',
             [parcels, buildings],
@@ -595,7 +580,7 @@ def parcel_summary(parcels, buildings, households, jobs,
         "x", "y",
         "total_residential_units",
         "total_job_spaces",
-        "first_building_type_id"
+        "first_building_type"
     ])
 
     df2 = parcels_zoning_calculations.to_frame([
@@ -642,7 +627,7 @@ def parcel_summary(parcels, buildings, households, jobs,
 
         for col in df.columns:
 
-            if col in ["x", "y", "first_building_type_id"]:
+            if col in ["x", "y", "first_building_type"]:
                 continue
 
             df[col] = df[col] - df2[col]
@@ -655,93 +640,134 @@ def parcel_summary(parcels, buildings, households, jobs,
 
 @orca.step("travel_model_output")
 def travel_model_output(parcels, households, jobs, buildings,
-                        zones, homesales, year, summary, coffer,
+                        zones, year, summary, coffer,
                         zone_forecast_inputs, run_number,
-                        taz, base_year_summary_taz):
-    # using the following conditional b/c `year` is used to pull a column
-    # from a csv based on a string of the year in add_population()
-    # and in add_employment() and 2009 is the
-    # 'base'/pre-simulation year, as is the 2010 value in the csv.
-    if year == 2009:
-        year = 2010
-        base = True
-    else:
-        base = False
+                        taz, base_year_summary_taz, taz_geography):
 
-    if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
+    if year not in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
+        # only summarize for years which are multiples of 5
+        return
 
-        df = taz
-        taz_df = pd.DataFrame(index=zones.index)
-        taz_df["sd"] = df.sd
-        taz_df["zone"] = df.index
-        taz_df["county"] = df.county
-        taz_df["agrempn"] = df.agrempn
-        taz_df["fpsempn"] = df.fsempn
-        taz_df["herempn"] = df.herempn
-        taz_df["retempn"] = df.retempn
-        taz_df["totemp"] = df.totemp
-        taz_df["mwtempn"] = df.mwtempn
-        taz_df["othempn"] = df.othempn
-        taz_df["hhincq1"] = df.hhinq1
-        taz_df["hhincq2"] = df.hhinq2
-        taz_df["hhincq3"] = df.hhinq3
-        taz_df["hhincq4"] = df.hhinq4
-        taz_df["shpop62p"] = df.shpop62p
-        taz_df["tothh"] = df.tothh
-        taz_df["gqpop"] = df.gqpop.fillna(0)
-        taz_df["mfdu"] = df.mfdu
-        taz_df["sfdu"] = df.sfdu
-        taz_df["ciacre_unweighted"] = df.ciacre
-        taz_df["resacre_unweighted"] = df.resacre
-        taz_df["ciacre"] = scaled_ciacre(
-                           base_year_summary_taz.CIACRE_UNWEIGHTED,
-                           df.ciacre)
-        taz_df["resacre"] = scaled_resacre(
-                            base_year_summary_taz.RESACRE_UNWEIGHTED,
-                            df.resacre)
-        taz_df["totacre"] = df.totacre
-        taz_df["totemp"] = df.totemp
-        taz_df["tothh"] = df.tothh
-        taz_df["zone"] = df.index
+    taz_df = pd.DataFrame(index=zones.index)
 
-        taz_df = add_population(taz_df, year)
-        # total population = group quarters plus households population
-        taz_df["totpop"] = taz_df.hhpop + taz_df.gqpop
-        taz_df["totpop"] = taz_df.totpop.fillna(0)
-        taz_df = add_employment(taz_df, year)
-        taz_df = add_age_categories(taz_df, year)
+    taz_df["sd"] = taz_geography.superdistrict
+    taz_df["zone"] = zones.index
+    taz_df["county"] = taz_geography.county
 
-        orca.add_table("travel_model_output", taz_df, year)
-        summary.add_zone_output(taz_df, "travel_model_output", year)
-        if sys.platform != 'win32':
-            summary.write_zone_output()
+    jobs_df = orca.merge_tables(
+        'jobs',
+        [parcels, buildings, jobs],
+        columns=['zone_id', 'empsix']
+    )
 
-        add_xy_config = {
-            "xy_table": "parcels",
-            "foreign_key": "parcel_id",
-            "x_col": "x",
-            "y_col": "y"
-        }
-        # otherwise it loses precision
-        if summary.parcel_output is not None and \
-                "geom_id" in summary.parcel_output:
-            summary.parcel_output["geom_id"] = \
-                summary.parcel_output.geom_id.astype('str')
-        summary.write_parcel_output(add_xy=add_xy_config)
+    # totally baffled by this - after joining the three tables we have three
+    # zone_ids, one from the parcel table, one from buildings, and one from
+    # jobs and the one called zone_id has null values while there others do not
+    # going to change this while I think about this - turns out this has to do
+    # with major caching issue which has been reported upstream
+    jobs_df["zone_id"] = jobs_df.zone_id_x
 
-        # travel model csv
-        if base is False:
-            travel_model_csv = \
-                "runs/run{}_taz_summaries_{}.csv".format(run_number, year)
-        elif base is True:
-            travel_model_csv = \
-                "runs/run{}_taz_summaries_{}.csv".format(run_number, 2009)
+    def getsectorcounts(sector):
+        return jobs_df.query("empsix == '%s'" % sector).\
+            groupby('zone_id').size()
 
-        # uppercase columns to match travel model template
-        taz_df.columns = \
-            [x.upper() for x in taz_df.columns]
+    taz_df["agrempn"] = getsectorcounts("AGREMPN")
+    taz_df["fpsempn"] = getsectorcounts("FPSEMPN")
+    taz_df["herempn"] = getsectorcounts("HEREMPN")
+    taz_df["retempn"] = getsectorcounts("RETEMPN")
+    taz_df["mwtempn"] = getsectorcounts("MWTEMPN")
+    taz_df["othempn"] = getsectorcounts("OTHEMPN")
+    taz_df["totemp"] = jobs_df.groupby('zone_id').size()
 
-        taz_df.fillna(0).to_csv(travel_model_csv)
+    households_df = households.to_frame(['zone_id',
+                                         'base_income_quartile',
+                                         'income',
+                                         'persons'])
+
+    def gethhcounts(filter):
+        return households_df.query(filter).groupby('zone_id').size()
+
+    taz_df["hhincq1"] = gethhcounts("base_income_quartile == 1")
+    taz_df["hhincq2"] = gethhcounts("base_income_quartile == 2")
+    taz_df["hhincq3"] = gethhcounts("base_income_quartile == 3")
+    taz_df["hhincq4"] = gethhcounts("base_income_quartile == 4")
+    taz_df["hhpop"] = households_df.groupby('zone_id').persons.sum()
+    taz_df["tothh"] = households_df.groupby('zone_id').size()
+
+    taz_df["shpop62p"] = zone_forecast_inputs.sh_62plus
+    taz_df["gqpop"] = zone_forecast_inputs["gqpop" + str(year)[-2:]].fillna(0)
+
+    taz_df["totacre"] = zone_forecast_inputs.totacre_abag
+    # total population = group quarters plus households population
+    taz_df["totpop"] = (taz_df.hhpop + taz_df.gqpop).fillna(0)
+    taz_df["density"] = \
+        (taz_df.totpop + (2.5 * taz_df.totemp)) / taz_df.totacre
+    taz_df["areatype"] = pd.cut(
+        taz_df.density,
+        bins=[0, 6, 30, 55, 100, 300, np.inf],
+        labels=[5, 4, 3, 2, 1, 0]
+    )
+
+    buildings_df = buildings.to_frame(['zone_id',
+                                       'building_type',
+                                       'residential_units',
+                                       'building_sqft',
+                                       'lot_size_per_unit'])
+
+    taz_df["res_units"] = buildings_df.\
+        groupby('zone_id').residential_units.sum()
+
+    taz_df["mfdu"] = buildings_df.\
+        query("building_type == 'HM' or building_type == 'MR'").\
+        groupby('zone_id').residential_units.sum()
+
+    taz_df["sfdu"] = buildings_df.\
+        query("building_type == 'HS' or building_type == 'HT'").\
+        groupby('zone_id').residential_units.sum()
+
+    f = orca.get_injectable('parcel_first_building_type_is')
+
+    def count_acres_with_mask(mask):
+        mask *= parcels.acres
+        return mask.groupby(parcels.zone_id).sum()
+
+    taz_df["resacre_unweighted"] = count_acres_with_mask(
+        f('residential') | f('mixedresidential'))
+
+    taz_df["ciacre_unweighted"] = count_acres_with_mask(
+        f('select_non_residential'))
+
+    taz_df["ciacre"] = scaled_ciacre(
+        base_year_summary_taz.CIACRE_UNWEIGHTED, taz_df.ciacre_unweighted)
+    taz_df["resacre"] = scaled_resacre(
+        base_year_summary_taz.RESACRE_UNWEIGHTED, taz_df.resacre_unweighted)
+
+    taz_df = add_population(taz_df, year)
+    taz_df = add_employment(taz_df, year)
+    taz_df = add_age_categories(taz_df, year)
+
+    summary.add_zone_output(taz_df, "travel_model_output", year)
+    summary.write_zone_output()
+
+    # otherwise it loses precision
+    if summary.parcel_output is not None\
+            and "geom_id" in summary.parcel_output:
+        summary.parcel_output["geom_id"] = \
+            summary.parcel_output.geom_id.astype('str')
+
+    summary.write_parcel_output(add_xy={
+        "xy_table": "parcels",
+        "foreign_key": "parcel_id",
+        "x_col": "x",
+        "y_col": "y"
+    })
+
+    # uppercase columns to match travel model template
+    taz_df.columns = \
+        [x.upper() for x in taz_df.columns]
+
+    taz_df.fillna(0).to_csv(
+        "runs/run{}_taz_summaries_{}.csv".format(run_number, year))
 
 
 def scaled_ciacre(mtcc, us_outc):

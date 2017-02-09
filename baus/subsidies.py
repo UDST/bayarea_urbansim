@@ -13,7 +13,6 @@ from utils import add_buildings
 # this method is a custom profit to probability function where we test the
 # combination of different metrics like return on cost and raw profit
 def profit_to_prob_func(df):
-
     # the clip is because we still might build negative profit buildings
     # (when we're subsidizing them) and choice doesn't allow negative
     # probability options
@@ -32,7 +31,7 @@ def profit_to_prob_func(df):
     return p / p.sum()
 
 
-@orca.injectable("coffer", cache=True)
+@orca.injectable(cache=True)
 def coffer(settings):
     d = {
         "vmt_res_acct":  accounts.Account("vmt_res_acct"),
@@ -45,52 +44,9 @@ def coffer(settings):
     return d
 
 
-@orca.injectable("acct_settings", cache=True)
+@orca.injectable(cache=True)
 def acct_settings(settings):
     return settings["acct_settings"]
-
-
-def tax_buildings(buildings, acct_settings, account, year):
-    """
-    Tax buildings and add the tax to an Account object by subaccount
-
-    Parameters
-    ----------
-    buildings : DataFrameWrapper
-        The standard buildings DataFrameWrapper
-    acct_settings : Dict
-        A dictionary of settings to parameterize the model.  Needs these keys:
-        sending_buildings_subaccount_def - maps buildings to subaccounts
-        sending_buildings_filter - filter for eligible buildings
-        sending_buildings_tax - a Pandas eval expression to compute the tax
-    accounts : Account
-        The Account object to use for subsidization
-    year : int
-        The current simulation year (will be added as metadata)
-
-    Returns
-    -------
-    Nothing
-    """
-    buildings = buildings.query(acct_settings["sending_buildings_filter"])
-
-    tax = buildings.eval(acct_settings["sending_buildings_tax"])
-
-    subaccounts = buildings[acct_settings["sending_buildings_subaccount_def"]]
-
-    tot_tax_by_subaccount = tax.groupby(subaccounts).sum()
-
-    for subacct, amt in tot_tax_by_subaccount.iteritems():
-        metadata = {
-            "description": "Collecting property tax",
-            "year": year
-        }
-        account.add_transaction(amt, subaccount=subacct,
-                                metadata=metadata)
-
-    print "Sample rows from property tax accts:"
-    print account.to_frame().\
-        sort(columns=["amount"], ascending=False).head(7)
 
 
 @orca.step()
@@ -304,9 +260,9 @@ def policy_modifications_of_profit(feasibility, parcels):
     return feasibility
 
 
-@orca.step("calculate_vmt_fees")
+@orca.step()
 def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
-                       summary, years_per_iter):
+                       summary, years_per_iter, scenario):
 
     vmt_settings = settings["acct_settings"]["vmt_settings"]
 
@@ -323,14 +279,14 @@ def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
 
     total_fees = 0
 
-    if settings.get("vmt_res_for_res", False):
+    if scenario in vmt_settings["res_for_res_scenarios"]:
 
         df["res_for_res_fees"] = df.vmt_res_cat.map(
             vmt_settings["res_for_res_fee_amounts"])
         total_fees += (df.res_for_res_fees * df.residential_units).sum()
         print "Applying vmt fees to %d units" % df.residential_units.sum()
 
-    if settings.get("vmt_com_for_res", False):
+    if scenario in vmt_settings["com_for_res_scenarios"]:
 
         df["com_for_res_fees"] = df.vmt_res_cat.map(
             vmt_settings["com_for_res_fee_amounts"])
@@ -351,7 +307,7 @@ def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
 
     total_fees = 0
 
-    if settings.get("vmt_com_for_com", False):
+    if scenario in vmt_settings["com_for_com_scenarios"]:
 
         df["com_for_com_fees"] = df.vmt_res_cat.map(
             vmt_settings["com_for_com_fee_amounts"])
@@ -687,7 +643,7 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
     summary.add_parcel_output(new_buildings)
 
 
-@orca.step('subsidized_residential_feasibility')
+@orca.step()
 def subsidized_residential_feasibility(
         parcels, settings,
         add_extra_columns_func, parcel_sales_price_sqft_func,
@@ -723,7 +679,7 @@ def subsidized_residential_feasibility(
         orca.get_injectable("year")))
 
 
-@orca.step('subsidized_residential_developer_vmt')
+@orca.step()
 def subsidized_residential_developer_vmt(
         households, buildings, add_extra_columns_func,
         parcels_geography, year, acct_settings, parcels,

@@ -1,37 +1,50 @@
+# these are the tables the get auto-merged to buildings/parcels in the hedonic and lcms
 aggregation_tables:
   - nodes
   - tmnodes
   - logsums
 
 
+# towards the end of the process we got a new tpp_id and didn't have the ability to
+# quickly turn around a new parcels_geography file to replace the old one
 use_new_tpp_id_in_topsheet: True
 
 
+# the weight to use to combine profit vs ROC to create a probability.  A 1.0 would mean
+# equal weights.  0.5 means profit is half as much as ROC
 profit_vs_return_on_cost_combination_factor: 0.5
 
 
+# a settings to not build the most dense building in any zone, even if zoning allows
+# it - reduces zoning to match the most dense building
 dont_build_most_dense_building: True
 
 
+# sets nan to zero so later models can run - usually used when these prices aren't
+# used but there is a check to force the models to fail before filters are applied
 set_nan_price_to_zero: True
 
 
+# if households or jobs are in building that don't exist, unplace them so they can be
+# places the next time through the LCMs
 remove_invalid_building_ids: True
 
 
+# add residential units if the number of households exceeds the number of units in
+# the base year data
 reconcile_residential_units_and_households: True
 
 
+# same as above but for non-res
 reconcile_non_residential_sqft_and_jobs: True
 
 
-set_nan_price_to_zero: True
-
-
+# convert square meters to square feet
 parcel_size_factor: 10.764
 
 
 # this is really because we don't have limits right now for retail
+# we can disallow new retail per city using this list of cities
 eliminate_retail_zoning_from_juris:
   - 'Sonoma County'
   - 'Contra Costa County'
@@ -65,6 +78,9 @@ eliminate_retail_zoning_from_juris:
   - 'Clayton'
 
 
+# we don't have great sqft_per_unit info across the bay area (building data
+# is poor on this metric) so we use DUA to get a clue as to sqft per unit
+# we assume high DUA areas will yield slightly smaller units
 clip_sqft_per_unit_based_on_dua:
   - threshold: 50
     max: 1000
@@ -73,17 +89,23 @@ clip_sqft_per_unit_based_on_dua:
   - threshold: 150
     max: 800
 
+
+# sqft per unit is often bad so we clip it to certain sizes - these are the
+# sizes the developer model will be testing
 ave_sqft_per_unit_clip:
   lower: 800
   upper: 2500
 
 
+# this is the percent of units (0 to 1.0) that must be set to inclusionary
+# in the developer model (revenue will be foregone based on the area AMI)
+# this is per scenario and per city
 inclusionary_housing_settings:
   default:
     - type: jurisdictions
       amount: .2
       values:
-        San Francisco:
+      - San Francisco
   "1":
     - type: jurisdictions
       description: low setting
@@ -384,11 +406,15 @@ inclusionary_housing_settings:
       - Walnut Creek
       - Windsor
 
+
+# these are the settings for various policies that are in play
 acct_settings:
   disable: False
 
   lump_sum_accounts:
 
+    # obag, where to spend the funds, how much to add, and which scenarios to
+    # add it in - the amount is per year
     obag_settings:
       name: "OBAG"
       sending_buildings_subaccount_def: regional
@@ -397,6 +423,8 @@ acct_settings:
       subsidize_affordable: False
       enable_in_scenarios: ["1", "2", "3", "4", "5"]
 
+    # these are all county specific affordable housing bonds but right now
+    # they aren't enabled in any scenarios
     san_mateo_bond_settings:
       name: "San Mateo Affordable Housing Bond"
       sending_buildings_subaccount_def: regional
@@ -429,6 +457,7 @@ acct_settings:
       subsidize_affordable: True
       enable_in_scenarios: []
 
+    # parcel tax settings
     parcel_tax_settings:
       name: "Parcel Tax"
       sending_buildings_subaccount_def: regional
@@ -437,6 +466,8 @@ acct_settings:
       subsidize_affordable: True
       enable_in_scenarios: ["1"]
 
+    # capital gains tax settings - see baus_docs for more information on the
+    # intent and use of these policies
     capital_gains_tax_settings:
       name: "Capital Gains Tax"
       sending_buildings_subaccount_def: regional
@@ -447,12 +478,17 @@ acct_settings:
 
   profitability_adjustment_policies:  
 
+    # rather than a lump sum pot of money to subsidized housing, these are
+    # adjustments to profitability using percentages (actually it's an open)
+    # ended formula - this is for CEQA review acceleration
     ceqa_tiering:
       name: "CEQA"
       enable_in_scenarios: ["1", "2", "3", "4"]
       # any parcel in a tpa
       profitability_adjustment_formula: "(tpp_id > 0) * .01"
 
+    # reduce parking requirements in TPPs - would be nice to have better data
+    # on how this impacts price as well, but we don't have it
     parking_requirements_tpps:
       name: "Reduce Parking Requirements in TPPs"
       enable_in_scenarios: ["3"]
@@ -465,23 +501,30 @@ acct_settings:
       # any parcel in a tpa
       profitability_adjustment_formula: "(pda_id > 0) * .01"
 
+  # this is a cutom policy which taxes land (reduces profit) based on the current
+  # built density - this is to incentive using land at its highest and best use
   land_value_tax_settings:
     enable_in_scenarios: ["3"]
     bins:
       pcts: [0.05, 0.02, 0.01, 0.0]
       breaks: [0.1, 0.3, 0.5]
 
-  sales_tax_settings:
-    sending_buildings_filter: general_type != 'Residential'
-    # this is the method used to compute the property tax - the 20 here is a cap rate
-    # to turn yearly rent into overall value - 1% property tax and 1% actually goes into
-    # funding affordable housing
-    sending_buildings_tax: non_residential_price * non_residential_sqft * 20 * .01 * .01
-    sending_buildings_subaccount_def: city_id
-    receiving_buildings_filter: pda_id > 0 and residential_units > 1
+  # these are the vmt policies which impose fees on new units / sqft in high vmt
+  # areas in order to subsidize development on new units / sqft in low vmt areas
+  # the areas are defined elsewhere - note that the policies can be res for res,
+  # com for com or com for res.
   vmt_settings:
     sending_buildings_subaccount_def: regional
     receiving_buildings_filter: pda_id>0
+    res_for_res_scenarios:
+      - "3"
+    com_for_com_scenarios:
+      - "4"
+      - "5"
+    com_for_res_scenarios:
+      - "1"
+      - "4"
+      - "5"
     res_for_res_fee_amounts:
       VH: 25000
       H: 15000
@@ -505,9 +548,12 @@ acct_settings:
       S: 0.02
 
 
+# break point to split between low income and high income HLCMs
 low_income_for_hlcm: 30000
 
 
+# enable supply correction for prices - tries to calibrate prices based on the demand
+# generated by the LCMS and the supply generated by the dev model
 enable_supply_correction:
   price_col: residential_price
   submarket_col: zone_id
@@ -522,35 +568,12 @@ enable_supply_correction:
     iterations: 8
 
 
-table_reprocess:
-  jobs:
-    fill_nas:
-      empsix:
-        how: "mode"
-        type: "int"
-  buildings:
-    fill_nas:
-      building_type_id:
-        how: "drop"
-        type: "int"
-      residential_units:
-        how: "zero"
-        type: "int"
-      non_residential_sqft:
-        how: "zero"
-        type: "int"
-      year_built:
-        how: "median"
-        type: "int"
-      building_type_id:
-        how: "mode"
-        type: "int"
-
-
+# simple household relocation rate - will be changed in the UAL model
 rates:
   households_relocation: .07
 
 
+# some info on where to get the accessibliity networks
 build_networks:
   walk:
       name: 2015_06_01_osm_bayarea4326.h5
@@ -561,26 +584,32 @@ build_networks:
       weight_col: "CTIMEA"
 
 
+# inputs to the transition model for households
 households_transition:
   add_columns:
     - base_income_quartile
   total_column: total_number_of_households
 
 
+# info to the transition model for jobs
 jobs_transition:
   add_columns:
     - empsix_id
   total_column: number_of_jobs
 
 
+# clip the prices that come out of the sales hedonic
 rsh_simulate:
   low: 200
   high: 2000
 
 
-
+# settings for the feasibility model - parcel_filter is very important and is a rule of
+# which parcels to consider - we don't consider nodev properties, historic properties, and
+# optionally we don't look at small lot single family
+# pass_through are columns not used by the developer but which go in the debug output
 feasibility:
-  parcel_filter: nodev != 1 and manual_nodev != 1 and sdem != 1 and oldest_building > 1906 and oldest_building_age > 20  and (total_residential_units != 1 or parcel_acres > 1.0) and first_building_type_id != 5 and first_building_type_id != 6
+  parcel_filter: nodev != 1 and manual_nodev != 1 and sdem != 1 and oldest_building > 1906 and oldest_building_age > 20  and (total_residential_units != 1 or parcel_acres > 1.0) and first_building_type != 'HO' and first_building_type != 'SC'
   residential_to_yearly: True
   simple_zoning: True
   pass_through:
@@ -604,12 +633,15 @@ feasibility:
     - vmt_res_cat
 
 
+# settings that get passed to the residential developer as kwargs
 residential_developer:
   target_vacancy: .03
   min_unit_size: 1000
   bldg_sqft_per_job: 400
   max_parcel_size: 150000000
 
+
+# same as above for non-res
 non_residential_developer:
   kwargs:
     target_vacancy: 0.05
@@ -619,16 +651,12 @@ non_residential_developer:
     Retail: 0.2
     Office: 0.8
 
-pusher:
-  key: 7d78b1b3454b78aed26f
-  secret: d87736e21dd7819926e6
-  host: http://localhost:8765/
-  region: bayarea
 
-
+# location of the hdf store
 store: 2015_09_01_bayarea_v3.h5
 
 
+# active scenario if not specified on the command line
 scenario: "4"
 
 
@@ -670,6 +698,8 @@ naics_to_empsix:
   4445: RETEMPN
   4849: MWTEMPN
 
+
+# what it says
 empsix_name_to_id:
   AGREMPN: 1
   MWTEMPN: 2
@@ -682,43 +712,23 @@ empsix_name_to_id:
 # this maps building type ids to general building types
 # basically just reduces dimensionality
 building_type_map:
-  0: Other
-  1: Residential
-  2: Residential
-  3: Residential
-  4: Office
-  5: Hotel
-  6: School
-  7: Industrial
-  8: Industrial
-  9: Industrial
-  10: Retail
-  11: Retail
-  12: Residential
-  13: Retail
-  14: Office
-  15: Parking
-  16: Parking
-
-
-building_type_map2:
-  O: 0
-  HS: 1
-  HT: 2
-  HM: 3
-  OF: 4
-  HO: 5
-  SC: 6
-  IL: 7
-  IW: 8
-  IH: 9
-  RS: 10
-  RB: 11
-  MR: 12
-  MT: 13
-  ME: 14
-  PA: 15
-  PA2: 16
+  HS: Residential
+  HT: Residential
+  HM: Residential
+  OF: Office
+  HO: Hotel
+  SC: School
+  IL: Industrial
+  IW: Industrial
+  IH: Industrial
+  RS: Retail
+  RB: Retail
+  MR: Residential
+  MT: Retail
+  ME: Office
+  PA: Parking
+  PA2: Parking
+  
 
 # this maps building "forms" from the developer model
 # to building types so that when the developer builds a
@@ -729,52 +739,53 @@ building_type_map2:
 # travel_model_ variables are for the travel_model_summary step.
 form_to_btype:
   residential:
-    - 1
-    - 2
-    - 3
+    - HS
+    - HT
+    - HM
   industrial:
-    - 7
-    - 8
-    - 9
+    - IL
+    - IW
+    - IH
   retail:
-    - 10
-    - 11
+    - RS
+    - RB
   office:
-    - 4
+    - OF
   mixedresidential:
-    - 12
+    - MR
   mixedoffice:
-    - 14
+    - ME
   select_non_residential:
-    - 4
-    - 5
-    - 6 
-    - 7
-    - 8
-    - 9
-    - 10
-    - 11
-    - 13
-    - 14
+    - OF
+    - HO
+    - SC
+    - IL
+    - IW
+    - IH
+    - RS
+    - RB
+    - MR
 
+
+# jobs sqft per building type
 building_sqft_per_job:
-  -1: 400
-  0: 400
-  1: 400
-  2: 400
-  3: 400
-  4: 355
-  5: 1161
-  6: 470
-  7: 661
-  8: 960
-  9: 825
-  10: 445
-  11: 445
-  12: 383
-  13: 383
-  14: 383
+  HS: 400
+  HT: 400
+  HM: 400
+  OF: 355
+  HO: 1161
+  SC: 470
+  IL: 661
+  IW: 960
+  IH: 825
+  RS: 445
+  RB: 445
+  MR: 383
+  MT: 383
+  ME: 383
 
+
+# county ids in parcels geography (I think FIPS codes)
 county_id_map:
   85: Santa Clara
   1: Alameda
@@ -786,6 +797,8 @@ county_id_map:
   41: Marin
   55: Napa
 
+
+# county ids for the travel model
 county_id_tm_map:
   3: Santa Clara
   4: Alameda
@@ -797,6 +810,7 @@ county_id_tm_map:
   9: Marin
   7: Napa
 
+# price shisfters per pda - price is multiplied by this amount
 pda_price_shifters:
   "ber1": 1
   "ber2": 1
@@ -808,6 +822,8 @@ pda_price_shifters:
   "sfo5": 1
   "sfo11": 1
 
+
+# cost shifters per county - cost is multiplied by this amount
 cost_shifters:
   "Santa Clara": 1.3
   "San Francisco": 0.8
@@ -820,6 +836,9 @@ cost_shifters:
   "Contra Costa": 0.75
 
 
+# limits!  these are very important as they give per scenario limits in terms of
+# general_type and in terms of resdential units and job spaces - believe scenarios
+# inherit settings from teh default scenario
 development_limits:
   default:
     Office:
@@ -887,31 +906,9 @@ development_limits:
       'San Francisco': 5250
 
 
-zoning_column_dictionary: 
-  id: "generic zoning id"
-  juris: "jurisdiction id"
-  city: "city name"
-  name: "string of zoning type from source data"
-  max_far: "maximum floor-to-area ratio"
-  max_height: "maximum height"
-  max_dua: "maximum dwelling units per acre"
-  max_du_per_parcel: "maximum dwelling units per parcel"
-  hs: "single-family detached"
-  ht: "single-family attached"
-  hm: "multi-family"
-  of: "office"
-  ho: "hotel"
-  sc: "school"
-  il: "light industrial"
-  iw: "warehouse industrial"
-  ih: "heavy industrial"
-  rs: "strip mall retail"
-  rb: "big-box retail"
-  mr: "residential-focus mixed"
-  mt: "retail-focus mixed"
-  me: "employment-focus mixed"
-
-
+# a list of parcel geom ids which urbansim doesn't touch - this are viewed as exceptions
+# and are often dealt with using specific models (SDEM and possibly proportional jobs model)
+# which ignore this list
 static_parcels:
   - 11280465768398 # city hall
   - 2240580234395 # sf state

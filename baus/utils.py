@@ -68,7 +68,6 @@ def parcel_id_to_geom_id(s):
 # dataframe and then counts gives you the count you want to sample
 # from each group.
 def groupby_random_choice(s, counts, replace=True):
-
     if counts.sum() == 0:
         return pd.Series()
 
@@ -92,7 +91,6 @@ def random_indexes(s, num, replace=False):
 # some resolution on the distrbution implied by s in order to meet
 # the target exactly
 def round_series_match_target(s, target, fillna=np.nan):
-
     if target == 0 or s.sum() == 0:
         return s
 
@@ -137,10 +135,11 @@ def constrained_normalization(marginals, constraint, total):
         exceeds = marginals > constraint
         unconstrained = ~constrained
 
-        num_constrained = len(constrained[constrained == True])
-        num_exceeds = len(exceeds[exceeds == True])
+        num_constrained = len(constrained[constrained is True])
+        num_exceeds = len(exceeds[exceeds is True])
 
-        print "Len constrained = %d, exceeds = %d" % (num_constrained, num_exceeds)
+        print "Len constrained = %d, exceeds = %d" %\
+            (num_constrained, num_exceeds)
 
         if num_exceeds == 0:
             return marginals
@@ -149,7 +148,8 @@ def constrained_normalization(marginals, constraint, total):
 
         # scale up where unconstrained
         unconstrained_total = total - marginals[constrained].sum()
-        marginals[unconstrained] *= unconstrained_total / marginals[unconstrained].sum()
+        marginals[unconstrained] *= \
+            unconstrained_total / marginals[unconstrained].sum()
 
         # should have scaled up
         assert np.isclose(marginals.sum(), total)
@@ -185,6 +185,7 @@ def simple_ipf(seed_matrix, col_marginals, row_marginals, tolerance=1, cnt=0):
 
     return simple_ipf(seed_matrix, col_marginals, row_marginals,
                       tolerance, cnt+1)
+
 
 """
 BELOW IS A SET OF UTITLIES TO COMPARE TWO SUMMARY DATAFRAMES, MAINLY LOOKING
