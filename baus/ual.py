@@ -1,9 +1,7 @@
 import os
 import yaml
-
 import numpy as np
 import pandas as pd
-
 import orca
 import orca_test as ot
 from orca_test import OrcaSpec, TableSpec, ColumnSpec, InjectableSpec
@@ -347,17 +345,22 @@ def reconcile_placed_households(households, residential_units):
     """
     
     # Verify initial data characteristics
-    ot.assert_orca_spec(OrcaSpec('',
-        TableSpec('households',
-            ColumnSpec('household_id', primary_key=True),
-            ColumnSpec('unit_id', foreign_key='residential_units.unit_id', missing_val_coding=-1),
-            ColumnSpec('building_id', foreign_key='buildings.building_id', missing_val_coding=-1)),
-        TableSpec('residential_units',
-            ColumnSpec('unit_id', primary_key=True),
-            ColumnSpec('building_id', foreign_key='buildings.building_id', missing=False))))
 
-    print "Reconciling placed households..."
-    hh = households.to_frame(['unit_id', 'building_id']).reset_index()
+    # ot.assert_orca_spec(OrcaSpec('',
+    #     TableSpec('households',
+    #         ColumnSpec('household_id', primary_key=True),
+    #         ColumnSpec('unit_id', foreign_key='residential_units.unit_id', missing_val_coding=-1),
+    #         ColumnSpec('building_id', foreign_key='buildings.building_id', missing_val_coding=-1)),
+    #     TableSpec('residential_units',
+    #         ColumnSpec('unit_id', primary_key=True),
+    #         ColumnSpec('building_id', foreign_key='buildings.building_id', missing=False))))
+
+    hh = households.to_frame(['unit_id', 'building_id'])
+    hh.index.rename('household_id',inplace=True)
+    hh = hh.reset_index()
+    print "hh columns: %s" % hh.columns
+    
+    # hh.index.name = 'household_id'
     units = residential_units.to_frame(['building_id']).reset_index()
     
     # Filter for households missing a 'building_id' but not a 'unit_id'
@@ -366,9 +369,10 @@ def reconcile_placed_households(households, residential_units):
     # Join building id's to the filtered households, using mapping from the units table
     hh = hh.drop('building_id', axis=1)
     hh = pd.merge(hh, units, on='unit_id', how='left').set_index('household_id')
+    print "hh index.names: %s" % hh.index.names
     
     print "%d movers updated" % len(hh)
-    households.update_col_from_series('building_id', hh.building_id)
+    households.update_col_from_series('building_id', hh.building_id, cast=True)
     
     # Verify final data characteristics
     ot.assert_orca_spec(OrcaSpec('',
@@ -423,8 +427,8 @@ def reconcile_unplaced_households(households):
     unit_unplaced = pd.Series(-1, index=hh[hh.unit_id == -1].index)
     
     # Update those households to be fully unplaced
-    households.update_col_from_series('building_id', unit_unplaced)
-    households.update_col_from_series('unit_id', bldg_unplaced)
+    households.update_col_from_series('building_id', unit_unplaced, cast=True)
+    households.update_col_from_series('unit_id', bldg_unplaced, cast=True)
     _print_status()
 
     # Verify final data characteristics
@@ -485,7 +489,7 @@ def ual_update_building_residential_price(buildings, residential_units, ual_sett
     print means.describe()
     
     # Update the buildings table
-    buildings.update_col_from_series('residential_price', means.max_potential)
+    buildings.update_col_from_series('residential_price', means.max_potential, cast=True)
     
     # Verify final data characteristics
     ot.assert_orca_spec(OrcaSpec('',
@@ -640,7 +644,7 @@ def ual_assign_tenure_to_new_units(residential_units, ual_settings):
     print "Adding tenure assignment to %d new residential units" % len(units)
     print units.describe()
 
-    residential_units.update_col_from_series('hownrent', units.hownrent)
+    residential_units.update_col_from_series('hownrent', units.hownrent, cast=True)
     return
     
 
@@ -761,8 +765,8 @@ def ual_households_relocation(households, ual_settings):
     # Initialize model, choose movers, and un-place them from buildings and units
     m = RelocationModel(rates)
     mover_ids = m.find_movers(households.to_frame(['unit_id', 'hownrent']))
-    households.update_col_from_series('building_id', pd.Series(-1, index=mover_ids))
-    households.update_col_from_series('unit_id', pd.Series(-1, index=mover_ids))
+    households.update_col_from_series('building_id', pd.Series(-1, index=mover_ids),cast=True)
+    households.update_col_from_series('unit_id', pd.Series(-1, index=mover_ids),cast=True)
     
     print "Total currently unplaced: %d" % (households.unit_id == -1).sum()
     return
@@ -801,7 +805,8 @@ def ual_hlcm_owner_simulate(households, residential_units, unit_aggregations, ua
                               supply_fname = 'num_units',
                               vacant_fname = 'vacant_units',
                               enable_supply_correction = 
-                                    ual_settings.get('price_equilibration', None))
+                                    ual_settings.get('price_equilibration', None),
+                              cast=True)
 
 
 @orca.step('ual_hlcm_renter_simulate')
@@ -814,7 +819,8 @@ def ual_hlcm_renter_simulate(households, residential_units, unit_aggregations, u
                               supply_fname = 'num_units',
                               vacant_fname = 'vacant_units',
                               enable_supply_correction = 
-                                    ual_settings.get('rent_equilibration', None))
+                                    ual_settings.get('rent_equilibration', None),
+                              cast=True)
 
 
 
