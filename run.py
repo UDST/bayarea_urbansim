@@ -23,7 +23,7 @@ INTERACT = False
 SCENARIO = None
 MODE = "ual_simulation"
 S3 = False
-EVERY_NTH_YEAR = 1
+EVERY_NTH_YEAR = 5
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
 COMPARE_TO_NO_PROJECT = True
 NO_PROJECT = 611
@@ -141,6 +141,9 @@ def run_models(MODE, SCENARIO):
 
     elif MODE == "ual_simulation":
 
+        years_to_run = range(IN_YEAR, OUT_YEAR+1, EVERY_NTH_YEAR)
+        models = get_simulation_models(SCENARIO)
+
         # Initialization steps
         orca.run([
             "ual_initialize_residential_units",
@@ -206,7 +209,7 @@ def run_models(MODE, SCENARIO):
             "geographic_summary",
             "travel_model_output"
 
-        ], iter_vars=range(2010, 2010+1))
+        ], iter_vars=years_to_run)
 
     elif MODE == "estimation":
 
