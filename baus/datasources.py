@@ -143,7 +143,7 @@ def jobs(store, baseyear_taz_controls, settings, parcels):
             sector_id = int(''.join(c for c in sector_col if c.isdigit()))
             sector_name = sector_map[sector_id]
 
-            jobs += [[sector_id, sector_name, taz, -1]] * num
+            jobs += [[sector_id, sector_name, taz, -1]] * int(num)
 
     # df is now the
     df = pd.DataFrame(jobs, columns=[

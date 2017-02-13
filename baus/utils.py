@@ -60,7 +60,7 @@ def parcel_id_to_geom_id(s):
 
 # pick random indexes from s without replacement
 def random_indexes(s, num):
-    return np.random.choice(s.index.values, num, replace=False)
+    return np.random.choice(s.index.values, int(num), replace=False)
 
 
 # This method takes a series of floating point numbers, rounds to

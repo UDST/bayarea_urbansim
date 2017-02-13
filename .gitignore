@@ -5,12 +5,15 @@ RUNNUM
 .idea
 .vagrant
 runs
+_run_archives
 *.pyc
 *.gz
 .ipynb_checkpoints
 dump.rdb
 logs
 compare
+venv
+ual_baus_install.sh
 data/2015_06_01_zoning_parcels.csv
 data/2015_08_13_parcels_geography.csv
 data/2015_08_13_zoning_parcels.csv

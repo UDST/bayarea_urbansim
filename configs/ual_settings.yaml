@@ -1,0 +1,50 @@
+# New settings associated with the UAL model steps
+
+
+unit_aggregation_tables:
+  - nodes
+  - tmnodes
+  - logsums
+  - buildings
+
+
+cap_rate: 0.05
+
+
+relocation_rates:
+  hownrent: 
+    - 1
+    - 2
+  probability_of_relocating: 
+    - 0.15
+    - 0.25
+  
+
+price_equilibration:
+  price_col: unit_residential_price
+  submarket_col: submarket_id
+  submarket_table: zones
+  warm_start: False
+  multiplier_func: supply_and_demand_multiplier_func
+  clip_final_price_low: null
+  clip_final_price_high: null
+  kwargs:
+    clip_change_low: 1.0
+    clip_change_high: 1.2
+    iterations: 8
+
+
+rent_equilibration:
+  price_col: unit_residential_rent
+  submarket_col: submarket_id
+  submarket_table: zones
+  warm_start: False
+  multiplier_func: supply_and_demand_multiplier_func
+  clip_final_price_low: null
+  clip_final_price_high: null
+  kwargs:
+    clip_change_low: 1.0
+    clip_change_high: 1.2
+    iterations: 8
+
+
