@@ -105,6 +105,24 @@ def building_sqft_per_job(settings):
     return settings['building_sqft_per_job']
 
 
+@orca.step()
+def fetch_from_s3(settings):
+    import boto
+    # fetch files from s3 based on config in settings.yaml
+    s3_settings = settings["s3_settings"]
+
+    conn = boto.connect_s3()
+    bucket = conn.get_bucket(s3_settings["bucket"])
+
+    for file in s3_settings["files"]:
+        file = os.path.join("data", file)
+        if os.path.exists(file):
+            continue
+        print "Downloading " + file
+        key = bucket.get_key(file)
+        key.get_contents_to_filename(file)
+
+
 # key locations in the Bay Area for use as attractions in the models
 @orca.table(cache=True)
 def landmarks():
