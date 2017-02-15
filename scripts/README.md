@@ -96,4 +96,7 @@ the data using a webapp.
 
 ### vmt_compare.py
 
+Compare the household totals for two scenarios inside different VMT zones.  This is used
+to see if our VMT impact fees were successful in moving households out of higher VMT
+areas.
 
