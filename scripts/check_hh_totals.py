@@ -11,8 +11,10 @@ controls_df.columns = ["HHINCQ1", "HHINCQ2", "HHINCQ3", "HHINCQ4"]
 for year in range(2010, 2045, 5):
 
     print year
-    taz_df = pd.read_csv("runs/run{}_taz_summaries_{}.csv".format(runnum, year))
-    juris_df = pd.read_csv("runs/run{}_juris_summaries_{}.csv".format(runnum, year))
+    taz_df = pd.read_csv("runs/run{}_taz_summaries_{}.csv".
+                         format(runnum, year))
+    juris_df = pd.read_csv("runs/run{}_juris_summaries_{}.csv".
+                           format(runnum, year))
 
     for col in ["HHINCQ1", "HHINCQ2", "HHINCQ3", "HHINCQ4"]:
 

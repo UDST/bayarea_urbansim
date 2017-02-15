@@ -23,7 +23,7 @@ numpy_arrays = mon.query(
     ['float32']*len(columns)
 )
 
-df = np.matrix(numpy_arrays).transpose() 
+df = np.matrix(numpy_arrays).transpose()
 df = pd.DataFrame(df, columns=columns)
 
 print time.time()-t1

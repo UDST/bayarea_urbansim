@@ -17,7 +17,8 @@ for runnum in range(1300, 1600):
     print runnum
 
     # now we know it's scenario 4
-    df = pd.read_csv("runs/run%d_parcel_output.csv" % runnum).set_index("parcel_id")
+    df = pd.read_csv("runs/run%d_parcel_output.csv" % runnum).\
+        set_index("parcel_id")
 
     dua = df.residential_units / (df.parcel_size / 43560.0)
 
@@ -26,9 +27,9 @@ for runnum in range(1300, 1600):
     dua = dua.round()
 
     if max_dua is None:
-       max_dua = dua
+        max_dua = dua
     else:
-       max_dua = pd.concat([max_dua, dua], axis=1).max(axis=1)
+        max_dua = pd.concat([max_dua, dua], axis=1).max(axis=1)
 
     far = df.non_residential_sqft / df.parcel_size
 
@@ -37,9 +38,9 @@ for runnum in range(1300, 1600):
     far = far.round(1)
 
     if max_far is None:
-       max_far = far
+        max_far = far
     else:
-       max_far = pd.concat([max_far, far], axis=1).max(axis=1)
+        max_far = pd.concat([max_far, far], axis=1).max(axis=1)
 
 print max_dua.describe()
 print max_far.describe()

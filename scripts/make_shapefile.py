@@ -21,5 +21,4 @@ gdf["GEOM_ID"] = gdf.GEOM_ID.astype('int')
 
 open('out.json', 'w').write(gdf.to_json())
 
-
 # gdf[gdf.COUNTY_ID == 75].to_file('/home/ubuntu/data/sfr.shp')

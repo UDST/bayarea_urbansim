@@ -12,7 +12,7 @@ for runnum in [RUN1, RUN2]:
     print "VMT summary for run =", runnum
 
     df = pd.read_csv('runs/run%d_parcel_output.csv' % runnum,
-    	             low_memory=False)
+                     low_memory=False)
 
     df = df[df.form == "residential"]
 
@@ -20,5 +20,5 @@ for runnum in [RUN1, RUN2]:
     print "Total units =", total_units
 
     s = df.groupby("vmt_res_cat").net_units.sum().loc[vmt_order]
-   
+
     print s / total_units
