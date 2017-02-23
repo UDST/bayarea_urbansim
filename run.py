@@ -49,8 +49,11 @@ parser.add_argument('-i', action='store_true', dest='interactive',
 parser.add_argument('-s', action='store', dest='scenario',
                     help='specify which scenario to run')
 
+parser.add_argument('-k', action='store_true', dest='skip_base_year',
+                    help='skip base year - used for debugging')
+
 parser.add_argument('-y', action='store', dest='out_year', type=int,
-                    help='The year to which to run the simualtion.')
+                    help='The year to which to run the simulation.')
 
 parser.add_argument('--mode', action='store', dest='mode',
                     help='which mode to run (see code for mode options)')
@@ -72,6 +75,8 @@ if options.out_year:
 
 if options.scenario:
     orca.add_injectable("scenario", options.scenario)
+
+SKIP_BASE_YEAR = options.skip_base_year
 
 if options.mode:
     MODE = options.mode
@@ -177,7 +182,30 @@ def run_models(MODE, SCENARIO):
 
     elif MODE == "simulation":
 
-        years_to_run = range(IN_YEAR, OUT_YEAR+1, EVERY_NTH_YEAR)
+        # start with a small subset of models for the base year
+        # just run the transition model and place households because current
+        # base year doesn't match what's in the base data - when we update the
+        # base data this might go away
+        if not SKIP_BASE_YEAR:
+            orca.run([
+
+                "neighborhood_vars",            # local accessibility vars
+                "regional_vars",                # regional accessibility vars
+
+                "rsh_simulate",                 # residential sales hedonic
+
+                "households_transition",
+
+                "hlcm_simulate",                 # put these last so they don't get
+
+                "geographic_summary",
+                "travel_model_output"
+
+            ], iter_vars=[IN_YEAR])
+
+        # start the simulation in the next round - only the models above run
+        # for the IN_YEAR
+        years_to_run = range(IN_YEAR+EVERY_NTH_YEAR, OUT_YEAR+1, EVERY_NTH_YEAR)
         models = get_simulation_models(SCENARIO)
         orca.run(models, iter_vars=years_to_run)
 
@@ -195,29 +223,6 @@ def run_models(MODE, SCENARIO):
             "elcm_estimate",             # employment lcm
 
         ], iter_vars=[2010])
-
-    elif MODE == "baseyearsim":
-
-        orca.run([
-
-            "neighborhood_vars",            # local accessibility vars
-            "regional_vars",                # regional accessibility vars
-
-            "rsh_simulate",                 # residential sales hedonic
-
-            "households_transition",
-
-            "hlcm_simulate",                 # put these last so they don't get
-
-            "geographic_summary",
-            "travel_model_output"
-
-        ], iter_vars=[2010])
-
-        for geog_name in ["juris", "pda", "superdistrict", "taz"]:
-            os.rename(
-                "runs/run%d_%s_summaries_2010.csv" % (run_num, geog_name),
-                "output/baseyear_%s_summaries_2010.csv" % geog_name)
 
     elif MODE == "feasibility":
 
@@ -303,24 +308,6 @@ if SLACK:
         'Targets comparison is available at ' +
         'http://urbanforecast.com/runs/run%d_targets_comparison_2040.csv' %
         run_num, as_user=True)
-
-if MODE == "simulation":
-
-    # copy base year into runs so as to avoid confusion
-
-    import shutil
-
-    for fname in [
-        "baseyear_juris_summaries_2010.csv",
-        "baseyear_pda_summaries_2010.csv",
-        "baseyear_superdistrict_summaries_2010.csv",
-        "baseyear_taz_summaries_2010.csv"
-    ]:
-
-        shutil.copy(
-            os.path.join("output", fname),
-            os.path.join("runs", "run{}_".format(run_num) + fname)
-        )
 
 
 if MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:

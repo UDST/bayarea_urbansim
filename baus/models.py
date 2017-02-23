@@ -237,7 +237,7 @@ def proportional_elcm(jobs, households, buildings, parcels,
         "taz_growth_rates_gov_ed.csv"
     ), index_col="Taz")
 
-    # we're going to multiple various aggregations of populations by factors
+    # we're going to multiply various aggregations of populations by factors
     # e.g. high school jobs are multiplied by county pop and so forth - this
     # is the dict of the aggregations of household counts
     mapping_d = {
