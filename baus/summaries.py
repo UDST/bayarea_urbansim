@@ -66,7 +66,13 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
             "capacity": capacity
         })
 
-    base_year_measures = orca.get_injectable("base_year_measures")
+    try:
+        base_year_measures = orca.get_injectable("base_year_measures")
+    except:
+        # the base year measures don't exist - we didn't run year 2010
+        # this can happen when we skip the first year, usually because
+        # we don't want to waste time doing so
+        return
 
     f = open(os.path.join("runs", "run%d_topsheet_%d.log" %
              (run_number, year)), "w")

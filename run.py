@@ -196,8 +196,11 @@ def run_models(MODE, SCENARIO):
 
                 "households_transition",
 
-                "hlcm_simulate",                 # put these last so they don't get
+                "hlcm_simulate",
 
+                "topsheet",
+                "parcel_summary",
+                "building_summary",
                 "geographic_summary",
                 "travel_model_output"
 
@@ -205,7 +208,8 @@ def run_models(MODE, SCENARIO):
 
         # start the simulation in the next round - only the models above run
         # for the IN_YEAR
-        years_to_run = range(IN_YEAR+EVERY_NTH_YEAR, OUT_YEAR+1, EVERY_NTH_YEAR)
+        years_to_run = range(IN_YEAR+EVERY_NTH_YEAR, OUT_YEAR+1,
+                             EVERY_NTH_YEAR)
         models = get_simulation_models(SCENARIO)
         orca.run(models, iter_vars=years_to_run)
 
@@ -310,6 +314,7 @@ if SLACK:
         run_num, as_user=True)
 
 
+summary = ""
 if MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
     # compute and write the difference report at the superdistrict level
     prev_run = LAST_KNOWN_GOOD_RUNS[SCENARIO]
