@@ -107,6 +107,11 @@ def job_spaces(buildings):
             buildings.sqft_per_job).fillna(0).round().astype('int')
 
 
+@orca.column('buildings')
+def vacant_job_spaces(buildings, jobs):
+    return buildings.job_spaces.sub(jobs.building_id.value_counts(), fill_value=0)
+
+
 @orca.column('buildings', cache=True)
 def sqft_per_job(buildings, building_sqft_per_job, superdistricts,
                  taz_geography):
