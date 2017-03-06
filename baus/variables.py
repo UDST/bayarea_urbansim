@@ -109,7 +109,8 @@ def job_spaces(buildings):
 
 @orca.column('buildings')
 def vacant_job_spaces(buildings, jobs):
-    return buildings.job_spaces.sub(jobs.building_id.value_counts(), fill_value=0)
+    return buildings.job_spaces.sub(jobs.building_id.value_counts(),
+                                    fill_value=0)
 
 
 @orca.column('buildings', cache=True)

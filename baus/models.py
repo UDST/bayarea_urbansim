@@ -167,7 +167,8 @@ def _proportional_jobs_model(
     print "Need more jobs\n", need_more_jobs
 
     # choose random locations within jurises to match need_more_jobs totals
-    choices = groupby_random_choice(locations_series, need_more_jobs, replace=True)
+    choices = groupby_random_choice(locations_series, need_more_jobs,
+                                    replace=True)
 
     return pd.Series(choices.index, available_jobs.index)
 
