@@ -382,7 +382,7 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
     parcel_output = summary.parcel_output
 
     # because merge_tables returns multiple zone_id_'s, but not the one we need
-    buildings_df = buildings_df.rename(columns={'zone_id_x': 'zone_id'})
+    # buildings_df = buildings_df.rename(columns={'zone_id_x': 'zone_id'})
 
     geographies = ['superdistrict', 'pda', 'juris']
 
@@ -671,7 +671,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     # jobs and the one called zone_id has null values while there others do not
     # going to change this while I think about this - turns out this has to do
     # with major caching issue which has been reported upstream
-    jobs_df["zone_id"] = jobs_df.zone_id_x
+    # jobs_df["zone_id"] = jobs_df.zone_id_x
 
     def getsectorcounts(sector):
         return jobs_df.query("empsix == '%s'" % sector).\

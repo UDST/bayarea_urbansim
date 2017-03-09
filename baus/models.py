@@ -166,9 +166,22 @@ def _proportional_jobs_model(
 
     print "Need more jobs\n", need_more_jobs
 
+    excess = need_more_jobs.sub(locations_series.value_counts(), fill_value=0)
+    print "Excess demand\n", excess[excess > 0]
+
+    # there's an issue with groupby_random_choice where it can't choose from
+    # a set of locations that don't exist - e.g. we have 2 jobs in a certain
+    # city but not locations to put them in.  we need to drop this demand
+    drop = need_more_jobs.index.difference(locations_series.unique())
+    print "We don't have any locations for these locations:\n", drop
+    need_more_jobs = need_more_jobs.drop(drop)
+
     # choose random locations within jurises to match need_more_jobs totals
     choices = groupby_random_choice(locations_series, need_more_jobs,
                                     replace=True)
+
+    # these might not be the same length after dropping a few lines above
+    available_jobs = available_jobs.head(len(choices))
 
     return pd.Series(choices.index, available_jobs.index)
 
@@ -223,7 +236,7 @@ def proportional_elcm(jobs, households, buildings, parcels,
     # overfill certain location because we don't have enough space
     building_subset = buildings_df[buildings_df.general_type == "Retail"]
     location_options = building_subset.juris.repeat(
-        building_subset.vacant_job_spaces)
+        building_subset.vacant_job_spaces.clip(0))
 
     print "Running proportional jobs model for retail"
 
@@ -283,15 +296,12 @@ def proportional_elcm(jobs, households, buildings, parcels,
 
     print "Running proportional jobs model for gov/edu"
 
-    buildings_zone_id = buildings.zone_id
-    buildings_zone_id = buildings_zone_id[
-        ]
     # location options are vacant job spaces in retail buildings - this will
     # overfill certain location because we don't have enough space
     building_subset = buildings_df[
         buildings.general_type.isin(["Office", "School"])]
     location_options = building_subset.zone_id.repeat(
-        building_subset.vacant_job_spaces)
+        building_subset.vacant_job_spaces.clip(0))
 
     # now do the same thing for gov't jobs
     s = _proportional_jobs_model(
