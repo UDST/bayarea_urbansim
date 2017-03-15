@@ -166,15 +166,29 @@ def _proportional_jobs_model(
 
     print "Need more jobs\n", need_more_jobs
 
-    choices = groupby_random_choice(locations_series, need_more_jobs)
+    excess = need_more_jobs.sub(locations_series.value_counts(), fill_value=0)
+    print "Excess demand\n", excess[excess > 0]
+
+    # there's an issue with groupby_random_choice where it can't choose from
+    # a set of locations that don't exist - e.g. we have 2 jobs in a certain
+    # city but not locations to put them in.  we need to drop this demand
+    drop = need_more_jobs.index.difference(locations_series.unique())
+    print "We don't have any locations for these locations:\n", drop
+    need_more_jobs = need_more_jobs.drop(drop)
 
     # choose random locations within jurises to match need_more_jobs totals
+    choices = groupby_random_choice(locations_series, need_more_jobs,
+                                    replace=True)
+
+    # these might not be the same length after dropping a few lines above
+    available_jobs = available_jobs.head(len(choices))
+
     return pd.Series(choices.index, available_jobs.index)
 
 
 @orca.step()
-def additional_units(year, buildings, parcels):
-    add_units = pd.read_csv("data/additional_units.csv",
+def accessory_units(year, buildings, parcels):
+    add_units = pd.read_csv("data/accessory_units.csv",
                             index_col="juris")[str(year)]
     buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
     res_buildings = buildings_juris[buildings.general_type == "Residential"]
@@ -213,7 +227,19 @@ def proportional_elcm(jobs, households, buildings, parcels,
     # jobs - there has to be some amount of basic services to support an
     # increase in population
 
-    buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
+    buildings_df = orca.merge_tables(
+        target='buildings',
+        tables=[buildings, parcels],
+        columns=['juris', 'zone_id', 'general_type', 'vacant_job_spaces'])
+
+    buildings_df = buildings_df.rename(columns={
+      'zone_id_x': 'zone_id', 'general_type_x': 'general_type'})
+
+    # location options are vacant job spaces in retail buildings - this will
+    # overfill certain location because we don't have enough space
+    building_subset = buildings_df[buildings_df.general_type == "Retail"]
+    location_options = building_subset.juris.repeat(
+        building_subset.vacant_job_spaces.clip(0))
 
     print "Running proportional jobs model for retail"
 
@@ -226,7 +252,7 @@ def proportional_elcm(jobs, households, buildings, parcels,
         "juris",
         hh_df,
         jobs_df,
-        buildings_juris
+        location_options
     )
 
     jobs.update_col_from_series("building_id", s)
@@ -237,7 +263,7 @@ def proportional_elcm(jobs, households, buildings, parcels,
         "taz_growth_rates_gov_ed.csv"
     ), index_col="Taz")
 
-    # we're going to multiple various aggregations of populations by factors
+    # we're going to multiply various aggregations of populations by factors
     # e.g. high school jobs are multiplied by county pop and so forth - this
     # is the dict of the aggregations of household counts
     mapping_d = {
@@ -273,6 +299,13 @@ def proportional_elcm(jobs, households, buildings, parcels,
 
     print "Running proportional jobs model for gov/edu"
 
+    # location options are vacant job spaces in retail buildings - this will
+    # overfill certain location because we don't have enough space
+    building_subset = buildings_df[
+        buildings.general_type.isin(["Office", "School"])]
+    location_options = building_subset.zone_id.repeat(
+        building_subset.vacant_job_spaces.clip(0))
+
     # now do the same thing for gov't jobs
     s = _proportional_jobs_model(
         None,  # computing jobs directly
@@ -280,7 +313,7 @@ def proportional_elcm(jobs, households, buildings, parcels,
         "zone_id",
         hh_df,
         jobs_df,
-        buildings.zone_id,
+        location_options,
         target_jobs=target_jobs
     )
 

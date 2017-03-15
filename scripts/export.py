@@ -1,7 +1,6 @@
 import sys
 import orca
-sys.path.append(".")
-import baus.models
+from baus import models
 import pandas as pd
 import numpy as np
 
@@ -59,11 +58,21 @@ df = df.query(f)
 
 # get building types
 df["building_type"] = \
-    df.first_building_type_id.map({v: k for k, v in settings["building_type_map2"].items()})
+    df.first_building_type_id.map({v: k for k, v in
+                                  settings["building_type_map2"].items()})
 
 df["oldest_building"][df.oldest_building > 2200] = np.nan
 
+columns = {
+    "total_sqft": "building_sqft",
+    "total_residential_units": "residential_units",
+    "total_non_residential_sqft": "non_residential_sqft",
+    "oldest_building": "year_built"
+}
+
 # after filter can drop a few fields
-df = df.drop(["first_building_type_id", "sdem", "nodev", "parcel_acres", "oldest_building_age", "manual_nodev"], axis=1).rename(index=str, columns={"total_sqft": "building_sqft", "total_residential_units": "residential_units", "total_non_residential_sqft": "non_residential_sqft", "oldest_building": "year_built"})
+df = df.drop(["first_building_type_id", "sdem", "nodev", "parcel_acres",
+              "oldest_building_age", "manual_nodev"], axis=1).\
+    rename(index=str, columns=columns)
 
 df.to_csv("parcels.csv")
