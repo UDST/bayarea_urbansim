@@ -232,6 +232,9 @@ def proportional_elcm(jobs, households, buildings, parcels,
         tables=[buildings, parcels],
         columns=['juris', 'zone_id', 'general_type', 'vacant_job_spaces'])
 
+    buildings_df = buildings_df.rename(columns={
+      'zone_id_x': 'zone_id', 'general_type_x': 'general_type'})
+
     # location options are vacant job spaces in retail buildings - this will
     # overfill certain location because we don't have enough space
     building_subset = buildings_df[buildings_df.general_type == "Retail"]
