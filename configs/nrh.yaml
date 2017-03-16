@@ -7,8 +7,7 @@ segmentation_col: general_type
 fit_filters:
 - costar_rent > 0
 
-predict_filters:
-- general_type != 'Residential'
+predict_filters: null
 
 min_segment_size: 10
 
