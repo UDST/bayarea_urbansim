@@ -10,7 +10,7 @@ This is the DRAFT UrbanSim implementation for the Bay Area. Policy documentation
 * Install Python for your OS ([Anaconda](https://www.continuum.io/downloads) highly suggested)
 * Clone this repository
 * Install dependencies using `pip install -r requirements.txt`
-* Get data using `python baus.py -c --mode fetch-data` (you will need an appropriately configured AWS credentials file which you must get from your MTC contact)
+* Get data using `python baus.py -c --mode fetch_data` (you will need an appropriately configured AWS credentials file which you must get from your MTC contact)
 * Preprocess data using `python baus.py -c --mode preprocessing`
 * Run a simulation using `python baus.py -c` (default mode is simulation)
 
