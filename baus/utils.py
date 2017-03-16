@@ -78,11 +78,16 @@ def groupby_random_choice(s, counts, replace=True):
 
 
 # pick random indexes from s without replacement
+<<<<<<< HEAD
 def random_indexes(s, num, replace=False):
     return np.random.choice(
         np.repeat(s.index.values, s.values),
         num,
         replace=replace)
+=======
+def random_indexes(s, num):
+    return np.random.choice(s.index.values, int(num), replace=False)
+>>>>>>> f4cd2a74ca950189f9e549ff893a3e54d3b2b01d
 
 
 # This method takes a series of floating point numbers, rounds to

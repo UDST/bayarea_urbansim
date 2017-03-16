@@ -3,9 +3,76 @@ DRAFT Bay Area UrbanSim (BAUS) Implementation
 
 [![Build Status](https://travis-ci.org/UDST/bayarea_urbansim.svg?branch=master)](https://travis-ci.org/UDST/bayarea_urbansim)
 
+<<<<<<< HEAD
 This is the DRAFT UrbanSim implementation for the Bay Area. Policy documentation for the Bay Area model is available [here](http://data.mtc.ca.gov/bayarea_urbansim/) and documentation for the UrbanSim framework is available [here](https://udst.github.io/urbansim/).
 
 ### Install Overview
+=======
+UAL research fork
+-----------------
+
+This copy of the Bay Area UrbanSim repository is a research fork maintained by U.C. Berkeley's Urban Analytics Lab (http://ual.berkeley.edu).
+
+The `master` branch tracks the main UDST fork, and the `ual-development` branch contains our modifications to the model. Our current projects focus on extending Bay Area UrbanSim to better capture processes of residential displacement and affordable housing provision.
+
+Modifications include: 
+
+#### Data schemas
+
+* Builds out the representation of individual housing units to include a semi-persistent tenure status, which is assigned based on characteristics of initial unit occupants
+* Joins additional race/ethnicity PUMS variables to synthetic households [NB: currently missing from the reconciled model, but will be re-added]
+* Adds a representation of market rents alongside market sale prices
+
+#### Model steps
+
+* Residential hedonics predict market rents and sale prices separately, with rents estimated from Craigslist listings
+* Household move-out choice is conditional on tenure status
+* Household location choice is modeled separately for renters and owners, and includes race/ethnicity measures as explanatory variables
+* Developer models are updated to produce both rental and ownership housing stock
+
+Notebooks, work history, code samples, etc are kept in a separate [bayarea_urbansim_work](https://github.com/ual/bayarea_urbansim_work) repository. 
+
+#### Current status (August 2016)
+
+* All of the UAL alterations have been refactored as modular orca steps
+* This code is contained in `baus/ual.py`, `configs/ual_settings.yaml` and individual `yaml` files as needed for regression models that have been re-estimated
+* There are *no* changes to `urbansim`, `urbansim_defaults`, or MTC's orca initialization and model steps
+* MTC and UAL model steps can be mixed and matched by passing different lists to orca; see `run.py` for examples
+* The UAL model steps document and test for required data characteristics, using the [orca_test](https://github.com/udst/orca_test) library
+
+#### Installation
+
+The following setup procedure seems reliable for OS X and Linux. See [ual_baus_install.sh](https://github.com/ual/bayarea_urbansim/blob/ual-development/ual_baus_install_template.sh) for a programmatic version. 
+
+* Install Anaconda
+* Git-clone the repositories for `orca`, `urbansim`, `pandana`, `orca_test`, `urbansim_defaults`, and `bayarea_urbansim`
+* Run `python setup.py develop` for all of them (except `bayarea_urbansim`)
+* Switch to the `ual-development` branch of `bayarea_urbansim`
+* Copy the appropriate data files into the `data` directory (or add symbolic links)
+* Try running `python run.py`
+
+### Subsequent README content is from the master branch
+
+Install Overview
+----------------
+
+* https://mtcdrive.account.box.com/login
+* get anaconda (version as indicated in reqs below)
+* bash Anaconda2-4.0.0-Linux-x86_64.sh
+* yes to prepend install location to .bashrc
+* open new terminal
+* sudo apt-get update
+* sudo apt-get -y install git g++ python-dev unzip
+* git clone https://github.com/MetropolitanTransportationCommission/bayarea_urbansim.git
+* pip install -r requirements.txt (comment out pandana)
+* pip install pandana
+* get data
+* change RUNNUM so in 5000s etc
+* python run.py -s 4 & OR python all.py &
+
+Data
+----
+>>>>>>> f4cd2a74ca950189f9e549ff893a3e54d3b2b01d
 
 * Install Python for your OS ([Anaconda](https://www.continuum.io/downloads) highly suggested)
 * Clone this repository
