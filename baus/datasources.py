@@ -123,84 +123,11 @@ def fetch_from_s3(settings):
         key.get_contents_to_filename(file)
 
 
-<<<<<<< HEAD
 # key locations in the Bay Area for use as attractions in the models
 @orca.table(cache=True)
 def landmarks():
     return pd.read_csv(os.path.join(misc.data_dir(), 'landmarks.csv'),
                        index_col="name")
-=======
-            # get integer sector id
-            sector_id = int(''.join(c for c in sector_col if c.isdigit()))
-            sector_name = sector_map[sector_id]
-
-            jobs += [[sector_id, sector_name, taz, -1]] * int(num)
-
-    # df is now the
-    df = pd.DataFrame(jobs, columns=[
-        'sector_id', 'empsix', 'taz', 'building_id'])
-
-    # just do random assignment weighted by job spaces - we'll then
-    # fill in the job_spaces if overfilled in the next step (code
-    # has existed in urbansim for a while)
-    for taz, cnt in df.groupby('taz').size().iteritems():
-
-        potential_add_locations = buildings.non_residential_sqft[
-            (buildings.zone_id == taz) &
-            (buildings.non_residential_sqft > 0)]
-
-        if len(potential_add_locations) == 0:
-            # if no non-res buildings, put jobs in res buildings
-            potential_add_locations = buildings.building_sqft[
-                buildings.zone_id == taz]
-
-        weights = potential_add_locations / potential_add_locations.sum()
-
-        print taz, len(potential_add_locations),\
-            potential_add_locations.sum(), cnt
-
-        buildings_ids = potential_add_locations.sample(
-            cnt, replace=True, weights=weights)
-
-        df["building_id"][df.taz == taz] = buildings_ids.index.values
-
-    s = buildings.zone_id.loc[df.building_id].value_counts()
-    t = baseyear_taz_controls.emp_tot - s
-    # assert we matched the totals exactly
-    assert t.sum() == 0
-
-    # this is some exploratory diagnostics comparing the job controls to
-    # the buildings table - in other words, comparing non-residential space
-    # to the number of jobs
-    '''
-    old_jobs = store['jobs']
-    old_jobs_cnt = old_jobs.groupby('taz').si ze()
-
-    emp_tot = baseyear_taz_controls.emp_tot
-    print buildings.job_spaces.groupby(buildings.building_type_id).sum()
-    supply = buildings.job_spaces.groupby(buildings.zone_id).sum()
-    non_residential_sqft = buildings.non_residential_sqft.\
-        groupby(buildings.zone_id).sum()
-    s = (supply-emp_tot).order()
-    df = pd.DataFrame({
-        "job_spaces": supply,
-        "jobs": emp_tot,
-        "non_residential_sqft": non_residential_sqft
-    }, index=s.index)
-    df["vacant_spaces"] = supply-emp_tot
-    df["vacancy_rate"] = df.vacant_spaces/supply.astype('float')
-    df["old_jobs"] = old_jobs_cnt
-    df["old_vacant_spaces"] = supply-old_jobs_cnt
-    df["old_vacancy_rate"] = df.old_vacant_spaces/supply.astype('float')
-    df["sqft_per_job"] = df.non_residential_sqft / df.jobs
-    df["old_sqft_per_job"] = df.non_residential_sqft / df.old_jobs
-    df.index.name = "zone_id"
-    print df[["jobs", "old_jobs", "job_spaces", "non_residential_sqft"]].corr()
-    df.sort("sqft_per_job").to_csv("job_demand.csv")
-    '''
-
-    store['jobs_urbansim_allocated'] = df
->>>>>>> f4cd2a74ca950189f9e549ff893a3e54d3b2b01d
 
 
 @orca.table(cache=True)

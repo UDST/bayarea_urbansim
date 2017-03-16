@@ -14,14 +14,9 @@ from scripts.check_feedback import check_feedback
 
 warnings.filterwarnings("ignore")
 
-<<<<<<< HEAD:baus.py
-=======
-args = sys.argv[1:]
-
 # Suppress scientific notation in pandas output
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
 
->>>>>>> f4cd2a74ca950189f9e549ff893a3e54d3b2b01d:run.py
 SLACK = MAPS = "URBANSIM_SLACK" in os.environ
 LOGS = True
 INTERACT = False
@@ -32,12 +27,9 @@ EVERY_NTH_YEAR = 5
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
 COMPARE_TO_NO_PROJECT = True
 NO_PROJECT = 611
-<<<<<<< HEAD:baus.py
+
 IN_YEAR, OUT_YEAR = 2010, 2040
 COMPARE_AGAINST_LAST_KNOWN_GOOD = False
-=======
-IN_YEAR, OUT_YEAR = 2010, 2011
->>>>>>> f4cd2a74ca950189f9e549ff893a3e54d3b2b01d:run.py
 
 LAST_KNOWN_GOOD_RUNS = {
     "0": 1057,

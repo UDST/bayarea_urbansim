@@ -3,19 +3,26 @@ DRAFT Bay Area UrbanSim (BAUS) Implementation
 
 [![Build Status](https://travis-ci.org/UDST/bayarea_urbansim.svg?branch=master)](https://travis-ci.org/UDST/bayarea_urbansim)
 
-<<<<<<< HEAD
 This is the DRAFT UrbanSim implementation for the Bay Area. Policy documentation for the Bay Area model is available [here](http://data.mtc.ca.gov/bayarea_urbansim/) and documentation for the UrbanSim framework is available [here](https://udst.github.io/urbansim/).
 
-### Install Overview
-=======
-UAL research fork
------------------
+* Install Python for your OS ([Anaconda](https://www.continuum.io/downloads) highly suggested)
+* Clone this repository
+* Install dependencies using `pip install -r requirements.txt`
+* Get data using `python baus.py -c --mode fetch_data` (you will need an appropriately configured AWS credentials file which you must get from your MTC contact)
+* Preprocess data using `python baus.py -c --mode preprocessing`
+* Run a simulation using `python baus.py -c` (default mode is simulation)
 
-This copy of the Bay Area UrbanSim repository is a research fork maintained by U.C. Berkeley's Urban Analytics Lab (http://ual.berkeley.edu).
+### An overview of baus.py
+ 
+baus.py is a command line interface (cli) used to run Bay Area UrbanSim in various modes.  These modes currently include:
 
-The `master` branch tracks the main UDST fork, and the `ual-development` branch contains our modifications to the model. Our current projects focus on extending Bay Area UrbanSim to better capture processes of residential displacement and affordable housing provision.
+* estimation, which runs a series of models to save parameter estimates for all statistical models
+* simulation, which runs all models to create a simulated regional growth forecast
+* fetch_data, which downloads large data files from Amazon S3 as inputs for BAUS
+* preprocessing, which performas long-running data cleaning steps and writes newly cleaned data back to the binary h5 file for use in the other steps
+* baseyearsim which runs a "base year simulation" which summarizes the data before the simulation runs (during simulation, summaries are written after each year, so the first year's summaries are *after* the base year is finished - a base year simulation writes the summaries before any models have run)
 
-Modifications include: 
+### Urban Analytics Lab (UAL) Improvements
 
 #### Data schemas
 
@@ -39,57 +46,6 @@ Notebooks, work history, code samples, etc are kept in a separate [bayarea_urban
 * There are *no* changes to `urbansim`, `urbansim_defaults`, or MTC's orca initialization and model steps
 * MTC and UAL model steps can be mixed and matched by passing different lists to orca; see `run.py` for examples
 * The UAL model steps document and test for required data characteristics, using the [orca_test](https://github.com/udst/orca_test) library
-
-#### Installation
-
-The following setup procedure seems reliable for OS X and Linux. See [ual_baus_install.sh](https://github.com/ual/bayarea_urbansim/blob/ual-development/ual_baus_install_template.sh) for a programmatic version. 
-
-* Install Anaconda
-* Git-clone the repositories for `orca`, `urbansim`, `pandana`, `orca_test`, `urbansim_defaults`, and `bayarea_urbansim`
-* Run `python setup.py develop` for all of them (except `bayarea_urbansim`)
-* Switch to the `ual-development` branch of `bayarea_urbansim`
-* Copy the appropriate data files into the `data` directory (or add symbolic links)
-* Try running `python run.py`
-
-### Subsequent README content is from the master branch
-
-Install Overview
-----------------
-
-* https://mtcdrive.account.box.com/login
-* get anaconda (version as indicated in reqs below)
-* bash Anaconda2-4.0.0-Linux-x86_64.sh
-* yes to prepend install location to .bashrc
-* open new terminal
-* sudo apt-get update
-* sudo apt-get -y install git g++ python-dev unzip
-* git clone https://github.com/MetropolitanTransportationCommission/bayarea_urbansim.git
-* pip install -r requirements.txt (comment out pandana)
-* pip install pandana
-* get data
-* change RUNNUM so in 5000s etc
-* python run.py -s 4 & OR python all.py &
-
-Data
-----
->>>>>>> f4cd2a74ca950189f9e549ff893a3e54d3b2b01d
-
-* Install Python for your OS ([Anaconda](https://www.continuum.io/downloads) highly suggested)
-* Clone this repository
-* Install dependencies using `pip install -r requirements.txt`
-* Get data using `python baus.py -c --mode fetch_data` (you will need an appropriately configured AWS credentials file which you must get from your MTC contact)
-* Preprocess data using `python baus.py -c --mode preprocessing`
-* Run a simulation using `python baus.py -c` (default mode is simulation)
-
-### An overview of baus.py
- 
-baus.py is a command line interface (cli) used to run Bay Area UrbanSim in various modes.  These modes currently include:
-
-* estimation, which runs a series of models to save parameter estimates for all statistical models
-* simulation, which runs all models to create a simulated regional growth forecast
-* fetch_data, which downloads large data files from Amazon S3 as inputs for BAUS
-* preprocessing, which performas long-running data cleaning steps and writes newly cleaned data back to the binary h5 file for use in the other steps
-* baseyearsim which runs a "base year simulation" which summarizes the data before the simulation runs (during simulation, summaries are written after each year, so the first year's summaries are *after* the base year is finished - a base year simulation writes the summaries before any models have run)
 
 ### Outputs from Simulation (written to the runs directory)
 
