@@ -10,13 +10,13 @@ This is the DRAFT UrbanSim implementation for the Bay Area. Policy documentation
 * Install Python for your OS ([Anaconda](https://www.continuum.io/downloads) highly suggested)
 * Clone this repository
 * Install dependencies using `pip install -r requirements.txt`
-* Get data using `python run.py -c --mode fetch-data` (you will need an appropriately configured AWS credentials file which you must get from your MTC contact)
-* Preprocess data using `python run.py -c --mode preprocessing`
-* Run a simulation using `python run.py -c` (default mode is simulation)
+* Get data using `python baus.py -c --mode fetch-data` (you will need an appropriately configured AWS credentials file which you must get from your MTC contact)
+* Preprocess data using `python baus.py -c --mode preprocessing`
+* Run a simulation using `python baus.py -c` (default mode is simulation)
 
-### An overview of run.py
+### An overview of baus.py
  
-Run.py is a command line interface (cli) used to run Bay Area UrbanSim in various modes.  These modes currently include:
+baus.py is a command line interface (cli) used to run Bay Area UrbanSim in various modes.  These modes currently include:
 
 * estimation, which runs a series of models to save parameter estimates for all statistical models
 * simulation, which runs all models to create a simulated regional growth forecast
@@ -28,7 +28,7 @@ Run.py is a command line interface (cli) used to run Bay Area UrbanSim in variou
 
 ALL OUTPUT IN THIS DIRECTORY IS NOT OFFICIAL OUTPUT. PLEASE CONTACT MTC FOR OFFICIAL OUTPUTS OF THE LAST PLAN BAY AREA.
 
-`[num]` = a positive integer used to identify each successive run.  This number usually starts at 1 and increments each time run.py is called.
+`[num]` = a positive integer used to identify each successive run.  This number usually starts at 1 and increments each time baus.py is called.
 
 Many files are output to the `runs/` directory. They are described below.
 
