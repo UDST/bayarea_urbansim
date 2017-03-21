@@ -1,6 +1,7 @@
 -e git+https://github.com/synthicity/urbansim.git@151bfbf4272545fa0e20a458f1d552d3bfdf00fa#egg=urbansim
--e git+https://github.com/synthicity/urbansim_defaults.git@f7d9b8dcf7fde27314dcf80956b3470f3d88f5c6#egg=urbansim_defaults
--e git+https://github.com/UDST/orca.git@73f80f6345f282d8c836e8fcd11b22264cad0ac8#egg=orca
+-e git+https://github.com/synthicity/urbansim_defaults.git@da1541e47813a2cbe39e8576f008dc3142b1a09f#egg=urbansim_defaults
+-e git+https://github.com/UDST/orca.git@f49398e2a363f8869e14b5218640d8d9c13863a4#egg=orca
+-e git+https://github.com/UDST/orca_test.git@411a569e89994e0ede0077e30c4a9af0cb6d7aef#egg=orca_test
 #-e git+https://github.com/UDST/pandana.git@8f24b8a1b7539c95b51153e9954f755a7116089b#egg=pandana
 # using this version of anaconda http://repo.continuum.io/archive/Anaconda2-4.0.0-Linux-x86_64.sh
 # to install:

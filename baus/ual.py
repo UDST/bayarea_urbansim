@@ -57,8 +57,8 @@ def _ual_create_empty_units(buildings):
     # floating-point unit counts
 
     df = pd.DataFrame({
-        'unit_residential_price': 0,
-        'unit_residential_rent': 0,
+        'unit_residential_price': 0.0,
+        'unit_residential_rent': 0.0,
         'num_units': 1,
         'building_id': np.repeat(
             buildings.index.values,
@@ -163,7 +163,9 @@ def ual_match_households_to_units(households, residential_units):
     This initialization step adds a 'unit_id' to the households table and
     populates it based on existing assignments of households to buildings.
     This also allows us to add a 'vacant_units' count to the residential_units
-    table.
+    table.  FSF note: this won't work if there are more households in a
+    building than there are units in that building - make sure not to have
+    overfull buildings.
 
     Data expectations
     -----------------

@@ -254,7 +254,6 @@ def parcels_geography(parcels):
     df.loc[2054506, "juris_name"] = "Marin County"
     df.loc[572927, "juris_name"] = "Contra Costa County"
     # assert no empty juris values
-    print df.juris_name[df.juris_name.isnull()]
     assert True not in df.juris_name.isnull().value_counts()
 
     df["pda_id"] = df.pda_id.str.lower()

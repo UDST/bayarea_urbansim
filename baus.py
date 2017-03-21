@@ -10,7 +10,6 @@ import socket
 import argparse
 import warnings
 from baus.utils import compare_summary
-from scripts.check_feedback import check_feedback
 
 warnings.filterwarnings("ignore")
 
@@ -21,7 +20,7 @@ SLACK = MAPS = "URBANSIM_SLACK" in os.environ
 LOGS = True
 INTERACT = False
 SCENARIO = None
-MODE = "ual_simulation"
+MODE = "simulation"
 S3 = False
 EVERY_NTH_YEAR = 5
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
@@ -109,7 +108,7 @@ if SLACK:
     host = socket.gethostname()
 
 
-def get_simulation_models(SCENARIO):
+def get_simulation_models(SCENARIO, ual=False):
 
     models = [
         "neighborhood_vars",            # local accessibility vars
@@ -150,6 +149,74 @@ def get_simulation_models(SCENARIO):
         "geographic_summary",
         "travel_model_output"
     ]
+
+    if ual:
+
+        # ual has a slightly different set of models - might be able to get rid
+        # of the old version soon
+
+        models = [
+
+            "neighborhood_vars",    # street network accessibility
+            "regional_vars",        # road network accessibility
+
+            "ual_rsh_simulate",     # residential sales hedonic for units
+            "ual_rrh_simulate",     # residential rental hedonic for units
+            "nrh_simulate",         # non-residential rent hedonic
+
+            # (based on higher of predicted price or rent)
+            "ual_assign_tenure_to_new_units",
+
+            # uses conditional probabilities
+            "ual_households_relocation",
+            "households_transition",
+            # update building/unit/hh correspondence
+            "ual_reconcile_unplaced_households",
+
+            # allocate owners to vacant owner-occupied units
+            "ual_hlcm_owner_simulate",
+            # allocate renters to vacant rental units
+            "ual_hlcm_renter_simulate",
+            # update building/unit/hh correspondence
+            "ual_reconcile_placed_households",
+            "jobs_relocation",
+            "jobs_transition",
+            "proportional_elcm",        # start with a proportional jobs model
+            "elcm_simulate",            # displaced by new dev
+
+            # apply unit prices to buildings
+            "ual_update_building_residential_price",
+            "price_vars",
+            "scheduled_development_events",
+
+            # run the subsidized acct system
+            "lump_sum_accounts",
+            "subsidized_residential_developer_lump_sum_accts",
+
+            "alt_feasibility",
+
+            "residential_developer",
+            "developer_reprocess",
+            "retail_developer",
+            "office_developer",
+            "accessory_units",
+
+            # (for buildings that were removed)
+            "ual_remove_old_units",
+            # set up units for new residential buildings
+            "ual_initialize_new_units",
+            # update building/unit/hh correspondence
+            "ual_reconcile_unplaced_households",
+
+            # ual_save_intermediate_tables", # saves output for visualization
+
+            "topsheet",
+            "parcel_summary",
+            "building_summary",
+            "diagnostic_output",
+            "geographic_summary",
+            "travel_model_output"
+        ]
 
     # calculate VMT taxes
     vmt_settings = \
@@ -220,75 +287,59 @@ def run_models(MODE, SCENARIO):
 
     elif MODE == "ual_simulation":
 
-        years_to_run = range(IN_YEAR, OUT_YEAR+1, EVERY_NTH_YEAR)
-        models = get_simulation_models(SCENARIO)
-
         # Initialization steps
         orca.run([
             "ual_initialize_residential_units",
             "ual_match_households_to_units",
             "ual_assign_tenure_to_units",
-#           "ual_load_rental_listings",     # required to estimate rental hedonic
         ])
 
         # Estimation steps
         orca.run([
-#           "neighborhood_vars",             # street network accessibility
-#           "regional_vars",                 # road network accessibility
-#             
-#           "ual_rrh_estimate",              # estimate residential rental hedonic
-# 
-#           "ual_hlcm_owner_estimate",       # estimate location choice for owners
-#           "ual_hlcm_renter_estimate",      # estimate location choice for renters
+            # "ual_load_rental_listings", # required to estimate rental hedonic
+            # "neighborhood_vars",        # street network accessibility
+            # "regional_vars",            # road network accessibility
+
+            # "ual_rrh_estimate",         # estimate residential rental hedonic
+
+            # "ual_hlcm_owner_estimate",  # estimate location choice owners
+            # "ual_hlcm_renter_estimate", # estimate location choice renters
 
         ])
 
-        # Simulation steps
-        orca.run([
+        # see oabove for docs on this
+        if not SKIP_BASE_YEAR:
+            orca.run([
 
-            "neighborhood_vars",                # street network accessibility
-            "regional_vars",                    # road network accessibility
-            
-            "ual_rsh_simulate",                 # residential sales hedonic for units
-            "ual_rrh_simulate",                 # residential rental hedonic for units
-            "nrh_simulate",                     # non-residential rent hedonic
-            
-            "ual_assign_tenure_to_new_units",   # (based on higher of predicted price or rent)
- 
-            "ual_households_relocation",        # uses conditional probabilities
-            "households_transition",
-            "ual_reconcile_unplaced_households",  # update building/unit/hh correspondence
+                "neighborhood_vars",   # local accessibility vars
+                "regional_vars",       # regional accessibility vars
 
-            "ual_hlcm_owner_simulate",          # allocate owners to vacant owner-occupied units
-            "ual_hlcm_renter_simulate",         # allocate renters to vacant rental units
-            "ual_reconcile_placed_households",  # update building/unit/hh correspondence
+                "ual_rsh_simulate",    # residential sales hedonic for units
+                "ual_rrh_simulate",    # residential rental hedonic for units
 
-            "jobs_relocation",
-            "jobs_transition",
-            "elcm_simulate",
+                "households_transition",
 
-            "ual_update_building_residential_price",  # apply unit prices to buildings          
-            "price_vars",
-            "scheduled_development_events",
-            "alt_feasibility",
-            
-            "residential_developer",
-            "developer_reprocess",
-            "retail_developer",
-            "office_developer",
-            
-            "ual_remove_old_units",               # (for buildings that were removed)
-            "ual_initialize_new_units",           # set up units for new residential buildings
-            "ual_reconcile_unplaced_households",  # update building/unit/hh correspondence
+                # allocate owners to vacant owner-occupied units
+                "ual_hlcm_owner_simulate",
+                # allocate renters to vacant rental units
+                "ual_hlcm_renter_simulate",
+                # update building/unit/hh correspondence
+                "ual_reconcile_placed_households",
 
-#             "ual_save_intermediate_tables",       # saves output for visualization
-            
-            "topsheet",
-            "diagnostic_output",
-            "geographic_summary",
-            "travel_model_output"
+                "topsheet",
+                "parcel_summary",
+                "building_summary",
+                "geographic_summary",
+                "travel_model_output"
 
-        ], iter_vars=years_to_run)
+            ], iter_vars=[IN_YEAR])
+
+        # start the simulation in the next round - only the models above run
+        # for the IN_YEAR
+        years_to_run = range(IN_YEAR+EVERY_NTH_YEAR, OUT_YEAR+1,
+                             EVERY_NTH_YEAR)
+        models = get_simulation_models(SCENARIO, ual=True)
+        orca.run(models, iter_vars=years_to_run)
 
     elif MODE == "estimation":
 
