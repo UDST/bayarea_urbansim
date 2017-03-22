@@ -92,8 +92,7 @@ def ual_initialize_residential_units(buildings, ual_settings):
     - initializes a 'residential_units' table with the following columns:
         - 'unit_id' (index)
         - 'num_units' (int, always '1', needed when passing the table to
-          utility functions
-          that expect it to look like a 'buildings' table)
+          utility functions that expect it to look like a 'buildings' table)
         - 'unit_residential_price' (float, 0-filled)
         - 'unit_residential_rent' (float, 0-filled)
         - 'building_id' (int, non-missing, corresponds to index of 'buildings'
@@ -209,13 +208,17 @@ def ual_match_households_to_units(households, residential_units):
     # This code block is from Fletcher
     unit_lookup = units.reset_index().set_index(['building_id', 'unit_num'])
     hh = hh.sort_values(by=['building_id'], ascending=True)
+
     building_counts = hh.building_id.value_counts().sort_index()
-    hh['unit_num'] = np.concatenate([np.arange(i)
-                                    for i in building_counts.values])
+    hh['unit_num'] = np.concatenate(
+        [np.arange(i) for i in building_counts.values])
+
     unplaced = hh[hh.building_id == -1].index
     placed = hh[hh.building_id != -1].index
-    indexes = [tuple(t) for t in hh.loc[placed,
-               ['building_id', 'unit_num']].values]
+
+    indexes = [tuple(t) for t in
+               hh.loc[placed, ['building_id', 'unit_num']].values]
+
     hh.loc[placed, 'unit_id'] = unit_lookup.loc[indexes].unit_id.values
     hh.loc[unplaced, 'unit_id'] = -1
     orca.add_table('households', hh)
