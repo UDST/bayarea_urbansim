@@ -295,6 +295,7 @@ def run_models(MODE, SCENARIO):
         ])
 
         # Estimation steps
+        # these should be moved to the estimation step when the time is right
         orca.run([
             # "ual_load_rental_listings", # required to estimate rental hedonic
             # "neighborhood_vars",        # street network accessibility
@@ -317,7 +318,14 @@ def run_models(MODE, SCENARIO):
                 "ual_rsh_simulate",    # residential sales hedonic for units
                 "ual_rrh_simulate",    # residential rental hedonic for units
 
+                # (based on higher of predicted price or rent)
+                "ual_assign_tenure_to_new_units",
+
+                # uses conditional probabilities
+                "ual_households_relocation",
                 "households_transition",
+                # update building/unit/hh correspondence
+                "ual_reconcile_unplaced_households",
 
                 # allocate owners to vacant owner-occupied units
                 "ual_hlcm_owner_simulate",
