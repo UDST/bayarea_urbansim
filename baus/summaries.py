@@ -105,7 +105,8 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
     write("Number of residential units in buildings table = %d" % du)
     write("Residential vacancy rate = %.2f" % (1-0 - float(nhh)/du))
 
-    write("Number of residential units in units table = %d" % len(residential_units))
+    write("Number of residential units in units table = %d"
+          % len(residential_units))
     rent_own = residential_units.hownrent.value_counts()
     write("Split of units by rent/own = %s" % str(rent_own))
 
