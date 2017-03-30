@@ -12,7 +12,8 @@ from scripts.output_csv_utils import format_df
 @orca.step("topsheet")
 def topsheet(households, jobs, buildings, parcels, zones, year,
              run_number, taz_geography, parcels_zoning_calculations,
-             summary, settings, parcels_geography, abag_targets, new_tpp_id):
+             summary, settings, parcels_geography, abag_targets, new_tpp_id,
+             residential_units):
 
     hh_by_subregion = misc.reindex(taz_geography.subregion,
                                    households.zone_id).value_counts()
@@ -96,9 +97,17 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
     n = len(jobs.building_id[jobs.building_id == -1])
     write("Number of unplaced jobs = %d" % n)
 
+    # we should assert there are no unplaces households and jobs right?
+    # this is considered an error for the MTC-style model
+    # could be configured in settings.yaml
+
     du = buildings.residential_units.sum()
-    write("Number of residential units = %d" % du)
+    write("Number of residential units in buildings table = %d" % du)
     write("Residential vacancy rate = %.2f" % (1-0 - float(nhh)/du))
+
+    write("Number of residential units in units table = %d" % len(residential_units))
+    rent_own = residential_units.hownrent.value_counts()
+    write("Split of units by rent/own = %s" % str(rent_own))
 
     du = buildings.deed_restricted_units.sum()
     write("Number of deed restricted units = %d" % du)
