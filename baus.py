@@ -160,12 +160,7 @@ def get_simulation_models(SCENARIO, ual=False):
             "neighborhood_vars",    # street network accessibility
             "regional_vars",        # road network accessibility
 
-            "ual_rsh_simulate",     # residential sales hedonic for units
-            "ual_rrh_simulate",     # residential rental hedonic for units
             "nrh_simulate",         # non-residential rent hedonic
-
-            # (based on higher of predicted price or rent)
-            "ual_assign_tenure_to_new_units",
 
             # uses conditional probabilities
             "ual_households_relocation",
@@ -173,16 +168,8 @@ def get_simulation_models(SCENARIO, ual=False):
             # update building/unit/hh correspondence
             "ual_reconcile_unplaced_households",
 
-            # allocate owners to vacant owner-occupied units
-            "ual_hlcm_owner_simulate",
-            # allocate renters to vacant rental units
-            "ual_hlcm_renter_simulate",
-            # update building/unit/hh correspondence
-            "ual_reconcile_placed_households",
             "jobs_relocation",
             "jobs_transition",
-            "proportional_elcm",        # start with a proportional jobs model
-            "elcm_simulate",            # displaced by new dev
 
             # apply unit prices to buildings
             "ual_update_building_residential_price",
@@ -207,6 +194,22 @@ def get_simulation_models(SCENARIO, ual=False):
             "ual_initialize_new_units",
             # update building/unit/hh correspondence
             "ual_reconcile_unplaced_households",
+
+            "ual_rsh_simulate",     # residential sales hedonic for units
+            "ual_rrh_simulate",     # residential rental hedonic for units
+
+            # (based on higher of predicted price or rent)
+            "ual_assign_tenure_to_new_units",
+
+            # allocate owners to vacant owner-occupied units
+            "ual_hlcm_owner_simulate",
+            # allocate renters to vacant rental units
+            "ual_hlcm_renter_simulate",
+            # update building/unit/hh correspondence
+            "ual_reconcile_placed_households",
+
+            "proportional_elcm",        # start with a proportional jobs model
+            "elcm_simulate",            # displaced by new dev
 
             # ual_save_intermediate_tables", # saves output for visualization
 
