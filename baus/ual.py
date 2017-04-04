@@ -923,15 +923,11 @@ def ual_hlcm_renter_estimate(households, residential_units, unit_aggregations):
                               join_tbls=unit_aggregations)
 
 
-@orca.step('ual_hlcm_owner_simulate')
-def ual_hlcm_owner_simulate(households, residential_units,
-                            unit_aggregations, ual_settings):
+# use one core hlcm for the hlcms below, with different yaml files
+def ual_hlcm_simulate(households, residential_units, unit_aggregations,
+                      ual_settings, yaml_name):
 
-    # Note that the submarket id (zone_id) needs to be in the table of
-    # alternatives, for supply/demand equilibration, and needs to NOT be in the
-    # choosers table, to avoid conflicting when the tables are joined
-
-    return utils.lcm_simulate(cfg='ual_hlcm_owner.yaml',
+    return utils.lcm_simulate(cfg=yaml_name,
                               choosers=households,
                               buildings=residential_units,
                               join_tbls=unit_aggregations,
@@ -943,16 +939,66 @@ def ual_hlcm_owner_simulate(households, residential_units,
                               cast=True)
 
 
+@orca.step('ual_hlcm_owner_simulate')
+def ual_hlcm_owner_simulate(households, residential_units,
+                            unit_aggregations, ual_settings):
+
+    # Note that the submarket id (zone_id) needs to be in the table of
+    # alternatives, for supply/demand equilibration, and needs to NOT be in the
+    # choosers table, to avoid conflicting when the tables are joined
+
+    return ual_hlcm_simulate(households, residential_units, unit_aggregations,
+                             ual_settings, 'ual_hlcm_owner.yaml')
+
+
 @orca.step('ual_hlcm_renter_simulate')
 def ual_hlcm_renter_simulate(households, residential_units, unit_aggregations,
                              ual_settings):
-    return utils.lcm_simulate(cfg='ual_hlcm_renter.yaml',
-                              choosers=households,
-                              buildings=residential_units,
-                              join_tbls=unit_aggregations,
-                              out_fname='unit_id',
-                              supply_fname='num_units',
-                              vacant_fname='vacant_units',
-                              enable_supply_correction=ual_settings.get(
-                                'rent_equilibration', None),
-                              cast=True)
+    return ual_hlcm_simulate(households, residential_units, unit_aggregations,
+                             ual_settings, 'ual_hlcm_renter.yaml')
+
+
+# this opens the yaml file, deletes the predict filters and writes it to the
+# out name - since the alts don't have a filter, all hhlds should be placed
+def drop_predict_filters_from_yaml(in_yaml_name, out_yaml_name):
+    fname = misc.config(in_yaml_name)
+    cfg = yaml.load(open(fname))
+    cfg["alts_predict_filters"] = None
+    open(misc.config(out_yaml_name), "w").write(yaml.dump(cfg))
+
+
+# see comment above - these hlcms ignore tenure in the alternatives and so
+# place households as long as there are empty units - this should only run
+# in the final year
+@orca.step()
+def ual_hlcm_owner_simulate_no_unplaced(households, residential_units,
+                                        year, final_year,
+                                        unit_aggregations, ual_settings):
+
+    # only run in the last year, but make sure to run before summaries
+    if year != final_year:
+        return
+
+    drop_predict_filters_from_yaml(
+        "ual_hlcm_owner.yaml",
+        "ual_hlcm_owner_no_unplaced.yaml")
+
+    return ual_hlcm_simulate(households, residential_units, unit_aggregations,
+                             ual_settings, 'ual_hlcm_owner_no_unplaced.yaml')
+
+
+@orca.step()
+def ual_hlcm_renter_simulate_no_unplaced(households, residential_units,
+                                         year, final_year,
+                                         unit_aggregations, ual_settings):
+
+    # only run in the last year, but make sure to run before summaries
+    if year != final_year:
+        return
+
+    drop_predict_filters_from_yaml(
+        "ual_hlcm_renter.yaml",
+        "ual_hlcm_renter_no_unplaced.yaml")
+
+    return ual_hlcm_simulate(households, residential_units, unit_aggregations,
+                             ual_settings, 'ual_hlcm_renter_no_unplaced.yaml')
