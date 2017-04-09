@@ -8,5 +8,5 @@ pandana
 # 1) get that anaconda and install
 # 2) clone master (or release) of bayarea_urbansim
 # 3) pip install -r requirements.txt
-# run by calling `python run.py &`
+# run by calling `python baus.py &`
 boto

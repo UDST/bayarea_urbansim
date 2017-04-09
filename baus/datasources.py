@@ -362,7 +362,7 @@ def print_error_if_not_available(store, table):
     if table not in store:
         raise Exception(
             "%s not found in store - you need to preprocess" % table +
-            " the data with:\n  python run.py --mode preprocessing -c")
+            " the data with:\n  python baus.py --mode preprocessing -c")
     return store[table]
 
 
