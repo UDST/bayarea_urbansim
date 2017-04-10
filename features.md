@@ -12,7 +12,7 @@
 
 ## Run management
 
-* Ability to run different model sets, output to Slack and web maps (in run.py)
+* Ability to run different model sets, output to Slack and web maps (in baus.py)
 
 ## Standard (or extensions to) UrbanSim features
 

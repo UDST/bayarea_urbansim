@@ -9,7 +9,6 @@ import socket
 import argparse
 import warnings
 from baus.utils import compare_summary
-from scripts.check_feedback import check_feedback
 
 warnings.filterwarnings("ignore")
 
