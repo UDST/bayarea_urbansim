@@ -171,6 +171,8 @@ def get_simulation_models(SCENARIO, ual=False):
             "jobs_relocation",
             "jobs_transition",
 
+            "balance_rental_and_ownership_hedonics",
+
             # apply unit prices to buildings
             "ual_update_building_residential_price",
             "price_vars",

@@ -1,4 +1,5 @@
 import os
+import math
 import yaml
 import numpy as np
 import pandas as pd
@@ -1002,3 +1003,42 @@ def ual_hlcm_renter_simulate_no_unplaced(households, residential_units,
 
     return ual_hlcm_simulate(households, residential_units, unit_aggregations,
                              ual_settings, 'ual_hlcm_renter_no_unplaced.yaml')
+
+@orca.step()
+def balance_rental_and_ownership_hedonics(households, ual_settings,
+                                          residential_units):
+    hh_rent_own = households.hownrent.map({1: "own", 2: "rent"}).value_counts()
+    unit_rent_own = residential_units.hownrent.\
+        map({1: "own", 2: "rent"}).value_counts()
+
+    # keep these positive by not doing a full vacancy rate - just divide
+    # the number of households by the number of units for each tenure
+    owner_utilization = hh_rent_own.own / float(unit_rent_own.own)
+    renter_utilization = hh_rent_own.rent / float(unit_rent_own.rent)
+
+    print "Owner utilization = %.3f" % owner_utilization
+    print "Renter utilization = %.3f" % renter_utilization
+
+    utilization_ratio = renter_utilization / owner_utilization
+    print "Ratio of renter utilization to owner utilization = %.3f" %\
+        utilization_ratio
+
+    if "original_cap_rate" not in ual_settings:
+        ual_settings["original_cap_rate"] = ual_settings["cap_rate"]
+
+    factor = 1.4
+    # move the ratio away from zero to have more of an impact
+    if utilization_ratio < 1.0:
+        utilization_ratio /= factor
+    elif utilization_ratio > 1.0:
+        utilization_ratio *= factor
+    print "Modified ratio = %.3f" % utilization_ratio
+
+    # adjust the cap rate based on utilization ratio - higher ratio
+    # here means renter utilization is higher than owner utilization
+    # meaning rent price should go up meaning cap rate should go down
+    # FIXME these might need a parameter to spread or narrow the impact
+    ual_settings["cap_rate"] = ual_settings["original_cap_rate"] /\
+        utilization_ratio
+
+    print "New cap rate = %.2f" % ual_settings["cap_rate"]
