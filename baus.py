@@ -218,10 +218,9 @@ def get_simulation_models(SCENARIO, ual=False):
             # force placement of any unplaced households, in terms of rent/own
             # is a noop except in the final simulation year
             "ual_hlcm_owner_simulate_no_unplaced",
-            # FIXME
             # this one crashes right no because there are no unplaced, so
             # need to fix the crash in urbansim
-            # "ual_hlcm_renter_simulate_no_unplaced"
+            "ual_hlcm_renter_simulate_no_unplaced",
 
             # update building/unit/hh correspondence
             "ual_reconcile_placed_households",
