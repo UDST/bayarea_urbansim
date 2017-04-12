@@ -1004,6 +1004,7 @@ def ual_hlcm_renter_simulate_no_unplaced(households, residential_units,
     return ual_hlcm_simulate(households, residential_units, unit_aggregations,
                              ual_settings, 'ual_hlcm_renter_no_unplaced.yaml')
 
+
 @orca.step()
 def balance_rental_and_ownership_hedonics(households, ual_settings,
                                           residential_units):
