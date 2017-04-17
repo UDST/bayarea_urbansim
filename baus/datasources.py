@@ -112,14 +112,14 @@ def fetch_from_s3(settings):
     s3_settings = settings["s3_settings"]
 
     conn = boto.connect_s3()
-    bucket = conn.get_bucket(s3_settings["bucket"])
+    bucket = conn.get_bucket(s3_settings["bucket"], validate=False)
 
     for file in s3_settings["files"]:
         file = os.path.join("data", file)
         if os.path.exists(file):
             continue
         print "Downloading " + file
-        key = bucket.get_key(file)
+        key = bucket.get_key(file, validate=False)
         key.get_contents_to_filename(file)
 
 
@@ -361,7 +361,7 @@ def print_error_if_not_available(store, table):
     if table not in store:
         raise Exception(
             "%s not found in store - you need to preprocess" % table +
-            " the data with:\n  python run.py --mode preprocessing -c")
+            " the data with:\n  python baus.py --mode preprocessing -c")
     return store[table]
 
 
