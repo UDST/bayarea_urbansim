@@ -3,6 +3,7 @@ import sys
 import time
 import traceback
 from baus import models
+from baus import ual
 import pandas as pd
 import orca
 import socket
@@ -11,6 +12,9 @@ import warnings
 from baus.utils import compare_summary
 
 warnings.filterwarnings("ignore")
+
+# Suppress scientific notation in pandas output
+pd.set_option('display.float_format', lambda x: '%.3f' % x)
 
 SLACK = MAPS = "URBANSIM_SLACK" in os.environ
 LOGS = True
@@ -22,6 +26,7 @@ EVERY_NTH_YEAR = 5
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
 COMPARE_TO_NO_PROJECT = True
 NO_PROJECT = 611
+
 IN_YEAR, OUT_YEAR = 2010, 2040
 COMPARE_AGAINST_LAST_KNOWN_GOOD = False
 
@@ -103,7 +108,7 @@ if SLACK:
     host = socket.gethostname()
 
 
-def get_simulation_models(SCENARIO):
+def get_simulation_models(SCENARIO, ual=False):
 
     models = [
         "neighborhood_vars",            # local accessibility vars
@@ -144,6 +149,94 @@ def get_simulation_models(SCENARIO):
         "geographic_summary",
         "travel_model_output"
     ]
+
+    if ual:
+
+        # ual has a slightly different set of models - might be able to get rid
+        # of the old version soon
+
+        models = [
+
+            "neighborhood_vars",    # street network accessibility
+            "regional_vars",        # road network accessibility
+
+            "nrh_simulate",         # non-residential rent hedonic
+
+            # uses conditional probabilities
+            "ual_households_relocation",
+            "households_transition",
+            # update building/unit/hh correspondence
+            "ual_reconcile_unplaced_households",
+
+            "jobs_relocation",
+            "jobs_transition",
+
+            "balance_rental_and_ownership_hedonics",
+
+            # apply unit prices to buildings
+            "ual_update_building_residential_price",
+            "price_vars",
+            "scheduled_development_events",
+
+            # run the subsidized acct system
+            "lump_sum_accounts",
+            "subsidized_residential_developer_lump_sum_accts",
+
+            "alt_feasibility",
+
+            "residential_developer",
+            "developer_reprocess",
+            "retail_developer",
+            "office_developer",
+            "accessory_units",
+
+            # (for buildings that were removed)
+            "ual_remove_old_units",
+            # set up units for new residential buildings
+            "ual_initialize_new_units",
+            # update building/unit/hh correspondence
+            "ual_reconcile_unplaced_households",
+
+            "ual_rsh_simulate",     # residential sales hedonic for units
+            "ual_rrh_simulate",     # residential rental hedonic for units
+
+            # (based on higher of predicted price or rent)
+            "ual_assign_tenure_to_new_units",
+
+            # allocate owners to vacant owner-occupied units
+            "ual_hlcm_owner_simulate",
+            # allocate renters to vacant rental units
+            "ual_hlcm_renter_simulate",
+
+            # we have to run the hlcm above before this one - we first want to
+            # try and put unplaced households into their appropraite tenured
+            # units and then when that fails, force them to place using the
+            # code below.  technically the hlcms above could be moved above the
+            # developer again, but we would have to run the hedonics twice and
+            # also the assign_tenure_to_new_units twice.
+
+            # force placement of any unplaced households, in terms of rent/own
+            # is a noop except in the final simulation year
+            "ual_hlcm_owner_simulate_no_unplaced",
+            # this one crashes right no because there are no unplaced, so
+            # need to fix the crash in urbansim
+            "ual_hlcm_renter_simulate_no_unplaced",
+
+            # update building/unit/hh correspondence
+            "ual_reconcile_placed_households",
+
+            "proportional_elcm",        # start with a proportional jobs model
+            "elcm_simulate",            # displaced by new dev
+
+            # ual_save_intermediate_tables", # saves output for visualization
+
+            "topsheet",
+            "parcel_summary",
+            "building_summary",
+            "diagnostic_output",
+            "geographic_summary",
+            "travel_model_output"
+        ]
 
     # calculate VMT taxes
     vmt_settings = \
@@ -210,6 +303,70 @@ def run_models(MODE, SCENARIO):
         years_to_run = range(IN_YEAR+EVERY_NTH_YEAR, OUT_YEAR+1,
                              EVERY_NTH_YEAR)
         models = get_simulation_models(SCENARIO)
+        orca.run(models, iter_vars=years_to_run)
+
+    elif MODE == "ual_simulation":
+
+        # Initialization steps
+        orca.run([
+            "ual_initialize_residential_units",
+            "ual_match_households_to_units",
+            "ual_assign_tenure_to_units",
+        ])
+
+        # Estimation steps
+        # these should be moved to the estimation step when the time is right
+        orca.run([
+            # "ual_load_rental_listings", # required to estimate rental hedonic
+            # "neighborhood_vars",        # street network accessibility
+            # "regional_vars",            # road network accessibility
+
+            # "ual_rrh_estimate",         # estimate residential rental hedonic
+
+            # "ual_hlcm_owner_estimate",  # estimate location choice owners
+            # "ual_hlcm_renter_estimate", # estimate location choice renters
+
+        ])
+
+        # see oabove for docs on this
+        if not SKIP_BASE_YEAR:
+            orca.run([
+
+                "neighborhood_vars",   # local accessibility vars
+                "regional_vars",       # regional accessibility vars
+
+                "ual_rsh_simulate",    # residential sales hedonic for units
+                "ual_rrh_simulate",    # residential rental hedonic for units
+
+                # (based on higher of predicted price or rent)
+                "ual_assign_tenure_to_new_units",
+
+                # uses conditional probabilities
+                "ual_households_relocation",
+                "households_transition",
+                # update building/unit/hh correspondence
+                "ual_reconcile_unplaced_households",
+
+                # allocate owners to vacant owner-occupied units
+                "ual_hlcm_owner_simulate",
+                # allocate renters to vacant rental units
+                "ual_hlcm_renter_simulate",
+                # update building/unit/hh correspondence
+                "ual_reconcile_placed_households",
+
+                "topsheet",
+                "parcel_summary",
+                "building_summary",
+                "geographic_summary",
+                "travel_model_output"
+
+            ], iter_vars=[IN_YEAR])
+
+        # start the simulation in the next round - only the models above run
+        # for the IN_YEAR
+        years_to_run = range(IN_YEAR+EVERY_NTH_YEAR, OUT_YEAR+1,
+                             EVERY_NTH_YEAR)
+        models = get_simulation_models(SCENARIO, ual=True)
         orca.run(models, iter_vars=years_to_run)
 
     elif MODE == "estimation":

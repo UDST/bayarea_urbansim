@@ -266,7 +266,13 @@ def preproc_buildings(store, parcels, manual_edits):
     # start with buildings from urbansim_defaults
     df = store['buildings']
 
-    # XXX need to make sure households and jobs don't exceed capacity
+    # this is code from urbansim_defaults
+    df["residential_units"] = pd.concat(
+        [df.residential_units,
+         store.households_preproc.building_id.value_counts()],
+        axis=1).max(axis=1)
+
+    # XXX need to make sure jobs don't exceed capacity
 
     # drop columns we don't needed
     df = df.drop(['development_type_id', 'improvement_value',
@@ -320,6 +326,9 @@ def preproc_buildings(store, parcels, manual_edits):
 
     # set default redfin sale year to 2012
     df["redfin_sale_year"] = df.redfin_sale_year.fillna(2012)
+
+    df["residential_price"] = 0.0
+    df["non_residential_price"] = 0.0
 
     df = assign_deed_restricted_units(df, parcels)
 

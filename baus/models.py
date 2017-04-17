@@ -53,7 +53,8 @@ def hlcm_simulate(households, buildings, aggregations, settings, low_income):
                        aggregations,
                        "building_id", "residential_units",
                        "vacant_affordable_units",
-                       settings.get("enable_supply_correction", None))
+                       settings.get("enable_supply_correction", None),
+                       cast=True)
 
     os.remove(misc.config("hlcm_tmp.yaml"))
 
@@ -64,7 +65,8 @@ def hlcm_simulate(households, buildings, aggregations, settings, low_income):
                        aggregations,
                        "building_id", "residential_units",
                        "vacant_market_rate_units_minus_structural_vacancy",
-                       settings.get("enable_supply_correction", None))
+                       settings.get("enable_supply_correction", None),
+                       cast=True)
 
 
 @orca.step()
@@ -73,7 +75,7 @@ def elcm_simulate(jobs, buildings, aggregations):
         buildings.local.non_residential_price.fillna(0)
     return utils.lcm_simulate("elcm.yaml", jobs, buildings, aggregations,
                               "building_id", "job_spaces",
-                              "vacant_job_spaces")
+                              "vacant_job_spaces", cast=True)
 
 
 @orca.step()
@@ -94,7 +96,7 @@ def households_transition(households, household_controls, year, settings):
 def households_relocation(households, settings, years_per_iter):
     rate = settings['rates']['households_relocation']
     rate = min(rate * years_per_iter, 1.0)
-    return utils.simple_relocation(households, rate, "building_id")
+    return utils.simple_relocation(households, rate, "building_id", cast=True)
 
 
 @orca.table(cache=True)

@@ -1,0 +1,45 @@
+name: ual_rrh
+
+model_type: regression
+
+fit_filters:
+- sqft_per_unit > 100
+- sqft_per_unit < 4000
+- price_per_sqft > 0.5
+- price_per_sqft < 7
+
+predict_filters: null
+
+model_expression: price_per_sqft ~ sqft_per_unit + residential_units_1500 + jobs_45
+    + sfdu + ave_income_1500
+
+ytransform: null
+
+fitted: true
+
+fit_parameters:
+    Coefficient:
+        Intercept: -3.9385721546550583
+        ave_income_1500: 0.0405590138352805
+        jobs_45: 0.43423424300338376
+        residential_units_1500: 0.285106772861442
+        sfdu: -0.21024231283071346
+        sqft_per_unit: -0.000530356858147471
+    Std. Error:
+        Intercept: 0.06876332045361362
+        ave_income_1500: 0.002958279074704742
+        jobs_45: 0.005008579582139719
+        residential_units_1500: 0.0027770737290278105
+        sfdu: 0.0020655669207821875
+        sqft_per_unit: 5.633522811816299e-06
+    T-Score:
+        Intercept: -57.27722466968333
+        ave_income_1500: 13.710340644358778
+        jobs_45: 86.69808193760879
+        residential_units_1500: 102.6644593124473
+        sfdu: -101.7843143765582
+        sqft_per_unit: -94.14302131430956
+
+fit_rsquared_adj: 0.42712607394469126
+
+fit_rsquared: 0.4271654094152453
