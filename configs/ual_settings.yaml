@@ -12,9 +12,9 @@ cap_rate: 0.05
 
 
 relocation_rates:
-  hownrent: 
-    - 1
-    - 2
+  tenure: 
+    - own
+    - rent
   probability_of_relocating: 
     - 0.15
     - 0.25

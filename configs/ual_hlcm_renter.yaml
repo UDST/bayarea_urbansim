@@ -4,13 +4,13 @@ model_type: segmented_discretechoice
 
 segmentation_col: base_income_octile
 
-choosers_fit_filters: (hownrent == 2 & income > 0)
+choosers_fit_filters: (tenure == 'rent' & income > 0)
 
-choosers_predict_filters: (hownrent == 2)
+choosers_predict_filters: (tenure == 'rent')
 
 alts_fit_filters: null
 
-alts_predict_filters: (hownrent == 2)
+alts_predict_filters: (tenure == 'rent')
 
 interaction_predict_filters: null
 
