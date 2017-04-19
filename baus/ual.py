@@ -19,23 +19,6 @@ from urbansim_defaults import utils
 ###############################################################################
 
 
-@orca.injectable('ual_settings', cache=True)
-def ual_settings():
-    """
-    This step loads the UAL settings, which are kept separate for clarity.
-
-    Data expectations
-    -----------------
-    - 'configs' folder contains a file called 'ual_settings.yaml'
-    - 'os.path' is expected to provide the root level of the urbansim instance,
-      so be sure to either (a) launch the python process from that directory,
-      or (b) use os.chdir to switch to that directory before running any model
-      steps
-    """
-    with open(os.path.join(misc.configs_dir(), 'ual_settings.yaml')) as f:
-        return yaml.load(f)
-
-
 def _create_empty_units(buildings):
     """
     Create a table of empty units corresponding to an input table of buildings.
@@ -74,7 +57,7 @@ def _create_empty_units(buildings):
 
 
 @orca.step('initialize_residential_units')
-def initialize_residential_units(buildings, ual_settings):
+def initialize_residential_units(buildings, settings):
     """
     This initialization step creates and registers a table of synthetic
     residential units, based on building info.
@@ -85,8 +68,8 @@ def initialize_residential_units(buildings, ual_settings):
         - index that serves as its id
         - 'residential_units' (int, never missing)
         - 'zone_id' (int, non-missing??)
-    - 'ual_settings' injectable contains list of tables called
-      'unit_aggregation_tables'
+    - 'settings' injectable contains list of tables called
+      'aggregation_tables'
 
     Results
     -------
@@ -103,8 +86,8 @@ def initialize_residential_units(buildings, ual_settings):
           of 'zones' table)
     - adds broadcasts linking 'residential_units' table to:
         - 'buildings' table
-    - initializes a 'unit_aggregations' injectable containing tables as
-      specified in 'ual_settings' -> 'unit_aggregation_tables'
+    - initializes a 'aggregations' injectable containing tables as
+      specified in 'settings' -> 'aggregation_tables'
     """
 
     # Verify initial data characteristics
@@ -117,7 +100,7 @@ def initialize_residential_units(buildings, ual_settings):
             ColumnSpec('residential_units', min=0, missing=False),
             ColumnSpec('zone_id', foreign_key='zones.zone_id', missing=False)),
         TableSpec('residential_units', registered=False),
-        InjectableSpec('ual_settings', has_key='unit_aggregation_tables')))
+        InjectableSpec('settings', has_key='aggregation_tables')))
     '''
 
     @orca.table('residential_units', cache=True)
@@ -133,14 +116,6 @@ def initialize_residential_units(buildings, ual_settings):
 
     orca.broadcast('buildings', 'residential_units', cast_index=True,
                    onto_on='building_id')
-
-    # This injectable provides a list of tables needed for hedonic and
-    # LCM model steps, but it cannot be evaluated until the network aggregation
-    # steps are run
-    @orca.injectable('unit_aggregations')
-    def unit_aggregations(ual_settings):
-        return [orca.get_table(tbl) for tbl in
-                ual_settings['unit_aggregation_tables']]
 
     # Verify final data characteristics
     '''
@@ -526,7 +501,7 @@ def reconcile_unplaced_households(households):
 
 @orca.step('update_building_residential_price')
 def update_building_residential_price(buildings, residential_units,
-                                      ual_settings):
+                                      settings):
     """
     This data maintenance step updates the prices in the buildings table
     to reflect changes to the unit-level prices. This allows model steps
@@ -547,7 +522,7 @@ def update_building_residential_price(buildings, residential_units,
     - 'buildings' table has following columns:
         - index that serves as its id
         - 'residential_price' (float, 0-filled)
-    - 'ual_settings' injectable has a 'cap_rate' (float, range 0 to 1)
+    - 'settings' injectable has a 'cap_rate' (float, range 0 to 1)
 
     Results
     -------
@@ -570,14 +545,14 @@ def update_building_residential_price(buildings, residential_units,
             'buildings',
             ColumnSpec('building_id', primary_key=True),
             ColumnSpec('residential_price', min=0)),
-        InjectableSpec('ual_settings', min=0, max=1)))
+        InjectableSpec('settings', min=0, max=1)))
     '''
 
     cols = ['building_id', 'unit_residential_price', 'unit_residential_rent']
     means = residential_units.to_frame(cols).groupby(['building_id']).mean()
 
     # Convert monthly rent to equivalent sale price
-    cap_rate = ual_settings.get('cap_rate')
+    cap_rate = settings.get('cap_rate')
     means['unit_residential_rent'] = \
         means.unit_residential_rent * 12 / cap_rate
 
@@ -713,7 +688,7 @@ def initialize_new_units(buildings, residential_units):
 
 
 @orca.step('assign_tenure_to_new_units')
-def assign_tenure_to_new_units(residential_units, ual_settings):
+def assign_tenure_to_new_units(residential_units, settings):
     """
     This data maintenance step assigns tenure to new residential units.
     Tenure is determined by comparing the fitted sale price and fitted
@@ -753,7 +728,7 @@ def assign_tenure_to_new_units(residential_units, ual_settings):
     units = units[~units.hownrent.isin([1, 2])]
 
     # Convert monthly rent to equivalent sale price
-    cap_rate = ual_settings.get('cap_rate')
+    cap_rate = settings.get('cap_rate')
     units['unit_residential_rent'] = \
         units.unit_residential_rent * 12 / cap_rate
 
@@ -789,6 +764,11 @@ def save_intermediate_tables(households, buildings, parcels,
 ###############################################################################
 
 
+@orca.step()
+def rsh_estimate(buildings, aggregations):
+    return utils.hedonic_estimate("rsh.yaml", buildings, aggregations)
+
+
 @orca.step('rrh_estimate')
 def rrh_estimate(craigslist, aggregations):
     """
@@ -816,7 +796,7 @@ def _mtc_clip(table, col_name, settings, price_scale=1):
 
 
 @orca.step('rsh_simulate')
-def rsh_simulate(residential_units, unit_aggregations, settings):
+def rsh_simulate(residential_units, aggregations, settings):
     """
     This uses the MTC's model specification from rsh.yaml, but
     generates unit-level price predictions rather than building-level.
@@ -827,7 +807,7 @@ def rsh_simulate(residential_units, unit_aggregations, settings):
     """
     utils.hedonic_simulate(cfg='rsh.yaml',
                            tbl=residential_units,
-                           join_tbls=unit_aggregations,
+                           join_tbls=aggregations,
                            out_fname='unit_residential_price')
 
     _mtc_clip(residential_units, 'unit_residential_price', settings)
@@ -835,7 +815,7 @@ def rsh_simulate(residential_units, unit_aggregations, settings):
 
 
 @orca.step('rrh_simulate')
-def rrh_simulate(residential_units, unit_aggregations, settings):
+def rrh_simulate(residential_units, aggregations, settings):
     """
     This uses an altered hedonic specification to generate
     unit-level rent predictions.
@@ -846,7 +826,7 @@ def rrh_simulate(residential_units, unit_aggregations, settings):
     """
     utils.hedonic_simulate(cfg='rrh.yaml',
                            tbl=residential_units,
-                           join_tbls=unit_aggregations,
+                           join_tbls=aggregations,
                            out_fname='unit_residential_rent')
 
     _mtc_clip(residential_units, 'unit_residential_rent',
@@ -855,7 +835,7 @@ def rrh_simulate(residential_units, unit_aggregations, settings):
 
 
 @orca.step('households_relocation')
-def households_relocation(households, ual_settings):
+def households_relocation(households, settings):
     """
     This model step randomly assigns households for relocation, using
     probabilities that depend on their tenure status.
@@ -868,7 +848,7 @@ def households_relocation(households, ual_settings):
           'buildings' table
         - 'unit_id' (int, '-1'-filled, corresponds to index of
           'residential_units' table
-    - 'ual_settings.yaml' has:
+    - 'settings.yaml' has:
         - 'relocation_rates' as specified in RelocationModel() documentation
 
     Results
@@ -887,7 +867,7 @@ def households_relocation(households, ual_settings):
             ColumnSpec('unit_id', numeric=True, missing_val_coding=-1))))
     '''
 
-    rates = pd.DataFrame.from_dict(ual_settings['relocation_rates'])
+    rates = pd.DataFrame.from_dict(settings['relocation_rates'])
 
     print "Total agents: %d" % len(households)
     print "Total currently unplaced: %d" % (households.unit_id == -1).sum()
@@ -907,56 +887,56 @@ def households_relocation(households, ual_settings):
 
 
 @orca.step('hlcm_owner_estimate')
-def hlcm_owner_estimate(households, residential_units, unit_aggregations):
+def hlcm_owner_estimate(households, residential_units, aggregations):
     return utils.lcm_estimate(cfg="hlcm_owner.yaml",
                               choosers=households,
                               chosen_fname="unit_id",
                               buildings=residential_units,
-                              join_tbls=unit_aggregations)
+                              join_tbls=aggregations)
 
 
 @orca.step('hlcm_renter_estimate')
-def hlcm_renter_estimate(households, residential_units, unit_aggregations):
+def hlcm_renter_estimate(households, residential_units, aggregations):
     return utils.lcm_estimate(cfg="hlcm_renter.yaml",
                               choosers=households,
                               chosen_fname="unit_id",
                               buildings=residential_units,
-                              join_tbls=unit_aggregations)
+                              join_tbls=aggregations)
 
 
 # use one core hlcm for the hlcms below, with different yaml files
-def hlcm_simulate(households, residential_units, unit_aggregations,
-                  ual_settings, yaml_name):
+def hlcm_simulate(households, residential_units, aggregations,
+                  settings, yaml_name):
 
     return utils.lcm_simulate(cfg=yaml_name,
                               choosers=households,
                               buildings=residential_units,
-                              join_tbls=unit_aggregations,
+                              join_tbls=aggregations,
                               out_fname='unit_id',
                               supply_fname='num_units',
                               vacant_fname='vacant_units',
-                              enable_supply_correction=ual_settings.get(
+                              enable_supply_correction=settings.get(
                                 'price_equilibration', None),
                               cast=True)
 
 
 @orca.step('hlcm_owner_simulate')
 def hlcm_owner_simulate(households, residential_units,
-                        unit_aggregations, ual_settings):
+                        aggregations, settings):
 
     # Note that the submarket id (zone_id) needs to be in the table of
     # alternatives, for supply/demand equilibration, and needs to NOT be in the
     # choosers table, to avoid conflicting when the tables are joined
 
-    return hlcm_simulate(households, residential_units, unit_aggregations,
-                         ual_settings, 'hlcm_owner.yaml')
+    return hlcm_simulate(households, residential_units, aggregations,
+                         settings, 'hlcm_owner.yaml')
 
 
 @orca.step('hlcm_renter_simulate')
-def hlcm_renter_simulate(households, residential_units, unit_aggregations,
-                         ual_settings):
-    return hlcm_simulate(households, residential_units, unit_aggregations,
-                         ual_settings, 'hlcm_renter.yaml')
+def hlcm_renter_simulate(households, residential_units, aggregations,
+                         settings):
+    return hlcm_simulate(households, residential_units, aggregations,
+                         settings, 'hlcm_renter.yaml')
 
 
 # this opens the yaml file, deletes the predict filters and writes it to the
@@ -974,7 +954,7 @@ def drop_predict_filters_from_yaml(in_yaml_name, out_yaml_name):
 @orca.step()
 def hlcm_owner_simulate_no_unplaced(households, residential_units,
                                     year, final_year,
-                                    unit_aggregations, ual_settings):
+                                    aggregations, settings):
 
     # only run in the last year, but make sure to run before summaries
     if year != final_year:
@@ -984,14 +964,14 @@ def hlcm_owner_simulate_no_unplaced(households, residential_units,
         "hlcm_owner.yaml",
         "hlcm_owner_no_unplaced.yaml")
 
-    return hlcm_simulate(households, residential_units, unit_aggregations,
-                         ual_settings, 'hlcm_owner_no_unplaced.yaml')
+    return hlcm_simulate(households, residential_units, aggregations,
+                         settings, 'hlcm_owner_no_unplaced.yaml')
 
 
 @orca.step()
 def hlcm_renter_simulate_no_unplaced(households, residential_units,
                                      year, final_year,
-                                     unit_aggregations, ual_settings):
+                                     aggregations, settings):
 
     # only run in the last year, but make sure to run before summaries
     if year != final_year:
@@ -1001,12 +981,12 @@ def hlcm_renter_simulate_no_unplaced(households, residential_units,
         "hlcm_renter.yaml",
         "hlcm_renter_no_unplaced.yaml")
 
-    return hlcm_simulate(households, residential_units, unit_aggregations,
-                         ual_settings, 'hlcm_renter_no_unplaced.yaml')
+    return hlcm_simulate(households, residential_units, aggregations,
+                         settings, 'hlcm_renter_no_unplaced.yaml')
 
 
 @orca.step()
-def balance_rental_and_ownership_hedonics(households, ual_settings,
+def balance_rental_and_ownership_hedonics(households, settings,
                                           residential_units):
     hh_rent_own = households.hownrent.map({1: "own", 2: "rent"}).value_counts()
     unit_rent_own = residential_units.hownrent.\
@@ -1024,8 +1004,8 @@ def balance_rental_and_ownership_hedonics(households, ual_settings,
     print "Ratio of renter utilization to owner utilization = %.3f" %\
         utilization_ratio
 
-    if "original_cap_rate" not in ual_settings:
-        ual_settings["original_cap_rate"] = ual_settings["cap_rate"]
+    if "original_cap_rate" not in settings:
+        settings["original_cap_rate"] = settings["cap_rate"]
 
     factor = 1.4
     # move the ratio away from zero to have more of an impact
@@ -1039,7 +1019,7 @@ def balance_rental_and_ownership_hedonics(households, ual_settings,
     # here means renter utilization is higher than owner utilization
     # meaning rent price should go up meaning cap rate should go down
     # FIXME these might need a parameter to spread or narrow the impact
-    ual_settings["cap_rate"] = ual_settings["original_cap_rate"] /\
+    settings["cap_rate"] = settings["original_cap_rate"] /\
         utilization_ratio
 
-    print "New cap rate = %.2f" % ual_settings["cap_rate"]
+    print "New cap rate = %.2f" % settings["cap_rate"]

@@ -19,11 +19,6 @@ import numpy as np
 import pandas as pd
 
 
-@orca.step()
-def rsh_estimate(buildings, aggregations):
-    return utils.hedonic_estimate("rsh.yaml", buildings, aggregations)
-
-
 '''
 @orca.step()
 def hlcm_simulate(households, buildings, aggregations, settings, low_income):
