@@ -949,14 +949,14 @@ def hlcm_owner_simulate(households, residential_units,
     # choosers table, to avoid conflicting when the tables are joined
 
     return hlcm_simulate(households, residential_units, unit_aggregations,
-                         ual_settings, 'owner.yaml')
+                         ual_settings, 'hlcm_owner.yaml')
 
 
 @orca.step('hlcm_renter_simulate')
 def hlcm_renter_simulate(households, residential_units, unit_aggregations,
                          ual_settings):
     return hlcm_simulate(households, residential_units, unit_aggregations,
-                         ual_settings, 'renter.yaml')
+                         ual_settings, 'hlcm_renter.yaml')
 
 
 # this opens the yaml file, deletes the predict filters and writes it to the
