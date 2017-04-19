@@ -24,19 +24,7 @@ def rsh_estimate(buildings, aggregations):
     return utils.hedonic_estimate("rsh.yaml", buildings, aggregations)
 
 
-@orca.step()
-def rsh_simulate(buildings, aggregations, settings):
-    utils.hedonic_simulate("rsh.yaml", buildings, aggregations,
-                           "residential_price")
-    if "rsh_simulate" in settings:
-        low = float(settings["rsh_simulate"]["low"])
-        high = float(settings["rsh_simulate"]["high"])
-        buildings.update_col("residential_price",
-                             buildings.residential_price.clip(low, high))
-        print "Clipped rsh_simulate produces\n", \
-            buildings.residential_price.describe()
-
-
+'''
 @orca.step()
 def hlcm_simulate(households, buildings, aggregations, settings, low_income):
 
@@ -67,6 +55,7 @@ def hlcm_simulate(households, buildings, aggregations, settings, low_income):
                        "vacant_market_rate_units_minus_structural_vacancy",
                        settings.get("enable_supply_correction", None),
                        cast=True)
+'''
 
 
 @orca.step()
@@ -90,13 +79,6 @@ def households_transition(households, household_controls, year, settings):
     s = orca.get_table('households').base_income_quartile.value_counts()
     print "Distribution by income after:\n", (s/s.sum())
     return ret
-
-
-@orca.step()
-def households_relocation(households, settings, years_per_iter):
-    rate = settings['rates']['households_relocation']
-    rate = min(rate * years_per_iter, 1.0)
-    return utils.simple_relocation(households, rate, "building_id", cast=True)
 
 
 @orca.table(cache=True)

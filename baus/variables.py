@@ -171,6 +171,7 @@ def vacant_market_rate_units(buildings, households, settings, low_income):
     return s.reindex(buildings.index).fillna(0)
 
 
+'''
 @orca.column('buildings')
 def vacant_market_rate_units_minus_structural_vacancy(buildings,
                                                       baseyear_taz_controls):
@@ -215,6 +216,7 @@ def vacant_market_rate_units_minus_structural_vacancy(buildings,
         remove_building_zone_ids, fill_value=0)
 
     return s
+'''
 
 
 @orca.column('buildings', cache=True)

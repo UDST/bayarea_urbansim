@@ -36,7 +36,7 @@ def ual_settings():
         return yaml.load(f)
 
 
-def _ual_create_empty_units(buildings):
+def _create_empty_units(buildings):
     """
     Create a table of empty units corresponding to an input table of buildings.
     This function is used (a) in initialization and (b) after the developer
@@ -73,8 +73,8 @@ def _ual_create_empty_units(buildings):
     return df
 
 
-@orca.step('ual_initialize_residential_units')
-def ual_initialize_residential_units(buildings, ual_settings):
+@orca.step('initialize_residential_units')
+def initialize_residential_units(buildings, ual_settings):
     """
     This initialization step creates and registers a table of synthetic
     residential units, based on building info.
@@ -122,7 +122,7 @@ def ual_initialize_residential_units(buildings, ual_settings):
 
     @orca.table('residential_units', cache=True)
     def residential_units(buildings):
-        return _ual_create_empty_units(buildings)
+        return _create_empty_units(buildings)
 
     @orca.column('residential_units', 'submarket_id')
     def submarket_id(residential_units, buildings):
@@ -160,8 +160,8 @@ def ual_initialize_residential_units(buildings, ual_settings):
     '''
 
 
-@orca.step('ual_match_households_to_units')
-def ual_match_households_to_units(households, residential_units):
+@orca.step('match_households_to_units')
+def match_households_to_units(households, residential_units):
     """
     This initialization step adds a 'unit_id' to the households table and
     populates it based on existing assignments of households to buildings.
@@ -252,8 +252,8 @@ def ual_match_households_to_units(households, residential_units):
     '''
 
 
-@orca.step('ual_assign_tenure_to_units')
-def ual_assign_tenure_to_units(residential_units, households):
+@orca.step('assign_tenure_to_units')
+def assign_tenure_to_units(residential_units, households):
     """
     This initialization step assigns tenure to residential units, based on the
     'hownrent' attribute of the households occupying them. (Tenure for
@@ -322,8 +322,8 @@ def ual_assign_tenure_to_units(residential_units, households):
     '''
 
 
-@orca.step('ual_load_rental_listings')
-def ual_load_rental_listings():
+@orca.step('load_rental_listings')
+def load_rental_listings():
     """
     This initialization step loads the Craigslist rental listings data for
     hedonic estimation. Not needed for simulation.
@@ -379,7 +379,7 @@ def ual_load_rental_listings():
 ###############################################################################
 
 
-@orca.step('ual_reconcile_placed_households')
+@orca.step('reconcile_placed_households')
 def reconcile_placed_households(households, residential_units):
     """
     This data maintenance step keeps the building/unit/household correspondence
@@ -452,7 +452,7 @@ def reconcile_placed_households(households, residential_units):
     '''
 
 
-@orca.step('ual_reconcile_unplaced_households')
+@orca.step('reconcile_unplaced_households')
 def reconcile_unplaced_households(households):
     """
     This data maintenance step keeps the building/unit/household
@@ -524,9 +524,9 @@ def reconcile_unplaced_households(households):
     '''
 
 
-@orca.step('ual_update_building_residential_price')
-def ual_update_building_residential_price(buildings, residential_units,
-                                          ual_settings):
+@orca.step('update_building_residential_price')
+def update_building_residential_price(buildings, residential_units,
+                                      ual_settings):
     """
     This data maintenance step updates the prices in the buildings table
     to reflect changes to the unit-level prices. This allows model steps
@@ -596,8 +596,8 @@ def ual_update_building_residential_price(buildings, residential_units,
     '''
 
 
-@orca.step('ual_remove_old_units')
-def ual_remove_old_units(buildings, residential_units):
+@orca.step('remove_old_units')
+def remove_old_units(buildings, residential_units):
     """
     This data maintenance step removes units whose building_ids no longer
     exist.
@@ -649,8 +649,8 @@ def ual_remove_old_units(buildings, residential_units):
     '''
 
 
-@orca.step('ual_initialize_new_units')
-def ual_initialize_new_units(buildings, residential_units):
+@orca.step('initialize_new_units')
+def initialize_new_units(buildings, residential_units):
     """
     This data maintenance step initializes units for buildings that have been
     newly created, conforming to the data requirements of the
@@ -668,7 +668,7 @@ def ual_initialize_new_units(buildings, residential_units):
     Results
     -------
     - extends the 'residential_units' table, following the same schema as the
-      'ual_initialize_residential_units' model step
+      'initialize_residential_units' model step
     """
 
     # Verify initial data characteristics
@@ -694,7 +694,7 @@ def ual_initialize_new_units(buildings, residential_units):
     new_bldgs = bldgs[~bldgs.index.isin(old_units.building_id)]
 
     # Create new units, merge them, and update the table
-    new_units = _ual_create_empty_units(new_bldgs)
+    new_units = _create_empty_units(new_bldgs)
     all_units = dev.merge(old_units, new_units)
     all_units.index.name = 'unit_id'
 
@@ -712,8 +712,8 @@ def ual_initialize_new_units(buildings, residential_units):
     '''
 
 
-@orca.step('ual_assign_tenure_to_new_units')
-def ual_assign_tenure_to_new_units(residential_units, ual_settings):
+@orca.step('assign_tenure_to_new_units')
+def assign_tenure_to_new_units(residential_units, ual_settings):
     """
     This data maintenance step assigns tenure to new residential units.
     Tenure is determined by comparing the fitted sale price and fitted
@@ -770,9 +770,9 @@ def ual_assign_tenure_to_new_units(residential_units, ual_settings):
     return
 
 
-@orca.step('ual_save_intermediate_tables')
-def ual_save_intermediate_tables(households, buildings, parcels,
-                                 jobs, zones, year):
+@orca.step('save_intermediate_tables')
+def save_intermediate_tables(households, buildings, parcels,
+                             jobs, zones, year):
     """
     This orca step saves intermediate versions of data tables, for developing
     visualization proofs of concept.
@@ -789,8 +789,8 @@ def ual_save_intermediate_tables(households, buildings, parcels,
 ###############################################################################
 
 
-@orca.step('ual_rrh_estimate')
-def ual_rrh_estimate(craigslist, aggregations):
+@orca.step('rrh_estimate')
+def rrh_estimate(craigslist, aggregations):
     """
     This model step estimates a residental rental hedonic using
     craigslist listings.
@@ -799,7 +799,7 @@ def ual_rrh_estimate(craigslist, aggregations):
     -----------------
     - 'craigslist' table and others, as defined in the yaml config
     """
-    return utils.hedonic_estimate(cfg='ual_rrh.yaml',
+    return utils.hedonic_estimate(cfg='rrh.yaml',
                                   tbl=craigslist,
                                   join_tbls=aggregations)
 
@@ -815,8 +815,8 @@ def _mtc_clip(table, col_name, settings, price_scale=1):
         print "Clipping produces\n", table[col_name].describe()
 
 
-@orca.step('ual_rsh_simulate')
-def ual_rsh_simulate(residential_units, unit_aggregations, settings):
+@orca.step('rsh_simulate')
+def rsh_simulate(residential_units, unit_aggregations, settings):
     """
     This uses the MTC's model specification from rsh.yaml, but
     generates unit-level price predictions rather than building-level.
@@ -834,8 +834,8 @@ def ual_rsh_simulate(residential_units, unit_aggregations, settings):
     return
 
 
-@orca.step('ual_rrh_simulate')
-def ual_rrh_simulate(residential_units, unit_aggregations, settings):
+@orca.step('rrh_simulate')
+def rrh_simulate(residential_units, unit_aggregations, settings):
     """
     This uses an altered hedonic specification to generate
     unit-level rent predictions.
@@ -844,7 +844,7 @@ def ual_rrh_simulate(residential_units, unit_aggregations, settings):
     -----------------
     - tk
     """
-    utils.hedonic_simulate(cfg='ual_rrh.yaml',
+    utils.hedonic_simulate(cfg='rrh.yaml',
                            tbl=residential_units,
                            join_tbls=unit_aggregations,
                            out_fname='unit_residential_rent')
@@ -854,8 +854,8 @@ def ual_rrh_simulate(residential_units, unit_aggregations, settings):
     return
 
 
-@orca.step('ual_households_relocation')
-def ual_households_relocation(households, ual_settings):
+@orca.step('households_relocation')
+def households_relocation(households, ual_settings):
     """
     This model step randomly assigns households for relocation, using
     probabilities that depend on their tenure status.
@@ -906,18 +906,18 @@ def ual_households_relocation(households, ual_settings):
     return
 
 
-@orca.step('ual_hlcm_owner_estimate')
-def ual_hlcm_owner_estimate(households, residential_units, unit_aggregations):
-    return utils.lcm_estimate(cfg="ual_hlcm_owner.yaml",
+@orca.step('hlcm_owner_estimate')
+def hlcm_owner_estimate(households, residential_units, unit_aggregations):
+    return utils.lcm_estimate(cfg="hlcm_owner.yaml",
                               choosers=households,
                               chosen_fname="unit_id",
                               buildings=residential_units,
                               join_tbls=unit_aggregations)
 
 
-@orca.step('ual_hlcm_renter_estimate')
-def ual_hlcm_renter_estimate(households, residential_units, unit_aggregations):
-    return utils.lcm_estimate(cfg="ual_hlcm_renter.yaml",
+@orca.step('hlcm_renter_estimate')
+def hlcm_renter_estimate(households, residential_units, unit_aggregations):
+    return utils.lcm_estimate(cfg="hlcm_renter.yaml",
                               choosers=households,
                               chosen_fname="unit_id",
                               buildings=residential_units,
@@ -925,8 +925,8 @@ def ual_hlcm_renter_estimate(households, residential_units, unit_aggregations):
 
 
 # use one core hlcm for the hlcms below, with different yaml files
-def ual_hlcm_simulate(households, residential_units, unit_aggregations,
-                      ual_settings, yaml_name):
+def hlcm_simulate(households, residential_units, unit_aggregations,
+                  ual_settings, yaml_name):
 
     return utils.lcm_simulate(cfg=yaml_name,
                               choosers=households,
@@ -940,23 +940,23 @@ def ual_hlcm_simulate(households, residential_units, unit_aggregations,
                               cast=True)
 
 
-@orca.step('ual_hlcm_owner_simulate')
-def ual_hlcm_owner_simulate(households, residential_units,
-                            unit_aggregations, ual_settings):
+@orca.step('hlcm_owner_simulate')
+def hlcm_owner_simulate(households, residential_units,
+                        unit_aggregations, ual_settings):
 
     # Note that the submarket id (zone_id) needs to be in the table of
     # alternatives, for supply/demand equilibration, and needs to NOT be in the
     # choosers table, to avoid conflicting when the tables are joined
 
-    return ual_hlcm_simulate(households, residential_units, unit_aggregations,
-                             ual_settings, 'ual_hlcm_owner.yaml')
+    return hlcm_simulate(households, residential_units, unit_aggregations,
+                         ual_settings, 'owner.yaml')
 
 
-@orca.step('ual_hlcm_renter_simulate')
-def ual_hlcm_renter_simulate(households, residential_units, unit_aggregations,
-                             ual_settings):
-    return ual_hlcm_simulate(households, residential_units, unit_aggregations,
-                             ual_settings, 'ual_hlcm_renter.yaml')
+@orca.step('hlcm_renter_simulate')
+def hlcm_renter_simulate(households, residential_units, unit_aggregations,
+                         ual_settings):
+    return hlcm_simulate(households, residential_units, unit_aggregations,
+                         ual_settings, 'renter.yaml')
 
 
 # this opens the yaml file, deletes the predict filters and writes it to the
@@ -972,37 +972,37 @@ def drop_predict_filters_from_yaml(in_yaml_name, out_yaml_name):
 # place households as long as there are empty units - this should only run
 # in the final year
 @orca.step()
-def ual_hlcm_owner_simulate_no_unplaced(households, residential_units,
-                                        year, final_year,
-                                        unit_aggregations, ual_settings):
+def hlcm_owner_simulate_no_unplaced(households, residential_units,
+                                    year, final_year,
+                                    unit_aggregations, ual_settings):
 
     # only run in the last year, but make sure to run before summaries
     if year != final_year:
         return
 
     drop_predict_filters_from_yaml(
-        "ual_hlcm_owner.yaml",
-        "ual_hlcm_owner_no_unplaced.yaml")
+        "hlcm_owner.yaml",
+        "hlcm_owner_no_unplaced.yaml")
 
-    return ual_hlcm_simulate(households, residential_units, unit_aggregations,
-                             ual_settings, 'ual_hlcm_owner_no_unplaced.yaml')
+    return hlcm_simulate(households, residential_units, unit_aggregations,
+                         ual_settings, 'hlcm_owner_no_unplaced.yaml')
 
 
 @orca.step()
-def ual_hlcm_renter_simulate_no_unplaced(households, residential_units,
-                                         year, final_year,
-                                         unit_aggregations, ual_settings):
+def hlcm_renter_simulate_no_unplaced(households, residential_units,
+                                     year, final_year,
+                                     unit_aggregations, ual_settings):
 
     # only run in the last year, but make sure to run before summaries
     if year != final_year:
         return
 
     drop_predict_filters_from_yaml(
-        "ual_hlcm_renter.yaml",
-        "ual_hlcm_renter_no_unplaced.yaml")
+        "hlcm_renter.yaml",
+        "hlcm_renter_no_unplaced.yaml")
 
-    return ual_hlcm_simulate(households, residential_units, unit_aggregations,
-                             ual_settings, 'ual_hlcm_renter_no_unplaced.yaml')
+    return hlcm_simulate(households, residential_units, unit_aggregations,
+                         ual_settings, 'hlcm_renter_no_unplaced.yaml')
 
 
 @orca.step()
