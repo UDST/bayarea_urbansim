@@ -906,7 +906,7 @@ def hlcm_renter_estimate(households, residential_units, aggregations):
 
 # use one core hlcm for the hlcms below, with different yaml files
 def hlcm_simulate(households, residential_units, aggregations,
-                  settings, yaml_name):
+                  settings, yaml_name, equilibration_name):
 
     return utils.lcm_simulate(cfg=yaml_name,
                               choosers=households,
@@ -916,7 +916,7 @@ def hlcm_simulate(households, residential_units, aggregations,
                               supply_fname='num_units',
                               vacant_fname='vacant_units',
                               enable_supply_correction=settings.get(
-                                'price_equilibration', None),
+                                equilibration_name, None),
                               cast=True)
 
 
@@ -929,14 +929,14 @@ def hlcm_owner_simulate(households, residential_units,
     # choosers table, to avoid conflicting when the tables are joined
 
     return hlcm_simulate(households, residential_units, aggregations,
-                         settings, 'hlcm_owner.yaml')
+                         settings, 'hlcm_owner.yaml', 'price_equilibration')
 
 
 @orca.step('hlcm_renter_simulate')
 def hlcm_renter_simulate(households, residential_units, aggregations,
                          settings):
     return hlcm_simulate(households, residential_units, aggregations,
-                         settings, 'hlcm_renter.yaml')
+                         settings, 'hlcm_renter.yaml', 'rent_equilibration')
 
 
 # this opens the yaml file, deletes the predict filters and writes it to the
@@ -965,7 +965,8 @@ def hlcm_owner_simulate_no_unplaced(households, residential_units,
         "hlcm_owner_no_unplaced.yaml")
 
     return hlcm_simulate(households, residential_units, aggregations,
-                         settings, 'hlcm_owner_no_unplaced.yaml')
+                         settings, 'hlcm_owner_no_unplaced.yaml',
+                         "price_equilibration")
 
 
 @orca.step()
@@ -982,7 +983,8 @@ def hlcm_renter_simulate_no_unplaced(households, residential_units,
         "hlcm_renter_no_unplaced.yaml")
 
     return hlcm_simulate(households, residential_units, aggregations,
-                         settings, 'hlcm_renter_no_unplaced.yaml')
+                         settings, 'hlcm_renter_no_unplaced.yaml',
+                         "rent_equilibration")
 
 
 @orca.step()

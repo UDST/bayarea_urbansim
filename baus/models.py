@@ -392,7 +392,7 @@ def supply_and_demand_multiplier_func(demand, supply):
     settings = orca.get_injectable('settings')
     print "Number of submarkets where demand exceeds supply:", len(s[s > 1.0])
     # print "Raw relationship of supply and demand\n", s.describe()
-    supply_correction = settings["enable_supply_correction"]
+    supply_correction = settings["price_equilibration"]
     clip_change_high = supply_correction["kwargs"]["clip_change_high"]
     t = s
     t -= 1.0
