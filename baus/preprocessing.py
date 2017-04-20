@@ -101,6 +101,8 @@ def preproc_households(store):
 
     df = store['households']
 
+    df['tenure'] = df.hownrent.map({1: 'own', 2: 'rent'})
+
     # need to keep track of base year income quartiles for use in the
     # transition model - even caching doesn't work because when you add
     # rows via the transitioning, you automatically clear the cache!
