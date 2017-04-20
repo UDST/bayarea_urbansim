@@ -231,69 +231,71 @@ def match_households_to_units(households, residential_units):
 def assign_tenure_to_units(residential_units, households):
     """
     This initialization step assigns tenure to residential units, based on the
-    'hownrent' attribute of the households occupying them. (Tenure for
+    'tenure' attribute of the households occupying them. (Tenure for
     unoccupied units is assigned andomly.)
 
     Data expections
     ---------------
-    - 'residential_units' table has NO column 'hownrent'
+    - 'residential_units' table has NO column 'tenure'
     - 'households' table has following columns:
-        - 'hownrent' (int, missing values ok)
+        - 'tenure' (str, either rent/own, missing values ok)
         - 'unit_id' (int, '-1'-filled, corresponds to index of
           'residential_units' table)
 
     Results
     -------
     - adds following column to 'residential_units' table:
-        - 'hownrent' (int in range [1,2], non-missing)
+        - 'tenure' (str either rent/own, non-missing)
     """
 
     # Verify initial data characteristics
     '''
+    # XXX can we restrict tenure to rent/own
     ot.assert_orca_spec(OrcaSpec(
         '',
         TableSpec(
             'residential_units',
-            ColumnSpec('hownrent', registered=False)),
+            ColumnSpec('tenure', registered=False)),
         TableSpec(
             'households',
-            ColumnSpec('hownrent', min=1, max=2, missing_val_coding=np.nan),
+            ColumnSpec('tenure', missing_val_coding=np.nan),
             ColumnSpec('unit_id', foreign_key='residential_units.unit_id',
                        missing_val_coding=-1))))
     '''
 
     units = residential_units.to_frame(residential_units.local_columns)
-    hh = households.to_frame(['hownrent', 'unit_id'])
+    hh = households.to_frame(['tenure', 'unit_id'])
 
-    # 'Hownrent' is a PUMS field where 1=owns, 2=rents. Note that there's also
-    # a field in the MTC households table called 'tenure', with min=1, max=4,
-    # mean=2. Not sure where this comes from or what the values indicate.
+    # tenure comes from PUMS - this used to have values of 1 and 2 but
+    # these values are now mapped to the string 'own' and 'rent' for clarity
 
-    units['hownrent'] = np.nan
-    own = hh[(hh.hownrent == 1) & (hh.unit_id != -1)].unit_id.values
-    rent = hh[(hh.hownrent == 2) & (hh.unit_id != -1)].unit_id.values
-    units.loc[own, 'hownrent'] = 1
-    units.loc[rent, 'hownrent'] = 2
+    units['tenure'] = np.nan
+    own = hh[(hh.tenure == 'own') & (hh.unit_id != -1)].unit_id.values
+    rent = hh[(hh.tenure == 'rent') & (hh.unit_id != -1)].unit_id.values
+    units.loc[own, 'tenure'] = 'own'
+    units.loc[rent, 'tenure'] = 'rent'
 
     print "Init unit tenure assignment: %d%% owner occupied, %d%% unfilled" % \
-        (round(len(units[units.hownrent == 1])*100 /
-         len(units[units.hownrent.notnull()])),
-         round(len(units[units.hownrent.isnull()])*100 / len(units)))
+        (round(len(units[units.tenure == 'own'])*100 /
+         len(units[units.tenure.notnull()])),
+         round(len(units[units.tenure.isnull()])*100 / len(units)))
 
     # Fill remaining units with random tenure assignment
     # TO DO: Make this weighted by existing allocation, rather than 50/50
-    unfilled = units[units.hownrent.isnull()].index
-    units.loc[unfilled, 'hownrent'] = np.random.randint(1, 3, len(unfilled))
+    unfilled = units[units.tenure.isnull()].index
+    units.loc[unfilled, 'tenure'] = \
+        pd.Series(['rent', 'own']).sample(len(unfilled), replace=True).values
 
     orca.add_table('residential_units', units)
 
     # Verify final data characteristics
     '''
+    # XXX restrict tenure to rent/own
     ot.assert_orca_spec(OrcaSpec(
         '',
         TableSpec(
             'residential_units',
-            ColumnSpec('hownrent', min=1, max=2, missing_val_coding=np.nan))))
+            ColumnSpec('tenure', missing_val_coding=np.nan))))
     '''
 
 
@@ -702,30 +704,31 @@ def assign_tenure_to_new_units(residential_units, settings):
     Data expectations
     -----------------
     - 'residential_units' table has the following columns:
-        - 'hownrent' (int in range 1 to 2, may be missing)
+        - 'tenure' (str with values 'rent' and 'own', may be missing)
         - 'unit_residential_price' (float, non-missing)
         - 'unit_residential_rent' (float, non-missing)
 
     Results
     -------
-    - fills missing values of 'hownrent'
+    - fills missing values of 'tenure'
     """
 
     # Verify initial data characteristics
     '''
+    # XXX can we restrict tenure to rent/own?
     ot.assert_orca_spec(
         OrcaSpec('', TableSpec(
             'residential_units',
-            ColumnSpec('hownrent', min=1, max=2, missing_val_coding=np.nan),
+            ColumnSpec('tenure', missing_val_coding=np.nan),
             ColumnSpec('unit_residential_price', min=0),
             ColumnSpec('unit_residential_rent', min=0))))
     '''
 
-    cols = ['hownrent', 'unit_residential_price', 'unit_residential_rent']
+    cols = ['tenure', 'unit_residential_price', 'unit_residential_rent']
     units = residential_units.to_frame(cols)
 
     # Filter for units that are missing a tenure assignment
-    units = units[~units.hownrent.isin([1, 2])]
+    units = units[~units.tenure.isin(['own', 'rent'])]
 
     # Convert monthly rent to equivalent sale price
     cap_rate = settings.get('cap_rate')
@@ -734,14 +737,14 @@ def assign_tenure_to_new_units(residential_units, settings):
 
     # Assign tenure based on higher of price or adjusted rent
     rental_units = (units.unit_residential_rent > units.unit_residential_price)
-    units.loc[~rental_units, 'hownrent'] = 1
-    units.loc[rental_units, 'hownrent'] = 2
+    units.loc[~rental_units, 'tenure'] = 'own'
+    units.loc[rental_units, 'tenure'] = 'rent'
 
     print "Adding tenure assignment to %d new residential units" % len(units)
     print units.describe()
 
     residential_units.update_col_from_series(
-        'hownrent', units.hownrent, cast=True)
+        'tenure', units.tenure, cast=True)
     return
 
 
@@ -843,7 +846,7 @@ def households_relocation(households, settings):
     Data expectations
     -----------------
     - 'households' table has following columns:
-        - 'hownrent' (int in range [1,2], non-missing)
+        - 'tenure' (str either rent/own, non-missing)
         - 'building_id' (int, '-1'-filled, corredponds to index of
           'buildings' table
         - 'unit_id' (int, '-1'-filled, corresponds to index of
@@ -859,10 +862,11 @@ def households_relocation(households, settings):
 
     # Verify expected data characteristics
     '''
+    # XXX restrict tenure to rent/own
     ot.assert_orca_spec(
         OrcaSpec('', TableSpec(
             'households',
-            ColumnSpec('hownrent', numeric=True, min=1, max=2, missing=False),
+            ColumnSpec('tenure', missing=False),
             ColumnSpec('building_id', numeric=True, missing_val_coding=-1),
             ColumnSpec('unit_id', numeric=True, missing_val_coding=-1))))
     '''
@@ -876,7 +880,7 @@ def households_relocation(households, settings):
     # Initialize model, choose movers, and un-place them from buildings
     # and units
     m = RelocationModel(rates)
-    mover_ids = m.find_movers(households.to_frame(['unit_id', 'hownrent']))
+    mover_ids = m.find_movers(households.to_frame(['unit_id', 'tenure']))
     households.update_col_from_series(
         'building_id', pd.Series(-1, index=mover_ids), cast=True)
     households.update_col_from_series(
@@ -990,9 +994,8 @@ def hlcm_renter_simulate_no_unplaced(households, residential_units,
 @orca.step()
 def balance_rental_and_ownership_hedonics(households, settings,
                                           residential_units):
-    hh_rent_own = households.hownrent.map({1: "own", 2: "rent"}).value_counts()
-    unit_rent_own = residential_units.hownrent.\
-        map({1: "own", 2: "rent"}).value_counts()
+    hh_rent_own = households.tenure.value_counts()
+    unit_rent_own = residential_units.tenure.value_counts()
 
     # keep these positive by not doing a full vacancy rate - just divide
     # the number of households by the number of units for each tenure
