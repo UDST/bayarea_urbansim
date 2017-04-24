@@ -87,6 +87,16 @@ def empsix_id(jobs, settings):
     return jobs.empsix.map(settings['empsix_name_to_id'])
 
 
+#############################
+# RESIDENTIAL UNITS VARIABLES
+#############################
+
+# move zone_id from buildings to residential units
+@orca.column('residential_units', cache=True)
+def zone_id(residential_units, buildings):
+    return misc.reindex(buildings.zone_id, residential_units.building_id)
+
+
 #####################
 # BUILDINGS VARIABLES
 #####################

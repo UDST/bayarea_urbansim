@@ -262,6 +262,7 @@ def run_models(MODE, SCENARIO):
 
                 "rsh_simulate",    # residential sales hedonic for units
                 "rrh_simulate",    # residential rental hedonic for units
+                "nrh_simulate",
 
                 # (based on higher of predicted price or rent)
                 "assign_tenure_to_new_units",
@@ -279,11 +280,14 @@ def run_models(MODE, SCENARIO):
                 # update building/unit/hh correspondence
                 "reconcile_placed_households",
 
+                "price_vars",
+
                 "topsheet",
                 "parcel_summary",
                 "building_summary",
                 "geographic_summary",
-                "travel_model_output"
+                "travel_model_output",
+                "diagnostic_output"
 
             ], iter_vars=[IN_YEAR])
 

@@ -571,7 +571,7 @@ cap_rate: 0.05
 
 # household relocation rates split by rent / own
 relocation_rates:
-  hownrent: 
+  tenure: 
     - 1
     - 2
   probability_of_relocating: 
