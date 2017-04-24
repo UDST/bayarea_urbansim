@@ -295,7 +295,7 @@ def compare_to_targets(parcels, buildings, jobs, households, abag_targets,
 
 
 @orca.step("diagnostic_output")
-def diagnostic_output(households, buildings, parcels, taz, jobs,
+def diagnostic_output(households, buildings, parcels, taz, jobs, settings,
                       zones, year, summary, run_number, residential_units):
     households = households.to_frame()
     buildings = buildings.to_frame()
@@ -344,6 +344,12 @@ def diagnostic_output(households, buildings, parcels, taz, jobs,
         ru.unit_residential_price.groupby(ru.zone_id).quantile()
     zones['unit_residential_rent'] = \
         ru.unit_residential_rent.groupby(ru.zone_id).quantile()
+    cap_rate = settings.get('cap_rate')
+    # this compares price to rent and shows us where price is greater
+    # rents are monthly and a cap rate is applied in order to do the conversion
+    zones['unit_residential_price_>_rent'] = (zones.unit_residential_price > \
+        (zones.unit_residential_rent * 12 / cap_rate)).astype('int')
+
     zones['retail_rent'] = buildings[buildings.general_type == "Retail"].\
         groupby('zone_id').non_residential_price.quantile()
     zones['office_rent'] = buildings[buildings.general_type == "Office"].\
