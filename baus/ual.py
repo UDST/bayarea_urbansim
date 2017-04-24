@@ -764,6 +764,14 @@ def save_intermediate_tables(households, buildings, parcels,
 ###############################################################################
 
 
+# have to define this here because urbansim_defaults incorrectly calls the
+# outcome variable non_residential_price
+@orca.step('nrh_simulate')
+def nrh_simulate(buildings, aggregations):
+    return utils.hedonic_simulate("nrh.yaml", buildings, aggregations,
+                                  "non_residential_rent")
+
+
 @orca.step()
 def rsh_estimate(buildings, aggregations):
     return utils.hedonic_estimate("rsh.yaml", buildings, aggregations)

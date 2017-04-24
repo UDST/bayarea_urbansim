@@ -338,12 +338,12 @@ def diagnostic_output(households, buildings, parcels, taz, jobs,
         query('general_type == "Residential"').groupby('zone_id').\
         residential_price.quantile()
     zones['retail_rent'] = buildings[buildings.general_type == "Retail"].\
-        groupby('zone_id').non_residential_price.quantile()
+        groupby('zone_id').non_residential_rent.quantile()
     zones['office_rent'] = buildings[buildings.general_type == "Office"].\
-        groupby('zone_id').non_residential_price.quantile()
+        groupby('zone_id').non_residential_rent.quantile()
     zones['industrial_rent'] = \
         buildings[buildings.general_type == "Industrial"].\
-        groupby('zone_id').non_residential_price.quantile()
+        groupby('zone_id').non_residential_rent.quantile()
 
     zones['retail_sqft'] = buildings[buildings.general_type == "Retail"].\
         groupby('zone_id').non_residential_sqft.sum()

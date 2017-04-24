@@ -328,7 +328,7 @@ def preproc_buildings(store, parcels, manual_edits):
     df["redfin_sale_year"] = df.redfin_sale_year.fillna(2012)
 
     df["residential_price"] = 0.0
-    df["non_residential_price"] = 0.0
+    df["non_residential_rent"] = 0.0
 
     df = assign_deed_restricted_units(df, parcels)
 
