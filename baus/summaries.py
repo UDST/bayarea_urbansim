@@ -347,8 +347,9 @@ def diagnostic_output(households, buildings, parcels, taz, jobs, settings,
     cap_rate = settings.get('cap_rate')
     # this compares price to rent and shows us where price is greater
     # rents are monthly and a cap rate is applied in order to do the conversion
-    zones['unit_residential_price_>_rent'] = (zones.unit_residential_price > \
-        (zones.unit_residential_rent * 12 / cap_rate)).astype('int')
+    zones['unit_residential_price_>_rent'] = \
+        (zones.unit_residential_price >
+         (zones.unit_residential_rent * 12 / cap_rate)).astype('int')
 
     zones['retail_rent'] = buildings[buildings.general_type == "Retail"].\
         groupby('zone_id').non_residential_price.quantile()
