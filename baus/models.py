@@ -461,6 +461,8 @@ def alt_feasibility(parcels, settings,
     config.parking_rates["retail"] = 1.5
     config.building_efficiency = .85
     config.parcel_coverage = .85
+    # use the cap rate from settings.yaml
+    config.cap_rate = settings["cap_rate"]
 
     utils.run_feasibility(parcels,
                           parcel_sales_price_sqft_func,

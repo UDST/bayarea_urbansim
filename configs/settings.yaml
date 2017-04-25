@@ -565,7 +565,7 @@ acct_settings:
 low_income_for_hlcm: 30000
 
 
-# cap rate for us in the developer model
+# cap rate for use in the developer model
 cap_rate: 0.05
 
 

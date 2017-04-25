@@ -652,10 +652,16 @@ def subsidized_residential_feasibility(
     kwargs = settings['feasibility'].copy()
     kwargs["only_built"] = False
     kwargs["forms_to_test"] = ["residential"]
+
+    config = sqftproforma.SqFtProFormaConfig()
+    # use the cap rate from settings.yaml
+    config.cap_rate = settings["cap_rate"]
+
     # step 1
     utils.run_feasibility(parcels,
                           parcel_sales_price_sqft_func,
                           parcel_is_allowed_func,
+                          config=config,
                           **kwargs)
 
     feasibility = orca.get_table("feasibility").to_frame()
