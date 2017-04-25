@@ -97,6 +97,21 @@ def zone_id(residential_units, buildings):
     return misc.reindex(buildings.zone_id, residential_units.building_id)
 
 
+@orca.column('residential_units')
+def submarket_id(residential_units, buildings):
+    # The submarket is used for supply/demand equilibration. It's the same
+    # as the zone_id, but in a separate column to avoid name conflicts when
+    # tables are merged.
+    return misc.reindex(buildings.zone_id, residential_units.building_id)
+
+
+@orca.column('residential_units')
+def vacant_units(residential_units, households):
+    return residential_units.num_units.sub(
+        households.unit_id[
+            households.unit_id != -1].value_counts(), fill_value=0)
+
+
 #####################
 # BUILDINGS VARIABLES
 #####################

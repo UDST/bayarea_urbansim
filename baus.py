@@ -223,7 +223,8 @@ def run_models(MODE, SCENARIO):
         orca.run([
             "preproc_jobs",
             "preproc_households",
-            "preproc_buildings"
+            "preproc_buildings",
+            "initialize_residential_units"
         ])
 
     elif MODE == "fetch_data":
@@ -232,28 +233,7 @@ def run_models(MODE, SCENARIO):
 
     elif MODE == "simulation":
 
-        # Initialization steps
-        orca.run([
-            "initialize_residential_units",
-            "match_households_to_units",
-            "assign_tenure_to_units",
-        ])
-
-        # Estimation steps
-        # these should be moved to the estimation step when the time is right
-        orca.run([
-            # "load_rental_listings", # required to estimate rental hedonic
-            # "neighborhood_vars",        # street network accessibility
-            # "regional_vars",            # road network accessibility
-
-            # "rrh_estimate",         # estimate residential rental hedonic
-
-            # "hlcm_owner_estimate",  # estimate location choice owners
-            # "hlcm_renter_estimate", # estimate location choice renters
-
-        ])
-
-        # see oabove for docs on this
+        # see above for docs on this
         if not SKIP_BASE_YEAR:
             orca.run([
 
@@ -312,6 +292,20 @@ def run_models(MODE, SCENARIO):
             "elcm_estimate",             # employment lcm
 
         ], iter_vars=[2010])
+
+        # Estimation steps
+        '''
+        orca.run([
+            "load_rental_listings", # required to estimate rental hedonic
+            "neighborhood_vars",        # street network accessibility
+            "regional_vars",            # road network accessibility
+
+            "rrh_estimate",         # estimate residential rental hedonic
+
+            "hlcm_owner_estimate",  # estimate location choice owners
+            "hlcm_renter_estimate", # estimate location choice renters
+        ])
+        '''
 
     elif MODE == "feasibility":
 
