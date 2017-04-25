@@ -55,8 +55,8 @@ def hlcm_simulate(households, buildings, aggregations, settings, low_income):
 
 @orca.step()
 def elcm_simulate(jobs, buildings, aggregations):
-    buildings.local["non_residential_price"] = \
-        buildings.local.non_residential_price.fillna(0)
+    buildings.local["non_residential_rent"] = \
+        buildings.local.non_residential_rent.fillna(0)
     return utils.lcm_simulate("elcm.yaml", jobs, buildings, aggregations,
                               "building_id", "job_spaces",
                               "vacant_job_spaces", cast=True)
@@ -421,7 +421,7 @@ def form_to_btype_func(building):
 
 @orca.injectable(autocall=False)
 def add_extra_columns_func(df):
-    for col in ["residential_price", "non_residential_price"]:
+    for col in ["residential_price", "non_residential_rent"]:
         df[col] = 0
 
     if "deed_restricted_units" not in df.columns:

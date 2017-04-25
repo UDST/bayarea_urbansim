@@ -352,12 +352,12 @@ def diagnostic_output(households, buildings, parcels, taz, jobs, settings,
          (zones.unit_residential_rent * 12 / cap_rate)).astype('int')
 
     zones['retail_rent'] = buildings[buildings.general_type == "Retail"].\
-        groupby('zone_id').non_residential_price.quantile()
+        groupby('zone_id').non_residential_rent.quantile()
     zones['office_rent'] = buildings[buildings.general_type == "Office"].\
-        groupby('zone_id').non_residential_price.quantile()
+        groupby('zone_id').non_residential_rent.quantile()
     zones['industrial_rent'] = \
         buildings[buildings.general_type == "Industrial"].\
-        groupby('zone_id').non_residential_price.quantile()
+        groupby('zone_id').non_residential_rent.quantile()
 
     zones['retail_sqft'] = buildings[buildings.general_type == "Retail"].\
         groupby('zone_id').non_residential_sqft.sum()

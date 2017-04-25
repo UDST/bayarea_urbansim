@@ -24,7 +24,7 @@ estimation_sample_size: 5000
 prediction_sample_size: null
 
 default_config:
-    model_expression: np.log1p(non_residential_price) + office_1500 + industrial_1500
+    model_expression: np.log1p(non_residential_rent) + office_1500 + industrial_1500
         + retail_1500 + jobs_45 + residential_units_1500 + residential_units_45 +
         ave_income_1500 + juris_ave_income + embarcadero + stanford
 
@@ -37,7 +37,7 @@ models:
                 industrial_1500: 0.1048607860777378
                 jobs_45: 1.7930795280557015
                 juris_ave_income: 1.1538559886899389
-                np.log1p(non_residential_price): 1.311505808859499
+                np.log1p(non_residential_rent): 1.311505808859499
                 office_1500: -0.05650573556277545
                 residential_units_1500: -0.3949108210041755
                 residential_units_45: -2.0903368281528962
@@ -49,7 +49,7 @@ models:
                 industrial_1500: 0.0072359190672865135
                 jobs_45: 0.10190979950328043
                 juris_ave_income: 0.035076269954942126
-                np.log1p(non_residential_price): 0.014403513560735718
+                np.log1p(non_residential_rent): 0.014403513560735718
                 office_1500: 0.008903299022863714
                 residential_units_1500: 0.012178900647372386
                 residential_units_45: 0.10215972163444892
@@ -61,7 +61,7 @@ models:
                 industrial_1500: 14.491702450323404
                 jobs_45: 17.594770442051384
                 juris_ave_income: 32.895629728364675
-                np.log1p(non_residential_price): 91.05457521383474
+                np.log1p(non_residential_rent): 91.05457521383474
                 office_1500: -6.346606512672264
                 residential_units_1500: -32.42581842470142
                 residential_units_45: -20.461457751740987
@@ -81,7 +81,7 @@ models:
                 industrial_1500: 0.06432429919556347
                 jobs_45: 0.6424496319177287
                 juris_ave_income: 0.5297915806258436
-                np.log1p(non_residential_price): 1.0976939732233044
+                np.log1p(non_residential_rent): 1.0976939732233044
                 office_1500: 0.427279957831321
                 residential_units_1500: -0.3058217066950211
                 residential_units_45: -0.4085703736869765
@@ -93,7 +93,7 @@ models:
                 industrial_1500: 0.00773941948255426
                 jobs_45: 0.33654195821774474
                 juris_ave_income: 0.06178920223876191
-                np.log1p(non_residential_price): 0.012963429387261138
+                np.log1p(non_residential_rent): 0.012963429387261138
                 office_1500: 0.0105368190317198
                 residential_units_1500: 0.01306680805685234
                 residential_units_45: 0.3658222544162435
@@ -105,7 +105,7 @@ models:
                 industrial_1500: 8.311256333961415
                 jobs_45: 1.9089733574975511
                 juris_ave_income: 8.57417738747713
-                np.log1p(non_residential_price): 84.6762026028377
+                np.log1p(non_residential_rent): 84.6762026028377
                 office_1500: 40.55113374777029
                 residential_units_1500: -23.4044691989369
                 residential_units_45: -1.1168548899217403
@@ -125,7 +125,7 @@ models:
                 industrial_1500: -0.05364340018896362
                 jobs_45: 0.6023382363503588
                 juris_ave_income: -0.33411148862818973
-                np.log1p(non_residential_price): 1.2047384438218778
+                np.log1p(non_residential_rent): 1.2047384438218778
                 office_1500: 0.2814964183304126
                 residential_units_1500: -0.20386741728999144
                 residential_units_45: -0.5380536161562809
@@ -137,7 +137,7 @@ models:
                 industrial_1500: 0.007393490887050828
                 jobs_45: 0.29216141714255633
                 juris_ave_income: 0.055002982874583835
-                np.log1p(non_residential_price): 0.012312234227100198
+                np.log1p(non_residential_rent): 0.012312234227100198
                 office_1500: 0.010921535249383276
                 residential_units_1500: 0.014504011403046668
                 residential_units_45: 0.3157844224643049
@@ -149,7 +149,7 @@ models:
                 industrial_1500: -7.255490134290449
                 jobs_45: 2.0616624954843226
                 juris_ave_income: -6.074424897828193
-                np.log1p(non_residential_price): 97.84888929177075
+                np.log1p(non_residential_rent): 97.84888929177075
                 office_1500: 25.77443664308169
                 residential_units_1500: -14.055933329393804
                 residential_units_45: -1.7038637053640622
@@ -169,7 +169,7 @@ models:
                 industrial_1500: 0.309189196732516
                 jobs_45: 1.0629885427323065
                 juris_ave_income: -0.3434887510642488
-                np.log1p(non_residential_price): 1.2968958396833719
+                np.log1p(non_residential_rent): 1.2968958396833719
                 office_1500: 0.08221294007271106
                 residential_units_1500: -0.34553582926132437
                 residential_units_45: -0.566697351210849
@@ -181,7 +181,7 @@ models:
                 industrial_1500: 0.008107424606967483
                 jobs_45: 0.4093027394102561
                 juris_ave_income: 0.06560879025736568
-                np.log1p(non_residential_price): 0.01698378199243969
+                np.log1p(non_residential_rent): 0.01698378199243969
                 office_1500: 0.010497341736661427
                 residential_units_1500: 0.012153265752086521
                 residential_units_45: 0.43891865236043187
@@ -193,7 +193,7 @@ models:
                 industrial_1500: 38.13654911657152
                 jobs_45: 2.5970716547461024
                 juris_ave_income: -5.235407476907204
-                np.log1p(non_residential_price): 76.36083884382663
+                np.log1p(non_residential_rent): 76.36083884382663
                 office_1500: 7.831786573698614
                 residential_units_1500: -28.431520902272823
                 residential_units_45: -1.2911215965948233
@@ -213,7 +213,7 @@ models:
                 industrial_1500: 0.11431769687781299
                 jobs_45: 0.8883398274765266
                 juris_ave_income: 0.13546788186472114
-                np.log1p(non_residential_price): 1.1586137002160306
+                np.log1p(non_residential_rent): 1.1586137002160306
                 office_1500: 0.32976290183260726
                 residential_units_1500: -0.21661959316114188
                 residential_units_45: -0.6970395454883818
@@ -225,7 +225,7 @@ models:
                 industrial_1500: 0.007426647094298184
                 jobs_45: 0.34968124426110947
                 juris_ave_income: 0.05482050608539363
-                np.log1p(non_residential_price): 0.01286841271512767
+                np.log1p(non_residential_rent): 0.01286841271512767
                 office_1500: 0.01046853731045222
                 residential_units_1500: 0.012775949221261509
                 residential_units_45: 0.370390239408811
@@ -237,7 +237,7 @@ models:
                 industrial_1500: 15.39290818942784
                 jobs_45: 2.5404274380046443
                 juris_ave_income: 2.4711169512682627
-                np.log1p(non_residential_price): 90.03547880104931
+                np.log1p(non_residential_rent): 90.03547880104931
                 office_1500: 31.500379857590836
                 residential_units_1500: -16.955264098940482
                 residential_units_45: -1.8819058153393668
@@ -257,7 +257,7 @@ models:
                 industrial_1500: 0.02290574058702665
                 jobs_45: 0.004339163785697172
                 juris_ave_income: -0.0037676081058425847
-                np.log1p(non_residential_price): 1.2629449388166134
+                np.log1p(non_residential_rent): 1.2629449388166134
                 office_1500: -0.012353404839634766
                 residential_units_1500: -0.3093391456455967
                 residential_units_45: 0.31921212359055945
@@ -269,7 +269,7 @@ models:
                 industrial_1500: 0.007088616303727654
                 jobs_45: 0.2661154301000682
                 juris_ave_income: 0.05813951958221012
-                np.log1p(non_residential_price): 0.013106202027149617
+                np.log1p(non_residential_rent): 0.013106202027149617
                 office_1500: 0.01022345631152455
                 residential_units_1500: 0.0129051095090393
                 residential_units_45: 0.2908385113571614
@@ -281,7 +281,7 @@ models:
                 industrial_1500: 3.2313415771962894
                 jobs_45: 0.01630557004554566
                 juris_ave_income: -0.06480287647570139
-                np.log1p(non_residential_price): 96.3623890582803
+                np.log1p(non_residential_rent): 96.3623890582803
                 office_1500: -1.2083393779175442
                 residential_units_1500: -23.97028443880481
                 residential_units_45: 1.0975579612926643

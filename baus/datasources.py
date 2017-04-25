@@ -323,7 +323,7 @@ def development_projects(parcels, settings, scenario):
     df = get_dev_projects_table(scenario, parcels)
 
     for col in [
-            'residential_sqft', 'residential_price', 'non_residential_price']:
+            'residential_sqft', 'residential_price', 'non_residential_rent']:
         df[col] = 0
     df["redfin_sale_year"] = 2012  # default base year
     df["redfin_sale_price"] = np.nan  # null sales price
