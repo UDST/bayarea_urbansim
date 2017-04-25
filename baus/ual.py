@@ -156,12 +156,13 @@ def assign_tenure_to_units(residential_units, households):
 
 @orca.step()
 def initialize_residential_units(store):
-    # this is assumed to run as preprocessing step, after the other preprocessing
-    # steps - thus we need to get the data from the hdf rather than from the orca
-    # tables - I contemplated putting this code in the preprocessing.py module,
-    # but in the end I wanted to keep the residential units code together, and
-    # also I wanted the github diff to show how few lines actually changed here
-    # I'm not editing code - just changing where thise code runs
+    # this is assumed to run as preprocessing step, after the other
+    # preprocessing steps - thus we need to get the data from the hdf rather
+    # than from the orca tables - I contemplated putting this code in the
+    # preprocessing.py module, but in the end I wanted to keep the residential
+    # units code together, and also I wanted the github diff to show how few
+    # lines actually changed here I'm not editing code - just changing where
+    # this code runs
     households = store['households_preproc']
     buildings = store['buildings_preproc']
 
