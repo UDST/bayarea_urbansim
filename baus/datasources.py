@@ -381,6 +381,11 @@ def buildings(store):
 
 
 @orca.table(cache=True)
+def residential_units(store):
+    return print_error_if_not_available(store, 'residential_units_preproc')
+
+
+@orca.table(cache=True)
 def household_controls_unstacked():
     return pd.read_csv(os.path.join(misc.data_dir(), "household_controls.csv"),
                        index_col='year')
@@ -477,6 +482,10 @@ def zones(store):
 
 
 # this specifies the relationships between tables
+orca.broadcast('buildings', 'residential_units', cast_index=True,
+               onto_on='building_id')
+orca.broadcast('residential_units', 'households', cast_index=True,
+               onto_on='unit_id')
 orca.broadcast('parcels_geography', 'buildings', cast_index=True,
                onto_on='parcel_id')
 # not defined in urbansim_Defaults
