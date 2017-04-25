@@ -313,6 +313,60 @@ def vmt_res_cat(buildings, vmt_fee_categories):
     return misc.reindex(vmt_fee_categories.res_cat, buildings.zone_id)
 
 
+@orca.columns('buildings', cache=True)
+def residential_price(buildings, residential_units, settings, buildings):
+    """
+    This was originally an orca.step in the ual code.  This allows model steps
+    like 'price_vars' and 'feasibility' to read directly from the buildings
+    table, by aggregating up prices/rents from the units table.
+
+    We currently set the building price per square foot to be the higher of
+    the average (a) unit price per square foot or (b) unit price-adjusted
+    rent per square foot.
+
+    Data expectations
+    -----------------
+    - 'residential_units' table has following columns:
+        - 'unit_residential_price' (float, 0-filled)
+        - 'unit_residential_rent' (float, 0-filled)
+        - 'building_id' (int, non-missing, corresponds to index of
+          'buildings' table)
+    - 'buildings' table has following columns:
+        - index that serves as its id
+        - 'residential_price' (float, 0-filled)
+    - 'settings' injectable has a 'cap_rate' (float, range 0 to 1)
+    """
+
+    # Verify initial data characteristics
+    '''
+    ot.assert_orca_spec(OrcaSpec(
+        '',
+        TableSpec(
+            'residential_units',
+            ColumnSpec('unit_residential_price', min=0),
+            ColumnSpec('unit_residential_rent', min=0),
+            ColumnSpec(
+                'building_id', foreign_key='buildings.building_id',
+                missing=False)),
+        TableSpec(
+            'buildings',
+            ColumnSpec('building_id', primary_key=True),
+            ColumnSpec('residential_price', min=0)),
+        InjectableSpec('settings', min=0, max=1)))
+    '''
+
+    cols = ['building_id', 'unit_residential_price', 'unit_residential_rent']
+    means = residential_units.to_frame(cols).groupby(['building_id']).mean()
+
+    # Convert monthly rent to equivalent sale price
+    cap_rate = settings.get('cap_rate')
+    means['unit_residential_rent'] = \
+        means.unit_residential_rent * 12 / cap_rate
+
+    # Calculate max of price or rent, by building
+    return means.max(axis=1)
+
+
 #####################
 # NODES VARIABLES
 #####################

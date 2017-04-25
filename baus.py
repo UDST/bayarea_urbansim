@@ -131,8 +131,6 @@ def get_simulation_models(SCENARIO):
 
         "balance_rental_and_ownership_hedonics",
 
-        # apply unit prices to buildings
-        "update_building_residential_price",
         "price_vars",
         "scheduled_development_events",
 
