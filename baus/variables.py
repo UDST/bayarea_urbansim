@@ -313,8 +313,8 @@ def vmt_res_cat(buildings, vmt_fee_categories):
     return misc.reindex(vmt_fee_categories.res_cat, buildings.zone_id)
 
 
-@orca.columns('buildings', cache=True)
-def residential_price(buildings, residential_units, settings, buildings):
+@orca.column('buildings', cache=True)
+def residential_price(buildings, residential_units, settings):
     """
     This was originally an orca.step in the ual code.  This allows model steps
     like 'price_vars' and 'feasibility' to read directly from the buildings
