@@ -46,17 +46,30 @@ def _create_empty_units(buildings):
         'num_units': 1,
         'building_id': np.repeat(
             buildings.index.values,
-            buildings.residential_units.values.astype(int)),
+            buildings.residential_units.values.astype(int)
+        ),
         # counter of the units in a building
         'unit_num': np.concatenate([
-            np.arange(i)
-            for i in buildings.residential_units.values.astype(int)])
+            np.arange(num_units)
+            for num_units in buildings.residential_units.values.astype(int)
+        ]),
+        # also identify deed restricted units
+        'deed_restricted': np.concatenate([
+            np.concatenate([
+                np.ones(restricted_units),
+                np.zeros(num_units - restricted_units)
+            ])
+            # iterate over number of units and deed restricted units too
+            for (num_units, restricted_units) in zip(
+                buildings.residential_units.values.astype(int),
+                buildings.deed_restricted_units.values.astype(int)
+            )
+        ])
     }).sort_values(by=['building_id', 'unit_num']).reset_index(drop=True)
     df.index.name = 'unit_id'
     return df
 
 
-@orca.step()
 def match_households_to_units(households, residential_units):
     """
     This initialization step adds a 'unit_id' to the households table and
@@ -106,7 +119,6 @@ def match_households_to_units(households, residential_units):
     return hh
 
 
-@orca.step()
 def assign_tenure_to_units(residential_units, households):
     """
     This initialization step assigns tenure to residential units, based on the
@@ -472,12 +484,12 @@ def initialize_new_units(buildings, residential_units):
     '''
 
     old_units = residential_units.to_frame(residential_units.local_columns)
-    bldgs = buildings.to_frame(['residential_units'])
+    bldgs = buildings.to_frame(['residential_units', 'deed_restricted_units'])
 
     # Filter for residential buildings not currently represented in
     # the units table
-    bldgs = bldgs[bldgs.residential_units > 0]
     new_bldgs = bldgs[~bldgs.index.isin(old_units.building_id)]
+    new_bldgs = new_bldgs[new_bldgs.residential_units > 0]
 
     # Create new units, merge them, and update the table
     new_units = _create_empty_units(new_bldgs)
@@ -554,7 +566,6 @@ def assign_tenure_to_new_units(residential_units, settings):
 
     residential_units.update_col_from_series(
         'tenure', units.tenure, cast=True)
-    return
 
 
 @orca.step()
