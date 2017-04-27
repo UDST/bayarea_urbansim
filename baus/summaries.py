@@ -134,8 +134,8 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
     pdt.assert_series_equal(
         buildings.deed_restricted_units[
             buildings.residential_units > 0].sort_index(),
-        residential_units.deed_restricted.\
-            groupby(residential_units.building_id).sum().sort_index(),
+        residential_units.deed_restricted.groupby(
+            residential_units.building_id).sum().sort_index(),
         check_names=False,
         check_dtype=False
     )
