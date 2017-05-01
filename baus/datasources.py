@@ -40,12 +40,6 @@ def store(settings):
     return pd.HDFStore(os.path.join(misc.data_dir(), settings["store"]))
 
 
-# this is the income split for the low income and regular HLCMs
-@orca.injectable()
-def low_income(settings):
-    return int(settings["low_income_for_hlcm"])
-
-
 @orca.injectable(cache=True)
 def limits_settings(settings, scenario):
     # for limits, we inherit from the default

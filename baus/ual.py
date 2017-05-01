@@ -765,10 +765,27 @@ def hlcm_owner_simulate(households, residential_units,
 
 
 @orca.step()
+def hlcm_owner_lowincome_simulate(households, residential_units,
+                                  aggregations, settings):
+
+    return hlcm_simulate(households, residential_units, aggregations,
+                         settings, 'hlcm_owner_lowincome.yaml',
+                         'price_equilibration')
+
+
+@orca.step()
 def hlcm_renter_simulate(households, residential_units, aggregations,
                          settings):
     return hlcm_simulate(households, residential_units, aggregations,
                          settings, 'hlcm_renter.yaml', 'rent_equilibration')
+
+
+@orca.step()
+def hlcm_renter_lowincome_simulate(households, residential_units, aggregations,
+                                   settings):
+    return hlcm_simulate(households, residential_units, aggregations,
+                         settings, 'hlcm_renter_lowincome.yaml',
+                         'rent_equilibration')
 
 
 # this opens the yaml file, deletes the predict filters and writes it to the
