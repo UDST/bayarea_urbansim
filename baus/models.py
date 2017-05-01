@@ -19,40 +19,6 @@ import numpy as np
 import pandas as pd
 
 
-'''
-@orca.step()
-def hlcm_simulate(households, buildings, aggregations, settings, low_income):
-
-    fname = misc.config("hlcm.yaml")
-
-    print "\nAffordable housing HLCM:\n"
-
-    cfg = yaml.load(open(fname))
-    cfg["choosers_predict_filters"] = "income <= %d" % low_income
-    open(misc.config("hlcm_tmp.yaml"), "w").write(yaml.dump(cfg))
-
-    # low income into affordable units
-    utils.lcm_simulate("hlcm_tmp.yaml", households, buildings,
-                       aggregations,
-                       "building_id", "residential_units",
-                       "vacant_affordable_units",
-                       settings.get("enable_supply_correction", None),
-                       cast=True)
-
-    os.remove(misc.config("hlcm_tmp.yaml"))
-
-    print "\nMarket rate housing HLCM:\n"
-
-    # then everyone into market rate units
-    utils.lcm_simulate("hlcm.yaml", households, buildings,
-                       aggregations,
-                       "building_id", "residential_units",
-                       "vacant_market_rate_units_minus_structural_vacancy",
-                       settings.get("enable_supply_correction", None),
-                       cast=True)
-'''
-
-
 @orca.step()
 def elcm_simulate(jobs, buildings, aggregations):
     buildings.local["non_residential_rent"] = \
