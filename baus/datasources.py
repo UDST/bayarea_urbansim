@@ -40,12 +40,6 @@ def store(settings):
     return pd.HDFStore(os.path.join(misc.data_dir(), settings["store"]))
 
 
-# this is the income split for the low income and regular HLCMs
-@orca.injectable()
-def low_income(settings):
-    return int(settings["low_income_for_hlcm"])
-
-
 @orca.injectable(cache=True)
 def limits_settings(settings, scenario):
     # for limits, we inherit from the default
@@ -323,7 +317,7 @@ def development_projects(parcels, settings, scenario):
     df = get_dev_projects_table(scenario, parcels)
 
     for col in [
-            'residential_sqft', 'residential_price', 'non_residential_price']:
+            'residential_sqft', 'residential_price', 'non_residential_rent']:
         df[col] = 0
     df["redfin_sale_year"] = 2012  # default base year
     df["redfin_sale_price"] = np.nan  # null sales price
@@ -378,6 +372,11 @@ def households(store):
 @orca.table(cache=True)
 def buildings(store):
     return print_error_if_not_available(store, 'buildings_preproc')
+
+
+@orca.table(cache=True)
+def residential_units(store):
+    return print_error_if_not_available(store, 'residential_units_preproc')
 
 
 @orca.table(cache=True)
@@ -477,6 +476,10 @@ def zones(store):
 
 
 # this specifies the relationships between tables
+orca.broadcast('buildings', 'residential_units', cast_index=True,
+               onto_on='building_id')
+orca.broadcast('residential_units', 'households', cast_index=True,
+               onto_on='unit_id')
 orca.broadcast('parcels_geography', 'buildings', cast_index=True,
                onto_on='parcel_id')
 # not defined in urbansim_Defaults

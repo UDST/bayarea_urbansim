@@ -1,4 +1,4 @@
-name: ual_hlcm_owner
+name: hlcm_owner
 
 model_type: segmented_discretechoice
 
@@ -10,7 +10,7 @@ choosers_predict_filters: (tenure == 'own')
 
 alts_fit_filters: null
 
-alts_predict_filters: (tenure == 'own')
+alts_predict_filters: (tenure == 'own' & deed_restricted == False)
 
 interaction_predict_filters: null
 

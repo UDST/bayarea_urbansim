@@ -20,59 +20,9 @@ import pandas as pd
 
 
 @orca.step()
-def rsh_estimate(buildings, aggregations):
-    return utils.hedonic_estimate("rsh.yaml", buildings, aggregations)
-
-
-@orca.step()
-def rsh_simulate(buildings, aggregations, settings):
-    utils.hedonic_simulate("rsh.yaml", buildings, aggregations,
-                           "residential_price")
-    if "rsh_simulate" in settings:
-        low = float(settings["rsh_simulate"]["low"])
-        high = float(settings["rsh_simulate"]["high"])
-        buildings.update_col("residential_price",
-                             buildings.residential_price.clip(low, high))
-        print "Clipped rsh_simulate produces\n", \
-            buildings.residential_price.describe()
-
-
-@orca.step()
-def hlcm_simulate(households, buildings, aggregations, settings, low_income):
-
-    fname = misc.config("hlcm.yaml")
-
-    print "\nAffordable housing HLCM:\n"
-
-    cfg = yaml.load(open(fname))
-    cfg["choosers_predict_filters"] = "income <= %d" % low_income
-    open(misc.config("hlcm_tmp.yaml"), "w").write(yaml.dump(cfg))
-
-    # low income into affordable units
-    utils.lcm_simulate("hlcm_tmp.yaml", households, buildings,
-                       aggregations,
-                       "building_id", "residential_units",
-                       "vacant_affordable_units",
-                       settings.get("enable_supply_correction", None),
-                       cast=True)
-
-    os.remove(misc.config("hlcm_tmp.yaml"))
-
-    print "\nMarket rate housing HLCM:\n"
-
-    # then everyone into market rate units
-    utils.lcm_simulate("hlcm.yaml", households, buildings,
-                       aggregations,
-                       "building_id", "residential_units",
-                       "vacant_market_rate_units_minus_structural_vacancy",
-                       settings.get("enable_supply_correction", None),
-                       cast=True)
-
-
-@orca.step()
 def elcm_simulate(jobs, buildings, aggregations):
-    buildings.local["non_residential_price"] = \
-        buildings.local.non_residential_price.fillna(0)
+    buildings.local["non_residential_rent"] = \
+        buildings.local.non_residential_rent.fillna(0)
     return utils.lcm_simulate("elcm.yaml", jobs, buildings, aggregations,
                               "building_id", "job_spaces",
                               "vacant_job_spaces", cast=True)
@@ -90,13 +40,6 @@ def households_transition(households, household_controls, year, settings):
     s = orca.get_table('households').base_income_quartile.value_counts()
     print "Distribution by income after:\n", (s/s.sum())
     return ret
-
-
-@orca.step()
-def households_relocation(households, settings, years_per_iter):
-    rate = settings['rates']['households_relocation']
-    rate = min(rate * years_per_iter, 1.0)
-    return utils.simple_relocation(households, rate, "building_id", cast=True)
 
 
 @orca.table(cache=True)
@@ -415,7 +358,7 @@ def supply_and_demand_multiplier_func(demand, supply):
     settings = orca.get_injectable('settings')
     print "Number of submarkets where demand exceeds supply:", len(s[s > 1.0])
     # print "Raw relationship of supply and demand\n", s.describe()
-    supply_correction = settings["enable_supply_correction"]
+    supply_correction = settings["price_equilibration"]
     clip_change_high = supply_correction["kwargs"]["clip_change_high"]
     t = s
     t -= 1.0
@@ -444,7 +387,7 @@ def form_to_btype_func(building):
 
 @orca.injectable(autocall=False)
 def add_extra_columns_func(df):
-    for col in ["residential_price", "non_residential_price"]:
+    for col in ["residential_price", "non_residential_rent"]:
         df[col] = 0
 
     if "deed_restricted_units" not in df.columns:
@@ -484,6 +427,8 @@ def alt_feasibility(parcels, settings,
     config.parking_rates["retail"] = 1.5
     config.building_efficiency = .85
     config.parcel_coverage = .85
+    # use the cap rate from settings.yaml
+    config.cap_rate = settings["cap_rate"]
 
     utils.run_feasibility(parcels,
                           parcel_sales_price_sqft_func,

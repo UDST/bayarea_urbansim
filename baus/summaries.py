@@ -2,6 +2,7 @@ import sys
 import os
 import orca
 import pandas as pd
+from pandas.util import testing as pdt
 import numpy as np
 from utils import random_indexes, round_series_match_target,\
     scale_by_target, simple_ipf
@@ -116,6 +117,28 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
 
     du = buildings.deed_restricted_units.sum()
     write("Number of deed restricted units = %d" % du)
+
+    # assert we fanned out the residential units correctly
+    assert len(residential_units) == buildings.residential_units.sum()
+
+    # make sure the unit counts per building add up
+    pdt.assert_series_equal(
+        buildings.residential_units[
+            buildings.residential_units > 0].sort_index(),
+        residential_units.building_id.value_counts().sort_index(),
+        check_names=False,
+        check_dtype=False
+    )
+
+    # make sure we moved deed restricted units to the res units table correctly
+    pdt.assert_series_equal(
+        buildings.deed_restricted_units[
+            buildings.residential_units > 0].sort_index(),
+        residential_units.deed_restricted.groupby(
+            residential_units.building_id).sum().sort_index(),
+        check_names=False,
+        check_dtype=False
+    )
 
     write("Base year mean income by whether household is in tpp:\n%s" %
           base_year_measures["hhincome_by_intpp"])
@@ -295,8 +318,8 @@ def compare_to_targets(parcels, buildings, jobs, households, abag_targets,
 
 
 @orca.step("diagnostic_output")
-def diagnostic_output(households, buildings, parcels, taz, jobs,
-                      zones, year, summary, run_number):
+def diagnostic_output(households, buildings, parcels, taz, jobs, settings,
+                      zones, year, summary, run_number, residential_units):
     households = households.to_frame()
     buildings = buildings.to_frame()
     parcels = parcels.to_frame()
@@ -334,16 +357,30 @@ def diagnostic_output(households, buildings, parcels, taz, jobs,
 
     zones['building_count'] = buildings.\
         query('general_type == "Residential"').groupby('zone_id').size()
+    # this price is the max of the original unit vector belows
     zones['residential_price'] = buildings.\
         query('general_type == "Residential"').groupby('zone_id').\
         residential_price.quantile()
+    # these two are the original unit prices averaged up to the building id
+    ru = residential_units
+    zones['unit_residential_price'] = \
+        ru.unit_residential_price.groupby(ru.zone_id).quantile()
+    zones['unit_residential_rent'] = \
+        ru.unit_residential_rent.groupby(ru.zone_id).quantile()
+    cap_rate = settings.get('cap_rate')
+    # this compares price to rent and shows us where price is greater
+    # rents are monthly and a cap rate is applied in order to do the conversion
+    zones['unit_residential_price_>_rent'] = \
+        (zones.unit_residential_price >
+         (zones.unit_residential_rent * 12 / cap_rate)).astype('int')
+
     zones['retail_rent'] = buildings[buildings.general_type == "Retail"].\
-        groupby('zone_id').non_residential_price.quantile()
+        groupby('zone_id').non_residential_rent.quantile()
     zones['office_rent'] = buildings[buildings.general_type == "Office"].\
-        groupby('zone_id').non_residential_price.quantile()
+        groupby('zone_id').non_residential_rent.quantile()
     zones['industrial_rent'] = \
         buildings[buildings.general_type == "Industrial"].\
-        groupby('zone_id').non_residential_price.quantile()
+        groupby('zone_id').non_residential_rent.quantile()
 
     zones['retail_sqft'] = buildings[buildings.general_type == "Retail"].\
         groupby('zone_id').non_residential_sqft.sum()
