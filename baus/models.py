@@ -406,10 +406,10 @@ def add_extra_columns_func(df):
         df["parcel_size"] = \
             orca.get_table("parcels").parcel_size.loc[df.parcel_id]
 
-    if "year" in orca.orca._INJECTABLES and "year_built" not in df:
+    if orca.is_injectable("year") and "year_built" not in df:
         df["year_built"] = orca.get_injectable("year")
 
-    if "form_to_btype_func" in orca.orca._INJECTABLES and \
+    if orca.is_injectable("form_to_btype_func") and \
             "building_type" not in df:
         form_to_btype_func = orca.get_injectable("form_to_btype_func")
         df["building_type"] = df.apply(form_to_btype_func, axis=1)
