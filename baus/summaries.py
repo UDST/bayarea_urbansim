@@ -118,7 +118,6 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
     du = buildings.deed_restricted_units.sum()
     write("Number of deed restricted units = %d" % du)
 
-
     write("Base year mean income by whether household is in tpp:\n%s" %
           base_year_measures["hhincome_by_intpp"])
 
