@@ -4,6 +4,7 @@ import time
 import traceback
 from baus import models
 from baus import ual
+from baus import validation
 import pandas as pd
 import orca
 import socket
@@ -187,6 +188,7 @@ def get_simulation_models(SCENARIO):
         # save_intermediate_tables", # saves output for visualization
 
         "topsheet",
+        "simulation_validation",
         "parcel_summary",
         "building_summary",
         "diagnostic_output",
@@ -261,6 +263,7 @@ def run_models(MODE, SCENARIO):
                 "price_vars",
 
                 "topsheet",
+                "simulation_validation",
                 "parcel_summary",
                 "building_summary",
                 "geographic_summary",
