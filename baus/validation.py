@@ -3,25 +3,7 @@ import os
 import orca
 import pandas as pd
 from pandas.util import testing as pdt
-
-
-def save_and_restore_state(locals, outhdf="save_state.h5"):
-    if os.path.exists(outhdf):
-        # the state exists - load it back into the locals
-        store = pd.HDFStore(outhdf)
-        for table_name in store:
-            print table_name
-            table = store[table_name]
-            locals[table_name] = table
-        sys.exit(0)
-
-    # the state doesn't exist and thus needs to be saved
-    for table_name, table in locals.items():
-        print table_name
-        store = pd.HDFStore(outhdf, "w")
-        store[table_name] = table
-
-    sys.exit(0)
+from utils import save_and_restore_state
 
 
 def check_household_controls(households, household_controls, year):
@@ -33,7 +15,10 @@ def simulation_validation(
         parcels, buildings, households, jobs, residential_units, year,
         household_controls, employment_controls):
 
-    save_and_restore_state(locals())
+    # this does a save and restore state for debugging
+    d = save_and_restore_state(locals())
+    for k in d.keys():
+        exec("{} = d['{}']".format(k, k))
 
     # assert we fanned out the residential units correctly
     assert len(residential_units) == buildings.residential_units.sum()

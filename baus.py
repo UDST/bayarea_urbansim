@@ -231,6 +231,10 @@ def run_models(MODE, SCENARIO):
 
         orca.run(["fetch_from_s3"])
 
+    elif MODE == "debug":
+
+        orca.run(["simulation_validation"])
+
     elif MODE == "simulation":
 
         # see above for docs on this
