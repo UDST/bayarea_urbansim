@@ -256,6 +256,7 @@ def run_models(MODE, SCENARIO):
                 "households_transition",
                 # update building/unit/hh correspondence
                 "reconcile_unplaced_households",
+                "jobs_transition",
 
                 # allocate owners to vacant owner-occupied units
                 "hlcm_owner_simulate",
@@ -263,6 +264,8 @@ def run_models(MODE, SCENARIO):
                 "hlcm_renter_simulate",
                 # update building/unit/hh correspondence
                 "reconcile_placed_households",
+
+                "elcm_simulate",
 
                 "price_vars",
 

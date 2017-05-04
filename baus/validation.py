@@ -35,8 +35,6 @@ def check_job_controls(jobs, employment_controls, year, settings):
     empsix_map = settings["empsix_name_to_id"]
     current_counts = jobs.empsix.map(empsix_map).value_counts()
 
-    print current_employment_controls
-    print current_counts
     assert_series_equal(
         current_employment_controls,
         current_counts
@@ -77,7 +75,7 @@ def simulation_validation(
 
     print jobs.empsix.value_counts()
 
-    #check_job_controls(jobs, employment_controls, year, settings)
+    check_job_controls(jobs, employment_controls, year, settings)
 
     check_household_controls(households, household_controls, year)
 
