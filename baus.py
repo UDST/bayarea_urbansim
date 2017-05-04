@@ -233,7 +233,7 @@ def run_models(MODE, SCENARIO):
 
     elif MODE == "debug":
 
-        orca.run(["simulation_validation"])
+        orca.run(["simulation_validation"], [2010])
 
     elif MODE == "simulation":
 
