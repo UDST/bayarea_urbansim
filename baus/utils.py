@@ -29,7 +29,7 @@ from urbansim.developer.developer import Developer as dev
 #
 #    d = save_and_restore_state(locals())
 #    for k in d.keys():
-#        exec("{} = d['{}']".format(k, k))
+#        locals()[k].local = d[k]
 #
 def save_and_restore_state(in_d, outhdf="save_state.h5"):
     if os.path.exists(outhdf):
