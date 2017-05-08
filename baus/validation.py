@@ -81,6 +81,7 @@ def simulation_validation(
 
     check_residential_units(residential_units, buildings)
 
+
     # check no households are unplaced
 
     # check job allocation
@@ -89,7 +90,7 @@ def simulation_validation(
 
     # check household unit ids and building ids line up
 
-    # check vacancies are reasonable
+    # check vacancies are reasonable (no overfull buildings)
 
     # some sort of test to check local retail doesn't drop
     # below a certain level
