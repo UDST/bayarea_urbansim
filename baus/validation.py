@@ -70,15 +70,20 @@ def check_residential_units(residential_units, buildings):
 
 # make sure everyone gets a house - this might not exist in the real world,
 # but due to the nature of control totals it exists here
-def check_no_unplaced_households(households):
+def check_no_unplaced_households(households, year):
     print "Check no unplaced households"
+    if year <= 2020:
+        # for some reason, since we added renter/owner models, we do have
+        # unplaced households in the first couple of years, which eventually
+        # evens out
+        return
     assert -1 not in households.building_id.value_counts()
 
 
 # check not more households than units or jobs than job spaces
 def check_no_overfull_buildings(households, buildings):
     print "Check no overfull buildings"
-    assert True not in (buildings.vacant_res_units.drop(-1) < 0).value_counts()
+    assert True not in (buildings.vacant_res_units < 0).value_counts()
     # there are overfull job spaces based on the assignment and also
     # proportional job model
     # assert True not in (buildings.vacant_job_spaces < 0).value_counts()
@@ -98,9 +103,9 @@ def simulation_validation(
         household_controls, employment_controls, settings):
 
     # this does a save and restore state for debugging
-    d = save_and_restore_state(locals())
-    for k in d.keys():
-        locals()[k].local = d[k]
+    # d = save_and_restore_state(locals())
+    # for k in d.keys():
+    #     locals()[k].local = d[k]
 
     check_job_controls(jobs, employment_controls, year, settings)
 
@@ -108,13 +113,8 @@ def simulation_validation(
 
     check_residential_units(residential_units, buildings)
 
-    # check_no_unplaced_households(households)
+    check_no_unplaced_households(households, year)
 
     check_no_overfull_buildings(households, buildings)
 
     check_unit_ids_match_building_ids(households, residential_units)
-
-    # check proportional jobs model is working
-
-    # some sort of test to check local retail doesn't drop
-    # below a certain level
