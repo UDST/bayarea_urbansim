@@ -134,8 +134,16 @@ def job_spaces(buildings):
 
 @orca.column('buildings')
 def vacant_job_spaces(buildings, jobs):
-    return buildings.job_spaces.sub(jobs.building_id.value_counts(),
-                                    fill_value=0).astype('int')
+    s = jobs.building_id[jobs.building_id != -1]
+    return buildings.job_spaces.sub(
+        s.value_counts(), fill_value=0).astype('int')
+
+
+@orca.column('buildings')
+def vacant_res_units(buildings, households):
+    s = households.building_id[households.building_id != -1]
+    return buildings.residential_units.sub(
+        s.value_counts(), fill_value=0).astype('int')
 
 
 @orca.column('buildings', cache=True)

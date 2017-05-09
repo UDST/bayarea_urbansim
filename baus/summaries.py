@@ -10,7 +10,7 @@ from urbansim.utils import misc
 from scripts.output_csv_utils import format_df
 
 
-@orca.step("topsheet")
+@orca.step()
 def topsheet(households, jobs, buildings, parcels, zones, year,
              run_number, taz_geography, parcels_zoning_calculations,
              summary, settings, parcels_geography, abag_targets, new_tpp_id,
@@ -117,28 +117,6 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
 
     du = buildings.deed_restricted_units.sum()
     write("Number of deed restricted units = %d" % du)
-
-    # assert we fanned out the residential units correctly
-    assert len(residential_units) == buildings.residential_units.sum()
-
-    # make sure the unit counts per building add up
-    pdt.assert_series_equal(
-        buildings.residential_units[
-            buildings.residential_units > 0].sort_index(),
-        residential_units.building_id.value_counts().sort_index(),
-        check_names=False,
-        check_dtype=False
-    )
-
-    # make sure we moved deed restricted units to the res units table correctly
-    pdt.assert_series_equal(
-        buildings.deed_restricted_units[
-            buildings.residential_units > 0].sort_index(),
-        residential_units.deed_restricted.groupby(
-            residential_units.building_id).sum().sort_index(),
-        check_names=False,
-        check_dtype=False
-    )
 
     write("Base year mean income by whether household is in tpp:\n%s" %
           base_year_measures["hhincome_by_intpp"])
@@ -317,7 +295,7 @@ def compare_to_targets(parcels, buildings, jobs, households, abag_targets,
     return l
 
 
-@orca.step("diagnostic_output")
+@orca.step()
 def diagnostic_output(households, buildings, parcels, taz, jobs, settings,
                       zones, year, summary, run_number, residential_units):
     households = households.to_frame()
@@ -695,7 +673,7 @@ def parcel_summary(parcels, buildings, households, jobs,
         )
 
 
-@orca.step("travel_model_output")
+@orca.step()
 def travel_model_output(parcels, households, jobs, buildings,
                         zones, year, summary, coffer,
                         zone_forecast_inputs, run_number,

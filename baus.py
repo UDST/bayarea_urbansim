@@ -4,6 +4,7 @@ import time
 import traceback
 from baus import models
 from baus import ual
+from baus import validation
 import pandas as pd
 import orca
 import socket
@@ -187,6 +188,7 @@ def get_simulation_models(SCENARIO):
         # save_intermediate_tables", # saves output for visualization
 
         "topsheet",
+        "simulation_validation",
         "parcel_summary",
         "building_summary",
         "diagnostic_output",
@@ -229,6 +231,10 @@ def run_models(MODE, SCENARIO):
 
         orca.run(["fetch_from_s3"])
 
+    elif MODE == "debug":
+
+        orca.run(["simulation_validation"], [2010])
+
     elif MODE == "simulation":
 
         # see above for docs on this
@@ -250,6 +256,7 @@ def run_models(MODE, SCENARIO):
                 "households_transition",
                 # update building/unit/hh correspondence
                 "reconcile_unplaced_households",
+                "jobs_transition",
 
                 # allocate owners to vacant owner-occupied units
                 "hlcm_owner_simulate",
@@ -258,9 +265,12 @@ def run_models(MODE, SCENARIO):
                 # update building/unit/hh correspondence
                 "reconcile_placed_households",
 
+                "elcm_simulate",
+
                 "price_vars",
 
                 "topsheet",
+                "simulation_validation",
                 "parcel_summary",
                 "building_summary",
                 "geographic_summary",

@@ -1,6 +1,7 @@
 import orca
 import pandas as pd
 from urbansim.utils import misc
+from validation import assert_series_equal
 
 
 # the way this works is there is an orca step to do jobs allocation, which
@@ -59,9 +60,8 @@ def allocate_jobs(baseyear_taz_controls, settings, buildings, parcels):
         df["building_id"][df.taz == taz] = buildings_ids.index.values
 
     s = zone_id.loc[df.building_id].value_counts()
-    t = baseyear_taz_controls.emp_tot - s
-    # assert we matched the totals exactly
-    assert t.sum() == 0
+    # assert that we at least got the total employment right after assignment
+    assert_series_equal(baseyear_taz_controls.emp_tot, s)
 
     return df
 
