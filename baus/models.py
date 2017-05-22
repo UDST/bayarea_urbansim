@@ -786,6 +786,7 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
 
     new_buildings["residential_units"] = 0
     new_buildings["residential_sqft"] = 0
+    new_buildings["deed_restricted_units"] = 0
     new_buildings["building_sqft"] = new_buildings.non_residential_sqft
     new_buildings["stories"] = 1
     new_buildings["building_type"] = "RB"
