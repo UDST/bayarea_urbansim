@@ -617,7 +617,7 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
                     already_subsidized_units
                 # cap at number of residential units
                 subsidized_units = min(subsidized_units,
-                    new_building.residential_units)
+                                       new_building.residential_units)
 
                 buildings.local.loc[index, "deed_restricted_units"] =\
                     int(round(subsidized_units))
@@ -627,7 +627,7 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
                     int(round(subsidized_units))
 
         assert np.all(buildings.local.deed_restricted_units.fillna(0) <=
-            buildings.local.residential_units.fillna(0))
+                      buildings.local.residential_units.fillna(0))
 
         print "Amount left after subsidy: ${:,.2f}".\
             format(account.total_transactions_by_subacct(subacct))
