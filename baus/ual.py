@@ -40,6 +40,16 @@ def _create_empty_units(buildings):
     # The '.astype(int)' deals with a bug (?) where the developer model creates
     # floating-point unit counts
 
+    s = buildings.residential_units.fillna(0) >=\
+        buildings.deed_restricted_units.fillna(0)
+    if not np.all(s):
+        print buildings[s]
+        #import code
+        #code.iteract(local=locals())
+
+    assert np.all(buildings.residential_units.fillna(0) >=
+        buildings.deed_restricted_units.fillna(0))
+
     df = pd.DataFrame({
         'unit_residential_price': 0.0,
         'unit_residential_rent': 0.0,
