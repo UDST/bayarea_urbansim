@@ -10,8 +10,8 @@ run_nums = range(334, 420)
 SAMPLE_SIZES = range(5, 20)
 NUM_SAMPLES = 2
 
-flds = ("AGREMPN,FPSEMPN,HEREMPN,RETEMPN,MWTEMPN,OTHEMPN,HHINCQ1," +\
-    "HHINCQ2,HHINCQ3,HHINCQ4").split(',')
+flds = ("AGREMPN,FPSEMPN,HEREMPN,RETEMPN,MWTEMPN,OTHEMPN,HHINCQ1," +
+        "HHINCQ2,HHINCQ3,HHINCQ4").split(',')
 
 
 def get_2040_taz_summaries(run_nums):
