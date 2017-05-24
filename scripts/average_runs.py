@@ -7,8 +7,8 @@ import random
 # find out how many runs we need to do in order to reduce stochasticity
 
 run_nums = range(334, 420)
-SAMPLE_SIZES = range(5, 20)
-NUM_SAMPLES = 2
+SAMPLE_SIZES = range(5, 19)
+NUM_SAMPLES = 3
 
 flds = ("AGREMPN,FPSEMPN,HEREMPN,RETEMPN,MWTEMPN,OTHEMPN,HHINCQ1," +
         "HHINCQ2,HHINCQ3,HHINCQ4").split(',')
@@ -47,7 +47,7 @@ def variability_measure(dfs, N, M):
 
     # now we take a measure of the variability - we take the stddev by column
     # and then the stddev of the stddevs to boil it down to one number
-    return average_dfs.std().std()
+    return average_dfs.std().mean()
 
 
 dfs = get_2040_taz_summaries(run_nums)
