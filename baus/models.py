@@ -540,10 +540,21 @@ def residential_developer(feasibility, households, buildings, parcels, year,
                 index = new_buildings.tail(1).index[0]
                 index = int(index)
                 # make sure we don't get into a negative unit situation
-                overshoot = min(overshoot,
-                                buildings.local.loc[index,
-                                                    "residential_units"])
+                current_units = buildings.local.loc[index, "residential_units"]
+                # only can reduce by as many units as we have
+                overshoot = min(overshoot, current_units)
+                # used below - this is the pct we need to reduce the building
+                overshoot_pct = \
+                    (current_units - overshoot) / float(current_units)
+
                 buildings.local.loc[index, "residential_units"] -= overshoot
+
+                # we also need to fix the other columns so they make sense
+                for col in ["residential_sqft", "building_sqft",
+                            "deed_restricted_units"]:
+                    val = buildings.local.loc[index, col]
+                    # reduce by pct but round to int
+                    buildings.local.loc[index, col] = int(val * overshoot_pct)
 
         summary.add_parcel_output(new_buildings)
 
