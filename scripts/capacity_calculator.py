@@ -20,6 +20,7 @@ parcels_geography = orca.get_table("parcels_geography")
 df = parcels.to_frame([
     "total_residential_units",
     "zoned_du",
+    "zoned_du_vacant",
     "zoned_du_underbuild",
     "zoned_du_underbuild_nodev"
 ])

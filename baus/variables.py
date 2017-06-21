@@ -805,6 +805,12 @@ def zoned_du(parcels, parcels_zoning_calculations):
 
 
 @orca.column('parcels_zoning_calculations', cache=True)
+def zoned_du_vacant(parcels, parcels_zoning_calculations):
+    return parcels_zoning_calculations.effective_max_dua * parcels.parcel_acres *\
+        ~parcels.nodev * (parcels.total_sqft == 0)
+
+
+@orca.column('parcels_zoning_calculations', cache=True)
 def effective_max_dua(zoning_baseline, parcels, scenario):
 
     max_dua_from_far = zoning_baseline.max_far * 43560 / GROSS_AVE_UNIT_SIZE
