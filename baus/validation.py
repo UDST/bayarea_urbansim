@@ -72,7 +72,7 @@ def check_residential_units(residential_units, buildings):
 # but due to the nature of control totals it exists here
 def check_no_unplaced_households(households, year):
     print "Check no unplaced households"
-    if year <= 2020:
+    if year <= 2030:
         # for some reason, since we added renter/owner models, we do have
         # unplaced households in the first couple of years, which eventually
         # evens out

@@ -6,12 +6,11 @@ import random
 # impacts of stochasticity - this also runs at different sample sizes to
 # find out how many runs we need to do in order to reduce stochasticity
 
-run_nums = range(334, 420)
-SAMPLE_SIZES = range(5, 19)
-NUM_SAMPLES = 3
+run_nums = range(334, 550)
+SAMPLE_SIZES = range(1, 45, 5)
+NUM_SAMPLES = 2
 
-flds = ("AGREMPN,FPSEMPN,HEREMPN,RETEMPN,MWTEMPN,OTHEMPN,HHINCQ1," +
-        "HHINCQ2,HHINCQ3,HHINCQ4").split(',')
+flds = ("TOTHH,TOTEMP").split(',')
 
 
 def get_2040_taz_summaries(run_nums):
@@ -45,14 +44,13 @@ def variability_measure(dfs, N, M):
     # with rows corresponding to each sample
     average_dfs = pd.DataFrame([df.stack() for df in average_dfs])
 
-    # now we take a measure of the variability - we take the stddev by column
-    # and then the stddev of the stddevs to boil it down to one number
-    return average_dfs.std().mean()
-
+    pct_diff = (average_dfs.iloc[0] - average_dfs.iloc[1]).abs() / average_dfs.mean() * 100
+    return pct_diff.unstack().fillna(0).quantile(.95)
 
 dfs = get_2040_taz_summaries(run_nums)
 print "Total sims = {}".format(len(dfs))
 
 # need to test different sample sizes
 for sample_size in SAMPLE_SIZES:
-    print sample_size, variability_measure(dfs, NUM_SAMPLES, sample_size)
+    print sample_size
+    print variability_measure(dfs, NUM_SAMPLES, sample_size)
