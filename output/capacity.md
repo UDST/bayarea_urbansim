@@ -12,7 +12,7 @@ The simplest calculation is computed on each parcel and is defined [here](https:
 
 In words, this calculation first takes the `max_dua` (max dwelling units per acre) of each parcel where avialable times the number of acres.  When `max_dua` on a parcel is not available, `max_far` (max floor area ratio) is multiplied by the parcel size (in square feet) to get maxiumum building space, which is divided by an assumed unit size (at the time of this writing, the assumption is 1000 sqft).  This is only used when `max_dua` is not available.  Then the combined number for each parcel is set to zero if residential building types are not allowed.  
 
-The result is then grouped by jurisdiction, summed and writted to a csv.  We call this calculation `zoned_du`.  `zoned_du` in concept is the amount of capacity that could be built if there were no buildings currently in existance.  It is thus a metric of *total* capacity and not change in capacity.
+The result is then grouped by jurisdiction, summed and written to a csv.  We call this calculation `zoned_du`.  `zoned_du` in concept is the amount of capacity that could be built if there were no buildings currently in existance.  It is thus a metric of *total* capacity and not change in capacity.
 
 ## Calculation 2 - Net Capacity
 
