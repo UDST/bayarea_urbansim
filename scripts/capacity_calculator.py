@@ -18,8 +18,8 @@ parcels = orca.get_table("parcels_zoning_calculations")
 parcels_geography = orca.get_table("parcels_geography")
 
 df = parcels.to_frame([
-	"total_residential_units",
-	"zoned_du",
+    "total_residential_units",
+    "zoned_du",
     "zoned_du_underbuild",
     "zoned_du_underbuild_nodev"
 ])
@@ -27,9 +27,8 @@ df = parcels.to_frame([
 # add the city name
 df["juris_name"] = parcels_geography.juris_name
 
-df_filt = df.query("zoned_du_underbuild_nodev > 0")
-print "Number of parcels with value > 0 = %d" % len(df_filt)
-
 df = df.groupby(["juris_name"]).sum().fillna(0).astype('int')
+
+scenario = orca.get_injectable("scenario")
 
 df.to_csv("output/city_capacity_scenario_{}.csv".format(scenario))
