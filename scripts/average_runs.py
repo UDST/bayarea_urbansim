@@ -44,7 +44,8 @@ def variability_measure(dfs, N, M):
     # with rows corresponding to each sample
     average_dfs = pd.DataFrame([df.stack() for df in average_dfs])
 
-    pct_diff = (average_dfs.iloc[0] - average_dfs.iloc[1]).abs() / average_dfs.mean() * 100
+    pct_diff = (average_dfs.iloc[0] - average_dfs.iloc[1]).abs() /\
+        average_dfs.mean() * 100
     return pct_diff.unstack().fillna(0).quantile(.95)
 
 dfs = get_2040_taz_summaries(run_nums)
