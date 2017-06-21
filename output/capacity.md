@@ -14,6 +14,12 @@ In words, this calculation first takes the `max_dua` (max dwelling units per acr
 
 The result is then grouped by jurisdiction, summed and written to a csv.  We call this calculation `zoned_du`.  `zoned_du` in concept is the amount of capacity that could be built if there were no buildings currently in existance.  It is thus a metric of *total* capacity and not change in capacity.
 
+## Calculation 1b - Zoning on Vacant Land accounting for NODEV rules
+
+This calcaultion is defined [here](https://github.com/UDST/bayarea_urbansim/blob/2f128f2451eaedee9edac9183ed168a16dd51750/baus/variables.py#L808).
+
+This calculation is the same as the above, but only on empty parcels (building sqft = 0) and excluding parcels marked NODEV (described below).
+
 ## Calculation 2 - Net Capacity
 
 The second calaculation (described below) is defined [here](https://github.com/UDST/bayarea_urbansim/blob/0fb7776596075fa7d2cba2b9fbc92333354ba6fa/baus/variables.py#L901).
