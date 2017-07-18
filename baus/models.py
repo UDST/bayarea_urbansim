@@ -523,7 +523,7 @@ def residential_developer(feasibility, households, buildings, parcels, year,
             year=year,
             form_to_btype_callback=form_to_btype_func,
             add_more_columns_callback=add_extra_columns_func,
-            num_units_to_build=target,
+            num_units_to_build=int(target),
             profit_to_prob_func=subsidies.profit_to_prob_func,
             **kwargs)
 

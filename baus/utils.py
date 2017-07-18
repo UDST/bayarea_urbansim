@@ -116,7 +116,7 @@ def groupby_random_choice(s, counts, replace=True):
         return pd.Series()
 
     return pd.concat([
-        s[s == grp].sample(cnt, replace=replace)
+        s[s == grp].sample(int(cnt), replace=replace)
         for grp, cnt in counts[counts > 0].iteritems()
     ])
 
