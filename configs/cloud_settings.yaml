@@ -1,0 +1,108 @@
+# Required. Python modules that contain orca registrations.  Omit the '.py'
+orca_modules:
+    - baus.models
+    - baus.ual
+    - baus.validation
+
+# Required. Links to data files that will be downloaded into ./data
+data_files:
+    - 
+        filename: data/mpo_06197001/02_01_2016_parcels_geography.csv
+        storage: gcs
+        project: swarm-test-1470707908646
+        bucket: urbansim_models
+    -
+        filename: data/mpo_06197001/2015_06_01_osm_bayarea4326.h5
+        storage: gcs
+        project: swarm-test-1470707908646
+        bucket: urbansim_models
+    -
+        filename: data/mpo_06197001/2015_08_03_tmnet.h5
+        storage: gcs
+        project: swarm-test-1470707908646
+        bucket: urbansim_models
+    -
+        filename: data/mpo_06197001/2015_09_01_bayarea_v3.h5
+        storage: gcs
+        project: swarm-test-1470707908646
+        bucket: urbansim_models
+    -
+        filename: data/mpo_06197001/2015_12_21_zoning_parcels.csv 
+        storage: gcs
+        project: swarm-test-1470707908646
+        bucket: urbansim_models
+
+# Optional. Orca steps that run prior to the simulation.
+orca_preprocessing_steps:
+
+# Optional. Simulation steps that will be executed for the first simulation year.
+orca_simulation_steps_first_year:
+    - neighborhood_vars
+    - regional_vars
+    - rsh_simulate
+    - rrh_simulate
+    - nrh_simulate
+    - assign_tenure_to_new_units
+    - households_relocation
+    - households_transition
+    - reconcile_unplaced_households
+    - jobs_transition
+    - hlcm_owner_simulate
+    - hlcm_renter_simulate
+    - reconcile_placed_households
+    - elcm_simulate
+    - price_vars
+    - topsheet
+    - simulation_validation
+    - parcel_summary
+    - building_summary
+    - geographic_summary
+    - travel_model_output
+    - diagnostic_output
+
+# Required. Orca steps that run on each simulation year.
+# If orca_simulation_steps_first_year is present then these steps will not be 
+# executed on first year but other listed on previously mentioned section.
+orca_simulation_steps:
+    - neighborhood_vars
+    - regional_vars
+    - nrh_simulate
+    - households_relocation
+    - households_transition
+    - reconcile_unplaced_households
+    - jobs_relocation
+    - jobs_transition
+    - balance_rental_and_ownership_hedonics
+    - price_vars
+    - scheduled_development_events
+    - lump_sum_accounts
+    - subsidized_residential_developer_lump_sum_accts
+    - alt_feasibility
+    - residential_developer
+    - developer_reprocess
+    - retail_developer
+    - office_developer
+    - accessory_units
+    - remove_old_units
+    - initialize_new_units
+    - reconcile_unplaced_households
+    - rsh_simulate
+    - rrh_simulate
+    - assign_tenure_to_new_units
+    - hlcm_owner_simulate
+    - hlcm_renter_simulate
+    - hlcm_owner_simulate_no_unplaced
+    - hlcm_renter_simulate_no_unplaced
+    - reconcile_placed_households
+    - proportional_elcm
+    - elcm_simulate
+    - topsheet
+    - simulation_validation
+    - parcel_summary
+    - building_summary
+    - diagnostic_output
+    - geographic_summary
+    - travel_model_output
+
+orca_injectables:
+    - years_per_iter: 5
