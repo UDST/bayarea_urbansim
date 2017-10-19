@@ -141,7 +141,7 @@ def inclusionary_housing_revenue_reduction(feasibility, units):
 
     s = num_affordable_units.groupby(parcels_geography.juris_name).sum()
     print "Feasibile affordable units by jurisdiction"
-    print s[s > 0].order()
+    print s[s > 0].sort_values()
 
     return revenue_reduction, num_affordable_units
 
@@ -350,7 +350,7 @@ def subsidized_office_developer(feasibility, coffer, acct_settings, year,
 
     # sorting by our choice metric as we're going to pick our devs
     # in order off the top
-    feasibility = feasibility.sort(columns=['max_profit_per_sqft'])
+    feasibility = feasibility.sort_values(['max_profit_per_sqft'])
 
     # make parcel_id available
     feasibility = feasibility.reset_index()
@@ -541,7 +541,7 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
             continue
 
         # step 7
-        df = df.sort(columns=['subsidy_per_unit'], ascending=True)
+        df = df.sort_values(['subsidy_per_unit'], ascending=True)
         # df.to_csv('subsidized_units_%d_%s_%s.csv' %
         #           (orca.get_injectable("year"), account.name, subacct))
 
