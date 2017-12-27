@@ -440,6 +440,8 @@ def alt_feasibility(parcels, settings,
         orca.get_table('feasibility').to_frame(),
         parcels)
 
+    f.to_csv("feasibility.csv")
+
     orca.add_table("feasibility", f)
 
 
