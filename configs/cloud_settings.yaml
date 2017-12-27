@@ -104,5 +104,22 @@ orca_simulation_steps:
     - geographic_summary
     - travel_model_output
 
+# Optional. Orca steps that run prior to the simulation.
+orca_postprocessing_steps:
+    - tnc_conservation
+
 orca_injectables:
     - years_per_iter: 5
+
+output_storage:
+    provider: gcs
+    project: urbansim-cloud
+    bucket: urbansim_models
+    path: results/mtc-test
+
+region_id: 06197001
+model_description: Cloud wrapper testing
+redis:
+    host: localhost
+    port: 6379
+    sleep_time: 200000
