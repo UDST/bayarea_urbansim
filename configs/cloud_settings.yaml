@@ -120,6 +120,6 @@ output_storage:
 region_id: 06197001
 model_description: Cloud wrapper testing
 redis:
-    host: localhost
+    host: redis
     port: 6379
     sleep_time: 200000
