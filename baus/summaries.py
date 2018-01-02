@@ -703,7 +703,7 @@ def travel_model_output(parcels, households, jobs, buildings,
      with major caching issue which has been reported upstream
     '''
 
-    #jobs_df["zone_id"] = jobs_df.zone_id_x
+    # jobs_df["zone_id"] = jobs_df.zone_id_x
 
     def getsectorcounts(sector):
         return jobs_df.query("empsix == '%s'" % sector).\
@@ -782,7 +782,8 @@ def travel_model_output(parcels, households, jobs, buildings,
 
     taz_df = add_population(taz_df, year)
     taz_df = add_employment(taz_df, year)
-    #taz_df = add_age_categories(taz_df, year)
+
+    # taz_df = add_age_categories(taz_df, year)
 
     summary.add_zone_output(taz_df, "travel_model_output", year)
     summary.write_zone_output()
