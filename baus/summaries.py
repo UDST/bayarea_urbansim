@@ -695,11 +695,14 @@ def travel_model_output(parcels, households, jobs, buildings,
         columns=['zone_id', 'empsix']
     )
 
-    # totally baffled by this - after joining the three tables we have three
-    # zone_ids, one from the parcel table, one from buildings, and one from
-    # jobs and the one called zone_id has null values while there others do not
-    # going to change this while I think about this - turns out this has to do
-    # with major caching issue which has been reported upstream
+    '''
+     totally baffled by this - after joining the three tables we have three
+     zone_ids, one from the parcel table, one from buildings, and one from
+     jobs and the one called zone_id has null values while there others do not
+     going to change this while I think about this - turns out this has to do
+     with major caching issue which has been reported upstream
+    '''
+
     #jobs_df["zone_id"] = jobs_df.zone_id_x
 
     def getsectorcounts(sector):
