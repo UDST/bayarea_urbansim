@@ -22,8 +22,9 @@ def format_df(df, formatters=None, **kwargs):
 
 def get_base_year_df(base_run_year=2010):
     geography_id = 'zone_id' if geography == 'taz' else geography
-    df = pd.read_csv('output/baseyear_{}_summaries_{}.csv'.format(geography, base_run_year),
-                     index_col=geography_id)
+    df = pd.read_csv(
+        'output/baseyear_{}_summaries_{}.csv'.format(geography, base_run_year),
+        index_col=geography_id)
     df = df.fillna(0)
     return df
 
@@ -31,7 +32,8 @@ def get_base_year_df(base_run_year=2010):
 def get_outcome_df(run, year=2040):
     geography_id = 'zone_id' if geography == 'taz' else geography
     df = pd.read_csv(
-        'http://urbanforecast.com/runs/run%(run)d_%(geography)s_summaries_%(year)d.csv'
+        'http://urbanforecast.com/runs/run' +
+        '%(run)d_%(geography)s_summaries_%(year)d.csv'
         % {"run": run, "year": year, "geography": geography},
         index_col=geography_id)
     df = df.fillna(0)
@@ -89,9 +91,10 @@ def to_esri_csv(df, variable, runs):
     df = make_esri_columns(df)
     df.to_csv(f)
 
+
 def write_bundle_comparison_csv(df, variable, runs):
     df = make_esri_columns(df)
-    if variable=="tothh" or variable == "TOTHH":
+    if variable == "tothh" or variable == "TOTHH":
         headers = ['hh10', 'hh10_shr', 'hh40_0', 'hh40_0_shr',
                    'pctch40_0', 'Shrch40_0', 'hh40_3', 'hh40_3_shr',
                    'pctch40_3', 'shrch40_3', 'hh40_1', 'hh40_1_shr',
@@ -99,25 +102,28 @@ def write_bundle_comparison_csv(df, variable, runs):
                    'pctch40_2', 'shrch40_2', '3_40_0_40_rat',
                    '1_40_0_40_rat', '2_40_0_40_rat']
         df.columns = headers
-        df = df[['hh10', 'hh10_shr', 'hh40_0', 'hh40_0_shr',
-             'pctch40_0', 'Shrch40_0', 'hh40_3', 'hh40_3_shr', 'pctch40_3',
-             'shrch40_3', '3_40_0_40_rat', 'hh40_1', 'hh40_1_shr', 'pctch40_1',
-             'shrch40_1', '1_40_0_40_rat', 'hh40_2', 'hh40_2_shr', 'pctch40_2',
-             'shrch40_2', '2_40_0_40_rat']]
-    elif variable=="totemp" or variable == "TOTEMP":
-        headers = ['emp10', 'emp10_shr', 'emp40_0',
-                  'emp40_0_shr', 'pctch40_0', 'Shrch40_0', 'emp40_3',
-                  'emp40_3_shr', 'pctch40_3', 'shrch40_3', 'emp40_1',
-                  'emp40_1_shr', 'pctch40_1', 'shrch40_1', 'emp40_2',
-                  'emp40_2_shr', 'pctch40_2', 'shrch40_2', '3_40_0_40_rat',
-                  '1_40_0_40_rat', '2_40_0_40_rat']
+        df = df[[
+            'hh10', 'hh10_shr', 'hh40_0', 'hh40_0_shr',
+            'pctch40_0', 'Shrch40_0', 'hh40_3', 'hh40_3_shr', 'pctch40_3',
+            'shrch40_3', '3_40_0_40_rat', 'hh40_1', 'hh40_1_shr', 'pctch40_1',
+            'shrch40_1', '1_40_0_40_rat', 'hh40_2', 'hh40_2_shr', 'pctch40_2',
+            'shrch40_2', '2_40_0_40_rat']]
+    elif variable == "totemp" or variable == "TOTEMP":
+        headers = [
+            'emp10', 'emp10_shr', 'emp40_0',
+            'emp40_0_shr', 'pctch40_0', 'Shrch40_0', 'emp40_3',
+            'emp40_3_shr', 'pctch40_3', 'shrch40_3', 'emp40_1',
+            'emp40_1_shr', 'pctch40_1', 'shrch40_1', 'emp40_2',
+            'emp40_2_shr', 'pctch40_2', 'shrch40_2', '3_40_0_40_rat',
+            '1_40_0_40_rat', '2_40_0_40_rat']
         df.columns = headers
-        df = df[['emp10', 'emp10_shr', 'emp40_0',
-             'emp40_0_shr', 'pctch40_0', 'Shrch40_0', 'emp40_3',
-             'emp40_3_shr', 'pctch40_3', 'shrch40_3', '3_40_0_40_rat',
-             'emp40_1', 'emp40_1_shr', 'pctch40_1', 'shrch40_1',
-             '1_40_0_40_rat', 'emp40_2', 'emp40_2_shr', 'pctch40_2',
-             'shrch40_2', '2_40_0_40_rat']]
+        df = df[[
+            'emp10', 'emp10_shr', 'emp40_0',
+            'emp40_0_shr', 'pctch40_0', 'Shrch40_0', 'emp40_3',
+            'emp40_3_shr', 'pctch40_3', 'shrch40_3', '3_40_0_40_rat',
+            'emp40_1', 'emp40_1_shr', 'pctch40_1', 'shrch40_1',
+            '1_40_0_40_rat', 'emp40_2', 'emp40_2_shr', 'pctch40_2',
+            'shrch40_2', '2_40_0_40_rat']]
     cut_variable_name = variable[3:]
     f = 'compare/' + \
         '%(geography)s_%(variable)s_%(runs)s.csv'\
@@ -132,7 +138,6 @@ def write_csvs(df, variable, runs):
         '%(variable)s_%(runs)s.csv'\
         % {"variable": variable,
            "runs": '-'.join(str(x) for x in runs)}
-    #df.to_csv(f)
     write_bundle_comparison_csv(df, variable, runs)
 
 
@@ -156,34 +161,35 @@ def compare_outcome_for(variable, runs, set_geography):
     df_lst = []
     s = base_year_df[variable]
     s1 = s / s.sum()
-    d = {
-        'Count': s,
-        'Share': s1
-    }
+    d = {'Count': s, 'Share': s1}
 
     df = pd.DataFrame(d, index=base_year_df.index)
     if geography == 'superdistrict':
-        formatters = {'Count': '{:.0f}',
-                      'Share': '{:.2f}'}
+        formatters = {
+            'Count': '{:.0f}',
+            'Share': '{:.2f}'}
         df = pd.DataFrame(d, index=base_year_df.index)
         df = format_df(df, formatters)
         df_lst.append(df)
-        more_formatters = {'Count': '{:.0f}',
-                   'Share': '{:.2f}',
-                   'Percent_Change': '{:.0f}',
-                   'Share_Change': '{:.3f}'}
+        more_formatters = {
+            'Count': '{:.0f}',
+            'Share': '{:.2f}',
+            'Percent_Change': '{:.0f}',
+            'Share_Change': '{:.3f}'}
         for run in runs:
             df_lst.append(compare_outcome(run, s, more_formatters))
     else:
-        formatters = {'Count': '{:.4f}',
-                      'Share': '{:.6f}'}
+        formatters = {
+            'Count': '{:.4f}',
+            'Share': '{:.6f}'}
         df = pd.DataFrame(d, index=base_year_df.index)
         df = format_df(df, formatters)
         df_lst.append(df)
-        more_formatters = {'Count': '{:.4f}',
-                   'Share': '{:.6f}',
-                   'Percent_Change': '{:.6f}',
-                   'Share_Change': '{:.6f}'}
+        more_formatters = {
+            'Count': '{:.4f}',
+            'Share': '{:.6f}',
+            'Percent_Change': '{:.6f}',
+            'Share_Change': '{:.6f}'}
         for run in runs:
             df_lst.append(compare_outcome(run, s, more_formatters))
 
@@ -191,12 +197,12 @@ def compare_outcome_for(variable, runs, set_geography):
     if len(runs) > 1:
         ratios = pd.DataFrame()
         combinations = get_combinations(runs)
-        #just compare no no project right now
-        s2 = divide_series((runs[0],runs[1]), variable)
+        # just compare no no project right now
+        s2 = divide_series((runs[0], runs[1]), variable)
         ratios[s2.name] = s2
-        s2 = divide_series((runs[0],runs[2]), variable)
+        s2 = divide_series((runs[0], runs[2]), variable)
         ratios[s2.name] = s2
-        s2 = divide_series((runs[0],runs[3]), variable)
+        s2 = divide_series((runs[0], runs[3]), variable)
         ratios[s2.name] = s2
     df_rt = pd.DataFrame(ratios)
     formatters = {}
@@ -211,16 +217,21 @@ def compare_outcome_for(variable, runs, set_geography):
     keys.extend(run_column_shortnames)
     keys.extend(['y40Ratios'])
 
-
     df2 = pd.concat(df_lst, axis=1, keys=keys)
 
     write_csvs(df2, variable, runs)
 
 
 def subtract_base_year_urban_footprint(run_number):
-        base_year_filename = 'runs/run{}_urban_footprint_summary_summaries_{}.csv'.format(run_number,2010)
+        base_year_filename = \
+            'runs/run{}_urban_footprint_summary_summaries_{}.csv'.\
+            format(run_number, 2010)
         bdf = pd.read_csv(base_year_filename, index_col=0)
-        outcome_year_filename = 'runs/run{}_urban_footprint_summary_summaries_{}.csv'.format(run_number,2040)
+        outcome_year_filename = \
+            'runs/run{}_urban_footprint_summary_summaries_{}.csv'.\
+            format(run_number, 2040)
         odf = pd.read_csv(outcome_year_filename, index_col=0)
         sdf = odf - bdf
-        sdf.to_csv('runs/run{}_urban_footprint_subtracted_summaries_{}.csv'.format(run_number,2040))
+        sdf.to_csv(
+            'runs/run{}_urban_footprint_subtracted_summaries_{}.csv'
+            .format(run_number, 2040))

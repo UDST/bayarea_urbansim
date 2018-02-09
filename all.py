@@ -1,9 +1,12 @@
 import os
+import re
+import numpy as np
 
-# run a full package of scenarios
+for i in range(50):
+    os.system("python baus.py --mode simulation")
 
-for num in [0, 1, 2, 3, 4]:
-    os.system('python run.py -s %d' % num)
+import sys
+sys.exit()
 
 with open('RUNNUM', 'r') as f:
     runnum = f.readline()

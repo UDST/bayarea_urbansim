@@ -4,9 +4,7 @@ from flask import Flask, jsonify
 from flask.ext.cors import CORS
 import pandas as pd
 import orca
-
-sys.path.append(".")
-import models
+from baus import models
 
 app = Flask(__name__)
 # app.debug = True
@@ -73,12 +71,4 @@ def get_data(query):
 
 
 if __name__ == '__main__':
-
-    # from tornado.wsgi import WSGIContainer
-    # from tornado.httpserver import HTTPServer
-    # from tornado.ioloop import IOLoop
-
-    # http_server = HTTPServer(WSGIContainer(app))
-    # http_server.listen(5000)
-    # IOLoop.instance().start()
     app.run('0.0.0.0', 1984)
