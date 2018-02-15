@@ -3,7 +3,6 @@ import os
 import orca
 import pandas as pd
 from pandas.util import testing as pdt
-from utils import save_and_restore_state
 from urbansim.utils import misc
 
 
@@ -101,12 +100,6 @@ def check_unit_ids_match_building_ids(households, residential_units):
 def simulation_validation(
         parcels, buildings, households, jobs, residential_units, year,
         household_controls, employment_controls, settings):
-
-    # this does a save and restore state for debugging
-    # d = save_and_restore_state(locals())
-    # for k in d.keys():
-    #     locals()[k].local = d[k]
-
     check_job_controls(jobs, employment_controls, year, settings)
 
     check_household_controls(households, household_controls, year)

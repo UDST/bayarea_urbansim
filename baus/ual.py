@@ -173,7 +173,7 @@ def assign_tenure_to_units(residential_units, households):
 
 
 @orca.step()
-def initialize_residential_units(store):
+def initialize_residential_units():
     # this is assumed to run as preprocessing step, after the other
     # preprocessing steps - thus we need to get the data from the hdf rather
     # than from the orca tables - I contemplated putting this code in the
@@ -181,8 +181,8 @@ def initialize_residential_units(store):
     # units code together, and also I wanted the github diff to show how few
     # lines actually changed here I'm not editing code - just changing where
     # this code runs
-    households = store['households_preproc']
-    buildings = store['buildings_preproc']
+    households = pd.read_csv("data/households.csv", "household_id")
+    buildings = pd.read_csv("data/buildings.csv", "building_id")
 
     # fan out buildings into units
     units = _create_empty_units(buildings)
@@ -193,9 +193,8 @@ def initialize_residential_units(store):
     # then assign tenure to units based on the households in them
     units = assign_tenure_to_units(units, households)
 
-    # write to the hdfstore
-    store['households_preproc'] = households
-    store['residential_units_preproc'] = units
+    households.to_csv("data/households_with_unit_ids.csv")
+    units.to_csv("data/residential_units.csv")
 
 
 @orca.step()

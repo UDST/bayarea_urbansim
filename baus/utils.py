@@ -12,49 +12,6 @@ from urbansim.developer.developer import Developer as dev
 #####################
 
 
-# This is really simple and basic (hackish) code to solve a very important
-# problem.  I'm calling an orca step and want to serialize the tables that
-# are passed in so that I can add code to this orca step and test it quickly
-# without running all the models that came before, which takes many minutes.
-#
-# If the passed in outhdf does not exist, all the DataFarmeWrappers which
-# have been passed have their DataFrames saved to the hdf5.  If the file
-# does exist they all get restored, and as a byproduct their types are
-# changed from DataFrameWrappers to DataFrames.  This type change is a
-# major drawback of the current code, as is the fact that other non-
-# DataFrame types are not serialized, but it's a start.  I plan to bring
-# this problem up on the UrbanSim coders call the next time we meet.
-#
-#    Sample code:
-#
-#    d = save_and_restore_state(locals())
-#    for k in d.keys():
-#        locals()[k].local = d[k]
-#
-def save_and_restore_state(in_d, outhdf="save_state.h5"):
-    if os.path.exists(outhdf):
-        # the state exists - load it back into the locals
-        store = pd.HDFStore(outhdf)
-        out_d = {}
-        for table_name in store:
-            print "Restoring", table_name
-            out_d[table_name[1:]] = store[table_name]
-        return out_d
-
-    # the state doesn't exist and thus needs to be saved
-    store = pd.HDFStore(outhdf, "w")
-    for table_name, table in in_d.items():
-        try:
-            table = table.local
-        except:
-            # not a dataframe wrapper
-            continue
-        print "Saving", table_name
-        store[table_name] = table
-    store.close()
-    sys.exit(0)
-
-
 # similar to the function in urbansim_defaults, except it assumes you want
 # to use your own pick function
 def add_buildings(buildings, new_buildings,

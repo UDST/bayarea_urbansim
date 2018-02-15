@@ -36,11 +36,6 @@ def final_year():
 
 
 @orca.injectable(cache=True)
-def store(settings):
-    return pd.HDFStore(os.path.join(misc.data_dir(), settings["store"]))
-
-
-@orca.injectable(cache=True)
 def limits_settings(settings, scenario):
     # for limits, we inherit from the default
     # limits set the max number of job spaces or res units that may be
@@ -139,7 +134,7 @@ def base_year_summary_taz():
 
 # non-residential rent data
 @orca.table(cache=True)
-def costar(store, parcels):
+def costar(parcels):
     df = pd.read_csv(os.path.join(misc.data_dir(), '2015_08_29_costar.csv'))
 
     df["PropertyType"] = df.PropertyType.replace("General Retail", "Retail")
@@ -209,8 +204,8 @@ def zoning_scenario(parcels_geography, scenario, settings):
 
 
 @orca.table(cache=True)
-def parcels(store):
-    return store['parcels']
+def parcels():
+    return pd.read_csv("data/parcels.csv", "apn")
 
 
 @orca.table(cache=True)
@@ -351,32 +346,34 @@ def development_projects(parcels, settings, scenario):
     return df
 
 
-def print_error_if_not_available(store, table):
-    if table not in store:
+def print_error_if_not_available(fname):
+    if not os.path.exists(fname):
         raise Exception(
-            "%s not found in store - you need to preprocess" % table +
+            "%s not found on disk - you need to preprocess" % fname +
             " the data with:\n  python baus.py --mode preprocessing -c")
-    return store[table]
+
+@orca.table(cache=True)
+def jobs():
+    return pd.read_csv("data/jobs.csv", "job_id")
 
 
 @orca.table(cache=True)
-def jobs(store):
-    return print_error_if_not_available(store, 'jobs_preproc')
+def households():
+    fname = "data/households_with_unit_ids.csv"
+    print_error_if_not_available(fname)
+    return pd.read_csv(fname, "household_id")
 
 
 @orca.table(cache=True)
-def households(store):
-    return print_error_if_not_available(store, 'households_preproc')
+def buildings():
+    return pd.read_csv("data/buildings.csv", "building_id")
 
 
 @orca.table(cache=True)
-def buildings(store):
-    return print_error_if_not_available(store, 'buildings_preproc')
-
-
-@orca.table(cache=True)
-def residential_units(store):
-    return print_error_if_not_available(store, 'residential_units_preproc')
+def residential_units():
+    fname = "data/residential_units.csv"
+    print_error_if_not_available(fname)
+    return pd.read_csv(fname, "unit_id")
 
 
 @orca.table(cache=True)
@@ -470,9 +467,9 @@ def taz_geography(superdistricts):
 
 # these are shapes - "zones" in the bay area
 @orca.table(cache=True)
-def zones(store):
+def zones():
     # sort index so it prints out nicely when we want it to
-    return store['zones'].sort_index()
+    return pd.read_csv("data/zones.csv").sort_index()
 
 
 # this specifies the relationships between tables

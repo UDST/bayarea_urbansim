@@ -28,7 +28,7 @@ CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
 COMPARE_TO_NO_PROJECT = True
 NO_PROJECT = 611
 
-IN_YEAR, OUT_YEAR = 2010, 2040
+IN_YEAR, OUT_YEAR = 2010, 2015
 COMPARE_AGAINST_LAST_KNOWN_GOOD = False
 
 LAST_KNOWN_GOOD_RUNS = {
@@ -221,9 +221,6 @@ def run_models(MODE, SCENARIO):
     if MODE == "preprocessing":
 
         orca.run([
-            "preproc_jobs",
-            "preproc_households",
-            "preproc_buildings",
             "initialize_residential_units"
         ])
 
