@@ -205,7 +205,9 @@ def zoning_scenario(parcels_geography, scenario, settings):
 
 @orca.table(cache=True)
 def parcels():
-    return pd.read_csv("data/parcels.csv", "apn")
+    df = pd.read_csv("data/parcels.csv", index_col="apn")
+    df["zone_id"] = df.old_zone_id
+    return df
 
 
 @orca.table(cache=True)
@@ -352,28 +354,29 @@ def print_error_if_not_available(fname):
             "%s not found on disk - you need to preprocess" % fname +
             " the data with:\n  python baus.py --mode preprocessing -c")
 
+
 @orca.table(cache=True)
 def jobs():
-    return pd.read_csv("data/jobs.csv", "job_id")
+    return pd.read_csv("data/jobs.csv", index_col="job_id")
 
 
 @orca.table(cache=True)
 def households():
     fname = "data/households_with_unit_ids.csv"
     print_error_if_not_available(fname)
-    return pd.read_csv(fname, "household_id")
+    return pd.read_csv(fname, index_col="household_id")
 
 
 @orca.table(cache=True)
 def buildings():
-    return pd.read_csv("data/buildings.csv", "building_id")
+    return pd.read_csv("data/buildings_with_deed_restricted.csv", index_col="building_id")
 
 
 @orca.table(cache=True)
 def residential_units():
     fname = "data/residential_units.csv"
     print_error_if_not_available(fname)
-    return pd.read_csv(fname, "unit_id")
+    return pd.read_csv(fname, index_col="unit_id")
 
 
 @orca.table(cache=True)

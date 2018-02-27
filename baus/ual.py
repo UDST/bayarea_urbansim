@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import orca
 import orca_test as ot
+from preprocessing import assign_deed_restricted_units
 from orca_test import OrcaSpec, TableSpec, ColumnSpec, InjectableSpec
 from urbansim.developer.developer import Developer as dev
 from urbansim.models.relocation import RelocationModel
@@ -39,6 +40,8 @@ def _create_empty_units(buildings):
     """
     # The '.astype(int)' deals with a bug (?) where the developer model creates
     # floating-point unit counts
+
+    buildings["residential_units"] = buildings.residential_units.fillna(0)
 
     s = buildings.residential_units.fillna(0) >=\
         buildings.deed_restricted_units.fillna(0)
@@ -102,27 +105,24 @@ def match_households_to_units(households, residential_units):
         - 'unit_id' (int, '-1'-filled, corresponds to index of
           'residential_units' table)
     """
-    units = residential_units
-    hh = households
+    d = {}
+    for unit_id, building_id in residential_units.building_id.iteritems():
+        d.setdefault(building_id, [])
+        d[building_id].append(unit_id)
+    unit_ids = []
+    print "Starting household unit assignment (takes a while)"
+    for building_id, hh_group in households.groupby("building_id"):
+        unit_options = d[building_id] if building_id in d \
+            else d[int(building_id)]
+        assert len(hh_group) <= len(unit_options)
+        choices = np.random.choice(
+            unit_options, size=len(hh_group), replace=False)
+        unit_ids.append(pd.Series(choices, index=hh_group.index))
+    print "Finished household unit assignment"
 
-    # This code block is from Fletcher
-    unit_lookup = units.reset_index().set_index(['building_id', 'unit_num'])
-    hh = hh.sort_values(by=['building_id'], ascending=True)
+    households["unit_id"] = pd.concat(unit_ids)
 
-    building_counts = hh.building_id.value_counts().sort_index()
-    hh['unit_num'] = np.concatenate(
-        [np.arange(i) for i in building_counts.values])
-
-    unplaced = hh[hh.building_id == -1].index
-    placed = hh[hh.building_id != -1].index
-
-    indexes = [tuple(t) for t in
-               hh.loc[placed, ['building_id', 'unit_num']].values]
-
-    hh.loc[placed, 'unit_id'] = unit_lookup.loc[indexes].unit_id.values
-    hh.loc[unplaced, 'unit_id'] = -1
-
-    return hh
+    return households
 
 
 def assign_tenure_to_units(residential_units, households):
@@ -173,7 +173,17 @@ def assign_tenure_to_units(residential_units, households):
 
 
 @orca.step()
-def initialize_residential_units():
+def initialize_deed_restricted_units(parcels):
+    buildings = pd.read_csv("data/buildings.csv", index_col="building_id")
+
+    print "Assigning deed restricted units to buildings"
+    buildings = assign_deed_restricted_units(buildings, parcels)
+
+    buildings.to_csv("data/buildings_with_deed_restricted.csv")
+
+
+@orca.step()
+def initialize_residential_units(buildings):
     # this is assumed to run as preprocessing step, after the other
     # preprocessing steps - thus we need to get the data from the hdf rather
     # than from the orca tables - I contemplated putting this code in the
@@ -181,8 +191,12 @@ def initialize_residential_units():
     # units code together, and also I wanted the github diff to show how few
     # lines actually changed here I'm not editing code - just changing where
     # this code runs
-    households = pd.read_csv("data/households.csv", "household_id")
-    buildings = pd.read_csv("data/buildings.csv", "building_id")
+    households = pd.read_csv("data/households.csv")
+
+    # tenure map is here
+    # https://github.com/BayAreaMetro/modeling-website/wiki
+    tenure_map = {0: "own", 1: "own", 2: "rent", 3: "rent", -9: "rent"}
+    households["tenure"] = households.ten.map(tenure_map).fillna("rent")
 
     # fan out buildings into units
     units = _create_empty_units(buildings)

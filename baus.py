@@ -221,6 +221,7 @@ def run_models(MODE, SCENARIO):
     if MODE == "preprocessing":
 
         orca.run([
+            "initialize_deed_restricted_units",
             "initialize_residential_units"
         ])
 
