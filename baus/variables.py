@@ -119,7 +119,10 @@ def vacant_units(residential_units, households):
 
 @orca.column('buildings', cache=True)
 def general_type(buildings, building_type_map):
-    return buildings.building_type.map(building_type_map)
+    gt = buildings.building_type.map(building_type_map)
+    print gt.isnull().value_counts()
+    print gt.value_counts()
+    return gt
 
 
 # I want to round this cause otherwise we'll be underfilling job spaces
@@ -169,6 +172,8 @@ def building_age(buildings, year):
     return (year or 2014) - buildings.year_built
 
 
+'''
+# don't have redfin sales price
 @orca.column('buildings')
 def price_per_sqft(buildings):
     s = buildings.redfin_sale_price / buildings.sqft_per_unit
@@ -176,6 +181,7 @@ def price_per_sqft(buildings):
     # though nas will be filtered out by the hedonic - error should happen
     # after filters are applied
     return s.reindex(buildings.index).fillna(-1)
+'''
 
 
 @orca.column('buildings', cache=True)

@@ -207,6 +207,7 @@ def zoning_scenario(parcels_geography, scenario, settings):
 def parcels():
     df = pd.read_csv("data/parcels.csv", index_col="apn")
     df["zone_id"] = df.old_zone_id
+    df["parcel_id"] = df.index
     return df
 
 
@@ -228,31 +229,20 @@ def parcel_rejections():
 
 @orca.table(cache=True)
 def parcels_geography(parcels):
-    df = pd.read_csv(
-        os.path.join(misc.data_dir(), "02_01_2016_parcels_geography.csv"),
-        index_col="geom_id")
-    df = geom_id_to_parcel_id(df, parcels)
-
-    # this will be used to map juris id to name
-    juris_name = pd.read_csv(
-        os.path.join(misc.data_dir(), "census_id_to_name.csv"),
-        index_col="census_id").name10
-
-    df["juris_name"] = df.jurisdiction_id.map(juris_name)
-
-    df.loc[2054504, "juris_name"] = "Marin County"
-    df.loc[2054505, "juris_name"] = "Santa Clara County"
-    df.loc[2054506, "juris_name"] = "Marin County"
-    df.loc[572927, "juris_name"] = "Contra Costa County"
-    # assert no empty juris values
-    assert True not in df.juris_name.isnull().value_counts()
-
-    df["pda_id"] = df.pda_id.str.lower()
+    # df["pda_id"] = df.pda_id.str.lower()
 
     # danville wasn't supposed to be a pda
-    df["pda_id"] = df.pda_id.replace("dan1", np.nan)
+    # df["pda_id"] = df.pda_id.replace("dan1", np.nan)
 
-    return df
+    # there is no longer a need for parcel_geography
+    # zoningmodcat is assigned by basis
+    df = pd.read_csv(
+        os.path.join(misc.data_dir(), "parcels_geography.csv"),
+        index_col="apn")
+
+    df2 = pd.read_csv("data/zoningmodcat_mapping.csv")
+
+    return pd.merge(df, df2, on="zoningmodcat")
 
 
 @orca.table(cache=True)
@@ -364,12 +354,19 @@ def jobs():
 def households():
     fname = "data/households_with_unit_ids.csv"
     print_error_if_not_available(fname)
-    return pd.read_csv(fname, index_col="household_id")
+    df = pd.read_csv(fname, index_col="tempId")
+    df["income"] = df.hhincAdj
+    df["persons"] = df.np
+    df.index.name = "household_id"
+    return df
 
 
 @orca.table(cache=True)
 def buildings():
-    return pd.read_csv("data/buildings_with_deed_restricted.csv", index_col="building_id")
+    df = pd.read_csv("data/buildings_with_deed_restricted.csv",
+                     index_col="building_id")
+    df["parcel_id"] = df.apn
+    return df
 
 
 @orca.table(cache=True)
