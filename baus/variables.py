@@ -119,10 +119,7 @@ def vacant_units(residential_units, households):
 
 @orca.column('buildings', cache=True)
 def general_type(buildings, building_type_map):
-    gt = buildings.building_type.map(building_type_map)
-    print gt.isnull().value_counts()
-    print gt.value_counts()
-    return gt
+    return buildings.building_type.map(building_type_map).fillna("Residential")
 
 
 # I want to round this cause otherwise we'll be underfilling job spaces
@@ -213,7 +210,8 @@ def is_sanfran(parcels, buildings):
 @orca.column('buildings', cache=True)
 def sqft_per_unit(buildings):
     return (buildings.building_sqft /
-            buildings.residential_units.replace(0, 1)).clip(400, 6000)
+            buildings.residential_units.replace(0, 1)).\
+            clip(400, 6000).fillna(600)
 
 
 @orca.column('buildings', cache=True)
@@ -411,6 +409,11 @@ def juris(parcels, parcels_geography):
     return parcels_geography.juris_name
 
 
+@orca.column('parcels_geography', cache=True)
+def juris(parcels_geography):
+    return parcels_geography.juris_name
+
+
 @orca.column('parcels', cache=True)
 def ave_sqft_per_unit(parcels, zones, settings):
     s = misc.reindex(zones.ave_unit_sqft, parcels.zone_id)
@@ -525,12 +528,12 @@ def juris_ave_income(households, buildings, parcels_geography, parcels):
     # get frame of income and jurisdiction
     h = orca.merge_tables("households",
                           [households, buildings, parcels_geography],
-                          columns=["jurisdiction_id", "income"])
+                          columns=["juris", "income"])
     # get median income by jurisdiction
-    s = h.groupby(h.jurisdiction_id).income.quantile(.5)
+    s = h.groupby(h.juris).income.quantile(.5)
     # map it to parcels - fill na with median for all areas
     # should probably remove the log transform and do that in the models
-    return misc.reindex(s, parcels_geography.jurisdiction_id).\
+    return misc.reindex(s, parcels_geography.juris).\
         reindex(parcels.index).fillna(s.median()).apply(np.log1p)
 
 

@@ -240,9 +240,11 @@ def parcels_geography(parcels):
         os.path.join(misc.data_dir(), "parcels_geography.csv"),
         index_col="apn")
 
-    df2 = pd.read_csv("data/zoningmodcat_mapping.csv")
+    df2 = pd.read_csv("data/zoningmodcat_mapping.csv",
+                      index_col="zoningmodcat")
 
-    return pd.merge(df, df2, on="zoningmodcat")
+    return pd.merge(df, df2, left_on="zoningmodcat",
+                    right_index=True, how="left")
 
 
 @orca.table(cache=True)
@@ -354,9 +356,15 @@ def jobs():
 def households():
     fname = "data/households_with_unit_ids.csv"
     print_error_if_not_available(fname)
-    df = pd.read_csv(fname, index_col="tempId")
+    df = pd.read_csv(fname)
+    df.index = df.index + 1
     df["income"] = df.hhincAdj
+    df["base_income_quartile"] = pd.Series(pd.qcut(df.income, 4, labels=False),
+                                           index=df.index).add(1)
+    df["base_income_octile"] = pd.Series(pd.qcut(df.income, 8, labels=False),
+                                         index=df.index).add(1)
     df["persons"] = df.np
+    df["building_id"] = df.building_id.astype("str")
     df.index.name = "household_id"
     return df
 
@@ -366,6 +374,8 @@ def buildings():
     df = pd.read_csv("data/buildings_with_deed_restricted.csv",
                      index_col="building_id")
     df["parcel_id"] = df.apn
+    df["non_residential_rent"] = 0.0
+    df.index = df.index.astype("str")
     return df
 
 
