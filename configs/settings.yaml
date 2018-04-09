@@ -575,7 +575,7 @@ relocation_rates:
   
 
 # price and rent equilibration, treated separately
-price_equilibration:
+dont_run_price_equilibration:
   price_col: unit_residential_price
   submarket_col: submarket_id
   submarket_table: zones
@@ -589,7 +589,7 @@ price_equilibration:
     iterations: 8
 
 
-rent_equilibration:
+dont_run_rent_equilibration:
   price_col: unit_residential_rent
   submarket_col: submarket_id
   submarket_table: zones
@@ -649,7 +649,6 @@ feasibility:
     - max_far
     - max_dua
     - land_cost
-    - residential
     - min_max_fars
     - max_height
     - building_purchase_price
@@ -659,8 +658,8 @@ feasibility:
     - juris
     - county
     - superdistrict
-    - geom_id
     - vmt_res_cat
+    - apn
 
 
 # settings that get passed to the residential developer as kwargs

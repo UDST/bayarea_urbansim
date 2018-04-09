@@ -399,7 +399,7 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
     jobs_df = orca.merge_tables(
         'jobs',
         [parcels, buildings, jobs],
-        columns=['pda', 'superdistrict', 'juris', 'zone_id', 'empsix'])
+        columns=['pda', 'superdistrict', 'juris', 'zone_id', 'sector'])
 
     buildings_df = orca.merge_tables(
         'buildings',
@@ -469,17 +469,17 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
             # employees by sector
             summary_table['totemp'] = jobs_df.\
                 groupby(geography).size()
-            summary_table['agrempn'] = jobs_df.query("empsix == 'AGREMPN'").\
+            summary_table['agrempn'] = jobs_df.query("sector == 'AGREMPN'").\
                 groupby(geography).size()
-            summary_table['mwtempn'] = jobs_df.query("empsix == 'MWTEMPN'").\
+            summary_table['mwtempn'] = jobs_df.query("sector == 'MWTEMPN'").\
                 groupby(geography).size()
-            summary_table['retempn'] = jobs_df.query("empsix == 'RETEMPN'").\
+            summary_table['retempn'] = jobs_df.query("sector == 'RETEMPN'").\
                 groupby(geography).size()
-            summary_table['fpsempn'] = jobs_df.query("empsix == 'FPSEMPN'").\
+            summary_table['fpsempn'] = jobs_df.query("sector == 'FPSEMPN'").\
                 groupby(geography).size()
-            summary_table['herempn'] = jobs_df.query("empsix == 'HEREMPN'").\
+            summary_table['herempn'] = jobs_df.query("sector == 'HEREMPN'").\
                 groupby(geography).size()
-            summary_table['othempn'] = jobs_df.query("empsix == 'OTHEMPN'").\
+            summary_table['othempn'] = jobs_df.query("sector == 'OTHEMPN'").\
                 groupby(geography).size()
 
             # summary columns
@@ -640,11 +640,11 @@ def parcel_summary(parcels, buildings, households, jobs,
     jobs_df = orca.merge_tables(
         'jobs',
         [buildings, jobs],
-        columns=['parcel_id', 'empsix'])
+        columns=['parcel_id', 'sector'])
 
-    # add jobs by empsix category on each parcel
-    for cat in jobs_df.empsix.unique():
-        df[cat] = jobs_df[jobs_df.empsix == cat].\
+    # add jobs by sector category on each parcel
+    for cat in jobs_df.sector.unique():
+        df[cat] = jobs_df[jobs_df.sector == cat].\
             parcel_id.value_counts()
 
     df.to_csv(
@@ -692,7 +692,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     jobs_df = orca.merge_tables(
         'jobs',
         [parcels, buildings, jobs],
-        columns=['zone_id', 'empsix']
+        columns=['zone_id', 'sector']
     )
 
     # totally baffled by this - after joining the three tables we have three
@@ -703,7 +703,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     jobs_df["zone_id"] = jobs_df.zone_id_x
 
     def getsectorcounts(sector):
-        return jobs_df.query("empsix == '%s'" % sector).\
+        return jobs_df.query("sector == '%s'" % sector).\
             groupby('zone_id').size()
 
     taz_df["agrempn"] = getsectorcounts("AGREMPN")
@@ -779,16 +779,10 @@ def travel_model_output(parcels, households, jobs, buildings,
 
     taz_df = add_population(taz_df, year)
     taz_df = add_employment(taz_df, year)
-    taz_df = add_age_categories(taz_df, year)
+    # taz_df = add_age_categories(taz_df, year)
 
     summary.add_zone_output(taz_df, "travel_model_output", year)
     summary.write_zone_output()
-
-    # otherwise it loses precision
-    if summary.parcel_output is not None\
-            and "geom_id" in summary.parcel_output:
-        summary.parcel_output["geom_id"] = \
-            summary.parcel_output.geom_id.astype('str')
 
     summary.write_parcel_output(add_xy={
         "xy_table": "parcels",

@@ -33,7 +33,7 @@ def allocate_jobs(baseyear_taz_controls, settings, buildings, parcels):
     df = pd.DataFrame(jobs, columns=[
         'sector_id', 'empsix', 'taz', 'building_id'])
 
-    zone_id = misc.reindex(parcels.zone_id, buildings.apn)
+    zone_id = misc.reindex(parcels.zone_id, buildings.parcel_id)
 
     # just do random assignment weighted by job spaces - we'll then
     # fill in the job_spaces if overfilled in the next step (code
@@ -132,7 +132,7 @@ def assign_deed_restricted_units(df, parcels):
 
     df["deed_restricted_units"] = 0
 
-    zone_ids = misc.reindex(parcels.zone_id, df.apn).\
+    zone_ids = misc.reindex(parcels.zone_id, df.parcel_id).\
         reindex(df.index).fillna(-1)
     # sample deed restricted units to match current deed restricted unit
     # zone totals

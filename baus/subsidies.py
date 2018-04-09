@@ -677,7 +677,7 @@ def subsidized_residential_feasibility(
     # get rid of the multiindex that comes back from feasibility
     feasibility = feasibility.stack(level=0).reset_index(level=1, drop=True)
     # join to parcels_geography for filtering
-    feasibility = feasibility.join(parcels_geography.to_frame())
+    feasibility = feasibility.join(parcels_geography.to_frame(), rsuffix="_right")
 
     # add the multiindex back
     feasibility.columns = pd.MultiIndex.from_tuples(

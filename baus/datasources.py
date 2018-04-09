@@ -163,12 +163,10 @@ def zoning_lookup():
 # zoning for use in the "baseline" scenario
 @orca.table(cache=True)
 def zoning_baseline(parcels, zoning_lookup, settings):
-    df = pd.read_csv(os.path.join(misc.data_dir(),
-                     "2015_12_21_zoning_parcels.csv"),
-                     index_col="geom_id")
-    df = pd.merge(df, zoning_lookup.to_frame(),
-                  left_on="zoning_id", right_index=True)
-    df = geom_id_to_parcel_id(df, parcels)
+    df = pd.merge(parcels.to_frame(["general_plan_city", "general_plan_name"]),
+                  zoning_lookup.to_frame(),
+                  left_on=["general_plan_city", "general_plan_name"],
+                  right_on=["city", "name"])
 
     return df
 
@@ -205,9 +203,10 @@ def zoning_scenario(parcels_geography, scenario, settings):
 
 @orca.table(cache=True)
 def parcels():
-    df = pd.read_csv("data/parcels.csv", index_col="apn")
+    df = pd.read_csv("data/parcels.csv", index_col="parcel_id")
     df["zone_id"] = df.old_zone_id
-    df["parcel_id"] = df.index
+    df = df[df.zone_id != -1]
+    df["acres"] = df.shape_area * 0.000247105  # convert square meters to acres
     return df
 
 
@@ -238,7 +237,7 @@ def parcels_geography(parcels):
     # zoningmodcat is assigned by basis
     df = pd.read_csv(
         os.path.join(misc.data_dir(), "parcels_geography.csv"),
-        index_col="apn")
+        index_col="parcel_id")
 
     df2 = pd.read_csv("data/zoningmodcat_mapping.csv",
                       index_col="zoningmodcat")
@@ -269,6 +268,7 @@ def reprocess_dev_projects(df):
 
 # shared between demolish and build tables below
 def get_dev_projects_table(scenario, parcels):
+    return pd.DataFrame()
     df = pd.read_csv(os.path.join(misc.data_dir(), "development_projects.csv"))
     df = reprocess_dev_projects(df)
 
@@ -364,8 +364,10 @@ def households():
     df["base_income_octile"] = pd.Series(pd.qcut(df.income, 8, labels=False),
                                          index=df.index).add(1)
     df["persons"] = df.np
-    df["building_id"] = df.building_id.astype("str")
     df.index.name = "household_id"
+    # remove gq households
+    df = df[df.GQFlag == 0]
+    df["building_id"] = df.building_id.astype(int)
     return df
 
 
@@ -373,9 +375,13 @@ def households():
 def buildings():
     df = pd.read_csv("data/buildings_with_deed_restricted.csv",
                      index_col="building_id")
-    df["parcel_id"] = df.apn
     df["non_residential_rent"] = 0.0
-    df.index = df.index.astype("str")
+    for col in ["residential_units", "non_residential_sqft", "building_sqft"]:
+        df[col] = df[col].fillna(0).astype("int")
+    del df["juris_name"]
+    del df["small_building"]
+    del df["sqft_per_job"]
+    del df["calc_area"]
     return df
 
 
@@ -383,7 +389,8 @@ def buildings():
 def residential_units():
     fname = "data/residential_units.csv"
     print_error_if_not_available(fname)
-    return pd.read_csv(fname, index_col="unit_id")
+    df = pd.read_csv(fname, index_col="unit_id")
+    return df
 
 
 @orca.table(cache=True)
@@ -479,7 +486,7 @@ def taz_geography(superdistricts):
 @orca.table(cache=True)
 def zones():
     # sort index so it prints out nicely when we want it to
-    return pd.read_csv("data/zones.csv").sort_index()
+    return pd.read_csv("data/zones.csv", index_col="zone_id").sort_index()
 
 
 # this specifies the relationships between tables

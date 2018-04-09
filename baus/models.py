@@ -17,6 +17,7 @@ import subsidies
 import summaries
 import numpy as np
 import pandas as pd
+from urbansim.developer import sqftproforma, developer
 
 
 @orca.step()
@@ -26,6 +27,12 @@ def elcm_simulate(jobs, buildings, aggregations):
     return utils.lcm_simulate("elcm.yaml", jobs, buildings, aggregations,
                               "building_id", "job_spaces",
                               "vacant_job_spaces", cast=True)
+
+
+@orca.step('elcm_estimate')
+def elcm_estimate(jobs, buildings, aggregations):
+    return utils.lcm_estimate("elcm.yaml", jobs, "building_id",
+                              buildings, aggregations)
 
 
 @orca.step()
@@ -53,6 +60,7 @@ def employment_relocation_rates():
 # this is a list of parcel_ids which are to be treated as static
 @orca.injectable()
 def static_parcels(settings, parcels):
+    return []  # come back and fix this - no geom -> apn mapping right now
     # list of geom_ids to not relocate
     static_parcels = settings["static_parcels"]
     # geom_ids -> parcel_ids
@@ -402,9 +410,18 @@ def add_extra_columns_func(df):
     if "residential_units" not in df:
         df["residential_units"] = 0
 
+    pcl = orca.get_table("parcels")
     if "parcel_size" not in df:
         df["parcel_size"] = \
-            orca.get_table("parcels").parcel_size.loc[df.parcel_id]
+            pcl.parcel_size.loc[df.parcel_id]
+
+    df['base_residential_units'] = np.nan
+    df['geometry'] = np.nan
+    df['maz_id'] = pcl.maz_id.loc[df.parcel_id]
+    df['maz_building_id'] = np.nan
+    df['name'] = 'simulated building'
+    df['osm_building_id'] = -1
+    df['osm_building_type'] = 'not osm'
 
     if orca.is_injectable("year") and "year_built" not in df:
         df["year_built"] = orca.get_injectable("year")
@@ -445,6 +462,27 @@ def alt_feasibility(parcels, settings,
     orca.add_table("feasibility", f)
 
 
+@orca.table()
+def buildings_no_dummies(buildings):
+    # need a way to drop dummy buildings and cast the index to ints
+    # one reason for this is that when we run dev.merge to merge old
+    # buildings and new buildings
+    dummies = pd.to_numeric(buildings.index, errors="coerce").isnull()
+    df = buildings.local[~dummies]
+    return df
+
+
+def merge(old_df, new_df):
+    maxind = int(pd.Series(
+        pd.to_numeric(old_df.index.values, errors='coerce')).max())
+    new_df = new_df.reset_index(drop=True)
+    new_df.index = new_df.index + maxind + 1
+    concat_df = pd.concat([old_df, new_df], verify_integrity=True)
+    concat_df.index.name = 'building_id'
+
+    return concat_df
+
+
 @orca.step()
 def residential_developer(feasibility, households, buildings, parcels, year,
                           settings, summary, form_to_btype_func,
@@ -478,11 +516,13 @@ def residential_developer(feasibility, households, buildings, parcels, year,
             # built in previous years - in other words, you get rollover
             # and development is lumpy
 
-            current_total = parcels.total_residential_units[
-                (juris_name == juris) & (parcels.newest_building >= 2010)]\
-                .sum()
+            s = parcels.total_residential_units[
+                (juris_name == juris) & (parcels.newest_building >= 2010)]
+            # some new behavior in pandas
+            current_total = 0 if len(s) == 0 else s.sum()
 
             target = (year - 2010 + 1) * limit - current_total
+
             # make sure we don't overshoot the total development of the limit
             # for the horizon year - for instance, in Half Moon Bay we have
             # a very low limit and a single development in a far out year can
@@ -552,7 +592,7 @@ def residential_developer(feasibility, households, buildings, parcels, year,
                 buildings.local.loc[index, "residential_units"] -= overshoot
 
                 # we also need to fix the other columns so they make sense
-                for col in ["residential_sqft", "building_sqft",
+                for col in ["building_sqft",
                             "deed_restricted_units"]:
                     val = buildings.local.loc[index, col]
                     # reduce by pct but round to int
@@ -811,8 +851,9 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
     ratio = parcels.retail_ratio.loc[new_buildings.parcel_id]
     new_buildings = new_buildings[ratio.values > ratio.median()]
 
-    print "Adding %d sqft of ground floor retail in %d locations" % \
-        (new_buildings.non_residential_sqft.sum(), len(new_buildings))
+    if len(new_buildings):
+        print "Adding %d sqft of ground floor retail in %d locations" % \
+            (new_buildings.non_residential_sqft.sum(), len(new_buildings))
 
     all_buildings = dev.merge(old_buildings, new_buildings)
     orca.add_table("buildings", all_buildings)

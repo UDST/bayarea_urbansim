@@ -11,6 +11,10 @@ import socket
 import argparse
 import warnings
 from baus.utils import compare_summary
+# import logging
+
+# logging.basicConfig()
+# logging.getLogger('urbansim.models.dcm').setLevel(logging.DEBUG)
 
 warnings.filterwarnings("ignore")
 
@@ -119,6 +123,7 @@ def get_simulation_models(SCENARIO):
         "neighborhood_vars",    # street network accessibility
         "regional_vars",        # road network accessibility
 
+        "rsh_simulate",         # residential hedonic
         "nrh_simulate",         # non-residential rent hedonic
 
         # uses conditional probabilities
@@ -127,13 +132,13 @@ def get_simulation_models(SCENARIO):
         # update building/unit/hh correspondence
         "reconcile_unplaced_households",
 
-        "jobs_relocation",
-        "jobs_transition",
+        #"jobs_relocation",
+        #"jobs_transition",
 
         "balance_rental_and_ownership_hedonics",
 
         "price_vars",
-        "scheduled_development_events",
+        #"scheduled_development_events",
 
         # run the subsidized acct system
         "lump_sum_accounts",
@@ -143,12 +148,12 @@ def get_simulation_models(SCENARIO):
 
         "residential_developer",
         "developer_reprocess",
-        "retail_developer",
+        # "retail_developer",
         "office_developer",
         "accessory_units",
 
         # (for buildings that were removed)
-        "remove_old_units",
+        #"remove_old_units",
         # set up units for new residential buildings
         "initialize_new_units",
         # update building/unit/hh correspondence
@@ -182,13 +187,11 @@ def get_simulation_models(SCENARIO):
         # update building/unit/hh correspondence
         "reconcile_placed_households",
 
-        "proportional_elcm",        # start with a proportional jobs model
-        "elcm_simulate",            # displaced by new dev
-
-        # save_intermediate_tables", # saves output for visualization
+        #"proportional_elcm",        # start with a proportional jobs model
+        #"elcm_simulate",            # displaced by new dev
 
         "topsheet",
-        "simulation_validation",
+        #"simulation_validation",
         "parcel_summary",
         "building_summary",
         "diagnostic_output",
@@ -205,8 +208,7 @@ def get_simulation_models(SCENARIO):
 
     if SCENARIO in vmt_settings["com_for_res_scenarios"] or \
             SCENARIO in vmt_settings["res_for_res_scenarios"]:
-
-        models.insert(models.index("diagnostic_output"),
+        models.insert(models.index("travel_model_output"),
                       "calculate_vmt_fees")
         models.insert(models.index("alt_feasibility"),
                       "subsidized_residential_feasibility")
@@ -254,7 +256,7 @@ def run_models(MODE, SCENARIO):
                 "households_transition",
                 # update building/unit/hh correspondence
                 "reconcile_unplaced_households",
-                "jobs_transition",
+                #"jobs_transition",
 
                 # allocate owners to vacant owner-occupied units
                 "hlcm_owner_simulate",
@@ -263,17 +265,17 @@ def run_models(MODE, SCENARIO):
                 # update building/unit/hh correspondence
                 "reconcile_placed_households",
 
-                "elcm_simulate",
+                #"elcm_simulate",
 
                 "price_vars",
 
                 "topsheet",
-                "simulation_validation",
+                #"simulation_validation",
                 "parcel_summary",
                 "building_summary",
                 "geographic_summary",
                 "travel_model_output",
-                "diagnostic_output"
+                #"diagnostic_output"
 
             ], iter_vars=[IN_YEAR])
 
@@ -290,11 +292,11 @@ def run_models(MODE, SCENARIO):
 
             "neighborhood_vars",         # local accessibility variables
             "regional_vars",             # regional accessibility variables
-            "rsh_estimate",              # residential sales hedonic
-            "nrh_estimate",              # non-res rent hedonic
-            "rsh_simulate",
+            #"rsh_estimate",              # residential sales hedonic
+            #"nrh_estimate",              # non-res rent hedonic
+            #"rsh_simulate",
             "nrh_simulate",
-            "hlcm_estimate",             # household lcm
+            #"hlcm_estimate",             # household lcm
             "elcm_estimate",             # employment lcm
 
         ], iter_vars=[2010])

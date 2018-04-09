@@ -54,7 +54,7 @@ def _create_empty_units(buildings):
         'unit_residential_rent': 0.0,
         'num_units': 1,
         'building_id': np.repeat(
-            buildings.index.values,
+            buildings.index.astype(int).values,
             buildings.residential_units.values.astype(int)
         ),
         # counter of the units in a building
@@ -113,7 +113,7 @@ def match_households_to_units(households, residential_units):
     print "Starting household unit assignment (takes a while)"
     for building_id, hh_group in households.groupby("building_id"):
         unit_options = d[building_id] if building_id in d \
-            else d[int(building_id)]
+            else d[int(float(building_id))]
         assert len(hh_group) <= len(unit_options)
         choices = np.random.choice(
             unit_options, size=len(hh_group), replace=False)
@@ -192,6 +192,8 @@ def initialize_residential_units(buildings):
     # lines actually changed here I'm not editing code - just changing where
     # this code runs
     households = pd.read_csv("data/households.csv")
+    # XXX drop gqhouseholds
+    households = households[households.GQFlag == 0]
 
     # tenure map is here
     # https://github.com/BayAreaMetro/modeling-website/wiki
@@ -313,7 +315,6 @@ def reconcile_placed_households(households, residential_units):
     hh = households.to_frame(['unit_id', 'building_id'])
     hh.index.rename('household_id', inplace=True)
     hh = hh.reset_index()
-    print "hh columns: %s" % hh.columns
 
     # hh.index.name='household_id'
     units = residential_units.to_frame(['building_id']).reset_index()
@@ -326,7 +327,6 @@ def reconcile_placed_households(households, residential_units):
     hh = hh.drop('building_id', axis=1)
     hh = pd.merge(hh, units, on='unit_id', how='left').\
         set_index('household_id')
-    print "hh index.names: %s" % hh.index.names
 
     print "%d movers updated" % len(hh)
     households.update_col_from_series('building_id', hh.building_id, cast=True)

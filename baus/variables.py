@@ -315,7 +315,9 @@ def residential_sales_price_sqft(parcel_sales_price_sqft_func):
 
 
 @orca.column('parcels')
-def sdem(development_projects, parcels):
+def sdem(parcels):
+    # FIXME
+    return pd.Series(False, parcels.index)
     return parcels.geom_id.isin(development_projects.geom_id).astype('int')
 
 
@@ -592,12 +594,12 @@ def total_non_residential_sqft(parcels, buildings):
 @orca.column('parcels')
 def nodev(zoning_baseline, parcels, static_parcels):
     # nodev from zoning
-    s1 = zoning_baseline.nodev.reindex(parcels.index).\
-        fillna(0).astype('bool')
+    # s1 = zoning_baseline.nodev.reindex(parcels.index).\
+    #    fillna(0).astype('bool')
     # nodev from static parcels - this marks nodev those parcels which are
     # marked as "static" - any parcels which should not be considered by the
     # developer model may be marked as static
-    s2 = parcels.index.isin(static_parcels)
+    return parcels.index.isin(static_parcels)
     return s1 | s2
 
 
@@ -726,7 +728,7 @@ def land_cost(parcels):
 
 @orca.column('parcels', cache=True)
 def county(parcels, settings):
-    return parcels.county_id.map(settings["county_id_map"])
+    return parcels.county_id
 
 
 @orca.column('parcels', cache=True)
