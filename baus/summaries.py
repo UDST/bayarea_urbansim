@@ -2,6 +2,7 @@ import sys
 import os
 import orca
 import pandas as pd
+from pandas.util import testing as pdt
 import numpy as np
 from utils import random_indexes, round_series_match_target,\
     scale_by_target, simple_ipf
@@ -9,10 +10,11 @@ from urbansim.utils import misc
 from scripts.output_csv_utils import format_df
 
 
-@orca.step("topsheet")
+@orca.step()
 def topsheet(households, jobs, buildings, parcels, zones, year,
              run_number, taz_geography, parcels_zoning_calculations,
-             summary, settings, parcels_geography, abag_targets, new_tpp_id):
+             summary, settings, parcels_geography, abag_targets, new_tpp_id,
+             residential_units):
 
     hh_by_subregion = misc.reindex(taz_geography.subregion,
                                    households.zone_id).value_counts()
@@ -96,9 +98,22 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
     n = len(jobs.building_id[jobs.building_id == -1])
     write("Number of unplaced jobs = %d" % n)
 
+    # we should assert there are no unplaces households and jobs right?
+    # this is considered an error for the MTC-style model
+    # could be configured in settings.yaml
+
     du = buildings.residential_units.sum()
-    write("Number of residential units = %d" % du)
+    write("Number of residential units in buildings table = %d" % du)
     write("Residential vacancy rate = %.2f" % (1-0 - float(nhh)/du))
+
+    write("Number of residential units in units table = %d"
+          % len(residential_units))
+
+    rent_own = residential_units.tenure.value_counts()
+    write("Split of units by rent/own = %s" % str(rent_own))
+
+    rent_own = households.tenure[households.building_id == -1].value_counts()
+    write("Number of unplaced households by rent/own = %s" % str(rent_own))
 
     du = buildings.deed_restricted_units.sum()
     write("Number of deed restricted units = %d" % du)
@@ -280,9 +295,9 @@ def compare_to_targets(parcels, buildings, jobs, households, abag_targets,
     return l
 
 
-@orca.step("diagnostic_output")
-def diagnostic_output(households, buildings, parcels, taz, jobs,
-                      zones, year, summary, run_number):
+@orca.step()
+def diagnostic_output(households, buildings, parcels, taz, jobs, settings,
+                      zones, year, summary, run_number, residential_units):
     households = households.to_frame()
     buildings = buildings.to_frame()
     parcels = parcels.to_frame()
@@ -320,16 +335,30 @@ def diagnostic_output(households, buildings, parcels, taz, jobs,
 
     zones['building_count'] = buildings.\
         query('general_type == "Residential"').groupby('zone_id').size()
+    # this price is the max of the original unit vector belows
     zones['residential_price'] = buildings.\
         query('general_type == "Residential"').groupby('zone_id').\
         residential_price.quantile()
+    # these two are the original unit prices averaged up to the building id
+    ru = residential_units
+    zones['unit_residential_price'] = \
+        ru.unit_residential_price.groupby(ru.zone_id).quantile()
+    zones['unit_residential_rent'] = \
+        ru.unit_residential_rent.groupby(ru.zone_id).quantile()
+    cap_rate = settings.get('cap_rate')
+    # this compares price to rent and shows us where price is greater
+    # rents are monthly and a cap rate is applied in order to do the conversion
+    zones['unit_residential_price_>_rent'] = \
+        (zones.unit_residential_price >
+         (zones.unit_residential_rent * 12 / cap_rate)).astype('int')
+
     zones['retail_rent'] = buildings[buildings.general_type == "Retail"].\
-        groupby('zone_id').non_residential_price.quantile()
+        groupby('zone_id').non_residential_rent.quantile()
     zones['office_rent'] = buildings[buildings.general_type == "Office"].\
-        groupby('zone_id').non_residential_price.quantile()
+        groupby('zone_id').non_residential_rent.quantile()
     zones['industrial_rent'] = \
         buildings[buildings.general_type == "Industrial"].\
-        groupby('zone_id').non_residential_price.quantile()
+        groupby('zone_id').non_residential_rent.quantile()
 
     zones['retail_sqft'] = buildings[buildings.general_type == "Retail"].\
         groupby('zone_id').non_residential_sqft.sum()
@@ -644,7 +673,7 @@ def parcel_summary(parcels, buildings, households, jobs,
         )
 
 
-@orca.step("travel_model_output")
+@orca.step()
 def travel_model_output(parcels, households, jobs, buildings,
                         zones, year, summary, coffer,
                         zone_forecast_inputs, run_number,

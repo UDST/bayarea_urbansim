@@ -1,6 +1,7 @@
 import orca
 import pandas as pd
 from urbansim.utils import misc
+from validation import assert_series_equal
 
 
 # the way this works is there is an orca step to do jobs allocation, which
@@ -59,9 +60,8 @@ def allocate_jobs(baseyear_taz_controls, settings, buildings, parcels):
         df["building_id"][df.taz == taz] = buildings_ids.index.values
 
     s = zone_id.loc[df.building_id].value_counts()
-    t = baseyear_taz_controls.emp_tot - s
-    # assert we matched the totals exactly
-    assert t.sum() == 0
+    # assert that we at least got the total employment right after assignment
+    assert_series_equal(baseyear_taz_controls.emp_tot, s)
 
     return df
 
@@ -100,6 +100,8 @@ def preproc_jobs(store, baseyear_taz_controls, settings, parcels):
 def preproc_households(store):
 
     df = store['households']
+
+    df['tenure'] = df.hownrent.map({1: 'own', 2: 'rent'})
 
     # need to keep track of base year income quartiles for use in the
     # transition model - even caching doesn't work because when you add
@@ -266,7 +268,13 @@ def preproc_buildings(store, parcels, manual_edits):
     # start with buildings from urbansim_defaults
     df = store['buildings']
 
-    # XXX need to make sure households and jobs don't exceed capacity
+    # this is code from urbansim_defaults
+    df["residential_units"] = pd.concat(
+        [df.residential_units,
+         store.households_preproc.building_id.value_counts()],
+        axis=1).max(axis=1)
+
+    # XXX need to make sure jobs don't exceed capacity
 
     # drop columns we don't needed
     df = df.drop(['development_type_id', 'improvement_value',
@@ -320,6 +328,9 @@ def preproc_buildings(store, parcels, manual_edits):
 
     # set default redfin sale year to 2012
     df["redfin_sale_year"] = df.redfin_sale_year.fillna(2012)
+
+    df["residential_price"] = 0.0
+    df["non_residential_rent"] = 0.0
 
     df = assign_deed_restricted_units(df, parcels)
 

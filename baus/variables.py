@@ -87,6 +87,31 @@ def empsix_id(jobs, settings):
     return jobs.empsix.map(settings['empsix_name_to_id'])
 
 
+#############################
+# RESIDENTIAL UNITS VARIABLES
+#############################
+
+# move zone_id from buildings to residential units
+@orca.column('residential_units', cache=True)
+def zone_id(residential_units, buildings):
+    return misc.reindex(buildings.zone_id, residential_units.building_id)
+
+
+@orca.column('residential_units')
+def submarket_id(residential_units, buildings):
+    # The submarket is used for supply/demand equilibration. It's the same
+    # as the zone_id, but in a separate column to avoid name conflicts when
+    # tables are merged.
+    return misc.reindex(buildings.zone_id, residential_units.building_id)
+
+
+@orca.column('residential_units')
+def vacant_units(residential_units, households):
+    return residential_units.num_units.sub(
+        households.unit_id[
+            households.unit_id != -1].value_counts(), fill_value=0)
+
+
 #####################
 # BUILDINGS VARIABLES
 #####################
@@ -109,8 +134,16 @@ def job_spaces(buildings):
 
 @orca.column('buildings')
 def vacant_job_spaces(buildings, jobs):
-    return buildings.job_spaces.sub(jobs.building_id.value_counts(),
-                                    fill_value=0).astype('int')
+    s = jobs.building_id[jobs.building_id != -1]
+    return buildings.job_spaces.sub(
+        s.value_counts(), fill_value=0).astype('int')
+
+
+@orca.column('buildings')
+def vacant_res_units(buildings, households):
+    s = households.building_id[households.building_id != -1]
+    return buildings.residential_units.sub(
+        s.value_counts(), fill_value=0).astype('int')
 
 
 @orca.column('buildings', cache=True)
@@ -129,92 +162,6 @@ def sqft_per_job(buildings, building_sqft_per_job, superdistricts,
         superdistrict.map(superdistricts.sqft_per_job_factor)
 
     return sqft_per_job
-
-
-@orca.column('buildings')
-def market_rate_units(buildings):
-    return buildings.residential_units - buildings.deed_restricted_units
-
-
-# this column can be negative when there are more low income households than
-# deed restricted units, which means some of the low income households are in
-# market rate units - this feature is used below
-@orca.column('buildings')
-def vacant_affordable_units_neg(buildings, households, settings, low_income):
-    return buildings.deed_restricted_units.sub(
-        households.building_id[households.income <= low_income].value_counts(),
-        fill_value=0)
-
-
-@orca.column('buildings')
-def vacant_affordable_units(buildings):
-    return buildings.vacant_affordable_units_neg.clip(lower=0).\
-        reindex(buildings.index).fillna(0)
-
-
-@orca.column('buildings')
-def vacant_market_rate_units(buildings, households, settings, low_income):
-
-    # this is market rate households per building
-    s1 = households.building_id[households.income > low_income].value_counts()
-    # this is low income households in market rate units - a negative number
-    # in vacant affordable units indicates the number of households in market
-    # rate units
-    s2 = buildings.vacant_affordable_units_neg.clip(upper=0)*-1
-    s = buildings.market_rate_units.\
-        sub(s1, fill_value=0).sub(s2, fill_value=0).clip(lower=0)
-
-    if -1 in s:
-        # -1 means unplaced - it's not a building id
-        del s[-1]
-
-    return s.reindex(buildings.index).fillna(0)
-
-
-@orca.column('buildings')
-def vacant_market_rate_units_minus_structural_vacancy(buildings,
-                                                      baseyear_taz_controls):
-    # this will take vacant_market_rate_units above and remove the number of
-    # units that we require to be vacant because of the structural vacancy rate
-
-    # first sum the residential units by zone and multiply by structural
-    # vacancy rate in order to get the required vacancies
-    residential_units_by_zone = \
-        buildings.residential_units.groupby(buildings.zone_id).sum()
-
-    required_vacant_units_by_zone = \
-        (residential_units_by_zone *
-         baseyear_taz_controls.target_ltvacancy).astype("int")
-
-    # repeat building ids according to the number of vacant units
-    unit_zone_ids = \
-        buildings.zone_id.repeat(
-            buildings.vacant_market_rate_units.astype("int"))
-
-    # this is some convoluted pandas for the next two lines!
-    # but the concept is simple:
-    # can't require more vacancy units than we have
-    s = unit_zone_ids.value_counts().reindex(
-        required_vacant_units_by_zone.index).fillna(0)
-
-    required_vacant_units_by_zone = \
-        required_vacant_units_by_zone.clip(upper=s).astype('int')
-
-    # select among units to remove from the choice and leave vacant
-    remove_unit_zone_ids =\
-        groupby_random_choice(unit_zone_ids,
-                              required_vacant_units_by_zone,
-                              replace=False)
-
-    # the building ids are the index, so count em up
-    remove_building_zone_ids = pd.Series(
-        remove_unit_zone_ids.index).value_counts()
-
-    # subtract the ones we want to stay vacant from the vacant ones
-    s = buildings.vacant_market_rate_units.sub(
-        remove_building_zone_ids, fill_value=0)
-
-    return s
 
 
 @orca.column('buildings', cache=True)
@@ -284,6 +231,60 @@ def historic(buildings):
 @orca.column('buildings', cache=True)
 def vmt_res_cat(buildings, vmt_fee_categories):
     return misc.reindex(vmt_fee_categories.res_cat, buildings.zone_id)
+
+
+@orca.column('buildings', cache=True)
+def residential_price(buildings, residential_units, settings):
+    """
+    This was originally an orca.step in the ual code.  This allows model steps
+    like 'price_vars' and 'feasibility' to read directly from the buildings
+    table, by aggregating up prices/rents from the units table.
+
+    We currently set the building price per square foot to be the higher of
+    the average (a) unit price per square foot or (b) unit price-adjusted
+    rent per square foot.
+
+    Data expectations
+    -----------------
+    - 'residential_units' table has following columns:
+        - 'unit_residential_price' (float, 0-filled)
+        - 'unit_residential_rent' (float, 0-filled)
+        - 'building_id' (int, non-missing, corresponds to index of
+          'buildings' table)
+    - 'buildings' table has following columns:
+        - index that serves as its id
+        - 'residential_price' (float, 0-filled)
+    - 'settings' injectable has a 'cap_rate' (float, range 0 to 1)
+    """
+
+    # Verify initial data characteristics
+    '''
+    ot.assert_orca_spec(OrcaSpec(
+        '',
+        TableSpec(
+            'residential_units',
+            ColumnSpec('unit_residential_price', min=0),
+            ColumnSpec('unit_residential_rent', min=0),
+            ColumnSpec(
+                'building_id', foreign_key='buildings.building_id',
+                missing=False)),
+        TableSpec(
+            'buildings',
+            ColumnSpec('building_id', primary_key=True),
+            ColumnSpec('residential_price', min=0)),
+        InjectableSpec('settings', min=0, max=1)))
+    '''
+
+    cols = ['building_id', 'unit_residential_price', 'unit_residential_rent']
+    means = residential_units.to_frame(cols).groupby(['building_id']).mean()
+
+    # Convert monthly rent to equivalent sale price
+    cap_rate = settings.get('cap_rate')
+    means['unit_residential_rent'] = \
+        means.unit_residential_rent * 12 / cap_rate
+
+    # Calculate max of price or rent, by building
+    return means.max(axis=1)
 
 
 #####################
@@ -664,16 +665,16 @@ def general_type(parcels, buildings):
 
 # for debugging reasons this is split out into its own function
 @orca.column('parcels')
-def building_purchase_price_sqft(parcels):
+def building_purchase_price_sqft(parcels, settings):
     price = pd.Series(0, parcels.index)
     gentype = parcels.general_type
+    cap_rate = settings["cap_rate"]
     # all of these factors are above one which does some discouraging of
     # redevelopment - this will need to be recalibrated when the new
     # developer model comes into play
     for form in ["Office", "Retail", "Industrial", "Residential"]:
         # convert to price per sqft from yearly rent per sqft
-        # assumes a caprate of .05 (reciprocal equals 20.0)
-        factor = 1.4 if form == "Residential" else 20.0
+        factor = 1.4 if form == "Residential" else (1/cap_rate)
         # raise cost to convert from industrial
         if form == "Industrial":
             factor *= 3.0
@@ -801,6 +802,12 @@ HEIGHT_PER_STORY = 12.0
 @orca.column('parcels_zoning_calculations', cache=True)
 def zoned_du(parcels, parcels_zoning_calculations):
     return parcels_zoning_calculations.effective_max_dua * parcels.parcel_acres
+
+
+@orca.column('parcels_zoning_calculations', cache=True)
+def zoned_du_vacant(parcels, parcels_zoning_calculations):
+    return parcels_zoning_calculations.effective_max_dua * \
+        parcels.parcel_acres * ~parcels.nodev * (parcels.total_sqft == 0)
 
 
 @orca.column('parcels_zoning_calculations', cache=True)

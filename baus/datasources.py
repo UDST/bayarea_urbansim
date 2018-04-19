@@ -40,12 +40,6 @@ def store(settings):
     return pd.HDFStore(os.path.join(misc.data_dir(), settings["store"]))
 
 
-# this is the income split for the low income and regular HLCMs
-@orca.injectable()
-def low_income(settings):
-    return int(settings["low_income_for_hlcm"])
-
-
 @orca.injectable(cache=True)
 def limits_settings(settings, scenario):
     # for limits, we inherit from the default
@@ -112,14 +106,14 @@ def fetch_from_s3(settings):
     s3_settings = settings["s3_settings"]
 
     conn = boto.connect_s3()
-    bucket = conn.get_bucket(s3_settings["bucket"])
+    bucket = conn.get_bucket(s3_settings["bucket"], validate=False)
 
     for file in s3_settings["files"]:
         file = os.path.join("data", file)
         if os.path.exists(file):
             continue
         print "Downloading " + file
-        key = bucket.get_key(file)
+        key = bucket.get_key(file, validate=False)
         key.get_contents_to_filename(file)
 
 
@@ -254,7 +248,6 @@ def parcels_geography(parcels):
     df.loc[2054506, "juris_name"] = "Marin County"
     df.loc[572927, "juris_name"] = "Contra Costa County"
     # assert no empty juris values
-    print df.juris_name[df.juris_name.isnull()]
     assert True not in df.juris_name.isnull().value_counts()
 
     df["pda_id"] = df.pda_id.str.lower()
@@ -324,7 +317,7 @@ def development_projects(parcels, settings, scenario):
     df = get_dev_projects_table(scenario, parcels)
 
     for col in [
-            'residential_sqft', 'residential_price', 'non_residential_price']:
+            'residential_sqft', 'residential_price', 'non_residential_rent']:
         df[col] = 0
     df["redfin_sale_year"] = 2012  # default base year
     df["redfin_sale_price"] = np.nan  # null sales price
@@ -362,7 +355,7 @@ def print_error_if_not_available(store, table):
     if table not in store:
         raise Exception(
             "%s not found in store - you need to preprocess" % table +
-            " the data with:\n  python run.py --mode preprocessing -c")
+            " the data with:\n  python baus.py --mode preprocessing -c")
     return store[table]
 
 
@@ -379,6 +372,11 @@ def households(store):
 @orca.table(cache=True)
 def buildings(store):
     return print_error_if_not_available(store, 'buildings_preproc')
+
+
+@orca.table(cache=True)
+def residential_units(store):
+    return print_error_if_not_available(store, 'residential_units_preproc')
 
 
 @orca.table(cache=True)
@@ -478,6 +476,10 @@ def zones(store):
 
 
 # this specifies the relationships between tables
+orca.broadcast('buildings', 'residential_units', cast_index=True,
+               onto_on='building_id')
+orca.broadcast('residential_units', 'households', cast_index=True,
+               onto_on='unit_id')
 orca.broadcast('parcels_geography', 'buildings', cast_index=True,
                onto_on='parcel_id')
 # not defined in urbansim_Defaults

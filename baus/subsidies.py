@@ -8,6 +8,7 @@ from urbansim_defaults import utils
 from cStringIO import StringIO
 from urbansim.utils import misc
 from utils import add_buildings
+from urbansim.developer import sqftproforma
 
 
 # this method is a custom profit to probability function where we test the
@@ -140,7 +141,7 @@ def inclusionary_housing_revenue_reduction(feasibility, units):
 
     s = num_affordable_units.groupby(parcels_geography.juris_name).sum()
     print "Feasibile affordable units by jurisdiction"
-    print s[s > 0].order()
+    print s[s > 0].sort_values()
 
     return revenue_reduction, num_affordable_units
 
@@ -178,6 +179,8 @@ def policy_modifications_of_profit(feasibility, parcels):
     # this section adds inclusionary housing reduction in revenue
     revenue_reduction, num_affordable_units = \
         inclusionary_housing_revenue_reduction(feasibility, units)
+
+    assert np.all(num_affordable_units <= units.fillna(0))
 
     print "Describe of inclusionary revenue reduction:\n", \
         revenue_reduction[revenue_reduction > 0].describe()
@@ -347,7 +350,7 @@ def subsidized_office_developer(feasibility, coffer, acct_settings, year,
 
     # sorting by our choice metric as we're going to pick our devs
     # in order off the top
-    feasibility = feasibility.sort(columns=['max_profit_per_sqft'])
+    feasibility = feasibility.sort_values(['max_profit_per_sqft'])
 
     # make parcel_id available
     feasibility = feasibility.reset_index()
@@ -538,7 +541,7 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
             continue
 
         # step 7
-        df = df.sort(columns=['subsidy_per_unit'], ascending=True)
+        df = df.sort_values(['subsidy_per_unit'], ascending=True)
         # df.to_csv('subsidized_units_%d_%s_%s.csv' %
         #           (orca.get_injectable("year"), account.name, subacct))
 
@@ -612,6 +615,9 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
                 # round off for now
                 subsidized_units = int(subsidized_units) + \
                     already_subsidized_units
+                # cap at number of residential units
+                subsidized_units = min(subsidized_units,
+                                       new_building.residential_units)
 
                 buildings.local.loc[index, "deed_restricted_units"] =\
                     int(round(subsidized_units))
@@ -619,6 +625,9 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
                 # also correct the debug output
                 new_buildings.loc[index, "deed_restricted_units"] =\
                     int(round(subsidized_units))
+
+        assert np.all(buildings.local.deed_restricted_units.fillna(0) <=
+                      buildings.local.residential_units.fillna(0))
 
         print "Amount left after subsidy: ${:,.2f}".\
             format(account.total_transactions_by_subacct(subacct))
@@ -652,10 +661,16 @@ def subsidized_residential_feasibility(
     kwargs = settings['feasibility'].copy()
     kwargs["only_built"] = False
     kwargs["forms_to_test"] = ["residential"]
+
+    config = sqftproforma.SqFtProFormaConfig()
+    # use the cap rate from settings.yaml
+    config.cap_rate = settings["cap_rate"]
+
     # step 1
     utils.run_feasibility(parcels,
                           parcel_sales_price_sqft_func,
                           parcel_is_allowed_func,
+                          config=config,
                           **kwargs)
 
     feasibility = orca.get_table("feasibility").to_frame()
@@ -674,9 +689,10 @@ def subsidized_residential_feasibility(
 
     df = orca.get_table("feasibility").to_frame()
     df = df.stack(level=0).reset_index(level=1, drop=True)
-    df.to_csv("runs/run{}_feasibility_{}.csv".format(
-        orca.get_injectable("run_number"),
-        orca.get_injectable("year")))
+    # this uses a surprising amount of disk space, don't write out for now
+    # df.to_csv("runs/run{}_feasibility_{}.csv".format(
+    #    orca.get_injectable("run_number"),
+    #    orca.get_injectable("year")))
 
 
 @orca.step()
