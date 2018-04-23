@@ -24,12 +24,22 @@ import pandas as pd
 
 #@orca.step()
 #def slr_inundate(parcels, slr_parcels):
-#     true_slrparcels=slr_parcels.query(
+#
+#    # select parcels that are indundated in the current year
+#
+#    true_slrparcels=slr_parcels.query(
+#
+#    # remove building space from parcels
+#
+#    
 #     
+#    # remove households and jobs and put in unplaced
 #
 #
+#    # create summary table of count of impacted parcels, units, sqft, hhs by type, jobs by sector
 #
-
+#
+#    # mark parcel as nodev
 
 
 
