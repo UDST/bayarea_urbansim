@@ -22,8 +22,13 @@ import pandas as pd
 
 # inundation is parcels where building destroyed and become nodev
 
-
-
+#@orca.step()
+#def slr_inundate(parcels, slr_parcels):
+#     true_slrparcels=slr_parcels.query(
+#     
+#
+#
+#
 
 
 
