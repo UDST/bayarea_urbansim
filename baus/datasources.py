@@ -474,6 +474,12 @@ def zones(store):
     # sort index so it prints out nicely when we want it to
     return store['zones'].sort_index()
 
+# new maz39737 for tm2
+@orca.table(cache=True)
+def maz():
+    return pd.read_csv(os.path.join(misc.data_dir(), "parcel_maz.zip"),
+                       index_col="parcel_id")
+
 
 # this specifies the relationships between tables
 orca.broadcast('buildings', 'residential_units', cast_index=True,
