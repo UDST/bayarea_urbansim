@@ -20,3 +20,14 @@ import summaries
 import numpy as np
 import pandas as pd
 
+# inundation is parcels where building destroyed and become nodev
+
+
+
+
+
+
+
+
+
+# floodier is parcels where buildings decline in value maybe
