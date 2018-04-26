@@ -475,6 +475,12 @@ def zones(store):
     return store['zones'].sort_index()
 
 
+# SLR inundation levels for parcels
+# @orca.table()
+#    def slr_parcel_elevation():
+#    return po.read_csv(data/slr_parcel_elevation.csv index_col=parcel_id)
+
+
 # this specifies the relationships between tables
 orca.broadcast('buildings', 'residential_units', cast_index=True,
                onto_on='building_id')
