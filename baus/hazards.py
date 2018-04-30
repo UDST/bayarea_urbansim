@@ -37,7 +37,8 @@ import pandas as pd
 #
 #
 #    # create summary table of count of impacted parcels,
-#	 # units, sqft, hhs by type, jobs by sector
+#    # units, sqft, hhs by type, jobs by sector
+#
 #
 #
 #    # mark parcel as nodev
