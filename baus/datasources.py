@@ -481,7 +481,7 @@ def slr_parcel_inundation():
     return pd.read_csv(
         os.path.join(misc.data_dir(), "slr_parcel_inundation.csv"),
         index_col='parcel_id')
-    
+
 
 # this specifies the relationships between tables
 orca.broadcast('buildings', 'residential_units', cast_index=True,
