@@ -22,8 +22,8 @@ import pandas as pd
 
 # inundation is parcels where building destroyed and become nodev
 
-#@orca.step()
-#def slr_inundate(parcels, slr_parcels):
+# @orca.step()
+# def slr_inundate(parcels, slr_parcels):
 #
 #    # select parcels that are indundated in the current year
 #
@@ -31,18 +31,18 @@ import pandas as pd
 #
 #    # remove building space from parcels
 #
-#    
-#     
+#
+#
 #    # remove households and jobs and put in unplaced
 #
 #
-#    # create summary table of count of impacted parcels, units, sqft, hhs by type, jobs by sector
+#    # create summary table of count of impacted parcels, 
+#	  # units, sqft, hhs by type, jobs by sector
 #
 #
 #    # mark parcel as nodev
-
-
-
-
-
+#
+#
+#
+#
 # floodier is parcels where buildings decline in value maybe
