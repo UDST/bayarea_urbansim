@@ -256,20 +256,24 @@ def reprocess_dev_projects(df):
     # record, we change the later ones to add records - we don't want to
     # constantly be redeveloping projects, but it's a common error for users
     # to make in their development project configuration
-    df = df.sort_values(["geom_id", "year_built"])
-    prev_geom_id = None
+    df = df.sort_values(["parcel_id", "year_built"])
+    prev_pcl_id = None
     for index, rec in df.iterrows():
-        if rec.geom_id == prev_geom_id:
+        if rec.parcel_id == prev_pcl_id:
             df.loc[index, "action"] = "add"
-        prev_geom_id = rec.geom_id
+        prev_pcl_id = rec.parcel_id
 
     return df
 
 
 # shared between demolish and build tables below
 def get_dev_projects_table(scenario, parcels):
-    return pd.DataFrame()
     df = pd.read_csv(os.path.join(misc.data_dir(), "development_projects.csv"))
+    # find nearest parcel centroid to dev project x, y and assign parcel_id
+    df = df[(df.x.notnull()) & (df.y.notnull())]
+    df['parcel_id'] = nearest_neighbor(parcels.to_frame(['x','y']),
+                                                              df[['x','y']])
+
     df = reprocess_dev_projects(df)
 
     # this filters project by scenario
@@ -277,18 +281,13 @@ def get_dev_projects_table(scenario, parcels):
         # df[scenario] is 1s and 0s indicating whether to include it
         df = df[df[scenario].astype('bool')]
 
-    df = df.dropna(subset=['geom_id'])
+    df = df.dropna(subset=['parcel_id'])
 
-    cnts = df.geom_id.isin(parcels.geom_id).value_counts()
+    cnts = df.parcel_id.isin(parcels.index).value_counts()
     if False in cnts.index:
         print "%d MISSING GEOMIDS!" % cnts.loc[False]
 
-    df = df[df.geom_id.isin(parcels.geom_id)]
-
-    geom_id = df.geom_id  # save for later
-    df = df.set_index("geom_id")
-    df = geom_id_to_parcel_id(df, parcels).reset_index()  # use parcel id
-    df["geom_id"] = geom_id.values  # add it back again cause it goes away
+    df = df[df.parcel_id.isin(parcels.index)]
 
     return df
 
@@ -327,6 +326,10 @@ def development_projects(parcels, settings, scenario):
 
     # we don't predict prices for schools and hotels right now
     df = df[~df.building_type.isin(["SC", "HO"])]
+
+    df['sqft_job'] = df.building_type.map(settings['building_sqft_per_job'])
+    df['job_spaces'] = np.divide(df.building_sqft, df.sqft_job)
+    del df['sqft_job']
 
     # need a year built to get built
     df = df.dropna(subset=["year_built"])
@@ -378,10 +381,9 @@ def buildings():
     df["non_residential_rent"] = 0.0
     for col in ["residential_units", "non_residential_sqft", "building_sqft"]:
         df[col] = df[col].fillna(0).astype("int")
-    del df["juris_name"]
-    del df["small_building"]
-    del df["sqft_per_job"]
-    del df["calc_area"]
+    df = df.drop(['juris_name', 'small_building', 'sqft_per_job', 'calc_area',
+                  'apn', 'base_residential_units', 'maz_building_id',
+                  'maz_id', 'name', 'osm_building_type'], axis=1)
     return df
 
 

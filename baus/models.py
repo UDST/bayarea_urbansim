@@ -345,7 +345,7 @@ def scheduled_development_events(buildings, development_projects,
         new_buildings.building_type.fillna("OF").map(building_sqft_per_job)
     new_buildings["job_spaces"] = new_buildings.job_spaces.\
         fillna(0).astype('int')
-    new_buildings["geom_id"] = parcel_id_to_geom_id(new_buildings.parcel_id)
+    #new_buildings["geom_id"] = parcel_id_to_geom_id(new_buildings.parcel_id)
     new_buildings["SDEM"] = True
     new_buildings["subsidized"] = False
 
