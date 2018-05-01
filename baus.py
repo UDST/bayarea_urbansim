@@ -138,7 +138,7 @@ def get_simulation_models(SCENARIO):
         "balance_rental_and_ownership_hedonics",
 
         "price_vars",
-        #"scheduled_development_events",
+        "scheduled_development_events",
 
         # run the subsidized acct system
         "lump_sum_accounts",
