@@ -268,11 +268,11 @@ def reprocess_dev_projects(df):
 
 # shared between demolish and build tables below
 def get_dev_projects_table(scenario, parcels):
-    df = pd.read_csv(os.path.join(misc.data_dir(), "development_projects.csv"))
+    df = pd.read_csv(os.path.join(misc.data_dir(),
+                     "development_projects_w_apn.csv"))
     # find nearest parcel centroid to dev project x, y and assign parcel_id
-    df = df[(df.x.notnull()) & (df.y.notnull())]
-    df['parcel_id'] = nearest_neighbor(parcels.to_frame(['x','y']),
-                                                              df[['x','y']])
+    df = pd.merge(df, parcels.apn.reset_index(), how='left', left_on='apn',
+             right_on='apn')
 
     df = reprocess_dev_projects(df)
 
@@ -285,7 +285,7 @@ def get_dev_projects_table(scenario, parcels):
 
     cnts = df.parcel_id.isin(parcels.index).value_counts()
     if False in cnts.index:
-        print "%d MISSING GEOMIDS!" % cnts.loc[False]
+        print "%d MISSING PARCELIDS!" % cnts.loc[False]
 
     df = df[df.parcel_id.isin(parcels.index)]
 
