@@ -44,4 +44,4 @@ dev_apn.loc[dev_apn.apn.isnull(),
 del dev_apn['geometry']
 del dev_apn['index_right']
 
-dev_apn.to_csv('data/development_projects_w_apn.csv', index=False)
+dev_apn.to_csv('data/development_projects.csv', index=False)

@@ -269,7 +269,7 @@ def reprocess_dev_projects(df):
 # shared between demolish and build tables below
 def get_dev_projects_table(scenario, parcels):
     df = pd.read_csv(os.path.join(misc.data_dir(),
-                     "development_projects_w_apn.csv"))
+                     "development_projects.csv"))
     # find nearest parcel centroid to dev project x, y and assign parcel_id
     df = pd.merge(df, parcels.apn.reset_index(), how='left', left_on='apn',
                   right_on='apn')
