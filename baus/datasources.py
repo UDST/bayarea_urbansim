@@ -272,7 +272,7 @@ def get_dev_projects_table(scenario, parcels):
                      "development_projects_w_apn.csv"))
     # find nearest parcel centroid to dev project x, y and assign parcel_id
     df = pd.merge(df, parcels.apn.reset_index(), how='left', left_on='apn',
-             right_on='apn')
+                  right_on='apn')
 
     df = reprocess_dev_projects(df)
 
