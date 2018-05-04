@@ -1,7 +1,6 @@
 import pandas as pd
 import geopandas as gpd
 from baus import utils
-import orca
 from shapely import wkt
 from shapely.geometry import Point
 

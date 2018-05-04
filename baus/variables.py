@@ -592,15 +592,10 @@ def total_non_residential_sqft(parcels, buildings):
 
 
 @orca.column('parcels')
-def nodev(zoning_baseline, parcels, static_parcels):
-    # nodev from zoning
-    # s1 = zoning_baseline.nodev.reindex(parcels.index).\
-    #    fillna(0).astype('bool')
-    # nodev from static parcels - this marks nodev those parcels which are
-    # marked as "static" - any parcels which should not be considered by the
-    # developer model may be marked as static
-    return parcels.index.isin(static_parcels)
-    return s1 | s2
+def nodev(parcels):
+    nd = pd.read_csv('data/nodev_locations.csv')
+    # nodev from apn values
+    return parcels.apn.isin(nd.apn)
 
 
 # get built far but set to nan for small parcels
