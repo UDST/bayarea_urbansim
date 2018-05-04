@@ -30,15 +30,15 @@ parcels = parcels[parcels.is_valid]
 
 nodev = nodev[nodev.is_valid]
 
-nodev_apn = gpd.sjoin(
+nodev = gpd.sjoin(
     nodev, parcels, how="left", op="intersects")
 
-nodev_apn.loc[nodev_apn.apn.isnull(),
-              'apn'] = nearest_neighbor(pcl_second_match[['x', 'y']],
-                                        nodev_apn.loc[nodev_apn.apn.isnull(),
-                                                      ['x', 'y']])
+nodev.loc[nodev.apn.isnull(),
+          'apn'] = utils.nearest_neighbor(pcl_second_match[['x', 'y']],
+                                          nodev.loc[nodev.apn.isnull(),
+                                                    ['x', 'y']])
 
-del nodev_apn['geometry']
-del nodev_apn['index_right']
+del nodev['geometry']
+del nodev['index_right']
 
-nodev_apn.to_csv('data/nodev_locations.csv', index=False)
+nodev.to_csv('data/nodev_locations.csv', index=False)
