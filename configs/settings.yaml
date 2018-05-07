@@ -939,6 +939,28 @@ development_limits:
 # and are often dealt with using specific models (SDEM and possibly proportional jobs model)
 # which ignore this list
 static_parcels:
+  - 'Hayward-081D208000102' # cal state east bay
+  - 'San Francisco-0787001'
+  - 'San Jose-46744002'
+  - 'San Francisco-4090002'
+  - 'San Francisco-7299005'
+  - 'Unincorporated Marin-1815407' # san quentin
+  - 'Berkeley-057 204200410-2' # ucb
+  - 'Unincorporated San Mateo-92030010-2'
+  - 'San Jose-46752006'
+  - 'San Francisco-4154001'
+  - 'San Jose-46743091-1'
+  - 'San Francisco-4213001'
+  - 'Hayward-445 028000105-1' # cal state east bay
+  - 'Oakland-048H780000201'
+  - 'Unincorporated Marin-1815416' # san quentin
+  - 'San Jose-46753002'
+  - 'San Francisco-4091003'
+  - 'Unincorporated Sonoma-047-131-011'
+  - 'San Francisco-4140001'
+
+  
+old_static_parcels:
   - 11280465768398 # city hall
   - 2240580234395 # sf state
   - 7299494955245 # sj state
