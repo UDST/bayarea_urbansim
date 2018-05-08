@@ -592,10 +592,11 @@ def total_non_residential_sqft(parcels, buildings):
 
 
 @orca.column('parcels')
-def nodev(parcels):
-    nd = pd.read_csv('data/nodev_locations.csv')
-    # nodev from apn values
-    return parcels.apn.isin(nd.apn)
+def nodev(parcels, settings):
+    nd = list(pd.read_csv('data/nodev_locations.csv').apn)
+    nd += settings['static_parcels']
+    # nodev from apn values and static parcels
+    return parcels.apn.isin(nd)
 
 
 # get built far but set to nan for small parcels
