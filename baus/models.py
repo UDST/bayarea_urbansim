@@ -60,12 +60,11 @@ def employment_relocation_rates():
 # this is a list of parcel_ids which are to be treated as static
 @orca.injectable()
 def static_parcels(settings, parcels):
-    return []  # come back and fix this - no geom -> apn mapping right now
-    # list of geom_ids to not relocate
+    # list of apns to not relocate
     static_parcels = settings["static_parcels"]
-    # geom_ids -> parcel_ids
-    return geom_id_to_parcel_id(
-        pd.DataFrame(index=static_parcels), parcels).index.values
+    # apns -> parcel_ids
+    pcl = parcels.apn.reset_index()
+    return pcl.loc[pcl.apn.isin(static_parcels), 'parcel_id'].values
 
 
 def _proportional_jobs_model(
