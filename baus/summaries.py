@@ -926,28 +926,31 @@ def add_age_categories(df, year):
 #def travel_model_two_output(parcels, households, jobs, buildings,
 #                        zones, year, summary, coffer,
 #                        zone_forecast_inputs, run_number,
-#                        taz, base_year_summary_taz, taz_geography):
+#                        taz, base_year_summary_taz, taz_geography
+#                        maz, base_year_summary_maz, maz_geography):
+#
+# NEED TO DO last line above
 #
 #    if year not in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
 #        # only summarize for years which are multiples of 5
 #        return
 #
-#    taz_df = pd.DataFrame(index=zones.index)
+#    maz_df = pd.DataFrame(index=mazzones.index)
 #
-#    taz_df["sd"] = taz_geography.superdistrict
-#    taz_df["zone"] = zones.index
-#    taz_df["county"] = taz_geography.county
+#    maz_df["sd"] = maz_geography.superdistrict
+#    maz_df["mazzone"] = mazzones.index
+#    maz_df["county"] = maz_geography.county
 #
 #    jobs_df = orca.merge_tables(
 #        'jobs',
 #        [parcels, buildings, jobs],
-#        columns=['zone_id', 'empsix']
+#        columns=['mazzone_id', 'empsix']
 #    )
-#    jobs_df["zone_id"] = jobs_df.zone_id_x
+#    jobs_df["mazzone_id"] = jobs_df.mazzone_id_x
 #
 #    def getsectorcounts(sector):
 #        return jobs_df.query("empsix == '%s'" % sector).\
-#            groupby('zone_id').size()
+#            groupby('mazzone_id').size()
 #
 #    taz_df["agrempn"] = getsectorcounts("AGREMPN")
 #    taz_df["fpsempn"] = getsectorcounts("FPSEMPN")
