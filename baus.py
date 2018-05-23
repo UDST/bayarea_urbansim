@@ -194,7 +194,6 @@ def get_simulation_models(SCENARIO):
         "diagnostic_output",
         "geographic_summary",
         "travel_model_output"
-        #"travel_model_two_output"
     ]
 
     # calculate VMT taxes
