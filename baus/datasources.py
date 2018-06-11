@@ -183,6 +183,25 @@ def new_tpp_id():
     return pd.read_csv(os.path.join(misc.data_dir(), "tpp_id_2016.zip"),
                        index_col="parcel_id")
 
+@orca.table(cache=True)
+def maz():
+    maz = pd.read_csv(os.path.join(misc.data_dir(), "maz_geography.csv"))
+    return maz.drop_duplicates('MAZ').set_index('MAZ')
+
+@orca.table(cache=True)
+def parcel_to_maz():
+    return pd.read_csv(os.path.join(misc.data_dir(), "2018_05_23_parcel_to_maz22.csv"),
+                       index_col="PARCEL_ID")
+
+@orca.table(cache=True)
+def taz2():
+    taz2 = pd.read_csv(os.path.join(misc.data_dir(), "taz2_forecast_inputs.csv"))
+    return taz2.set_index('TAZ')
+
+@orca.table(cache=True)
+def empsh_to_empsix():
+    return pd.read_csv(os.path.join(misc.data_dir(), "empsh_to_empsix.csv"))
+
 
 @orca.table(cache=True)
 def zoning_scenario(parcels_geography, scenario, settings):

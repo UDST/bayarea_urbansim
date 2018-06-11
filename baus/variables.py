@@ -305,6 +305,11 @@ def retail_ratio(nodes):
 #####################
 
 
+@orca.column('parcels')
+def maz_id(parcels, parcel_to_maz):
+    return parcel_to_maz.maz.reindex(parcels.index)
+
+
 @orca.column("parcels")
 def residential_sales_price_sqft(parcel_sales_price_sqft_func):
     return parcel_sales_price_sqft_func("residential")

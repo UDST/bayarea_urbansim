@@ -805,6 +805,58 @@ def travel_model_output(parcels, households, jobs, buildings,
         "runs/run{}_taz_summaries_{}.csv".format(run_number, year))
 
 
+@orca.step()
+def travel_model_2_output(parcels, households, jobs, buildings,
+                          maz, year, empsh_to_empsix,
+                          zone_forecast_inputs, run_number,
+                          taz, base_year_summary_taz, taz_geography):
+    if year not in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
+        # only summarize for years which are multiples of 5
+        return
+
+    maz = maz.to_frame(['TAZ','COUNTY'])
+    
+    hh_df = orca.merge_tables('households',
+                              [parcels, buildings, households],
+                               columns=['zone_id',
+                                        'base_income_quartile',
+                                        'income',
+                                        'persons',
+                                        'maz_id'])
+
+    def gethhcounts(filter):
+        return hh_df.query(filter).groupby('maz_id').size()
+
+    maz["hhincq1"] = gethhcounts("base_income_quartile == 1")
+    maz["hhincq2"] = gethhcounts("base_income_quartile == 2")
+    maz["hhincq3"] = gethhcounts("base_income_quartile == 3")
+    maz["hhincq4"] = gethhcounts("base_income_quartile == 4")
+    maz["hhpop"] = hh_df.groupby('maz_id').persons.sum()
+    maz["tothh"] = hh_df.groupby('maz_id').size()
+    
+    jobs_df = orca.merge_tables('jobs',
+                                [parcels, bldg, jobs],
+                                columns=['maz_id', 'empsix'])
+    
+    empsh_to_empsix = empsh_to_empsix.to_frame()
+
+    def getsectorcounts(empsix, empsh):
+        emp = jobs_df.query("empsix == '%s'" % empsix).\
+            groupby('maz_id').size()
+        return emp * empsh_to_empsix.loc[empsh_to_empsix.empsh==empsh,
+                                         str(year)][0]
+
+    maz["ag"] = getsectorcounts("AGREMPN", "ag")
+    maz["fpsempn"] = getsectorcounts("FPSEMPN")
+    maz["herempn"] = getsectorcounts("HEREMPN")
+    maz["retempn"] = getsectorcounts("RETEMPN")
+    maz["mwtempn"] = getsectorcounts("MWTEMPN")
+    maz["othempn"] = getsectorcounts("OTHEMPN")
+    maz["emp_total"] = jobs_df.groupby('maz_id').size()
+
+    
+    
+
 def scaled_ciacre(mtcc, us_outc):
     zfi = zone_forecast_inputs()
     abgc = zfi.ciacre10_abag
