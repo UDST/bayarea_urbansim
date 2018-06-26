@@ -137,10 +137,8 @@ def random_indexes(s, num, replace=False):
 def round_series_match_target(s, target, fillna=np.nan):
     if target == 0 or s.sum() == 0:
         return s
-
     s = s.fillna(fillna).round().astype('int')
-    diff = target - s.sum()
-
+    diff = int(target - s.sum())
     if diff > 0:
         # replace=True allows us to add even more than we have now
         indexes = random_indexes(s, abs(diff), replace=True)
@@ -206,19 +204,19 @@ def simple_ipf(seed_matrix, col_marginals, row_marginals, tolerance=1, cnt=0):
     assert np.absolute(row_marginals.sum() - col_marginals.sum()) < 5.0
 
     # first normalize on columns
-    ratios = col_marginals / seed_matrix.sum(axis=0)
+    ratios = np.array(col_marginals / seed_matrix.sum(axis=0))
     seed_matrix *= ratios
     closeness = np.absolute(row_marginals - seed_matrix.sum(axis=1)).sum()
-    assert np.absolute(col_marginals - seed_matrix.sum(axis=0)).sum() < .01
+    # assert np.absolute(col_marginals - seed_matrix.sum(axis=0)).sum() < .01
     # print "row closeness", closeness
     if closeness < tolerance:
         return seed_matrix
 
     # first normalize on rows
-    ratios = row_marginals / seed_matrix.sum(axis=1)
+    ratios = np.array(row_marginals / seed_matrix.sum(axis=1))
     ratios[row_marginals == 0] = 0
     seed_matrix = seed_matrix * ratios.reshape((ratios.size, 1))
-    assert np.absolute(row_marginals - seed_matrix.sum(axis=1)).sum() < .01
+    # assert np.absolute(row_marginals - seed_matrix.sum(axis=1)).sum() < .01
     closeness = np.absolute(col_marginals - seed_matrix.sum(axis=0)).sum()
     # print "col closeness", closeness
     if closeness < tolerance:

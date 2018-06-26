@@ -776,7 +776,6 @@ def travel_model_output(parcels, households, jobs, buildings,
         base_year_summary_taz.CIACRE_UNWEIGHTED, taz_df.ciacre_unweighted)
     taz_df["resacre"] = scaled_resacre(
         base_year_summary_taz.RESACRE_UNWEIGHTED, taz_df.resacre_unweighted)
-
     taz_df = add_population(taz_df, year)
     taz_df = add_employment(taz_df, year)
     taz_df = add_age_categories(taz_df, year)
@@ -807,22 +806,27 @@ def travel_model_output(parcels, households, jobs, buildings,
 
 @orca.step()
 def travel_model_2_output(parcels, households, jobs, buildings,
-                          maz, year, empsh_to_empsix,
-                          zone_forecast_inputs, run_number,
-                          taz, base_year_summary_taz, taz_geography):
+                          maz, year, empsh_to_empsix, run_number,
+                          zone_forecast_inputs, maz_forecast_inputs,
+                          taz2_forecast_inputs, county_forecast_inputs,
+                          county_employment_forecast,
+                          regional_demographic_forecast):
     if year not in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
         # only summarize for years which are multiples of 5
         return
 
-    maz = maz.to_frame(['TAZ','COUNTY'])
-    
+    maz = maz.to_frame(['TAZ', 'COUNTY'])
+
+    pcl = parcels.to_frame(['maz_id', 'acres'])
+    maz['ACRES'] = pcl.groupby('maz_id').acres.sum()
+
     hh_df = orca.merge_tables('households',
                               [parcels, buildings, households],
-                               columns=['zone_id',
-                                        'base_income_quartile',
-                                        'income',
-                                        'persons',
-                                        'maz_id'])
+                              columns=['zone_id',
+                                       'base_income_quartile',
+                                       'income',
+                                       'persons',
+                                       'maz_id'])
 
     def gethhcounts(filter):
         return hh_df.query(filter).groupby('maz_id').size()
@@ -833,29 +837,174 @@ def travel_model_2_output(parcels, households, jobs, buildings,
     maz["hhincq4"] = gethhcounts("base_income_quartile == 4")
     maz["hhpop"] = hh_df.groupby('maz_id').persons.sum()
     maz["tothh"] = hh_df.groupby('maz_id').size()
-    
+
     jobs_df = orca.merge_tables('jobs',
-                                [parcels, bldg, jobs],
+                                [parcels, buildings, jobs],
                                 columns=['maz_id', 'empsix'])
-    
+
+    bldg_df = orca.merge_tables('buildings',
+                                [buildings, parcels],
+                                columns=['maz_id', 'residential_units'])
+
     empsh_to_empsix = empsh_to_empsix.to_frame()
 
     def getsectorcounts(empsix, empsh):
         emp = jobs_df.query("empsix == '%s'" % empsix).\
             groupby('maz_id').size()
-        return emp * empsh_to_empsix.loc[empsh_to_empsix.empsh==empsh,
-                                         str(year)][0]
+        return emp * empsh_to_empsix.loc[empsh_to_empsix.empsh == empsh,
+                                         str(year)].values[0]
 
     maz["ag"] = getsectorcounts("AGREMPN", "ag")
-    maz["fpsempn"] = getsectorcounts("FPSEMPN")
-    maz["herempn"] = getsectorcounts("HEREMPN")
-    maz["retempn"] = getsectorcounts("RETEMPN")
-    maz["mwtempn"] = getsectorcounts("MWTEMPN")
-    maz["othempn"] = getsectorcounts("OTHEMPN")
+    maz["natres"] = getsectorcounts("AGREMPN", "natres")
+    maz["fire"] = getsectorcounts("FPSEMPN", "fire")
+    maz["serv_bus"] = getsectorcounts("FPSEMPN", "serv_bus")
+    maz["prof"] = getsectorcounts("FPSEMPN", "prof")
+    maz["lease"] = getsectorcounts("FPSEMPN", "lease")
+
+    maz["art_rec"] = getsectorcounts("HEREMPN", "art_rec")
+    maz["serv_soc"] = getsectorcounts("HEREMPN", "serv_soc")
+    maz["serv_per"] = getsectorcounts("HEREMPN", "serv_per")
+    maz["ed_high"] = getsectorcounts("HEREMPN", "ed_high")
+    maz["ed_k12"] = getsectorcounts("HEREMPN", "ed_k12")
+    maz["ed_oth"] = getsectorcounts("HEREMPN", "ed_oth")
+    maz["health"] = getsectorcounts("HEREMPN", "health")
+
+    maz["man_tech"] = getsectorcounts("MWTEMPN", "man_tech")
+    maz["man_lgt"] = getsectorcounts("MWTEMPN", "man_lgt")
+    maz["logis"] = getsectorcounts("MWTEMPN", "logis")
+    maz["man_bio"] = getsectorcounts("MWTEMPN", "man_bio")
+    maz["transp"] = getsectorcounts("MWTEMPN", "transp")
+    maz["man_hvy"] = getsectorcounts("MWTEMPN", "man_hvy")
+    maz["util"] = getsectorcounts("MWTEMPN", "util")
+
+    maz["info"] = getsectorcounts("OTHEMPN", "info")
+    maz["gov"] = getsectorcounts("OTHEMPN", "gov")
+    maz["constr"] = getsectorcounts("OTHEMPN", "constr")
+
+    maz["hotel"] = getsectorcounts("RETEMPN", "hotel")
+    maz["ret_loc"] = getsectorcounts("RETEMPN", "ret_loc")
+    maz["ret_reg"] = getsectorcounts("RETEMPN", "ret_reg")
+    maz["eat"] = getsectorcounts("RETEMPN", "eat")
+
     maz["emp_total"] = jobs_df.groupby('maz_id').size()
 
-    
-    
+    maz['num_hh'] = maz['tothh']
+
+    mazi = maz_forecast_inputs.to_frame()
+    mazi_yr = str(year)[2:]
+    maz['gq_type_univ'] = mazi['gqpopu' + mazi_yr]
+    maz['gq_type_mil'] = mazi['gqpopm' + mazi_yr]
+    maz['gq_type_othnon'] = mazi['gqpopo' + mazi_yr]
+    maz['gq_tot_pop'] = maz['gq_type_univ'] + maz['gq_type_mil']\
+        + maz['gq_type_othnon']
+
+    maz['POP'] = maz.gq_tot_pop + maz.hhpop
+    maz['HH'] = maz.tothh.fillna(0)
+
+    maz['RetEmp'] = maz.hotel + maz.ret_loc + maz.ret_reg + maz.eat
+    maz['ACRES'] = pcl.groupby('maz_id').acres.sum()
+    maz['residential_units'] = bldg_df.groupby('maz_id').\
+        residential_units.sum()
+    maz['DUDen'] = maz.residential_units / maz.ACRES
+    maz['EmpDen'] = maz.emp_total / maz.ACRES
+    maz['RetEmpDen'] = maz.RetEmp / maz.ACRES
+    maz['PopDen'] = maz.POP / maz.ACRES
+
+    maz['hh_size_1'] = maz.tothh.fillna(0) * mazi.shrs1_2010
+    maz['hh_size_2'] = maz.tothh.fillna(0) * mazi.shrs2_2010
+    maz['hh_size_3'] = maz.tothh.fillna(0) * mazi.shrs3_2010
+    maz['hh_size_4_plus'] = maz.tothh.fillna(0) * mazi.shs4_2010
+    rdf = regional_demographic_forecast.to_frame()
+    maz = adjust_hhsize(maz, year, rdf)
+
+    taz2 = pd.DataFrame(index=taz2_forecast_inputs.index)
+    t2fi = taz2_forecast_inputs.to_frame()
+    taz2['hh'] = maz.groupby('TAZ').tothh.sum()
+    taz2['hh_inc_30'] = maz.groupby('TAZ').hhincq1.sum().fillna(0)
+    taz2['hh_inc_30_60'] = maz.groupby('TAZ').hhincq2.sum().fillna(0)
+    taz2['hh_inc_60_100'] = maz.groupby('TAZ').hhincq3.sum().fillna(0)
+    taz2['hh_inc_100_plus'] = maz.groupby('TAZ').hhincq4.sum().fillna(0)
+
+    taz2['pop_hhsize1'] = maz.groupby('TAZ').hh_size_1.sum()
+    taz2['pop_hhsize2'] = maz.groupby('TAZ').hh_size_2.sum() * 2
+    taz2['pop_hhsize3'] = maz.groupby('TAZ').hh_size_3.sum() * 3
+    taz2['pop_hhsize4'] = maz.groupby('TAZ').hh_size_4_plus.sum() * 4.781329
+
+    taz2['pop'] = taz2.pop_hhsize1 + taz2.pop_hhsize2\
+        + taz2.pop_hhsize3 + taz2.pop_hhsize4
+
+    taz2['county'] = maz.groupby('TAZ').COUNTY.first()
+
+    taz2['pers_age_00_19'] = taz2['pop'] * t2fi.shra1_2010
+    taz2['pers_age_20_34'] = taz2['pop'] * t2fi.shra2_2010
+    taz2['pers_age_35_64'] = taz2['pop'] * t2fi.shra3_2010
+    taz2['pers_age_65_plus'] = taz2['pop'] * t2fi.shra4_2010
+
+    taz2['hh_wrks_0'] = taz2['hh'] * t2fi.shrw0_2010
+    taz2['hh_wrks_1'] = taz2['hh'] * t2fi.shrw1_2010
+    taz2['hh_wrks_2'] = taz2['hh'] * t2fi.shrw2_2010
+    taz2['hh_wrks_3_plus'] = taz2['hh'] * t2fi.shrw3_2010
+
+    taz2['hh_kids_no'] = taz2['hh'] * t2fi.shrn_2010
+    taz2['hh_kids_yes'] = taz2['hh'] * t2fi.shry_2010
+    taz2 = adjust_hhwkrs(taz2, year, rdf)
+    taz2 = adjust_page(taz2, year, rdf)
+    taz2 = adjust_hhkids(taz2, year, rdf)
+    taz2.index.name = 'TAZ2'
+
+    cfi = county_forecast_inputs.to_frame()
+    county = pd.DataFrame(index=cfi.index)
+    county['pop'] = maz.groupby('COUNTY').POP.sum()
+
+    county[['hh_wrks_1', 'hh_wrks_2', 'hh_wrks_3_plus']] =\
+        taz2.groupby('county').agg({'hh_wrks_1': 'sum', 'hh_wrks_2': 'sum',
+                                    'hh_wrks_3_plus': 'sum'})
+
+    county['workers'] = county.hh_wrks_1 + county.hh_wrks_2 * 2\
+        + county.hh_wrks_3_plus * 3.474036
+
+    cef = county_employment_forecast.to_frame()
+    cef = cef.loc[cef.year == year].set_index('county')
+    county['pers_occ_management'] = county.workers * cef.shr_occ_management
+    county['pers_occ_professional'] = county.workers *\
+        cef.shr_occ_professional
+    county['pers_occ_services'] = county.workers * cef.shr_occ_services
+    county['pers_occ_retail'] = county.workers * cef.shr_occ_retail
+    county['pers_occ_manual'] = county.workers * cef.shr_occ_manual
+    county['pers_occ_military'] = county.workers * cef.shr_occ_military
+
+    county['gq_tot_pop'] = maz.groupby('COUNTY').gq_tot_pop.sum()
+
+    maz[['HH', 'POP', 'emp_total', 'ag', 'natres', 'logis',
+         'man_bio', 'man_hvy', 'man_lgt', 'man_tech',
+         'transp', 'util', 'eat', 'hotel',
+         'ret_loc', 'ret_reg', 'fire', 'lease',
+         'prof', 'serv_bus', 'art_rec', 'ed_high',
+         'ed_k12', 'ed_oth', 'health', 'serv_per',
+         'serv_soc', 'constr', 'info', 'gov',
+         'DUDen', 'EmpDen', 'PopDen', 'RetEmpDen']].fillna(0).to_csv(
+        "runs/run{}_maz_summaries_{}.csv".format(run_number, year))
+
+    maz[['num_hh', 'hh_size_1', 'hh_size_2',
+         'hh_size_3', 'hh_size_4_plus', 'gq_tot_pop',
+         'gq_type_univ', 'gq_type_mil', 'gq_type_othnon']].fillna(0).to_csv(
+        "runs/run{}_maz_marginals_{}.csv".format(run_number, year))
+
+    taz2[['hh_inc_30', 'hh_inc_30_60',
+          'hh_inc_60_100', 'hh_inc_100_plus',
+          'hh_wrks_0', 'hh_wrks_1', 'hh_wrks_2',
+          'hh_wrks_3_plus', 'pers_age_00_19',
+          'pers_age_20_34', 'pers_age_35_64',
+          'pers_age_65_plus', 'hh_kids_no',
+          'hh_kids_yes']].fillna(0).to_csv(
+        "runs/run{}_taz2_marginals_{}.csv".format(run_number, year))
+
+    county[['pers_occ_management', 'pers_occ_professional',
+            'pers_occ_services', 'pers_occ_retail',
+            'pers_occ_manual', 'pers_occ_military',
+            'gq_tot_pop']].fillna(0).to_csv(
+        "runs/run{}_county_marginals_{}.csv".format(run_number, year))
+
 
 def scaled_ciacre(mtcc, us_outc):
     zfi = zone_forecast_inputs()
@@ -963,7 +1112,6 @@ def add_age_categories(df, year):
     agedf = pd.DataFrame(mat)
     agedf.columns = [col.upper() for col in agecols]
     agedf.index = zfi.index
-
     for ind, row in agedf.iterrows():
         target = df.totpop.loc[ind]
         row = row.round()
@@ -975,3 +1123,126 @@ def add_age_categories(df, year):
     return df
 
 
+def adjust_hhsize(df, year, rdf):
+    col_marginals = (rdf.loc[rdf.year == year,
+                             ['shrs1', 'shrs2', 'shrs3',
+                              'shrs4']] * df.tothh.sum()).values[0]
+    row_marginals = df.tothh.fillna(0).values
+    seed_matrix = np.round(df[['hh_size_1', 'hh_size_2',
+                               'hh_size_3', 'hh_size_4_plus']]).as_matrix()
+
+    target = df.tothh.sum()
+    col_marginals = scale_by_target(col_marginals,
+                                    target).round().astype('int')
+
+    seed_matrix[seed_matrix == 0] = .1
+    seed_matrix[row_marginals == 0, :] = 0
+
+    mat = simple_ipf(seed_matrix, col_marginals, row_marginals)
+    hhsizedf = pd.DataFrame(mat)
+
+    hhsizedf.columns = ['hh_size_1', 'hh_size_2',
+                        'hh_size_3', 'hh_size_4_plus']
+    hhsizedf.index = df.index
+    for ind, row in hhsizedf.iterrows():
+            target = df.tothh.loc[ind]
+            row = row.round()
+            hhsizedf.loc[ind] = round_series_match_target(row, target, 0)
+
+    for col in hhsizedf.columns:
+        df[col] = hhsizedf[col]
+
+    return df
+
+
+def adjust_hhwkrs(df, year, rdf):
+    col_marginals = (rdf.loc[rdf.year == year,
+                             ['shrw0', 'shrw1', 'shrw2',
+                              'shrw3']] * df.hh.sum()).values[0]
+    row_marginals = df.hh.fillna(0).values
+    seed_matrix = np.round(df[['hh_wrks_0', 'hh_wrks_1',
+                               'hh_wrks_2', 'hh_wrks_3_plus']]).as_matrix()
+
+    target = df.hh.sum()
+    col_marginals = scale_by_target(col_marginals,
+                                    target).round().astype('int')
+
+    seed_matrix[seed_matrix == 0] = .1
+    seed_matrix[row_marginals == 0, :] = 0
+
+    mat = simple_ipf(seed_matrix, col_marginals, row_marginals)
+    hhwkrdf = pd.DataFrame(mat)
+
+    hhwkrdf.columns = ['hh_wrks_0', 'hh_wrks_1', 'hh_wrks_2', 'hh_wrks_3_plus']
+    hhwkrdf.index = df.index
+    for ind, row in hhwkrdf.iterrows():
+            target = df.hh.loc[ind]
+            row = row.round()
+            hhwkrdf.loc[ind] = round_series_match_target(row, target, 0)
+
+    for col in hhwkrdf.columns:
+        df[col] = hhwkrdf[col]
+
+    return df
+
+
+def adjust_page(df, year, rdf):
+    col_marginals = (rdf.loc[rdf.year == year,
+                             ['shra1', 'shra2', 'shra3',
+                              'shra4']] * df['pop'].sum()).values[0]
+    row_marginals = df['pop'].fillna(0).values
+    seed_matrix = np.round(df[['pers_age_00_19', 'pers_age_20_34',
+                               'pers_age_35_64',
+                               'pers_age_65_plus']]).as_matrix()
+
+    target = df['pop'].sum()
+    col_marginals = scale_by_target(col_marginals,
+                                    target).round().astype('int')
+
+    seed_matrix[seed_matrix == 0] = .1
+    seed_matrix[row_marginals == 0, :] = 0
+
+    mat = simple_ipf(seed_matrix, col_marginals, row_marginals)
+    pagedf = pd.DataFrame(mat)
+
+    pagedf.columns = ['pers_age_00_19', 'pers_age_20_34',
+                      'pers_age_35_64', 'pers_age_65_plus']
+    pagedf.index = df.index
+    for ind, row in pagedf.iterrows():
+            target = np.round(df['pop'].loc[ind])
+            row = row.round()
+            pagedf.loc[ind] = round_series_match_target(row, target, 0)
+
+    for col in pagedf.columns:
+        df[col] = pagedf[col]
+
+    return df
+
+
+def adjust_hhkids(df, year, rdf):
+    col_marginals = (rdf.loc[rdf.year == year,
+                             ['shrn', 'shry']] * df.hh.sum()).values[0]
+    row_marginals = df.hh.fillna(0).values
+    seed_matrix = np.round(df[['hh_kids_no', 'hh_kids_yes']]).as_matrix()
+
+    target = df.hh.sum()
+    col_marginals = scale_by_target(col_marginals,
+                                    target).round().astype('int')
+
+    seed_matrix[seed_matrix == 0] = .1
+    seed_matrix[row_marginals == 0, :] = 0
+
+    mat = simple_ipf(seed_matrix, col_marginals, row_marginals)
+    hhkidsdf = pd.DataFrame(mat)
+
+    hhkidsdf.columns = ['hh_kids_no', 'hh_kids_yes']
+    hhkidsdf.index = df.index
+    for ind, row in hhkidsdf.iterrows():
+            target = np.round(df.hh.loc[ind])
+            row = row.round()
+            hhkidsdf.loc[ind] = round_series_match_target(row, target, 0)
+
+    for col in hhkidsdf.columns:
+        df[col] = hhkidsdf[col]
+
+    return df

@@ -183,24 +183,107 @@ def new_tpp_id():
     return pd.read_csv(os.path.join(misc.data_dir(), "tpp_id_2016.zip"),
                        index_col="parcel_id")
 
+
 @orca.table(cache=True)
 def maz():
     maz = pd.read_csv(os.path.join(misc.data_dir(), "maz_geography.csv"))
     return maz.drop_duplicates('MAZ').set_index('MAZ')
 
-@orca.table(cache=True)
-def parcel_to_maz():
-    return pd.read_csv(os.path.join(misc.data_dir(), "2018_05_23_parcel_to_maz22.csv"),
-                       index_col="PARCEL_ID")
 
 @orca.table(cache=True)
-def taz2():
-    taz2 = pd.read_csv(os.path.join(misc.data_dir(), "taz2_forecast_inputs.csv"))
-    return taz2.set_index('TAZ')
+def parcel_to_maz():
+    return pd.read_csv(os.path.join(misc.data_dir(),
+                                    "2018_05_23_parcel_to_maz22.csv"),
+                       index_col="PARCEL_ID")
+
+
+@orca.table(cache=True)
+def county_forecast_inputs():
+    return pd.read_csv(os.path.join(misc.data_dir(),
+                                    "county_forecast_inputs.csv"),
+                       index_col="COUNTY")
+
+
+@orca.table(cache=True)
+def county_employment_forecast():
+    return pd.read_csv(os.path.join(misc.data_dir(),
+                       "county_employment_forecast.csv"))
+
+
+@orca.table(cache=True)
+def taz2_forecast_inputs(regional_demographic_forecast):
+    t2fi = pd.read_csv(os.path.join(misc.data_dir(),
+                                    "taz2_forecast_inputs.csv"),
+                       index_col='TAZ').replace('#DIV/0!', np.nan)
+
+    rdf = regional_demographic_forecast.to_frame()
+    # apply regional share of hh by size to MAZs with no households in 2010
+    t2fi.loc[t2fi.shrw0_2010.isnull(),
+             'shrw0_2010'] = rdf.loc[rdf.year == 2010, 'shrw0'].values[0]
+    t2fi.loc[t2fi.shrw1_2010.isnull(),
+             'shrw1_2010'] = rdf.loc[rdf.year == 2010, 'shrw1'].values[0]
+    t2fi.loc[t2fi.shrw2_2010.isnull(),
+             'shrw2_2010'] = rdf.loc[rdf.year == 2010, 'shrw2'].values[0]
+    t2fi.loc[t2fi.shrw3_2010.isnull(),
+             'shrw3_2010'] = rdf.loc[rdf.year == 2010, 'shrw3'].values[0]
+
+    # apply regional share of persons by age category
+    t2fi.loc[t2fi.shra1_2010.isnull(),
+             'shra1_2010'] = rdf.loc[rdf.year == 2010, 'shra1'].values[0]
+    t2fi.loc[t2fi.shra2_2010.isnull(),
+             'shra2_2010'] = rdf.loc[rdf.year == 2010, 'shra2'].values[0]
+    t2fi.loc[t2fi.shra3_2010.isnull(),
+             'shra3_2010'] = rdf.loc[rdf.year == 2010, 'shra3'].values[0]
+    t2fi.loc[t2fi.shra4_2010.isnull(),
+             'shra4_2010'] = rdf.loc[rdf.year == 2010, 'shra4'].values[0]
+
+    # apply regional share of hh by presence of children
+    t2fi.loc[t2fi.shrn_2010.isnull(),
+             'shrn_2010'] = rdf.loc[rdf.year == 2010, 'shrn'].values[0]
+    t2fi.loc[t2fi.shry_2010.isnull(),
+             'shry_2010'] = rdf.loc[rdf.year == 2010, 'shry'].values[0]
+
+    t2fi[['shrw0_2010', 'shrw1_2010', 'shrw2_2010', 'shrw3_2010',
+          'shra1_2010', 'shra2_2010', 'shra3_2010', 'shra4_2010', 'shrn_2010',
+          'shry_2010']] = t2fi[['shrw0_2010', 'shrw1_2010', 'shrw2_2010',
+                                'shrw3_2010', 'shra1_2010', 'shra2_2010',
+                                'shra3_2010', 'shra4_2010', 'shrn_2010',
+                                'shry_2010']].astype('float')
+    return t2fi
+
 
 @orca.table(cache=True)
 def empsh_to_empsix():
     return pd.read_csv(os.path.join(misc.data_dir(), "empsh_to_empsix.csv"))
+
+
+@orca.table(cache=True)
+def maz_forecast_inputs(regional_demographic_forecast):
+    rdf = regional_demographic_forecast.to_frame()
+    mfi = pd.read_csv(os.path.join(misc.data_dir(),
+                                   "maz_forecast_inputs.csv"),
+                      index_col='MAZ').replace('#DIV/0!', np.nan)
+
+    # apply regional share of hh by size to MAZs with no households in 2010
+    mfi.loc[mfi.shrs1_2010.isnull(),
+            'shrs1_2010'] = rdf.loc[rdf.year == 2010, 'shrs1'].values[0]
+    mfi.loc[mfi.shrs2_2010.isnull(),
+            'shrs2_2010'] = rdf.loc[rdf.year == 2010, 'shrs2'].values[0]
+    mfi.loc[mfi.shrs3_2010.isnull(),
+            'shrs3_2010'] = rdf.loc[rdf.year == 2010, 'shrs3'].values[0]
+    # the fourth category here is missing the 'r' in the csv
+    mfi.loc[mfi.shs4_2010.isnull(),
+            'shs4_2010'] = rdf.loc[rdf.year == 2010, 'shrs4'].values[0]
+    mfi[['shrs1_2010', 'shrs2_2010', 'shrs3_2010',
+         'shs4_2010']] = mfi[['shrs1_2010', 'shrs2_2010',
+                              'shrs3_2010', 'shs4_2010']].astype('float')
+    return mfi
+
+
+@orca.table(cache=True)
+def regional_demographic_forecast():
+    return pd.read_csv(os.path.join(misc.data_dir(),
+                       "regional_demographic_forecast.csv"))
 
 
 @orca.table(cache=True)
@@ -492,7 +575,6 @@ def taz_geography(superdistricts):
 def zones(store):
     # sort index so it prints out nicely when we want it to
     return store['zones'].sort_index()
-
 
 
 # this specifies the relationships between tables

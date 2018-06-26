@@ -304,7 +304,6 @@ def retail_ratio(nodes):
 # PARCELS VARIABLES
 #####################
 
-
 @orca.column('parcels')
 def maz_id(parcels, parcel_to_maz):
     return parcel_to_maz.maz.reindex(parcels.index)
