@@ -831,13 +831,13 @@ def travel_model_output(parcels, households, jobs, buildings,
     )
 
     base_year_summary_taz = \
-    base_year_summary_taz.to_frame()
+        base_year_summary_taz.to_frame()
     base_year_summary_county = \
-    base_year_summary_taz.groupby('COUNTY').sum()
+        base_year_summary_taz.groupby('COUNTY').sum()
     base_year_summary_county_ciacre = \
-    base_year_summary_county['CIACRE_UNWEIGHTED']
+        base_year_summary_county['CIACRE_UNWEIGHTED']
     base_year_summary_county_resacre = \
-    base_year_summary_county['RESACRE_UNWEIGHTED']
+        base_year_summary_county['RESACRE_UNWEIGHTED']
 
     county_df["CIACRE"] = scaled_ciacre(
         base_year_summary_county_ciacre, county_df.CIACRE_UNWEIGHTED)
