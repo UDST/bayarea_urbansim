@@ -805,7 +805,7 @@ def travel_model_output(parcels, households, jobs, buildings,
         "runs/run{}_taz_summaries_{}.csv".format(run_number, year))
 
 
-     # aggregate TAZ summaries to create county summaries
+    # aggregate TAZ summaries to create county summaries
 
     county_df = pd.DataFrame(index=[1,2,3,4,5,6,7,8,9])
 
