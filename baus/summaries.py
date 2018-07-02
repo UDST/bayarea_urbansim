@@ -811,11 +811,11 @@ def travel_model_output(parcels, households, jobs, buildings,
     county_df["COUNTY"] = county_df.index
 
     taz_cols = ["AGREMPN", "FPSEMPN", "HEREMPN", "RETEMPN", "MWTEMPN",
-        "OTHEMPN", "TOTEMP", "HHINCQ1", "HHINCQ2", "HHINCQ3", "HHINCQ4",
-        "HHPOP", "TOTHH", "SHPOP62P", "GQPOP", "TOTACRE", "TOTPOP",
-        "RES_UNITS","MFDU", "SFDU", "RESACRE_UNWEIGHTED",
-        "CIACRE_UNWEIGHTED", "EMPRES", "AGE0004", "AGE0519", "AGE2044",
-        "AGE4564", "AGE65P"]
+                "OTHEMPN", "TOTEMP", "HHINCQ1", "HHINCQ2", "HHINCQ3",
+                "HHINCQ4", "HHPOP", "TOTHH", "SHPOP62P", "GQPOP",
+                "TOTACRE", "TOTPOP", "RES_UNITS", "MFDU", "SFDU",
+                "RESACRE_UNWEIGHTED", "CIACRE_UNWEIGHTED", "EMPRES",
+                "AGE0004", "AGE0519", "AGE2044", "AGE4564", "AGE65P"]
 
     for col in taz_cols:
         taz_df_grouped = taz_df.groupby('COUNTY').sum()
@@ -845,12 +845,14 @@ def travel_model_output(parcels, households, jobs, buildings,
         base_year_summary_county_resacre, county_df.RESACRE_UNWEIGHTED)
 
     county_df = county_df[["COUNTY", "AGREMPN", "FPSEMPN", "HEREMPN",
-        "RETEMPN", "MWTEMPN", "OTHEMPN", "TOTEMP", "HHINCQ1", "HHINCQ2",
-        "HHINCQ3", "HHINCQ4", "HHPOP", "TOTHH", "SHPOP62P", "GQPOP",
-        "TOTACRE", "TOTPOP", "DENSITY", "AREATYPE", "RES_UNITS", "MFDU",
-        "SFDU", "RESACRE_UNWEIGHTED", "CIACRE_UNWEIGHTED", "CIACRE",
-        "RESACRE", "EMPRES", "AGE0004", "AGE0519", "AGE2044", "AGE4564",
-        "AGE65P"]]
+                           "RETEMPN", "MWTEMPN", "OTHEMPN", "TOTEMP",
+                           "HHINCQ1", "HHINCQ2", "HHINCQ3", "HHINCQ4",
+                           "HHPOP", "TOTHH", "SHPOP62P", "GQPOP",
+                           "TOTACRE", "TOTPOP", "DENSITY", "AREATYPE",
+                           "RES_UNITS", "MFDU", "SFDU", "RESACRE_UNWEIGHTED",
+                           "CIACRE_UNWEIGHTED", "CIACRE", "RESACRE", "EMPRES",
+                           "AGE0004", "AGE0519", "AGE2044", "AGE4564",
+                           "AGE65P"]]
 
     county_df.fillna(0).to_csv(
         "runs/run{}_county_summaries_{}.csv".format(run_number, year))
