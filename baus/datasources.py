@@ -180,7 +180,7 @@ def zoning_baseline(parcels, zoning_lookup, settings):
 
 @orca.table(cache=True)
 def new_tpp_id():
-    return pd.read_csv(os.path.join(misc.data_dir(), "tpp_id_2016.zip"),
+    return pd.read_csv(os.path.join(misc.data_dir(), "tpp_id_2016.csv"),
                        index_col="parcel_id")
 
 
