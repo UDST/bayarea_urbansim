@@ -921,3 +921,60 @@ def add_age_categories(df, year):
         df[col] = agedf[col]
 
     return df
+
+
+@orca.step()
+def hazards_summary(run_number, year, destroy_parcels, slr_demolish,
+                    households, jobs, parcels):
+
+    f = open(os.path.join("runs", "run%d_hazards_%d.log" %
+             (run_number, year)), "w")
+
+    def write(s):
+        # print s
+        f.write(s + "\n\n")
+
+    n = len(destroy_parcels)
+    write("Number of impacted parcels = %d" % n)
+    n = slr_demolish['residential_units'].sum()
+    write("Number of impacted residential units = %d" % n)
+    n = slr_demolish['building_sqft'].sum()
+    write("Number of impacted building sqft = %d" % n)
+
+    households = households.to_frame()
+    jobs = jobs.to_frame()
+    slr_households = households.local[households.building_id.
+                                      isin(slr_demolish.index)]
+    slr_jobs = jobs.local[jobs.building_id.isin(slr_demolish.index)]
+
+    # income quartile counts
+
+    write("Number of impacted households by type")
+
+    hh_summary = pd.DataFrame(index=[0])
+    hh_summary['hhincq1'] = \
+        (slr_households["base_income_quartile"] == 1).sum()
+    hh_summary['hhincq2'] = \
+        (slr_households["base_income_quartile"] == 2).sum()
+    hh_summary['hhincq3'] = \
+        (slr_households["base_income_quartile"] == 3).sum()
+    hh_summary['hhincq4'] = \
+        (slr_households["base_income_quartile"] == 4).sum()
+    hh_summary.to_string(f, index=False)
+
+    write("")
+    # employees by sector
+
+    write("Number of impacted jobs by sector")
+
+    jobs_summary = pd.DataFrame(index=[0])
+    jobs_summary['totemp'] = slr_jobs["empsix"].sum()
+    jobs_summary['agrempn'] = (slr_jobs["empsix"] == 'AGREMPN').sum()
+    jobs_summary['mwtempn'] = (slr_jobs["empsix"] == 'MWTEMPN').sum()
+    jobs_summary['retempn'] = (slr_jobs["empsix"] == 'RETEMPN').sum()
+    jobs_summary['fpsempn'] = (slr_jobs["empsix"] == 'FPSEMPN').sum()
+    jobs_summary['herempn'] = (slr_jobs["empsix"] == 'HEREMPN').sum()
+    jobs_summary['othempn'] = (slr_jobs["empsix"] == 'HEREMPN').sum()
+    jobs_summary.to_string(f, index=False)
+
+    f.close()
