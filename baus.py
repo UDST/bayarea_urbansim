@@ -3,6 +3,7 @@ import sys
 import time
 import traceback
 from baus import models
+from baus import hazards
 from baus import ual
 from baus import validation
 import pandas as pd

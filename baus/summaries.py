@@ -941,8 +941,6 @@ def hazards_summary(run_number, year, destroy_parcels, slr_demolish,
     n = slr_demolish['building_sqft'].sum()
     write("Number of impacted building sqft = %d" % n)
 
-    households = households.to_frame()
-    jobs = jobs.to_frame()
     slr_households = households.local[households.building_id.
                                       isin(slr_demolish.index)]
     slr_jobs = jobs.local[jobs.building_id.isin(slr_demolish.index)]
