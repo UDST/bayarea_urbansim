@@ -32,7 +32,7 @@ def initial_year():
 
 @orca.injectable()
 def final_year():
-    return 2040
+    return 2050
 
 
 @orca.injectable(cache=True)
