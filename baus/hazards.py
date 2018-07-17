@@ -13,8 +13,7 @@ import summaries
 
 @orca.step()
 def slr_inundate(parcels, slr_progression_f3, year, slr_parcel_inundation):
-    # UPDATE slr_progression_fX based on "futures" scenario
-    # (including function arg)
+    # UPDATE slr_progression_fX based on "futures" scenario (parameter, var)
     slr_progression = slr_progression_f3.to_frame()
     inundation_yr = slr_progression.query('year==@year')['inundated'].item()
     print "Inundation in model year is %d inches" % inundation_yr
@@ -35,21 +34,37 @@ def slr_inundate(parcels, slr_progression_f3, year, slr_parcel_inundation):
 
 
 @orca.step()
-def slr_remove_dev(buildings, destroy_parcels, year, parcels):
+def slr_remove_dev(buildings, destroy_parcels, year, parcels
+                   households, jobs):
     slr_demolish = buildings.local[buildings.parcel_id.isin
                                    (destroy_parcels.index)]
-    orca.add_table('slr_demolish', slr_demolish)
+    orca.add_table("slr_demolish", slr_demolish)
 
     print "Demolishing %d buildings" % len(slr_demolish)
+    households = households.to_frame()
+    hh_unplaced = households[households["building_id"] == -1]
+    jobs = jobs.to_frame()
+    jobs_unplaced = jobs[jobs["building_id"] == -1]
     l1 = len(buildings)
     buildings = utils._remove_developed_buildings(
         buildings.to_frame(buildings.local_columns),
         slr_demolish,
         unplace_agents=["households", "jobs"])
+    households = orca.get_table("households")
+    households = households.to_frame()
+    hh_unplaced_slr = households[households["building_id"] == -1]
+    hh_unplaced_slr = hh_unplaced_slr[~hh_unplaced_slr.index.isin
+                                      (hh_unplaced.index)]
+    orca.add_injectable("hh_unplaced_slr", hh_unplaced_slr)
+    jobs = orca.get_table("jobs")
+    jobs = jobs.to_frame()
+    jobs_unplaced_slr = jobs[jobs["building_id"] == -1]
+    jobs_unplaced_slr = jobs_unplaced_slr[~jobs_unplaced_slr.index.isin
+                                          (jobs_unplaced.index)]
+    orca.add_injectable("jobs_unplaced_slr", jobs_unplaced_slr)
     orca.add_table("buildings", buildings)
     buildings = orca.get_table("buildings")
     print "Demolished %d buildings" % (l1 - len(buildings))
 
 
-# floodier is parcels where buildings decline in value maybe
-# floodier should not pass 2015
+# floodier
