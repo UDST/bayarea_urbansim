@@ -34,7 +34,7 @@ def slr_inundate(parcels, slr_progression_f3, year, slr_parcel_inundation):
 
 
 @orca.step()
-def slr_remove_dev(buildings, destroy_parcels, year, parcels
+def slr_remove_dev(buildings, destroy_parcels, year, parcels,
                    households, jobs):
     slr_demolish = buildings.local[buildings.parcel_id.isin
                                    (destroy_parcels.index)]
