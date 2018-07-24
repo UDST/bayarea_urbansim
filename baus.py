@@ -193,7 +193,8 @@ def get_simulation_models(SCENARIO):
         "building_summary",
         "diagnostic_output",
         "geographic_summary",
-        "travel_model_output"
+        "travel_model_output",
+        "travel_model_2_output"
     ]
 
     # calculate VMT taxes
@@ -275,6 +276,7 @@ def run_models(MODE, SCENARIO):
                 "building_summary",
                 "geographic_summary",
                 "travel_model_output",
+                "travel_model_2_output",
                 "diagnostic_output"
 
             ], iter_vars=[IN_YEAR])
