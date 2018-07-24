@@ -510,7 +510,7 @@ def residential_developer(feasibility, households, buildings, parcels, year,
         # again because the buildings df gets modified by the run_developer
         # method below
         buildings = orca.get_table('buildings')
-        
+
         new_buildings = utils.run_developer(
             "residential",
             households,

@@ -921,5 +921,3 @@ def add_age_categories(df, year):
         df[col] = agedf[col]
 
     return df
-
-
