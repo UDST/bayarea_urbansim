@@ -851,11 +851,13 @@ def travel_model_2_output(parcels, households, jobs, buildings,
     def getsectorcounts(empsix, empsh):
         emp = jobs_df.query("empsix == '%s'" % empsix).\
             groupby('maz_id').size()
-        return emp * empsh_to_empsix.loc[empsh_to_empsix.empsh == empsh,
-                                         str(year)].values[0]
+        emp = emp * empsh_to_empsix.loc[empsh_to_empsix.empsh == empsh,
+                                        str(year)].values[0]
+        return round_series_match_target(emp, np.round(emp.sum()), 0)
 
     maz["ag"] = getsectorcounts("AGREMPN", "ag")
     maz["natres"] = getsectorcounts("AGREMPN", "natres")
+
     maz["fire"] = getsectorcounts("FPSEMPN", "fire")
     maz["serv_bus"] = getsectorcounts("FPSEMPN", "serv_bus")
     maz["prof"] = getsectorcounts("FPSEMPN", "prof")
@@ -966,12 +968,30 @@ def travel_model_2_output(parcels, households, jobs, buildings,
     cef = county_employment_forecast.to_frame()
     cef = cef.loc[cef.year == year].set_index('county')
     county['pers_occ_management'] = county.workers * cef.shr_occ_management
+    county['pers_occ_management'] = round_series_match_target(
+        county['pers_occ_management'], np.round(
+            county['pers_occ_management'].sum()), 0)
     county['pers_occ_professional'] = county.workers *\
         cef.shr_occ_professional
+    county['pers_occ_professional'] = round_series_match_target(
+        county['pers_occ_professional'], np.round(
+            county['pers_occ_professional'].sum()), 0)
     county['pers_occ_services'] = county.workers * cef.shr_occ_services
+    county['pers_occ_services'] = round_series_match_target(
+        county['pers_occ_services'], np.round(
+            county['pers_occ_services'].sum()), 0)
     county['pers_occ_retail'] = county.workers * cef.shr_occ_retail
+    county['pers_occ_retail'] = round_series_match_target(
+        county['pers_occ_retail'], np.round(
+            county['pers_occ_retail'].sum()), 0)
     county['pers_occ_manual'] = county.workers * cef.shr_occ_manual
+    county['pers_occ_manual'] = round_series_match_target(
+        county['pers_occ_manual'], np.round(
+            county['pers_occ_manual'].sum()), 0)
     county['pers_occ_military'] = county.workers * cef.shr_occ_military
+    county['pers_occ_military'] = round_series_match_target(
+        county['pers_occ_military'], np.round(
+            county['pers_occ_military'].sum()), 0)
 
     county['gq_tot_pop'] = maz.groupby('COUNTY').gq_tot_pop.sum()
 
