@@ -3,6 +3,7 @@ import sys
 import time
 import traceback
 from baus import models
+from baus import hazards
 from baus import ual
 from baus import validation
 import pandas as pd
@@ -116,6 +117,9 @@ def get_simulation_models(SCENARIO):
 
     models = [
 
+        "slr_inundate",
+        "slr_remove_dev",
+
         "neighborhood_vars",    # street network accessibility
         "regional_vars",        # road network accessibility
 
@@ -193,7 +197,8 @@ def get_simulation_models(SCENARIO):
         "building_summary",
         "diagnostic_output",
         "geographic_summary",
-        #"travel_model_output"
+        "travel_model_output",
+        "hazards_summary"
     ]
 
     # calculate VMT taxes
@@ -241,6 +246,9 @@ def run_models(MODE, SCENARIO):
         if not SKIP_BASE_YEAR:
             orca.run([
 
+                "slr_inundate",
+                "slr_remove_dev",
+
                 "neighborhood_vars",   # local accessibility vars
                 "regional_vars",       # regional accessibility vars
 
@@ -274,8 +282,9 @@ def run_models(MODE, SCENARIO):
                 "parcel_summary",
                 "building_summary",
                 "geographic_summary",
-                #"travel_model_output",
-                "diagnostic_output"
+                "travel_model_output",
+                "diagnostic_output",
+                "hazards_summary"
 
             ], iter_vars=[IN_YEAR])
 
