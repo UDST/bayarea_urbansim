@@ -974,3 +974,55 @@ def add_age_categories(df, year):
         df[col] = agedf[col]
 
     return df
+
+
+@orca.step()
+def hazards_summary(run_number, year, destroy_parcels, slr_demolish,
+                    households, jobs, parcels, hh_unplaced_slr,
+                    jobs_unplaced_slr):
+
+    f = open(os.path.join("runs", "run%d_hazards_%d.log" %
+             (run_number, year)), "w")
+
+    def write(s):
+        # print s
+        f.write(s + "\n\n")
+
+    n = len(destroy_parcels)
+    write("Number of impacted parcels = %d" % n)
+    n = slr_demolish['residential_units'].sum()
+    write("Number of impacted residential units = %d" % n)
+    n = slr_demolish['building_sqft'].sum()
+    write("Number of impacted building sqft = %d" % n)
+
+    # income quartile counts
+
+    write("Number of impacted households by type")
+
+    hh_summary = pd.DataFrame(index=[0])
+    hh_summary['hhincq1'] = \
+        (hh_unplaced_slr["base_income_quartile"] == 1).sum()
+    hh_summary['hhincq2'] = \
+        (hh_unplaced_slr["base_income_quartile"] == 2).sum()
+    hh_summary['hhincq3'] = \
+        (hh_unplaced_slr["base_income_quartile"] == 3).sum()
+    hh_summary['hhincq4'] = \
+        (hh_unplaced_slr["base_income_quartile"] == 4).sum()
+    hh_summary.to_string(f, index=False)
+
+    write("")
+    # employees by sector
+
+    write("Number of impacted jobs by sector")
+
+    jobs_summary = pd.DataFrame(index=[0])
+    jobs_summary['totemp'] = jobs_unplaced_slr["empsix"].sum()
+    jobs_summary['agrempn'] = (jobs_unplaced_slr["empsix"] == 'AGREMPN').sum()
+    jobs_summary['mwtempn'] = (jobs_unplaced_slr["empsix"] == 'MWTEMPN').sum()
+    jobs_summary['retempn'] = (jobs_unplaced_slr["empsix"] == 'RETEMPN').sum()
+    jobs_summary['fpsempn'] = (jobs_unplaced_slr["empsix"] == 'FPSEMPN').sum()
+    jobs_summary['herempn'] = (jobs_unplaced_slr["empsix"] == 'HEREMPN').sum()
+    jobs_summary['othempn'] = (jobs_unplaced_slr["empsix"] == 'OTHEMPN').sum()
+    jobs_summary.to_string(f, index=False)
+
+    f.close()
