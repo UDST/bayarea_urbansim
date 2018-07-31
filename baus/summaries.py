@@ -851,9 +851,8 @@ def travel_model_2_output(parcels, households, jobs, buildings,
     def getsectorcounts(empsix, empsh):
         emp = jobs_df.query("empsix == '%s'" % empsix).\
             groupby('maz_id').size()
-        emp = emp * empsh_to_empsix.loc[empsh_to_empsix.empsh == empsh,
-                                        str(year)].values[0]
-        return round_series_match_target(emp, np.round(emp.sum()), 0)
+        return emp * empsh_to_empsix.loc[empsh_to_empsix.empsh == empsh,
+                                         str(year)].values[0]
 
     maz["ag"] = getsectorcounts("AGREMPN", "ag")
     maz["natres"] = getsectorcounts("AGREMPN", "natres")
@@ -889,6 +888,18 @@ def travel_model_2_output(parcels, households, jobs, buildings,
     maz["eat"] = getsectorcounts("RETEMPN", "eat")
 
     maz["emp_total"] = jobs_df.groupby('maz_id').size()
+
+    maz = maz.fillna(0)
+
+    emp_cols = ['ag', 'natres', 'logis', 'man_bio', 'man_hvy', 'man_lgt',
+                'man_tech', 'transp', 'util', 'eat', 'hotel', 'ret_loc',
+                'ret_reg', 'fire', 'lease', 'prof', 'serv_bus', 'art_rec',
+                'ed_high', 'ed_k12', 'ed_oth', 'health', 'serv_per',
+                'serv_soc', 'constr', 'info', 'gov']
+    for i, r in maz.iterrows():
+        c = r[emp_cols]
+        maz.loc[i, emp_cols] = round_series_match_target(r[emp_cols],
+                                                         r.emp_total, 0)
 
     maz['num_hh'] = maz['tothh']
 
