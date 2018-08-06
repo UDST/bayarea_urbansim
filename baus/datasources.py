@@ -576,7 +576,7 @@ def zones(store):
     # sort index so it prints out nicely when we want it to
     return store['zones'].sort_index()
 
-  
+
 # SLR inundation levels for parcels
 @orca.table(cache=True)
 def slr_parcel_inundation():
