@@ -803,6 +803,59 @@ def travel_model_output(parcels, households, jobs, buildings,
     taz_df.fillna(0).to_csv(
         "runs/run{}_taz_summaries_{}.csv".format(run_number, year))
 
+    # aggregate TAZ summaries to create county summaries
+
+    county_df = pd.DataFrame(index=[1, 2, 3, 4, 5, 6, 7, 8, 9])
+
+    county_df["COUNTY"] = county_df.index
+
+    taz_cols = ["AGREMPN", "FPSEMPN", "HEREMPN", "RETEMPN", "MWTEMPN",
+                "OTHEMPN", "TOTEMP", "HHINCQ1", "HHINCQ2", "HHINCQ3",
+                "HHINCQ4", "HHPOP", "TOTHH", "SHPOP62P", "GQPOP",
+                "TOTACRE", "TOTPOP", "RES_UNITS", "MFDU", "SFDU",
+                "RESACRE_UNWEIGHTED", "CIACRE_UNWEIGHTED", "EMPRES",
+                "AGE0004", "AGE0519", "AGE2044", "AGE4564", "AGE65P"]
+
+    for col in taz_cols:
+        taz_df_grouped = taz_df.groupby('COUNTY').sum()
+        county_df[col] = taz_df_grouped[col]
+
+    county_df["DENSITY"] = \
+        (county_df.TOTPOP + (2.5 * county_df.TOTEMP)) / county_df.TOTACRE
+
+    county_df["AREATYPE"] = pd.cut(
+        county_df.DENSITY,
+        bins=[0, 6, 30, 55, 100, 300, np.inf],
+        labels=[5, 4, 3, 2, 1, 0]
+    )
+
+    base_year_summary_taz = \
+        base_year_summary_taz.to_frame()
+    base_year_summary_county = \
+        base_year_summary_taz.groupby('COUNTY').sum()
+    base_year_summary_county_ciacre = \
+        base_year_summary_county['CIACRE_UNWEIGHTED']
+    base_year_summary_county_resacre = \
+        base_year_summary_county['RESACRE_UNWEIGHTED']
+
+    county_df["CIACRE"] = scaled_ciacre(
+        base_year_summary_county_ciacre, county_df.CIACRE_UNWEIGHTED)
+    county_df["RESACRE"] = scaled_resacre(
+        base_year_summary_county_resacre, county_df.RESACRE_UNWEIGHTED)
+
+    county_df = county_df[["COUNTY", "AGREMPN", "FPSEMPN", "HEREMPN",
+                           "RETEMPN", "MWTEMPN", "OTHEMPN", "TOTEMP",
+                           "HHINCQ1", "HHINCQ2", "HHINCQ3", "HHINCQ4",
+                           "HHPOP", "TOTHH", "SHPOP62P", "GQPOP",
+                           "TOTACRE", "TOTPOP", "DENSITY", "AREATYPE",
+                           "RES_UNITS", "MFDU", "SFDU", "RESACRE_UNWEIGHTED",
+                           "CIACRE_UNWEIGHTED", "CIACRE", "RESACRE", "EMPRES",
+                           "AGE0004", "AGE0519", "AGE2044", "AGE4564",
+                           "AGE65P"]]
+
+    county_df.fillna(0).to_csv(
+        "runs/run{}_county_summaries_{}.csv".format(run_number, year))
+
 
 @orca.step()
 def travel_model_2_output(parcels, households, jobs, buildings,
@@ -1277,3 +1330,55 @@ def adjust_hhkids(df, year, rdf):
         df[col] = hhkidsdf[col]
 
     return df
+
+  
+@orca.step()
+def hazards_summary(run_number, year, destroy_parcels, slr_demolish,
+                    households, jobs, parcels, hh_unplaced_slr,
+                    jobs_unplaced_slr):
+
+    f = open(os.path.join("runs", "run%d_hazards_%d.log" %
+             (run_number, year)), "w")
+
+    def write(s):
+        # print s
+        f.write(s + "\n\n")
+
+    n = len(destroy_parcels)
+    write("Number of impacted parcels = %d" % n)
+    n = slr_demolish['residential_units'].sum()
+    write("Number of impacted residential units = %d" % n)
+    n = slr_demolish['building_sqft'].sum()
+    write("Number of impacted building sqft = %d" % n)
+
+    # income quartile counts
+
+    write("Number of impacted households by type")
+
+    hh_summary = pd.DataFrame(index=[0])
+    hh_summary['hhincq1'] = \
+        (hh_unplaced_slr["base_income_quartile"] == 1).sum()
+    hh_summary['hhincq2'] = \
+        (hh_unplaced_slr["base_income_quartile"] == 2).sum()
+    hh_summary['hhincq3'] = \
+        (hh_unplaced_slr["base_income_quartile"] == 3).sum()
+    hh_summary['hhincq4'] = \
+        (hh_unplaced_slr["base_income_quartile"] == 4).sum()
+    hh_summary.to_string(f, index=False)
+
+    write("")
+    # employees by sector
+
+    write("Number of impacted jobs by sector")
+
+    jobs_summary = pd.DataFrame(index=[0])
+    jobs_summary['totemp'] = jobs_unplaced_slr["empsix"].sum()
+    jobs_summary['agrempn'] = (jobs_unplaced_slr["empsix"] == 'AGREMPN').sum()
+    jobs_summary['mwtempn'] = (jobs_unplaced_slr["empsix"] == 'MWTEMPN').sum()
+    jobs_summary['retempn'] = (jobs_unplaced_slr["empsix"] == 'RETEMPN').sum()
+    jobs_summary['fpsempn'] = (jobs_unplaced_slr["empsix"] == 'FPSEMPN').sum()
+    jobs_summary['herempn'] = (jobs_unplaced_slr["empsix"] == 'HEREMPN').sum()
+    jobs_summary['othempn'] = (jobs_unplaced_slr["empsix"] == 'OTHEMPN').sum()
+    jobs_summary.to_string(f, index=False)
+
+    f.close()
