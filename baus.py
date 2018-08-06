@@ -286,7 +286,7 @@ def run_models(MODE, SCENARIO):
                 "travel_model_output",
                 "travel_model_2_output",
                 "diagnostic_output",
-                "hazards_summary
+                "hazards_summary"
               
             ], iter_vars=[IN_YEAR])
 
