@@ -1382,4 +1382,3 @@ def hazards_summary(run_number, year, destroy_parcels, slr_demolish,
     jobs_summary.to_string(f, index=False)
 
     f.close()
-    
