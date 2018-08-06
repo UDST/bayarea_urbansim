@@ -1331,7 +1331,7 @@ def adjust_hhkids(df, year, rdf):
 
     return df
 
-  
+
 @orca.step()
 def hazards_summary(run_number, year, destroy_parcels, slr_demolish,
                     households, jobs, parcels, hh_unplaced_slr,
@@ -1382,3 +1382,4 @@ def hazards_summary(run_number, year, destroy_parcels, slr_demolish,
     jobs_summary.to_string(f, index=False)
 
     f.close()
+    
