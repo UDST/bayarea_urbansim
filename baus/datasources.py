@@ -32,7 +32,7 @@ def initial_year():
 
 @orca.injectable()
 def final_year():
-    return 2040
+    return 2050
 
 
 @orca.injectable(cache=True)
@@ -180,7 +180,7 @@ def zoning_baseline(parcels, zoning_lookup, settings):
 
 @orca.table(cache=True)
 def new_tpp_id():
-    return pd.read_csv(os.path.join(misc.data_dir(), "tpp_id_2016.zip"),
+    return pd.read_csv(os.path.join(misc.data_dir(), "tpp_id_2016.csv"),
                        index_col="parcel_id")
 
 
@@ -575,6 +575,41 @@ def taz_geography(superdistricts):
 def zones(store):
     # sort index so it prints out nicely when we want it to
     return store['zones'].sort_index()
+
+
+# SLR inundation levels for parcels
+@orca.table(cache=True)
+def slr_parcel_inundation():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "slr_parcel_inundation.csv"),
+        index_col='parcel_id')
+
+
+# SLR inundation levels for parcels
+@orca.table(cache=True)
+def slr_parcel_inundation():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "slr_parcel_inundation.csv"),
+        index_col='parcel_id')
+
+
+# SLR progression by year, for "futures" f1, f2, f3
+@orca.table(cache=True)
+def slr_progression_f1():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "slr_progression_f1.csv"))
+
+
+@orca.table(cache=True)
+def slr_progression_f2():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "slr_progression_f2.csv"))
+
+
+@orca.table(cache=True)
+def slr_progression_f3():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "slr_progression_f3.csv"))
 
 
 # this specifies the relationships between tables
