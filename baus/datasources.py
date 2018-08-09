@@ -585,14 +585,6 @@ def slr_parcel_inundation():
         index_col='parcel_id')
 
 
-# SLR inundation levels for parcels
-@orca.table(cache=True)
-def slr_parcel_inundation():
-    return pd.read_csv(
-        os.path.join(misc.data_dir(), "slr_parcel_inundation.csv"),
-        index_col='parcel_id')
-
-
 # SLR progression by year, for "futures" f1, f2, f3
 @orca.table(cache=True)
 def slr_progression_f1():
