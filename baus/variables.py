@@ -451,8 +451,7 @@ def parcel_average_price(use, quantile=.5):
         cost_shifters = orca.get_table("parcels").cost_shifters
         price_shifters = orca.get_table("parcels").price_shifters
         taz2_shifters = orca.get_table("parcels").taz2_price_shifters
-        s = s / cost_shifters * price_shifters
-        s *= taz2_shifters
+        s = s / cost_shifters * price_shifters * taz2_shifters
 
         # just to make sure we're in a reasonable range
         return s.fillna(0).clip(150, 1250)
