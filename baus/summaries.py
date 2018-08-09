@@ -415,7 +415,7 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
 
     geographies = ['superdistrict', 'pda', 'juris']
 
-    if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
+    if year not in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
 
         for geography in geographies:
 
@@ -679,7 +679,7 @@ def travel_model_output(parcels, households, jobs, buildings,
                         zone_forecast_inputs, run_number,
                         taz, base_year_summary_taz, taz_geography):
 
-    if year not in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
+    if year not in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
         # only summarize for years which are multiples of 5
         return
 
@@ -864,7 +864,7 @@ def travel_model_2_output(parcels, households, jobs, buildings,
                           taz2_forecast_inputs, county_forecast_inputs,
                           county_employment_forecast,
                           regional_demographic_forecast):
-    if year not in [2010, 2015, 2020, 2025, 2030, 2035, 2040]:
+    if year not in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
         # only summarize for years which are multiples of 5
         return
 
