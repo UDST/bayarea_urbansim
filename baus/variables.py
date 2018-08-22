@@ -590,8 +590,11 @@ def nodev(zoning_baseline, parcels, static_parcels):
     # developer model may be marked as static
     s2 = parcels.index.isin(static_parcels)
     # nodev from sea level rise- determined by hazards.py model
-    s3 = np.array(parcels['slr_nodev'])
-    return s1 | s2 | s3
+    if 'slr_nodev' in parcels.columns:
+        s3 = np.array(parcels['slr_nodev'])
+        return s1 | s2 | s3
+    else:
+        return s1 | s2
 
 
 # get built far but set to nan for small parcels
