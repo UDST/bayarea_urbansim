@@ -3,7 +3,8 @@ import sys
 import time
 import traceback
 from baus import models
-from baus import hazards
+from baus import slr
+from baus import earthquake
 from baus import ual
 from baus import validation
 import pandas as pd
@@ -119,6 +120,8 @@ def get_simulation_models(SCENARIO):
 
         "slr_inundate",
         "slr_remove_dev",
+        "eq_code_buildings",
+        "earthquake_demolish",
 
         "neighborhood_vars",    # street network accessibility
         "regional_vars",        # road network accessibility
@@ -198,7 +201,8 @@ def get_simulation_models(SCENARIO):
         "diagnostic_output",
         "geographic_summary",
         "travel_model_output",
-        "hazards_summary"
+        "hazards_slr_summary",
+        "hazards_eq_summary"
     ]
 
     # calculate VMT taxes
@@ -248,6 +252,8 @@ def run_models(MODE, SCENARIO):
 
                 "slr_inundate",
                 "slr_remove_dev",
+                "eq_code_buildings",
+                "earthquake_demolish",
 
                 "neighborhood_vars",   # local accessibility vars
                 "regional_vars",       # regional accessibility vars
@@ -284,7 +290,8 @@ def run_models(MODE, SCENARIO):
                 "geographic_summary",
                 "travel_model_output",
                 "diagnostic_output",
-                "hazards_summary"
+                "hazards_slr_summary",
+                "hazards_eq_summary"
 
             ], iter_vars=[IN_YEAR])
 

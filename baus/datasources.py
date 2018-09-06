@@ -502,6 +502,21 @@ def slr_progression_f3():
         os.path.join(misc.data_dir(), "slr_progression_f3.csv"))
 
 
+# census tracts for parcels, to assign earthquake probabilities
+@orca.table(cache=True)
+def parcels_tract():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "parcel_tract_xwalk.csv"),
+        index_col='parcel_id')
+
+
+# earthquake and fire damage probabilities for census tracts
+@orca.table(cache=True)
+def tracts_earthquake():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "tract_damage_earthquake.csv"))
+
+
 # this specifies the relationships between tables
 orca.broadcast('buildings', 'residential_units', cast_index=True,
                onto_on='building_id')
