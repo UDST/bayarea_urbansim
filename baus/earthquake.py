@@ -338,8 +338,8 @@ def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
             fire_buildings.extend(buildings_fire)
             eq_buildings.extend(buildings_fire)
 
-        print "Total number of buildings being destroyed is: \
-            %d" % len(eq_buildings)
+        print "Total number of buildings being destroyed is: %d" \
+            % len(eq_buildings)
 
         orca.add_injectable("eq_buildings", eq_buildings)
         orca.add_injectable("existing_buildings", existing_buildings)
