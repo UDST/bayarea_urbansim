@@ -981,7 +981,7 @@ def hazards_slr_summary(run_number, year, destroy_parcels, slr_demolish,
                         households, jobs, parcels, hh_unplaced_slr,
                         jobs_unplaced_slr):
 
-    f = open(os.path.join("runs", "run%d_hazards_%d.log" %
+    f = open(os.path.join("runs", "run%d_hazards_slr_%d.log" %
              (run_number, year)), "w")
 
     def write(s):
