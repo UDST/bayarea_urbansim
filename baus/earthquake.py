@@ -377,5 +377,6 @@ def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
                                             (jobs_unplaced.index)]
         orca.add_injectable("jobs_unplaced_eq", jobs_unplaced_eq)
 
+        orca.add_table("buildings", buildings)
         buildings = orca.get_table("buildings")
         print "Demolished %d buildings" % (l1 - len(buildings))
