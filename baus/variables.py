@@ -304,6 +304,10 @@ def retail_ratio(nodes):
 # PARCELS VARIABLES
 #####################
 
+@orca.column('parcels')
+def maz_id(parcels, parcel_to_maz):
+    return parcel_to_maz.maz.reindex(parcels.index)
+
 
 @orca.column("parcels")
 def residential_sales_price_sqft(parcel_sales_price_sqft_func):
@@ -446,7 +450,8 @@ def parcel_average_price(use, quantile=.5):
         # apply shifters
         cost_shifters = orca.get_table("parcels").cost_shifters
         price_shifters = orca.get_table("parcels").price_shifters
-        s = s / cost_shifters * price_shifters
+        taz2_shifters = orca.get_table("parcels").taz2_price_shifters
+        s = s / cost_shifters * price_shifters * taz2_shifters
 
         # just to make sure we're in a reasonable range
         return s.fillna(0).clip(150, 1250)
@@ -733,6 +738,16 @@ def cost_shifters(parcels, settings):
 @orca.column('parcels', cache=True)
 def price_shifters(parcels, settings):
     return parcels.pda.map(settings["pda_price_shifters"]).fillna(1.0)
+
+
+@orca.column('parcels', cache=True)
+def taz2(parcels, maz):
+    return misc.reindex(maz.TAZ, parcels.maz_id)
+
+
+@orca.column('parcels', cache=True)
+def taz2_price_shifters(parcels, taz2_price_shifters, year):
+    return parcels.taz2.map(taz2_price_shifters[str(year)]).fillna(1.0)
 
 
 @orca.column('parcels', cache=True)
