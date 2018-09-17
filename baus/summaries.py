@@ -1333,11 +1333,11 @@ def adjust_hhkids(df, year, rdf):
 
 
 @orca.step()
-def hazards_summary(run_number, year, destroy_parcels, slr_demolish,
-                    households, jobs, parcels, hh_unplaced_slr,
-                    jobs_unplaced_slr):
+def hazards_slr_summary(run_number, year, destroy_parcels, slr_demolish,
+                        households, jobs, parcels, hh_unplaced_slr,
+                        jobs_unplaced_slr):
 
-    f = open(os.path.join("runs", "run%d_hazards_%d.log" %
+    f = open(os.path.join("runs", "run%d_hazards_slr_%d.log" %
              (run_number, year)), "w")
 
     def write(s):
@@ -1372,7 +1372,6 @@ def hazards_summary(run_number, year, destroy_parcels, slr_demolish,
     write("Number of impacted jobs by sector")
 
     jobs_summary = pd.DataFrame(index=[0])
-    jobs_summary['totemp'] = jobs_unplaced_slr["empsix"].sum()
     jobs_summary['agrempn'] = (jobs_unplaced_slr["empsix"] == 'AGREMPN').sum()
     jobs_summary['mwtempn'] = (jobs_unplaced_slr["empsix"] == 'MWTEMPN').sum()
     jobs_summary['retempn'] = (jobs_unplaced_slr["empsix"] == 'RETEMPN').sum()
@@ -1382,3 +1381,90 @@ def hazards_summary(run_number, year, destroy_parcels, slr_demolish,
     jobs_summary.to_string(f, index=False)
 
     f.close()
+
+
+@orca.step()
+def hazards_eq_summary(run_number, year, households, jobs):
+    if year == 2035:
+
+        f = open(os.path.join("runs", "run%d_hazards_eq_%d.log" %
+                 (run_number, year)), "w")
+
+        def write(s):
+            # print s
+            f.write(s + "\n\n")
+
+        write("Number of buildings with earthquake buildings codes")
+        code = orca.get_injectable("code")
+        code_counts = [[x, code.count(x)] for x in set(code)]
+        code_counts_df = pd.DataFrame(code_counts,
+                                      columns=['building_code', 'count'])
+        code_counts_df.to_string(f, index=False)
+
+        write("")
+
+        write("Number of buildings with fragility codes")
+        fragilities = orca.get_injectable("fragilities")
+        fragility_counts = [[x, fragilities.count(x)]
+                            for x in set(fragilities)]
+        fragility_counts_df = pd.DataFrame(fragility_counts,
+                                           columns=['fragility_code', 'count'])
+        fragility_counts_df.to_string(f, index=False)
+
+        write("")
+
+        # buildings counts
+        eq_buildings = orca.get_injectable("eq_buildings")
+        n = len(eq_buildings)
+        write("Total number of buildings destroyed = %d" % n)
+        existing_buildings = orca.get_injectable("existing_buildings")
+        n = len(existing_buildings)
+        write("Number of existing buildings destroyed = %d" % n)
+        new_buildings = orca.get_injectable("new_buildings")
+        n = len(new_buildings)
+        write("Number of new buildings destroyed = %d" % n)
+        fire_buildings = orca.get_injectable("fire_buildings")
+        n = len(fire_buildings)
+        write("Number of buildings destroyed by fire = %d" % n)
+
+        eq_demolish = orca.get_table("eq_demolish")
+        n = eq_demolish['residential_units'].sum()
+        write("Number of impacted residential units = %d" % n)
+        n = eq_demolish['building_sqft'].sum()
+        write("Number of impacted building sqft = %d" % n)
+
+        # income quartile counts
+        write("Number of impacted households by type")
+        hh_unplaced_eq = orca.get_injectable("hh_unplaced_eq")
+        hh_summary = pd.DataFrame(index=[0])
+        hh_summary['hhincq1'] = \
+            (hh_unplaced_eq["base_income_quartile"] == 1).sum()
+        hh_summary['hhincq2'] = \
+            (hh_unplaced_eq["base_income_quartile"] == 2).sum()
+        hh_summary['hhincq3'] = \
+            (hh_unplaced_eq["base_income_quartile"] == 3).sum()
+        hh_summary['hhincq4'] = \
+            (hh_unplaced_eq["base_income_quartile"] == 4).sum()
+        hh_summary.to_string(f, index=False)
+
+        write("")
+
+        # employees by sector
+        write("Number of impacted jobs by sector")
+        jobs_unplaced_eq = orca.get_injectable("jobs_unplaced_eq")
+        jobs_summary = pd.DataFrame(index=[0])
+        jobs_summary['agrempn'] = \
+            (jobs_unplaced_eq["empsix"] == 'AGREMPN').sum()
+        jobs_summary['mwtempn'] = \
+            (jobs_unplaced_eq["empsix"] == 'MWTEMPN').sum()
+        jobs_summary['retempn'] = \
+            (jobs_unplaced_eq["empsix"] == 'RETEMPN').sum()
+        jobs_summary['fpsempn'] = \
+            (jobs_unplaced_eq["empsix"] == 'FPSEMPN').sum()
+        jobs_summary['herempn'] = \
+            (jobs_unplaced_eq["empsix"] == 'HEREMPN').sum()
+        jobs_summary['othempn'] = \
+            (jobs_unplaced_eq["empsix"] == 'OTHEMPN').sum()
+        jobs_summary.to_string(f, index=False)
+
+        f.close()
