@@ -359,6 +359,8 @@ def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
         jobs_unplaced = jobs[jobs["building_id"] == -1]
 
         l1 = len(buildings)
+        # currently destroying more buildings than it is being
+        # passed- why?
         buildings = utils._remove_developed_buildings(
             buildings.to_frame(buildings.local_columns),
             eq_demolish,
