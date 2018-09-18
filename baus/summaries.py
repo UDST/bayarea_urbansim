@@ -700,7 +700,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     # jobs and the one called zone_id has null values while there others do not
     # going to change this while I think about this - turns out this has to do
     # with major caching issue which has been reported upstream
-    jobs_df["zone_id"] = jobs_df.zone_id_x
+    # jobs_df["zone_id"] = jobs_df.zone_id_x
 
     def getsectorcounts(sector):
         return jobs_df.query("empsix == '%s'" % sector).\
