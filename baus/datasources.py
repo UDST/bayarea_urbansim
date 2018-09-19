@@ -592,7 +592,7 @@ def slr_parcel_inundation():
         index_col='parcel_id')
 
 
-# SLR progression by year, for "futures" f1, f2, f3
+# SLR progression by year, for "futures" C, B, R
 @orca.table(cache=True)
 def slr_progression_C():
     return pd.read_csv(
