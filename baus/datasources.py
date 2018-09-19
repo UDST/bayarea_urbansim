@@ -594,21 +594,21 @@ def slr_parcel_inundation():
 
 # SLR progression by year, for "futures" f1, f2, f3
 @orca.table(cache=True)
-def slr_progression_f1():
+def slr_progression_C():
     return pd.read_csv(
-        os.path.join(misc.data_dir(), "slr_progression_f1.csv"))
+        os.path.join(misc.data_dir(), "slr_progression_C.csv"))
 
 
 @orca.table(cache=True)
-def slr_progression_f2():
+def slr_progression_B():
     return pd.read_csv(
-        os.path.join(misc.data_dir(), "slr_progression_f2.csv"))
+        os.path.join(misc.data_dir(), "slr_progression_B.csv"))
 
 
 @orca.table(cache=True)
-def slr_progression_f3():
+def slr_progression_R():
     return pd.read_csv(
-        os.path.join(misc.data_dir(), "slr_progression_f3.csv"))
+        os.path.join(misc.data_dir(), "slr_progression_R.csv"))
 
 
 # census tracts for parcels, to assign earthquake probabilities
