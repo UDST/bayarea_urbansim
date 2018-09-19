@@ -12,9 +12,9 @@ import summaries
 
 
 @orca.step()
-def slr_inundate(parcels, slr_progression_f3, year, slr_parcel_inundation):
-    # UPDATE slr_progression_fX based on "futures" scenario (parameter, var)
-    slr_progression = slr_progression_f3.to_frame()
+def slr_inundate(parcels, slr_progression_R, year, slr_parcel_inundation):
+    # UPDATE slr_progression_X based on "futures" scenario (parameter, var)
+    slr_progression = slr_progression_R.to_frame()
     inundation_yr = slr_progression.query('year==@year')['inundated'].item()
     print "Inundation in model year is %d inches" % inundation_yr
     slr_parcel_inundation = slr_parcel_inundation.to_frame()
