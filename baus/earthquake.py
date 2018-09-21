@@ -264,7 +264,7 @@ def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
                                                 key=itemgetter(0)):
             tract_parcels_grp.append(list(parcels))
             tracts.append(tract)
-        print "Number of census tract groups is: %d" % len(tracts)
+        print "Number of census tract groups is: %d" % len(tract_parcels_grp)
 
         # for the parcels in each tract, destroy X% of parcels in that tract
         tracts_earthquake = tracts_earthquake.to_frame()
