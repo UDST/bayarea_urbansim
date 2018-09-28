@@ -1381,6 +1381,12 @@ def hazards_slr_summary(run_number, year, destroy_parcels, slr_demolish,
     jobs_summary.to_string(f, index=False)
 
     f.close()
+    
+    slr_demolish = slr_demolish.to_frame()
+    slr_demolish = slr_demolish[['parcel_id']]
+    slr_demolish.to_csv(os.path.join("runs",
+                                     "run%d_hazards_slr_buildings_%d.csv"
+                                     %(run_number, year)))
 
 
 @orca.step()
@@ -1468,3 +1474,9 @@ def hazards_eq_summary(run_number, year, households, jobs):
         jobs_summary.to_string(f, index=False)
 
         f.close()
+        
+        eq_demolish = eq_demolish.to_frame()
+        eq_demolish = eq_demolish[['parcel_id']]
+        eq_demolish.to_csv(os.path.join("runs",
+                                        "run%d_hazards_eq_buildings_%d.csv"
+                                        %(run_number, year)))
