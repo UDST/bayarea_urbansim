@@ -269,6 +269,7 @@ def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
         # for the parcels in each tract, destroy X% of parcels in that tract
         tracts_earthquake = tracts_earthquake.to_frame()
         tracts_earthquake = tracts_earthquake.sort_values(by=['tract_ba'])
+        tracts_earthquake = tracts_earthquake.reset_index(drop=True)
 
         buildings = buildings.to_frame()
         eq_buildings = []
