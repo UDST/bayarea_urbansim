@@ -415,7 +415,7 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
 
     geographies = ['superdistrict', 'pda', 'juris']
 
-    if year not in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
+    if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
 
         for geography in geographies:
 
