@@ -120,67 +120,7 @@ inclusionary_housing_settings:
       values:
       - San Francisco
   "1":
-    - type: jurisdictions
-      description: low setting
-      amount: .05
-      values:
-      - Alameda
-      - Alameda County
-      - Albany
-      - Atherton
-      - Belmont
-      - Belvedere
-      - Berkeley
-      - Burlingame
-      - Campbell
-      - Cloverdale
-      - Concord
-      - Contra Costa County
-      - Corte Madera
-      - Cupertino
-      - Danville
-      - Dublin
-      - East Palo Alto
-      - El Cerrito
-      - Emeryville
-      - Fairfax
-      - Foster City
-      - Fremont
-      - Lafayette
-      - Larkspur
-      - Los Altos
-      - Los Altos Hills
-      - Los Gatos
-      - Menlo Park
-      - Millbrae
-      - Milpitas
-      - Monte Sereno
-      - Moraga
-      - Mountain View
-      - Orinda
-      - Palo Alto
-      - Piedmont
-      - Pleasanton
-      - Redwood City
-      - Ross
-      - San Anselmo
-      - San Bruno
-      - San Carlos
-      - San Francisco
-      - San Jose
-      - San Mateo
-      - San Mateo County
-      - San Ramon
-      - Santa Clara
-      - Santa Rosa
-      - Saratoga
-      - Sausalito
-      - Sunnyvale
-      - Tiburon
-      - Union City
-      - Walnut Creek
-  "2":
-    - type: jurisdictions
+      - type: jurisdictions
       description: medium setting
       amount: .1
       values:
@@ -257,7 +197,86 @@ inclusionary_housing_settings:
       - Vacaville
       - Vallejo
       - Walnut Creek
-      - Windsor  
+      - Windsor
+  "2":
+      - type: jurisdictions
+      description: medium setting
+      amount: .1
+      values:
+      - Alameda
+      - Alameda County
+      - Albany
+      - American Canyon
+      - Antioch
+      - Belmont
+      - Benicia
+      - Berkeley
+      - Brisbane
+      - Burlingame
+      - Campbell
+      - Cloverdale
+      - Colma
+      - Concord
+      - Contra Costa County
+      - Cotati
+      - Cupertino
+      - Daly City
+      - Danville
+      - Dixon
+      - Dublin
+      - East Palo Alto
+      - El Cerrito
+      - Emeryville
+      - Fairfield
+      - Fremont
+      - Gilroy
+      - Hayward
+      - Hercules
+      - Lafayette
+      - Livermore
+      - Los Altos
+      - Martinez
+      - Menlo Park
+      - Millbrae
+      - Milpitas
+      - Moraga
+      - Morgan Hill
+      - Mountain View
+      - Napa
+      - Newark
+      - Oakland
+      - Oakley
+      - Orinda
+      - Palo Alto
+      - Petaluma
+      - Pinole
+      - Pittsburg
+      - Pleasant Hill
+      - Pleasanton
+      - Redwood City
+      - Richmond
+      - Rohnert Park
+      - San Bruno
+      - San Carlos
+      - San Francisco
+      - San Jose
+      - San Leandro
+      - San Mateo
+      - San Mateo County
+      - San Pablo
+      - San Rafael
+      - San Ramon
+      - Santa Clara
+      - Santa Rosa
+      - Sebastopol
+      - South San Francisco
+      - Suisun City
+      - Sunnyvale
+      - Union City
+      - Vacaville
+      - Vallejo
+      - Walnut Creek
+      - Windsor
   "3":
     - type: jurisdictions
       description: high setting
@@ -347,14 +366,16 @@ inclusionary_housing_settings:
       - Windsor
   "5":
     - type: jurisdictions
-      description: higher setting
-      amount: .2
+      description: medium setting
+      amount: .1
       values:
       - Alameda
       - Alameda County
       - Albany
       - American Canyon
+      - Antioch
       - Belmont
+      - Benicia
       - Berkeley
       - Brisbane
       - Burlingame
@@ -367,6 +388,7 @@ inclusionary_housing_settings:
       - Cupertino
       - Daly City
       - Danville
+      - Dixon
       - Dublin
       - East Palo Alto
       - El Cerrito
@@ -389,14 +411,17 @@ inclusionary_housing_settings:
       - Napa
       - Newark
       - Oakland
+      - Oakley
       - Orinda
       - Palo Alto
       - Petaluma
       - Pinole
+      - Pittsburg
       - Pleasant Hill
       - Pleasanton
       - Redwood City
       - Richmond
+      - Rohnert Park
       - San Bruno
       - San Carlos
       - San Francisco
@@ -408,7 +433,7 @@ inclusionary_housing_settings:
       - San Rafael
       - San Ramon
       - Santa Clara
-      - Santa Rosa 
+      - Santa Rosa
       - Sebastopol
       - South San Francisco
       - Suisun City
@@ -477,7 +502,7 @@ acct_settings:
       total_amount: 500000000
       receiving_buildings_filter: pda_id > 0
       subsidize_affordable: True
-      enable_in_scenarios: ["1"]
+      enable_in_scenarios: []
 
     # capital gains tax settings - see baus_docs for more information on the
     # intent and use of these policies
@@ -487,7 +512,7 @@ acct_settings:
       total_amount: 42000000
       receiving_buildings_filter: pda_id > 0
       subsidize_affordable: True
-      enable_in_scenarios: ["1"]
+      enable_in_scenarios: []
 
   profitability_adjustment_policies:  
 
@@ -533,11 +558,8 @@ acct_settings:
       - "3"
     com_for_com_scenarios:
       - "4"
-      - "5"
     com_for_res_scenarios:
-      - "1"
       - "4"
-      - "5"
     res_for_res_fee_amounts:
       VH: 25000
       H: 15000
@@ -932,9 +954,6 @@ development_limits:
       'Napa County': 25
       'Solano County': 230
       'Sonoma County': 50
-  "2":
-    Office:
-      'San Francisco': 5250
 
 
 # a list of parcel geom ids which urbansim doesn't touch - this are viewed as exceptions
