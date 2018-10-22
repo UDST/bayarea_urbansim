@@ -120,7 +120,7 @@ inclusionary_housing_settings:
       values:
       - San Francisco
   "1":
-      - type: jurisdictions
+    - type: jurisdictions
       description: medium setting
       amount: .1
       values:
@@ -199,7 +199,7 @@ inclusionary_housing_settings:
       - Walnut Creek
       - Windsor
   "2":
-      - type: jurisdictions
+    - type: jurisdictions
       description: medium setting
       amount: .1
       values:
