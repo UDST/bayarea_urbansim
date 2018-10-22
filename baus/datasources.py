@@ -361,6 +361,43 @@ def parcels_geography(parcels):
 
 
 @orca.table(cache=True)
+def parcels_subzone():
+    return pd.read_csv(os.path.join(misc.data_dir(),
+                                    '2018_10_17_parcel_to_taz1454sub.csv'),
+                       usecols=['taz_sub', 'PARCEL_ID'],
+                       index_col='PARCEL_ID')
+
+
+@orca.table(cache=True)
+def mandatory_accessibility():
+    df = pd.read_csv(os.path.join(misc.data_dir(),
+                       '2015_06_002_mandatoryAccessibilities.csv'))
+    df.loc[df.subzone==0, 'subzone'] = 'a'
+    df.loc[df.subzone==1, 'subzone'] = 'b'
+    df.loc[df.subzone==2, 'subzone'] = 'c'
+    df['taz_sub'] = df.taz.astype('str') + df.subzone
+    return df.set_index('taz_sub')
+
+
+@orca.table(cache=True)
+def non_mandatory_accessibility():
+    df = pd.read_csv(os.path.join(misc.data_dir(),
+                       '2015_06_002_nonMandatoryAccessibilities.csv'))
+    df.loc[df.subzone==0, 'subzone'] = 'a'
+    df.loc[df.subzone==1, 'subzone'] = 'b'
+    df.loc[df.subzone==2, 'subzone'] = 'c'
+    df['taz_sub'] = df.taz.astype('str') + df.subzone
+    return df.set_index('taz_sub')
+
+
+@orca.table(cache=True)
+def accessibilities_segmentation():
+    return pd.read_csv(os.path.join(misc.data_dir(),
+                       'accessibilities_segmentation.csv'),
+                       index_col='year')
+
+
+@orca.table(cache=True)
 def manual_edits():
     return pd.read_csv(os.path.join(misc.data_dir(), "manual_edits.csv"))
 
@@ -632,6 +669,8 @@ orca.broadcast('buildings', 'residential_units', cast_index=True,
 orca.broadcast('residential_units', 'households', cast_index=True,
                onto_on='unit_id')
 orca.broadcast('parcels_geography', 'buildings', cast_index=True,
+               onto_on='parcel_id')
+orca.broadcast('parcels', 'buildings', cast_index=True,
                onto_on='parcel_id')
 # not defined in urbansim_Defaults
 orca.broadcast('tmnodes', 'buildings', cast_index=True, onto_on='tmnode_id')
