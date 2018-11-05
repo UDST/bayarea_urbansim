@@ -803,7 +803,8 @@ def cml(parcels, year, mandatory_accessibility,
     acc_seg = accessibilities_segmentation.local
     cols_to_sum = []
     for col in mand_acc.columns[~mand_acc.columns.isin(['destChoiceAlt',
-                                                        'taz', 'subzone'])]:
+                                                        'taz', 'subzone',
+                                                        'weighted_sum'])]:
         mand_acc[col] = ((mand_acc[col] - mand_acc[col].min())
                          / 0.0134) * acc_seg.loc[year, col]
         cols_to_sum.append(col)
@@ -819,7 +820,8 @@ def cnml(parcels, year, non_mandatory_accessibility,
     acc_seg = accessibilities_segmentation.local
     cols_to_sum = []
     for col in nmand_acc.columns[~nmand_acc.columns.isin(['destChoiceAlt',
-                                                          'taz', 'subzone'])]:
+                                                          'taz', 'subzone',
+                                                          'weighted_sum'])]:
         nmand_acc[col] = ((nmand_acc[col] - nmand_acc[col].min())
                           / 0.0175) * acc_seg.loc[year, col]
         cols_to_sum.append(col)

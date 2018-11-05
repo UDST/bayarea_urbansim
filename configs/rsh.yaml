@@ -13,12 +13,13 @@ fit_filters:
 - cml > 0
 - combo_logsum > 0
 
-predict_filters: null
+predict_filters:
+- cml > 0
+- combo_logsum > 0
 
 model_expression: price_per_sqft ~ sqft_per_unit + residential_units_1500 + combo_logsum
-    + sfdu + ave_income_1500 + is_sanfran + pacheights + modern_condo + historic
-    + new_construction + stanford + I(transit_type == "bart1") + I(transit_type ==
-    "bart2")
+    + sfdu + ave_income_1500 + is_sanfran + pacheights + modern_condo + historic +
+    new_construction + stanford + I(transit_type == "bart1") + I(transit_type == "bart2")
 
 ytransform: null
 
@@ -26,54 +27,51 @@ fitted: true
 
 fit_parameters:
     Coefficient:
-        I(transit_type == "bart1")[T.True]: 4.067231457502082
-        I(transit_type == "bart2")[T.True]: 30.9732476230825
-        Intercept: -4083.1594239514293
-        ave_income_1500: 402.1860779834311
-        cml: 5.794261613065703
-        combo_logsum: -3.128791795165253
-        historic: 75.09592044669732
-        is_sanfran: 135.92608216756966
-        modern_condo: 35.47227843153438
-        new_construction: 17.877269990128717
-        pacheights: -1.4943767583779637
-        residential_units_1500: 71.14622716710744
-        sfdu: -73.0189202260674
-        sqft_per_unit: -0.09319359770303141
-        stanford: -1.8129895633136281
+        I(transit_type == "bart1")[T.True]: 7.385723486900683
+        I(transit_type == "bart2")[T.True]: 33.23253751642887
+        Intercept: -4114.111742318178
+        ave_income_1500: 394.3129142706155
+        combo_logsum: 0.4244199389793332
+        historic: 76.32601962735768
+        is_sanfran: 119.33658070663058
+        modern_condo: 28.78484664024181
+        new_construction: 19.96250107067786
+        pacheights: -1.4898198233701723
+        residential_units_1500: 73.6582695342104
+        sfdu: -75.01524879560084
+        sqft_per_unit: -0.0928285900842262
+        stanford: -1.8134180222637177
     Std. Error:
-        I(transit_type == "bart1")[T.True]: 3.715595748619679
-        I(transit_type == "bart2")[T.True]: 3.911121141618734
-        Intercept: 24.96207284806536
-        ave_income_1500: 2.0302485696744776
-        cml: 0.14047514642106004
-        combo_logsum: 0.08643221724526966
-        historic: 1.4363836787244069
-        is_sanfran: 2.274859026532174
-        modern_condo: 5.025246846037578
-        new_construction: 1.6879296970381026
-        pacheights: 0.029919918012506427
-        residential_units_1500: 1.1023051754927526
-        sfdu: 1.0467696038635605
-        sqft_per_unit: 0.0007972186266088438
-        stanford: 0.022743203997116244
+        I(transit_type == "bart1")[T.True]: 3.738631721214531
+        I(transit_type == "bart2")[T.True]: 3.9359061618476185
+        Intercept: 25.111368490620926
+        ave_income_1500: 2.034264300944277
+        combo_logsum: 0.007104230044176733
+        historic: 1.4453162918543703
+        is_sanfran: 2.2534328730614677
+        modern_condo: 5.054955254477165
+        new_construction: 1.698030716754278
+        pacheights: 0.03011227025761027
+        residential_units_1500: 1.1077048467221873
+        sfdu: 1.0523796766796487
+        sqft_per_unit: 0.00080229990645452
+        stanford: 0.02288957149821564
     T-Score:
-        I(transit_type == "bart1")[T.True]: 1.0946377735018762
-        I(transit_type == "bart2")[T.True]: 7.919275957344368
-        Intercept: -163.57453360560507
-        ave_income_1500: 198.09696408155386
-        cml: 41.24759262181503
-        combo_logsum: -36.19936980543547
-        historic: 52.28124042274479
-        is_sanfran: 59.751431003958615
-        modern_condo: 7.05881313263335
-        new_construction: 10.591240868324602
-        pacheights: -49.945884134886974
-        residential_units_1500: 64.54313083970021
-        sfdu: -69.75643919785134
-        sqft_per_unit: -116.89841982173975
-        stanford: -79.71566203000724
+        I(transit_type == "bart1")[T.True]: 1.975515118269354
+        I(transit_type == "bart2")[T.True]: 8.443427294727128
+        Intercept: -163.83462907864995
+        ave_income_1500: 193.83563585497765
+        combo_logsum: 59.74186313508049
+        historic: 52.80921557275871
+        is_sanfran: 52.95768164795712
+        modern_condo: 5.694382084736976
+        new_construction: 11.756266169810774
+        pacheights: -49.47550651693724
+        residential_units_1500: 66.49629614980273
+        sfdu: -71.28154453940104
+        sqft_per_unit: -115.70310470862354
+        stanford: -79.22463827708977
 
-fit_rsquared_adj: 0.4776665070201166
+fit_rsquared_adj: 0.47092164251091884
 
-fit_rsquared: 0.47772203559361925
+fit_rsquared: 0.4709738705782833
