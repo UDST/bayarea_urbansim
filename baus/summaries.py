@@ -860,7 +860,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     taz_df = adjust_hhkids(taz_df, year, rdf, tothh)
     del taz_df['hh']
     # taz_df = taz_df.rename(columns={'hh': 'HH', 'pop': 'POP'})
-    taz_df.index.name = 'TAZ1454'
+    taz_df.index.name = 'TAZ'
 
     taz_df.fillna(0).to_csv(
         "runs/run{}_taz_summaries_{}.csv".format(run_number, year))
