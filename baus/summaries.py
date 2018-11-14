@@ -819,6 +819,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     maz['gq_type_othnon'] = mazi['gqpopo' + mazi_yr]
     maz['gq_tot_pop'] = maz['gq_type_univ'] + maz['gq_type_mil']\
         + maz['gq_type_othnon']
+    tot_gqpop = maz.gq_tot_pop.sum()
 
     maz['POP'] = maz.gq_tot_pop + maz.hhpop
     maz['HH'] = maz.tothh.fillna(0)
@@ -831,25 +832,19 @@ def travel_model_output(parcels, households, jobs, buildings,
     maz = adjust_hhsize(maz, year, rdf, tothh)
 
     tfi = taz_forecast_inputs.to_frame()
-    taz_df['gq_type_univ'] = maz.groupby('taz1454').gq_type_univ.sum().fillna(0)
+    taz_df['gq_type_univ'] = maz.groupby('taz1454'
+                                         ).gq_type_univ.sum().fillna(0)
     taz_df['gq_type_mil'] = maz.groupby('taz1454').gq_type_mil.sum().fillna(0)
-    taz_df['gq_type_othnon'] = maz.groupby('taz1454').gq_type_othnon.sum().fillna(0)
+    taz_df['gq_type_othnon'] = maz.groupby('taz1454'
+                                           ).gq_type_othnon.sum().fillna(0)
     taz_df['gq_tot_pop'] = maz.groupby('taz1454').gq_tot_pop.sum().fillna(0)
-    
+
     taz_df['hh'] = maz.groupby('taz1454').tothh.sum()
 
     taz_df['hh_size_1'] = maz.groupby('taz1454').hh_size_1.sum()
     taz_df['hh_size_2'] = maz.groupby('taz1454').hh_size_2.sum()
     taz_df['hh_size_3'] = maz.groupby('taz1454').hh_size_3.sum()
     taz_df['hh_size_4_plus'] = maz.groupby('taz1454').hh_size_4_plus.sum()
-
-    # taz_df['pop_hhsize1'] = maz.groupby('taz1454').hh_size_1.sum()
-    # taz_df['pop_hhsize2'] = maz.groupby('taz1454').hh_size_2.sum() * 2
-    # taz_df['pop_hhsize3'] = maz.groupby('taz1454').hh_size_3.sum() * 3
-    # taz_df['pop_hhsize4'] = maz.groupby('taz1454').hh_size_4_plus.sum() * 4.781329
-
-    # taz_df['pop'] = taz_df.pop_hhsize1 + taz_df.pop_hhsize2\
-    #    + taz_df.pop_hhsize3 + taz_df.pop_hhsize4
 
     taz_df['county'] = maz.groupby('taz1454').COUNTY.first()
 
@@ -861,7 +856,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     taz_df['hh_kids_no'] = taz_df['hh'] * tfi.shrn_2010
     taz_df['hh_kids_yes'] = taz_df['hh'] * tfi.shry_2010
     taz_df = adjust_hhwkrs(taz_df, year, rdf, tothh)
-    #taz = adjust_page(taz_df, year, rdf)
+    # taz = adjust_page(taz_df, year, rdf)
     taz_df = adjust_hhkids(taz_df, year, rdf, tothh)
     del taz_df['hh']
     # taz_df = taz_df.rename(columns={'hh': 'HH', 'pop': 'POP'})
@@ -922,6 +917,12 @@ def travel_model_output(parcels, households, jobs, buildings,
 
     county_df.fillna(0).to_csv(
         "runs/run{}_county_summaries_{}.csv".format(run_number, year))
+
+    pd.DataFrame(data={'REGION': [1],
+                       'gq_num_hh_region': [tot_gqpop]}).to_csv(
+                 "runs/run{}_regional_marginals_{}.csv".format(run_number,
+                                                               year),
+                 index=False)
 
 
 @orca.step()
