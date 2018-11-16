@@ -371,21 +371,21 @@ def parcels_subzone():
 @orca.table(cache=True)
 def mandatory_accessibility():
     df = pd.read_csv(os.path.join(misc.data_dir(),
-                       '2015_06_002_mandatoryAccessibilities.csv'))
-    df.loc[df.subzone==0, 'subzone'] = 'a'
-    df.loc[df.subzone==1, 'subzone'] = 'b'
-    df.loc[df.subzone==2, 'subzone'] = 'c'
+                                  '2015_06_002_mandatoryAccessibilities.csv'))
+    df.loc[df.subzone == 0, 'subzone'] = 'a'
+    df.loc[df.subzone == 1, 'subzone'] = 'b'
+    df.loc[df.subzone == 2, 'subzone'] = 'c'
     df['taz_sub'] = df.taz.astype('str') + df.subzone
     return df.set_index('taz_sub')
 
 
 @orca.table(cache=True)
 def non_mandatory_accessibility():
-    df = pd.read_csv(os.path.join(misc.data_dir(),
-                       '2015_06_002_nonMandatoryAccessibilities.csv'))
-    df.loc[df.subzone==0, 'subzone'] = 'a'
-    df.loc[df.subzone==1, 'subzone'] = 'b'
-    df.loc[df.subzone==2, 'subzone'] = 'c'
+    df = pd.read_csv(os.path.join(
+        misc.data_dir(), '2015_06_002_nonMandatoryAccessibilities.csv'))
+    df.loc[df.subzone == 0, 'subzone'] = 'a'
+    df.loc[df.subzone == 1, 'subzone'] = 'b'
+    df.loc[df.subzone == 2, 'subzone'] = 'c'
     df['taz_sub'] = df.taz.astype('str') + df.subzone
     return df.set_index('taz_sub')
 
