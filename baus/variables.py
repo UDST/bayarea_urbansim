@@ -805,8 +805,8 @@ def cml(parcels, year, mandatory_accessibility,
     for col in mand_acc.columns[~mand_acc.columns.isin(['destChoiceAlt',
                                                         'taz', 'subzone',
                                                         'weighted_sum'])]:
-        mand_acc[col] = ((mand_acc[col] - mand_acc[col].min())
-                         / 0.0134) * acc_seg.loc[year, col]
+        mand_acc[col] = ((mand_acc[col] - mand_acc[col].min()) /
+                         0.0134) * acc_seg.loc[year, col]
         cols_to_sum.append(col)
     mand_acc['weighted_sum'] = mand_acc[cols_to_sum].sum(axis=1)
     df = misc.reindex(mand_acc.weighted_sum, parcels.subzone)
@@ -822,8 +822,8 @@ def cnml(parcels, year, non_mandatory_accessibility,
     for col in nmand_acc.columns[~nmand_acc.columns.isin(['destChoiceAlt',
                                                           'taz', 'subzone',
                                                           'weighted_sum'])]:
-        nmand_acc[col] = ((nmand_acc[col] - nmand_acc[col].min())
-                          / 0.0175) * acc_seg.loc[year, col]
+        nmand_acc[col] = ((nmand_acc[col] - nmand_acc[col].min()) /
+                          0.0175) * acc_seg.loc[year, col]
         cols_to_sum.append(col)
     nmand_acc['weighted_sum'] = nmand_acc[cols_to_sum].sum(axis=1)
     df = misc.reindex(nmand_acc.weighted_sum, parcels.subzone)
