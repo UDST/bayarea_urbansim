@@ -287,6 +287,21 @@ def residential_price(buildings, residential_units, settings):
     return means.max(axis=1)
 
 
+@orca.column('buildings', cache=True, cache_scope='iteration')
+def cml(buildings, parcels):
+    return misc.reindex(parcels.cml, buildings.parcel_id)
+
+
+@orca.column('buildings', cache=True, cache_scope='iteration')
+def cnml(buildings, parcels):
+    return misc.reindex(parcels.cnml, buildings.parcel_id)
+
+
+@orca.column('buildings', cache=True, cache_scope='iteration')
+def combo_logsum(buildings, parcels):
+    return misc.reindex(parcels.combo_logsum, buildings.parcel_id)
+
+
 #####################
 # NODES VARIABLES
 #####################
@@ -774,6 +789,51 @@ def subregion(taz_geography, parcels):
 @orca.column('parcels', cache=True)
 def vmt_code(parcels, vmt_fee_categories):
     return misc.reindex(vmt_fee_categories.res_cat, parcels.zone_id)
+
+
+@orca.column('parcels', cache=True)
+def subzone(parcels, parcels_subzone):
+    return parcels_subzone.taz_sub
+
+
+@orca.column('parcels', cache=True, cache_scope='iteration')
+def cml(parcels, year, mandatory_accessibility,
+        accessibilities_segmentation):
+    mand_acc = mandatory_accessibility.local
+    acc_seg = accessibilities_segmentation.local
+    cols_to_sum = []
+    for col in mand_acc.columns[~mand_acc.columns.isin(['destChoiceAlt',
+                                                        'taz', 'subzone',
+                                                        'weighted_sum'])]:
+        mand_acc[col] = ((mand_acc[col] - mand_acc[col].min()) /
+                         0.0134) * acc_seg.loc[year, col]
+        cols_to_sum.append(col)
+    mand_acc['weighted_sum'] = mand_acc[cols_to_sum].sum(axis=1)
+    df = misc.reindex(mand_acc.weighted_sum, parcels.subzone)
+    return df.reindex(parcels.index).fillna(-1)
+
+
+@orca.column('parcels', cache=True, cache_scope='iteration')
+def cnml(parcels, year, non_mandatory_accessibility,
+         accessibilities_segmentation):
+    nmand_acc = non_mandatory_accessibility.local
+    acc_seg = accessibilities_segmentation.local
+    cols_to_sum = []
+    for col in nmand_acc.columns[~nmand_acc.columns.isin(['destChoiceAlt',
+                                                          'taz', 'subzone',
+                                                          'weighted_sum'])]:
+        nmand_acc[col] = ((nmand_acc[col] - nmand_acc[col].min()) /
+                          0.0175) * acc_seg.loc[year, col]
+        cols_to_sum.append(col)
+    nmand_acc['weighted_sum'] = nmand_acc[cols_to_sum].sum(axis=1)
+    df = misc.reindex(nmand_acc.weighted_sum, parcels.subzone)
+    return df.reindex(parcels.index).fillna(-1)
+
+
+@orca.column('parcels', cache=True, cache_scope='iteration')
+def combo_logsum(parcels):
+    df = parcels.to_frame(['cml', 'cnml'])
+    return df.cml + df.cnml
 
 
 # This is an all computed table which takes calculations from the below and
