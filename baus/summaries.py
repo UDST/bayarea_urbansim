@@ -701,7 +701,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     jobs_df = orca.merge_tables(
         'jobs',
         [parcels, buildings, jobs],
-        columns=['zone_id', 'empsix']
+        columns=['zone_id', 'empsix', 'taz']
     )
 
     # totally baffled by this - after joining the three tables we have three
@@ -713,7 +713,7 @@ def travel_model_output(parcels, households, jobs, buildings,
 
     def getsectorcounts(sector):
         return jobs_df.query("empsix == '%s'" % sector).\
-            groupby('zone_id').size()
+            groupby('taz').size()
 
     taz_df["agrempn"] = getsectorcounts("AGREMPN")
     taz_df["fpsempn"] = getsectorcounts("FPSEMPN")
@@ -721,7 +721,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     taz_df["retempn"] = getsectorcounts("RETEMPN")
     taz_df["mwtempn"] = getsectorcounts("MWTEMPN")
     taz_df["othempn"] = getsectorcounts("OTHEMPN")
-    taz_df["totemp"] = jobs_df.groupby('zone_id').size()
+    taz_df["totemp"] = jobs_df.groupby('taz').size()
 
     def gethhcounts(filter):
         return households_df.query(filter).groupby('zone_id').size()
