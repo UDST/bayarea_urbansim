@@ -26,6 +26,7 @@ SCENARIO = None
 MODE = "simulation"
 S3 = False
 EVERY_NTH_YEAR = 5
+BRANCH = os.popen('git rev-parse --abbrev-ref HEAD').read()
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
 COMPARE_TO_NO_PROJECT = True
 NO_PROJECT = 611
@@ -360,6 +361,7 @@ def run_models(MODE, SCENARIO):
 
 
 print "Started", time.ctime()
+print "Current Branch : ", BRANCH.rstrip()
 print "Current Commit : ", CURRENT_COMMIT.rstrip()
 print "Current Scenario : ", orca.get_injectable('scenario').rstrip()
 
