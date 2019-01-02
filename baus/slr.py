@@ -10,11 +10,15 @@ import summaries
 # select and tag parcels that are indundated in the current year:
 # all parcels at or below the SLR which corresponds to that year
 
-
 @orca.step()
-def slr_inundate(parcels, slr_progression_R, year, slr_parcel_inundation):
-    # UPDATE slr_progression_X based on "futures" scenario (parameter, var)
-    slr_progression = slr_progression_R.to_frame()
+def slr_inundate(scenario, parcels, slr_progression_C, slr_progression_R,
+                 slr_progression_B, year, slr_parcel_inundation):
+    if scenario == '1':
+    	slr_progression = slr_progression_C.to_frame()
+    if scenario == '2':
+    	slr_progression = slr_progression_R.to_frame()
+    if scenario == '5':
+    	slr_progression = slr_progression_B.to_frame()
     inundation_yr = slr_progression.query('year==@year')['inundated'].item()
     print "Inundation in model year is %d inches" % inundation_yr
     slr_parcel_inundation = slr_parcel_inundation.to_frame()
@@ -31,7 +35,6 @@ def slr_inundate(parcels, slr_progression_R, year, slr_parcel_inundation):
 
 # remove building space from parcels,
 # remove households and jobs and put in unplaced
-
 
 @orca.step()
 def slr_remove_dev(buildings, destroy_parcels, year, parcels,
@@ -65,6 +68,3 @@ def slr_remove_dev(buildings, destroy_parcels, year, parcels,
     orca.add_table("buildings", buildings)
     buildings = orca.get_table("buildings")
     print "Demolished %d buildings" % (l1 - len(buildings))
-
-
-# floodier
