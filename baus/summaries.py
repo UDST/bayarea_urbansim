@@ -677,12 +677,15 @@ def parcel_summary(parcels, buildings, households, jobs,
 def travel_model_output(parcels, households, jobs, buildings,
                         zones, year, summary, coffer,
                         zone_forecast_inputs, run_number,
-                        taz, base_year_summary_taz, taz_geography):
+                        taz, base_year_summary_taz, taz_geography,
+                        regional_controls):
 
     if year not in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
         # only summarize for years which are multiples of 5
         return
 
+    rc = regional_controls.to_frame()
+    
     taz_df = pd.DataFrame(index=zones.index)
 
     taz_df["sd"] = taz_geography.superdistrict
@@ -776,9 +779,9 @@ def travel_model_output(parcels, households, jobs, buildings,
         base_year_summary_taz.CIACRE_UNWEIGHTED, taz_df.ciacre_unweighted)
     taz_df["resacre"] = scaled_resacre(
         base_year_summary_taz.RESACRE_UNWEIGHTED, taz_df.resacre_unweighted)
-    taz_df = add_population(taz_df, year)
-    taz_df = add_employment(taz_df, year)
-    taz_df = add_age_categories(taz_df, year)
+    taz_df = add_population(taz_df, year, rc)
+    taz_df = add_employment(taz_df, year, rc)
+    taz_df = add_age_categories(taz_df, year, rc)
 
     summary.add_zone_output(taz_df, "travel_model_output", year)
     summary.write_zone_output()
@@ -1113,13 +1116,8 @@ def zone_forecast_inputs():
                        index_col="zone_id")
 
 
-def regional_controls():
-    return pd.read_csv(os.path.join('data', 'regional_controls.csv'),
-                       index_col="year")
-
-
-def add_population(df, year):
-    rc = regional_controls()
+def add_population(df, year, regional_controls):
+    rc = regional_controls
     target = rc.totpop.loc[year] - df.gqpop.sum()
 
     zfi = zone_forecast_inputs()
@@ -1135,7 +1133,7 @@ def add_population(df, year):
 # estimated coefficients done by @mkreilly
 
 
-def add_employment(df, year):
+def add_employment(df, year, regional_controls):
 
     hhs_by_inc = df[["hhincq1", "hhincq2", "hhincq3", "hhincq4"]]
     hh_shares = hhs_by_inc.divide(hhs_by_inc.sum(axis=1), axis="index")
@@ -1155,7 +1153,7 @@ def add_employment(df, year):
 
     empres = empshare * df.totpop
 
-    rc = regional_controls()
+    rc = regional_controls
     target = rc.empres.loc[year]
 
     empres = scale_by_target(empres, target)
@@ -1173,9 +1171,9 @@ def add_employment(df, year):
 
 
 # add age categories necessary for the TM
-def add_age_categories(df, year):
+def add_age_categories(df, year, regional_controls):
     zfi = zone_forecast_inputs()
-    rc = regional_controls()
+    rc = regional_controls
 
     seed_matrix = zfi[["sh_age0004", "sh_age0519", "sh_age2044",
                        "sh_age4564", "sh_age65p"]].\

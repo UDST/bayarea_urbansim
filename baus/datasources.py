@@ -99,6 +99,70 @@ def building_sqft_per_job(settings):
     return settings['building_sqft_per_job']
 
 
+@orca.injectable(cache=True)
+def elcm_config():
+    return get_config_file('elcm')
+
+
+@orca.injectable(cache=True)
+def hlcm_owner_config():
+    return get_config_file('hlcm_owner')
+
+
+@orca.injectable(cache=True)
+def hlcm_owner_no_unplaced_config():
+    return get_config_file('hlcm_owner_no_unplaced')
+
+    
+@orca.injectable(cache=True)
+def hlcm_owner_lowincome_config():
+    return get_config_file('hlcm_owner_lowincome')
+
+
+@orca.injectable(cache=True)
+def hlcm_renter_config():
+    return get_config_file('hlcm_renter')
+
+
+@orca.injectable(cache=True)
+def hlcm_renter_no_unplaced_config():
+    return get_config_file('hlcm_renter_no_unplaced')
+
+
+@orca.injectable(cache=True)
+def hlcm_renter_lowincome_config():
+    return get_config_file('hlcm_renter_lowincome')
+
+
+@orca.injectable(cache=True)
+def rsh_config():
+    return get_config_file('rsh')
+
+
+@orca.injectable(cache=True)
+def rrh_config():
+    return get_config_file('rrh')
+
+
+@orca.injectable(cache=True)
+def nrh_config():
+    return get_config_file('nrh')
+
+
+def get_config_file(type):
+    configs = orca.get_injectable('settings')\
+        ['model_configs'][type.split('_')[0]]
+    sc = orca.get_injectable('scenario')
+    sc_cfg = '{}_{}_config'.format(sc, type)
+    gen_cfg = '{}_config'.format(type)
+    if sc_cfg in configs:
+        return configs[sc_cfg]
+    elif gen_cfg in configs:
+        return configs[gen_cfg]
+    else:
+        return '{}.yaml'.format(type)
+    
+
 @orca.step()
 def fetch_from_s3(settings):
     import boto
@@ -368,26 +432,77 @@ def parcels_subzone():
                        index_col='PARCEL_ID')
 
 
-@orca.table(cache=True)
+@orca.table(cache=False)
 def mandatory_accessibility():
-    df = pd.read_csv(os.path.join(misc.data_dir(),
-                                  '2015_06_002_mandatoryAccessibilities.csv'))
-    df.loc[df.subzone == 0, 'subzone'] = 'a'
-    df.loc[df.subzone == 1, 'subzone'] = 'b'
-    df.loc[df.subzone == 2, 'subzone'] = 'c'
-    df['taz_sub'] = df.taz.astype('str') + df.subzone
-    return df.set_index('taz_sub')
-
-
-@orca.table(cache=True)
-def non_mandatory_accessibility():
+    fname = get_logsum_file('mandatory')
     df = pd.read_csv(os.path.join(
-        misc.data_dir(), '2015_06_002_nonMandatoryAccessibilities.csv'))
+        misc.data_dir(), fname))
     df.loc[df.subzone == 0, 'subzone'] = 'a'
     df.loc[df.subzone == 1, 'subzone'] = 'b'
     df.loc[df.subzone == 2, 'subzone'] = 'c'
     df['taz_sub'] = df.taz.astype('str') + df.subzone
     return df.set_index('taz_sub')
+
+
+@orca.table(cache=False)
+def non_mandatory_accessibility():
+    fname = get_logsum_file('non_mandatory')
+    df = pd.read_csv(os.path.join(
+        misc.data_dir(), fname))
+    df.loc[df.subzone == 0, 'subzone'] = 'a'
+    df.loc[df.subzone == 1, 'subzone'] = 'b'
+    df.loc[df.subzone == 2, 'subzone'] = 'c'
+    df['taz_sub'] = df.taz.astype('str') + df.subzone
+    return df.set_index('taz_sub')
+
+
+def get_logsum_file(type='mandatory'):
+    logsums = orca.get_injectable('settings')['logsums'][type]
+    sc = orca.get_injectable('scenario')
+    yr = orca.get_injectable('year')
+    try:
+        prev_type = orca.get_injectable('previous_logsum_type')
+        if prev_type == 'generic':
+            return orca.get_injectable('previous_logsum_file')
+        elif prev_type == 'year':
+            if 'logsum_{}'.format(yr) in logsums:
+                ls = logsums['logsum_{}'.format(yr)]
+                orca.add_injectable('previous_logsum_file', ls)
+                return ls
+            else:
+                return orca.get_injectable('previous_logsum_file')
+        elif prev_type == 'scenario':
+            if 'logsum_{}'.format(sc) in logsums:
+                ls = logsums['logsum_{}'.format(sc)]
+                orca.add_injectable('previous_logsum_file', ls)
+                return ls
+            else:
+                return orca.get_injectable('previous_logsum_file')
+        else:
+            if 'logsum_{}_{}'.format(yr, sc) in logsums:
+                ls = logsums['logsum_{}_{}'.format(yr, sc)]
+                orca.add_injectable('previous_logsum_file', ls)
+                return ls
+            else:
+                return orca.get_injectable('previous_logsum_file')
+    except:
+        if 'logsum' in logsums:
+            ls = logsums['logsum']
+            orca.add_injectable('previous_logsum_type', 'generic')
+            orca.add_injectable('previous_logsum_file', ls)
+        if 'logsum_{}'.format(yr) in logsums:
+            ls = logsums['logsum_{}'.format(yr)]
+            orca.add_injectable('previous_logsum_type', 'year')
+            orca.add_injectable('previous_logsum_file', ls)
+        if 'logsum_{}'.format(sc) in logsums:
+            ls = logsums['logsum_{}'.format(sc)]
+            orca.add_injectable('previous_logsum_type', 'scenario')
+            orca.add_injectable('previous_logsum_file', ls)
+        if 'logsum_{}_{}'.format(yr, sc) in logsums:
+            ls = logsums['logsum_{}_{}'.format(yr, sc)]
+            orca.add_injectable('previous_logsum_type', 'year_scenario')
+            orca.add_injectable('previous_logsum_file', ls)
+        return ls
 
 
 @orca.table(cache=True)
@@ -520,8 +635,23 @@ def residential_units(store):
 
 @orca.table(cache=True)
 def household_controls_unstacked():
-    return pd.read_csv(os.path.join(misc.data_dir(), "household_controls.csv"),
+    fname = get_control_file(type='household')
+    return pd.read_csv(os.path.join(misc.data_dir(), fname),
                        index_col='year')
+
+
+def get_control_file(type):
+    controls = orca.get_injectable('settings')['control_tables'][type]
+    sc = orca.get_injectable('scenario')
+    sc_file = 's{}_{}_controls_input_file'.format(sc, type)
+    gen_file = '{}_controls_input_file'.format(type)
+    if sc_file in controls:
+        fname = controls[sc_file]
+    elif gen_file in controls:
+        fname = controls[gen_file]
+    else:
+        fname = '{}_controls.csv'.format(type)
+    return fname
 
 
 # the following overrides household_controls
@@ -540,9 +670,14 @@ def household_controls(household_controls_unstacked):
 
 @orca.table(cache=True)
 def employment_controls_unstacked():
-    return pd.read_csv(
-        os.path.join(misc.data_dir(), "employment_controls.csv"),
-        index_col='year')
+    fname = get_control_file(type='employment')
+    return pd.read_csv(os.path.join(misc.data_dir(), fname), index_col='year')
+
+
+@orca.table(cache=True)
+def regional_controls():
+    fname = get_control_file(type='regional')
+    return pd.read_csv(os.path.join('data', fname), index_col="year")
 
 
 # the following overrides employment_controls

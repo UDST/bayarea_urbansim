@@ -836,6 +836,46 @@ def combo_logsum(parcels):
     return df.cml + df.cnml
 
 
+@orca.column('zones', cache=True, cache_scope='iteration')
+def zone_cml(year, mandatory_accessibility,
+             accessibilities_segmentation):
+    mand_acc = mandatory_accessibility.local
+    acc_seg = accessibilities_segmentation.local
+    mand_acc = mand_acc.groupby('taz').median()
+    cols_to_sum = []
+    for col in mand_acc.columns[~mand_acc.columns.isin(['destChoiceAlt',
+                                                        'taz', 'subzone',
+                                                        'weighted_sum'])]:
+        mand_acc[col] = ((mand_acc[col] - mand_acc[col].min()) /
+                         0.0134) * acc_seg.loc[year, col]
+        cols_to_sum.append(col)
+    mand_acc['weighted_sum'] = mand_acc[cols_to_sum].sum(axis=1)
+    return mand_acc['weighted_sum']
+
+
+@orca.column('zones', cache=True, cache_scope='iteration')
+def zone_cnml(year, non_mandatory_accessibility,
+             accessibilities_segmentation):
+    nmand_acc = non_mandatory_accessibility.local
+    acc_seg = accessibilities_segmentation.local
+    nmand_acc = nmand_acc.groupby('taz').median()
+    cols_to_sum = []
+    for col in nmand_acc.columns[~nmand_acc.columns.isin(['destChoiceAlt',
+                                                         'taz', 'subzone',
+                                                         'weighted_sum'])]:
+        nmand_acc[col] = ((nmand_acc[col] - nmand_acc[col].min()) /
+                         0.0175) * acc_seg.loc[year, col]
+        cols_to_sum.append(col)
+    nmand_acc['weighted_sum'] = nmand_acc[cols_to_sum].sum(axis=1)
+    return nmand_acc['weighted_sum']
+
+
+@orca.column('zones', cache=True, cache_scope='iteration')
+def zone_combo_logsum(zones):
+    df = zones.to_frame(['zone_cml', 'zone_cnml'])
+    return df.zone_cml + df.zone_cnml
+
+
 # This is an all computed table which takes calculations from the below and
 # puts it in a computed dataframe.  The catch here is that UrbanSim only
 # needs one scenario's zoning at a time.  This dataframe gives you the
