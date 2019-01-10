@@ -855,16 +855,16 @@ def zone_cml(year, mandatory_accessibility,
 
 @orca.column('zones', cache=True, cache_scope='iteration')
 def zone_cnml(year, non_mandatory_accessibility,
-             accessibilities_segmentation):
+              accessibilities_segmentation):
     nmand_acc = non_mandatory_accessibility.local
     acc_seg = accessibilities_segmentation.local
     nmand_acc = nmand_acc.groupby('taz').median()
     cols_to_sum = []
     for col in nmand_acc.columns[~nmand_acc.columns.isin(['destChoiceAlt',
-                                                         'taz', 'subzone',
-                                                         'weighted_sum'])]:
+                                                          'taz', 'subzone',
+                                                          'weighted_sum'])]:
         nmand_acc[col] = ((nmand_acc[col] - nmand_acc[col].min()) /
-                         0.0175) * acc_seg.loc[year, col]
+                          0.0175) * acc_seg.loc[year, col]
         cols_to_sum.append(col)
     nmand_acc['weighted_sum'] = nmand_acc[cols_to_sum].sum(axis=1)
     return nmand_acc['weighted_sum']

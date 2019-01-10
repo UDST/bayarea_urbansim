@@ -685,7 +685,7 @@ def travel_model_output(parcels, households, jobs, buildings,
         return
 
     rc = regional_controls.to_frame()
-    
+
     taz_df = pd.DataFrame(index=zones.index)
 
     taz_df["sd"] = taz_geography.superdistrict
