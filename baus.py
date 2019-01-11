@@ -26,6 +26,7 @@ SCENARIO = None
 MODE = "simulation"
 S3 = False
 EVERY_NTH_YEAR = 5
+BRANCH = os.popen('git rev-parse --abbrev-ref HEAD').read()
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
 COMPARE_TO_NO_PROJECT = True
 NO_PROJECT = 611
@@ -120,8 +121,8 @@ def get_simulation_models(SCENARIO):
 
         "slr_inundate",
         "slr_remove_dev",
-        # "eq_code_buildings",
-        # "earthquake_demolish",
+#        "eq_code_buildings",
+#        "earthquake_demolish",
 
         "neighborhood_vars",    # street network accessibility
         "regional_vars",        # road network accessibility
@@ -203,7 +204,7 @@ def get_simulation_models(SCENARIO):
         "travel_model_output",
         "travel_model_2_output",
         "hazards_slr_summary",
-        # "hazards_eq_summary"
+#        "hazards_eq_summary"
     ]
 
     # calculate VMT taxes
@@ -253,8 +254,8 @@ def run_models(MODE, SCENARIO):
 
                 "slr_inundate",
                 "slr_remove_dev",
-                # "eq_code_buildings",
-                # "earthquake_demolish",
+#                "eq_code_buildings",
+#                "earthquake_demolish",
 
                 "neighborhood_vars",   # local accessibility vars
                 "regional_vars",       # regional accessibility vars
@@ -292,7 +293,7 @@ def run_models(MODE, SCENARIO):
                 "travel_model_output",
                 "travel_model_2_output",
                 "hazards_slr_summary",
-                # "hazards_eq_summary",
+#                "hazards_eq_summary",
                 "diagnostic_output"
 
             ], iter_vars=[IN_YEAR])
@@ -360,6 +361,7 @@ def run_models(MODE, SCENARIO):
 
 
 print "Started", time.ctime()
+print "Current Branch : ", BRANCH.rstrip()
 print "Current Commit : ", CURRENT_COMMIT.rstrip()
 print "Current Scenario : ", orca.get_injectable('scenario').rstrip()
 

@@ -675,16 +675,22 @@ def parcel_summary(parcels, buildings, households, jobs,
 
 @orca.step()
 def travel_model_output(parcels, households, jobs, buildings,
-                        zones, year, summary, coffer,
+                        zones, maz, year, summary, coffer,
                         zone_forecast_inputs, run_number,
-                        taz, base_year_summary_taz, taz_geography,
-                        regional_controls):
+                        taz, base_year_summary_taz,
+                        taz_geography, taz_forecast_inputs,
+                        maz_forecast_inputs, regional_demographic_forecast):
 
     if year not in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
         # only summarize for years which are multiples of 5
         return
 
-    rc = regional_controls.to_frame()
+    households_df = orca.merge_tables('households',
+                                      [parcels, buildings, households],
+                                      columns=['zone_id',
+                                               'base_income_quartile',
+                                               'income', 'persons',
+                                               'maz_id'])
 
     taz_df = pd.DataFrame(index=zones.index)
 
@@ -695,7 +701,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     jobs_df = orca.merge_tables(
         'jobs',
         [parcels, buildings, jobs],
-        columns=['zone_id', 'empsix']
+        columns=['zone_id', 'empsix', 'taz']
     )
 
     # totally baffled by this - after joining the three tables we have three
@@ -707,7 +713,7 @@ def travel_model_output(parcels, households, jobs, buildings,
 
     def getsectorcounts(sector):
         return jobs_df.query("empsix == '%s'" % sector).\
-            groupby('zone_id').size()
+            groupby('taz').size()
 
     taz_df["agrempn"] = getsectorcounts("AGREMPN")
     taz_df["fpsempn"] = getsectorcounts("FPSEMPN")
@@ -715,12 +721,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     taz_df["retempn"] = getsectorcounts("RETEMPN")
     taz_df["mwtempn"] = getsectorcounts("MWTEMPN")
     taz_df["othempn"] = getsectorcounts("OTHEMPN")
-    taz_df["totemp"] = jobs_df.groupby('zone_id').size()
-
-    households_df = households.to_frame(['zone_id',
-                                         'base_income_quartile',
-                                         'income',
-                                         'persons'])
+    taz_df["totemp"] = jobs_df.groupby('taz').size()
 
     def gethhcounts(filter):
         return households_df.query(filter).groupby('zone_id').size()
@@ -779,9 +780,11 @@ def travel_model_output(parcels, households, jobs, buildings,
         base_year_summary_taz.CIACRE_UNWEIGHTED, taz_df.ciacre_unweighted)
     taz_df["resacre"] = scaled_resacre(
         base_year_summary_taz.RESACRE_UNWEIGHTED, taz_df.resacre_unweighted)
-    taz_df = add_population(taz_df, year, rc)
-    taz_df = add_employment(taz_df, year, rc)
-    taz_df = add_age_categories(taz_df, year, rc)
+    taz_df = add_population(taz_df, year)
+    taz_df.totpop = taz_df.hhpop + taz_df.gqpop
+    taz_df = add_employment(taz_df, year)
+    taz_df = add_age_categories(taz_df, year)
+    orca.add_table('taz_summary_1', taz_df)
 
     summary.add_zone_output(taz_df, "travel_model_output", year)
     summary.write_zone_output()
@@ -802,6 +805,62 @@ def travel_model_output(parcels, households, jobs, buildings,
     # uppercase columns to match travel model template
     taz_df.columns = \
         [x.upper() for x in taz_df.columns]
+
+    maz = maz.to_frame(['TAZ', 'COUNTY', 'taz1454'])
+    mazi = maz_forecast_inputs.to_frame()
+    mazi_yr = str(year)[2:]
+    households_df.maz_id = households_df.maz_id.fillna(213906)
+    maz["hhpop"] = households_df.groupby('maz_id').persons.sum()
+    maz["tothh"] = households_df.groupby('maz_id').size()
+    tothh = taz_df.TOTHH.sum()
+    maz = add_households(maz, tothh)
+    maz['gq_type_univ'] = mazi['gqpopu' + mazi_yr]
+    maz['gq_type_mil'] = mazi['gqpopm' + mazi_yr]
+    maz['gq_type_othnon'] = mazi['gqpopo' + mazi_yr]
+    maz['gq_tot_pop'] = maz['gq_type_univ'] + maz['gq_type_mil']\
+        + maz['gq_type_othnon']
+    tot_gqpop = maz.gq_tot_pop.sum()
+
+    maz['POP'] = maz.gq_tot_pop + maz.hhpop
+    maz['HH'] = maz.tothh.fillna(0)
+
+    maz['hh_size_1'] = maz.tothh.fillna(0) * mazi.shrs1_2010
+    maz['hh_size_2'] = maz.tothh.fillna(0) * mazi.shrs2_2010
+    maz['hh_size_3'] = maz.tothh.fillna(0) * mazi.shrs3_2010
+    maz['hh_size_4_plus'] = maz.tothh.fillna(0) * mazi.shs4_2010
+    rdf = regional_demographic_forecast.to_frame()
+    maz = adjust_hhsize(maz, year, rdf, tothh)
+
+    tfi = taz_forecast_inputs.to_frame()
+    taz_df['gq_type_univ'] = maz.groupby('taz1454'
+                                         ).gq_type_univ.sum().fillna(0)
+    taz_df['gq_type_mil'] = maz.groupby('taz1454').gq_type_mil.sum().fillna(0)
+    taz_df['gq_type_othnon'] = maz.groupby('taz1454'
+                                           ).gq_type_othnon.sum().fillna(0)
+    taz_df['gq_tot_pop'] = maz.groupby('taz1454').gq_tot_pop.sum().fillna(0)
+
+    taz_df['hh'] = maz.groupby('taz1454').tothh.sum()
+
+    taz_df['hh_size_1'] = maz.groupby('taz1454').hh_size_1.sum()
+    taz_df['hh_size_2'] = maz.groupby('taz1454').hh_size_2.sum()
+    taz_df['hh_size_3'] = maz.groupby('taz1454').hh_size_3.sum()
+    taz_df['hh_size_4_plus'] = maz.groupby('taz1454').hh_size_4_plus.sum()
+
+    taz_df['county'] = maz.groupby('taz1454').COUNTY.first()
+
+    taz_df['hh_wrks_0'] = taz_df['hh'] * tfi.shrw0_2010
+    taz_df['hh_wrks_1'] = taz_df['hh'] * tfi.shrw1_2010
+    taz_df['hh_wrks_2'] = taz_df['hh'] * tfi.shrw2_2010
+    taz_df['hh_wrks_3_plus'] = taz_df['hh'] * tfi.shrw3_2010
+
+    taz_df['hh_kids_no'] = taz_df['hh'] * tfi.shrn_2010
+    taz_df['hh_kids_yes'] = taz_df['hh'] * tfi.shry_2010
+    taz_df = adjust_hhwkrs(taz_df, year, rdf, tothh)
+    # taz = adjust_page(taz_df, year, rdf)
+    taz_df = adjust_hhkids(taz_df, year, rdf, tothh)
+    del taz_df['hh']
+    # taz_df = taz_df.rename(columns={'hh': 'HH', 'pop': 'POP'})
+    taz_df.index.name = 'TAZ'
 
     taz_df.fillna(0).to_csv(
         "runs/run{}_taz_summaries_{}.csv".format(run_number, year))
@@ -859,19 +918,26 @@ def travel_model_output(parcels, households, jobs, buildings,
     county_df.fillna(0).to_csv(
         "runs/run{}_county_summaries_{}.csv".format(run_number, year))
 
+    pd.DataFrame(data={'REGION': [1],
+                       'gq_num_hh_region': [tot_gqpop]}).to_csv(
+                 "runs/run{}_regional_marginals_{}.csv".format(run_number,
+                                                               year),
+                 index=False)
+
 
 @orca.step()
 def travel_model_2_output(parcels, households, jobs, buildings,
                           maz, year, empsh_to_empsix, run_number,
                           zone_forecast_inputs, maz_forecast_inputs,
                           taz2_forecast_inputs, county_forecast_inputs,
-                          county_employment_forecast,
+                          county_employment_forecast, taz_forecast_inputs,
                           regional_demographic_forecast):
     if year not in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
         # only summarize for years which are multiples of 5
         return
 
-    maz = maz.to_frame(['TAZ', 'COUNTY'])
+    maz = maz.to_frame(['TAZ', 'COUNTY', 'taz1454'])
+    rc = regional_controls()
 
     pcl = parcels.to_frame(['maz_id', 'acres'])
     maz['ACRES'] = pcl.groupby('maz_id').acres.sum()
@@ -884,15 +950,19 @@ def travel_model_2_output(parcels, households, jobs, buildings,
                                        'persons',
                                        'maz_id'])
 
+    hh_df.maz_id = hh_df.maz_id.fillna(213906)
+
     def gethhcounts(filter):
         return hh_df.query(filter).groupby('maz_id').size()
 
+    tothh = len(hh_df)
     maz["hhincq1"] = gethhcounts("base_income_quartile == 1")
     maz["hhincq2"] = gethhcounts("base_income_quartile == 2")
     maz["hhincq3"] = gethhcounts("base_income_quartile == 3")
     maz["hhincq4"] = gethhcounts("base_income_quartile == 4")
     maz["hhpop"] = hh_df.groupby('maz_id').persons.sum()
     maz["tothh"] = hh_df.groupby('maz_id').size()
+    maz = add_households(maz, tothh)
 
     jobs_df = orca.merge_tables('jobs',
                                 [parcels, buildings, jobs],
@@ -966,6 +1036,8 @@ def travel_model_2_output(parcels, households, jobs, buildings,
     maz['gq_type_othnon'] = mazi['gqpopo' + mazi_yr]
     maz['gq_tot_pop'] = maz['gq_type_univ'] + maz['gq_type_mil']\
         + maz['gq_type_othnon']
+    maz['gqpop'] = maz['gq_tot_pop']
+    maz = add_population_tm2(maz, year)
 
     maz['POP'] = maz.gq_tot_pop + maz.hhpop
     maz['HH'] = maz.tothh.fillna(0)
@@ -984,7 +1056,7 @@ def travel_model_2_output(parcels, households, jobs, buildings,
     maz['hh_size_3'] = maz.tothh.fillna(0) * mazi.shrs3_2010
     maz['hh_size_4_plus'] = maz.tothh.fillna(0) * mazi.shs4_2010
     rdf = regional_demographic_forecast.to_frame()
-    maz = adjust_hhsize(maz, year, rdf)
+    maz = adjust_hhsize(maz, year, rdf, tothh)
 
     taz2 = pd.DataFrame(index=taz2_forecast_inputs.index)
     t2fi = taz2_forecast_inputs.to_frame()
@@ -1002,12 +1074,13 @@ def travel_model_2_output(parcels, households, jobs, buildings,
     taz2['pop'] = taz2.pop_hhsize1 + taz2.pop_hhsize2\
         + taz2.pop_hhsize3 + taz2.pop_hhsize4
 
+    taz2['hhpop'] = maz.groupby('TAZ').hhpop.sum()
     taz2['county'] = maz.groupby('TAZ').COUNTY.first()
 
-    taz2['pers_age_00_19'] = taz2['pop'] * t2fi.shra1_2010
-    taz2['pers_age_20_34'] = taz2['pop'] * t2fi.shra2_2010
-    taz2['pers_age_35_64'] = taz2['pop'] * t2fi.shra3_2010
-    taz2['pers_age_65_plus'] = taz2['pop'] * t2fi.shra4_2010
+    taz2['pers_age_00_19'] = taz2['hhpop'] * t2fi.shra1_2010
+    taz2['pers_age_20_34'] = taz2['hhpop'] * t2fi.shra2_2010
+    taz2['pers_age_35_64'] = taz2['hhpop'] * t2fi.shra3_2010
+    taz2['pers_age_65_plus'] = taz2['hhpop'] * t2fi.shra4_2010
 
     taz2['hh_wrks_0'] = taz2['hh'] * t2fi.shrw0_2010
     taz2['hh_wrks_1'] = taz2['hh'] * t2fi.shrw1_2010
@@ -1016,9 +1089,9 @@ def travel_model_2_output(parcels, households, jobs, buildings,
 
     taz2['hh_kids_no'] = taz2['hh'] * t2fi.shrn_2010
     taz2['hh_kids_yes'] = taz2['hh'] * t2fi.shry_2010
-    taz2 = adjust_hhwkrs(taz2, year, rdf)
-    taz2 = adjust_page(taz2, year, rdf)
-    taz2 = adjust_hhkids(taz2, year, rdf)
+    taz2 = adjust_hhwkrs(taz2, year, rdf, tothh)
+    taz2 = adjust_page(taz2, year)
+    taz2 = adjust_hhkids(taz2, year, rdf, tothh)
     taz2.index.name = 'TAZ2'
 
     cfi = county_forecast_inputs.to_frame()
@@ -1129,6 +1202,27 @@ def add_population(df, year, regional_controls):
     df["hhpop"] = df.hhpop.fillna(0)
     return df
 
+
+def add_population_tm2(df, year):
+    rc = regional_controls()
+    target = rc.totpop.loc[year] - df.gqpop.sum()
+    s = df.hhpop
+    s = scale_by_target(s, target, .15)
+    df["hhpop"] = round_series_match_target(s, target, 0)
+    df["hhpop"] = df.hhpop.fillna(0)
+    return df
+
+
+# temporary function to balance hh while some parcels have
+# unassigned MAZ
+def add_households(df, tothh):
+    s = scale_by_target(df.tothh, tothh, .15)
+
+    df["tothh"] = round_series_match_target(s, tothh, 0)
+    df["tothh"] = df.tothh.fillna(0)
+    return df
+
+
 # add employemnt to the dataframe - this uses a regression with
 # estimated coefficients done by @mkreilly
 
@@ -1205,10 +1299,10 @@ def add_age_categories(df, year, regional_controls):
     return df
 
 
-def adjust_hhsize(df, year, rdf):
+def adjust_hhsize(df, year, rdf, total_hh):
     col_marginals = (rdf.loc[rdf.year == year,
                              ['shrs1', 'shrs2', 'shrs3',
-                              'shrs4']] * df.tothh.sum()).values[0]
+                              'shrs4']] * total_hh).values[0]
     row_marginals = df.tothh.fillna(0).values
     seed_matrix = np.round(df[['hh_size_1', 'hh_size_2',
                                'hh_size_3', 'hh_size_4_plus']]).as_matrix()
@@ -1237,10 +1331,10 @@ def adjust_hhsize(df, year, rdf):
     return df
 
 
-def adjust_hhwkrs(df, year, rdf):
+def adjust_hhwkrs(df, year, rdf, total_hh):
     col_marginals = (rdf.loc[rdf.year == year,
                              ['shrw0', 'shrw1', 'shrw2',
-                              'shrw3']] * df.hh.sum()).values[0]
+                              'shrw3']] * total_hh).values[0]
     row_marginals = df.hh.fillna(0).values
     seed_matrix = np.round(df[['hh_wrks_0', 'hh_wrks_1',
                                'hh_wrks_2', 'hh_wrks_3_plus']]).as_matrix()
@@ -1268,16 +1362,18 @@ def adjust_hhwkrs(df, year, rdf):
     return df
 
 
-def adjust_page(df, year, rdf):
-    col_marginals = (rdf.loc[rdf.year == year,
-                             ['shra1', 'shra2', 'shra3',
-                              'shra4']] * df['pop'].sum()).values[0]
-    row_marginals = df['pop'].fillna(0).values
+def adjust_page(df, year):
+    rc = regional_controls()
+    rc['age0019'] = rc.age0004 + rc.age0519
+    col_marginals = rc.loc[year,
+                           ['age0019', 'age2044', 'age4564',
+                            'age65p']]
+    row_marginals = df['hhpop'].fillna(0).values
     seed_matrix = np.round(df[['pers_age_00_19', 'pers_age_20_34',
                                'pers_age_35_64',
                                'pers_age_65_plus']]).as_matrix()
 
-    target = df['pop'].sum()
+    target = df['hhpop'].sum()
     col_marginals = scale_by_target(col_marginals,
                                     target).round().astype('int')
 
@@ -1291,7 +1387,7 @@ def adjust_page(df, year, rdf):
                       'pers_age_35_64', 'pers_age_65_plus']
     pagedf.index = df.index
     for ind, row in pagedf.iterrows():
-            target = np.round(df['pop'].loc[ind])
+            target = np.round(df['hhpop'].loc[ind])
             row = row.round()
             pagedf.loc[ind] = round_series_match_target(row, target, 0)
 
@@ -1301,9 +1397,9 @@ def adjust_page(df, year, rdf):
     return df
 
 
-def adjust_hhkids(df, year, rdf):
+def adjust_hhkids(df, year, rdf, total_hh):
     col_marginals = (rdf.loc[rdf.year == year,
-                             ['shrn', 'shry']] * df.hh.sum()).values[0]
+                             ['shrn', 'shry']] * total_hh).values[0]
     row_marginals = df.hh.fillna(0).values
     seed_matrix = np.round(df[['hh_kids_no', 'hh_kids_yes']]).as_matrix()
 

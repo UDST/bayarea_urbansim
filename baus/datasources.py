@@ -251,7 +251,11 @@ def new_tpp_id():
 @orca.table(cache=True)
 def maz():
     maz = pd.read_csv(os.path.join(misc.data_dir(), "maz_geography.csv"))
-    return maz.drop_duplicates('MAZ').set_index('MAZ')
+    maz = maz.drop_duplicates('MAZ').set_index('MAZ')
+    taz1454 = pd.read_csv(os.path.join(misc.data_dir(), "maz22_taz1454.csv"),
+                          index_col='maz')
+    maz['taz1454'] = taz1454.TAZ1454
+    return maz
 
 
 @orca.table(cache=True)
@@ -699,6 +703,13 @@ def zone_forecast_inputs():
     return pd.read_csv(
         os.path.join(misc.data_dir(), "zone_forecast_inputs.csv"),
         index_col="zone_id")
+
+
+@orca.table(cache=True)
+def taz_forecast_inputs():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "taz_forecast_inputs.csv"),
+        index_col="TAZ1454")
 
 
 # this is the set of categories by zone of sending and receiving zones
