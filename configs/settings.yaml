@@ -539,6 +539,22 @@ acct_settings:
       # any parcel in a tpa
       profitability_adjustment_formula: "(pda_id > 0) * .01"
 
+    parking_requirements_AVs_s1: # cag
+      name: "Reduce Parking Requirements due to AVs"
+      enable_in_scenarios: ["1"]
+      # parcels in San Francisco, Oakland, San Jose
+      profitability_adjustment_formula: "(jurisdiction_id == 67000 or 
+                                          jurisdiction_id == 53000 or 
+                                          jurisdiction_id == 68000) * .02"
+
+    parking_requirements_AVs_s5: # bttf
+      name: "Reduce Parking Requirements due to AVs"
+      enable_in_scenarios: ["5"]
+      # parcels in San Francisco, Oakland, San Jose
+      profitability_adjustment_formula: "(jurisdiction_id == 67000 or 
+                                          jurisdiction_id == 53000 or 
+                                          jurisdiction_id == 68000) * .01"
+
   # this is a cutom policy which taxes land (reduces profit) based on the current
   # built density - this is to incentive using land at its highest and best use
   land_value_tax_settings:
