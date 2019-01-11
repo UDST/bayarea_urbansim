@@ -349,12 +349,6 @@ def maz_forecast_inputs(regional_demographic_forecast):
 
 
 @orca.table(cache=True)
-def regional_demographic_forecast():
-    return pd.read_csv(os.path.join(misc.data_dir(),
-                       "regional_demographic_forecast.csv"))
-
-
-@orca.table(cache=True)
 def zoning_scenario(parcels_geography, scenario, settings):
     scenario_zoning = pd.read_csv(
         os.path.join(misc.data_dir(), 'zoning_mods_%s.csv' % scenario))
@@ -642,6 +636,12 @@ def household_controls_unstacked():
     fname = get_control_file(type='household')
     return pd.read_csv(os.path.join(misc.data_dir(), fname),
                        index_col='year')
+
+
+@orca.table(cache=True)
+def regional_demographic_forecast():
+    fname = get_control_file(type='demographic_forecast')
+    return pd.read_csv(os.path.join(misc.data_dir(), fname))
 
 
 def get_control_file(type):

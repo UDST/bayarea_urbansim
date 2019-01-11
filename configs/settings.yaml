@@ -652,6 +652,8 @@ control_tables:
   regional:
     regional_controls_input_file: regional_controls.csv
     s4_regional_controls_input_file: regional_controls.csv
+  demographic_forecast:
+    demographic_forecast_controls_input_file: regional_demographic_forecast.csv
 
 
 logsums:
