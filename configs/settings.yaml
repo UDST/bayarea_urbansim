@@ -121,83 +121,64 @@ inclusionary_housing_settings:
       - San Francisco
   "1":
     - type: jurisdictions
-      description: medium setting
-      amount: .1
+      description: low setting
+      amount: .05
       values:
       - Alameda
       - Alameda County
       - Albany
-      - American Canyon
-      - Antioch
+      - Atherton
       - Belmont
-      - Benicia
+      - Belvedere
       - Berkeley
-      - Brisbane
       - Burlingame
       - Campbell
       - Cloverdale
-      - Colma
       - Concord
       - Contra Costa County
-      - Cotati
+      - Corte Madera
       - Cupertino
-      - Daly City
       - Danville
-      - Dixon
       - Dublin
       - East Palo Alto
       - El Cerrito
       - Emeryville
-      - Fairfield
+      - Fairfax
+      - Foster City
       - Fremont
-      - Gilroy
-      - Hayward
-      - Hercules
       - Lafayette
-      - Livermore
+      - Larkspur
       - Los Altos
-      - Martinez
+      - Los Altos Hills
+      - Los Gatos
       - Menlo Park
       - Millbrae
       - Milpitas
+      - Monte Sereno
       - Moraga
-      - Morgan Hill
       - Mountain View
-      - Napa
-      - Newark
-      - Oakland
-      - Oakley
       - Orinda
       - Palo Alto
-      - Petaluma
-      - Pinole
-      - Pittsburg
-      - Pleasant Hill
+      - Piedmont
       - Pleasanton
       - Redwood City
-      - Richmond
-      - Rohnert Park
+      - Ross
+      - San Anselmo
       - San Bruno
       - San Carlos
       - San Francisco
       - San Jose
-      - San Leandro
       - San Mateo
       - San Mateo County
-      - San Pablo
-      - San Rafael
       - San Ramon
       - Santa Clara
       - Santa Rosa
-      - Sebastopol
-      - South San Francisco
-      - Suisun City
+      - Saratoga
+      - Sausalito
       - Sunnyvale
+      - Tiburon
       - Union City
-      - Vacaville
-      - Vallejo
       - Walnut Creek
-      - Windsor
   "2":
     - type: jurisdictions
       description: medium setting
@@ -276,7 +257,7 @@ inclusionary_housing_settings:
       - Vacaville
       - Vallejo
       - Walnut Creek
-      - Windsor
+      - Windsor  
   "3":
     - type: jurisdictions
       description: high setting
@@ -366,16 +347,14 @@ inclusionary_housing_settings:
       - Windsor
   "5":
     - type: jurisdictions
-      description: medium setting
-      amount: .1
+      description: higher setting
+      amount: .2
       values:
       - Alameda
       - Alameda County
       - Albany
       - American Canyon
-      - Antioch
       - Belmont
-      - Benicia
       - Berkeley
       - Brisbane
       - Burlingame
@@ -388,7 +367,6 @@ inclusionary_housing_settings:
       - Cupertino
       - Daly City
       - Danville
-      - Dixon
       - Dublin
       - East Palo Alto
       - El Cerrito
@@ -411,17 +389,14 @@ inclusionary_housing_settings:
       - Napa
       - Newark
       - Oakland
-      - Oakley
       - Orinda
       - Palo Alto
       - Petaluma
       - Pinole
-      - Pittsburg
       - Pleasant Hill
       - Pleasanton
       - Redwood City
       - Richmond
-      - Rohnert Park
       - San Bruno
       - San Carlos
       - San Francisco
@@ -433,7 +408,7 @@ inclusionary_housing_settings:
       - San Rafael
       - San Ramon
       - Santa Clara
-      - Santa Rosa
+      - Santa Rosa 
       - Sebastopol
       - South San Francisco
       - Suisun City
@@ -502,7 +477,7 @@ acct_settings:
       total_amount: 500000000
       receiving_buildings_filter: pda_id > 0
       subsidize_affordable: True
-      enable_in_scenarios: []
+      enable_in_scenarios: ["1"]
 
     # capital gains tax settings - see baus_docs for more information on the
     # intent and use of these policies
@@ -512,7 +487,7 @@ acct_settings:
       total_amount: 42000000
       receiving_buildings_filter: pda_id > 0
       subsidize_affordable: True
-      enable_in_scenarios: []
+      enable_in_scenarios: ["1"]
 
   profitability_adjustment_policies:  
 
@@ -539,22 +514,6 @@ acct_settings:
       # any parcel in a tpa
       profitability_adjustment_formula: "(pda_id > 0) * .01"
 
-    parking_requirements_AVs_s1: # cag
-      name: "Reduce Parking Requirements due to AVs"
-      enable_in_scenarios: ["1"]
-      # parcels in San Francisco, Oakland, San Jose
-      profitability_adjustment_formula: "(jurisdiction_id == 67000 or 
-                                          jurisdiction_id == 53000 or 
-                                          jurisdiction_id == 68000) * .02"
-
-    parking_requirements_AVs_s5: # bttf
-      name: "Reduce Parking Requirements due to AVs"
-      enable_in_scenarios: ["5"]
-      # parcels in San Francisco, Oakland, San Jose
-      profitability_adjustment_formula: "(jurisdiction_id == 67000 or 
-                                          jurisdiction_id == 53000 or 
-                                          jurisdiction_id == 68000) * .01"
-
   # this is a cutom policy which taxes land (reduces profit) based on the current
   # built density - this is to incentive using land at its highest and best use
   land_value_tax_settings:
@@ -574,8 +533,11 @@ acct_settings:
       - "3"
     com_for_com_scenarios:
       - "4"
+      - "5"
     com_for_res_scenarios:
+      - "1"
       - "4"
+      - "5"
     res_for_res_fee_amounts:
       VH: 25000
       H: 15000
@@ -1016,6 +978,9 @@ development_limits:
       'Napa County': 25
       'Solano County': 230
       'Sonoma County': 50
+  "2":
+    Office:
+      'San Francisco': 5250
 
 
 # a list of parcel geom ids which urbansim doesn't touch - this are viewed as exceptions
