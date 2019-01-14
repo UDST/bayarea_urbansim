@@ -658,7 +658,6 @@ control_tables:
     s1_regional_controls_input_file: regional_controls_s1.csv
     s2_regional_controls_input_file: regional_controls_s2.csv
     s5_regional_controls_input_file: regional_controls_s5.csv
-    s4_regional_controls_input_file: regional_controls.csv
   demographic_forecast:
     demographic_forecast_controls_input_file: regional_demographic_forecast.csv
     s1_demographic_forecast_controls_input_file: regional_demographic_forecast.csv
