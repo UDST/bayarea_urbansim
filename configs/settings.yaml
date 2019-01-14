@@ -642,6 +642,57 @@ rent_equilibration:
     iterations: 8
 
 
+control_tables:
+  household:
+    household_controls_input_file: household_controls.csv
+    s1_household_controls_input_file: household_controls_s1.csv
+    s2_household_controls_input_file: household_controls_s2.csv
+    s5_household_controls_input_file: household_controls_s5.csv
+  employment:
+    employment_controls_input_file: employment_controls.csv
+    s1_employment_controls_input_file: employment_controls_s1.csv
+    s2_employment_controls_input_file: employment_controls_s2.csv
+    s5_employment_controls_input_file: employment_controls_s5.csv
+  regional:
+    regional_controls_input_file: regional_controls.csv
+    s1_regional_controls_input_file: regional_controls_s1.csv
+    s2_regional_controls_input_file: regional_controls_s2.csv
+    s5_regional_controls_input_file: regional_controls_s5.csv
+  demographic_forecast:
+    demographic_forecast_controls_input_file: regional_demographic_forecast.csv
+    s1_demographic_forecast_controls_input_file: regional_demographic_forecast.csv
+    s2_demographic_forecast_controls_input_file: regional_demographic_forecast.csv
+    s5_demographic_forecast_controls_input_file: regional_demographic_forecast.csv
+
+
+logsums:
+  mandatory:
+    logsum: 2015_06_002_mandatoryAccessibilities.csv
+  non_mandatory:
+    logsum: 2015_06_002_nonMandatoryAccessibilities.csv
+
+
+model_configs:
+  hlcm:
+    hlcm_owner_config: hlcm_owner.yaml
+    hlcm_owner_lowincome_config: hlcm_owner_lowincome.yaml
+    hlcm_owner_no_unplaced_config: hlcm_owner_no_unplaced.yaml
+    hlcm_renter_config: hlcm_renter.yaml
+    hlcm_renter_lowincome_config: hlcm_renter_lowincome.yaml
+    hlcm_renter_no_unplaced_config: hlcm_renter_no_unplaced.yaml
+  elcm:
+    elcm_config: elcm.yaml
+  rsh:
+    rsh_config: rsh.yaml
+    s1_rsh_config: rsh_s1.yaml
+    s2_rsh_config: rsh_s2.yaml
+    s5_rsh_config: rsh_s5.yaml
+  rrh:
+    rrh_config: rrh.yaml
+  nrh:
+    nrh_config: nrh.yaml
+  
+
 # some info on where to get the accessibliity networks
 build_networks:
   walk:

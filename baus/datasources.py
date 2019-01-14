@@ -285,12 +285,6 @@ def maz_forecast_inputs(regional_demographic_forecast):
 
 
 @orca.table(cache=True)
-def regional_demographic_forecast():
-    return pd.read_csv(os.path.join(misc.data_dir(),
-                       "regional_demographic_forecast.csv"))
-
-
-@orca.table(cache=True)
 def zoning_scenario(parcels_geography, scenario, settings):
     scenario_zoning = pd.read_csv(
         os.path.join(misc.data_dir(), 'zoning_mods_%s.csv' % scenario))
@@ -526,6 +520,26 @@ def residential_units(store):
 def household_controls_unstacked():
     return pd.read_csv(os.path.join(misc.data_dir(), "household_controls.csv"),
                        index_col='year')
+
+
+@orca.table(cache=True)
+def regional_demographic_forecast():
+    fname = get_control_file(type='demographic_forecast')
+    return pd.read_csv(os.path.join(misc.data_dir(), fname))
+
+
+def get_control_file(type):
+    controls = orca.get_injectable('settings')['control_tables'][type]
+    sc = orca.get_injectable('scenario')
+    sc_file = 's{}_{}_controls_input_file'.format(sc, type)
+    gen_file = '{}_controls_input_file'.format(type)
+    if sc_file in controls:
+        fname = controls[sc_file]
+    elif gen_file in controls:
+        fname = controls[gen_file]
+    else:
+        fname = '{}_controls.csv'.format(type)
+    return fname
 
 
 # the following overrides household_controls
