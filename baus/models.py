@@ -20,10 +20,10 @@ import pandas as pd
 
 
 @orca.step()
-def elcm_simulate(jobs, buildings, aggregations):
+def elcm_simulate(jobs, buildings, aggregations, elcm_config):
     buildings.local["non_residential_rent"] = \
         buildings.local.non_residential_rent.fillna(0)
-    return utils.lcm_simulate("elcm.yaml", jobs, buildings, aggregations,
+    return utils.lcm_simulate(elcm_config, jobs, buildings, aggregations,
                               "building_id", "job_spaces",
                               "vacant_job_spaces", cast=True)
 
@@ -447,12 +447,12 @@ def alt_feasibility(parcels, settings,
 def residential_developer(feasibility, households, buildings, parcels, year,
                           settings, summary, form_to_btype_func,
                           add_extra_columns_func, parcels_geography,
-                          limits_settings, final_year):
+                          limits_settings, final_year,
+                          regional_controls):
 
     kwargs = settings['residential_developer']
-
-    target_vacancy = pd.read_csv("data/regional_controls.csv",
-                                 index_col="year").loc[year].st_res_vac
+    rc = regional_controls.to_frame()
+    target_vacancy = rc.loc[year].st_res_vac
 
     num_units = dev.compute_units_to_build(
         len(households),
