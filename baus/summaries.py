@@ -679,7 +679,8 @@ def travel_model_output(parcels, households, jobs, buildings,
                         zone_forecast_inputs, run_number,
                         taz, base_year_summary_taz,
                         taz_geography, taz_forecast_inputs,
-                        maz_forecast_inputs, regional_demographic_forecast):
+                        maz_forecast_inputs, regional_demographic_forecast,
+                        regional_controls):
 
     if year not in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
         # only summarize for years which are multiples of 5
@@ -780,7 +781,8 @@ def travel_model_output(parcels, households, jobs, buildings,
         base_year_summary_taz.CIACRE_UNWEIGHTED, taz_df.ciacre_unweighted)
     taz_df["resacre"] = scaled_resacre(
         base_year_summary_taz.RESACRE_UNWEIGHTED, taz_df.resacre_unweighted)
-    taz_df = add_population(taz_df, year)
+    rc = regional_controls.to_frame()
+    taz_df = add_population(taz_df, year, rc)
     taz_df.totpop = taz_df.hhpop + taz_df.gqpop
     taz_df = add_employment(taz_df, year)
     taz_df = add_age_categories(taz_df, year)
@@ -931,13 +933,13 @@ def travel_model_2_output(parcels, households, jobs, buildings,
                           zone_forecast_inputs, maz_forecast_inputs,
                           taz2_forecast_inputs, county_forecast_inputs,
                           county_employment_forecast, taz_forecast_inputs,
-                          regional_demographic_forecast):
+                          regional_demographic_forecast, regional_controls):
     if year not in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
         # only summarize for years which are multiples of 5
         return
 
     maz = maz.to_frame(['TAZ', 'COUNTY', 'taz1454'])
-    rc = regional_controls()
+    rc = regional_controls.to_frame()
 
     pcl = parcels.to_frame(['maz_id', 'acres'])
     maz['ACRES'] = pcl.groupby('maz_id').acres.sum()
@@ -1203,8 +1205,8 @@ def add_population(df, year, regional_controls):
     return df
 
 
-def add_population_tm2(df, year):
-    rc = regional_controls()
+def add_population_tm2(df, year, regional_controls):
+    rc = regional_controls
     target = rc.totpop.loc[year] - df.gqpop.sum()
     s = df.hhpop
     s = scale_by_target(s, target, .15)
