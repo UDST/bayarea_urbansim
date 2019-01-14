@@ -244,7 +244,6 @@ def load_rental_listings():
     orca.broadcast('nodes', 'craigslist', cast_index=True, onto_on='node_id')
     orca.broadcast('tmnodes', 'craigslist', cast_index=True,
                    onto_on='tmnode_id')
-    orca.broadcast('zones', 'craigslist', cast_index=True, onto_on='zone_id')
     orca.broadcast('logsums', 'craigslist', cast_index=True, onto_on='zone_id')
     return
 
@@ -597,8 +596,8 @@ def save_intermediate_tables(households, buildings, parcels,
 # have to define this here because urbansim_defaults incorrectly calls the
 # outcome variable non_residential_price
 @orca.step('nrh_simulate')
-def nrh_simulate(buildings, aggregations, nrh_config):
-    return utils.hedonic_simulate(nrh_config, buildings, aggregations,
+def nrh_simulate(buildings, aggregations):
+    return utils.hedonic_simulate("nrh.yaml", buildings, aggregations,
                                   "non_residential_rent")
 
 
@@ -634,7 +633,7 @@ def _mtc_clip(table, col_name, settings, price_scale=1):
 
 
 @orca.step()
-def rsh_simulate(residential_units, aggregations, settings, rsh_config):
+def rsh_simulate(residential_units, aggregations, settings):
     """
     This uses the MTC's model specification from rsh.yaml, but
     generates unit-level price predictions rather than building-level.
@@ -643,7 +642,7 @@ def rsh_simulate(residential_units, aggregations, settings, rsh_config):
     -----------------
     - tk
     """
-    utils.hedonic_simulate(cfg=rsh_config,
+    utils.hedonic_simulate(cfg='rsh.yaml',
                            tbl=residential_units,
                            join_tbls=aggregations,
                            out_fname='unit_residential_price')
@@ -653,7 +652,7 @@ def rsh_simulate(residential_units, aggregations, settings, rsh_config):
 
 
 @orca.step()
-def rrh_simulate(residential_units, aggregations, settings, rrh_config):
+def rrh_simulate(residential_units, aggregations, settings):
     """
     This uses an altered hedonic specification to generate
     unit-level rent predictions.
@@ -662,7 +661,7 @@ def rrh_simulate(residential_units, aggregations, settings, rrh_config):
     -----------------
     - tk
     """
-    utils.hedonic_simulate(cfg=rrh_config,
+    utils.hedonic_simulate(cfg='rrh.yaml',
                            tbl=residential_units,
                            join_tbls=aggregations,
                            out_fname='unit_residential_rent')
@@ -761,39 +760,37 @@ def hlcm_simulate(households, residential_units, aggregations,
 
 @orca.step()
 def hlcm_owner_simulate(households, residential_units,
-                        aggregations, settings,
-                        hlcm_owner_config):
+                        aggregations, settings):
 
     # Note that the submarket id (zone_id) needs to be in the table of
     # alternatives, for supply/demand equilibration, and needs to NOT be in the
     # choosers table, to avoid conflicting when the tables are joined
 
     return hlcm_simulate(households, residential_units, aggregations,
-                         settings, hlcm_owner_config, 'price_equilibration')
+                         settings, 'hlcm_owner.yaml', 'price_equilibration')
 
 
 @orca.step()
 def hlcm_owner_lowincome_simulate(households, residential_units,
-                                  aggregations, settings,
-                                  hlcm_owner_lowincome_config):
+                                  aggregations, settings):
 
     return hlcm_simulate(households, residential_units, aggregations,
-                         settings, hlcm_owner_lowincome_config,
+                         settings, 'hlcm_owner_lowincome.yaml',
                          'price_equilibration')
 
 
 @orca.step()
 def hlcm_renter_simulate(households, residential_units, aggregations,
-                         settings, hlcm_renter_config):
+                         settings):
     return hlcm_simulate(households, residential_units, aggregations,
-                         settings, hlcm_renter_config, 'rent_equilibration')
+                         settings, 'hlcm_renter.yaml', 'rent_equilibration')
 
 
 @orca.step()
 def hlcm_renter_lowincome_simulate(households, residential_units, aggregations,
-                                   settings, hlcm_renter_lowincome_config):
+                                   settings):
     return hlcm_simulate(households, residential_units, aggregations,
-                         settings, hlcm_renter_lowincome_config,
+                         settings, 'hlcm_renter_lowincome.yaml',
                          'rent_equilibration')
 
 
@@ -812,40 +809,36 @@ def drop_predict_filters_from_yaml(in_yaml_name, out_yaml_name):
 @orca.step()
 def hlcm_owner_simulate_no_unplaced(households, residential_units,
                                     year, final_year,
-                                    aggregations, settings,
-                                    hlcm_owner_config,
-                                    hlcm_owner_no_unplaced_config):
+                                    aggregations, settings):
 
     # only run in the last year, but make sure to run before summaries
     if year != final_year:
         return
 
     drop_predict_filters_from_yaml(
-        hlcm_owner_config,
-        hlcm_owner_no_unplaced_config)
+        "hlcm_owner.yaml",
+        "hlcm_owner_no_unplaced.yaml")
 
     return hlcm_simulate(households, residential_units, aggregations,
-                         settings, hlcm_owner_no_unplaced_config,
+                         settings, 'hlcm_owner_no_unplaced.yaml',
                          "price_equilibration")
 
 
 @orca.step()
 def hlcm_renter_simulate_no_unplaced(households, residential_units,
                                      year, final_year,
-                                     aggregations, settings,
-                                     hlcm_renter_config,
-                                     hlcm_renter_no_unplaced_config):
+                                     aggregations, settings):
 
     # only run in the last year, but make sure to run before summaries
     if year != final_year:
         return
 
     drop_predict_filters_from_yaml(
-        hlcm_renter_config,
-        hlcm_renter_no_unplaced_config)
+        "hlcm_renter.yaml",
+        "hlcm_renter_no_unplaced.yaml")
 
     return hlcm_simulate(households, residential_units, aggregations,
-                         settings, hlcm_renter_no_unplaced_config,
+                         settings, 'hlcm_renter_no_unplaced.yaml',
                          "rent_equilibration")
 
 

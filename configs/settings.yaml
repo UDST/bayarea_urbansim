@@ -642,48 +642,6 @@ rent_equilibration:
     iterations: 8
 
 
-control_tables:
-  household:
-    household_controls_input_file: household_controls.csv
-    s4_household_controls_input_file: household_controls.csv
-  employment:
-    employment_controls_input_file: employment_controls.csv
-    s4_employment_controls_input_file: employment_controls.csv
-  regional:
-    regional_controls_input_file: regional_controls.csv
-    s4_regional_controls_input_file: regional_controls.csv
-
-
-logsums:
-  mandatory:
-    logsum_2010: 2015_06_002_mandatoryAccessibilities.csv
-    logsum_2020: 2015_06_002_mandatoryAccessibilities.csv
-  non_mandatory:
-    logsum_2010: 2015_06_002_nonMandatoryAccessibilities.csv
-    logsum_2020: 2015_06_002_nonMandatoryAccessibilities.csv
-
-
-model_configs:
-  hlcm:
-    hlcm_owner_config: hlcm_owner.yaml
-    s4_hlcm_owner_config: hlcm_owner_booyah.yaml
-    hlcm_owner_lowincome_config: hlcm_owner_lowincome.yaml
-    s4_hlcm_owner_lowincome_config: hlcm_owner_lowincome.yaml
-    hlcm_owner_no_unplaced_config: hlcm_owner_no_unplaced.yaml
-    hlcm_renter_config: hlcm_renter.yaml
-    hlcm_renter_lowincome_config: hlcm_renter_lowincome.yaml
-    hlcm_renter_no_unplaced_config: hlcm_renter_no_unplaced.yaml
-  elcm:
-    elcm_config: elcm.yaml
-    s4_elcm_config: elcm.yaml
-  rsh:
-    rsh_config: rsh.yaml
-  rrh:
-    rrh_config: rrh.yaml
-  nrh:
-    nrh_config: nrh.yaml
-  
-
 # some info on where to get the accessibliity networks
 build_networks:
   walk:
