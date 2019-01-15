@@ -1192,7 +1192,7 @@ def zone_forecast_inputs():
 
 
 def add_population(df, year, regional_controls):
-    rc = regional_controls.to_frame()
+    rc = regional_controls
     target = rc.totpop.loc[year] - df.gqpop.sum()
 
     zfi = zone_forecast_inputs()
@@ -1206,7 +1206,7 @@ def add_population(df, year, regional_controls):
 
 
 def add_population_tm2(df, year, regional_controls):
-    rc = regional_controls.to_frame()
+    rc = regional_controls
     target = rc.totpop.loc[year] - df.gqpop.sum()
     s = df.hhpop
     s = scale_by_target(s, target, .15)
@@ -1249,7 +1249,7 @@ def add_employment(df, year, regional_controls):
 
     empres = empshare * df.totpop
 
-    rc = regional_controls.to_frame()
+    rc = regional_controls
     target = rc.empres.loc[year]
 
     empres = scale_by_target(empres, target)
@@ -1269,7 +1269,7 @@ def add_employment(df, year, regional_controls):
 # add age categories necessary for the TM
 def add_age_categories(df, year, regional_controls):
     zfi = zone_forecast_inputs()
-    rc = regional_controls.to_frame()
+    rc = regional_controls
 
     seed_matrix = zfi[["sh_age0004", "sh_age0519", "sh_age2044",
                        "sh_age4564", "sh_age65p"]].\
@@ -1365,7 +1365,7 @@ def adjust_hhwkrs(df, year, rdf, total_hh):
 
 
 def adjust_page(df, year, regional_controls):
-    rc = regional_controls.to_frame()
+    rc = regional_controls
     rc['age0019'] = rc.age0004 + rc.age0519
     col_marginals = rc.loc[year,
                            ['age0019', 'age2044', 'age4564',
