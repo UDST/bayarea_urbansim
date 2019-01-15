@@ -19,6 +19,8 @@ def slr_inundate(scenario, parcels, slr_progression_C, slr_progression_R,
         slr_progression = slr_progression_R.to_frame()
     if scenario == '5':
         slr_progression = slr_progression_B.to_frame()
+    else:
+        slr_progression = slr_progression_C.to_frame()
     inundation_yr = slr_progression.query('year==@year')['inundated'].item()
     print "Inundation in model year is %d inches" % inundation_yr
     slr_parcel_inundation = slr_parcel_inundation.to_frame()
