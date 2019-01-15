@@ -9,6 +9,7 @@ import summaries
 from operator import itemgetter
 import itertools
 
+
 # after slr has inundated some parcels and removed buildings permanently,
 # earthquake model removes further buildings temporarily
 
