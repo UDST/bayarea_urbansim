@@ -823,15 +823,7 @@ def travel_model_output(parcels, households, jobs, buildings,
         + maz['gq_type_othnon']
     tot_gqpop = maz.gq_tot_pop.sum()
 
-    maz['POP'] = maz.gq_tot_pop + maz.hhpop
-    maz['HH'] = maz.tothh.fillna(0)
-
-    maz['hh_size_1'] = maz.tothh.fillna(0) * mazi.shrs1_2010
-    maz['hh_size_2'] = maz.tothh.fillna(0) * mazi.shrs2_2010
-    maz['hh_size_3'] = maz.tothh.fillna(0) * mazi.shrs3_2010
-    maz['hh_size_4_plus'] = maz.tothh.fillna(0) * mazi.shs4_2010
     rdf = regional_demographic_forecast.to_frame()
-    maz = adjust_hhsize(maz, year, rdf, tothh)
 
     tfi = taz_forecast_inputs.to_frame()
     taz_df['gq_type_univ'] = maz.groupby('taz1454'
@@ -841,27 +833,26 @@ def travel_model_output(parcels, households, jobs, buildings,
                                            ).gq_type_othnon.sum().fillna(0)
     taz_df['gq_tot_pop'] = maz.groupby('taz1454').gq_tot_pop.sum().fillna(0)
 
-    taz_df['hh'] = maz.groupby('taz1454').tothh.sum()
-
-    taz_df['hh_size_1'] = maz.groupby('taz1454').hh_size_1.sum()
-    taz_df['hh_size_2'] = maz.groupby('taz1454').hh_size_2.sum()
-    taz_df['hh_size_3'] = maz.groupby('taz1454').hh_size_3.sum()
-    taz_df['hh_size_4_plus'] = maz.groupby('taz1454').hh_size_4_plus.sum()
+    taz_df['hh'] = taz_df.TOTHH
+    taz_df['hh_size_1'] = taz_df['TOTHH'] * tfi.shrs1_2010
+    taz_df['hh_size_2'] = taz_df['TOTHH'] * tfi.shrs2_2010
+    taz_df['hh_size_3'] = taz_df['TOTHH'] * tfi.shrs3_2010
+    taz_df['hh_size_4_plus'] = taz_df['TOTHH'] * tfi.shrs4_2010
 
     taz_df['county'] = maz.groupby('taz1454').COUNTY.first()
 
-    taz_df['hh_wrks_0'] = taz_df['hh'] * tfi.shrw0_2010
-    taz_df['hh_wrks_1'] = taz_df['hh'] * tfi.shrw1_2010
-    taz_df['hh_wrks_2'] = taz_df['hh'] * tfi.shrw2_2010
-    taz_df['hh_wrks_3_plus'] = taz_df['hh'] * tfi.shrw3_2010
+    taz_df['hh_wrks_0'] = taz_df['TOTHH'] * tfi.shrw0_2010
+    taz_df['hh_wrks_1'] = taz_df['TOTHH'] * tfi.shrw1_2010
+    taz_df['hh_wrks_2'] = taz_df['TOTHH'] * tfi.shrw2_2010
+    taz_df['hh_wrks_3_plus'] = taz_df['TOTHH'] * tfi.shrw3_2010
 
-    taz_df['hh_kids_no'] = taz_df['hh'] * tfi.shrn_2010
-    taz_df['hh_kids_yes'] = taz_df['hh'] * tfi.shry_2010
+    taz_df['hh_kids_no'] = taz_df['TOTHH'] * tfi.shrn_2010
+    taz_df['hh_kids_yes'] = taz_df['TOTHH'] * tfi.shry_2010
+    taz_df = adjust_hhsize(taz_df, year, rdf, tothh)
     taz_df = adjust_hhwkrs(taz_df, year, rdf, tothh)
-    # taz = adjust_page(taz_df, year, rdf)
     taz_df = adjust_hhkids(taz_df, year, rdf, tothh)
     del taz_df['hh']
-    # taz_df = taz_df.rename(columns={'hh': 'HH', 'pop': 'POP'})
+
     taz_df.index.name = 'TAZ'
 
     taz_df.fillna(0).to_csv(
@@ -1305,11 +1296,11 @@ def adjust_hhsize(df, year, rdf, total_hh):
     col_marginals = (rdf.loc[rdf.year == year,
                              ['shrs1', 'shrs2', 'shrs3',
                               'shrs4']] * total_hh).values[0]
-    row_marginals = df.tothh.fillna(0).values
+    row_marginals = df.hh.fillna(0).values
     seed_matrix = np.round(df[['hh_size_1', 'hh_size_2',
                                'hh_size_3', 'hh_size_4_plus']]).as_matrix()
 
-    target = df.tothh.sum()
+    target = df.hh.sum()
     col_marginals = scale_by_target(col_marginals,
                                     target).round().astype('int')
 
@@ -1323,7 +1314,7 @@ def adjust_hhsize(df, year, rdf, total_hh):
                         'hh_size_3', 'hh_size_4_plus']
     hhsizedf.index = df.index
     for ind, row in hhsizedf.iterrows():
-            target = df.tothh.loc[ind]
+            target = df.hh.loc[ind]
             row = row.round()
             hhsizedf.loc[ind] = round_series_match_target(row, target, 0)
 
