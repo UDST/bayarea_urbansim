@@ -9,13 +9,13 @@ import summaries
 from operator import itemgetter
 import itertools
 
+
 # after slr has inundated some parcels and removed buildings permanently,
 # earthquake model removes further buildings temporarily
 
-
 @orca.step()
-def eq_code_buildings(buildings, year):
-    if year == 2035:
+def eq_code_buildings(buildings, year, earthquake):
+    if year == 2035 and earthquake:
         # tags buildings that exist in 2035 with a fragility coefficient
         # keeping in-model adds run time, but is important given developer
         # model stochastisitcy, that will change the building stock in 2035
@@ -244,8 +244,8 @@ def eq_code_buildings(buildings, year):
 
 @orca.step()
 def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
-                        year, households, jobs, residential_units):
-    if year == 2035:
+                        households, jobs, residential_units, year, earthquake):
+    if year == 2035 and earthquake:
         # assign each parcel to a census tract
         # using the lookup table created with "parcel_tract_assignment.ipynb"
         census_tract = pd.Series(parcels_tract['census_tract'],

@@ -30,6 +30,7 @@ BRANCH = os.popen('git rev-parse --abbrev-ref HEAD').read()
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
 COMPARE_TO_NO_PROJECT = True
 NO_PROJECT = 611
+EARTHQUAKE = True
 
 IN_YEAR, OUT_YEAR = 2010, 2050
 COMPARE_AGAINST_LAST_KNOWN_GOOD = False
@@ -44,6 +45,8 @@ LAST_KNOWN_GOOD_RUNS = {
 }
 
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
+
+orca.add_injectable("earthquake", EARTHQUAKE)
 
 parser = argparse.ArgumentParser(description='Run UrbanSim models.')
 
@@ -121,8 +124,8 @@ def get_simulation_models(SCENARIO):
 
         "slr_inundate",
         "slr_remove_dev",
-        # "eq_code_buildings",
-        # "earthquake_demolish",
+        "eq_code_buildings",
+        "earthquake_demolish",
 
         "neighborhood_vars",    # street network accessibility
         "regional_vars",        # road network accessibility
@@ -202,9 +205,10 @@ def get_simulation_models(SCENARIO):
         "diagnostic_output",
         "geographic_summary",
         "travel_model_output",
-        # "travel_model_2_output",
+#       "travel_model_2_output",
         "hazards_slr_summary",
-        # "hazards_eq_summary"
+        "hazards_eq_summary"
+      
     ]
 
     # calculate VMT taxes
@@ -254,8 +258,8 @@ def run_models(MODE, SCENARIO):
 
                 "slr_inundate",
                 "slr_remove_dev",
-                # "eq_code_buildings",
-                # "earthquake_demolish",
+                "eq_code_buildings",
+                "earthquake_demolish",
 
                 "neighborhood_vars",   # local accessibility vars
                 "regional_vars",       # regional accessibility vars
@@ -291,9 +295,9 @@ def run_models(MODE, SCENARIO):
                 "building_summary",
                 "geographic_summary",
                 "travel_model_output",
-                # "travel_model_2_output",
+#                "travel_model_2_output",
                 "hazards_slr_summary",
-                # "hazards_eq_summary",
+                "hazards_eq_summary",
                 "diagnostic_output"
 
             ], iter_vars=[IN_YEAR])
