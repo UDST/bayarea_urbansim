@@ -820,7 +820,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     maz['gq_type_mil'] = mazi['gqpopm' + mazi_yr]
     maz['gq_type_othnon'] = mazi['gqpopo' + mazi_yr]
     maz['gq_tot_pop'] = maz['gq_type_univ'] + maz['gq_type_mil']\
-         + maz['gq_type_othnon']
+        + maz['gq_type_othnon']
     tot_gqpop = maz.gq_tot_pop.sum()
 
     rdf = regional_demographic_forecast.to_frame()
