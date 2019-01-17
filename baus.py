@@ -202,7 +202,7 @@ def get_simulation_models(SCENARIO):
         "diagnostic_output",
         "geographic_summary",
         "travel_model_output",
-        "travel_model_2_output",
+        # "travel_model_2_output",
         "hazards_slr_summary",
 #        "hazards_eq_summary"
     ]
@@ -291,7 +291,7 @@ def run_models(MODE, SCENARIO):
                 "building_summary",
                 "geographic_summary",
                 "travel_model_output",
-                "travel_model_2_output",
+                # "travel_model_2_output",
                 "hazards_slr_summary",
 #                "hazards_eq_summary",
                 "diagnostic_output"
