@@ -257,7 +257,7 @@ def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
         parcels_tract['parcel_id'] = parcels_tract.index
         parcels_tract = parcels_tract.to_frame(columns=['parcel_id',
                                                         'census_tract'])
-        parcels_tract = [['census_tract','parcel_id']]
+        parcels_tract = [['census_tract', 'parcel_id']]
         tract_parcels_grp = []
         tracts = []
         parcels_tract = sorted(parcels_tract.values, key=itemgetter(0))
