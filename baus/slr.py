@@ -15,9 +15,9 @@ def slr_inundate(scenario, parcels, slr_progression_C, slr_progression_R,
                  slr_progression_B, year, slr_parcel_inundation):
     if scenario == '1':
         slr_progression = slr_progression_C.to_frame()
-    if scenario == '2':
+    elif scenario == '2':
         slr_progression = slr_progression_R.to_frame()
-    if scenario == '5':
+    elif scenario == '5':
         slr_progression = slr_progression_B.to_frame()
     else:
         slr_progression = slr_progression_C.to_frame()  # placeholder
