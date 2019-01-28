@@ -716,7 +716,9 @@ def travel_model_output(parcels, households, jobs, buildings,
     # because of the null values, so TAZ was used to summarize. This worked for
     # every scenario/year besides BTTF 2050. Now summarizing using the
     # jobs table, instead of the jobs_df merged table, which seems to work.
-    # Households are not affected for some reason. 
+    # Households are not affected for some reason.
+
+    jobs = jobs.to_frame()
 
     def getsectorcounts(sector):
         return jobs.query("empsix == '%s'" % sector).\
