@@ -712,8 +712,14 @@ def travel_model_output(parcels, households, jobs, buildings,
     # with major caching issue which has been reported upstream
     # jobs_df["zone_id"] = jobs_df.zone_id_x
 
+    # 01 28 2019 ET: zone_id was still causing the employment totals to be low
+    # because of the null values, so TAZ was used to summarize. This worked for
+    # every scenario/year besides BTTF 2050. Now summarizing using the
+    # jobs table, instead of the jobs_df merged table, which seems to work.
+    # Households are not affected for some reason. 
+
     def getsectorcounts(sector):
-        return jobs_df.query("empsix == '%s'" % sector).\
+        return jobs.query("empsix == '%s'" % sector).\
             groupby('taz').size()
 
     taz_df["agrempn"] = getsectorcounts("AGREMPN")
@@ -722,7 +728,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     taz_df["retempn"] = getsectorcounts("RETEMPN")
     taz_df["mwtempn"] = getsectorcounts("MWTEMPN")
     taz_df["othempn"] = getsectorcounts("OTHEMPN")
-    taz_df["totemp"] = jobs_df.groupby('taz').size()
+    taz_df["totemp"] = jobs.groupby('taz').size()
 
     def gethhcounts(filter):
         return households_df.query(filter).groupby('zone_id').size()
