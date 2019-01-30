@@ -435,9 +435,9 @@ def mandatory_accessibility():
     fname = get_logsum_file('mandatory')
     df = pd.read_csv(os.path.join(
         misc.data_dir(), fname))
-    df.loc[df.subzone == 0, 'subzone'] = 'a'
-    df.loc[df.subzone == 1, 'subzone'] = 'b'
-    df.loc[df.subzone == 2, 'subzone'] = 'c'
+    df.loc[df.subzone == 0, 'subzone'] = 'c'  # no walk
+    df.loc[df.subzone == 1, 'subzone'] = 'a'  # short walk
+    df.loc[df.subzone == 2, 'subzone'] = 'b'  # long walk
     df['taz_sub'] = df.taz.astype('str') + df.subzone
     return df.set_index('taz_sub')
 
@@ -447,9 +447,9 @@ def non_mandatory_accessibility():
     fname = get_logsum_file('non_mandatory')
     df = pd.read_csv(os.path.join(
         misc.data_dir(), fname))
-    df.loc[df.subzone == 0, 'subzone'] = 'a'
-    df.loc[df.subzone == 1, 'subzone'] = 'b'
-    df.loc[df.subzone == 2, 'subzone'] = 'c'
+    df.loc[df.subzone == 0, 'subzone'] = 'c'  # no walk
+    df.loc[df.subzone == 1, 'subzone'] = 'a'  # short walk
+    df.loc[df.subzone == 2, 'subzone'] = 'b'  # long walk
     df['taz_sub'] = df.taz.astype('str') + df.subzone
     return df.set_index('taz_sub')
 
@@ -494,28 +494,28 @@ def get_logsum_file(type='mandatory'):
     except:
         if 'logsum' in logsums:
             ls = logsums['logsum']
-            orca.add_injectable('previous_{}_logsum_type'.format(type), \
-                'generic')
-            orca.add_injectable('previous_{}_logsum_file'.format(type), \
-                ls)
+            orca.add_injectable('previous_{}_logsum_type'.format(type),
+                                'generic')
+            orca.add_injectable('previous_{}_logsum_file'.format(type),
+                                ls)
         if 'logsum_{}'.format(yr) in logsums:
             ls = logsums['logsum_{}'.format(yr)]
-            orca.add_injectable('previous_{}_logsum_type'.format(type), \
-                'year')
-            orca.add_injectable('previous_{}_logsum_file'.format(type), \
-                ls)
+            orca.add_injectable('previous_{}_logsum_type'.format(type),
+                                'year')
+            orca.add_injectable('previous_{}_logsum_file'.format(type),
+                                ls)
         if 'logsum_{}'.format(sc) in logsums:
             ls = logsums['logsum_{}'.format(sc)]
-            orca.add_injectable('previous_{}_logsum_type'.format(type), \
-                'scenario')
-            orca.add_injectable('previous_{}_logsum_file'.format(type), \
-                ls)
+            orca.add_injectable('previous_{}_logsum_type'.format(type),
+                                'scenario')
+            orca.add_injectable('previous_{}_logsum_file'.format(type),
+                                ls)
         if 'logsum_{}_{}'.format(yr, sc) in logsums:
             ls = logsums['logsum_{}_{}'.format(yr, sc)]
-            orca.add_injectable('previous_{}_logsum_type'.format(type), \
-                'year_scenario')
-            orca.add_injectable('previous_{}_logsum_file'.format(type), \
-                ls)
+            orca.add_injectable('previous_{}_logsum_type'.format(type),
+                                'year_scenario')
+            orca.add_injectable('previous_{}_logsum_file'.format(type),
+                                ls)
         return ls
 
 
