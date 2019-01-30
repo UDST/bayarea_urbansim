@@ -670,7 +670,9 @@ logsums:
     logsum: 2015_06_002_mandatoryAccessibilities.csv
   non_mandatory:
     logsum: 2015_06_002_nonMandatoryAccessibilities.csv
-
+  segmentation:
+    logsum: accessibilities_segmentation.csv
+    
 
 model_configs:
   hlcm:

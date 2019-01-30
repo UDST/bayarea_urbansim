@@ -797,7 +797,7 @@ def subzone(parcels, parcels_subzone):
 
 
 @orca.column('parcels', cache=True, cache_scope='iteration')
-def cml(parcels, year, mandatory_accessibility,
+def cml(parcels, mandatory_accessibility,
         accessibilities_segmentation):
     mand_acc = mandatory_accessibility.local
     acc_seg = accessibilities_segmentation.local
@@ -806,7 +806,7 @@ def cml(parcels, year, mandatory_accessibility,
                                                         'taz', 'subzone',
                                                         'weighted_sum'])]:
         mand_acc[col] = ((mand_acc[col] - mand_acc[col].min()) /
-                         0.0134) * acc_seg.loc[year, col]
+                         0.0134) * acc_seg.loc[0, col]
         cols_to_sum.append(col)
     mand_acc['weighted_sum'] = mand_acc[cols_to_sum].sum(axis=1)
     df = misc.reindex(mand_acc.weighted_sum, parcels.subzone)
@@ -814,7 +814,7 @@ def cml(parcels, year, mandatory_accessibility,
 
 
 @orca.column('parcels', cache=True, cache_scope='iteration')
-def cnml(parcels, year, non_mandatory_accessibility,
+def cnml(parcels, non_mandatory_accessibility,
          accessibilities_segmentation):
     nmand_acc = non_mandatory_accessibility.local
     acc_seg = accessibilities_segmentation.local
@@ -823,7 +823,7 @@ def cnml(parcels, year, non_mandatory_accessibility,
                                                           'taz', 'subzone',
                                                           'weighted_sum'])]:
         nmand_acc[col] = ((nmand_acc[col] - nmand_acc[col].min()) /
-                          0.0175) * acc_seg.loc[year, col]
+                          0.0175) * acc_seg.loc[0, col]
         cols_to_sum.append(col)
     nmand_acc['weighted_sum'] = nmand_acc[cols_to_sum].sum(axis=1)
     df = misc.reindex(nmand_acc.weighted_sum, parcels.subzone)

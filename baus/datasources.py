@@ -454,6 +454,14 @@ def non_mandatory_accessibility():
     return df.set_index('taz_sub')
 
 
+@orca.table(cache=False)
+def accessibilities_segmentation():
+    fname = get_logsum_file('segmentation')
+    df = pd.read_csv(os.path.join(
+        misc.data_dir(), fname))
+    return df
+
+
 def get_logsum_file(type='mandatory'):
     logsums = orca.get_injectable('settings')['logsums'][type]
     sc = orca.get_injectable('scenario')
@@ -486,28 +494,29 @@ def get_logsum_file(type='mandatory'):
     except:
         if 'logsum' in logsums:
             ls = logsums['logsum']
-            orca.add_injectable('previous_logsum_type', 'generic')
-            orca.add_injectable('previous_logsum_file', ls)
+            orca.add_injectable('previous_{}_logsum_type'.format(type), \
+                'generic')
+            orca.add_injectable('previous_{}_logsum_file'.format(type), \
+                ls)
         if 'logsum_{}'.format(yr) in logsums:
             ls = logsums['logsum_{}'.format(yr)]
-            orca.add_injectable('previous_logsum_type', 'year')
-            orca.add_injectable('previous_logsum_file', ls)
+            orca.add_injectable('previous_{}_logsum_type'.format(type), \
+                'year')
+            orca.add_injectable('previous_{}_logsum_file'.format(type), \
+                ls)
         if 'logsum_{}'.format(sc) in logsums:
             ls = logsums['logsum_{}'.format(sc)]
-            orca.add_injectable('previous_logsum_type', 'scenario')
-            orca.add_injectable('previous_logsum_file', ls)
+            orca.add_injectable('previous_{}_logsum_type'.format(type), \
+                'scenario')
+            orca.add_injectable('previous_{}_logsum_file'.format(type), \
+                ls)
         if 'logsum_{}_{}'.format(yr, sc) in logsums:
             ls = logsums['logsum_{}_{}'.format(yr, sc)]
-            orca.add_injectable('previous_logsum_type', 'year_scenario')
-            orca.add_injectable('previous_logsum_file', ls)
+            orca.add_injectable('previous_{}_logsum_type'.format(type), \
+                'year_scenario')
+            orca.add_injectable('previous_{}_logsum_file'.format(type), \
+                ls)
         return ls
-
-
-@orca.table(cache=True)
-def accessibilities_segmentation():
-    return pd.read_csv(os.path.join(misc.data_dir(),
-                       'accessibilities_segmentation.csv'),
-                       index_col='year')
 
 
 @orca.table(cache=True)
