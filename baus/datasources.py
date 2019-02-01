@@ -459,6 +459,11 @@ def accessibilities_segmentation():
     fname = get_logsum_file('segmentation')
     df = pd.read_csv(os.path.join(
         misc.data_dir(), fname))
+    df['AV'] =  df['hasAV'].apply(lambda x: 'AV' if x==1 else 'noAV')
+    df['label'] = df['incQ_label'] + '_' + df['autoSuff_label'] + '_' + df['AV']
+    df = df.groupby('label').sum()
+    df['prop'] = df['num_persons'] / df['num_persons'].sum()
+    df = df[['prop']].transpose().reset_index(drop=True)
     return df
 
 

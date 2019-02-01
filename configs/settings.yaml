@@ -667,11 +667,17 @@ control_tables:
 
 logsums:
   mandatory:
-    logsum: 2015_06_002_mandatoryAccessibilities.csv
+    logsum: mandatoryAccessibilities_2015.csv
+    logsum_2050_s2: mandatoryAccessibilities_2050_s2.csv
+    logsum_2050_s5: mandatoryAccessibilities_2050_s5.csv
   non_mandatory:
-    logsum: 2015_06_002_nonMandatoryAccessibilities.csv
+    logsum: nonMandatoryAccessibilities_2015.csv
+    logsum_2050_s2: nonMandatoryAccessibilities_2050_s2.csv
+    logsum_2050_s5: nonMandatoryAccessibilities_2050_s5.csv
   segmentation:
-    logsum: accessibilities_segmentation.csv
+    logsum: AccessibilityMarkets_2015.csv
+    logsum_2050_s2: AccessibilityMarkets_2050_s2.csv
+    logsum_2050_s5: AccessibilityMarkets_2015_s5.csv
     
 
 model_configs:
