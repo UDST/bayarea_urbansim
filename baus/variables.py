@@ -877,8 +877,6 @@ def zone_cnml(year, non_mandatory_accessibility,
 @orca.column('zones', cache=True, cache_scope='iteration')
 def zone_combo_logsum(zones):
     df = zones.to_frame(['zone_cml', 'zone_cnml'])
-    print "Combined logsum value is: %d" /
-    % sum(df.zone_cml.sum() + df.zone_cnml.sum())
     return df.zone_cml + df.zone_cnml
 
 
