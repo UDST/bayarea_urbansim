@@ -6,6 +6,7 @@ import datasources
 from utils import nearest_neighbor, groupby_random_choice
 from urbansim_defaults import utils
 from urbansim_defaults import variables
+import os
 
 
 '''
@@ -835,6 +836,7 @@ def cnml(parcels, non_mandatory_accessibility,
 @orca.column('parcels', cache=True, cache_scope='iteration')
 def combo_logsum(parcels):
     df = parcels.to_frame(['cml', 'cnml'])
+    print "Combined logsum value is: %d" % (df.cml.sum() + df.cnml.sum())
     return df.cml + df.cnml
 
 
@@ -875,8 +877,12 @@ def zone_cnml(year, non_mandatory_accessibility,
 
 
 @orca.column('zones', cache=True, cache_scope='iteration')
-def zone_combo_logsum(zones):
+def zone_combo_logsum(zones, run_number, year):
     df = zones.to_frame(['zone_cml', 'zone_cnml'])
+    df['zone_total'] = df.zone_cml + df.zone_cnml
+    df.to_csv(os.path.join("runs",
+                       "run%d_taz_logsums_%d.csv"
+                        % (run_number, year)))
     return df.zone_cml + df.zone_cnml
 
 
