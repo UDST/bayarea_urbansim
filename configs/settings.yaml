@@ -729,7 +729,7 @@ logsums:
     logsum_2025_s1: AccessibilityMarkets_2030_s1.csv
     logsum_2030_s1: AccessibilityMarkets_2050_s1.csv
     logsum_2035_s1: AccessibilityMarkets_2050_s1.csv
-    logsum_2040_s1: AccessibilityMarketss_2050_s1.csv
+    logsum_2040_s1: AccessibilityMarkets_2050_s1.csv
     logsum_2045_s1: AccessibilityMarkets_2050_s1.csv
     logsum_2050_s1: AccessibilityMarkets_2050_s1.csv
     logsum_2010_s2: AccessibilityMarkets_2030_s2.csv
