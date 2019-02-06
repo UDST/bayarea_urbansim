@@ -15,7 +15,7 @@ import itertools
 
 @orca.step()
 def eq_code_buildings(buildings, year, earthquake):
-    if year == 2035 and earthquake:
+    if year == 2010 and earthquake:
         # tags buildings that exist in 2035 with a fragility coefficient
         # keeping in-model adds run time, but is important given developer
         # model stochastisitcy, that will change the building stock in 2035
@@ -245,7 +245,7 @@ def eq_code_buildings(buildings, year, earthquake):
 @orca.step()
 def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
                         households, jobs, residential_units, year, earthquake):
-    if year == 2035 and earthquake:
+    if year == 2010 and earthquake:
         # assign each parcel to a census tract
         # using the lookup table created with "parcel_tract_assignment.ipynb"
         census_tract = pd.Series(parcels_tract['census_tract'],
