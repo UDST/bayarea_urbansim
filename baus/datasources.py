@@ -473,38 +473,30 @@ def get_logsum_file(type='mandatory'):
     sc = orca.get_injectable('scenario')
     yr = orca.get_injectable('year')
     try:
-        prev_type = orca.get_injectable('previous_{}_logsum_type').\
-                                        format(type)
+        prev_type = orca.get_injectable('previous_logsum_type')
         if prev_type == 'generic':
-            return orca.get_injectable('previous_{}_logsum_file').\
-                                       format(type)
+            return orca.get_injectable('previous_logsum_file')
         elif prev_type == 'year':
             if 'logsum_{}'.format(yr) in logsums:
                 ls = logsums['logsum_{}'.format(yr)]
-                orca.add_injectable('previous_{}_logsum_file', ls).\
-                                    format(type)
+                orca.add_injectable('previous_logsum_file', ls)
                 return ls
             else:
-                return orca.get_injectable('previous_{}_logsum_file').\
-                                           format(type)
+                return orca.get_injectable('previous_logsum_file')
         elif prev_type == 'scenario':
             if 'logsum_s{}'.format(sc) in logsums:
                 ls = logsums['logsum_s{}'.format(sc)]
-                orca.add_injectable('previous_{}_logsum_file', ls).\
-                                    format(type)
+                orca.add_injectable('previous_logsum_file', ls)
                 return ls
             else:
-                return orca.get_injectable('previous_{}_logsum_file').\
-                                           format(type)
+                return orca.get_injectable('previous_logsum_file')
         else:
             if 'logsum_{}_s{}'.format(yr, sc) in logsums:
                 ls = logsums['logsum_{}_s{}'.format(yr, sc)]
-                orca.add_injectable('previous_{}_logsum_file', ls).\
-                                    format(type)
+                orca.add_injectable('previous_logsum_file', ls)
                 return ls
             else:
-                return orca.get_injectable('previous_{}_logsum_file').\
-                                           format(type)
+                return orca.get_injectable('previous_logsum_file')
     except:
         if 'logsum' in logsums:
             ls = logsums['logsum']

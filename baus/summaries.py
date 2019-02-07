@@ -532,8 +532,6 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
                 format(run_number, acct_name, year)
             acct.to_frame().to_csv(fname)
 
-    if year in [2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
-
         # Write Urban Footprint Summary
         buildings_uf_df = orca.merge_tables(
             'buildings',
@@ -1573,15 +1571,7 @@ def hazards_eq_summary(run_number, year, households, jobs):
         f.close()
 
         eq_demolish = eq_demolish.to_frame()
-#        buildings_df = orca.merge_tables(
-#        'buildings',
-#        [parcels, buildings],
-#        columns=['pda', 'superdistrict', 'juris', 'building_type',
-#                 'zone_id', 'residential_units', 'building_sqft',
-#                 'non_residential_sqft'])
-        eq_demolish = eq_demolish.groupby['taz'].sum()
+        eq_demolish = eq_demolish[['parcel_id']]
         eq_demolish.to_csv(os.path.join("runs",
                                         "run%d_hazards_eq_buildings_%d.csv"
                                         % (run_number, year)))
-
-        print eq_demolish
