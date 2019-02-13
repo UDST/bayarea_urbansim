@@ -532,7 +532,7 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
                 format(run_number, acct_name, year)
             acct.to_frame().to_csv(fname)
 
-    if year is in [2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
+    if year in [2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
 
         # Write Urban Footprint Summary
         buildings_uf_df = orca.merge_tables(
