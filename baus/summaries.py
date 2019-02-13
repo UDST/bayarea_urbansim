@@ -532,6 +532,8 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
                 format(run_number, acct_name, year)
             acct.to_frame().to_csv(fname)
 
+    if year is in [2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
+
         # Write Urban Footprint Summary
         buildings_uf_df = orca.merge_tables(
             'buildings',
@@ -542,17 +544,26 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
 
         buildings_uf_df['count'] = 1
 
+        # residential units per acre in current year
         s1 = buildings_uf_df['residential_units'] / buildings_uf_df['acres']
+        # residential units per acre > 1 in current year
         s2 = s1 > 1
+        # urban footprint is 0 in base year (there's no development)
         s3 = (buildings_uf_df['urban_footprint'] == 0) * 1
+        # urban footprint is 0 in the base year
+        # AND residential units per acre > 1 in current year
         buildings_uf_df['denser_greenfield'] = s3 * s2
 
+        # where buildings were built after the base year,
+        # sum whether urban footprint was 0 or 1 in the base year
         df = buildings_uf_df.\
             loc[buildings_uf_df['year_built'] > 2010].\
             groupby('urban_footprint').sum()
         df = df[['count', 'residential_units', 'non_residential_sqft',
                  'acres']]
 
+        # where buildings were built after the base year,
+        # sum if it was denser greenfield
         df2 = buildings_uf_df.\
             loc[buildings_uf_df['year_built'] > 2010].\
             groupby('denser_greenfield').sum()
@@ -1485,7 +1496,7 @@ def hazards_slr_summary(run_number, year, destroy_parcels, slr_demolish,
 
 
 @orca.step()
-def hazards_eq_summary(run_number, year, households, jobs):
+def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings):
     if year == 2035:
 
         f = open(os.path.join("runs", "run%d_hazards_eq_%d.log" %
@@ -1571,7 +1582,27 @@ def hazards_eq_summary(run_number, year, households, jobs):
         f.close()
 
         eq_demolish = eq_demolish.to_frame()
-        eq_demolish = eq_demolish[['parcel_id']]
+        eq_demolish_taz = misc.reindex(parcels.zone_id,
+                                       eq_demolish.parcel_id)
+        eq_demolish['taz'] = eq_demolish_taz
+        eq_demolish = eq_demolish.drop(['parcel_id', 'year_built',
+                                       'redfin_sale_year'], axis=1)
+        eq_demolish = eq_demolish.groupby(['taz']).sum()
         eq_demolish.to_csv(os.path.join("runs",
-                                        "run%d_hazards_eq_buildings_%d.csv"
+                           "run%d_hazards_eq_demolish_buildings_%d.csv"
                                         % (run_number, year)))
+
+    if year in [2030, 2035, 2050]:
+        buildings = buildings.to_frame()
+        buildings_taz = misc.reindex(parcels.zone_id,
+                                     buildings.parcel_id)
+        buildings['taz'] = buildings_taz
+        buildings = buildings[['taz', 'residential_units', 'residential_sqft',
+                               'non_residential_sqft', 'building_sqft',
+                               'stories', 'redfin_sale_price',
+                               'non_residential_rent', 'deed_restricted_units',
+                               'residential_price']]
+        buildings = buildings.groupby(['taz']).sum()
+        buildings.to_csv(os.path.join("runs",
+                                      "run%d_hazards_eq_buildings_%d.csv"
+                                      % (run_number, year)))

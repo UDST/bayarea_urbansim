@@ -881,8 +881,8 @@ def zone_combo_logsum(zones, run_number, year):
     df = zones.to_frame(['zone_cml', 'zone_cnml'])
     df['zone_total'] = df.zone_cml + df.zone_cnml
     df.to_csv(os.path.join("runs",
-                       "run%d_taz_logsums_%d.csv"
-                        % (run_number, year)))
+                           "run%d_taz_logsums_%d.csv"
+                           % (run_number, year)))
     return df.zone_cml + df.zone_cnml
 
 
