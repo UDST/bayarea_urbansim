@@ -400,6 +400,13 @@ def parcels_geography(parcels):
         index_col="geom_id")
     df = geom_id_to_parcel_id(df, parcels)
 
+#@orca.table(cache=True)
+#def parcels_urbanized(parcels):
+#    df = pd.read_csv(
+#        os.path.join(misc.data_dir(), "parcels_urbanized.csv"),
+#        index_col="geom_id")
+#    df = geom_id_to_parcel_id(df, parcels)
+
     # this will be used to map juris id to name
     juris_name = pd.read_csv(
         os.path.join(misc.data_dir(), "census_id_to_name.csv"),

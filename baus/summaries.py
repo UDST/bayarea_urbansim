@@ -379,7 +379,7 @@ def diagnostic_output(households, buildings, parcels, taz, jobs, settings,
 
 @orca.step()
 def geographic_summary(parcels, households, jobs, buildings, taz_geography,
-                       run_number, year, summary, final_year):
+                       run_number, year, summary, initial_year, final_year):
     # using the following conditional b/c `year` is used to pull a column
     # from a csv based on a string of the year in add_population()
     # and in add_employment() and 2009 is the
@@ -532,13 +532,13 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
                 format(run_number, acct_name, year)
             acct.to_frame().to_csv(fname)
 
-    if year in [2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
+    if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
 
         # Write Urban Footprint Summary
         buildings_uf_df = orca.merge_tables(
             'buildings',
             [parcels, buildings],
-            columns=['urban_footprint', 'year_built',
+            columns=['urbanized', 'year_built',
                      'acres', 'residential_units',
                      'non_residential_sqft'])
 
@@ -549,7 +549,7 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
         # residential units per acre > 1 in current year
         s2 = s1 > 1
         # urban footprint is 0 in base year (there's no development)
-        s3 = (buildings_uf_df['urban_footprint'] == 0) * 1
+        s3 = (buildings_uf_df['urbanized'] == 0) * 1
         # urban footprint is 0 in the base year
         # AND residential units per acre > 1 in current year
         buildings_uf_df['denser_greenfield'] = s3 * s2
@@ -558,7 +558,7 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
         # sum whether urban footprint was 0 or 1 in the base year
         df = buildings_uf_df.\
             loc[buildings_uf_df['year_built'] > 2010].\
-            groupby('urban_footprint').sum()
+            groupby('urbanized').sum()
         df = df[['count', 'residential_units', 'non_residential_sqft',
                  'acres']]
 
@@ -590,6 +590,66 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
         uf_summary_csv = "runs/run{}_urban_footprint_summary_{}.csv".\
             format(run_number, year)
         df.to_csv(uf_summary_csv)
+
+    # write secondary greenfield summary
+    # what we see from the urban footprint summary is that all greenfield ("urban_footprint_0")
+    # buildings are recorded in 2010, from base year buildings that are outside of the urbanized areas,
+    # and don't change through 2050 (less from the earthquake)
+    # this could be because so little growth is allowed on the fringes, or because the initial
+    # set of parcels flagged as urbanized area is more expansive than the urbanized area shapefile
+    #
+    # this method does not use the urbanized area shapefile, but counts new buildings (not from redevelopment)
+    # it also uses a new.............
+#    if year == initial_year:
+#
+#        buildings_df = orca.merge_tables(
+#            'buildings',
+#            [parcels, buildings],
+#            columns=['parcel_id'])
+#        orca.add_table('buildings_2010', buildings_df)
+
+ #       parcels = parcels.to_frame()
+ #       parcels_urbanized = parcels[parcels['urbanized'] == 1]
+ #       orca.add_table('parcels_urbanized', parcels_urbanized)
+
+ #   if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
+
+#        buildings_2010 = orca.get_table('buildings_2010')
+#        parcels_urbanized = orca.get_table('parcels_urbanized')
+#        buildings_2010 = buildings_2010.to_frame()
+#        parcels_urbanized = parcels_urbanized.to_frame()
+
+
+#        parcels = orca.get_table('parcels')
+#        buildings_df = orca.merge_tables(
+#            'buildings',
+#            [parcels, buildings],
+#            columns=['parcel_id', 'year_built', 'acres', 'residential_units',
+#                     'non_residential_sqft'])
+
+#        buildings_df['count'] = 1
+
+#        buildings_df = buildings_df[buildings_df['year_built'] > 2015]
+
+        # remove redevelopment
+#        buildings_df = buildings_df[~buildings_df.parcel_id.isin
+#                                         (buildings_2010.parcel_id)]
+        # remove infill
+#        buildings_df = buildings_df[~buildings_df.parcel_id.isin
+#                                        (parcels_urbanized.parcel_id)]
+
+
+#        buildings_df = buildings_df[['count', 'residential_units', 'non_residential_sqft', 'acres']]
+
+#        buildings_df.to_csv(
+#             os.path.join("runs", "run%d_greenfield_%d.csv"
+#             % (run_number, year)))
+
+#        buildings_df = buildings_df.sum()
+
+#        buildings_df.to_csv(
+#                     os.path.join("runs", "run%d_greenfield_summary_%d.csv"
+#                     % (run_number, year)))
 
 
 @orca.step()
@@ -1589,8 +1649,8 @@ def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings):
                                        'redfin_sale_year'], axis=1)
         eq_demolish = eq_demolish.groupby(['taz']).sum()
         eq_demolish.to_csv(os.path.join("runs",
-                           "run%d_hazards_eq_demolish_buildings_%d.csv"
-                                        % (run_number, year)))
+                           "run%d_hazards_eq_demolish_buildings_%d.csv"\
+                           % (run_number, year)))
 
     if year in [2030, 2035, 2050]:
         buildings = buildings.to_frame()
