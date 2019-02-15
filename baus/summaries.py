@@ -379,7 +379,7 @@ def diagnostic_output(households, buildings, parcels, taz, jobs, settings,
 
 @orca.step()
 def geographic_summary(parcels, households, jobs, buildings, taz_geography,
-                       run_number, year, summary, initial_year, final_year):
+                       run_number, year, summary, final_year):
     # using the following conditional b/c `year` is used to pull a column
     # from a csv based on a string of the year in add_population()
     # and in add_employment() and 2009 is the
@@ -533,6 +533,10 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
             acct.to_frame().to_csv(fname)
 
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
+    # 02 15 2019 ET: Using perffoot there was no greenfield change
+    # between 2010 and 2050. Joined the parcels to Urbanized_Footprint
+    # instead, which improved the diff. The large majority of greenfield
+    # still occurs in 2010 (base year buildings outside of the urbanized area).
 
         # Write Urban Footprint Summary
         buildings_uf_df = orca.merge_tables(
@@ -590,66 +594,6 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
         uf_summary_csv = "runs/run{}_urban_footprint_summary_{}.csv".\
             format(run_number, year)
         df.to_csv(uf_summary_csv)
-
-    # write secondary greenfield summary
-    # what we see from the urban footprint summary is that all greenfield ("urban_footprint_0")
-    # buildings are recorded in 2010, from base year buildings that are outside of the urbanized areas,
-    # and don't change through 2050 (less from the earthquake)
-    # this could be because so little growth is allowed on the fringes, or because the initial
-    # set of parcels flagged as urbanized area is more expansive than the urbanized area shapefile
-    #
-    # this method does not use the urbanized area shapefile, but counts new buildings (not from redevelopment)
-    # it also uses a new.............
-#    if year == initial_year:
-#
-#        buildings_df = orca.merge_tables(
-#            'buildings',
-#            [parcels, buildings],
-#            columns=['parcel_id'])
-#        orca.add_table('buildings_2010', buildings_df)
-
- #       parcels = parcels.to_frame()
- #       parcels_urbanized = parcels[parcels['urbanized'] == 1]
- #       orca.add_table('parcels_urbanized', parcels_urbanized)
-
- #   if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
-
-#        buildings_2010 = orca.get_table('buildings_2010')
-#        parcels_urbanized = orca.get_table('parcels_urbanized')
-#        buildings_2010 = buildings_2010.to_frame()
-#        parcels_urbanized = parcels_urbanized.to_frame()
-
-
-#        parcels = orca.get_table('parcels')
-#        buildings_df = orca.merge_tables(
-#            'buildings',
-#            [parcels, buildings],
-#            columns=['parcel_id', 'year_built', 'acres', 'residential_units',
-#                     'non_residential_sqft'])
-
-#        buildings_df['count'] = 1
-
-#        buildings_df = buildings_df[buildings_df['year_built'] > 2015]
-
-        # remove redevelopment
-#        buildings_df = buildings_df[~buildings_df.parcel_id.isin
-#                                         (buildings_2010.parcel_id)]
-        # remove infill
-#        buildings_df = buildings_df[~buildings_df.parcel_id.isin
-#                                        (parcels_urbanized.parcel_id)]
-
-
-#        buildings_df = buildings_df[['count', 'residential_units', 'non_residential_sqft', 'acres']]
-
-#        buildings_df.to_csv(
-#             os.path.join("runs", "run%d_greenfield_%d.csv"
-#             % (run_number, year)))
-
-#        buildings_df = buildings_df.sum()
-
-#        buildings_df.to_csv(
-#                     os.path.join("runs", "run%d_greenfield_summary_%d.csv"
-#                     % (run_number, year)))
 
 
 @orca.step()
@@ -787,7 +731,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     # because of the null values, so TAZ was used to summarize. This worked for
     # every scenario/year besides BTTF 2050. Now summarizing using the
     # jobs table, instead of the jobs_df merged table, which seems to work.
-    # Households are not affected for some reason.
+    # Households are not affected for some reason, but the other summaries are.
 
     jobs = jobs.to_frame()
 
@@ -1557,7 +1501,7 @@ def hazards_slr_summary(run_number, year, destroy_parcels, slr_demolish,
 
 @orca.step()
 def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings):
-    if year == 2035:
+    if year == 2035 and earthquake:
 
         f = open(os.path.join("runs", "run%d_hazards_eq_%d.log" %
                  (run_number, year)), "w")
