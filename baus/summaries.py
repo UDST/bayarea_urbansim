@@ -1501,7 +1501,7 @@ def hazards_slr_summary(run_number, year, destroy_parcels, slr_demolish,
 
 
 @orca.step()
-def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings
+def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings,
                        earthquake):
     if year == 2035 and earthquake:
 
