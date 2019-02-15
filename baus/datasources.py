@@ -400,7 +400,6 @@ def parcels_geography(parcels):
         index_col="geom_id")
     df = geom_id_to_parcel_id(df, parcels)
 
-
     # this will be used to map juris id to name
     juris_name = pd.read_csv(
         os.path.join(misc.data_dir(), "census_id_to_name.csv"),

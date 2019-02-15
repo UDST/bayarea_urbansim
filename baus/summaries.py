@@ -524,21 +524,22 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
                     format(run_number, geography, 2009)
             summary_table.to_csv(summary_csv)
 
+    # Write Summary of Accounts
     if year == final_year:
 
-        # Write Summary of Accounts
         for acct_name, acct in orca.get_injectable("coffer").iteritems():
             fname = "runs/run{}_acctlog_{}_{}.csv".\
                 format(run_number, acct_name, year)
             acct.to_frame().to_csv(fname)
 
+    # Write Urban Footprint Summary
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
-    # 02 15 2019 ET: Using perffoot there was no greenfield change
-    # between 2010 and 2050. Joined the parcels to Urbanized_Footprint
-    # instead, which improved the diff. The large majority of greenfield
-    # still occurs in 2010 (base year buildings outside of the urbanized area).
+        # 02 15 2019 ET: Using perffoot there was no greenfield change
+        # between 2010 and 2050. Joined the parcels to Urbanized_Footprint
+        # instead, which improved the diff. The large majority of greenfield
+        # still occurs in 2010 (base year buildings outside of the
+        # urbanized area).
 
-        # Write Urban Footprint Summary
         buildings_uf_df = orca.merge_tables(
             'buildings',
             [parcels, buildings],
@@ -1593,8 +1594,8 @@ def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings):
                                        'redfin_sale_year'], axis=1)
         eq_demolish = eq_demolish.groupby(['taz']).sum()
         eq_demolish.to_csv(os.path.join("runs",
-                           "run%d_hazards_eq_demolish_buildings_%d.csv"\
-                           % (run_number, year)))
+                           "run%d_hazards_eq_demolish_buildings_%d.csv"
+                                        % (run_number, year)))
 
     if year in [2030, 2035, 2050]:
         buildings = buildings.to_frame()
@@ -1608,5 +1609,5 @@ def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings):
                                'residential_price']]
         buildings = buildings.groupby(['taz']).sum()
         buildings.to_csv(os.path.join("runs",
-                                      "run%d_hazards_eq_buildings_%d.csv"
+                         "run%d_hazards_eq_buildings_%d.csv"
                                       % (run_number, year)))
