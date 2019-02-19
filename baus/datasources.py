@@ -475,16 +475,13 @@ def get_logsum_file(type='mandatory'):
     try:
         prev_type = orca.get_injectable('previous_{}_logsum_type'.format(type))
         if prev_type == 'generic':
-            # print('using previous generic {} logsum table'.format(type))
             return orca.get_injectable('previous_{}_logsum_file'.format(type))
         elif prev_type == 'year':
             if 'logsum_{}'.format(yr) in logsums:
                 ls = logsums['logsum_{}'.format(yr)]
                 orca.add_injectable('previous_{}_logsum_file'.format(type), ls)
-                # print('using {} year logsum table: '.format(type), ls)
                 return ls
             else:
-                # print('using previous year {} logsum table'.format(type))
                 return orca.get_injectable('previous_{}_logsum_file'
                                            .format(type))
         elif prev_type == 'scenario':
@@ -492,11 +489,8 @@ def get_logsum_file(type='mandatory'):
                 ls = logsums['logsum_s{}'.format(sc)]
                 orca.add_injectable('previous_{}_logsum_file'
                                     .format(type), ls)
-                # print('using {} scenario logsum table: '.format(type), ls)
                 return ls
             else:
-                # print('using previous scenario {} logsum table'
-                #       .format(type))
                 return orca.get_injectable('previous_{}_logsum_file'
                                            .format(type))
         else:
@@ -504,12 +498,8 @@ def get_logsum_file(type='mandatory'):
                 ls = logsums['logsum_{}_s{}'.format(yr, sc)]
                 orca.add_injectable('previous_{}_logsum_file'
                                     .format(type), ls)
-                # print('using {} year_scenario logsum table: '
-                #        .format(type), ls)
                 return ls
             else:
-                # print('using previous year_scenario {} logsum table'
-                #       .format(type))
                 return orca.get_injectable('previous_{}_logsum_file'
                                            .format(type))
     except:
@@ -525,7 +515,6 @@ def get_logsum_file(type='mandatory'):
         if 'logsum_{}_s{}'.format(yr, sc) in logsums:
             ls = logsums['logsum_{}_s{}'.format(yr, sc)]
             ls_type = 'year_scenario'
-        # print 'setting {} {} logsum file: '.format(type, ls_type), ls
         orca.add_injectable('previous_{}_logsum_type'.format(type),
                             ls_type)
         orca.add_injectable('previous_{}_logsum_file'.format(type),

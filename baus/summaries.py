@@ -596,6 +596,15 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
             format(run_number, year)
         df.to_csv(uf_summary_csv)
 
+    # Summarize Logsums
+    if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
+        orca.get_table('taz_logsums')
+        df = taz_logsums.to_frame()
+        df['zone_totl'] = df.zone_cml + df.zone_cnml
+        df.to_csv(os.path.join("runs",
+                               "run%d_taz_logsums_%d.csv"
+                               % (run_number, year)))
+
 
 @orca.step()
 def building_summary(parcels, run_number, year,
