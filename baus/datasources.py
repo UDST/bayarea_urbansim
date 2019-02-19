@@ -485,25 +485,33 @@ def get_logsum_file(type='mandatory'):
                 return ls
             else:
                 # print('using previous year {} logsum table'.format(type))
-                return orca.get_injectable('previous_{}_logsum_file'.format(type))
+                return orca.get_injectable('previous_{}_logsum_file'
+                                           .format(type))
         elif prev_type == 'scenario':
             if 'logsum_s{}'.format(sc) in logsums:
                 ls = logsums['logsum_s{}'.format(sc)]
-                orca.add_injectable('previous_{}_logsum_file'.format(type), ls)
+                orca.add_injectable('previous_{}_logsum_file'
+                                    .format(type), ls)
                 # print('using {} scenario logsum table: '.format(type), ls)
                 return ls
             else:
-                # print('using previous scenario {} logsum table'.format(type))
-                return orca.get_injectable('previous_{}_logsum_file'.format(type))
+                # print('using previous scenario {} logsum table'
+                #       .format(type))
+                return orca.get_injectable('previous_{}_logsum_file'
+                                           .format(type))
         else:
             if 'logsum_{}_s{}'.format(yr, sc) in logsums:
                 ls = logsums['logsum_{}_s{}'.format(yr, sc)]
-                orca.add_injectable('previous_{}_logsum_file'.format(type), ls)
-                # print('using {} year_scenario logsum table: '.format(type), ls)
+                orca.add_injectable('previous_{}_logsum_file'
+                                    .format(type), ls)
+                # print('using {} year_scenario logsum table: '
+                #        .format(type), ls)
                 return ls
             else:
-                # print('using previous year_scenario {} logsum table'.format(type))
-                return orca.get_injectable('previous_{}_logsum_file'.format(type))
+                # print('using previous year_scenario {} logsum table'
+                #       .format(type))
+                return orca.get_injectable('previous_{}_logsum_file'
+                                           .format(type))
     except:
         if 'logsum' in logsums:
             ls = logsums['logsum']
