@@ -141,7 +141,8 @@ def round_series_match_target(s, target, fillna=np.nan):
     # handles rare cases where all values round to 0
     if r.sum() == 0:
         r = np.ceil(s).astype('int')
-    diff = int(target - r.sum())
+    diff = int(np.subtract(target, r.sum()))
+    # diff = int(target - r.sum())
     if diff > 0:
         # replace=True allows us to add even more than we have now
         indexes = random_indexes(r, abs(diff), replace=True)

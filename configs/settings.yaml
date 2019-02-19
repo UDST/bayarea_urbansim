@@ -667,6 +667,7 @@ control_tables:
 
 logsums:
   mandatory:
+    logsum: mandatoryAccessibilities_2015.csv
     logsum_2010_s1: mandatoryAccessibilities_2030_s1.csv
     logsum_2015_s1: mandatoryAccessibilities_2030_s1.csv
     logsum_2020_s1: mandatoryAccessibilities_2030_s1.csv
