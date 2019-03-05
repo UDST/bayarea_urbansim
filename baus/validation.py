@@ -76,9 +76,15 @@ def check_no_unplaced_households(households, year):
         # for some reason, since we added renter/owner models, we do have
         # unplaced households in the first couple of years, which eventually
         # evens out
+        # 02 26 2019 ET:
+        # this should be temporarily reactivated now that tenure is off
         return
     assert -1 not in households.building_id.value_counts()
 
+
+# def check_no_unplaced_jobs(jobs, year):
+#    print "Check no unplaced jobs"
+#    assert -1 not in jobs.building_id.value_counts()
 
 # check not more households than units or jobs than job spaces
 def check_no_overfull_buildings(households, buildings):
@@ -113,7 +119,9 @@ def simulation_validation(
 
     check_residential_units(residential_units, buildings)
 
-    check_no_unplaced_households(households, year)
+#    check_no_unplaced_households(households, year)
+
+#    check_no_unplaced_jobs(jobs, year)
 
     check_no_overfull_buildings(households, buildings)
 

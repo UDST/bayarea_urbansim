@@ -727,7 +727,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     jobs_df = orca.merge_tables(
         'jobs',
         [parcels, buildings, jobs],
-        columns=['zone_id', 'empsix', 'taz']
+        columns=['zone_id', 'empsix']
     )
 
     # totally baffled by this - after joining the three tables we have three
@@ -735,19 +735,11 @@ def travel_model_output(parcels, households, jobs, buildings,
     # jobs and the one called zone_id has null values while there others do not
     # going to change this while I think about this - turns out this has to do
     # with major caching issue which has been reported upstream
-    # jobs_df["zone_id"] = jobs_df.zone_id_x
-
-    # 01 28 2019 ET: zone_id was still causing the employment totals to be low
-    # because of the null values, so TAZ was used to summarize. This worked for
-    # every scenario/year besides BTTF 2050. Now summarizing using the
-    # jobs table, instead of the jobs_df merged table, which seems to work.
-    # Households are not affected for some reason, but the other summaries are.
-
-    jobs = jobs.to_frame()
+    jobs_df["zone_id"] = jobs_df.zone_id_x
 
     def getsectorcounts(sector):
-        return jobs.query("empsix == '%s'" % sector).\
-            groupby('taz').size()
+        return jobs_df.query("empsix == '%s'" % sector).\
+            groupby('zone_id').size()
 
     taz_df["agrempn"] = getsectorcounts("AGREMPN")
     taz_df["fpsempn"] = getsectorcounts("FPSEMPN")
@@ -755,7 +747,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     taz_df["retempn"] = getsectorcounts("RETEMPN")
     taz_df["mwtempn"] = getsectorcounts("MWTEMPN")
     taz_df["othempn"] = getsectorcounts("OTHEMPN")
-    taz_df["totemp"] = jobs.groupby('taz').size()
+    taz_df["totemp"] = jobs_df.groupby('zone_id').size()
 
     def gethhcounts(filter):
         return households_df.query(filter).groupby('zone_id').size()
@@ -940,10 +932,12 @@ def travel_model_output(parcels, households, jobs, buildings,
                            "CIACRE_UNWEIGHTED", "CIACRE", "RESACRE", "EMPRES",
                            "AGE0004", "AGE0519", "AGE2044", "AGE4564",
                            "AGE65P"]]
+    county_df = county_df.set_index('COUNTY')
 
     county_df.fillna(0).to_csv(
         "runs/run{}_county_summaries_{}.csv".format(run_number, year))
 
+    # add region marginals
     pd.DataFrame(data={'REGION': [1],
                        'gq_num_hh_region': [tot_gqpop]}).to_csv(
                  "runs/run{}_regional_marginals_{}.csv".format(run_number,
