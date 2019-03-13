@@ -633,7 +633,7 @@ def parcel_summary(parcels, buildings, households, jobs,
                    parcels_zoning_calculations,
                    initial_year, final_year):
 
-    if year not in [initial_year, final_year]:
+    if year not in [2010, 2015, 2030, 2050]:
         return
 
     df = parcels.to_frame([
@@ -724,17 +724,31 @@ def travel_model_output(parcels, households, jobs, buildings,
     taz_df["zone"] = zones.index
     taz_df["county"] = taz_geography.county
 
+    parcels = parcels.to_frame()
+    parcels["zone_id_x"] = parcels.zone_id
+    orca.add_table('parcels', parcels)
+    parcels = orca.get_table("parcels")
+
     jobs_df = orca.merge_tables(
         'jobs',
         [parcels, buildings, jobs],
         columns=['zone_id', 'empsix']
     )
 
+    jobs_df.to_csv('jobs_merged_taz.csv')
+
     # totally baffled by this - after joining the three tables we have three
     # zone_ids, one from the parcel table, one from buildings, and one from
     # jobs and the one called zone_id has null values while there others do not
     # going to change this while I think about this - turns out this has to do
     # with major caching issue which has been reported upstream
+
+    # the null values are present in the jobs table, however when you merge the
+    # tables, the zone_id columns from the other tables don't have null values
+    # however on lumodel, these duplicate columns don't get created in the merge
+    # so a copy of zone_id (zone_id_x) is added to parcels to ensure it doesn't
+    # get dropped
+
     jobs_df["zone_id"] = jobs_df.zone_id_x
 
     def getsectorcounts(sector):
