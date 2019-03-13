@@ -732,7 +732,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     jobs_df = orca.merge_tables(
         'jobs',
         [parcels, buildings, jobs],
-        columns=['zone_id', 'empsix']
+        columns=['zone_id', 'zone_id_x', 'empsix']
     )
 
     jobs_df.to_csv('jobs_merged_taz.csv')
@@ -745,9 +745,9 @@ def travel_model_output(parcels, households, jobs, buildings,
 
     # the null values are present in the jobs table, however when you merge the
     # tables, the zone_id columns from the other tables don't have null values
-    # however on lumodel, these duplicate columns don't get created in the merge
-    # so a copy of zone_id (zone_id_x) is added to parcels to ensure it doesn't
-    # get dropped
+    # however on lumodel, these duplicate columns don't get created in the
+    # merge so a copy of zone_id (zone_id_x) is added to parcels to ensure
+    # it doesn't get dropped
 
     jobs_df["zone_id"] = jobs_df.zone_id_x
 
