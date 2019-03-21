@@ -287,6 +287,21 @@ def residential_price(buildings, residential_units, settings):
     return means.max(axis=1)
 
 
+@orca.column('buildings', cache=True, cache_scope='iteration')
+def cml(buildings, parcels):
+    return misc.reindex(parcels.cml, buildings.parcel_id)
+
+
+@orca.column('buildings', cache=True, cache_scope='iteration')
+def cnml(buildings, parcels):
+    return misc.reindex(parcels.cnml, buildings.parcel_id)
+
+
+@orca.column('buildings', cache=True, cache_scope='iteration')
+def combo_logsum(buildings, parcels):
+    return misc.reindex(parcels.combo_logsum, buildings.parcel_id)
+
+
 #####################
 # NODES VARIABLES
 #####################
@@ -303,6 +318,10 @@ def retail_ratio(nodes):
 #####################
 # PARCELS VARIABLES
 #####################
+
+@orca.column('parcels')
+def maz_id(parcels, parcel_to_maz):
+    return parcel_to_maz.maz.reindex(parcels.index)
 
 
 @orca.column("parcels")
@@ -400,6 +419,12 @@ def performance_zone(parcels, parcels_geography):
     return parcels_geography.perfarea.reindex(parcels.index)
 
 
+# urbanized is a dummy for urbanized area (Urbanized_Footprint shp)
+@orca.column('parcels', cache=True)
+def urbanized(parcels, parcels_geography):
+    return parcels_geography.urbanized.reindex(parcels.index)
+
+
 @orca.column('parcels', cache=True)
 def juris(parcels, parcels_geography):
     return parcels_geography.juris_name
@@ -446,7 +471,8 @@ def parcel_average_price(use, quantile=.5):
         # apply shifters
         cost_shifters = orca.get_table("parcels").cost_shifters
         price_shifters = orca.get_table("parcels").price_shifters
-        s = s / cost_shifters * price_shifters
+        taz2_shifters = orca.get_table("parcels").taz2_price_shifters
+        s = s / cost_shifters * price_shifters * taz2_shifters
 
         # just to make sure we're in a reasonable range
         return s.fillna(0).clip(150, 1250)
@@ -589,7 +615,12 @@ def nodev(zoning_baseline, parcels, static_parcels):
     # marked as "static" - any parcels which should not be considered by the
     # developer model may be marked as static
     s2 = parcels.index.isin(static_parcels)
-    return s1 | s2
+    # nodev from sea level rise- determined by hazards.py model
+    if 'slr_nodev' in parcels.columns:
+        s3 = np.array(parcels['slr_nodev'])
+        return s1 | s2 | s3
+    else:
+        return s1 | s2
 
 
 # get built far but set to nan for small parcels
@@ -731,6 +762,16 @@ def price_shifters(parcels, settings):
 
 
 @orca.column('parcels', cache=True)
+def taz2(parcels, maz):
+    return misc.reindex(maz.TAZ, parcels.maz_id)
+
+
+@orca.column('parcels', cache=True)
+def taz2_price_shifters(parcels, taz2_price_shifters, year):
+    return parcels.taz2.map(taz2_price_shifters[str(year)]).fillna(1.0)
+
+
+@orca.column('parcels', cache=True)
 def node_id(parcels, net):
     s = net["walk"].get_node_ids(parcels.x, parcels.y)
     fill_val = s.value_counts().index[0]
@@ -754,6 +795,95 @@ def subregion(taz_geography, parcels):
 @orca.column('parcels', cache=True)
 def vmt_code(parcels, vmt_fee_categories):
     return misc.reindex(vmt_fee_categories.res_cat, parcels.zone_id)
+
+
+@orca.column('parcels', cache=True)
+def subzone(parcels, parcels_subzone):
+    return parcels_subzone.taz_sub
+
+
+@orca.column('parcels', cache=True, cache_scope='iteration')
+def cml(parcels, mandatory_accessibility,
+        accessibilities_segmentation):
+    mand_acc = mandatory_accessibility.local
+    acc_seg = accessibilities_segmentation.local
+    cols_to_sum = []
+    for col in mand_acc.columns[~mand_acc.columns.isin(['destChoiceAlt',
+                                                        'taz', 'subzone',
+                                                        'weighted_sum'])]:
+        if col in acc_seg.columns:
+            mand_acc[col] = ((mand_acc[col] - mand_acc[col].min()) /
+                             0.0134) * acc_seg.loc[0, col]
+            cols_to_sum.append(col)
+    mand_acc['weighted_sum'] = mand_acc[cols_to_sum].sum(axis=1)
+    df = misc.reindex(mand_acc.weighted_sum, parcels.subzone)
+    return df.reindex(parcels.index).fillna(-1)
+
+
+@orca.column('parcels', cache=True, cache_scope='iteration')
+def cnml(parcels, non_mandatory_accessibility,
+         accessibilities_segmentation):
+    nmand_acc = non_mandatory_accessibility.local
+    acc_seg = accessibilities_segmentation.local
+    cols_to_sum = []
+    for col in nmand_acc.columns[~nmand_acc.columns.isin(['destChoiceAlt',
+                                                          'taz', 'subzone',
+                                                          'weighted_sum'])]:
+        if col in acc_seg.columns:
+            nmand_acc[col] = ((nmand_acc[col] - nmand_acc[col].min()) /
+                              0.0175) * acc_seg.loc[0, col]
+            cols_to_sum.append(col)
+    nmand_acc['weighted_sum'] = nmand_acc[cols_to_sum].sum(axis=1)
+    df = misc.reindex(nmand_acc.weighted_sum, parcels.subzone)
+    return df.reindex(parcels.index).fillna(-1)
+
+
+@orca.column('parcels', cache=True, cache_scope='iteration')
+def combo_logsum(parcels):
+    df = parcels.to_frame(['cml', 'cnml'])
+    return df.cml + df.cnml
+
+
+@orca.column('zones', cache=True, cache_scope='iteration')
+def zone_cml(year, mandatory_accessibility,
+             accessibilities_segmentation):
+    mand_acc = mandatory_accessibility.local
+    acc_seg = accessibilities_segmentation.local
+    mand_acc = mand_acc.groupby('taz').median()
+    cols_to_sum = []
+    for col in mand_acc.columns[~mand_acc.columns.isin(['destChoiceAlt',
+                                                        'taz', 'subzone',
+                                                        'weighted_sum'])]:
+        if col in acc_seg.columns:
+            mand_acc[col] = ((mand_acc[col] - mand_acc[col].min()) /
+                             0.0134) * acc_seg.loc[0, col]
+            cols_to_sum.append(col)
+        mand_acc['weighted_sum'] = mand_acc[cols_to_sum].sum(axis=1)
+    return mand_acc['weighted_sum']
+
+
+@orca.column('zones', cache=True, cache_scope='iteration')
+def zone_cnml(year, non_mandatory_accessibility,
+              accessibilities_segmentation):
+    nmand_acc = non_mandatory_accessibility.local
+    acc_seg = accessibilities_segmentation.local
+    nmand_acc = nmand_acc.groupby('taz').median()
+    cols_to_sum = []
+    for col in nmand_acc.columns[~nmand_acc.columns.isin(['destChoiceAlt',
+                                                          'taz', 'subzone',
+                                                          'weighted_sum'])]:
+        if col in acc_seg.columns:
+            nmand_acc[col] = ((nmand_acc[col] - nmand_acc[col].min()) /
+                              0.0175) * acc_seg.loc[0, col]
+            cols_to_sum.append(col)
+    nmand_acc['weighted_sum'] = nmand_acc[cols_to_sum].sum(axis=1)
+    return nmand_acc['weighted_sum']
+
+
+@orca.column('zones', cache=True, cache_scope='iteration')
+def zone_combo_logsum(zones):
+    df = zones.to_frame(['zone_cml', 'zone_cnml'])
+    return df.zone_cml + df.zone_cnml
 
 
 # This is an all computed table which takes calculations from the below and

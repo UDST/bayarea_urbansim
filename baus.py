@@ -3,6 +3,8 @@ import sys
 import time
 import traceback
 from baus import models
+from baus import slr
+from baus import earthquake
 from baus import ual
 from baus import validation
 import pandas as pd
@@ -24,11 +26,13 @@ SCENARIO = None
 MODE = "simulation"
 S3 = False
 EVERY_NTH_YEAR = 5
+BRANCH = os.popen('git rev-parse --abbrev-ref HEAD').read()
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
 COMPARE_TO_NO_PROJECT = True
 NO_PROJECT = 611
+EARTHQUAKE = False
 
-IN_YEAR, OUT_YEAR = 2010, 2040
+IN_YEAR, OUT_YEAR = 2010, 2050
 COMPARE_AGAINST_LAST_KNOWN_GOOD = False
 
 LAST_KNOWN_GOOD_RUNS = {
@@ -41,6 +45,8 @@ LAST_KNOWN_GOOD_RUNS = {
 }
 
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
+
+orca.add_injectable("earthquake", EARTHQUAKE)
 
 parser = argparse.ArgumentParser(description='Run UrbanSim models.')
 
@@ -115,6 +121,11 @@ def get_simulation_models(SCENARIO):
     # of the old version soon
 
     models = [
+
+        "slr_inundate",
+        "slr_remove_dev",
+        "eq_code_buildings",
+        "earthquake_demolish",
 
         "neighborhood_vars",    # street network accessibility
         "regional_vars",        # road network accessibility
@@ -193,7 +204,11 @@ def get_simulation_models(SCENARIO):
         "building_summary",
         "diagnostic_output",
         "geographic_summary",
-        "travel_model_output"
+        "travel_model_output",
+        # "travel_model_2_output",
+        "hazards_slr_summary",
+        "hazards_eq_summary"
+
     ]
 
     # calculate VMT taxes
@@ -241,6 +256,11 @@ def run_models(MODE, SCENARIO):
         if not SKIP_BASE_YEAR:
             orca.run([
 
+                "slr_inundate",
+                "slr_remove_dev",
+                "eq_code_buildings",
+                "earthquake_demolish",
+
                 "neighborhood_vars",   # local accessibility vars
                 "regional_vars",       # regional accessibility vars
 
@@ -275,6 +295,9 @@ def run_models(MODE, SCENARIO):
                 "building_summary",
                 "geographic_summary",
                 "travel_model_output",
+                # "travel_model_2_output",
+                "hazards_slr_summary",
+                "hazards_eq_summary",
                 "diagnostic_output"
 
             ], iter_vars=[IN_YEAR])
@@ -342,6 +365,7 @@ def run_models(MODE, SCENARIO):
 
 
 print "Started", time.ctime()
+print "Current Branch : ", BRANCH.rstrip()
 print "Current Commit : ", CURRENT_COMMIT.rstrip()
 print "Current Scenario : ", orca.get_injectable('scenario').rstrip()
 
@@ -391,13 +415,13 @@ if SLACK:
     slack.chat.post_message(
         '#sim_updates',
         'Final topsheet is available at ' +
-        'http://urbanforecast.com/runs/run%d_topsheet_2040.log' % run_num,
+        'http://urbanforecast.com/runs/run%d_topsheet_2050.log' % run_num,
         as_user=True)
 
     slack.chat.post_message(
         '#sim_updates',
         'Targets comparison is available at ' +
-        'http://urbanforecast.com/runs/run%d_targets_comparison_2040.csv' %
+        'http://urbanforecast.com/runs/run%d_targets_comparison_2050.csv' %
         run_num, as_user=True)
 
 
@@ -408,10 +432,10 @@ if MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
     # fetch the previous run off of the internet for comparison - the "last
     # known good run" should always be available on EC2
     df1 = pd.read_csv(("http://urbanforecast.com/runs/run%d_superdistrict" +
-                       "_summaries_2040.csv") % prev_run)
+                       "_summaries_2050.csv") % prev_run)
     df1 = df1.set_index(df1.columns[0]).sort_index()
 
-    df2 = pd.read_csv("runs/run%d_superdistrict_summaries_2040.csv" % run_num)
+    df2 = pd.read_csv("runs/run%d_superdistrict_summaries_2050.csv" % run_num)
     df2 = df2.set_index(df2.columns[0]).sort_index()
 
     supnames = \
