@@ -32,7 +32,7 @@ def initial_year():
 
 @orca.injectable()
 def final_year():
-    return 2040
+    return 2050
 
 
 @orca.injectable(cache=True)
@@ -97,6 +97,70 @@ def inclusionary_housing_settings(settings, scenario):
 @orca.injectable(cache=True)
 def building_sqft_per_job(settings):
     return settings['building_sqft_per_job']
+
+
+@orca.injectable(cache=True)
+def elcm_config():
+    return get_config_file('elcm')
+
+
+@orca.injectable(cache=True)
+def hlcm_owner_config():
+    return get_config_file('hlcm_owner')
+
+
+@orca.injectable(cache=True)
+def hlcm_owner_no_unplaced_config():
+    return get_config_file('hlcm_owner_no_unplaced')
+
+
+@orca.injectable(cache=True)
+def hlcm_owner_lowincome_config():
+    return get_config_file('hlcm_owner_lowincome')
+
+
+@orca.injectable(cache=True)
+def hlcm_renter_config():
+    return get_config_file('hlcm_renter')
+
+
+@orca.injectable(cache=True)
+def hlcm_renter_no_unplaced_config():
+    return get_config_file('hlcm_renter_no_unplaced')
+
+
+@orca.injectable(cache=True)
+def hlcm_renter_lowincome_config():
+    return get_config_file('hlcm_renter_lowincome')
+
+
+@orca.injectable(cache=True)
+def rsh_config():
+    return get_config_file('rsh')
+
+
+@orca.injectable(cache=True)
+def rrh_config():
+    return get_config_file('rrh')
+
+
+@orca.injectable(cache=True)
+def nrh_config():
+    return get_config_file('nrh')
+
+
+def get_config_file(type):
+    configs = orca.get_injectable('settings')['model_configs'][type.
+                                                               split('_')[0]]
+    sc = orca.get_injectable('scenario')
+    sc_cfg = '{}_{}_config'.format(sc, type)
+    gen_cfg = '{}_config'.format(type)
+    if sc_cfg in configs:
+        return configs[sc_cfg]
+    elif gen_cfg in configs:
+        return configs[gen_cfg]
+    else:
+        return '{}.yaml'.format(type)
 
 
 @orca.step()
@@ -180,8 +244,108 @@ def zoning_baseline(parcels, zoning_lookup, settings):
 
 @orca.table(cache=True)
 def new_tpp_id():
-    return pd.read_csv(os.path.join(misc.data_dir(), "tpp_id_2016.zip"),
+    return pd.read_csv(os.path.join(misc.data_dir(), "tpp_id_2016.csv"),
                        index_col="parcel_id")
+
+
+@orca.table(cache=True)
+def maz():
+    maz = pd.read_csv(os.path.join(misc.data_dir(), "maz_geography.csv"))
+    maz = maz.drop_duplicates('MAZ').set_index('MAZ')
+    taz1454 = pd.read_csv(os.path.join(misc.data_dir(), "maz22_taz1454.csv"),
+                          index_col='maz')
+    maz['taz1454'] = taz1454.TAZ1454
+    return maz
+
+
+@orca.table(cache=True)
+def parcel_to_maz():
+    return pd.read_csv(os.path.join(misc.data_dir(),
+                                    "2018_05_23_parcel_to_maz22.csv"),
+                       index_col="PARCEL_ID")
+
+
+@orca.table(cache=True)
+def county_forecast_inputs():
+    return pd.read_csv(os.path.join(misc.data_dir(),
+                                    "county_forecast_inputs.csv"),
+                       index_col="COUNTY")
+
+
+@orca.table(cache=True)
+def county_employment_forecast():
+    return pd.read_csv(os.path.join(misc.data_dir(),
+                       "county_employment_forecast.csv"))
+
+
+@orca.table(cache=True)
+def taz2_forecast_inputs(regional_demographic_forecast):
+    t2fi = pd.read_csv(os.path.join(misc.data_dir(),
+                                    "taz2_forecast_inputs.csv"),
+                       index_col='TAZ').replace('#DIV/0!', np.nan)
+
+    rdf = regional_demographic_forecast.to_frame()
+    # apply regional share of hh by size to MAZs with no households in 2010
+    t2fi.loc[t2fi.shrw0_2010.isnull(),
+             'shrw0_2010'] = rdf.loc[rdf.year == 2010, 'shrw0'].values[0]
+    t2fi.loc[t2fi.shrw1_2010.isnull(),
+             'shrw1_2010'] = rdf.loc[rdf.year == 2010, 'shrw1'].values[0]
+    t2fi.loc[t2fi.shrw2_2010.isnull(),
+             'shrw2_2010'] = rdf.loc[rdf.year == 2010, 'shrw2'].values[0]
+    t2fi.loc[t2fi.shrw3_2010.isnull(),
+             'shrw3_2010'] = rdf.loc[rdf.year == 2010, 'shrw3'].values[0]
+
+    # apply regional share of persons by age category
+    t2fi.loc[t2fi.shra1_2010.isnull(),
+             'shra1_2010'] = rdf.loc[rdf.year == 2010, 'shra1'].values[0]
+    t2fi.loc[t2fi.shra2_2010.isnull(),
+             'shra2_2010'] = rdf.loc[rdf.year == 2010, 'shra2'].values[0]
+    t2fi.loc[t2fi.shra3_2010.isnull(),
+             'shra3_2010'] = rdf.loc[rdf.year == 2010, 'shra3'].values[0]
+    t2fi.loc[t2fi.shra4_2010.isnull(),
+             'shra4_2010'] = rdf.loc[rdf.year == 2010, 'shra4'].values[0]
+
+    # apply regional share of hh by presence of children
+    t2fi.loc[t2fi.shrn_2010.isnull(),
+             'shrn_2010'] = rdf.loc[rdf.year == 2010, 'shrn'].values[0]
+    t2fi.loc[t2fi.shry_2010.isnull(),
+             'shry_2010'] = rdf.loc[rdf.year == 2010, 'shry'].values[0]
+
+    t2fi[['shrw0_2010', 'shrw1_2010', 'shrw2_2010', 'shrw3_2010',
+          'shra1_2010', 'shra2_2010', 'shra3_2010', 'shra4_2010', 'shrn_2010',
+          'shry_2010']] = t2fi[['shrw0_2010', 'shrw1_2010', 'shrw2_2010',
+                                'shrw3_2010', 'shra1_2010', 'shra2_2010',
+                                'shra3_2010', 'shra4_2010', 'shrn_2010',
+                                'shry_2010']].astype('float')
+    return t2fi
+
+
+@orca.table(cache=True)
+def empsh_to_empsix():
+    return pd.read_csv(os.path.join(misc.data_dir(), "empsh_to_empsix.csv"))
+
+
+@orca.table(cache=True)
+def maz_forecast_inputs(regional_demographic_forecast):
+    rdf = regional_demographic_forecast.to_frame()
+    mfi = pd.read_csv(os.path.join(misc.data_dir(),
+                                   "maz_forecast_inputs.csv"),
+                      index_col='MAZ').replace('#DIV/0!', np.nan)
+
+    # apply regional share of hh by size to MAZs with no households in 2010
+    mfi.loc[mfi.shrs1_2010.isnull(),
+            'shrs1_2010'] = rdf.loc[rdf.year == 2010, 'shrs1'].values[0]
+    mfi.loc[mfi.shrs2_2010.isnull(),
+            'shrs2_2010'] = rdf.loc[rdf.year == 2010, 'shrs2'].values[0]
+    mfi.loc[mfi.shrs3_2010.isnull(),
+            'shrs3_2010'] = rdf.loc[rdf.year == 2010, 'shrs3'].values[0]
+    # the fourth category here is missing the 'r' in the csv
+    mfi.loc[mfi.shs4_2010.isnull(),
+            'shs4_2010'] = rdf.loc[rdf.year == 2010, 'shrs4'].values[0]
+    mfi[['shrs1_2010', 'shrs2_2010', 'shrs3_2010',
+         'shs4_2010']] = mfi[['shrs1_2010', 'shrs2_2010',
+                              'shrs3_2010', 'shs4_2010']].astype('float')
+    return mfi
 
 
 @orca.table(cache=True)
@@ -256,6 +420,106 @@ def parcels_geography(parcels):
     df["pda_id"] = df.pda_id.replace("dan1", np.nan)
 
     return df
+
+
+@orca.table(cache=True)
+def parcels_subzone():
+    return pd.read_csv(os.path.join(misc.data_dir(),
+                                    '2018_10_17_parcel_to_taz1454sub.csv'),
+                       usecols=['taz_sub', 'PARCEL_ID'],
+                       index_col='PARCEL_ID')
+
+
+@orca.table(cache=False)
+def mandatory_accessibility():
+    fname = get_logsum_file('mandatory')
+    df = pd.read_csv(os.path.join(
+        misc.data_dir(), fname))
+    df.loc[df.subzone == 0, 'subzone'] = 'c'  # no walk
+    df.loc[df.subzone == 1, 'subzone'] = 'a'  # short walk
+    df.loc[df.subzone == 2, 'subzone'] = 'b'  # long walk
+    df['taz_sub'] = df.taz.astype('str') + df.subzone
+    return df.set_index('taz_sub')
+
+
+@orca.table(cache=False)
+def non_mandatory_accessibility():
+    fname = get_logsum_file('non_mandatory')
+    df = pd.read_csv(os.path.join(
+        misc.data_dir(), fname))
+    df.loc[df.subzone == 0, 'subzone'] = 'c'  # no walk
+    df.loc[df.subzone == 1, 'subzone'] = 'a'  # short walk
+    df.loc[df.subzone == 2, 'subzone'] = 'b'  # long walk
+    df['taz_sub'] = df.taz.astype('str') + df.subzone
+    return df.set_index('taz_sub')
+
+
+@orca.table(cache=False)
+def accessibilities_segmentation():
+    fname = get_logsum_file('segmentation')
+    df = pd.read_csv(os.path.join(
+        misc.data_dir(), fname))
+    df['AV'] = df['hasAV'].apply(lambda x: 'AV' if x == 1 else 'noAV')
+    df['label'] = (df['incQ_label'] + '_' + df['autoSuff_label'] +
+                   '_' + df['AV'])
+    df = df.groupby('label').sum()
+    df['prop'] = df['num_persons'] / df['num_persons'].sum()
+    df = df[['prop']].transpose().reset_index(drop=True)
+    return df
+
+
+def get_logsum_file(type='mandatory'):
+    logsums = orca.get_injectable('settings')['logsums'][type]
+    sc = orca.get_injectable('scenario')
+    yr = orca.get_injectable('year')
+    try:
+        prev_type = orca.get_injectable('previous_{}_logsum_type'.format(type))
+        if prev_type == 'generic':
+            return orca.get_injectable('previous_{}_logsum_file'.format(type))
+        elif prev_type == 'year':
+            if 'logsum_{}'.format(yr) in logsums:
+                ls = logsums['logsum_{}'.format(yr)]
+                orca.add_injectable('previous_{}_logsum_file'.format(type), ls)
+                return ls
+            else:
+                return orca.get_injectable('previous_{}_logsum_file'
+                                           .format(type))
+        elif prev_type == 'scenario':
+            if 'logsum_s{}'.format(sc) in logsums:
+                ls = logsums['logsum_s{}'.format(sc)]
+                orca.add_injectable('previous_{}_logsum_file'
+                                    .format(type), ls)
+                return ls
+            else:
+                return orca.get_injectable('previous_{}_logsum_file'
+                                           .format(type))
+        else:
+            if 'logsum_{}_s{}'.format(yr, sc) in logsums:
+                ls = logsums['logsum_{}_s{}'.format(yr, sc)]
+                orca.add_injectable('previous_{}_logsum_file'
+                                    .format(type), ls)
+                return ls
+            else:
+                return orca.get_injectable('previous_{}_logsum_file'
+                                           .format(type))
+    except:
+        if 'logsum' in logsums:
+            ls = logsums['logsum']
+            ls_type = 'generic'
+        if 'logsum_{}'.format(yr) in logsums:
+            ls = logsums['logsum_{}'.format(yr)]
+            ls_type = 'year'
+        if 'logsum_s{}'.format(sc) in logsums:
+            ls = logsums['logsum_s{}'.format(sc)]
+            ls_type = 'scenario'
+        if 'logsum_{}_s{}'.format(yr, sc) in logsums:
+            ls = logsums['logsum_{}_s{}'.format(yr, sc)]
+            ls_type = 'year_scenario'
+        orca.add_injectable('previous_{}_logsum_type'.format(type),
+                            ls_type)
+        orca.add_injectable('previous_{}_logsum_file'.format(type),
+                            ls)
+        return ls
 
 
 @orca.table(cache=True)
@@ -381,8 +645,29 @@ def residential_units(store):
 
 @orca.table(cache=True)
 def household_controls_unstacked():
-    return pd.read_csv(os.path.join(misc.data_dir(), "household_controls.csv"),
+    fname = get_control_file(type='household')
+    return pd.read_csv(os.path.join(misc.data_dir(), fname),
                        index_col='year')
+
+
+@orca.table(cache=True)
+def regional_demographic_forecast():
+    fname = get_control_file(type='demographic_forecast')
+    return pd.read_csv(os.path.join(misc.data_dir(), fname))
+
+
+def get_control_file(type):
+    controls = orca.get_injectable('settings')['control_tables'][type]
+    sc = orca.get_injectable('scenario')
+    sc_file = 's{}_{}_controls_input_file'.format(sc, type)
+    gen_file = '{}_controls_input_file'.format(type)
+    if sc_file in controls:
+        fname = controls[sc_file]
+    elif gen_file in controls:
+        fname = controls[gen_file]
+    else:
+        fname = '{}_controls.csv'.format(type)
+    return fname
 
 
 # the following overrides household_controls
@@ -401,9 +686,14 @@ def household_controls(household_controls_unstacked):
 
 @orca.table(cache=True)
 def employment_controls_unstacked():
-    return pd.read_csv(
-        os.path.join(misc.data_dir(), "employment_controls.csv"),
-        index_col='year')
+    fname = get_control_file(type='employment')
+    return pd.read_csv(os.path.join(misc.data_dir(), fname), index_col='year')
+
+
+@orca.table(cache=True)
+def regional_controls():
+    fname = get_control_file(type='regional')
+    return pd.read_csv(os.path.join('data', fname), index_col="year")
 
 
 # the following overrides employment_controls
@@ -425,6 +715,13 @@ def zone_forecast_inputs():
     return pd.read_csv(
         os.path.join(misc.data_dir(), "zone_forecast_inputs.csv"),
         index_col="zone_id")
+
+
+@orca.table(cache=True)
+def taz_forecast_inputs():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "taz_forecast_inputs.csv"),
+        index_col="TAZ1454")
 
 
 # this is the set of categories by zone of sending and receiving zones
@@ -468,11 +765,60 @@ def taz_geography(superdistricts):
     return tg
 
 
+@orca.table(cache=True)
+def taz2_price_shifters():
+    return pd.read_csv(os.path.join(misc.data_dir(),
+                                    "taz2_price_shifters.csv"),
+                       index_col="TAZ")
+
+
 # these are shapes - "zones" in the bay area
 @orca.table(cache=True)
 def zones(store):
     # sort index so it prints out nicely when we want it to
     return store['zones'].sort_index()
+
+
+# SLR inundation levels for parcels
+@orca.table(cache=True)
+def slr_parcel_inundation():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "slr_parcel_inundation.csv"),
+        index_col='parcel_id')
+
+
+# SLR progression by year, for "futures" C, B, R
+@orca.table(cache=True)
+def slr_progression_C():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "slr_progression_C.csv"))
+
+
+@orca.table(cache=True)
+def slr_progression_B():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "slr_progression_B.csv"))
+
+
+@orca.table(cache=True)
+def slr_progression_R():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "slr_progression_R.csv"))
+
+
+# census tracts for parcels, to assign earthquake probabilities
+@orca.table(cache=True)
+def parcels_tract():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "parcel_tract_xwalk.csv"),
+        index_col='parcel_id')
+
+
+# earthquake and fire damage probabilities for census tracts
+@orca.table(cache=True)
+def tracts_earthquake():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "tract_damage_earthquake.csv"))
 
 
 # this specifies the relationships between tables
@@ -481,6 +827,8 @@ orca.broadcast('buildings', 'residential_units', cast_index=True,
 orca.broadcast('residential_units', 'households', cast_index=True,
                onto_on='unit_id')
 orca.broadcast('parcels_geography', 'buildings', cast_index=True,
+               onto_on='parcel_id')
+orca.broadcast('parcels', 'buildings', cast_index=True,
                onto_on='parcel_id')
 # not defined in urbansim_Defaults
 orca.broadcast('tmnodes', 'buildings', cast_index=True, onto_on='tmnode_id')

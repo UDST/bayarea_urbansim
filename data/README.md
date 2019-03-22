@@ -86,9 +86,9 @@ Mapping of tazs to superdistricts and counties (by id).
 
 Ratios of gov't and education employment per population (sometimes at the TAZ level, sometimes for each county, and sometimes regionally).  This csv actually has two header rows - this first row is what the outcome attribute is, and the second is the geography at which the ratio acts (taz / county / regional).
 
-### tpp_id_2016.zip
+### tpp_id_2016.csv
 
-This is a mapping of parcel ids to new tpp_ids, which are used for analyzing output.  It's a large file so is stored as a zipfile (Pandas can now read_csv on a zip file).  This can go away when we have a new parcels_geography file with new tpps.
+This is a mapping of parcel ids to new tpp_ids, which are used for analyzing output. This can go away when we have a new parcels_geography file with new tpps.
 
 ### vmt_fee_zonecats.csv
 

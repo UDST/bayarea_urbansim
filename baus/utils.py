@@ -137,21 +137,23 @@ def random_indexes(s, num, replace=False):
 def round_series_match_target(s, target, fillna=np.nan):
     if target == 0 or s.sum() == 0:
         return s
-
-    s = s.fillna(fillna).round().astype('int')
-    diff = target - s.sum()
-
+    r = s.fillna(fillna).round().astype('int')
+    # handles rare cases where all values round to 0
+    if r.sum() == 0:
+        r = np.ceil(s).astype('int')
+    diff = int(np.subtract(target, r.sum()))
+    # diff = int(target - r.sum())
     if diff > 0:
         # replace=True allows us to add even more than we have now
-        indexes = random_indexes(s, abs(diff), replace=True)
-        s = s.add(pd.Series(indexes).value_counts(), fill_value=0)
+        indexes = random_indexes(r, abs(diff), replace=True)
+        r = r.add(pd.Series(indexes).value_counts(), fill_value=0)
     elif diff < 0:
         # this makes sure we can only subtract until all rows are zero
-        indexes = random_indexes(s, abs(diff))
-        s = s.sub(pd.Series(indexes).value_counts(), fill_value=0)
+        indexes = random_indexes(r, abs(diff))
+        r = r.sub(pd.Series(indexes).value_counts(), fill_value=0)
 
-    assert s.sum() == target
-    return s
+    assert r.sum() == target
+    return r
 
 
 # scales (floating point ok) so that the sum of s if equal to
@@ -210,17 +212,17 @@ def simple_ipf(seed_matrix, col_marginals, row_marginals, tolerance=1, cnt=0):
     seed_matrix *= ratios
     closeness = np.absolute(row_marginals - seed_matrix.sum(axis=1)).sum()
     assert np.absolute(col_marginals - seed_matrix.sum(axis=0)).sum() < .01
-    # print "row closeness", closeness
+    print "row closeness", closeness
     if closeness < tolerance:
         return seed_matrix
 
     # first normalize on rows
-    ratios = row_marginals / seed_matrix.sum(axis=1)
+    ratios = np.array(row_marginals / seed_matrix.sum(axis=1))
     ratios[row_marginals == 0] = 0
     seed_matrix = seed_matrix * ratios.reshape((ratios.size, 1))
     assert np.absolute(row_marginals - seed_matrix.sum(axis=1)).sum() < .01
     closeness = np.absolute(col_marginals - seed_matrix.sum(axis=0)).sum()
-    # print "col closeness", closeness
+    print "col closeness", closeness
     if closeness < tolerance:
         return seed_matrix
 
