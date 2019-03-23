@@ -31,8 +31,10 @@ CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
 COMPARE_TO_NO_PROJECT = True
 NO_PROJECT = 611
 EARTHQUAKE = False
+DATA_OUT = './output/model_data_output.h5'
+OUT_TABLES = ['jobs', 'households', 'buildings', 'parcels']
 
-IN_YEAR, OUT_YEAR = 2010, 2050
+IN_YEAR, OUT_YEAR = 2010, 2025
 COMPARE_AGAINST_LAST_KNOWN_GOOD = False
 
 LAST_KNOWN_GOOD_RUNS = {
@@ -96,11 +98,6 @@ if options.noslack:
     SLACK = False
 
 SCENARIO = orca.get_injectable("scenario")
-
-if INTERACT:
-    import code
-    code.interact(local=locals())
-    sys.exit()
 
 run_num = orca.get_injectable("run_number")
 
@@ -198,16 +195,16 @@ def get_simulation_models(SCENARIO):
 
         # save_intermediate_tables", # saves output for visualization
 
-        "topsheet",
+        # "topsheet",
         "simulation_validation",
-        "parcel_summary",
-        "building_summary",
-        "diagnostic_output",
-        "geographic_summary",
-        "travel_model_output",
+        # "parcel_summary",
+        # "building_summary",
+        # "diagnostic_output",
+        # "geographic_summary",
+        # "travel_model_output",
         # "travel_model_2_output",
-        "hazards_slr_summary",
-        "hazards_eq_summary"
+        # "hazards_slr_summary",
+        # "hazards_eq_summary"
 
     ]
 
@@ -289,25 +286,34 @@ def run_models(MODE, SCENARIO):
 
                 "price_vars",
 
-                "topsheet",
+                # "topsheet",
                 "simulation_validation",
-                "parcel_summary",
-                "building_summary",
-                "geographic_summary",
-                "travel_model_output",
+                # "parcel_summary",
+                # "building_summary",
+                # "geographic_summary",
+                # "travel_model_output",
                 # "travel_model_2_output",
-                "hazards_slr_summary",
-                "hazards_eq_summary",
+                # "hazards_slr_summary",
+                # "hazards_eq_summary",
                 "diagnostic_output"
-
-            ], iter_vars=[IN_YEAR])
+            ],
+                iter_vars=[IN_YEAR],
+                data_out=DATA_OUT,
+                out_base_tables=[],
+                out_run_tables=OUT_TABLES
+                )
 
         # start the simulation in the next round - only the models above run
         # for the IN_YEAR
         years_to_run = range(IN_YEAR+EVERY_NTH_YEAR, OUT_YEAR+1,
                              EVERY_NTH_YEAR)
         models = get_simulation_models(SCENARIO)
-        orca.run(models, iter_vars=years_to_run)
+        orca.run(
+            models, iter_vars=years_to_run,
+            data_out='./output/model_data_output.h5',
+            out_base_tables=[],
+            out_run_tables=['jobs', 'buildings', 'households', 'parcels']
+            )
 
     elif MODE == "estimation":
 
@@ -363,6 +369,11 @@ def run_models(MODE, SCENARIO):
 
         raise "Invalid mode"
 
+
+if INTERACT:
+    import code
+    code.interact(local=locals())
+    sys.exit()
 
 print "Started", time.ctime()
 print "Current Branch : ", BRANCH.rstrip()
