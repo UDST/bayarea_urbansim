@@ -640,7 +640,8 @@ def buildings(store):
 
 @orca.table(cache=True)
 def residential_units(store):
-    return print_error_if_not_available(store, 'residential_units_preproc')
+    # return print_error_if_not_available(store, 'residential_units_preproc')
+    return store['units']
 
 
 @orca.table(cache=True)

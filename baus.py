@@ -236,7 +236,7 @@ def run_models(MODE, SCENARIO):
             "preproc_jobs",
             "preproc_households",
             "preproc_buildings",
-            "initialize_residential_units"
+            # "initialize_residential_units"
         ])
 
     elif MODE == "fetch_data":
