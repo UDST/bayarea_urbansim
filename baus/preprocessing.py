@@ -100,7 +100,8 @@ def preproc_jobs(store, baseyear_taz_controls, settings, parcels):
     jobs['empsix'] = jobs['sector_id'].replace(sector_map)
 
     # this one i commented out only because it breaks using the UAL jobs table
-    # jobs = move_jobs_from_portola_to_san_mateo_county(parcels, buildings, jobs)
+    # jobs = move_jobs_from_portola_to_san_mateo_county(
+    #     parcels, buildings, jobs)
     store['jobs_preproc'] = jobs
 
 
@@ -125,7 +126,6 @@ def preproc_households(store):
     df["base_income_octile"] = pd.Series(pd.qcut(df.income, 8, labels=False),
                                          index=df.index).add(1)
 
-    
     # had to comment this stuff out bc it breaks
 
     # there are some overrides where we move households around in order
