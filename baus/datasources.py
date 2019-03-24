@@ -640,7 +640,12 @@ def buildings(store):
 
 @orca.table(cache=True)
 def residential_units(store):
-    return print_error_if_not_available(store, 'residential_units_preproc')
+    # return print_error_if_not_available(store, 'residential_units_preproc')
+
+    df = store['units']
+    if df.dtypes['tenure'] == np.int64:
+        df['tenure'] = df.tenure.map({1: 'own', 2: 'rent'})
+    return df
 
 
 @orca.table(cache=True)
