@@ -117,7 +117,7 @@ def simulation_validation(
 
     check_household_controls(households, household_controls, year)
 
-    check_residential_units(residential_units, buildings)
+    # check_residential_units(residential_units, buildings)
 
 #    check_no_unplaced_households(households, year)
 

@@ -199,7 +199,7 @@ def get_simulation_models(SCENARIO):
         "simulation_validation",
         # "parcel_summary",
         # "building_summary",
-        # "diagnostic_output",
+        "diagnostic_output",
         # "geographic_summary",
         # "travel_model_output",
         # "travel_model_2_output",
@@ -236,7 +236,7 @@ def run_models(MODE, SCENARIO):
             "preproc_jobs",
             "preproc_households",
             "preproc_buildings",
-            # "initialize_residential_units"
+            # "initialize_residential_units"     # ual already has a static units table
         ])
 
     elif MODE == "fetch_data":
