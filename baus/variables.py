@@ -45,7 +45,8 @@ geographic_levels['parcels'] = 'parcel_id'
 
 variables_to_aggregate = {
     'households': ['persons', 'income', 'race_of_head', 'age_of_head',
-                   'workers', 'children', 'cars', #'hispanic_head', 
+                   'workers', 'children', 'cars',
+                   # 'hispanic_head',
                    # 'tenure',
                    'recent_mover', 'income_quartile'],
     'jobs': ['sector_id'],
@@ -61,10 +62,11 @@ variables_to_aggregate = {
 
 discrete_variables = {
     'households': ['persons', 'race_of_head', 'workers', 'children',
-                   'cars', 'hispanic_head', 'tenure', 'recent_mover', 'income_quartile'],
+                   'cars', 'hispanic_head', 'tenure', 'recent_mover',
+                   'income_quartile'],
     'jobs': ['sector_id'],
     # 'buildings': ['building_type_id']
-    }
+}
 sum_vars = ['persons', 'workers', 'children', 'cars', 'hispanic_head',
             'recent_mover', 'acres', 'land_value', 'residential_units',
             'non_residential_sqft', 'job_spaces']
