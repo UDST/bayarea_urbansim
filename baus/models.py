@@ -765,7 +765,7 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
         print res_units[res_units < 0]
         add_indexes = np.random.choice(res_units.index.values, size=to_add,
                                        replace=True,
-                                       p=(res_units/res_units.sum()))
+                                       p=(res_units / res_units.sum()))
         # collect same indexes
         add_indexes = pd.Series(add_indexes).value_counts()
         # this is sqft per job for residential bldgs

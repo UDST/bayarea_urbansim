@@ -325,24 +325,23 @@ def run_models(MODE, SCENARIO):
             "nrh_estimate",              # non-res rent hedonic
             "rsh_simulate",
             "nrh_simulate",
-            "hlcm_estimate",             # household lcm
+            # "hlcm_estimate",             # household lcm
             "elcm_estimate",             # employment lcm
 
         ], iter_vars=[2010])
 
         # Estimation steps
-        '''
+
         orca.run([
-            "load_rental_listings", # required to estimate rental hedonic
+            "load_rental_listings",  # required to estimate rental hedonic
             "neighborhood_vars",        # street network accessibility
             "regional_vars",            # road network accessibility
-
             "rrh_estimate",         # estimate residential rental hedonic
-
+            "rrh_simulate",
             "hlcm_owner_estimate",  # estimate location choice owners
-            "hlcm_renter_estimate", # estimate location choice renters
+            "hlcm_renter_estimate",  # estimate location choice renters
         ])
-        '''
+
 
     elif MODE == "feasibility":
 

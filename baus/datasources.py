@@ -688,7 +688,7 @@ def residential_units(store):
 
     df = store['units']
     if df.dtypes['tenure'] == np.int64:
-        df['tenure'] = df.tenure.map({1: 'own', 2: 'rent'})
+        df['tenure'] = df.tenure.map({1: 'own', 2: 'rent', -1: ''})
     return df
 
 
@@ -871,14 +871,13 @@ def tracts_earthquake():
 
 
 # this specifies the relationships between tables
-orca.broadcast('buildings', 'residential_units', cast_index=True,
-               onto_on='building_id')
-orca.broadcast('residential_units', 'households', cast_index=True,
-               onto_on='unit_id')
-orca.broadcast('parcels_geography', 'buildings', cast_index=True,
-               onto_on='parcel_id')
-orca.broadcast('parcels', 'buildings', cast_index=True,
-               onto_on='parcel_id')
+orca.broadcast(
+    'buildings', 'residential_units', cast_index=True, onto_on='building_id')
+orca.broadcast(
+    'residential_units', 'households', cast_index=True, onto_on='unit_id')
+orca.broadcast(
+    'parcels_geography', 'buildings', cast_index=True, onto_on='parcel_id')
+orca.broadcast('parcels', 'buildings', cast_index=True, onto_on='parcel_id')
 # not defined in urbansim_Defaults
 orca.broadcast('tmnodes', 'buildings', cast_index=True, onto_on='tmnode_id')
 orca.broadcast('taz_geography', 'parcels', cast_index=True, onto_on='zone_id')
