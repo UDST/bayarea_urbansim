@@ -229,7 +229,7 @@ def load_rental_listings():
         df = pd.read_csv(os.path.join(misc.data_dir(), "sfbay_craigslist.csv"))
         net = orca.get_injectable('net')
         df['node_id'] = net['walk'].get_node_ids(df['lon'], df['lat'])
-        df['tmnode_id'] = net['drive'].get_node_ids(df['lon'], df['lat'])
+        # df['tmnode_id'] = net['drive'].get_node_ids(df['lon'], df['lat'])
         # fill nans -- missing bedrooms are mostly studio apts
         df['bedrooms'] = df.bedrooms.replace(np.nan, 1)
         df['neighborhood'] = df.neighborhood.replace(np.nan, '')
@@ -242,8 +242,8 @@ def load_rental_listings():
         return misc.reindex(parcels.zone_id, craigslist.node_id)
 
     orca.broadcast('nodes', 'craigslist', cast_index=True, onto_on='node_id')
-    orca.broadcast('tmnodes', 'craigslist', cast_index=True,
-                   onto_on='tmnode_id')
+    # orca.broadcast('tmnodes', 'craigslist', cast_index=True,
+    #                onto_on='tmnode_id')
     orca.broadcast('zones', 'craigslist', cast_index=True, onto_on='zone_id')
     orca.broadcast('logsums', 'craigslist', cast_index=True, onto_on='zone_id')
     return
@@ -597,18 +597,20 @@ def save_intermediate_tables(households, buildings, parcels,
 # have to define this here because urbansim_defaults incorrectly calls the
 # outcome variable non_residential_price
 @orca.step('nrh_simulate')
-def nrh_simulate(buildings, aggregations, nrh_config):
-    return utils.hedonic_simulate(nrh_config, buildings, aggregations,
-                                  "non_residential_rent")
+def nrh_simulate(buildings, aggregations, zones, nrh_config):
+    return utils.hedonic_simulate(
+        nrh_config, buildings, aggregations + [zones],
+        "non_residential_rent")
 
 
 @orca.step()
-def rsh_estimate(buildings, aggregations):
-    return utils.hedonic_estimate("rsh.yaml", buildings, aggregations)
+def rsh_estimate(buildings, aggregations, zones):
+    return utils.hedonic_estimate(
+        "rsh.yaml", buildings, aggregations + [zones])
 
 
 @orca.step('rrh_estimate')
-def rrh_estimate(craigslist, aggregations):
+def rrh_estimate(craigslist, aggregations, zones):
     """
     This model step estimates a residental rental hedonic using
     craigslist listings.
@@ -619,7 +621,12 @@ def rrh_estimate(craigslist, aggregations):
     """
     return utils.hedonic_estimate(cfg='rrh.yaml',
                                   tbl=craigslist,
-                                  join_tbls=aggregations)
+                                  join_tbls=aggregations + [zones])
+
+
+@orca.step('nrh_estimate')
+def nrh_estimate(costar, aggregations, zones):
+    return utils.hedonic_estimate("nrh.yaml", costar, aggregations + [zones])
 
 
 def _mtc_clip(table, col_name, settings, price_scale=1):
@@ -635,7 +642,8 @@ def _mtc_clip(table, col_name, settings, price_scale=1):
 
 @orca.step()
 def rsh_simulate(
-        residential_units, aggregations, buildings, settings, rsh_config):
+        residential_units, aggregations, buildings, zones, settings,
+        rsh_config):
     """
     This uses the MTC's model specification from rsh.yaml, but
     generates unit-level price predictions rather than building-level.
@@ -646,7 +654,7 @@ def rsh_simulate(
     """
     utils.hedonic_simulate(cfg=rsh_config,
                            tbl=residential_units,
-                           join_tbls=aggregations + [buildings],
+                           join_tbls=aggregations + [buildings, zones],
                            out_fname='unit_residential_price',
                            cast=True)
 
@@ -656,7 +664,8 @@ def rsh_simulate(
 
 @orca.step()
 def rrh_simulate(
-        residential_units, buildings, aggregations, settings, rrh_config):
+        residential_units, buildings, aggregations, zones, settings,
+        rrh_config):
     """
     This uses an altered hedonic specification to generate
     unit-level rent predictions.
@@ -667,7 +676,7 @@ def rrh_simulate(
     """
     utils.hedonic_simulate(cfg=rrh_config,
                            tbl=residential_units,
-                           join_tbls=aggregations + [buildings],
+                           join_tbls=aggregations + [buildings, zones],
                            out_fname='unit_residential_rent',
                            cast=True)
 
@@ -731,74 +740,75 @@ def households_relocation(households, settings):
 
 @orca.step()
 def hlcm_owner_estimate(
-        households, buildings, residential_units, aggregations):
+        households, buildings, residential_units, aggregations, zones):
     return utils.lcm_estimate(cfg="hlcm_owner.yaml",
                               choosers=households,
                               chosen_fname="unit_id",
                               buildings=residential_units,
-                              join_tbls=aggregations + [buildings])
+                              join_tbls=aggregations + [buildings, zones])
 
 
 @orca.step()
 def hlcm_renter_estimate(
-        households, buildings, residential_units, aggregations):
+        households, buildings, residential_units, aggregations, zones):
     return utils.lcm_estimate(cfg="hlcm_renter.yaml",
                               choosers=households,
                               chosen_fname="unit_id",
                               buildings=residential_units,
-                              join_tbls=aggregations + [buildings])
+                              join_tbls=aggregations + [buildings, zones])
 
 
 # use one core hlcm for the hlcms below, with different yaml files
-def hlcm_simulate(households, residential_units, aggregations,
+def hlcm_simulate(households, residential_units, aggregations, zones,
                   settings, yaml_name, equilibration_name):
 
     return utils.lcm_simulate(cfg=yaml_name,
                               choosers=households,
                               buildings=residential_units,
-                              join_tbls=aggregations,
+                              join_tbls=aggregations + [zones],
                               out_fname='unit_id',
                               supply_fname='num_units',
                               vacant_fname='vacant_units',
                               enable_supply_correction=settings.get(
-                                equilibration_name, None),
+                                  equilibration_name, None),
                               cast=True)
 
 
 @orca.step()
 def hlcm_owner_simulate(households, residential_units,
-                        aggregations, settings,
+                        aggregations, zones, settings,
                         hlcm_owner_config):
 
     # Note that the submarket id (zone_id) needs to be in the table of
     # alternatives, for supply/demand equilibration, and needs to NOT be in the
     # choosers table, to avoid conflicting when the tables are joined
 
-    return hlcm_simulate(households, residential_units, aggregations,
+    return hlcm_simulate(households, residential_units, aggregations, zones,
                          settings, hlcm_owner_config, 'price_equilibration')
 
 
 @orca.step()
 def hlcm_owner_lowincome_simulate(households, residential_units,
-                                  aggregations, settings,
+                                  aggregations, zones, settings,
                                   hlcm_owner_lowincome_config):
 
-    return hlcm_simulate(households, residential_units, aggregations,
+    return hlcm_simulate(households, residential_units, aggregations, zones,
                          settings, hlcm_owner_lowincome_config,
                          'price_equilibration')
 
 
 @orca.step()
-def hlcm_renter_simulate(households, residential_units, aggregations,
+def hlcm_renter_simulate(households, residential_units, aggregations, zones,
                          settings, hlcm_renter_config):
-    return hlcm_simulate(households, residential_units, aggregations,
+    return hlcm_simulate(households, residential_units, aggregations, zones,
                          settings, hlcm_renter_config, 'rent_equilibration')
 
 
 @orca.step()
-def hlcm_renter_lowincome_simulate(households, residential_units, aggregations,
-                                   settings, hlcm_renter_lowincome_config):
-    return hlcm_simulate(households, residential_units, aggregations,
+def hlcm_renter_lowincome_simulate(
+        households, residential_units, aggregations, zones,
+        settings, hlcm_renter_lowincome_config):
+    return hlcm_simulate(households, residential_units, aggregations, zones,
                          settings, hlcm_renter_lowincome_config,
                          'rent_equilibration')
 
