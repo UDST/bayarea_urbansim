@@ -298,9 +298,9 @@ def run_models(MODE, SCENARIO):
                 "diagnostic_output"
             ],
                 iter_vars=[IN_YEAR],
-                data_out=DATA_OUT,
-                out_base_tables=[],
-                out_run_tables=OUT_TABLES
+                # data_out=DATA_OUT,
+                # out_base_tables=[],
+                # out_run_tables=OUT_TABLES
                 )
 
         # start the simulation in the next round - only the models above run
@@ -310,9 +310,9 @@ def run_models(MODE, SCENARIO):
         models = get_simulation_models(SCENARIO)
         orca.run(
             models, iter_vars=years_to_run,
-            data_out='./output/model_data_output.h5',
-            out_base_tables=[],
-            out_run_tables=['jobs', 'buildings', 'households', 'parcels']
+            # data_out='./output/model_data_output.h5',
+            # out_base_tables=[],
+            # out_run_tables=['jobs', 'buildings', 'households', 'parcels']
             )
 
     elif MODE == "estimation":
