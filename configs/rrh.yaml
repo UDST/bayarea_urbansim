@@ -10,8 +10,8 @@ fit_filters:
 
 predict_filters: null
 
-model_expression: price_per_sqft ~ sqft_per_unit + residential_units_1500 + jobs_45
-    + sfdu + ave_income_1500
+model_expression: price_per_sqft ~ sqft_per_unit + residential_units_1500 + total_jobs_45_gen_tt_min
+    + + sfdu + ave_income_1500
 
 ytransform: null
 
@@ -19,27 +19,27 @@ fitted: true
 
 fit_parameters:
     Coefficient:
-        Intercept: -3.9385721546550583
-        ave_income_1500: 0.0405590138352805
-        jobs_45: 0.43423424300338376
-        residential_units_1500: 0.285106772861442
-        sfdu: -0.21024231283071346
-        sqft_per_unit: -0.000530356858147471
+        Intercept: 1.0680150217102726
+        ave_income_1500: 0.1086997366539993
+        residential_units_1500: 0.37067305162149483
+        sfdu: -0.2457006859070958
+        sqft_per_unit: -0.0005694593349936069
+        total_jobs_45_gen_tt_min: -7.35416646619559e-07
     Std. Error:
-        Intercept: 0.06876332045361362
-        ave_income_1500: 0.002958279074704742
-        jobs_45: 0.005008579582139719
-        residential_units_1500: 0.0027770737290278105
-        sfdu: 0.0020655669207821875
-        sqft_per_unit: 5.633522811816299e-06
+        Intercept: 0.03659634084118611
+        ave_income_1500: 0.003039893741778427
+        residential_units_1500: 0.002638582356023678
+        sfdu: 0.0020576983566853546
+        sqft_per_unit: 5.787948990240318e-06
+        total_jobs_45_gen_tt_min: 1.7381422954300297e-08
     T-Score:
-        Intercept: -57.27722466968333
-        ave_income_1500: 13.710340644358778
-        jobs_45: 86.69808193760879
-        residential_units_1500: 102.6644593124473
-        sfdu: -101.7843143765582
-        sqft_per_unit: -94.14302131430956
+        Intercept: 29.183655992959583
+        ave_income_1500: 35.757742173713865
+        residential_units_1500: 140.48189580866298
+        sfdu: -119.40558979834293
+        sqft_per_unit: -98.38706871014817
+        total_jobs_45_gen_tt_min: -42.310497164307904
 
-fit_rsquared_adj: 0.42712607394469126
+fit_rsquared_adj: 0.392655720226077
 
-fit_rsquared: 0.4271654094152453
+fit_rsquared: 0.39269742254825757

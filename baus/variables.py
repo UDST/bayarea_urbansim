@@ -48,7 +48,7 @@ variables_to_aggregate = {
                    'workers', 'children', 'cars',
                    # 'hispanic_head',
                    # 'tenure',
-                   'recent_mover', 'income_quartile'],
+                   'recent_mover', 'income_quartile', 'income'],
     'jobs': ['sector_id'],
     'parcels': [
         'acres', 'x', 'y', 'land_value', 'proportion_undevelopable'],
@@ -69,7 +69,7 @@ discrete_variables = {
 }
 sum_vars = ['persons', 'workers', 'children', 'cars', 'hispanic_head',
             'recent_mover', 'acres', 'land_value', 'residential_units',
-            'non_residential_sqft', 'job_spaces']
+            'non_residential_sqft', 'job_spaces', 'income']
 
 geog_vars_to_dummify = orca.get_injectable('aggregate_geos').values()
 
@@ -172,58 +172,19 @@ def register_skim_access_variable(
     return column_func
 
 
-def register_pandana_access_variable(
-        column_name, onto_table, variable_to_summarize,
-        distance, agg_type='sum', decay='linear', log=True):
-    """
-    Register pandana accessibility variable with orca.
-    Parameters
-    ----------
-    column_name : str
-        Name of the orca column to register this variable as.
-    onto_table : str
-        Name of the orca table to register this table with.
-    variable_to_summarize : str
-        Name of the onto_table variable to summarize.
-    distance : int
-        Distance along the network to query.
-    agg_type : str
-        Pandana aggregation type.
-    decay : str
-        Pandana decay type.
-    Returns
-    -------
-    column_func : function
-    """
-    @orca.column(onto_table, column_name, cache=True, cache_scope='iteration')
-    def column_func():
-        net = orca.get_injectable('net')  # Get the pandana network
-        table = orca.get_table(onto_table).to_frame(
-            ['node_id', variable_to_summarize])
-        net.set(table.node_id, variable=table[variable_to_summarize])
-        try:
-            results = net.aggregate(distance, type=agg_type, decay=decay)
-        except:
-            results = net.aggregate(
-                distance, type=agg_type, decay=decay)
-        if log:
-            results = results.apply(eval('np.log1p'))
-        return misc.reindex(results, table.node_id)
-    return column_func
-
-
 # Calculate skim-based accessibility variable
-variables_to_aggregate = ['total_jobs', 'sum_persons']
+variables_to_aggregate = [
+    'total_jobs', 'sum_residential_units', 'sum_persons', 'sum_income']
 skim_access_vars = []
 # Transit skim variables
-travel_times = [5, 10, 15, 25]
+travel_times = [15, 45]  # 15 and 45 min travel times in s
 
 for time in travel_times:
     for variable in variables_to_aggregate:
-        var_name = '_'.join([variable, str(time), 'generalizedTimeInS'])
+        var_name = '_'.join([variable, str(time), 'gen_tt_min'])
         skim_access_vars.append(var_name)
         register_skim_access_variable(
-            var_name, variable, 'generalizedTimeInS', time)
+            var_name, variable, 'gen_tt_min', time)
 
 
 #####################
@@ -231,9 +192,9 @@ for time in travel_times:
 #####################
 
 
-@orca.column('households', cache=True)
-def tmnode_id(households, buildings):
-    return misc.reindex(buildings.tmnode_id, households.building_id)
+# @orca.column('households', cache=True)
+# def tmnode_id(households, buildings):
+#     return misc.reindex(buildings.tmnode_id, households.building_id)
 
 
 @orca.column('households', cache=False)
@@ -266,9 +227,9 @@ def node_id(parcels, costar):
     return misc.reindex(parcels.node_id, costar.parcel_id)
 
 
-@orca.column('costar')
-def tmnode_id(parcels, costar):
-    return misc.reindex(parcels.tmnode_id, costar.parcel_id)
+# @orca.column('costar')
+# def tmnode_id(parcels, costar):
+#     return misc.reindex(parcels.tmnode_id, costar.parcel_id)
 
 
 @orca.column('costar')
@@ -297,9 +258,9 @@ def transit_type(costar, parcels_geography):
 #####################
 
 
-@orca.column('jobs', cache=True)
-def tmnode_id(jobs, buildings):
-    return misc.reindex(buildings.tmnode_id, jobs.building_id)
+# @orca.column('jobs', cache=True)
+# def tmnode_id(jobs, buildings):
+#     return misc.reindex(buildings.tmnode_id, jobs.building_id)
 
 
 @orca.column('jobs', cache=True)
@@ -419,9 +380,9 @@ def unit_price(buildings):
     return buildings.residential_price * buildings.sqft_per_unit
 
 
-@orca.column('buildings', cache=True)
-def tmnode_id(buildings, parcels):
-    return misc.reindex(parcels.tmnode_id, buildings.parcel_id)
+# @orca.column('buildings', cache=True)
+# def tmnode_id(buildings, parcels):
+#     return misc.reindex(parcels.tmnode_id, buildings.parcel_id)
 
 
 @orca.column('buildings')
@@ -1028,12 +989,12 @@ def node_id(parcels, net):
     return s
 
 
-@orca.column('parcels', cache=True)
-def tmnode_id(parcels, net):
-    s = net["drive"].get_node_ids(parcels.x, parcels.y)
-    fill_val = s.value_counts().index[0]
-    s = s.reindex(parcels.index).fillna(fill_val).astype('int')
-    return s
+# @orca.column('parcels', cache=True)
+# def tmnode_id(parcels, net):
+#     s = net["drive"].get_node_ids(parcels.x, parcels.y)
+#     fill_val = s.value_counts().index[0]
+#     s = s.reindex(parcels.index).fillna(fill_val).astype('int')
+#     return s
 
 
 @orca.column('parcels', cache=True)
