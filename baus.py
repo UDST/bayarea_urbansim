@@ -298,9 +298,9 @@ def run_models(MODE, SCENARIO):
                 "diagnostic_output"
             ],
                 iter_vars=[IN_YEAR],
-                data_out=DATA_OUT,
-                out_base_tables=[],
-                out_run_tables=OUT_TABLES
+                # data_out=DATA_OUT,
+                # out_base_tables=[],
+                # out_run_tables=OUT_TABLES
                 )
 
         # start the simulation in the next round - only the models above run
@@ -310,9 +310,9 @@ def run_models(MODE, SCENARIO):
         models = get_simulation_models(SCENARIO)
         orca.run(
             models, iter_vars=years_to_run,
-            data_out='./output/model_data_output.h5',
-            out_base_tables=[],
-            out_run_tables=['jobs', 'buildings', 'households', 'parcels']
+            # data_out='./output/model_data_output.h5',
+            # out_base_tables=[],
+            # out_run_tables=['jobs', 'buildings', 'households', 'parcels']
             )
 
     elif MODE == "estimation":
@@ -325,24 +325,23 @@ def run_models(MODE, SCENARIO):
             "nrh_estimate",              # non-res rent hedonic
             "rsh_simulate",
             "nrh_simulate",
-            "hlcm_estimate",             # household lcm
+            # "hlcm_estimate",             # household lcm
             "elcm_estimate",             # employment lcm
 
         ], iter_vars=[2010])
 
         # Estimation steps
-        '''
+
         orca.run([
-            "load_rental_listings", # required to estimate rental hedonic
+            "load_rental_listings",  # required to estimate rental hedonic
             "neighborhood_vars",        # street network accessibility
             "regional_vars",            # road network accessibility
-
             "rrh_estimate",         # estimate residential rental hedonic
-
+            "rrh_simulate",
             "hlcm_owner_estimate",  # estimate location choice owners
-            "hlcm_renter_estimate", # estimate location choice renters
+            "hlcm_renter_estimate",  # estimate location choice renters
         ])
-        '''
+
 
     elif MODE == "feasibility":
 

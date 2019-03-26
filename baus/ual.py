@@ -634,7 +634,8 @@ def _mtc_clip(table, col_name, settings, price_scale=1):
 
 
 @orca.step()
-def rsh_simulate(residential_units, aggregations, settings, rsh_config):
+def rsh_simulate(
+        residential_units, aggregations, buildings, settings, rsh_config):
     """
     This uses the MTC's model specification from rsh.yaml, but
     generates unit-level price predictions rather than building-level.
@@ -645,7 +646,7 @@ def rsh_simulate(residential_units, aggregations, settings, rsh_config):
     """
     utils.hedonic_simulate(cfg=rsh_config,
                            tbl=residential_units,
-                           join_tbls=aggregations,
+                           join_tbls=aggregations + [buildings],
                            out_fname='unit_residential_price',
                            cast=True)
 
@@ -654,7 +655,8 @@ def rsh_simulate(residential_units, aggregations, settings, rsh_config):
 
 
 @orca.step()
-def rrh_simulate(residential_units, aggregations, settings, rrh_config):
+def rrh_simulate(
+        residential_units, buildings, aggregations, settings, rrh_config):
     """
     This uses an altered hedonic specification to generate
     unit-level rent predictions.
@@ -665,7 +667,7 @@ def rrh_simulate(residential_units, aggregations, settings, rrh_config):
     """
     utils.hedonic_simulate(cfg=rrh_config,
                            tbl=residential_units,
-                           join_tbls=aggregations,
+                           join_tbls=aggregations + [buildings],
                            out_fname='unit_residential_rent',
                            cast=True)
 
@@ -728,21 +730,23 @@ def households_relocation(households, settings):
 
 
 @orca.step()
-def hlcm_owner_estimate(households, residential_units, aggregations):
+def hlcm_owner_estimate(
+        households, buildings, residential_units, aggregations):
     return utils.lcm_estimate(cfg="hlcm_owner.yaml",
                               choosers=households,
                               chosen_fname="unit_id",
                               buildings=residential_units,
-                              join_tbls=aggregations)
+                              join_tbls=aggregations + [buildings])
 
 
 @orca.step()
-def hlcm_renter_estimate(households, residential_units, aggregations):
+def hlcm_renter_estimate(
+        households, buildings, residential_units, aggregations):
     return utils.lcm_estimate(cfg="hlcm_renter.yaml",
                               choosers=households,
                               chosen_fname="unit_id",
                               buildings=residential_units,
-                              join_tbls=aggregations)
+                              join_tbls=aggregations + [buildings])
 
 
 # use one core hlcm for the hlcms below, with different yaml files

@@ -277,6 +277,16 @@ def zone_id(parcels, costar):
 
 
 @orca.column('costar')
+def zone_id(parcels, costar):
+    return misc.reindex(parcels.zone_id, costar.parcel_id)
+
+
+@orca.column('costar')
+def building_id(parcels, costar):
+    return misc.reindex(parcels.building_id, costar.parcel_id)
+
+
+@orca.column('costar')
 def transit_type(costar, parcels_geography):
     return misc.reindex(parcels_geography.tpp_id, costar.parcel_id).\
         reindex(costar.index).fillna('none')
@@ -565,6 +575,17 @@ def sdem(development_projects, parcels):
 @orca.column('parcels')
 def retail_ratio(parcels, nodes):
     return misc.reindex(nodes.retail_ratio, parcels.node_id)
+
+
+# this column sucks and I'd like to get rid of it. the only reason its
+# here is because MTC add the buildings table to the aggregation tables
+# list in the settings.yaml. I don't know why they did that or if its
+# necessary but it complicates things like this.
+
+@orca.column('parcels')
+def building_id(parcels, buildings):
+    return buildings.to_frame().reset_index().set_index(
+        'parcel_id', drop=True).reindex(parcels.index)['building_id']
 
 
 # the stories attributes on parcels will be the max story
