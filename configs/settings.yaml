@@ -1,4 +1,5 @@
 # current scenarios:
+# 0: no project
 # 1: clean and green
 # 2: rising tides, falling fortunes
 # 3: big 3
@@ -7,6 +8,8 @@
 # 6: clean and green, ppa
 # 7: rising tides falling fortunes, ppa
 # 10: back to the future, ppa
+# 16: forecast test base
+# 17: forecast test less constrained
 
 
 # these are the tables the get auto-merged to buildings/parcels in the hedonic and lcms
