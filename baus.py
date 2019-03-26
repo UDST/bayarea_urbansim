@@ -125,7 +125,7 @@ def get_simulation_models(SCENARIO):
         "earthquake_demolish",
 
         "neighborhood_vars",    # street network accessibility
-        "regional_vars",        # road network accessibility
+        # "regional_vars",        # road network accessibility
 
         "nrh_simulate",         # non-residential rent hedonic
 
@@ -259,7 +259,7 @@ def run_models(MODE, SCENARIO):
                 "earthquake_demolish",
 
                 "neighborhood_vars",   # local accessibility vars
-                "regional_vars",       # regional accessibility vars
+                # "regional_vars",       # regional accessibility vars
 
                 "rsh_simulate",    # residential sales hedonic for units
                 "rrh_simulate",    # residential rental hedonic for units
@@ -320,7 +320,7 @@ def run_models(MODE, SCENARIO):
         orca.run([
 
             "neighborhood_vars",         # local accessibility variables
-            "regional_vars",             # regional accessibility variables
+            # "regional_vars",             # regional accessibility variables
             "rsh_estimate",              # residential sales hedonic
             "nrh_estimate",              # non-res rent hedonic
             "rsh_simulate",
@@ -335,20 +335,19 @@ def run_models(MODE, SCENARIO):
         orca.run([
             "load_rental_listings",  # required to estimate rental hedonic
             "neighborhood_vars",        # street network accessibility
-            "regional_vars",            # road network accessibility
+            # "regional_vars",            # road network accessibility
             "rrh_estimate",         # estimate residential rental hedonic
             "rrh_simulate",
             "hlcm_owner_estimate",  # estimate location choice owners
             "hlcm_renter_estimate",  # estimate location choice renters
         ])
 
-
     elif MODE == "feasibility":
 
         orca.run([
 
             "neighborhood_vars",            # local accessibility vars
-            "regional_vars",                # regional accessibility vars
+            # "regional_vars",                # regional accessibility vars
 
             "rsh_simulate",                 # residential sales hedonic
             "nrh_simulate",                 # non-residential rent hedonic

@@ -397,6 +397,7 @@ def skims(store):
     df = df.rename(
         columns={'origTaz': 'from_zone_id', 'destTaz': 'to_zone_id'})
     df = df.set_index(['from_zone_id', 'to_zone_id'])
+    df['gen_tt_min'] = df['generalizedTimeInS'] / 60
     return df
 
 
@@ -825,7 +826,9 @@ def taz2_price_shifters():
 @orca.table(cache=True)
 def zones(store):
     # sort index so it prints out nicely when we want it to
-    return store['zones'].sort_index()
+    df = store['zones'].sort_index()
+    df.drop('tract', axis=1, inplace=True)
+    return df
 
 
 # SLR inundation levels for parcels
@@ -874,18 +877,21 @@ def tracts_earthquake():
 orca.broadcast(
     'buildings', 'residential_units', cast_index=True, onto_on='building_id')
 orca.broadcast(
+    'zones', 'buildings', cast_index=True, onto_on='zone_id')
+orca.broadcast(
     'residential_units', 'households', cast_index=True, onto_on='unit_id')
 orca.broadcast(
     'parcels_geography', 'buildings', cast_index=True, onto_on='parcel_id')
 orca.broadcast('parcels', 'buildings', cast_index=True, onto_on='parcel_id')
 # not defined in urbansim_Defaults
-orca.broadcast('tmnodes', 'buildings', cast_index=True, onto_on='tmnode_id')
+# orca.broadcast('tmnodes', 'buildings', cast_index=True, onto_on='tmnode_id')
 orca.broadcast('taz_geography', 'parcels', cast_index=True, onto_on='zone_id')
 orca.broadcast('parcels', 'homesales', cast_index=True, onto_on='parcel_id')
 orca.broadcast('nodes', 'homesales', cast_index=True, onto_on='node_id')
-orca.broadcast('tmnodes', 'homesales', cast_index=True, onto_on='tmnode_id')
+# orca.broadcast('tmnodes', 'homesales', cast_index=True, onto_on='tmnode_id')
 orca.broadcast('nodes', 'costar', cast_index=True, onto_on='node_id')
 orca.broadcast('buildings', 'costar', cast_index=True, onto_on='building_id')
-orca.broadcast('tmnodes', 'costar', cast_index=True, onto_on='tmnode_id')
+# orca.broadcast('tmnodes', 'costar', cast_index=True, onto_on='tmnode_id')
 orca.broadcast('logsums', 'homesales', cast_index=True, onto_on='zone_id')
 orca.broadcast('logsums', 'costar', cast_index=True, onto_on='zone_id')
+orca.broadcast('zones', 'costar', cast_index=True, onto_on='zone_id')
