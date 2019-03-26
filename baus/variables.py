@@ -72,8 +72,10 @@ sum_vars = ['persons', 'workers', 'children', 'cars', 'hispanic_head',
             'non_residential_sqft', 'job_spaces']
 
 geog_vars_to_dummify = orca.get_injectable('aggregate_geos').values()
+
 orca.add_column(
     'parcels', 'sum_acres', orca.get_table('parcels').acres)  # temporary
+
 for agent in variables_to_aggregate.keys():
     for geography_name, geography_id in geographic_levels.items():
         if geography_name != agent:
