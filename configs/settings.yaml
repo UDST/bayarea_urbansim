@@ -913,6 +913,8 @@ control_tables:
     s6_household_controls_input_file: household_controls_s6.csv
     s7_household_controls_input_file: household_controls_s7.csv
     s10_household_controls_input_file: household_controls_s10.csv
+    s16_household_controls_input_file: household_controls_s16.csv
+    s17_household_controls_input_file: household_controls_s17.csv
   employment:
     employment_controls_input_file: employment_controls.csv
     s1_employment_controls_input_file: employment_controls_s1.csv
