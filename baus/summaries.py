@@ -516,12 +516,15 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
                     summary_table.total_subsidy / \
                     summary_table.subsidized_units
 
+            summary_table = summary_table.sort_index()
+
             if base is False:
                 summary_csv = "runs/run{}_{}_summaries_{}.csv".\
                     format(run_number, geography, year)
             elif base is True:
                 summary_csv = "runs/run{}_{}_summaries_{}.csv".\
                     format(run_number, geography, 2009)
+
             summary_table.to_csv(summary_csv)
 
     # Write Summary of Accounts
@@ -661,6 +664,7 @@ def parcel_summary(parcels, buildings, households, jobs,
         df['hhq%d' % i] = households_df[
             households_df.base_income_quartile == i].\
             parcel_id.value_counts()
+    df["tothh"] = households_df.groupby('parcel_id').size()
 
     jobs_df = orca.merge_tables(
         'jobs',
@@ -671,6 +675,7 @@ def parcel_summary(parcels, buildings, households, jobs,
     for cat in jobs_df.empsix.unique():
         df[cat] = jobs_df[jobs_df.empsix == cat].\
             parcel_id.value_counts()
+    df["totemp"] = jobs_df.groupby('parcel_id').size()
 
     df.to_csv(
         os.path.join("runs", "run%d_parcel_data_%d.csv" %
@@ -734,8 +739,6 @@ def travel_model_output(parcels, households, jobs, buildings,
         [parcels, buildings, jobs],
         columns=['zone_id', 'zone_id_x', 'empsix']
     )
-
-    jobs_df.to_csv('jobs_merged_taz.csv')
 
     # totally baffled by this - after joining the three tables we have three
     # zone_ids, one from the parcel table, one from buildings, and one from
