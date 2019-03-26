@@ -374,7 +374,9 @@ def zoning_scenario(parcels_geography, scenario, settings):
 
 @orca.table(cache=True)
 def parcels(store):
-    return store['parcels']
+    df = store['parcels']
+    df.index.name = 'parcel_id'
+    return df
 
 
 @orca.table(cache=True)
@@ -385,6 +387,48 @@ def parcels_zoning_calculations(parcels):
 @orca.table()
 def taz(zones):
     return zones
+
+
+@orca.table()
+def skims(store):
+    df = store['beam_skims']
+    df = df[(df['period'] == 'AM') & (df['mode'] == 'CAR')]
+    assert len(df) == 2114116
+    df = df.rename(
+        columns={'origTaz': 'from_zone_id', 'destTaz': 'to_zone_id'})
+    df = df.set_index(['from_zone_id', 'to_zone_id'])
+    return df
+
+
+def register_aggregation_table(table_name, table_id):
+    """
+    Generator function for tables representing aggregate geography.
+    """
+
+    @orca.table(table_name, cache=True)
+    def func(parcels):
+        geog_ids = parcels[table_id].value_counts().index.values
+        df = pd.DataFrame(index=geog_ids)
+        df.index.name = table_id
+        return df
+
+    return func
+
+
+aggregate_geos = {
+    # 'zonings': 'zoning_id',
+    # 'locations': 'location_id',
+    # 'block_groups': 'block_group_id',
+    'blocks': 'block_id',
+    'zones': 'zone_id',
+    # 'plans': 'plan_id',
+    # 'zone_districts': 'zone_district_id',
+    # 'zone_subdistricts': 'zone_subdistrict_id'
+}
+orca.add_injectable('aggregate_geos', aggregate_geos)
+
+for geog in aggregate_geos.items():
+    register_aggregation_table(geog[0], geog[1])
 
 
 @orca.table(cache=True)
@@ -839,3 +883,10 @@ orca.broadcast('parcels', 'buildings', cast_index=True,
 orca.broadcast('tmnodes', 'buildings', cast_index=True, onto_on='tmnode_id')
 orca.broadcast('taz_geography', 'parcels', cast_index=True,
                onto_on='zone_id')
+orca.broadcast('parcels', 'homesales', cast_index=True, onto_on='parcel_id')
+orca.broadcast('nodes', 'homesales', cast_index=True, onto_on='node_id')
+orca.broadcast('tmnodes', 'homesales', cast_index=True, onto_on='tmnode_id')
+orca.broadcast('nodes', 'costar', cast_index=True, onto_on='node_id')
+orca.broadcast('tmnodes', 'costar', cast_index=True, onto_on='tmnode_id')
+orca.broadcast('logsums', 'homesales', cast_index=True, onto_on='zone_id')
+orca.broadcast('logsums', 'costar', cast_index=True, onto_on='zone_id')
