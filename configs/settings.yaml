@@ -15,7 +15,7 @@ aggregation_tables:
   - nodes
   - tmnodes
   - logsums
-  - buildings
+  # - buildings
 
 
 # large baus files are stored in s3 - this key gives the settings for fetching them
