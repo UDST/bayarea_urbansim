@@ -13,8 +13,8 @@ min_segment_size: 10
 
 default_config:
     model_expression: np.log1p(costar_rent) ~ office_1500 + retail_1500 + industrial_1500
-        + total_jobs_45_gen_tt_min + juris_ave_income + I(transit_type == "bart1")
-        + I(transit_type == "bart2") + I(transit_type == "bart3a") + I(transit_type
+        + np.log1p(total_jobs_45_gen_tt_min) + juris_ave_income + I(transit_type ==
+        "bart1") + I(transit_type == "bart2") + I(transit_type == "bart3a") + I(transit_type
         == "lrt1")
     ytransform: np.expm1
 
@@ -22,103 +22,103 @@ models:
     Industrial:
         fit_parameters:
             Coefficient:
-                I(transit_type == "bart1")[T.True]: 0.18056383104337617
-                I(transit_type == "bart2")[T.True]: -0.09026927739164525
-                I(transit_type == "bart3a")[T.True]: -8.10812945815385e-15
-                I(transit_type == "lrt1")[T.True]: -0.03160006893874119
-                Intercept: -5.215241073996433
-                industrial_1500: 0.0023853340959726433
-                juris_ave_income: 0.6369942222432476
-                office_1500: 0.04419339770734843
-                retail_1500: 0.028328444201082794
-                total_jobs_45_gen_tt_min: 2.6912271483122383e-07
+                I(transit_type == "bart1")[T.True]: 0.195304716028746
+                I(transit_type == "bart2")[T.True]: -0.08576184019778829
+                I(transit_type == "bart3a")[T.True]: -1.163750456417876e-14
+                I(transit_type == "lrt1")[T.True]: -0.005819605122109696
+                Intercept: -5.959114004961358
+                industrial_1500: 0.0014426630808275674
+                juris_ave_income: 0.6478998554867806
+                np.log1p(total_jobs_45_gen_tt_min): 0.05790543009835127
+                office_1500: 0.0444247425393155
+                retail_1500: 0.028437743890857736
             Std. Error:
-                I(transit_type == "bart1")[T.True]: 0.06576358830790323
-                I(transit_type == "bart2")[T.True]: 0.1122698268305742
-                I(transit_type == "bart3a")[T.True]: 1.0110352734364278e-15
-                I(transit_type == "lrt1")[T.True]: 0.08905799801305998
-                Intercept: 0.64385717528481
-                industrial_1500: 0.010714515230492952
-                juris_ave_income: 0.05707900869007193
-                office_1500: 0.007301890923786323
-                retail_1500: 0.007379521299425702
-                total_jobs_45_gen_tt_min: 6.70037710315362e-08
+                I(transit_type == "bart1")[T.True]: 0.06531958407887567
+                I(transit_type == "bart2")[T.True]: 0.11215622036697315
+                I(transit_type == "bart3a")[T.True]: 1.2409044003370226e-15
+                I(transit_type == "lrt1")[T.True]: 0.088169664866328
+                Intercept: 0.6378151977358214
+                industrial_1500: 0.010782889764647986
+                juris_ave_income: 0.05670976626165356
+                np.log1p(total_jobs_45_gen_tt_min): 0.01452543377874733
+                office_1500: 0.007290351103327579
+                retail_1500: 0.007381493791071355
             T-Score:
-                I(transit_type == "bart1")[T.True]: 2.7456505292561215
-                I(transit_type == "bart2")[T.True]: -0.8040386267618471
-                I(transit_type == "bart3a")[T.True]: -8.01963064116939
-                I(transit_type == "lrt1")[T.True]: -0.354825727545629
-                Intercept: -8.099996822570894
-                industrial_1500: 0.22262641329624572
-                juris_ave_income: 11.159868344981325
-                office_1500: 6.052322359867899
-                retail_1500: 3.8387915762621896
-                total_jobs_45_gen_tt_min: 4.01653087114392
-        fit_rsquared: 0.28830655459465926
-        fit_rsquared_adj: 0.2814633483888387
+                I(transit_type == "bart1")[T.True]: 2.9899871345308746
+                I(transit_type == "bart2")[T.True]: -0.7646641436130522
+                I(transit_type == "bart3a")[T.True]: -9.378244255575272
+                I(transit_type == "lrt1")[T.True]: -0.06600461883270925
+                Intercept: -9.343010367447501
+                industrial_1500: 0.1337918788298643
+                juris_ave_income: 11.424837346312296
+                np.log1p(total_jobs_45_gen_tt_min): 3.9864854282751083
+                office_1500: 6.093635534101841
+                retail_1500: 3.852573028680996
+        fit_rsquared: 0.288104724979122
+        fit_rsquared_adj: 0.2812595781039212
         fitted: true
         name: Industrial
     Office:
         fit_parameters:
             Coefficient:
-                I(transit_type == "bart1")[T.True]: -0.018270839862353783
-                I(transit_type == "bart3a")[T.True]: 7.355033631366638e-14
-                I(transit_type == "lrt1")[T.True]: -0.10038768937434583
-                Intercept: -6.1913843102619115
-                industrial_1500: -0.025307156075543787
-                juris_ave_income: 0.7620860686419528
-                office_1500: 0.11135936084058018
-                retail_1500: -0.004329563648119485
-                total_jobs_45_gen_tt_min: 4.5829187236070593e-07
+                I(transit_type == "bart1")[T.True]: 0.021528273786955873
+                I(transit_type == "bart3a")[T.True]: -3.9208724120400174e-14
+                I(transit_type == "lrt1")[T.True]: -0.06845678116064732
+                Intercept: -7.167136725028635
+                industrial_1500: -0.023121322704718138
+                juris_ave_income: 0.7449565911058827
+                np.log1p(total_jobs_45_gen_tt_min): 0.10617718699060512
+                office_1500: 0.11017035775113236
+                retail_1500: -0.003750549235331766
             Std. Error:
-                I(transit_type == "bart1")[T.True]: 0.03381245966819311
-                I(transit_type == "bart3a")[T.True]: 4.275456713833599e-15
-                I(transit_type == "lrt1")[T.True]: 0.039273121993687606
-                Intercept: 0.36019789949548514
-                industrial_1500: 0.003379614916962064
-                juris_ave_income: 0.03155473067544083
-                office_1500: 0.0063063529804847675
-                retail_1500: 0.00516811685196123
-                total_jobs_45_gen_tt_min: 4.234752901752582e-08
+                I(transit_type == "bart1")[T.True]: 0.033039003635239254
+                I(transit_type == "bart3a")[T.True]: 1.9160609339451136e-15
+                I(transit_type == "lrt1")[T.True]: 0.03875329050003321
+                Intercept: 0.35088089759014884
+                industrial_1500: 0.003367661698778656
+                juris_ave_income: 0.0321854104481115
+                np.log1p(total_jobs_45_gen_tt_min): 0.010314053088779206
+                office_1500: 0.0063620048447982
+                retail_1500: 0.005183407074047066
             T-Score:
-                I(transit_type == "bart1")[T.True]: -0.5403582005464364
-                I(transit_type == "bart3a")[T.True]: 17.202919181870815
-                I(transit_type == "lrt1")[T.True]: -2.5561423252900854
-                Intercept: -17.188840687116546
-                industrial_1500: -7.488177409955449
-                juris_ave_income: 24.15124617859874
-                office_1500: 17.658282240969648
-                retail_1500: -0.8377449218232119
-                total_jobs_45_gen_tt_min: 10.82216325233613
-        fit_rsquared: 0.40878381327190816
-        fit_rsquared_adj: 0.4070551109715336
+                I(transit_type == "bart1")[T.True]: 0.6516017863200303
+                I(transit_type == "bart3a")[T.True]: -20.46319270216034
+                I(transit_type == "lrt1")[T.True]: -1.7664766082402386
+                Intercept: -20.426124004619666
+                industrial_1500: -6.865690432356524
+                juris_ave_income: 23.145785022902935
+                np.log1p(total_jobs_45_gen_tt_min): 10.29441928179686
+                office_1500: 17.31692452909896
+                retail_1500: -0.7235683367626068
+        fit_rsquared: 0.406148346339648
+        fit_rsquared_adj: 0.4044119379956118
         fitted: true
         model_expression: np.log1p(costar_rent) ~ office_1500 + retail_1500 + industrial_1500
-            + total_jobs_45_gen_tt_min + juris_ave_income + I(transit_type == "bart1")
-            + I(transit_type == "bart3a") + I(transit_type == "lrt1")
+            + np.log1p(total_jobs_45_gen_tt_min) + juris_ave_income + I(transit_type
+            == "bart1") + I(transit_type == "bart3a") + I(transit_type == "lrt1")
         name: Office
     Retail:
         fit_parameters:
             Coefficient:
-                Intercept: 2.6651258610197046
-                office_1500: 0.02863727842088763
-                sum_income_3000: 4.163404364025473e-11
-                sum_income_45_gen_tt_min: 7.229403468417428e-12
+                Intercept: -1.2011442872793037
+                np.log1p(sum_income_45_gen_tt_min): 0.17163060555437243
+                office_1500: 0.02693490441437817
+                sum_income_3000: 4.84023007833838e-11
             Std. Error:
-                Intercept: 0.07042187859581558
-                office_1500: 0.010747854626699494
-                sum_income_3000: 6.750630209054013e-12
-                sum_income_45_gen_tt_min: 9.010575167788867e-13
+                Intercept: 0.45269407384439897
+                np.log1p(sum_income_45_gen_tt_min): 0.01938547936474916
+                office_1500: 0.010686758487119396
+                sum_income_3000: 6.2956693792665164e-12
             T-Score:
-                Intercept: 37.84514009227332
-                office_1500: 2.6644646225254824
-                sum_income_3000: 6.1674306473512255
-                sum_income_45_gen_tt_min: 8.023243060288983
-        fit_rsquared: 0.2594274718964438
-        fit_rsquared_adj: 0.2573275497940708
+                Intercept: -2.653324522406193
+                np.log1p(sum_income_45_gen_tt_min): 8.853565203369078
+                office_1500: 2.520399843118233
+                sum_income_3000: 7.688189748779814
+        fit_rsquared: 0.26856007497896994
+        fit_rsquared_adj: 0.26648604872654746
         fitted: true
         model_expression: np.log1p(costar_rent) ~ office_1500 + sum_income_3000 +
-            sum_income_45_gen_tt_min
+            np.log1p(sum_income_45_gen_tt_min)
         name: Retail
 
 fitted: true
