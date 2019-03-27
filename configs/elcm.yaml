@@ -26,7 +26,7 @@ prediction_sample_size: null
 default_config:
     model_expression: np.log1p(non_residential_rent) + office_1500 + industrial_1500
         + retail_1500 + np.log1p(total_jobs_45_gen_tt_min) + residential_units_1500
-        + ave_income_1500 + juris_ave_income
+        + ave_income_1500 + juris_ave_income + embarcadero + stanford
 
 models:
     AGREMPN:

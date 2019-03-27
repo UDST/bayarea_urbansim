@@ -242,8 +242,8 @@ def load_rental_listings():
         return misc.reindex(parcels.zone_id, craigslist.node_id)
 
     orca.broadcast('nodes', 'craigslist', cast_index=True, onto_on='node_id')
-    # orca.broadcast('tmnodes', 'craigslist', cast_index=True,
-    #                onto_on='tmnode_id')
+    orca.broadcast('tmnodes', 'craigslist', cast_index=True,
+                   onto_on='tmnode_id')
     orca.broadcast('zones', 'craigslist', cast_index=True, onto_on='zone_id')
     orca.broadcast('logsums', 'craigslist', cast_index=True, onto_on='zone_id')
     return

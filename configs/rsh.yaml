@@ -18,7 +18,8 @@ predict_filters:
 - combo_logsum > 0
 
 model_expression: price_per_sqft ~ sqft_per_unit + residential_units_1500 + sfdu +
-    np.log1p(total_jobs_45_gen_tt_min) + ave_income_1500 + is_sanfran + modern_condo
+    np.log1p(total_jobs_45_gen_tt_min) + ave_income_1500 + is_sanfran 
+    + pacheights + stanford + modern_condo
     + historic + new_construction + I(transit_type == "bart1") + I(transit_type ==
     "bart2")
 
