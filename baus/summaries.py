@@ -14,7 +14,7 @@ from scripts.output_csv_utils import format_df
 def topsheet(households, jobs, buildings, parcels, zones, year,
              run_number, taz_geography, parcels_zoning_calculations,
              summary, settings, parcels_geography, abag_targets, new_tpp_id,
-             residential_units):
+             units):
 
     hh_by_subregion = misc.reindex(taz_geography.subregion,
                                    households.zone_id).value_counts()
@@ -107,9 +107,9 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
     write("Residential vacancy rate = %.2f" % (1-0 - float(nhh)/du))
 
     write("Number of residential units in units table = %d"
-          % len(residential_units))
+          % len(units))
 
-    rent_own = residential_units.tenure.value_counts()
+    rent_own = units.tenure.value_counts()
     write("Split of units by rent/own = %s" % str(rent_own))
 
     rent_own = households.tenure[households.building_id == -1].value_counts()
@@ -297,7 +297,7 @@ def compare_to_targets(parcels, buildings, jobs, households, abag_targets,
 
 @orca.step()
 def diagnostic_output(households, buildings, parcels, taz, jobs, settings,
-                      zones, year, summary, run_number, residential_units):
+                      zones, year, summary, run_number, units):
     households = households.to_frame()
     buildings = buildings.to_frame()
     parcels = parcels.to_frame()
@@ -340,7 +340,7 @@ def diagnostic_output(households, buildings, parcels, taz, jobs, settings,
         query('general_type == "Residential"').groupby('zone_id').\
         residential_price.quantile()
     # these two are the original unit prices averaged up to the building id
-    ru = residential_units
+    ru = units
     zones['unit_residential_price'] = \
         ru.unit_residential_price.groupby(ru.zone_id).quantile()
     zones['unit_residential_rent'] = \

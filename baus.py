@@ -32,7 +32,9 @@ COMPARE_TO_NO_PROJECT = True
 NO_PROJECT = 611
 EARTHQUAKE = False
 DATA_OUT = './output/model_data_output.h5'
-OUT_TABLES = ['jobs', 'households', 'buildings', 'parcels']
+OUT_TABLES = [
+    'parcels', 'beam_skims', 'jobs', 'households', 'buildings', 'units',
+    'zones', 'establishments', 'persons', 'craigslist', 'skims']
 
 IN_YEAR, OUT_YEAR = 2010, 2025
 COMPARE_AGAINST_LAST_KNOWN_GOOD = False
@@ -123,7 +125,7 @@ def get_simulation_models(SCENARIO):
         "slr_remove_dev",
         "eq_code_buildings",
         "earthquake_demolish",
-
+        "load_rental_listings",
         "neighborhood_vars",    # street network accessibility
         # "regional_vars",        # road network accessibility
 
@@ -257,7 +259,7 @@ def run_models(MODE, SCENARIO):
                 "slr_remove_dev",
                 "eq_code_buildings",
                 "earthquake_demolish",
-
+                "load_rental_listings",
                 "neighborhood_vars",   # local accessibility vars
                 # "regional_vars",       # regional accessibility vars
 
@@ -298,22 +300,23 @@ def run_models(MODE, SCENARIO):
                 "diagnostic_output"
             ],
                 iter_vars=[IN_YEAR],
-                # data_out=DATA_OUT,
-                # out_base_tables=[],
-                # out_run_tables=OUT_TABLES
-                )
+                data_out=DATA_OUT,
+                out_base_tables=[],
+                out_run_tables=OUT_TABLES
+            )
 
         # start the simulation in the next round - only the models above run
         # for the IN_YEAR
-        years_to_run = range(IN_YEAR+EVERY_NTH_YEAR, OUT_YEAR+1,
+        years_to_run = range(IN_YEAR + EVERY_NTH_YEAR, OUT_YEAR + 1,
                              EVERY_NTH_YEAR)
         models = get_simulation_models(SCENARIO)
         orca.run(
             models, iter_vars=years_to_run,
-            # data_out='./output/model_data_output.h5',
-            # out_base_tables=[],
-            # out_run_tables=['jobs', 'buildings', 'households', 'parcels']
-            )
+            data_out='./output/model_data_output.h5',
+            out_interval=len(years_to_run) + 1,  # only store the final iter
+            out_base_tables=[],
+            out_run_tables=OUT_TABLES
+        )
 
     elif MODE == "estimation":
 

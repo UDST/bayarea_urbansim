@@ -47,24 +47,24 @@ def check_job_controls(jobs, employment_controls, year, settings):
     )
 
 
-def check_residential_units(residential_units, buildings):
+def check_residential_units(units, buildings):
     print "Check residential units"
     # assert we fanned out the residential units correctly
-    assert len(residential_units) == buildings.residential_units.sum()
+    assert len(units) == buildings.residential_units.sum()
 
     # make sure the unit counts per building add up
     assert_series_equal(
         buildings.residential_units[
             buildings.residential_units > 0].sort_index(),
-        residential_units.building_id.value_counts().sort_index()
+        units.building_id.value_counts().sort_index()
     )
 
     # make sure we moved deed restricted units to the res units table correctly
     assert_series_equal(
         buildings.deed_restricted_units[
             buildings.residential_units > 0].sort_index(),
-        residential_units.deed_restricted.groupby(
-            residential_units.building_id).sum().sort_index()
+        units.deed_restricted.groupby(
+            units.building_id).sum().sort_index()
     )
 
 
@@ -96,16 +96,16 @@ def check_no_overfull_buildings(households, buildings):
 
 
 # households have both unit ids and building ids - make sure they're in sync
-def check_unit_ids_match_building_ids(households, residential_units):
+def check_unit_ids_match_building_ids(households, units):
     print "Check unit ids and building ids match"
     building_ids = misc.reindex(
-        residential_units.building_id, households.unit_id)
+        units.building_id, households.unit_id)
     assert_series_equal(building_ids, households.building_id, 25000)
 
 
 @orca.step()
 def simulation_validation(
-        parcels, buildings, households, jobs, residential_units, year,
+        parcels, buildings, households, jobs, units, year,
         household_controls, employment_controls, settings):
 
     # this does a save and restore state for debugging
@@ -117,7 +117,7 @@ def simulation_validation(
 
     check_household_controls(households, household_controls, year)
 
-    # check_residential_units(residential_units, buildings)
+    # check_residential_units(units, buildings)
 
 #    check_no_unplaced_households(households, year)
 
@@ -125,4 +125,4 @@ def simulation_validation(
 
     check_no_overfull_buildings(households, buildings)
 
-    check_unit_ids_match_building_ids(households, residential_units)
+    # check_unit_ids_match_building_ids(households, units)
