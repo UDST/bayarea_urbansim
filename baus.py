@@ -36,7 +36,7 @@ OUT_TABLES = [
     'parcels', 'beam_skims', 'jobs', 'households', 'buildings', 'units',
     'zones', 'establishments', 'persons', 'craigslist', 'skims']
 
-IN_YEAR, OUT_YEAR = 2010, 2015
+IN_YEAR, OUT_YEAR = 2010, 2025
 COMPARE_AGAINST_LAST_KNOWN_GOOD = False
 
 LAST_KNOWN_GOOD_RUNS = {
@@ -126,7 +126,7 @@ def get_simulation_models(SCENARIO):
         # "earthquake_demolish",
         "load_rental_listings",
         "neighborhood_vars",    # street network accessibility
-        # "regional_vars",        # road network accessibility
+        "regional_vars",        # road network accessibility
 
         "nrh_simulate",         # non-residential rent hedonic
 
@@ -260,7 +260,7 @@ def run_models(MODE, SCENARIO):
                 "earthquake_demolish",
                 "load_rental_listings",
                 "neighborhood_vars",   # local accessibility vars
-                # "regional_vars",       # regional accessibility vars
+                "regional_vars",       # regional accessibility vars
 
                 "rsh_simulate",    # residential sales hedonic for units
                 "rrh_simulate",    # residential rental hedonic for units
@@ -341,7 +341,7 @@ def run_models(MODE, SCENARIO):
         orca.run([
             "load_rental_listings",  # required to estimate rental hedonic
             "neighborhood_vars",        # street network accessibility
-            # "regional_vars",            # road network accessibility
+            "regional_vars",            # road network accessibility
             "rrh_estimate",         # estimate residential rental hedonic
             "rrh_simulate",
             "hlcm_owner_estimate",  # estimate location choice owners
