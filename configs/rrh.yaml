@@ -11,7 +11,7 @@ fit_filters:
 predict_filters: null
 
 model_expression: price_per_sqft ~ sqft_per_unit + residential_units_1500 + np.log1p(total_jobs_45_gen_tt_min)
-    + sfdu + ave_income_1500
+    + np.log1p(sum_income_45_gen_tt_min) + sfdu + ave_income_1500
 
 ytransform: null
 
@@ -19,27 +19,30 @@ fitted: true
 
 fit_parameters:
     Coefficient:
-        Intercept: 5.216574527271257
-        ave_income_1500: 0.10617459210945115
-        np.log1p(total_jobs_45_gen_tt_min): -0.34500818729528415
-        residential_units_1500: 0.37375825724719175
-        sfdu: -0.2465746172871962
-        sqft_per_unit: -0.0005690589400954426
+        Intercept: 4.3483414317840205
+        ave_income_1500: 0.10595368298824223
+        np.log1p(sum_income_45_gen_tt_min): 0.060820881425554155
+        np.log1p(total_jobs_45_gen_tt_min): -0.3925334693993053
+        residential_units_1500: 0.37504930019794414
+        sfdu: -0.2473979080514372
+        sqft_per_unit: -0.0005689933737684245
     Std. Error:
-        Intercept: 0.10365544890829187
-        ave_income_1500: 0.0030342855762136678
-        np.log1p(total_jobs_45_gen_tt_min): 0.007365117182389558
-        residential_units_1500: 0.0026329405506488016
-        sfdu: 0.00205219279747719
-        sqft_per_unit: 5.772215351015853e-06
+        Intercept: 0.3046123519866179
+        ave_income_1500: 0.003034990141612699
+        np.log1p(sum_income_45_gen_tt_min): 0.0200652049545064
+        np.log1p(total_jobs_45_gen_tt_min): 0.017322435202953863
+        residential_units_1500: 0.0026670221773541416
+        sfdu: 0.0020699742001761587
+        sqft_per_unit: 5.771931366903224e-06
     T-Score:
-        Intercept: 50.326100385581945
-        ave_income_1500: 34.99162799367787
-        np.log1p(total_jobs_45_gen_tt_min): -46.843543524360975
-        residential_units_1500: 141.95468908520982
-        sfdu: -120.15177988652738
-        sqft_per_unit: -98.58588176120176
+        Intercept: 14.275000351840788
+        ave_income_1500: 34.910717348143265
+        np.log1p(sum_income_45_gen_tt_min): 3.0311617331321865
+        np.log1p(total_jobs_45_gen_tt_min): -22.660409163047095
+        residential_units_1500: 140.62473997498486
+        sfdu: -119.51738723621925
+        sqft_per_unit: -98.57937276092434
 
-fit_rsquared_adj: 0.3959280473565292
+fit_rsquared_adj: 0.39599596766929757
 
-fit_rsquared: 0.3959695249896087
+fit_rsquared: 0.39604573523262565
