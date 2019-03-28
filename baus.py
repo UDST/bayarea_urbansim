@@ -31,12 +31,12 @@ CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
 COMPARE_TO_NO_PROJECT = True
 NO_PROJECT = 611
 EARTHQUAKE = False
-DATA_OUT = './output/model_data_output.h5'
+DATA_OUT = './output/model_data_output_test.h5'
 OUT_TABLES = [
     'parcels', 'beam_skims', 'jobs', 'households', 'buildings', 'units',
     'zones', 'establishments', 'persons', 'craigslist', 'skims']
 
-IN_YEAR, OUT_YEAR = 2010, 2025
+IN_YEAR, OUT_YEAR = 2010, 2015
 COMPARE_AGAINST_LAST_KNOWN_GOOD = False
 
 LAST_KNOWN_GOOD_RUNS = {
@@ -120,11 +120,10 @@ def get_simulation_models(SCENARIO):
     # of the old version soon
 
     models = [
-
-        "slr_inundate",
-        "slr_remove_dev",
-        "eq_code_buildings",
-        "earthquake_demolish",
+        # "slr_inundate",
+        # "slr_remove_dev",
+        # "eq_code_buildings",
+        # "earthquake_demolish",
         "load_rental_listings",
         "neighborhood_vars",    # street network accessibility
         # "regional_vars",        # road network accessibility
@@ -302,7 +301,9 @@ def run_models(MODE, SCENARIO):
                 iter_vars=[IN_YEAR],
                 data_out=DATA_OUT,
                 out_base_tables=[],
-                out_run_tables=OUT_TABLES
+                out_base_local=True,
+                out_run_tables=OUT_TABLES,
+                out_run_local=True
             )
 
         # start the simulation in the next round - only the models above run
@@ -312,10 +313,12 @@ def run_models(MODE, SCENARIO):
         models = get_simulation_models(SCENARIO)
         orca.run(
             models, iter_vars=years_to_run,
-            data_out='./output/model_data_output.h5',
-            out_interval=len(years_to_run) + 1,  # only store the final iter
+            data_out=DATA_OUT,
+            out_interval=len(years_to_run) + 1,  # hack to store only last iter
             out_base_tables=[],
-            out_run_tables=OUT_TABLES
+            out_base_local=True,
+            out_run_tables=OUT_TABLES,
+            out_run_local=True
         )
 
     elif MODE == "estimation":

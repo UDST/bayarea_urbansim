@@ -89,7 +89,7 @@ def move_jobs_from_portola_to_san_mateo_county(parcels, buildings, jobs_df):
 
 @orca.step()
 def preproc_jobs(store, baseyear_taz_controls, settings, parcels):
-    buildings = store['buildings']
+    # buildings = store['buildings']
     jobs = store['jobs']
 
     # jobs table already created if using UAL data so no need to re-allocate
