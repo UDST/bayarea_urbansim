@@ -684,23 +684,8 @@ def buildings(store):
 
 
 @orca.table(cache=True)
-def establishments(store):
-    return print_error_if_not_available(store, 'establishments')
-
-
-@orca.table(cache=True)
-def persons(store):
-    return print_error_if_not_available(store, 'persons')
-
-
-@orca.table(cache=True)
-def skims(store):
-    return print_error_if_not_available(store, 'skims')
-
-
-@orca.table(cache=True)
 def units(store):
-    # return print_error_if_not_available(stories, 'residential_units_preproc')
+    # return print_error_if_not_available(store, 'residential_units_preproc')
 
     df = store['units']
     if df.dtypes['tenure'] == np.int64:
