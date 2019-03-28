@@ -229,7 +229,7 @@ def load_rental_listings():
         df = pd.read_csv(os.path.join(misc.data_dir(), "sfbay_craigslist.csv"))
         net = orca.get_injectable('net')
         df['node_id'] = net['walk'].get_node_ids(df['lon'], df['lat'])
-        # df['tmnode_id'] = net['drive'].get_node_ids(df['lon'], df['lat'])
+        df['tmnode_id'] = net['drive'].get_node_ids(df['lon'], df['lat'])
         # fill nans -- missing bedrooms are mostly studio apts
         df['bedrooms'] = df.bedrooms.replace(np.nan, 1)
         df['neighborhood'] = df.neighborhood.replace(np.nan, '')
@@ -242,8 +242,8 @@ def load_rental_listings():
         return misc.reindex(parcels.zone_id, craigslist.node_id)
 
     orca.broadcast('nodes', 'craigslist', cast_index=True, onto_on='node_id')
-    # orca.broadcast('tmnodes', 'craigslist', cast_index=True,
-    #                onto_on='tmnode_id')
+    orca.broadcast('tmnodes', 'craigslist', cast_index=True,
+                   onto_on='tmnode_id')
     orca.broadcast('zones', 'craigslist', cast_index=True, onto_on='zone_id')
     orca.broadcast('logsums', 'craigslist', cast_index=True, onto_on='zone_id')
     return

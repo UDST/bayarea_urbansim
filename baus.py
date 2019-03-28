@@ -320,7 +320,7 @@ def run_models(MODE, SCENARIO):
         orca.run([
 
             "neighborhood_vars",         # local accessibility variables
-            # "regional_vars",             # regional accessibility variables
+            "regional_vars",             # regional accessibility variables
             "rsh_estimate",              # residential sales hedonic
             "nrh_estimate",              # non-res rent hedonic
             "rsh_simulate",

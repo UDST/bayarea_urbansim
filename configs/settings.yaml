@@ -13,7 +13,7 @@
 # these are the tables the get auto-merged to buildings/parcels in the hedonic and lcms
 aggregation_tables:
   - nodes
-  # - tmnodes
+  - tmnodes
   - logsums
   # - buildings
 
