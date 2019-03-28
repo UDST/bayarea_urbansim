@@ -36,7 +36,7 @@ OUT_TABLES = [
     'parcels', 'beam_skims', 'jobs', 'households', 'buildings', 'units',
     'zones', 'establishments', 'persons', 'craigslist', 'skims']
 
-IN_YEAR, OUT_YEAR = 2010, 2015
+IN_YEAR, OUT_YEAR = 2010, 2025
 COMPARE_AGAINST_LAST_KNOWN_GOOD = False
 
 LAST_KNOWN_GOOD_RUNS = {
