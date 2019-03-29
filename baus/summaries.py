@@ -298,10 +298,10 @@ def compare_to_targets(parcels, buildings, jobs, households, abag_targets,
 @orca.step()
 def diagnostic_output(households, buildings, parcels, taz, jobs, settings,
                       zones, year, summary, run_number, units):
-    households = households.to_frame()
-    buildings = buildings.to_frame()
-    parcels = parcels.to_frame()
-    zones = zones.to_frame()
+    households = households.to_frame(households.local_columns)
+    buildings = buildings.to_frame(buildings.local_columns)
+    parcels = parcels.to_frame(parcels.local_columns)
+    zones = zones.to_frame(zones.local_columns)
 
     zones['zoned_du'] = parcels.groupby('zone_id').zoned_du.sum()
     zones['zoned_du_underbuild'] = parcels.groupby('zone_id').\
@@ -599,7 +599,7 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
     # Summarize Logsums
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
         zones = orca.get_table('zones')
-        df = zones.to_frame()
+        df = zones.to_frame(zones.local_columns)
         df = df[['zone_cml', 'zone_cnml', 'zone_combo_logsum']]
         df.to_csv(os.path.join("runs",
                                "run%d_taz_logsums_%d.csv"
@@ -724,7 +724,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     taz_df["zone"] = zones.index
     taz_df["county"] = taz_geography.county
 
-    parcels = parcels.to_frame()
+    parcels = parcels.to_frame(parcels.local_columns)
     parcels["zone_id_x"] = parcels.zone_id
     orca.add_table('parcels', parcels)
     parcels = orca.get_table("parcels")
@@ -1616,7 +1616,7 @@ def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings,
                                         % (run_number, year)))
 
     if year in [2030, 2035, 2050]:
-        buildings = buildings.to_frame()
+        buildings = buildings.to_frame(buildings.local_columns)
         buildings_taz = misc.reindex(parcels.zone_id,
                                      buildings.parcel_id)
         buildings['taz'] = buildings_taz

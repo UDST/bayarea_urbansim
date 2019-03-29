@@ -738,7 +738,8 @@ def subsidized_residential_developer_lump_sum_accts(
         # results - this is not ideal and is a story to fix in pivotal, but the
         # only cost is in time - the results should be the same
         orca.eval_step("subsidized_residential_feasibility")
-        feasibility = orca.get_table("feasibility").to_frame()
+        table = orca.get_table("feasibility")
+        feasibility = table.to_frame(table.local_columns)
         feasibility = feasibility.stack(level=0).\
             reset_index(level=1, drop=True)
 
