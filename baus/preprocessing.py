@@ -293,11 +293,14 @@ def preproc_buildings(store, parcels, manual_edits):
     # XXX need to make sure jobs don't exceed capacity
 
     # drop columns we don't needed
-    df = df.drop(['development_type_id', 'improvement_value',
-                  'sqft_per_unit', 'nonres_rent_per_sqft',
-                  'res_price_per_sqft',
-                  'redfin_home_type', 'costar_property_type',
-                  'costar_rent', 'res_sqft_per_unit'], axis=1)
+    # UAL: THIS WHOLE THING IS BAD AND SHOULD BE DEALT WITH
+    df = df.drop([
+        'development_type_id', 'improvement_value',
+        # 'sqft_per_unit',
+        'nonres_rent_per_sqft',
+        'res_price_per_sqft',
+        'redfin_home_type', 'costar_property_type',
+        'costar_rent', 'res_sqft_per_unit'], axis=1)
 
     # apply manual edits
     edits = manual_edits.local
@@ -333,7 +336,7 @@ def preproc_buildings(store, parcels, manual_edits):
       16: "PA2"
     })
 
-    del df["building_type_id"]  # we won't use building type ids anymore
+    # del df["building_type_id"]  # we won't use building type ids anymore
 
     # keeps parking lots from getting redeveloped
     df["building_sqft"][df.building_type.isin(["PA", "PA2"])] = 0

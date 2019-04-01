@@ -298,10 +298,16 @@ def compare_to_targets(parcels, buildings, jobs, households, abag_targets,
 @orca.step()
 def diagnostic_output(households, buildings, parcels, taz, jobs, settings,
                       zones, year, summary, run_number, units):
-    households = households.to_frame(households.local_columns)
-    buildings = buildings.to_frame(buildings.local_columns)
-    parcels = parcels.to_frame(parcels.local_columns)
-    zones = zones.to_frame(zones.local_columns)
+    households = households.to_frame(
+        households.local_columns + ['zone_id'])
+    buildings = buildings.to_frame(
+        buildings.local_columns + ['zone_id', 'job_spaces', 'general_type'])
+    parcels = parcels.to_frame(
+        parcels.local_columns + ['zoned_du', 'zoned_du_underbuild'])
+    zones = zones.to_frame(
+        zones.local_columns + [
+            'zoned_du', 'zoned_du_underbuild', 'residential_units',
+            'job_spaces'])
 
     zones['zoned_du'] = parcels.groupby('zone_id').zoned_du.sum()
     zones['zoned_du_underbuild'] = parcels.groupby('zone_id').\
@@ -599,8 +605,7 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
     # Summarize Logsums
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
         zones = orca.get_table('zones')
-        df = zones.to_frame(zones.local_columns)
-        df = df[['zone_cml', 'zone_cnml', 'zone_combo_logsum']]
+        df = zones.to_frame(['zone_cml', 'zone_cnml', 'zone_combo_logsum'])
         df.to_csv(os.path.join("runs",
                                "run%d_taz_logsums_%d.csv"
                                % (run_number, year)))

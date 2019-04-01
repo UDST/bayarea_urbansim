@@ -1,13 +1,13 @@
 import pandas as pd
 
-py2_store = pd.HDFStore('../output/model_data_output.h5')
+py2_store = pd.HDFStore('./output/model_data_output.h5')
 
 years = ['2010', '2025']
 
 for table in py2_store.keys():
     for year in years:
-        print(year)
         if year in table:
+            print(year)
             table_name = table.split('/')[2]
             print(table_name)
             df = py2_store[table]

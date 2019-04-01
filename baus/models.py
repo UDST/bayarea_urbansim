@@ -410,6 +410,9 @@ def add_extra_columns_func(df):
     if "residential_units" not in df:
         df["residential_units"] = 0
 
+    if 'sqft_per_unit' not in df.columns:
+        df['sqft_per_unit'] = df['ave_unit_size']
+
     if "parcel_size" not in df:
         df["parcel_size"] = \
             orca.get_table("parcels").parcel_size.loc[df.parcel_id]

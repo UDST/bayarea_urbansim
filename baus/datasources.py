@@ -628,6 +628,7 @@ def development_projects(parcels, settings, scenario):
     for col in [
             'residential_sqft', 'residential_price', 'non_residential_rent']:
         df[col] = 0
+    df['sqft_per_unit'] = df['unit_ave_sqft']
     df["redfin_sale_year"] = 2012  # default base year
     df["redfin_sale_price"] = np.nan  # null sales price
     df["stories"] = df.stories.fillna(1)

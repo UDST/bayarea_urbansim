@@ -225,14 +225,20 @@ def load_rental_listings():
     - adds broadcasts linking 'craigslist' to 'nodes', 'tmnodes', 'logsums'
     """
     @orca.table('craigslist', cache=True)
-    def craigslist():
-        df = pd.read_csv(os.path.join(misc.data_dir(), "sfbay_craigslist.csv"))
+    def craigslist(store):
+        df = store['rentals']
         net = orca.get_injectable('net')
-        df['node_id'] = net['walk'].get_node_ids(df['lon'], df['lat'])
-        df['tmnode_id'] = net['drive'].get_node_ids(df['lon'], df['lat'])
+        df['node_id'] = net['walk'].get_node_ids(
+            df['longitude'], df['latitude'])
+        df['tmnode_id'] = net['drive'].get_node_ids(
+            df['longitude'], df['latitude'])
         # fill nans -- missing bedrooms are mostly studio apts
         df['bedrooms'] = df.bedrooms.replace(np.nan, 1)
         df['neighborhood'] = df.neighborhood.replace(np.nan, '')
+
+        # gotta do this to use the same yaml for estimation and simulation
+        df['sqft_per_unit'] = df['sqft']
+        df['price_per_sqft'] = df['rent_sqft']
         return df
 
     # Is it simpler to just do this in the table definition since it

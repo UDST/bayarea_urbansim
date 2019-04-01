@@ -31,10 +31,12 @@ CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
 COMPARE_TO_NO_PROJECT = True
 NO_PROJECT = 611
 EARTHQUAKE = False
-DATA_OUT = './output/model_data_output_test.h5'
+DATA_OUT = './output/model_data_output.h5'
+OUTPUT_BUCKET = 'urbansim-outputs'
 OUT_TABLES = [
     'parcels', 'beam_skims', 'jobs', 'households', 'buildings', 'units',
     'zones', 'establishments', 'persons', 'craigslist', 'skims']
+OUTPUT_TO_CSV = True
 
 IN_YEAR, OUT_YEAR = 2010, 2025
 COMPARE_AGAINST_LAST_KNOWN_GOOD = False
@@ -47,6 +49,10 @@ LAST_KNOWN_GOOD_RUNS = {
     "4": 1059,
     "5": 1059
 }
+
+
+if S3:
+    DATA_OUT = None
 
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 
@@ -112,6 +118,16 @@ if SLACK:
     from slacker import Slacker
     slack = Slacker(os.environ["SLACK_TOKEN"])
     host = socket.gethostname()
+
+
+def send_output_to_s3(output_bucket, output_tables, year):
+
+    for table_name in output_tables:
+        table = orca.get_table(table_name)
+        df = table.to_frame(table.local_columns)
+        s3_url = 's3://{0}/{1}/{2}.parquet.gz'.format(
+            output_bucket, year, table_name)
+        df.to_parquet(s3_url, compression='gzip', engine='pyarrow')
 
 
 def get_simulation_models(SCENARIO):
@@ -196,12 +212,12 @@ def get_simulation_models(SCENARIO):
 
         # save_intermediate_tables", # saves output for visualization
 
-        # "topsheet",
+        "topsheet",
         "simulation_validation",
-        # "parcel_summary",
-        # "building_summary",
+        "parcel_summary",
+        "building_summary",
         "diagnostic_output",
-        # "geographic_summary",
+        "geographic_summary",
         # "travel_model_output",
         # "travel_model_2_output",
         # "hazards_slr_summary",
@@ -229,7 +245,7 @@ def get_simulation_models(SCENARIO):
     return models
 
 
-def run_models(MODE, SCENARIO):
+def run_models(MODE, SCENARIO, write_to_s3=False):
 
     if MODE == "preprocessing":
 
@@ -254,10 +270,10 @@ def run_models(MODE, SCENARIO):
         if not SKIP_BASE_YEAR:
             orca.run([
 
-                "slr_inundate",
-                "slr_remove_dev",
-                "eq_code_buildings",
-                "earthquake_demolish",
+                # "slr_inundate",
+                # "slr_remove_dev",
+                # "eq_code_buildings",
+                # "earthquake_demolish",
                 "load_rental_listings",
                 "neighborhood_vars",   # local accessibility vars
                 "regional_vars",       # regional accessibility vars
@@ -287,11 +303,11 @@ def run_models(MODE, SCENARIO):
 
                 "price_vars",
 
-                # "topsheet",
+                "topsheet",
                 "simulation_validation",
-                # "parcel_summary",
-                # "building_summary",
-                # "geographic_summary",
+                "parcel_summary",
+                "building_summary",
+                "geographic_summary",
                 # "travel_model_output",
                 # "travel_model_2_output",
                 # "hazards_slr_summary",
@@ -305,6 +321,8 @@ def run_models(MODE, SCENARIO):
                 out_run_tables=OUT_TABLES,
                 out_run_local=True
             )
+        if write_to_s3:
+            send_output_to_s3(OUTPUT_BUCKET, OUT_TABLES, IN_YEAR)
 
         # start the simulation in the next round - only the models above run
         # for the IN_YEAR
@@ -320,6 +338,8 @@ def run_models(MODE, SCENARIO):
             out_run_tables=OUT_TABLES,
             out_run_local=True
         )
+        if write_to_s3:
+            send_output_to_s3(OUTPUT_BUCKET, OUT_TABLES, years_to_run[-1])
 
     elif MODE == "estimation":
 
@@ -392,8 +412,7 @@ if SLACK:
         (run_num, host, SCENARIO), as_user=True)
 
 try:
-
-    run_models(MODE, SCENARIO)
+    run_models(MODE, SCENARIO, S3)
 
 except Exception as e:
     print traceback.print_exc()
@@ -475,7 +494,7 @@ if SLACK and MODE == "simulation":
         slack.chat.post_message(
             '#sim_updates', "No differences with reference run.", as_user=True)
 
-if S3:
-    os.system('ls runs/run%d_* ' % run_num +
-              '| xargs -I file aws s3 cp file ' +
-              's3://bayarea-urbansim-results')
+if OUTPUT_TO_CSV:
+    os.system(
+        '/home/max/anaconda3/envs/baus/bin/python '
+        'scripts/make_csvs_from_output_store.py')
