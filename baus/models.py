@@ -37,16 +37,26 @@ def elcm_estimate(jobs, buildings, aggregations, zones, elcm_config):
 
 
 @orca.step()
-def households_transition(households, household_controls, year, settings):
+def households_transition(
+        households, household_controls, year, settings, persons):
+    orig_size_hh = households.local.shape[0]
+    orig_size_pers = persons.local.shape[0]
     s = orca.get_table('households').base_income_quartile.value_counts()
-    print "Distribution by income before:\n", (s/s.sum())
+    print "Distribution by income before:\n", (s / s.sum())
     ret = utils.full_transition(households,
                                 household_controls,
                                 year,
                                 settings['households_transition'],
-                                "building_id")
+                                "building_id",
+                                linked_tables={"persons":
+                                               (persons.local,
+                                                'household_id')})
     s = orca.get_table('households').base_income_quartile.value_counts()
-    print "Distribution by income after:\n", (s/s.sum())
+    print "Distribution by income after:\n", (s / s.sum())
+    print "Net change: %s households" % (
+        households.local.shape[0] - orig_size_hh)
+    print "Net change: %s persons" % (
+        persons.local.shape[0] - orig_size_pers)
     return ret
 
 

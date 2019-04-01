@@ -13,6 +13,8 @@ import socket
 import argparse
 import warnings
 from baus.utils import compare_summary
+import s3fs
+import os
 
 warnings.filterwarnings("ignore")
 
@@ -25,6 +27,7 @@ INTERACT = False
 SCENARIO = None
 MODE = "simulation"
 S3 = False
+OUTPUT_TO_CSV = True
 EVERY_NTH_YEAR = 5
 BRANCH = os.popen('git rev-parse --abbrev-ref HEAD').read()
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
@@ -36,7 +39,7 @@ OUTPUT_BUCKET = 'urbansim-outputs'
 OUT_TABLES = [
     'parcels', 'beam_skims', 'jobs', 'households', 'buildings', 'units',
     'zones', 'establishments', 'persons', 'craigslist', 'skims']
-OUTPUT_TO_CSV = True
+# OUTPUT_TO_CSV = True
 
 IN_YEAR, OUT_YEAR = 2010, 2025
 COMPARE_AGAINST_LAST_KNOWN_GOOD = False
@@ -120,14 +123,22 @@ if SLACK:
     host = socket.gethostname()
 
 
-def send_output_to_s3(output_bucket, output_tables, year):
+def send_output_to_s3(
+        output_bucket, output_tables, year, output_format='parquet'):
+
+    if output_format == 'csv':
+        s3 = s3fs.S3FileSystem(anon=False)
 
     for table_name in output_tables:
         table = orca.get_table(table_name)
         df = table.to_frame(table.local_columns)
-        s3_url = 's3://{0}/{1}/{2}.parquet.gz'.format(
-            output_bucket, year, table_name)
-        df.to_parquet(s3_url, compression='gzip', engine='pyarrow')
+        s3_url = 's3://{0}/{1}/{2}.{3}.gz'.format(
+            output_bucket, year, table_name, output_format)
+        if output_format == 'parquet':
+            df.to_parquet(s3_url, compression='gzip', engine='pyarrow')
+        elif output_format == 'csv':
+            with s3.open(s3_url, 'w') as f:
+                df.to_csv(f)
 
 
 def get_simulation_models(SCENARIO):
