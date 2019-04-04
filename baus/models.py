@@ -420,8 +420,13 @@ def add_extra_columns_func(df):
     if "residential_units" not in df:
         df["residential_units"] = 0
 
+    # we're keeping sqft per unit in the buildings table but we need
+    # to make sure we get a comparable column out of the feasibility
+    # table which is what generates new buildings. ave_unit_size is
+    # the closest thing, even though its calculated at the parcel level
+    # rather than the building level
     if 'sqft_per_unit' not in df.columns:
-        df['sqft_per_unit'] = df['unit_ave_sqft']
+        df['sqft_per_unit'] = df['ave_unit_size']
 
     if "parcel_size" not in df:
         df["parcel_size"] = \
