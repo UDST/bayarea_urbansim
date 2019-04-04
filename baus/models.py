@@ -5,7 +5,7 @@ import orca
 import yaml
 import datasources
 import variables
-from utils import parcel_id_to_geom_id, geom_id_to_parcel_id, add_buildings
+from utils import parcel_id_to_geom_id, geom_id_to_parcel_id, add_buildings, run_feasibility
 from utils import round_series_match_target, groupby_random_choice
 from urbansim.utils import networks
 import pandana.network as pdna
@@ -421,7 +421,7 @@ def add_extra_columns_func(df):
         df["residential_units"] = 0
 
     if 'sqft_per_unit' not in df.columns:
-        df['sqft_per_unit'] = df['ave_unit_size']
+        df['sqft_per_unit'] = df['ave_unit_sqft']
 
     if "parcel_size" not in df:
         df["parcel_size"] = \
@@ -451,11 +451,12 @@ def alt_feasibility(parcels, settings,
     # use the cap rate from settings.yaml
     config.cap_rate = settings["cap_rate"]
 
-    utils.run_feasibility(parcels,
-                          parcel_sales_price_sqft_func,
-                          parcel_is_allowed_func,
-                          config=config,
-                          **kwargs)
+    run_feasibility(
+        parcels,
+        parcel_sales_price_sqft_func,
+        parcel_is_allowed_func,
+        config=config,
+        **kwargs)
 
     f = subsidies.policy_modifications_of_profit(
         orca.get_table('feasibility').to_frame(),
@@ -610,14 +611,15 @@ def retail_developer(jobs, buildings, parcels, nodes, feasibility,
     # combine features in probability function - it's like combining expense
     # of building the building with the market in the neighborhood
     p = f1 * 1.5 + f2
-    p = p.clip(lower=1.0/len(p)/10)
+    p = p.clip(lower=1.0 / len(p) / 10)
 
     print "Attempting to build {:,} retail sqft".format(target)
 
     # order by weighted random sample
     feasibility = feasibility.sample(frac=1.0, weights=p)
 
-    bldgs = buildings.to_frame(buildings.local_columns + ["general_type"])
+    foreign_columns = ["general_type", 'sqft_per_unit', 'building_type_id']
+    bldgs = buildings.to_frame(buildings.local_columns + foreign_columns)
 
     devs = []
 
@@ -643,7 +645,7 @@ def retail_developer(jobs, buildings, parcels, nodes, feasibility,
 
     # record keeping - add extra columns to match building dataframe
     # add the buidings and demolish old buildings, and add to debug output
-    devs = pd.DataFrame(devs, columns=feasibility.columns)
+    devs = pd.DataFrame(devs, columns=buildings.local_columns + foreign_columns)
 
     print "Building {:,} retail sqft in {:,} projects".format(
         devs.non_residential_sqft.sum(), len(devs))
