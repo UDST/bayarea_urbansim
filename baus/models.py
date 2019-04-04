@@ -421,7 +421,7 @@ def add_extra_columns_func(df):
         df["residential_units"] = 0
 
     if 'sqft_per_unit' not in df.columns:
-        df['sqft_per_unit'] = df['ave_unit_sqft']
+        df['sqft_per_unit'] = df['unit_ave_sqft']
 
     if "parcel_size" not in df:
         df["parcel_size"] = \
@@ -645,7 +645,8 @@ def retail_developer(jobs, buildings, parcels, nodes, feasibility,
 
     # record keeping - add extra columns to match building dataframe
     # add the buidings and demolish old buildings, and add to debug output
-    devs = pd.DataFrame(devs, columns=buildings.local_columns + foreign_columns)
+    devs = pd.DataFrame(
+        devs, columns=buildings.local_columns + foreign_columns)
 
     print "Building {:,} retail sqft in {:,} projects".format(
         devs.non_residential_sqft.sum(), len(devs))
