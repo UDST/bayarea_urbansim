@@ -512,7 +512,7 @@ def initialize_new_units(buildings, units):
     print "Creating %d residential units for %d new buildings" % \
         (len(new_units), len(new_bldgs))
 
-    orca.add_table(units, all_units)
+    orca.add_table('units', all_units)
 
     # Verify final data characteristics
     '''
