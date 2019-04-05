@@ -681,7 +681,10 @@ def households(store):
 
 @orca.table(cache=True)
 def buildings(store):
-    return print_error_if_not_available(store, 'buildings_preproc')
+    df = print_error_if_not_available(store, 'buildings_preproc')
+    if 'res_sqft_per_unit' in df.columns:
+        df = df.drop('res_sqft_per_unit', axis=1)
+    return df
 
 
 @orca.table(cache=True)
@@ -843,7 +846,8 @@ def taz2_price_shifters():
 def zones(store):
     # sort index so it prints out nicely when we want it to
     df = store['zones'].sort_index()
-    df.drop('tract', axis=1, inplace=True)
+    if 'tract' in df.columns:
+        df.drop('tract', axis=1, inplace=True)
     return df
 
 
