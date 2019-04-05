@@ -57,7 +57,8 @@ variables_to_aggregate = {
         'residential_units', 'non_residential_sqft',
         'year_built',
         # 'value_per_unit',
-        'sqft_per_unit', 'job_spaces']
+        # 'sqft_per_unit',
+        'job_spaces']
 }
 
 discrete_variables = {
@@ -157,9 +158,9 @@ def register_skim_access_variable(
     column_func : function
     """
     @orca.column('zones', column_name, cache=True, cache_scope='iteration')
-    def column_func(zones, skims):
+    def column_func(zones, beam_skims):
         results = misc.compute_range(
-            skims.to_frame(), zones.get_column(variable_to_summarize),
+            beam_skims.to_frame(), zones.get_column(variable_to_summarize),
             impedance_measure, distance, agg=np.sum)
 
         if log:
@@ -242,9 +243,9 @@ def zone_id(parcels, costar):
     return misc.reindex(parcels.zone_id, costar.parcel_id)
 
 
-@orca.column('costar')
-def building_id(parcels, costar):
-    return misc.reindex(parcels.building_id, costar.parcel_id)
+# @orca.column('costar')
+# def building_id(parcels, costar):
+#     return misc.reindex(parcels.building_id, costar.parcel_id)
 
 
 @orca.column('costar')
@@ -283,22 +284,22 @@ def parcel_id(jobs, buildings):
 #############################
 
 # move zone_id from buildings to residential units
-@orca.column('residential_units', cache=True)
-def zone_id(residential_units, buildings):
-    return misc.reindex(buildings.zone_id, residential_units.building_id)
+@orca.column('units', cache=True)
+def zone_id(units, buildings):
+    return misc.reindex(buildings.zone_id, units.building_id)
 
 
-@orca.column('residential_units')
-def submarket_id(residential_units, buildings):
+@orca.column('units')
+def submarket_id(units, buildings):
     # The submarket is used for supply/demand equilibration. It's the same
     # as the zone_id, but in a separate column to avoid name conflicts when
     # tables are merged.
-    return misc.reindex(buildings.zone_id, residential_units.building_id)
+    return misc.reindex(buildings.zone_id, units.building_id)
 
 
-@orca.column('residential_units')
-def vacant_units(residential_units, households):
-    return residential_units.num_units.sub(
+@orca.column('units')
+def vacant_units(units, households):
+    return units.num_units.sub(
         households.unit_id[
             households.unit_id != -1].value_counts(), fill_value=0)
 
@@ -425,7 +426,7 @@ def vmt_res_cat(buildings, vmt_fee_categories):
 
 
 @orca.column('buildings', cache=True)
-def residential_price(buildings, residential_units, settings):
+def residential_price(buildings, units, settings):
     """
     This was originally an orca.step in the ual code.  This allows model steps
     like 'price_vars' and 'feasibility' to read directly from the buildings
@@ -467,7 +468,7 @@ def residential_price(buildings, residential_units, settings):
     '''
 
     cols = ['building_id', 'unit_residential_price', 'unit_residential_rent']
-    means = residential_units.to_frame(cols).groupby(['building_id']).mean()
+    means = units.to_frame(cols).groupby(['building_id']).mean()
 
     # Convert monthly rent to equivalent sale price
     cap_rate = settings.get('cap_rate')
@@ -543,10 +544,10 @@ def retail_ratio(parcels, nodes):
 # list in the settings.yaml. I don't know why they did that or if its
 # necessary but it complicates things like this.
 
-@orca.column('parcels')
-def building_id(parcels, buildings):
-    return buildings.to_frame().reset_index().set_index(
-        'parcel_id', drop=True).reindex(parcels.index)['building_id']
+# @orca.column('parcels')
+# def building_id(parcels, buildings):
+#     return buildings.to_frame().reset_index().set_index(
+#         'parcel_id', drop=True).reindex(parcels.index)['building_id']
 
 
 # the stories attributes on parcels will be the max story

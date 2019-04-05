@@ -7,7 +7,7 @@ from urbansim import accounts
 from urbansim_defaults import utils
 from cStringIO import StringIO
 from urbansim.utils import misc
-from utils import add_buildings
+from utils import add_buildings, run_feasibility
 from urbansim.developer import sqftproforma
 
 
@@ -667,11 +667,12 @@ def subsidized_residential_feasibility(
     config.cap_rate = settings["cap_rate"]
 
     # step 1
-    utils.run_feasibility(parcels,
-                          parcel_sales_price_sqft_func,
-                          parcel_is_allowed_func,
-                          config=config,
-                          **kwargs)
+    run_feasibility(
+        parcels,
+        parcel_sales_price_sqft_func,
+        parcel_is_allowed_func,
+        config=config,
+        **kwargs)
 
     feasibility = orca.get_table("feasibility").to_frame()
     # get rid of the multiindex that comes back from feasibility
@@ -681,7 +682,7 @@ def subsidized_residential_feasibility(
 
     # add the multiindex back
     feasibility.columns = pd.MultiIndex.from_tuples(
-            [("residential", col) for col in feasibility.columns])
+        [("residential", col) for col in feasibility.columns])
 
     feasibility = policy_modifications_of_profit(feasibility, parcels)
 
@@ -738,7 +739,8 @@ def subsidized_residential_developer_lump_sum_accts(
         # results - this is not ideal and is a story to fix in pivotal, but the
         # only cost is in time - the results should be the same
         orca.eval_step("subsidized_residential_feasibility")
-        feasibility = orca.get_table("feasibility").to_frame()
+        table = orca.get_table("feasibility")
+        feasibility = table.to_frame(table.local_columns)
         feasibility = feasibility.stack(level=0).\
             reset_index(level=1, drop=True)
 

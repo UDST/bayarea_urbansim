@@ -13,6 +13,8 @@ import socket
 import argparse
 import warnings
 from baus.utils import compare_summary
+import s3fs
+import os
 
 warnings.filterwarnings("ignore")
 
@@ -25,16 +27,21 @@ INTERACT = False
 SCENARIO = None
 MODE = "simulation"
 S3 = False
+OUTPUT_TO_CSV = True
 EVERY_NTH_YEAR = 5
 BRANCH = os.popen('git rev-parse --abbrev-ref HEAD').read()
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
 COMPARE_TO_NO_PROJECT = True
 NO_PROJECT = 611
 EARTHQUAKE = False
-DATA_OUT = './output/model_data_output.h5'
-OUT_TABLES = ['jobs', 'households', 'buildings', 'parcels']
+DATA_OUT = None
+OUTPUT_BUCKET = 'urbansim-outputs'
+OUT_TABLES = [
+    'parcels', 'beam_skims', 'jobs', 'households', 'buildings', 'units',
+    'zones', 'establishments', 'persons', 'craigslist', 'skims']
+OUTPUT_TO_CSV = True
 
-IN_YEAR, OUT_YEAR = 2010, 2025
+IN_YEAR, OUT_YEAR = 2025, 2040
 COMPARE_AGAINST_LAST_KNOWN_GOOD = False
 
 LAST_KNOWN_GOOD_RUNS = {
@@ -45,6 +52,10 @@ LAST_KNOWN_GOOD_RUNS = {
     "4": 1059,
     "5": 1059
 }
+
+
+if S3:
+    DATA_OUT = None
 
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 
@@ -112,20 +123,37 @@ if SLACK:
     host = socket.gethostname()
 
 
+def send_output_to_s3(
+        output_bucket, output_tables, year, output_format='parquet'):
+
+    if output_format == 'csv':
+        s3 = s3fs.S3FileSystem(anon=False)
+
+    for table_name in output_tables:
+        table = orca.get_table(table_name)
+        df = table.to_frame(table.local_columns)
+        s3_url = 's3://{0}/{1}/{2}.{3}.gz'.format(
+            output_bucket, year, table_name, output_format)
+        if output_format == 'parquet':
+            df.to_parquet(s3_url, compression='gzip', engine='pyarrow')
+        elif output_format == 'csv':
+            with s3.open(s3_url, 'w') as f:
+                df.to_csv(f)
+
+
 def get_simulation_models(SCENARIO):
 
     # ual has a slightly different set of models - might be able to get rid
     # of the old version soon
 
     models = [
-
-        "slr_inundate",
-        "slr_remove_dev",
-        "eq_code_buildings",
-        "earthquake_demolish",
-
+        # "slr_inundate",
+        # "slr_remove_dev",
+        # "eq_code_buildings",
+        # "earthquake_demolish",
+        "load_rental_listings",
         "neighborhood_vars",    # street network accessibility
-        # "regional_vars",        # road network accessibility
+        "regional_vars",        # road network accessibility
 
         "nrh_simulate",         # non-residential rent hedonic
 
@@ -195,12 +223,12 @@ def get_simulation_models(SCENARIO):
 
         # save_intermediate_tables", # saves output for visualization
 
-        # "topsheet",
+        "topsheet",
         "simulation_validation",
-        # "parcel_summary",
-        # "building_summary",
+        "parcel_summary",
+        "building_summary",
         "diagnostic_output",
-        # "geographic_summary",
+        "geographic_summary",
         # "travel_model_output",
         # "travel_model_2_output",
         # "hazards_slr_summary",
@@ -228,7 +256,7 @@ def get_simulation_models(SCENARIO):
     return models
 
 
-def run_models(MODE, SCENARIO):
+def run_models(MODE, SCENARIO, write_to_s3=False):
 
     if MODE == "preprocessing":
 
@@ -253,13 +281,13 @@ def run_models(MODE, SCENARIO):
         if not SKIP_BASE_YEAR:
             orca.run([
 
-                "slr_inundate",
-                "slr_remove_dev",
-                "eq_code_buildings",
-                "earthquake_demolish",
-
+                # "slr_inundate",
+                # "slr_remove_dev",
+                # "eq_code_buildings",
+                # "earthquake_demolish",
+                "load_rental_listings",
                 "neighborhood_vars",   # local accessibility vars
-                # "regional_vars",       # regional accessibility vars
+                "regional_vars",       # regional accessibility vars
 
                 "rsh_simulate",    # residential sales hedonic for units
                 "rrh_simulate",    # residential rental hedonic for units
@@ -286,11 +314,11 @@ def run_models(MODE, SCENARIO):
 
                 "price_vars",
 
-                # "topsheet",
+                "topsheet",
                 "simulation_validation",
-                # "parcel_summary",
-                # "building_summary",
-                # "geographic_summary",
+                "parcel_summary",
+                "building_summary",
+                "geographic_summary",
                 # "travel_model_output",
                 # "travel_model_2_output",
                 # "hazards_slr_summary",
@@ -298,22 +326,31 @@ def run_models(MODE, SCENARIO):
                 "diagnostic_output"
             ],
                 iter_vars=[IN_YEAR],
-                # data_out=DATA_OUT,
-                # out_base_tables=[],
-                # out_run_tables=OUT_TABLES
-                )
+                data_out=DATA_OUT,
+                out_base_tables=[],
+                out_base_local=True,
+                out_run_tables=OUT_TABLES,
+                out_run_local=True
+            )
+        if write_to_s3:
+            send_output_to_s3(OUTPUT_BUCKET, OUT_TABLES, IN_YEAR)
 
         # start the simulation in the next round - only the models above run
         # for the IN_YEAR
-        years_to_run = range(IN_YEAR+EVERY_NTH_YEAR, OUT_YEAR+1,
+        years_to_run = range(IN_YEAR + EVERY_NTH_YEAR, OUT_YEAR + 1,
                              EVERY_NTH_YEAR)
         models = get_simulation_models(SCENARIO)
         orca.run(
             models, iter_vars=years_to_run,
-            # data_out='./output/model_data_output.h5',
-            # out_base_tables=[],
-            # out_run_tables=['jobs', 'buildings', 'households', 'parcels']
-            )
+            data_out=DATA_OUT,
+            out_interval=len(years_to_run) + 1,  # hack to store only last iter
+            out_base_tables=[],
+            out_base_local=True,
+            out_run_tables=OUT_TABLES,
+            out_run_local=True
+        )
+        if write_to_s3:
+            send_output_to_s3(OUTPUT_BUCKET, OUT_TABLES, years_to_run[-1])
 
     elif MODE == "estimation":
 
@@ -335,7 +372,7 @@ def run_models(MODE, SCENARIO):
         orca.run([
             "load_rental_listings",  # required to estimate rental hedonic
             "neighborhood_vars",        # street network accessibility
-            # "regional_vars",            # road network accessibility
+            "regional_vars",            # road network accessibility
             "rrh_estimate",         # estimate residential rental hedonic
             "rrh_simulate",
             "hlcm_owner_estimate",  # estimate location choice owners
@@ -386,8 +423,7 @@ if SLACK:
         (run_num, host, SCENARIO), as_user=True)
 
 try:
-
-    run_models(MODE, SCENARIO)
+    run_models(MODE, SCENARIO, S3)
 
 except Exception as e:
     print traceback.print_exc()
@@ -469,7 +505,7 @@ if SLACK and MODE == "simulation":
         slack.chat.post_message(
             '#sim_updates', "No differences with reference run.", as_user=True)
 
-if S3:
-    os.system('ls runs/run%d_* ' % run_num +
-              '| xargs -I file aws s3 cp file ' +
-              's3://bayarea-urbansim-results')
+if OUTPUT_TO_CSV:
+    os.system(
+        '/home/max/anaconda3/envs/baus/bin/python '
+        'scripts/make_csvs_from_output_store.py')

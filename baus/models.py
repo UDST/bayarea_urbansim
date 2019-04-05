@@ -5,7 +5,8 @@ import orca
 import yaml
 import datasources
 import variables
-from utils import parcel_id_to_geom_id, geom_id_to_parcel_id, add_buildings
+from utils import parcel_id_to_geom_id, geom_id_to_parcel_id, \
+    add_buildings, run_feasibility
 from utils import round_series_match_target, groupby_random_choice
 from urbansim.utils import networks
 import pandana.network as pdna
@@ -37,16 +38,26 @@ def elcm_estimate(jobs, buildings, aggregations, zones, elcm_config):
 
 
 @orca.step()
-def households_transition(households, household_controls, year, settings):
+def households_transition(
+        households, household_controls, year, settings, persons):
+    orig_size_hh = households.local.shape[0]
+    orig_size_pers = persons.local.shape[0]
     s = orca.get_table('households').base_income_quartile.value_counts()
-    print "Distribution by income before:\n", (s/s.sum())
+    print "Distribution by income before:\n", (s / s.sum())
     ret = utils.full_transition(households,
                                 household_controls,
                                 year,
                                 settings['households_transition'],
-                                "building_id")
+                                "building_id",
+                                linked_tables={"persons":
+                                               (persons.local,
+                                                'household_id')})
     s = orca.get_table('households').base_income_quartile.value_counts()
-    print "Distribution by income after:\n", (s/s.sum())
+    print "Distribution by income after:\n", (s / s.sum())
+    print "Net change: %s households" % (
+        households.local.shape[0] - orig_size_hh)
+    print "Net change: %s persons" % (
+        persons.local.shape[0] - orig_size_pers)
     return ret
 
 
@@ -396,7 +407,10 @@ def form_to_btype_func(building):
 @orca.injectable(autocall=False)
 def add_extra_columns_func(df):
     for col in ["residential_price", "non_residential_rent"]:
-        df[col] = 0
+        if col not in df.columns:
+            df[col] = 0
+        else:
+            df[col] = df[col].fillna(0)
 
     if "deed_restricted_units" not in df.columns:
         df["deed_restricted_units"] = 0
@@ -407,8 +421,18 @@ def add_extra_columns_func(df):
     df["redfin_sale_year"] = 2012
     df["redfin_sale_price"] = np.nan
 
-    if "residential_units" not in df:
+    if "residential_units" not in df.columns:
         df["residential_units"] = 0
+    else:
+        df["residential_units"] = df["residential_units"].fillna(0)
+
+    # we're keeping sqft per unit in the buildings table but we need
+    # to make sure we get a comparable column out of the feasibility
+    # table which is what generates new buildings. ave_unit_size is
+    # the closest thing, even though its calculated at the parcel level
+    # rather than the building level
+    if 'sqft_per_unit' not in df.columns:
+        df['sqft_per_unit'] = df['ave_unit_size']
 
     if "parcel_size" not in df:
         df["parcel_size"] = \
@@ -438,11 +462,12 @@ def alt_feasibility(parcels, settings,
     # use the cap rate from settings.yaml
     config.cap_rate = settings["cap_rate"]
 
-    utils.run_feasibility(parcels,
-                          parcel_sales_price_sqft_func,
-                          parcel_is_allowed_func,
-                          config=config,
-                          **kwargs)
+    run_feasibility(
+        parcels,
+        parcel_sales_price_sqft_func,
+        parcel_is_allowed_func,
+        config=config,
+        **kwargs)
 
     f = subsidies.policy_modifications_of_profit(
         orca.get_table('feasibility').to_frame(),
@@ -597,14 +622,15 @@ def retail_developer(jobs, buildings, parcels, nodes, feasibility,
     # combine features in probability function - it's like combining expense
     # of building the building with the market in the neighborhood
     p = f1 * 1.5 + f2
-    p = p.clip(lower=1.0/len(p)/10)
+    p = p.clip(lower=1.0 / len(p) / 10)
 
     print "Attempting to build {:,} retail sqft".format(target)
 
     # order by weighted random sample
     feasibility = feasibility.sample(frac=1.0, weights=p)
 
-    bldgs = buildings.to_frame(buildings.local_columns + ["general_type"])
+    foreign_columns = ["general_type"]
+    bldgs = buildings.to_frame(buildings.local_columns + foreign_columns)
 
     devs = []
 
@@ -630,7 +656,7 @@ def retail_developer(jobs, buildings, parcels, nodes, feasibility,
 
     # record keeping - add extra columns to match building dataframe
     # add the buidings and demolish old buildings, and add to debug output
-    devs = pd.DataFrame(devs, columns=feasibility.columns)
+    devs = pd.DataFrame(devs, columns=buildings.local_columns)
 
     print "Building {:,} retail sqft in {:,} projects".format(
         devs.non_residential_sqft.sum(), len(devs))

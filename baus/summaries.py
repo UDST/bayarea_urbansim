@@ -14,7 +14,7 @@ from scripts.output_csv_utils import format_df
 def topsheet(households, jobs, buildings, parcels, zones, year,
              run_number, taz_geography, parcels_zoning_calculations,
              summary, settings, parcels_geography, abag_targets, new_tpp_id,
-             residential_units):
+             units):
 
     hh_by_subregion = misc.reindex(taz_geography.subregion,
                                    households.zone_id).value_counts()
@@ -107,9 +107,9 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
     write("Residential vacancy rate = %.2f" % (1-0 - float(nhh)/du))
 
     write("Number of residential units in units table = %d"
-          % len(residential_units))
+          % len(units))
 
-    rent_own = residential_units.tenure.value_counts()
+    rent_own = units.tenure.value_counts()
     write("Split of units by rent/own = %s" % str(rent_own))
 
     rent_own = households.tenure[households.building_id == -1].value_counts()
@@ -297,11 +297,17 @@ def compare_to_targets(parcels, buildings, jobs, households, abag_targets,
 
 @orca.step()
 def diagnostic_output(households, buildings, parcels, taz, jobs, settings,
-                      zones, year, summary, run_number, residential_units):
-    households = households.to_frame()
-    buildings = buildings.to_frame()
-    parcels = parcels.to_frame()
-    zones = zones.to_frame()
+                      zones, year, summary, run_number, units):
+    households = households.to_frame(
+        households.local_columns + ['zone_id'])
+    buildings = buildings.to_frame(
+        buildings.local_columns + ['zone_id', 'job_spaces', 'general_type'])
+    parcels = parcels.to_frame(
+        parcels.local_columns + ['zoned_du', 'zoned_du_underbuild'])
+    zones = zones.to_frame(
+        zones.local_columns + [
+            'zoned_du', 'zoned_du_underbuild', 'residential_units',
+            'job_spaces'])
 
     zones['zoned_du'] = parcels.groupby('zone_id').zoned_du.sum()
     zones['zoned_du_underbuild'] = parcels.groupby('zone_id').\
@@ -340,7 +346,7 @@ def diagnostic_output(households, buildings, parcels, taz, jobs, settings,
         query('general_type == "Residential"').groupby('zone_id').\
         residential_price.quantile()
     # these two are the original unit prices averaged up to the building id
-    ru = residential_units
+    ru = units
     zones['unit_residential_price'] = \
         ru.unit_residential_price.groupby(ru.zone_id).quantile()
     zones['unit_residential_rent'] = \
@@ -599,8 +605,7 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
     # Summarize Logsums
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
         zones = orca.get_table('zones')
-        df = zones.to_frame()
-        df = df[['zone_cml', 'zone_cnml', 'zone_combo_logsum']]
+        df = zones.to_frame(['zone_cml', 'zone_cnml', 'zone_combo_logsum'])
         df.to_csv(os.path.join("runs",
                                "run%d_taz_logsums_%d.csv"
                                % (run_number, year)))
@@ -724,7 +729,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     taz_df["zone"] = zones.index
     taz_df["county"] = taz_geography.county
 
-    parcels = parcels.to_frame()
+    parcels = parcels.to_frame(parcels.local_columns)
     parcels["zone_id_x"] = parcels.zone_id
     orca.add_table('parcels', parcels)
     parcels = orca.get_table("parcels")
@@ -1616,7 +1621,7 @@ def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings,
                                         % (run_number, year)))
 
     if year in [2030, 2035, 2050]:
-        buildings = buildings.to_frame()
+        buildings = buildings.to_frame(buildings.local_columns)
         buildings_taz = misc.reindex(parcels.zone_id,
                                      buildings.parcel_id)
         buildings['taz'] = buildings_taz

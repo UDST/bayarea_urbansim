@@ -244,7 +244,7 @@ def eq_code_buildings(buildings, year, earthquake):
 
 @orca.step()
 def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
-                        households, jobs, residential_units, year, earthquake):
+                        households, jobs, units, year, earthquake):
     if year == 2035 and earthquake:
         # assign each parcel to a census tract
         # using the lookup table created with "parcel_tract_assignment.ipynb"

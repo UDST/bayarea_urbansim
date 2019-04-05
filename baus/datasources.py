@@ -390,7 +390,7 @@ def taz(zones):
 
 
 @orca.table()
-def skims(store):
+def beam_skims(store):
     df = store['beam_skims']
     df = df[(df['period'] == 'AM') & (df['mode'] == 'CAR')]
     assert len(df) == 2114116
@@ -628,6 +628,7 @@ def development_projects(parcels, settings, scenario):
     for col in [
             'residential_sqft', 'residential_price', 'non_residential_rent']:
         df[col] = 0
+    df['sqft_per_unit'] = df['unit_ave_sqft']
     df["redfin_sale_year"] = 2012  # default base year
     df["redfin_sale_price"] = np.nan  # null sales price
     df["stories"] = df.stories.fillna(1)
@@ -680,11 +681,29 @@ def households(store):
 
 @orca.table(cache=True)
 def buildings(store):
-    return print_error_if_not_available(store, 'buildings_preproc')
+    df = print_error_if_not_available(store, 'buildings_preproc')
+    if 'res_sqft_per_unit' in df.columns:
+        df = df.drop('res_sqft_per_unit', axis=1)
+    return df
 
 
 @orca.table(cache=True)
-def residential_units(store):
+def establishments(store):
+    return print_error_if_not_available(store, 'establishments')
+
+
+@orca.table(cache=True)
+def persons(store):
+    return print_error_if_not_available(store, 'persons')
+
+
+@orca.table(cache=True)
+def skims(store):
+    return print_error_if_not_available(store, 'skims')
+
+
+@orca.table(cache=True)
+def units(store):
     # return print_error_if_not_available(store, 'residential_units_preproc')
 
     df = store['units']
@@ -827,7 +846,8 @@ def taz2_price_shifters():
 def zones(store):
     # sort index so it prints out nicely when we want it to
     df = store['zones'].sort_index()
-    df.drop('tract', axis=1, inplace=True)
+    if 'tract' in df.columns:
+        df.drop('tract', axis=1, inplace=True)
     return df
 
 
@@ -875,11 +895,11 @@ def tracts_earthquake():
 
 # this specifies the relationships between tables
 orca.broadcast(
-    'buildings', 'residential_units', cast_index=True, onto_on='building_id')
+    'buildings', 'units', cast_index=True, onto_on='building_id')
 orca.broadcast(
     'zones', 'buildings', cast_index=True, onto_on='zone_id')
 orca.broadcast(
-    'residential_units', 'households', cast_index=True, onto_on='unit_id')
+    'units', 'households', cast_index=True, onto_on='unit_id')
 orca.broadcast(
     'parcels_geography', 'buildings', cast_index=True, onto_on='parcel_id')
 orca.broadcast('parcels', 'buildings', cast_index=True, onto_on='parcel_id')
@@ -896,4 +916,3 @@ orca.broadcast('logsums', 'homesales', cast_index=True, onto_on='zone_id')
 orca.broadcast('logsums', 'costar', cast_index=True, onto_on='zone_id')
 orca.broadcast('zones', 'costar', cast_index=True, onto_on='zone_id')
 orca.broadcast('zones', 'homesales', cast_index=True, onto_on='zone_id')
-
