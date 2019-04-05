@@ -57,7 +57,8 @@ variables_to_aggregate = {
         'residential_units', 'non_residential_sqft',
         'year_built',
         # 'value_per_unit',
-        'sqft_per_unit', 'job_spaces']
+        # 'sqft_per_unit',
+        'job_spaces']
 }
 
 discrete_variables = {
