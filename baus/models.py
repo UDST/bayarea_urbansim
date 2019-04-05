@@ -406,7 +406,10 @@ def form_to_btype_func(building):
 @orca.injectable(autocall=False)
 def add_extra_columns_func(df):
     for col in ["residential_price", "non_residential_rent"]:
-        df[col] = 0
+        if col not in df.columns:
+            df[col] = 0
+        else:
+            df[col] = df[col].fillna(0)
 
     if "deed_restricted_units" not in df.columns:
         df["deed_restricted_units"] = 0
@@ -417,8 +420,10 @@ def add_extra_columns_func(df):
     df["redfin_sale_year"] = 2012
     df["redfin_sale_price"] = np.nan
 
-    if "residential_units" not in df:
+    if "residential_units" not in df.columns:
         df["residential_units"] = 0
+    else:
+        df["residential_units"] = df["residential_units"].fillna(0)
 
     # we're keeping sqft per unit in the buildings table but we need
     # to make sure we get a comparable column out of the feasibility
@@ -623,7 +628,9 @@ def retail_developer(jobs, buildings, parcels, nodes, feasibility,
     # order by weighted random sample
     feasibility = feasibility.sample(frac=1.0, weights=p)
 
-    foreign_columns = ["general_type", 'sqft_per_unit', 'building_type_id']
+    foreign_columns = [
+        "general_type"#, 'sqft_per_unit', 'building_type_id'
+    ]
     bldgs = buildings.to_frame(buildings.local_columns + foreign_columns)
 
     devs = []
@@ -650,8 +657,7 @@ def retail_developer(jobs, buildings, parcels, nodes, feasibility,
 
     # record keeping - add extra columns to match building dataframe
     # add the buidings and demolish old buildings, and add to debug output
-    devs = pd.DataFrame(
-        devs, columns=buildings.local_columns + foreign_columns)
+    devs = pd.DataFrame(devs, columns=buildings.local_columns)
 
     print "Building {:,} retail sqft in {:,} projects".format(
         devs.non_residential_sqft.sum(), len(devs))
