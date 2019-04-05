@@ -7,7 +7,7 @@ from urbansim import accounts
 from urbansim_defaults import utils
 from cStringIO import StringIO
 from urbansim.utils import misc
-from utils import add_buildings
+from utils import add_buildings, run_feasibility
 from urbansim.developer import sqftproforma
 
 
@@ -667,7 +667,7 @@ def subsidized_residential_feasibility(
     config.cap_rate = settings["cap_rate"]
 
     # step 1
-    utils.run_feasibility(parcels,
+    run_feasibility(parcels,
                           parcel_sales_price_sqft_func,
                           parcel_is_allowed_func,
                           config=config,
@@ -681,7 +681,7 @@ def subsidized_residential_feasibility(
 
     # add the multiindex back
     feasibility.columns = pd.MultiIndex.from_tuples(
-            [("residential", col) for col in feasibility.columns])
+        [("residential", col) for col in feasibility.columns])
 
     feasibility = policy_modifications_of_profit(feasibility, parcels)
 
