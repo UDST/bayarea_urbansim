@@ -628,9 +628,7 @@ def retail_developer(jobs, buildings, parcels, nodes, feasibility,
     # order by weighted random sample
     feasibility = feasibility.sample(frac=1.0, weights=p)
 
-    foreign_columns = [
-        "general_type"#, 'sqft_per_unit', 'building_type_id'
-    ]
+    foreign_columns = ["general_type"]
     bldgs = buildings.to_frame(buildings.local_columns + foreign_columns)
 
     devs = []
