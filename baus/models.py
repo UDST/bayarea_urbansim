@@ -5,7 +5,8 @@ import orca
 import yaml
 import datasources
 import variables
-from utils import parcel_id_to_geom_id, geom_id_to_parcel_id, add_buildings, run_feasibility
+from utils import parcel_id_to_geom_id, geom_id_to_parcel_id, \
+    add_buildings, run_feasibility
 from utils import round_series_match_target, groupby_random_choice
 from urbansim.utils import networks
 import pandana.network as pdna

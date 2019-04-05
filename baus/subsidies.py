@@ -667,11 +667,12 @@ def subsidized_residential_feasibility(
     config.cap_rate = settings["cap_rate"]
 
     # step 1
-    run_feasibility(parcels,
-                          parcel_sales_price_sqft_func,
-                          parcel_is_allowed_func,
-                          config=config,
-                          **kwargs)
+    run_feasibility(
+        parcels,
+        parcel_sales_price_sqft_func,
+        parcel_is_allowed_func,
+        config=config,
+        **kwargs)
 
     feasibility = orca.get_table("feasibility").to_frame()
     # get rid of the multiindex that comes back from feasibility
