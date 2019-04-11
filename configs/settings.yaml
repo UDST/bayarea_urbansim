@@ -1003,6 +1003,11 @@ model_configs:
     s1_rsh_config: rsh_s1.yaml
     s2_rsh_config: rsh_s2.yaml
     s5_rsh_config: rsh_s5.yaml
+    s6_rsh_config: rsh_s1.yaml
+    s7_rsh_config: rsh_s2.yaml
+    s10_rsh_config: rsh_s5.yaml
+    
+
   rrh:
     rrh_config: rrh.yaml
   nrh:

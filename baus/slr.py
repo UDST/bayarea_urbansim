@@ -13,11 +13,11 @@ import summaries
 @orca.step()
 def slr_inundate(scenario, parcels, slr_progression_C, slr_progression_R,
                  slr_progression_B, year, slr_parcel_inundation):
-    if scenario == '1':
+    if scenario == '1' or scenario == '6':
         slr_progression = slr_progression_C.to_frame()
-    elif scenario == '2':
+    elif scenario == '2' or scenario == '7':
         slr_progression = slr_progression_R.to_frame()
-    elif scenario == '5':
+    elif scenario == '5' or scenario == '10':
         slr_progression = slr_progression_B.to_frame()
     else:
         slr_progression = slr_progression_C.to_frame()  # placeholder
