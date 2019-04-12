@@ -30,7 +30,6 @@ BRANCH = os.popen('git rev-parse --abbrev-ref HEAD').read()
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
 COMPARE_TO_NO_PROJECT = True
 NO_PROJECT = 611
-EARTHQUAKE = False
 
 IN_YEAR, OUT_YEAR = 2010, 2050
 COMPARE_AGAINST_LAST_KNOWN_GOOD = False
@@ -45,8 +44,6 @@ LAST_KNOWN_GOOD_RUNS = {
 }
 
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
-
-orca.add_injectable("earthquake", EARTHQUAKE)
 
 parser = argparse.ArgumentParser(description='Run UrbanSim models.')
 

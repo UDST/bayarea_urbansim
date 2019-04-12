@@ -1464,9 +1464,16 @@ def adjust_hhkids(df, year, rdf, total_hh):
 
 
 @orca.step()
-def hazards_slr_summary(run_number, year, destroy_parcels, slr_demolish,
-                        households, jobs, parcels, hh_unplaced_slr,
-                        jobs_unplaced_slr):
+def hazards_slr_summary(run_number, year, scenario, households, jobs, parcels):
+
+    slr_scenarios = [1, 2, 5, 6, 7, 10, 11, 12, 15]
+    if scenario not in slr_scenarios:
+        return
+
+    destroy_parcels = orca.get_table("destroy_parcels")
+    slr_demolish = orca.get_table("slr_demolish")
+    hh_unplaced_slr = orca.get_table("hh_unplaced_slr")
+    jobs_unplaced_slr = orca.get_table("jobs_unplaced_slr")
 
     f = open(os.path.join("runs", "run%d_hazards_slr_%d.log" %
              (run_number, year)), "w")
@@ -1522,8 +1529,13 @@ def hazards_slr_summary(run_number, year, destroy_parcels, slr_demolish,
 
 @orca.step()
 def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings,
-                       earthquake):
-    if year == 2035 and earthquake:
+                       scenario):
+
+    eq_scenarios = [1, 2, 5, 11, 12, 15]
+    if scenario not in eq_scenarios:
+        return
+
+    if year == 2035:
 
         f = open(os.path.join("runs", "run%d_hazards_eq_%d.log" %
                  (run_number, year)), "w")
