@@ -14,11 +14,11 @@ import summaries
 def slr_inundate(scenario, parcels, slr_progression_C, slr_progression_R,
                  slr_progression_B, year, slr_parcel_inundation):
 
-    if scenario == '1' or scenario == '11':
+    if scenario == '1' or scenario == '6' or scenario == '11':
         slr_progression = slr_progression_C.to_frame()
-    elif scenario == '2' or scenario == '12':
+    elif scenario == '2' or scenario == '7' or scenario == '12':
         slr_progression = slr_progression_R.to_frame()
-    elif scenario == '5' or scenario == '15':
+    elif scenario == '5' or scenario == '10' or scenario == '15':
         slr_progression = slr_progression_B.to_frame()
     else:
         return
