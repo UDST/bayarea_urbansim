@@ -1362,7 +1362,7 @@ residential_developer:
 # same as above for non-res
 non_residential_developer:
   kwargs:
-    target_vacancy: 0.13
+    target_vacancy: 0.15
     bldg_sqft_per_job: 400
   type_splits:
     Industrial: 0.0
