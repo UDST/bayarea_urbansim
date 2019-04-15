@@ -1466,14 +1466,9 @@ def adjust_hhkids(df, year, rdf, total_hh):
 @orca.step()
 def hazards_slr_summary(run_number, year, scenario, households, jobs, parcels):
 
-    slr_scenarios = [1, 2, 5, 6, 7, 10, 11, 12, 15]
+    slr_scenarios = ['1', '2', '5', '6', '7', '10', '11', '12', '15']
     if scenario not in slr_scenarios:
         return
-
-    destroy_parcels = orca.get_table("destroy_parcels")
-    slr_demolish = orca.get_table("slr_demolish")
-    hh_unplaced_slr = orca.get_table("hh_unplaced_slr")
-    jobs_unplaced_slr = orca.get_table("jobs_unplaced_slr")
 
     f = open(os.path.join("runs", "run%d_hazards_slr_%d.log" %
              (run_number, year)), "w")
@@ -1482,6 +1477,8 @@ def hazards_slr_summary(run_number, year, scenario, households, jobs, parcels):
         # print s
         f.write(s + "\n\n")
 
+    destroy_parcels = orca.get_table("destroy_parcels")
+    slr_demolish = orca.get_table("slr_demolish")
     n = len(destroy_parcels)
     write("Number of impacted parcels = %d" % n)
     n = slr_demolish['residential_units'].sum()
@@ -1490,6 +1487,7 @@ def hazards_slr_summary(run_number, year, scenario, households, jobs, parcels):
     write("Number of impacted building sqft = %d" % n)
 
     # income quartile counts
+    hh_unplaced_slr = orca.get_injectable("hh_unplaced_slr")
 
     write("Number of impacted households by type")
 
@@ -1505,6 +1503,7 @@ def hazards_slr_summary(run_number, year, scenario, households, jobs, parcels):
     hh_summary.to_string(f, index=False)
 
     write("")
+    jobs_unplaced_slr = orca.get_injectable("jobs_unplaced_slr")
     # employees by sector
 
     write("Number of impacted jobs by sector")
@@ -1531,7 +1530,7 @@ def hazards_slr_summary(run_number, year, scenario, households, jobs, parcels):
 def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings,
                        scenario):
 
-    eq_scenarios = [1, 2, 5, 11, 12, 15]
+    eq_scenarios = ['1', '2', '5', '11', '12', '15']
     if scenario not in eq_scenarios:
         return
 

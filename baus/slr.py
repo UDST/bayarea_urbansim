@@ -45,7 +45,7 @@ def slr_inundate(scenario, parcels, slr_progression_C, slr_progression_R,
 def slr_remove_dev(buildings, year, parcels,
                    households, jobs, scenario):
 
-    slr_scenarios = [1, 2, 5, 6, 7, 10, 11, 12, 15]
+    slr_scenarios = ['1', '2', '5', '6', '7', '10', '11', '12', '15']
     if scenario not in slr_scenarios:
         return
 

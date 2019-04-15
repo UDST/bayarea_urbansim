@@ -16,7 +16,7 @@ import itertools
 @orca.step()
 def eq_code_buildings(buildings, year, scenario):
 
-    eq_scenarios = [1, 2, 5, 11, 12, 15]
+    eq_scenarios = ['1', '2', '5', '11', '12', '15']
     if scenario not in eq_scenarios:
         return
 
@@ -251,7 +251,7 @@ def eq_code_buildings(buildings, year, scenario):
 def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
                         households, jobs, residential_units, year, scenario):
 
-    eq_scenarios = [1, 2, 5, 11, 12, 15]
+    eq_scenarios = ['1', '2', '5', '11', '12', '15']
     if scenario not in eq_scenarios:
         return
 
