@@ -12,17 +12,19 @@ import summaries
 
 @orca.step()
 def slr_inundate(scenario, parcels, slr_progression_C, slr_progression_R,
-                 slr_progression_B, year, slr_parcel_inundation):
+                 slr_progression_B, year, slr_parcel_inundation, settings):
 
-    if scenario == '1' or scenario == '6' or scenario == '11':
-        slr_progression = slr_progression_C.to_frame()
-    elif scenario == '2' or scenario == '7' or scenario == '12':
-        slr_progression = slr_progression_R.to_frame()
-    elif scenario == '5' or scenario == '10' or scenario == '15':
-        slr_progression = slr_progression_B.to_frame()
-    else:
+    if scenario not in settings["slr_scenarios"]["enable_in"]:
         return
 
+    if scenario in settings["slr_scenarios"]["rtff"]:
+        slr_progression = slr_progression_R.to_frame()
+    elif scenario in settings["slr_scenarios"]["cag"]:
+        slr_progression = slr_progression_C.to_frame()
+    elif scenario in settings["slr_scenarios"]["bttf"]:
+        slr_progression = slr_progression_B.to_frame()
+
+    orca.add_table("slr_progression", slr_progression)
     inundation_yr = slr_progression.query('year==@year')['inundated'].item()
     print "Inundation in model year is %d inches" % inundation_yr
     slr_parcel_inundation = slr_parcel_inundation.to_frame()
@@ -42,11 +44,10 @@ def slr_inundate(scenario, parcels, slr_progression_C, slr_progression_R,
 # remove households and jobs and put in unplaced
 
 @orca.step()
-def slr_remove_dev(buildings, year, parcels,
-                   households, jobs, scenario):
+def slr_remove_dev(buildings, year, parcels, households, jobs,
+                   scenario, settings):
 
-    slr_scenarios = ['1', '2', '5', '6', '7', '10', '11', '12', '15']
-    if scenario not in slr_scenarios:
+    if scenario not in settings["slr_scenarios"]["enable_in"]:
         return
 
     destroy_parcels = orca.get_table("destroy_parcels")

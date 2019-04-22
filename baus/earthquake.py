@@ -14,10 +14,9 @@ import itertools
 # earthquake model removes further buildings temporarily
 
 @orca.step()
-def eq_code_buildings(buildings, year, scenario):
+def eq_code_buildings(buildings, year, scenario, settings):
 
-    eq_scenarios = ['1', '2', '5', '11', '12', '15']
-    if scenario not in eq_scenarios:
+    if scenario not in settings["eq_scenarios"]["enable_in"]:
         return
 
     if year == 2035:
@@ -249,10 +248,10 @@ def eq_code_buildings(buildings, year, scenario):
 
 @orca.step()
 def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
-                        households, jobs, residential_units, year, scenario):
+                        households, jobs, residential_units, year, scenario,
+                        settings):
 
-    eq_scenarios = ['1', '2', '5', '11', '12', '15']
-    if scenario not in eq_scenarios:
+    if scenario not in settings["eq_scenarios"]["enable_in"]:
         return
 
     if year == 2035:
