@@ -11,6 +11,159 @@ from scripts.output_csv_utils import format_df
 
 
 @orca.step()
+def config(settings, run_number, scenario, parcels,
+           development_projects, year):
+
+    f = open(os.path.join("runs", "run%d_configuration.log" %
+             (run_number)), "w")
+
+    def write(s):
+        # print s
+        f.write(s + "\n")
+
+    # sea level rise
+    if scenario in settings["slr_scenarios"]["enable_in"]:
+        slr_progression = orca.get_table("slr_progression")
+        slr = slr_progression['inundated'].max()
+        write("Sea level rise in this scenario is %d inches" % slr)
+    else:
+        write("There is no sea level rise in this scenario")
+
+    write("")
+
+    # earthquake
+    if scenario in settings["eq_scenarios"]["enable_in"]:
+        write("Earthquake is activated")
+    else:
+        write("Earthquake is not activated")
+
+    write("")
+
+    # control files
+    write("Note: Control files differ between FR1 and PPA, FR2 files are")
+    write("currently set to FR1, but have files loaded for R2 changes")
+    write("")
+    hh_fname = orca.get_injectable("household_control_file")
+    write("Household control file used: %s" % hh_fname)
+    emp_fname = orca.get_injectable("employment_control_file")
+    write("Employment file used: %s" % emp_fname)
+    # these injectables are not storing ...
+#    reg_fname = orca.get_injectable("reg_control_file")
+#    write("Regional control file used is: %s" % reg_fname)
+#    reg_dem_fname = orca.get_injectable("reg_dem_control_file")
+#    write("Regional demographic control file used is: %s" % reg_dem_fname)
+
+    write("")
+
+    # logsums files
+    write("Note: Logsum files differ between FR1 and PPA, FR2 files are")
+    write("currently set to FR1, but have files loaded for R2 changes")
+    write("")
+    mand_acc_fname_2010 = orca.get_injectable("mand_acc_file_2010")
+    write("2010 mandatory accessibility file used: %s"
+          % mand_acc_fname_2010)
+    ma_fname_2030 = "logsum_2030_s"+scenario
+    if ma_fname_2030 in settings["logsums"]["mandatory"]:
+        write("2030 mandatory accessibility file used: %s"
+              % settings["logsums"]["mandatory"][ma_fname_2030])
+    else:
+        write("No 2030 mandatory accessibility file is set")
+    nonmand_acc_fname_2010 = orca.get_injectable("nonmand_acc_file_2010")
+    write("2010 non-mandatory accessibility file used: %s"
+          % nonmand_acc_fname_2010)
+    nma_fname_2030 = "logsum_2030_s"+scenario
+    if nma_fname_2030 in settings["logsums"]["mandatory"]:
+        write("2030 non-mandatory accessibility file used: %s"
+              % settings["logsums"]["non_mandatory"][nma_fname_2030])
+    else:
+        write("No 2030 non-mandatory accessibility file is set")
+    # these injectables are also not storing ...
+#   if year == 2010:
+#        acc_sec_fname_2010 = orca.get_injectable("acc_sec_file_2010")
+#        write("2010 accessibility segmentation file used: %s" % acc_sec_fname_2010)
+#   if year == 2030:
+#        acc_sec_fname_2030 = orca.get_injectable("acc_sec_file_2030")
+#        write("2030 accessibility segmentation file used: %s" % acc_sec_fname_2030)
+
+    write("")
+
+    # residential sales hedonic config
+    rsh_fname = orca.get_injectable("rsh_file")
+    # could register rsh_config and print out density var
+    write("The config file used for the residential sales hedonic is: %s"
+          % rsh_fname)
+
+    write("")
+
+    # development projects list
+    scen = "scen"+scenario
+    if scen in development_projects.columns:
+        write("Scenario is in development projects list")
+    else:
+        write("Scenario is not in development projects list")
+
+    write("")
+
+    # zoning mods
+    zm_file_loc = os.path.isfile(os.path.join("data", "zoning_mods_%s.csv"
+                                              % (scenario)))
+    if zm_file_loc:
+        write("Zoning modifications exist")
+    else:
+        write("Zoning modifications do not exist")
+
+    write("")
+
+    # policies enabled
+    if scenario in settings["inclusionary_housing_settings"]:
+        prop = settings["inclusionary_housing_settings"][scenario][0]["amount"]
+        write("Inclusionary housing amount is %.2f" % prop)
+    else:
+        write("Inclusionary housing is not activated")
+
+    def policy_activated(policy_loc, policy):
+        if scenario in policy_loc:
+            write(policy+" is activated")
+        else:
+            write(policy+" is not activated")
+
+    policy_loc = settings["acct_settings"]["lump_sum_accounts"]\
+                         ["obag_settings"]["enable_in_scenarios"]
+    policy = "OBAG"
+    policy_activated(policy_loc, policy)
+    policy_loc = settings["acct_settings"]["profitability_adjustment_policies"]\
+                         ["ceqa_tiering"]["enable_in_scenarios"]
+    policy = "CEQA"
+    policy_activated(policy_loc, policy)
+    policy_loc = settings["acct_settings"]["profitability_adjustment_policies"]\
+                         ["parking_requirements_pdas"]["enable_in_scenarios"]
+    policy = "Reduce Parking Requirements in PDAs"
+    policy_activated(policy_loc, policy)
+    policy_loc = settings["acct_settings"]["profitability_adjustment_policies"]\
+                         ["parking_requirements_AVs_s1"]["enable_in_scenarios"]
+    policy = "Reduce Parking Requirements due to AVs (CAG)"
+    policy_activated(policy_loc, policy)
+    policy_loc = settings["acct_settings"]["profitability_adjustment_policies"]\
+                         ["parking_requirements_AVs_s5"]["enable_in_scenarios"]
+    policy = "Reduce Parking Requirements due to AVs (BTTF)"
+    policy_activated(policy_loc, policy)
+    policy_loc = settings["acct_settings"]["vmt_settings"]\
+                         ["com_for_com_scenarios"]
+    policy = "VMT fees: com_for_com"
+    policy_activated(policy_loc, policy)
+    policy_loc = settings["acct_settings"]["vmt_settings"]\
+                         ["com_for_res_scenarios"]
+    policy = "VMT fees: com_for_res"
+    policy_activated(policy_loc, policy)
+
+    # workplace preferences are in the development projects list
+    # e-commerce should be embedded in the controls
+    # telecommuting should be handled in the TM
+
+    f.close()
+
+
+@orca.step()
 def topsheet(households, jobs, buildings, parcels, zones, year,
              run_number, taz_geography, parcels_zoning_calculations,
              summary, settings, parcels_geography, abag_targets, new_tpp_id,
@@ -1464,10 +1617,10 @@ def adjust_hhkids(df, year, rdf, total_hh):
 
 
 @orca.step()
-def hazards_slr_summary(run_number, year, scenario, households, jobs, parcels):
+def hazards_slr_summary(run_number, year, scenario, households, jobs, parcels,
+                        settings):
 
-    slr_scenarios = ['1', '2', '5', '6', '7', '10', '11', '12', '15']
-    if scenario not in slr_scenarios:
+    if scenario not in settings["slr_scenarios"]["enable_in"]:
         return
 
     f = open(os.path.join("runs", "run%d_hazards_slr_%d.log" %
@@ -1528,10 +1681,9 @@ def hazards_slr_summary(run_number, year, scenario, households, jobs, parcels):
 
 @orca.step()
 def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings,
-                       scenario):
+                       scenario, settings):
 
-    eq_scenarios = ['1', '2', '5', '11', '12', '15']
-    if scenario not in eq_scenarios:
+    if scenario not in settings["eq_scenarios"]["enable_in"]:
         return
 
     if year == 2035:

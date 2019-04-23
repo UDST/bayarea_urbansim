@@ -286,6 +286,7 @@ def run_models(MODE, SCENARIO):
 
                 "price_vars",
 
+                "config",
                 "topsheet",
                 "simulation_validation",
                 "parcel_summary",

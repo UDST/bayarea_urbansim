@@ -136,7 +136,9 @@ def hlcm_renter_lowincome_config():
 
 @orca.injectable(cache=True)
 def rsh_config():
-    return get_config_file('rsh')
+	fname = get_config_file('rsh')
+	orca.add_injectable("rsh_file", fname)
+	return get_config_file('rsh')
 
 
 @orca.injectable(cache=True)
@@ -433,6 +435,7 @@ def parcels_subzone():
 @orca.table(cache=False)
 def mandatory_accessibility():
     fname = get_logsum_file('mandatory')
+    orca.add_injectable("mand_acc_file_2010", fname)
     df = pd.read_csv(os.path.join(
         misc.data_dir(), fname))
     df.loc[df.subzone == 0, 'subzone'] = 'c'  # no walk
@@ -445,6 +448,7 @@ def mandatory_accessibility():
 @orca.table(cache=False)
 def non_mandatory_accessibility():
     fname = get_logsum_file('non_mandatory')
+    orca.add_injectable("nonmand_acc_file_2010", fname)
     df = pd.read_csv(os.path.join(
         misc.data_dir(), fname))
     df.loc[df.subzone == 0, 'subzone'] = 'c'  # no walk
@@ -457,6 +461,10 @@ def non_mandatory_accessibility():
 @orca.table(cache=False)
 def accessibilities_segmentation():
     fname = get_logsum_file('segmentation')
+    if year == 2010:
+        orca.add_injectable("acc_seg_file_2010", fname)
+    if year == 2030:
+        orca.add_injectable("acc_seg_file_2030", fname)
     df = pd.read_csv(os.path.join(
         misc.data_dir(), fname))
     df['AV'] = df['hasAV'].apply(lambda x: 'AV' if x == 1 else 'noAV')
@@ -646,6 +654,7 @@ def residential_units(store):
 @orca.table(cache=True)
 def household_controls_unstacked():
     fname = get_control_file(type='household')
+    orca.add_injectable("household_control_file", fname)
     return pd.read_csv(os.path.join(misc.data_dir(), fname),
                        index_col='year')
 
@@ -653,6 +662,7 @@ def household_controls_unstacked():
 @orca.table(cache=True)
 def regional_demographic_forecast():
     fname = get_control_file(type='demographic_forecast')
+    orca.add_injectable("reg_dem_control_file", fname)
     return pd.read_csv(os.path.join(misc.data_dir(), fname))
 
 
@@ -687,12 +697,14 @@ def household_controls(household_controls_unstacked):
 @orca.table(cache=True)
 def employment_controls_unstacked():
     fname = get_control_file(type='employment')
+    orca.add_injectable("employment_control_file", fname)
     return pd.read_csv(os.path.join(misc.data_dir(), fname), index_col='year')
 
 
 @orca.table(cache=True)
 def regional_controls():
     fname = get_control_file(type='regional')
+    orca.add_injectable("reg_control_file", "fname")
     return pd.read_csv(os.path.join('data', fname), index_col="year")
 
 
