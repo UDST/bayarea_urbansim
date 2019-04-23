@@ -59,6 +59,7 @@ def config(settings, run_number, scenario, parcels,
     write("Note: Logsum files differ between FR1 and PPA, FR2 files are")
     write("currently set to FR1, but have files loaded for R2 changes")
     write("")
+    # mandatory
     mand_acc_fname_2010 = orca.get_injectable("mand_acc_file_2010")
     write("2010 mandatory accessibility file used: %s"
           % mand_acc_fname_2010)
@@ -68,6 +69,7 @@ def config(settings, run_number, scenario, parcels,
               % settings["logsums"]["mandatory"][ma_fname_2030])
     else:
         write("No 2030 mandatory accessibility file is set")
+    # non-mandatory
     nonmand_acc_fname_2010 = orca.get_injectable("nonmand_acc_file_2010")
     write("2010 non-mandatory accessibility file used: %s"
           % nonmand_acc_fname_2010)
@@ -77,13 +79,17 @@ def config(settings, run_number, scenario, parcels,
               % settings["logsums"]["non_mandatory"][nma_fname_2030])
     else:
         write("No 2030 non-mandatory accessibility file is set")
-    # these injectables are also not storing ...
-#   if year == 2010:
-#        acc_sec_fname_2010 = orca.get_injectable("acc_sec_file_2010")
-#        write("2010 accessibility segmentation file used: %s" % acc_sec_fname_2010)
-#   if year == 2030:
-#        acc_sec_fname_2030 = orca.get_injectable("acc_sec_file_2030")
-#        write("2030 accessibility segmentation file used: %s" % acc_sec_fname_2030)
+    # segmentation
+    # this injectable is also not storing ...
+#    acc_sec_fname_2010 = orca.get_injectable("acc_sec_file_2010")
+#    write("2010 accessibility segmentation file used: %s"
+#          % acc_sec_fname_2010)
+#    acc_sec_fname_2030 = "logsum_2030_s"+scenario
+#    if acc_sec_fname_2030 in settings["logsums"]["segmentation"]:
+#        write("2030 accessibility segmentation file used: %s"
+#              % settings["logsums"]["segmentation"][acc_sec_fname_2030])
+#    else:
+#        write("No 2030 accessibility segmentation file is set")
 
     write("")
 
@@ -127,32 +133,36 @@ def config(settings, run_number, scenario, parcels,
         else:
             write(policy+" is not activated")
 
-    policy_loc = settings["acct_settings"]["lump_sum_accounts"]\
-                         ["obag_settings"]["enable_in_scenarios"]
+    policy_loc = (settings["acct_settings"]["lump_sum_accounts"]
+                  ["obag_settings"]["enable_in_scenarios"])
     policy = "OBAG"
     policy_activated(policy_loc, policy)
-    policy_loc = settings["acct_settings"]["profitability_adjustment_policies"]\
-                         ["ceqa_tiering"]["enable_in_scenarios"]
+    policy_loc = (settings["acct_settings"]
+                  ["profitability_adjustment_policies"]["ceqa_tiering"]
+                  ["enable_in_scenarios"])
     policy = "CEQA"
     policy_activated(policy_loc, policy)
-    policy_loc = settings["acct_settings"]["profitability_adjustment_policies"]\
-                         ["parking_requirements_pdas"]["enable_in_scenarios"]
+    policy_loc = (settings["acct_settings"]
+                  ["profitability_adjustment_policies"]
+                  ["parking_requirements_pdas"]["enable_in_scenarios"])
     policy = "Reduce Parking Requirements in PDAs"
     policy_activated(policy_loc, policy)
-    policy_loc = settings["acct_settings"]["profitability_adjustment_policies"]\
-                         ["parking_requirements_AVs_s1"]["enable_in_scenarios"]
+    policy_loc = (settings["acct_settings"]
+                  ["profitability_adjustment_policies"]
+                  ["parking_requirements_AVs_s1"]["enable_in_scenarios"])
     policy = "Reduce Parking Requirements due to AVs (CAG)"
     policy_activated(policy_loc, policy)
-    policy_loc = settings["acct_settings"]["profitability_adjustment_policies"]\
-                         ["parking_requirements_AVs_s5"]["enable_in_scenarios"]
+    policy_loc = (settings["acct_settings"]
+                  ["profitability_adjustment_policies"]
+                  ["parking_requirements_AVs_s5"]["enable_in_scenarios"])
     policy = "Reduce Parking Requirements due to AVs (BTTF)"
     policy_activated(policy_loc, policy)
-    policy_loc = settings["acct_settings"]["vmt_settings"]\
-                         ["com_for_com_scenarios"]
+    policy_loc = (settings["acct_settings"]["vmt_settings"]
+                  ["com_for_com_scenarios"])
     policy = "VMT fees: com_for_com"
     policy_activated(policy_loc, policy)
-    policy_loc = settings["acct_settings"]["vmt_settings"]\
-                         ["com_for_res_scenarios"]
+    policy_loc = (settings["acct_settings"]["vmt_settings"]
+                  ["com_for_res_scenarios"])
     policy = "VMT fees: com_for_res"
     policy_activated(policy_loc, policy)
 

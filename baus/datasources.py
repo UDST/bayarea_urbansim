@@ -136,9 +136,9 @@ def hlcm_renter_lowincome_config():
 
 @orca.injectable(cache=True)
 def rsh_config():
-	fname = get_config_file('rsh')
-	orca.add_injectable("rsh_file", fname)
-	return get_config_file('rsh')
+    fname = get_config_file('rsh')
+    orca.add_injectable("rsh_file", fname)
+    return get_config_file('rsh')
 
 
 @orca.injectable(cache=True)
@@ -461,10 +461,7 @@ def non_mandatory_accessibility():
 @orca.table(cache=False)
 def accessibilities_segmentation():
     fname = get_logsum_file('segmentation')
-    if year == 2010:
-        orca.add_injectable("acc_seg_file_2010", fname)
-    if year == 2030:
-        orca.add_injectable("acc_seg_file_2030", fname)
+    orca.add_injectable("acc_seg_file_2010", fname)
     df = pd.read_csv(os.path.join(
         misc.data_dir(), fname))
     df['AV'] = df['hasAV'].apply(lambda x: 'AV' if x == 1 else 'noAV')
