@@ -701,7 +701,7 @@ def employment_controls_unstacked():
 @orca.table(cache=True)
 def regional_controls():
     fname = get_control_file(type='regional')
-    orca.add_injectable("reg_control_file", "fname")
+    orca.add_injectable("reg_control_file", fname)
     return pd.read_csv(os.path.join('data', fname), index_col="year")
 
 

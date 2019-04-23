@@ -286,7 +286,6 @@ def run_models(MODE, SCENARIO):
 
                 "price_vars",
 
-                "config",
                 "topsheet",
                 "simulation_validation",
                 "parcel_summary",
@@ -296,7 +295,8 @@ def run_models(MODE, SCENARIO):
                 # "travel_model_2_output",
                 "hazards_slr_summary",
                 "hazards_eq_summary",
-                "diagnostic_output"
+                "diagnostic_output",
+                "config"
 
             ], iter_vars=[IN_YEAR])
 

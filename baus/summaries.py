@@ -48,10 +48,10 @@ def config(settings, run_number, scenario, parcels,
     emp_fname = orca.get_injectable("employment_control_file")
     write("Employment file used: %s" % emp_fname)
     # these injectables are not storing ...
-#    reg_fname = orca.get_injectable("reg_control_file")
-#    write("Regional control file used is: %s" % reg_fname)
-#    reg_dem_fname = orca.get_injectable("reg_dem_control_file")
-#    write("Regional demographic control file used is: %s" % reg_dem_fname)
+    reg_fname = orca.get_injectable("reg_control_file")
+    write("Regional control file used is: %s" % reg_fname)
+    reg_dem_fname = orca.get_injectable("reg_dem_control_file")
+    write("Regional demographic control file used is: %s" % reg_dem_fname)
 
     write("")
 
@@ -81,15 +81,15 @@ def config(settings, run_number, scenario, parcels,
         write("No 2030 non-mandatory accessibility file is set")
     # segmentation
     # this injectable is also not storing ...
-#    acc_sec_fname_2010 = orca.get_injectable("acc_sec_file_2010")
-#    write("2010 accessibility segmentation file used: %s"
-#          % acc_sec_fname_2010)
-#    acc_sec_fname_2030 = "logsum_2030_s"+scenario
-#    if acc_sec_fname_2030 in settings["logsums"]["segmentation"]:
-#        write("2030 accessibility segmentation file used: %s"
-#              % settings["logsums"]["segmentation"][acc_sec_fname_2030])
-#    else:
-#        write("No 2030 accessibility segmentation file is set")
+    acc_seg_fname_2010 = orca.get_injectable("acc_seg_file_2010")
+    write("2010 accessibility segmentation file used: %s"
+          % acc_seg_fname_2010)
+    acc_seg_fname_2030 = "logsum_2030_s"+scenario
+    if acc_seg_fname_2030 in settings["logsums"]["segmentation"]:
+        write("2030 accessibility segmentation file used: %s"
+              % settings["logsums"]["segmentation"][acc_seg_fname_2030])
+    else:
+        write("No 2030 accessibility segmentation file is set")
 
     write("")
 
