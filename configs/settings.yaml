@@ -1117,7 +1117,7 @@ acct_settings:
 
 
 # cap rate for use in the developer model
-cap_rate: 0.05
+cap_rate: 0.01
 
 
 # household relocation rates split by rent / own
@@ -1371,7 +1371,7 @@ residential_developer:
 # same as above for non-res
 non_residential_developer:
   kwargs:
-    target_vacancy: 0.15
+    target_vacancy: .05
     bldg_sqft_per_job: 400
   type_splits:
     Industrial: 0.0
