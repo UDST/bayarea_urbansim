@@ -50,6 +50,12 @@ def employment_relocation_rates():
     return df
 
 
+@orca.table(cache=True)
+def household_relocation_rates():
+    df = pd.read_csv(os.path.join("data", "household_relocation_rates.csv"))
+    return df
+
+
 # this is a list of parcel_ids which are to be treated as static
 @orca.injectable()
 def static_parcels(settings, parcels):
@@ -294,6 +300,42 @@ def jobs_relocation(jobs, employment_relocation_rates, years_per_iter,
     # set jobs that are moving to a building_id of -1 (means unplaced)
     jobs.update_col_from_series("building_id",
                                 pd.Series(-1, index=index))
+
+
+@orca.step()
+def household_relocation(households, household_relocation_rates,
+                    settings, static_parcels, buildings):
+
+    # get buildings that are on those parcels
+    static_buildings = buildings.index[
+        buildings.parcel_id.isin(static_parcels)]
+
+    hh_rr = household_relocation_rates.local.copy()
+    hh_rr.loc[hh_rr.tenure==1, 'tenure'] = 'own'
+    hh_rr.loc[hh_rr.tenure==2, 'tenure'] = 'rent'
+
+    df = pd.merge(households.to_frame(["zone_id", "base_income_quartile",
+                                       "tenure"]), hh_rr,
+                  on=["zone_id", "base_income_quartile", "tenure"],
+                  how="left")
+
+    df.index = households.index
+
+    # get the move rate for each job
+    rate = df.rate
+    # get random floats and move households if they're less than the rate
+    move = np.random.random(len(rate)) < rate
+
+    # also don't move households that are on static parcels
+    move &= ~households.building_id.isin(static_buildings)
+
+    # get the index of the moving jobs
+    index = households.index[move]
+    print("{} households are relocating".format(len(index)))
+
+    # set households that are moving to a building_id of -1 (means unplaced)
+    households.update_col_from_series("building_id",
+                                pd.Series(-1, index=index).astype('int32'))
 
 
 # this deviates from the step in urbansim_defaults only in how it deals with
