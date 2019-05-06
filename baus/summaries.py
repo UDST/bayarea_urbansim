@@ -1791,7 +1791,8 @@ def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings,
                            "run%d_hazards_eq_demolish_buildings_%d.csv"
                                         % (run_number, year)))
 
-    if year in [2030, 2035, 2050]:
+    if year in [2030, 2035, 2050] and scenario in \
+       settings["eq_scenarios"]["enable_in"]:
         buildings = buildings.to_frame()
         buildings_taz = misc.reindex(parcels.zone_id,
                                      buildings.parcel_id)
