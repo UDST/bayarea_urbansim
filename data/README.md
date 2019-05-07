@@ -1,3 +1,17 @@
+## Large Files (not stored on GitHub
+
+### 02_01_2016_parcels_geography
+Lookup toble from parcel's geom_id to ids for juris, pda, tpp, exp (expansion area), opp_id (catalyst site), and a concatenation of these used to join to the zoning_mod tables below. Also has perfoot, perfarea, and urbanized/ 
+
+### 2018_10_17_parcel_to_taz1454sub
+### 2015_12_21_zoning_parcels
+### 2018_05_23_parcel_to_maz22
+### 2015_09_01_bayarea_v3
+### 2015_08_03_tmnet
+### 2015_08_29_costar
+### 2015_06_01_osm_bayarea4326
+
+## Data file 
 ### abag_targets.csv
 
 These are the households and jobs expected per pda and non-pda jurisdiction as agreed upon using ABAG's local knowledge.  We use this to compare against UrbanSim output.
