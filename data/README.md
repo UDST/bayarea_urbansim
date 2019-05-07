@@ -16,7 +16,7 @@ Lookup table from parcel's geom_id OR parcel_id to maz
 Base year database
 
 ### 2015_08_03_tmnet
-hmmm
+for use with pandana
 
 ### 2015_08_29_costar
 Commercial data for nores hedonic estimation
