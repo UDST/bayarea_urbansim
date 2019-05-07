@@ -7,7 +7,7 @@ Lookup toble from parcel's geom_id to ids for juris, pda, tpp, exp (expansion ar
 Lookup table from parcel's parcel_id to 
 
 ### 2015_12_21_zoning_parcels.csv
-Lookup table from parcel's geom_id to zoning_id, some zoning area info and a nodev flag which seems all zeros--IS THIS IN USE?
+Lookup table from parcel's geom_id to zoning_id, some zoning area info and a nodev flag which seems all zeros--IS THIS FLAG IN USE?
 
 ### 2018_05_23_parcel_to_maz22.csv
 Lookup table from parcel's geom_id OR parcel_id to maz
