@@ -10,15 +10,19 @@ Lookup table from parcel's parcel_id to
 Lookup table from parcel's geom_id to zoning_id, some zoning area info and a nodev flag which seems all zeros--IS THIS IN USE?
 
 ### 2018_05_23_parcel_to_maz22
+Lookup table from parcel's geom_id OR parcel_id to maz
 
-### 2015_09_01_bayarea_v3
+### 2015_09_01_bayarea_v3.h5
+Base year database
 
 ### 2015_08_03_tmnet
+hmmm
 
 ### 2015_08_29_costar
+Commercial data for nores hedonic estimation
 
 ### 2015_06_01_osm_bayarea4326
-
+Street net
 
 
 
