@@ -1633,60 +1633,81 @@ def hazards_slr_summary(run_number, year, scenario, households, jobs, parcels,
     if scenario not in settings["slr_scenarios"]["enable_in"]:
         return
 
-    f = open(os.path.join("runs", "run%d_hazards_slr_%d.log" %
-             (run_number, year)), "w")
-
-    def write(s):
-        # print s
-        f.write(s + "\n\n")
-
     destroy_parcels = orca.get_table("destroy_parcels")
-    slr_demolish = orca.get_table("slr_demolish")
-    n = len(destroy_parcels)
-    write("Number of impacted parcels = %d" % n)
-    n = slr_demolish['residential_units'].sum()
-    write("Number of impacted residential units = %d" % n)
-    n = slr_demolish['building_sqft'].sum()
-    write("Number of impacted building sqft = %d" % n)
+    if len(destroy_parcels) > 0:
 
-    # income quartile counts
-    hh_unplaced_slr = orca.get_injectable("hh_unplaced_slr")
+        def write(s):
+            # print s
+            f.write(s + "\n\n")
 
-    write("Number of impacted households by type")
+        f = open(os.path.join("runs", "run%d_hazards_slr_%d.log" %
+                 (run_number, year)), "w")
 
-    hh_summary = pd.DataFrame(index=[0])
-    hh_summary['hhincq1'] = \
-        (hh_unplaced_slr["base_income_quartile"] == 1).sum()
-    hh_summary['hhincq2'] = \
-        (hh_unplaced_slr["base_income_quartile"] == 2).sum()
-    hh_summary['hhincq3'] = \
-        (hh_unplaced_slr["base_income_quartile"] == 3).sum()
-    hh_summary['hhincq4'] = \
-        (hh_unplaced_slr["base_income_quartile"] == 4).sum()
-    hh_summary.to_string(f, index=False)
+        n = len(destroy_parcels)
+        write("Number of impacted parcels = %d" % n)
 
-    write("")
-    jobs_unplaced_slr = orca.get_injectable("jobs_unplaced_slr")
-    # employees by sector
+        try:
+            slr_demolish_cum = orca.get_table("slr_demolish_cum").to_frame()
+        except:
+            slr_demolish_cum = pd.DataFrame()
+        slr_demolish = orca.get_table("slr_demolish").to_frame()
+        slr_demolish_cum = slr_demolish.append(slr_demolish_cum)
+        orca.add_table("slr_demolish_cum", slr_demolish_cum)
 
-    write("Number of impacted jobs by sector")
+        n = slr_demolish_cum['residential_units'].sum()
+        write("Number of impacted residential units = %d" % n)
+        n = slr_demolish_cum['building_sqft'].sum()
+        write("Number of impacted building sqft = %d" % n)
 
-    jobs_summary = pd.DataFrame(index=[0])
-    jobs_summary['agrempn'] = (jobs_unplaced_slr["empsix"] == 'AGREMPN').sum()
-    jobs_summary['mwtempn'] = (jobs_unplaced_slr["empsix"] == 'MWTEMPN').sum()
-    jobs_summary['retempn'] = (jobs_unplaced_slr["empsix"] == 'RETEMPN').sum()
-    jobs_summary['fpsempn'] = (jobs_unplaced_slr["empsix"] == 'FPSEMPN').sum()
-    jobs_summary['herempn'] = (jobs_unplaced_slr["empsix"] == 'HEREMPN').sum()
-    jobs_summary['othempn'] = (jobs_unplaced_slr["empsix"] == 'OTHEMPN').sum()
-    jobs_summary.to_string(f, index=False)
+        # income quartile counts
+        try:
+            hh_unplaced_slr_cum = \
+                orca.get_table("hh_unplaced_slr_cum").to_frame()
+        except:
+            hh_unplaced_slr_cum = pd.DataFrame()
+        hh_unplaced_slr = orca.get_injectable("hh_unplaced_slr")
+        hh_unplaced_slr_cum = hh_unplaced_slr.append(hh_unplaced_slr_cum)
+        orca.add_table("hh_unplaced_slr_cum", hh_unplaced_slr_cum)
 
-    f.close()
+        write("Number of impacted households by type")
+        hs = pd.DataFrame(index=[0])
+        hs['hhincq1'] = \
+            (hh_unplaced_slr_cum["base_income_quartile"] == 1).sum()
+        hs['hhincq2'] = \
+            (hh_unplaced_slr_cum["base_income_quartile"] == 2).sum()
+        hs['hhincq3'] = \
+            (hh_unplaced_slr_cum["base_income_quartile"] == 3).sum()
+        hs['hhincq4'] = \
+            (hh_unplaced_slr_cum["base_income_quartile"] == 4).sum()
+        hs.to_string(f, index=False)
 
-    slr_demolish = slr_demolish.to_frame()
-    slr_demolish = slr_demolish[['parcel_id']]
-    slr_demolish.to_csv(os.path.join("runs",
-                                     "run%d_hazards_slr_buildings_%d.csv"
-                                     % (run_number, year)))
+        write("")
+
+        # employees by sector
+        try:
+            jobs_unplaced_slr_cum = \
+                orca.get_table("jobs_unplaced_slr_cum").to_frame()
+        except:
+            jobs_unplaced_slr_cum = pd.DataFrame()
+        jobs_unplaced_slr = orca.get_injectable("jobs_unplaced_slr")
+        jobs_unplaced_slr_cum = jobs_unplaced_slr.append(jobs_unplaced_slr_cum)
+        orca.add_table("jobs_unplaced_slr_cum", jobs_unplaced_slr_cum)
+
+        write("Number of impacted jobs by sector")
+        js = pd.DataFrame(index=[0])
+        js['agrempn'] = (jobs_unplaced_slr_cum["empsix"] == 'AGREMPN').sum()
+        js['mwtempn'] = (jobs_unplaced_slr_cum["empsix"] == 'MWTEMPN').sum()
+        js['retempn'] = (jobs_unplaced_slr_cum["empsix"] == 'RETEMPN').sum()
+        js['fpsempn'] = (jobs_unplaced_slr_cum["empsix"] == 'FPSEMPN').sum()
+        js['herempn'] = (jobs_unplaced_slr_cum["empsix"] == 'HEREMPN').sum()
+        js['othempn'] = (jobs_unplaced_slr_cum["empsix"] == 'OTHEMPN').sum()
+        js.to_string(f, index=False)
+
+        f.close()
+
+        slr_demolish.to_csv(os.path.join("runs",
+                                         "run%d_hazards_slr_buildings_%d.csv"
+                                         % (run_number, year)))
 
 
 @orca.step()
