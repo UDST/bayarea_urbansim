@@ -130,7 +130,7 @@ def get_simulation_models(SCENARIO):
         "nrh_simulate",         # non-residential rent hedonic
 
         # uses conditional probabilities
-        "households_relocation",
+        "household_relocation",
         "households_transition",
         # update building/unit/hh correspondence
         "reconcile_unplaced_households",
@@ -269,7 +269,7 @@ def run_models(MODE, SCENARIO):
                 "assign_tenure_to_new_units",
 
                 # uses conditional probabilities
-                "households_relocation",
+                "household_relocation",
                 "households_transition",
                 # update building/unit/hh correspondence
                 "reconcile_unplaced_households",
