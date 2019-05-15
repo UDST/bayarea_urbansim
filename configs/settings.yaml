@@ -8,21 +8,9 @@
 # 6: clean and green, ppa
 # 7: rising tides falling fortunes, ppa
 # 10: back to the future, ppa
-# 11: clean and green, strategies
-# 12: rising tides falling fortunes, strategies
-# 15: back to the future, strategies
 # 16: forecast test base
 # 17: forecast test less constrained
 
-# scenarios for hazards models
-slr_scenarios:
-      enable_in: ["1", "2", "5", "6", "7", "10", "11", "12", "15"]
-      rtff: ["2", "7", "12"]
-      cag: ["1", "6", "11"]
-      bttf: ["5", "10", "15"]
-eq_scenarios:
-      enable_in: ["1", "2", "5", "11", "12", "15"]
-            
 
 # these are the tables the get auto-merged to buildings/parcels in the hedonic and lcms
 aggregation_tables:
@@ -706,243 +694,6 @@ inclusionary_housing_settings:
       - Vallejo
       - Walnut Creek
       - Windsor
-  "11":
-    - type: jurisdictions
-      description: medium setting
-      amount: .1
-      values:
-      - Alameda
-      - Alameda County
-      - Albany
-      - American Canyon
-      - Antioch
-      - Belmont
-      - Benicia
-      - Berkeley
-      - Brisbane
-      - Burlingame
-      - Campbell
-      - Cloverdale
-      - Colma
-      - Concord
-      - Contra Costa County
-      - Cotati
-      - Cupertino
-      - Daly City
-      - Danville
-      - Dixon
-      - Dublin
-      - East Palo Alto
-      - El Cerrito
-      - Emeryville
-      - Fairfield
-      - Fremont
-      - Gilroy
-      - Hayward
-      - Hercules
-      - Lafayette
-      - Livermore
-      - Los Altos
-      - Martinez
-      - Menlo Park
-      - Millbrae
-      - Milpitas
-      - Moraga
-      - Morgan Hill
-      - Mountain View
-      - Napa
-      - Newark
-      - Oakland
-      - Oakley
-      - Orinda
-      - Palo Alto
-      - Petaluma
-      - Pinole
-      - Pittsburg
-      - Pleasant Hill
-      - Pleasanton
-      - Redwood City
-      - Richmond
-      - Rohnert Park
-      - San Bruno
-      - San Carlos
-      - San Francisco
-      - San Jose
-      - San Leandro
-      - San Mateo
-      - San Mateo County
-      - San Pablo
-      - San Rafael
-      - San Ramon
-      - Santa Clara
-      - Santa Rosa
-      - Sebastopol
-      - South San Francisco
-      - Suisun City
-      - Sunnyvale
-      - Union City
-      - Vacaville
-      - Vallejo
-      - Walnut Creek
-      - Windsor
-  "12":
-    - type: jurisdictions
-      description: medium setting
-      amount: .1
-      values:
-      - Alameda
-      - Alameda County
-      - Albany
-      - American Canyon
-      - Antioch
-      - Belmont
-      - Benicia
-      - Berkeley
-      - Brisbane
-      - Burlingame
-      - Campbell
-      - Cloverdale
-      - Colma
-      - Concord
-      - Contra Costa County
-      - Cotati
-      - Cupertino
-      - Daly City
-      - Danville
-      - Dixon
-      - Dublin
-      - East Palo Alto
-      - El Cerrito
-      - Emeryville
-      - Fairfield
-      - Fremont
-      - Gilroy
-      - Hayward
-      - Hercules
-      - Lafayette
-      - Livermore
-      - Los Altos
-      - Martinez
-      - Menlo Park
-      - Millbrae
-      - Milpitas
-      - Moraga
-      - Morgan Hill
-      - Mountain View
-      - Napa
-      - Newark
-      - Oakland
-      - Oakley
-      - Orinda
-      - Palo Alto
-      - Petaluma
-      - Pinole
-      - Pittsburg
-      - Pleasant Hill
-      - Pleasanton
-      - Redwood City
-      - Richmond
-      - Rohnert Park
-      - San Bruno
-      - San Carlos
-      - San Francisco
-      - San Jose
-      - San Leandro
-      - San Mateo
-      - San Mateo County
-      - San Pablo
-      - San Rafael
-      - San Ramon
-      - Santa Clara
-      - Santa Rosa
-      - Sebastopol
-      - South San Francisco
-      - Suisun City
-      - Sunnyvale
-      - Union City
-      - Vacaville
-      - Vallejo
-      - Walnut Creek
-      - Windsor
-  "15":
-    - type: jurisdictions
-      description: medium setting
-      amount: .1
-      values:
-      - Alameda
-      - Alameda County
-      - Albany
-      - American Canyon
-      - Antioch
-      - Belmont
-      - Benicia
-      - Berkeley
-      - Brisbane
-      - Burlingame
-      - Campbell
-      - Cloverdale
-      - Colma
-      - Concord
-      - Contra Costa County
-      - Cotati
-      - Cupertino
-      - Daly City
-      - Danville
-      - Dixon
-      - Dublin
-      - East Palo Alto
-      - El Cerrito
-      - Emeryville
-      - Fairfield
-      - Fremont
-      - Gilroy
-      - Hayward
-      - Hercules
-      - Lafayette
-      - Livermore
-      - Los Altos
-      - Martinez
-      - Menlo Park
-      - Millbrae
-      - Milpitas
-      - Moraga
-      - Morgan Hill
-      - Mountain View
-      - Napa
-      - Newark
-      - Oakland
-      - Oakley
-      - Orinda
-      - Palo Alto
-      - Petaluma
-      - Pinole
-      - Pittsburg
-      - Pleasant Hill
-      - Pleasanton
-      - Redwood City
-      - Richmond
-      - Rohnert Park
-      - San Bruno
-      - San Carlos
-      - San Francisco
-      - San Jose
-      - San Leandro
-      - San Mateo
-      - San Mateo County
-      - San Pablo
-      - San Rafael
-      - San Ramon
-      - Santa Clara
-      - Santa Rosa
-      - Sebastopol
-      - South San Francisco
-      - Suisun City
-      - Sunnyvale
-      - Union City
-      - Vacaville
-      - Vallejo
-      - Walnut Creek
-      - Windsor
 
 # these are the settings for various policies that are in play
 acct_settings:
@@ -958,7 +709,7 @@ acct_settings:
       total_amount: 40000000
       receiving_buildings_filter: pda_id > 0
       subsidize_affordable: False
-      enable_in_scenarios: ["1", "2", "3", "4", "5", "6", "7", "10", "11", "12", "15"]
+      enable_in_scenarios: ["1", "2", "3", "4", "5", "6", "7", "10"]
 
     # these are all county specific affordable housing bonds but right now
     # they aren't enabled in any scenarios
@@ -1020,7 +771,7 @@ acct_settings:
     # ended formula - this is for CEQA review acceleration
     ceqa_tiering:
       name: "CEQA"
-      enable_in_scenarios: ["1", "2", "3", "4", "5", "6", "7", "10", "11", "12", "15"]
+      enable_in_scenarios: ["1", "2", "3", "4", "5", "6", "7", "10"]
       # any parcel in a tpa
       profitability_adjustment_formula: "(tpp_id > 0) * .01"
 
@@ -1034,21 +785,21 @@ acct_settings:
 
     parking_requirements_pdas:
       name: "Reduce Parking Requirements in PDAs"
-      enable_in_scenarios: ["1", "2", "4", "5", "6", "7", "10", "11", "12", "15"]
+      enable_in_scenarios: ["1", "2", "4", "5", "6", "7", "10"]
       # any parcel in a tpa
       profitability_adjustment_formula: "(pda_id > 0) * .01"
 
     parking_requirements_AVs_s1: # cag
-      name: "Reduce Parking Requirements due to AVs- CAG"
-      enable_in_scenarios: ["1", "6", "11"]
+      name: "Reduce Parking Requirements due to AVs"
+      enable_in_scenarios: ["1", "6"]
       # parcels in San Francisco, Oakland, San Jose
       profitability_adjustment_formula: "(jurisdiction_id == 67000 or
                                           jurisdiction_id == 53000 or
                                           jurisdiction_id == 68000) * .02"
 
     parking_requirements_AVs_s5: # bttf
-      name: "Reduce Parking Requirements due to AVs- BTTF"
-      enable_in_scenarios: ["5", "10", "15"]
+      name: "Reduce Parking Requirements due to AVs"
+      enable_in_scenarios: ["5", "10"]
       # parcels in San Francisco, Oakland, San Jose
       profitability_adjustment_formula: "(jurisdiction_id == 67000 or
                                           jurisdiction_id == 53000 or
@@ -1079,9 +830,6 @@ acct_settings:
       - "6"
       - "7"
       - "10"
-      - "11"
-      - "12"
-      - "15"
     com_for_res_scenarios:
       - "1"
       - "2"
@@ -1090,9 +838,6 @@ acct_settings:
       - "6"
       - "7"
       - "10"
-      - "11"
-      - "12"
-      - "15"
     res_for_res_fee_amounts:
       VH: 25000
       H: 15000
@@ -1168,9 +913,6 @@ control_tables:
     s6_household_controls_input_file: household_controls_s6.csv
     s7_household_controls_input_file: household_controls_s7.csv
     s10_household_controls_input_file: household_controls_s10.csv
-    s11_household_controls_input_file: household_controls_s1.csv
-    s12_household_controls_input_file: household_controls_s2.csv
-    s15_household_controls_input_file: household_controls_s5.csv
     s16_household_controls_input_file: household_controls_s16.csv
     s17_household_controls_input_file: household_controls_s17.csv
   employment:
@@ -1181,9 +923,6 @@ control_tables:
     s6_employment_controls_input_file: employment_controls_s6.csv
     s7_employment_controls_input_file: employment_controls_s7.csv
     s10_employment_controls_input_file: employment_controls_s10.csv
-    s11_employment_controls_input_file: employment_controls_s1.csv
-    s12_employment_controls_input_file: employment_controls_s2.csv
-    s15_employment_controls_input_file: employment_controls_s5.csv
   regional:
     regional_controls_input_file: regional_controls.csv
     s1_regional_controls_input_file: regional_controls_s1.csv
@@ -1192,9 +931,6 @@ control_tables:
     s6_regional_controls_input_file: regional_controls_s6.csv
     s7_regional_controls_input_file: regional_controls_s7.csv
     s10_regional_controls_input_file: regional_controls_s10.csv
-    s11_regional_controls_input_file: regional_controls_s1.csv
-    s12_regional_controls_input_file: regional_controls_s2.csv
-    s15_regional_controls_input_file: regional_controls_s5.csv
     s16_regional_controls_input_file: regional_controls_s16.csv
     s17_regional_controls_input_file: regional_controls_s17.csv
   demographic_forecast:
@@ -1205,9 +941,6 @@ control_tables:
     s6_demographic_forecast_controls_input_file: regional_demographic_forecast_s6.csv
     s7_demographic_forecast_controls_input_file: regional_demographic_forecast_s7.csv
     s10_demographic_forecast_controls_input_file: regional_demographic_forecast_s10.csv
-    s11_demographic_forecast_controls_input_file: regional_demographic_forecast_s1.csv
-    s12_demographic_forecast_controls_input_file: regional_demographic_forecast_s2.csv
-    s15_demographic_forecast_controls_input_file: regional_demographic_forecast_s5.csv
 
 
 logsums:
@@ -1225,12 +958,6 @@ logsums:
     logsum_2030_s7: mandatoryAccessibilities_2050_s7.csv
     logsum_2010_s10: mandatoryAccessibilities_2030_s10.csv
     logsum_2030_s10: mandatoryAccessibilities_2050_s10.csv
-    logsum_2010_s11: mandatoryAccessibilities_2030_s1.csv
-    logsum_2030_s11: mandatoryAccessibilities_2050_s1.csv
-    logsum_2010_s12: mandatoryAccessibilities_2030_s2.csv
-    logsum_2030_s12: mandatoryAccessibilities_2050_s2.csv
-    logsum_2010_s15: mandatoryAccessibilities_2030_s5.csv
-    logsum_2030_s15: mandatoryAccessibilities_2050_s5.csv
   non_mandatory:
     logsum: nonMandatoryAccessibilities_2015.csv
     logsum_2010_s1: nonMandatoryAccessibilities_2030_s1.csv
@@ -1245,12 +972,6 @@ logsums:
     logsum_2030_s7: nonMandatoryAccessibilities_2050_s7.csv
     logsum_2010_s10: nonMandatoryAccessibilities_2030_s10.csv
     logsum_2030_s10: nonMandatoryAccessibilities_2050_s10.csv
-    logsum_2010_s11: nonMandatoryAccessibilities_2030_s1.csv
-    logsum_2030_s11: nonMandatoryAccessibilities_2050_s1.csv
-    logsum_2010_s12: nonMandatoryAccessibilities_2030_s2.csv
-    logsum_2030_s12: nonMandatoryAccessibilities_2050_s2.csv
-    logsum_2010_s15: nonMandatoryAccessibilities_2030_s5.csv
-    logsum_2030_s15: nonMandatoryAccessibilities_2050_s5.csv
   segmentation:
     logsum: AccessibilityMarkets_2015.csv
     logsum_2010_s1: AccessibilityMarkets_2030_s1.csv
@@ -1265,12 +986,6 @@ logsums:
     logsum_2030_s7: AccessibilityMarkets_2050_s7.csv
     logsum_2010_s10: AccessibilityMarkets_2030_s10.csv
     logsum_2030_s10: AccessibilityMarkets_2050_s10.csv
-    logsum_2010_s11: AccessibilityMarkets_2030_s1.csv
-    logsum_2030_s11: AccessibilityMarkets_2050_s1.csv
-    logsum_2010_s12: AccessibilityMarkets_2030_s2.csv
-    logsum_2030_s12: AccessibilityMarkets_2050_s2.csv
-    logsum_2010_s15: AccessibilityMarkets_2030_s5.csv
-    logsum_2030_s15: AccessibilityMarkets_2050_s5.csv
 
 
 model_configs:
@@ -1291,9 +1006,8 @@ model_configs:
     s6_rsh_config: rsh_s1.yaml
     s7_rsh_config: rsh_s2.yaml
     s10_rsh_config: rsh_s5.yaml
-    s11_rsh_config: rsh_s1.yaml
-    s12_rsh_config: rsh_s2.yaml
-    s15_rsh_config: rsh_s5.yaml
+    
+
   rrh:
     rrh_config: rrh.yaml
   nrh:
