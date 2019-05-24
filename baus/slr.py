@@ -32,10 +32,13 @@ def slr_inundate(scenario, parcels, slr_progression_C, slr_progression_R,
 
     if scenario in settings["slr_scenarios"]["mitigation_full"]:
         slr_parcel_inundation = slr_parcel_inundation_mf.to_frame()
-    if scenario in settings["slr_scenarios"]["mitigation_partial"]:
+        orca.add_injectable("slr_mitigation", 'full mitigation')
+    elif scenario in settings["slr_scenarios"]["mitigation_partial"]:
         slr_parcel_inundation = slr_parcel_inundation_mp.to_frame()
+        orca.add_injectable("slr_mitigation", 'partial mitigation')
     else:
         slr_parcel_inundation = slr_parcel_inundation.to_frame()
+        orca.add_injectable("slr_mitigation", 'none')
 
     destroy_parcels = slr_parcel_inundation.\
         query('inundation<=@inundation_yr').astype('bool')

@@ -22,20 +22,30 @@ def config(settings, run_number, scenario, parcels,
         f.write(s + "\n")
 
     # sea level rise
+    # level
     if scenario in settings["slr_scenarios"]["enable_in"]:
         slr_progression = orca.get_table("slr_progression")
         slr = slr_progression['inundated'].max()
         write("Sea level rise in this scenario is %d inches" % slr)
     else:
         write("There is no sea level rise in this scenario")
+    # mitigation
+    slr_mitigation = orca.get_injectable("slr_mitigation")
+    write("Sea level rise mitigation is %s" % slr_mitigation)
 
     write("")
 
     # earthquake
+    # activation
     if scenario in settings["eq_scenarios"]["enable_in"]:
         write("Earthquake is activated")
     else:
         write("Earthquake is not activated")
+    # mitigation
+    if scenario in settings["eq_scenarios"]["mitigation"]:
+        write("Earthquake retrofit policies are applied")
+    else:
+        write("Earthquake retrofit policies are not applied")
 
     write("")
 
@@ -47,7 +57,6 @@ def config(settings, run_number, scenario, parcels,
     write("Household control file used: %s" % hh_fname)
     emp_fname = orca.get_injectable("employment_control_file")
     write("Employment file used: %s" % emp_fname)
-    # these injectables are not storing ...
     reg_fname = orca.get_injectable("reg_control_file")
     write("Regional control file used is: %s" % reg_fname)
     reg_dem_fname = orca.get_injectable("reg_dem_control_file")
@@ -80,7 +89,6 @@ def config(settings, run_number, scenario, parcels,
     else:
         write("No 2030 non-mandatory accessibility file is set")
     # segmentation
-    # this injectable is also not storing ...
     acc_seg_fname_2010 = orca.get_injectable("acc_seg_file_2010")
     write("2010 accessibility segmentation file used: %s"
           % acc_seg_fname_2010)
@@ -1801,6 +1809,7 @@ def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings,
 
         f.close()
 
+        # print out demolished buildings
         eq_demolish = eq_demolish.to_frame()
         eq_demolish_taz = misc.reindex(parcels.zone_id,
                                        eq_demolish.parcel_id)
@@ -1812,6 +1821,26 @@ def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings,
                            "run%d_hazards_eq_demolish_buildings_%d.csv"
                                         % (run_number, year)))
 
+        # print out retrofit buildings that were saved
+        if scenario in settings["eq_scenarios"]["mitigation"]:
+            retrofit_bldgs_tot = orca.get_table("retrofit_bldgs_tot")
+            retrofit_bldgs_tot = retrofit_bldgs_tot.to_frame()
+            retrofit_bldgs_tot_taz = misc.reindex(parcels.zone_id,
+                                                  retrofit_bldgs_tot.parcel_id)
+            retrofit_bldgs_tot['taz'] = retrofit_bldgs_tot_taz
+            retrofit_bldgs_tot = retrofit_bldgs_tot[[
+                'taz', 'residential_units', 'residential_sqft',
+                'non_residential_sqft', 'building_sqft', 'stories',
+                'redfin_sale_price', 'non_residential_rent',
+                'deed_restricted_units', 'residential_price']]
+            retrofit_bldgs_tot = retrofit_bldgs_tot.groupby(['taz']).sum()
+            retrofit_bldgs_tot.\
+                to_csv(os.path.join(
+                       "runs", "run%d_hazards_eq_retrofit_buildings_%d.csv"
+                       % (run_number, year)))
+
+    # print out buildings in 2030, 2035, and 2050 so Horizon team can compare
+    # building inventory by TAZ
     if year in [2030, 2035, 2050] and scenario in \
        settings["eq_scenarios"]["enable_in"]:
         buildings = buildings.to_frame()
@@ -1825,5 +1854,5 @@ def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings,
                                'residential_price']]
         buildings = buildings.groupby(['taz']).sum()
         buildings.to_csv(os.path.join("runs",
-                         "run%d_hazards_eq_buildings_%d.csv"
+                         "run%d_hazards_eq_buildings_list_%d.csv"
                                       % (run_number, year)))
