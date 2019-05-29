@@ -7,6 +7,7 @@ from baus import slr
 from baus import earthquake
 from baus import ual
 from baus import validation
+import numpy as np
 import pandas as pd
 import orca
 import socket
@@ -15,6 +16,9 @@ import warnings
 from baus.utils import compare_summary
 
 warnings.filterwarnings("ignore")
+
+# Set random seed
+np.random.seed(12)
 
 # Suppress scientific notation in pandas output
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
