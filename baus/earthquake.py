@@ -302,14 +302,15 @@ def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
             # in "strategies" scenarios, exclude some existing buildings
             # from destruction due to retrofit
             if scenario in settings["eq_scenarios"]["mitigation"]:
-                retrofit_codes = ['SF01G4N', 'SF2PG5N', 'MF01G5N', 'MF01G3N',
-                                  'MF5PG2N', 'SF01G2N', 'DU01G2N', 'MF25G2N']
+                retrofit_codes = ['DU01G1N', 'DU01G2N', 'MF01G1N', 'MF01G2N',
+                                  'MF25G1N', 'MF25G2N', 'MF25G3N', 'MF25G4N',
+                                  'SF01G1N', 'SF2PG1N']
                 top_build_frag_bldgs = buildings[buildings.index.isin
                                                  (top_build_frag.index)]
                 retrofit_bldgs = top_build_frag_bldgs[top_build_frag_bldgs.
                                                       earthquake_code.isin
                                                       (retrofit_codes)]
-                retro_no = (len(retrofit_bldgs))/2
+                retro_no = round(float(len(retrofit_bldgs))/2)
                 retrofit_set = np.random.choice(retrofit_bldgs.index,
                                                 retro_no, replace=False)
                 # update top_build_frag to remove retrofit buildings

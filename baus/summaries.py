@@ -1814,6 +1814,7 @@ def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings,
         eq_demolish_taz = misc.reindex(parcels.zone_id,
                                        eq_demolish.parcel_id)
         eq_demolish['taz'] = eq_demolish_taz
+        eq_demolish['count'] = 1
         eq_demolish = eq_demolish.drop(['parcel_id', 'year_built',
                                        'redfin_sale_year'], axis=1)
         eq_demolish = eq_demolish.groupby(['taz']).sum()
@@ -1828,11 +1829,12 @@ def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings,
             retrofit_bldgs_tot_taz = misc.reindex(parcels.zone_id,
                                                   retrofit_bldgs_tot.parcel_id)
             retrofit_bldgs_tot['taz'] = retrofit_bldgs_tot_taz
+            retrofit_bldgs_tot['count'] = 1
             retrofit_bldgs_tot = retrofit_bldgs_tot[[
                 'taz', 'residential_units', 'residential_sqft',
                 'non_residential_sqft', 'building_sqft', 'stories',
                 'redfin_sale_price', 'non_residential_rent',
-                'deed_restricted_units', 'residential_price']]
+                'deed_restricted_units', 'residential_price', 'count']]
             retrofit_bldgs_tot = retrofit_bldgs_tot.groupby(['taz']).sum()
             retrofit_bldgs_tot.\
                 to_csv(os.path.join(
@@ -1847,9 +1849,10 @@ def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings,
         buildings_taz = misc.reindex(parcels.zone_id,
                                      buildings.parcel_id)
         buildings['taz'] = buildings_taz
-        buildings = buildings[['taz', 'residential_units', 'residential_sqft',
-                               'non_residential_sqft', 'building_sqft',
-                               'stories', 'redfin_sale_price',
+        buildings['count'] = 1
+        buildings = buildings[['taz', 'count', 'residential_units',
+                               'residential_sqft', 'non_residential_sqft',
+                               'building_sqft', 'stories', 'redfin_sale_price',
                                'non_residential_rent', 'deed_restricted_units',
                                'residential_price']]
         buildings = buildings.groupby(['taz']).sum()
