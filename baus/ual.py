@@ -886,3 +886,39 @@ def balance_rental_and_ownership_hedonics(households, settings,
         utilization_ratio
 
     print "New cap rate = %.2f" % settings["cap_rate"]
+
+@orca.step()
+def save_tenure_indicators(households,buildings, residential_units, year):
+    """
+    Saves the tenure for households and residential units at the end of each
+    year using the "households_tenure_track" and "units_tenure_track" Orca
+    tables, so that these values can be used for any required tenure analysis.
+
+    Data expectations
+    -----------------
+    - households: Orca table of households
+    - buildings: Orca table of buildings
+    - residential_units: Orca table of residential units
+    - year: Orca injectable for current simulation year
+
+    Results
+    -------
+    - None. "households_tenure_track" and "units_tenure_track" Orca tables get
+    added for the base year, and updated for all subsequent years
+    """
+
+    households_tenure = households.to_frame(['building_id','unit_id', 'tenure'])
+    units_tenure = residential_units.to_frame(['unit_id', 'tenure', 'building_id'])
+    households_tenure['year'] = year
+    units_tenure['year'] = year
+    if not ('households_tenure_track' in orca.list_injectables()):
+        orca.add_injectable('households_tenure_track', households_tenure)
+        orca.add_injectable('units_tenure_track', units_tenure)
+    else:
+        households_tenure_track = orca.get_injectable('households_tenure_track')
+        units_tenure_track = orca.get_injectable('units_tenure_track')
+        households_tenure_track = households_tenure_track.append(households_tenure)
+        units_tenure_track = units_tenure_track.append(units_tenure)
+        orca.add_injectable('households_tenure_track', households_tenure_track)
+        orca.add_injectable('units_tenure_track', units_tenure_track)
+
