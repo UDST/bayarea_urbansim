@@ -274,6 +274,9 @@ def run_models(MODE, SCENARIO):
                 "reconcile_unplaced_households",
                 "jobs_transition",
 
+                # (based on higher of predicted price or rent)
+                "assign_tenure_to_new_units",
+
                 # allocate owners to vacant owner-occupied units
                 "hlcm_owner_simulate",
                 # allocate renters to vacant rental units
