@@ -518,7 +518,7 @@ def initialize_new_units(buildings, residential_units):
 
 
 @orca.step()
-def assign_tenure_to_new_units(residential_units, settings):
+def assign_tenure_to_new_units(residential_units, households, settings):
     """
     This data maintenance step assigns tenure to new residential units.
     Tenure is determined by comparing the fitted sale price and fitted
@@ -552,7 +552,8 @@ def assign_tenure_to_new_units(residential_units, settings):
             ColumnSpec('unit_residential_rent', min=0))))
     '''
 
-    cols = ['tenure', 'unit_residential_price', 'unit_residential_rent']
+    cols = ['tenure', 'unit_residential_price', 'unit_residential_rent',
+            'vacant_units']
     units = residential_units.to_frame(cols)
 
     # Filter for units that are missing a tenure assignment
@@ -567,6 +568,7 @@ def assign_tenure_to_new_units(residential_units, settings):
     rental_units = (units.unit_residential_rent > units.unit_residential_price)
     units.loc[~rental_units, 'tenure'] = 'own'
     units.loc[rental_units, 'tenure'] = 'rent'
+    units = unplaced_adjustment(households, units)
 
     print "Adding tenure assignment to %d new residential units" % len(units)
     print units.describe()
@@ -574,6 +576,47 @@ def assign_tenure_to_new_units(residential_units, settings):
     residential_units.update_col_from_series(
         'tenure', units.tenure, cast=True)
 
+def unplaced_adjustment(households, units):
+
+    """
+    Modifies tenure assignment to new units, so that it is not only based on
+    the highest value between buying price and rent (converted to equivalent),
+    but also considers the minimum number of units required by tenure category
+    to meet demand
+
+    Data expectations
+    -----------------
+    - households: Orca table of households
+    - units: Pandas DataFrame with initial tenure assignment
+
+    Results
+    -------
+    - units: DataFrame with adjusted tenure values
+    """
+
+    hh = households.to_frame(['unit_id', 'building_id', 'tenure'])
+    vacant_units = units[units['vacant_units'] > 0][['tenure', 'vacant_units']]
+    min_new = {}
+    for tenure in ['own', 'rent']:
+        units_tenure = vacant_units[vacant_units['tenure'] == tenure]
+        vacant_units_tenure = units_tenure.vacant_units.sum()
+        unplaced_hh = hh[(hh['tenure'] == tenure) & (hh['unit_id'] == -1)]
+        unplaced_hh = len(unplaced_hh.index)
+        min_new[tenure] = max(unplaced_hh - vacant_units_tenure, 0)
+    complement = {'own':'rent', 'rent':'own'}
+    price = {'own':'unit_residential_price','rent': 'unit_residential_rent'}
+    for tenure in ['own', 'rent']:
+        units_tenure = vacant_units[vacant_units['tenure'] == tenure]
+        units_comp = vacant_units[vacant_units['tenure'] == complement[tenure]]
+        if (min_new[complement[tenure]] < len(units_comp.index)) & \
+                (min_new[tenure] > len(units_tenure.index)):
+            available_units = len(units_tenure.index)
+            missing_units = min_new[tenure] - available_units
+            available_units = available_units - min_new[complement[tenure]]
+            extra_units = int(min(missing_units, available_units))
+            extra_units = units_comp.nlargest(extra_units, price[tenure])
+            units.loc[extra_units.index, 'tenure'] = tenure
+    return units
 
 @orca.step()
 def save_intermediate_tables(households, buildings, parcels,
@@ -768,8 +811,11 @@ def hlcm_owner_simulate(households, residential_units,
     # alternatives, for supply/demand equilibration, and needs to NOT be in the
     # choosers table, to avoid conflicting when the tables are joined
 
-    return hlcm_simulate(households, residential_units, aggregations,
-                         settings, hlcm_owner_config, 'price_equilibration')
+    correct_alternative_filters_sample(residential_units, households, 'own')
+    hlcm_simulate(orca.get_table('own_hh'), orca.get_table('own_units'),
+                  aggregations, settings, hlcm_owner_config,
+                  'price_equilibration')
+    update_unit_ids(households, 'own')
 
 
 @orca.step()
@@ -785,8 +831,68 @@ def hlcm_owner_lowincome_simulate(households, residential_units,
 @orca.step()
 def hlcm_renter_simulate(households, residential_units, aggregations,
                          settings, hlcm_renter_config):
-    return hlcm_simulate(households, residential_units, aggregations,
-                         settings, hlcm_renter_config, 'rent_equilibration')
+
+    correct_alternative_filters_sample(residential_units, households, 'rent')
+    hlcm_simulate(orca.get_table('rent_hh'), orca.get_table('rent_units'),
+                  aggregations, settings, hlcm_renter_config,
+                  'rent_equilibration')
+    update_unit_ids(households, 'rent')
+
+
+def correct_alternative_filters_sample(residential_units, households, tenure):
+    """
+    Creates modified versions of the alternatives and choosers Orca tables
+    (residential units and households), so that the parameters that will be
+    given to the hlcm_simulate() method are already filtered with the
+    alternative filters defined in the hlcm_owner and hlcm_renter yaml files.
+
+    Data expectations
+    -----------------
+    - residential_units: Orca table of residential units
+    - households: Orca table of households
+    - tenure: String for tenure. Takes the values of 'rent' or 'own'
+
+    Results
+    -------
+    None. New tables of residential units and households by tenure segment
+    are registered in Orca.
+    """
+
+    units = residential_units.to_frame()
+    units_tenure = units[units.tenure == tenure]
+    units_name = tenure + '_units'
+    orca.add_table(units_name, units_tenure, cache=True, cache_scope='step')
+    hh = households.to_frame()
+    hh_tenure = hh[hh.tenure == tenure]
+    hh_name = tenure + '_hh'
+    orca.add_table(hh_name, hh_tenure, cache=True, cache_scope='step')
+    orca.broadcast('buildings', units_name,
+                   cast_index=True, onto_on='building_id')
+    orca.broadcast(units_name, hh_name, cast_index=True, onto_on='unit_id')
+
+
+def update_unit_ids(households, tenure):
+    """
+    After running the hlcm simulation for a given tenure (own or rent), this
+    function retrieves the new unit_id values from the own_hh or rent_hh
+    Orca tables as applicable. It then updates the general households table
+    with the new unit ids that were selected by unplaced households.
+
+    Data expectations
+    -----------------
+    - households: Orca table of households
+    - tenure: String for tenure. Takes the values of 'rent' or 'own'
+
+    Results
+    -------
+    None. unit_id column gets updated in the households table.
+    """
+
+    unit_ids = households.to_frame(['unit_id'])
+    updated = orca.get_table(tenure+'_hh').to_frame(['unit_id'])
+    unit_ids.loc[unit_ids.index.isin(updated.index),
+                 'unit_id']= updated['unit_id']
+    households.update_col_from_series('unit_id', unit_ids.unit_id, cast=True)
 
 
 @orca.step()
