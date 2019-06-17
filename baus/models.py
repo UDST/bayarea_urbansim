@@ -119,15 +119,6 @@ def _proportional_jobs_model(
     # city but not locations to put them in.  we need to drop this demand
     drop = need_more_jobs.index.difference(locations_series.unique())
     print "We don't have any locations for these locations:\n", drop
-    
-    print "TEMP INSTRUMENTING"
-    print type(need_more_jobs)
-    print type(drop)
-    print type(need_more_jobs.drop(drop))
-    print need_more_jobs
-    print drop
-    print need_more_jobs.drop(drop)
-    
     need_more_jobs = need_more_jobs.drop(drop).astype('int')
 
     # choose random locations within jurises to match need_more_jobs totals
@@ -520,10 +511,6 @@ def residential_developer(feasibility, households, buildings, parcels, year,
         # method below
         buildings = orca.get_table('buildings')
 
-        print "TEMP INSTRUMENTING"
-        print type(target)
-        print target
-
         new_buildings = utils.run_developer(
             "residential",
             households,
@@ -730,10 +717,6 @@ def office_developer(feasibility, jobs, buildings, parcels, year,
             # again because the buildings df gets modified by the run_developer
             # method below
             buildings = orca.get_table('buildings')
-
-            print "TEMP INSTRUMENTING"
-            print type(target)
-            print target
 
             new_buildings = utils.run_developer(
                 typ.lower(),
