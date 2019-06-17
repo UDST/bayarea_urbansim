@@ -208,7 +208,7 @@ def simple_ipf(seed_matrix, col_marginals, row_marginals, tolerance=1, cnt=0):
     assert np.absolute(row_marginals.sum() - col_marginals.sum()) < 5.0
 
     # most numpy/pandas combinations will perform this conversion
-    # automatically, but explicit is safer - see PR #98
+    # automatically, but explicit is safer - see PR #99
     if isinstance(col_marginals, pd.Series):
         col_marginals = col_marginals.values
 
