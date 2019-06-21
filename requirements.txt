@@ -1,12 +1,5 @@
--e git+https://github.com/synthicity/urbansim.git@286e61049ac1e67c7e7a9eec8acecea704b1a332#egg=urbansim
--e git+https://github.com/synthicity/urbansim_defaults.git@8c95c2a10c5d0bcd1a470a3b636b47d8824e1254#egg=urbansim_defaults
--e git+https://github.com/UDST/orca.git@f49398e2a363f8869e14b5218640d8d9c13863a4#egg=orca
--e git+https://github.com/UDST/orca_test.git@02357bacc6a31e87b1476ff0f5b377a683e0c86a#egg=orca_test
--e git+https://github.com/UDST/pandana.git@8f24b8a1b7539c95b51153e9954f755a7116089b#egg=pandana
-# using this version of anaconda http://repo.continuum.io/archive/Anaconda2-4.0.0-Linux-x86_64.sh
-# to install:
-# 1) get that anaconda and install
-# 2) clone master (or release) of bayarea_urbansim
-# 3) pip install -r requirements.txt
-# run by calling `python baus.py &`
+-e git+https://github.com/UDST/urbansim.git@master#egg=urbansim
+-e git+https://github.com/UDST/urbansim_defaults.git@python3#egg=urbansim_defaults
+-e git+https://github.com/UDST/orca.git@master#egg=orca
+-e git+https://github.com/UDST/orca_test.git@master#egg=orca_test
 boto
