@@ -595,7 +595,7 @@ def unplaced_adjustment(households, units):
     """
 
     hh = households.to_frame(['unit_id', 'building_id', 'tenure'])
-    vacant_units = units[units['vacant_units'] > 0][['tenure', 'vacant_units']]
+    vacant_units = units[units['vacant_units'] > 0]
     min_new = {}
     for tenure in ['own', 'rent']:
         units_tenure = vacant_units[vacant_units['tenure'] == tenure]
@@ -612,8 +612,8 @@ def unplaced_adjustment(households, units):
                 (min_new[tenure] > len(units_tenure.index)):
             available_units = len(units_tenure.index)
             missing_units = min_new[tenure] - available_units
-            available_units = available_units - min_new[complement[tenure]]
-            extra_units = int(min(missing_units, available_units))
+            extra_units = len(units_comp.index) - min_new[complement[tenure]]
+            extra_units = int(min(missing_units, extra_units))
             extra_units = units_comp.nlargest(extra_units, price[tenure])
             units.loc[extra_units.index, 'tenure'] = tenure
     return units
