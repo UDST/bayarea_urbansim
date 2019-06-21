@@ -26,12 +26,12 @@ def slr_inundate(scenario, parcels, slr_progression_C, slr_progression_R,
 
     orca.add_table("slr_progression", slr_progression)
     inundation_yr = slr_progression.query('year==@year')['inundated'].item()
-    print "Inundation in model year is %d inches" % inundation_yr
+    print("Inundation in model year is %d inches" % inundation_yr)
     slr_parcel_inundation = slr_parcel_inundation.to_frame()
     destroy_parcels = slr_parcel_inundation.\
         query('inundation<=@inundation_yr').astype('bool')
     orca.add_table('destroy_parcels', destroy_parcels)
-    print "Number of parcels destroyed: %d" % len(destroy_parcels)
+    print("Number of parcels destroyed: %d" % len(destroy_parcels))
 
     slr_nodev = pd.Series(False, parcels.index)
     destroy = pd.Series(destroy_parcels['inundation'])
@@ -55,7 +55,7 @@ def slr_remove_dev(buildings, year, parcels, households, jobs,
                                    (destroy_parcels.index)]
     orca.add_table("slr_demolish", slr_demolish)
 
-    print "Demolishing %d buildings" % len(slr_demolish)
+    print("Demolishing %d buildings" % len(slr_demolish))
     households = households.to_frame()
     hh_unplaced = households[households["building_id"] == -1]
     jobs = jobs.to_frame()
@@ -79,4 +79,4 @@ def slr_remove_dev(buildings, year, parcels, households, jobs,
     orca.add_injectable("jobs_unplaced_slr", jobs_unplaced_slr)
     orca.add_table("buildings", buildings)
     buildings = orca.get_table("buildings")
-    print "Demolished %d buildings" % (l1 - len(buildings))
+    print("Demolished %d buildings" % (l1 - len(buildings)))

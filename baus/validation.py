@@ -20,7 +20,7 @@ def assert_series_equal(s1, s2, head=None):
 
 # make sure the household controls are currently being matched
 def check_household_controls(households, household_controls, year):
-    print "Check household controls"
+    print("Check household controls")
     current_household_controls = household_controls.local.loc[year]
     current_household_controls = current_household_controls.\
         set_index("base_income_quartile").total_number_of_households
@@ -33,7 +33,7 @@ def check_household_controls(households, household_controls, year):
 
 # make sure the employment controls are currently being matched
 def check_job_controls(jobs, employment_controls, year, settings):
-    print "Check job controls"
+    print("Check job controls")
     current_employment_controls = employment_controls.local.loc[year]
     current_employment_controls = current_employment_controls.\
         set_index("empsix_id").number_of_jobs
@@ -48,7 +48,7 @@ def check_job_controls(jobs, employment_controls, year, settings):
 
 
 def check_residential_units(residential_units, buildings):
-    print "Check residential units"
+    print("Check residential units")
     # assert we fanned out the residential units correctly
     assert len(residential_units) == buildings.residential_units.sum()
 
@@ -71,7 +71,7 @@ def check_residential_units(residential_units, buildings):
 # make sure everyone gets a house - this might not exist in the real world,
 # but due to the nature of control totals it exists here
 def check_no_unplaced_households(households, year):
-    print "Check no unplaced households"
+    print("Check no unplaced households")
     # for some reason, since we added renter/owner models, we do have
     # unplaced households in the first couple of years, which eventually
     # evens out
@@ -82,13 +82,13 @@ def check_no_unplaced_households(households, year):
 
 
 def check_no_unplaced_jobs(jobs, year):
-    print "Check no unplaced jobs"
+    print("Check no unplaced jobs")
     assert -1 not in jobs.building_id.value_counts()
 
 
 # check not more households than units or jobs than job spaces
 def check_no_overfull_buildings(households, buildings):
-    print "Check no overfull buildings"
+    print("Check no overfull buildings")
     assert True not in (buildings.vacant_res_units < 0).value_counts()
     # there are overfull job spaces based on the assignment and also
     # proportional job model
@@ -97,7 +97,7 @@ def check_no_overfull_buildings(households, buildings):
 
 # households have both unit ids and building ids - make sure they're in sync
 def check_unit_ids_match_building_ids(households, residential_units):
-    print "Check unit ids and building ids match"
+    print("Check unit ids and building ids match")
     building_ids = misc.reindex(
         residential_units.building_id, households.unit_id)
     assert_series_equal(building_ids, households.building_id, 25000)

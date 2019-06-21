@@ -158,14 +158,14 @@ def assign_deed_restricted_units(df, parcels):
         units = pd.Series(buildings_ids.index.values).value_counts()
         df.loc[units.index, "deed_restricted_units"] += units.values
 
-    print "Total deed restricted units after random selection: %d" % \
-        df.deed_restricted_units.sum()
+    print("Total deed restricted units after random selection: %d" % \
+        df.deed_restricted_units.sum())
 
     df["deed_restricted_units"] = \
         df[["deed_restricted_units", "residential_units"]].min(axis=1)
 
-    print "Total deed restricted units after truncating to res units: %d" % \
-        df.deed_restricted_units.sum()
+    print("Total deed restricted units after truncating to res units: %d" % \
+        df.deed_restricted_units.sum())
 
     return df
 
@@ -250,15 +250,15 @@ def correct_baseyear_vacancies(buildings, parcels, jobs, store):
 
     jobs_county = misc.reindex(buildings_county, jobs.building_id)
 
-    print "Vacancy rate by county:\n", \
+    print("Vacancy rate by county:\n", \
         buildings.job_spaces.groupby(buildings_county).sum() / \
-        jobs_county.value_counts() - 1.0
+        jobs_county.value_counts() - 1.0)
 
     jobs_juris = misc.reindex(buildings_juris, jobs.building_id)
 
     s = buildings.job_spaces.groupby(buildings_juris).sum() / \
         jobs_juris.value_counts() - 1.0
-    print "Vacancy rate by juris:\n", s.to_string()
+    print("Vacancy rate by juris:\n", s.to_string())
 
     return buildings
 

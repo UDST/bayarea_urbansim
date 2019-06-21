@@ -37,7 +37,7 @@ def save_and_restore_state(in_d, outhdf="save_state.h5"):
         store = pd.HDFStore(outhdf)
         out_d = {}
         for table_name in store:
-            print "Restoring", table_name
+            print("Restoring", table_name)
             out_d[table_name[1:]] = store[table_name]
         return out_d
 
@@ -49,7 +49,7 @@ def save_and_restore_state(in_d, outhdf="save_state.h5"):
         except:
             # not a dataframe wrapper
             continue
-        print "Saving", table_name
+        print("Saving", table_name)
         store[table_name] = table
     store.close()
     sys.exit(0)
@@ -184,8 +184,8 @@ def constrained_normalization(marginals, constraint, total):
         num_constrained = len(constrained[constrained is True])
         num_exceeds = len(exceeds[exceeds is True])
 
-        print "Len constrained = %d, exceeds = %d" %\
-            (num_constrained, num_exceeds)
+        print("Len constrained = %d, exceeds = %d" %\
+            (num_constrained, num_exceeds))
 
         if num_exceeds == 0:
             return marginals
@@ -212,7 +212,7 @@ def simple_ipf(seed_matrix, col_marginals, row_marginals, tolerance=1, cnt=0):
     seed_matrix *= ratios
     closeness = np.absolute(row_marginals - seed_matrix.sum(axis=1)).sum()
     assert np.absolute(col_marginals - seed_matrix.sum(axis=0)).sum() < .01
-    print "row closeness", closeness
+    print("row closeness", closeness)
     if closeness < tolerance:
         return seed_matrix
 
@@ -222,7 +222,7 @@ def simple_ipf(seed_matrix, col_marginals, row_marginals, tolerance=1, cnt=0):
     seed_matrix = seed_matrix * ratios.reshape((ratios.size, 1))
     assert np.absolute(row_marginals - seed_matrix.sum(axis=1)).sum() < .01
     closeness = np.absolute(col_marginals - seed_matrix.sum(axis=0)).sum()
-    print "col closeness", closeness
+    print("col closeness", closeness)
     if closeness < tolerance:
         return seed_matrix
 

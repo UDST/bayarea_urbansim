@@ -534,7 +534,7 @@ def diagnostic_output(households, buildings, parcels, taz, jobs, settings,
     # save the dropped buildings to a csv
     if "dropped_buildings" in orca.orca._TABLES:
         df = orca.get_table("dropped_buildings").to_frame()
-        print "Dropped buildings", df.describe()
+        print("Dropped buildings", df.describe())
         df.to_csv(
             "runs/run{}_dropped_buildings.csv".format(run_number)
         )
