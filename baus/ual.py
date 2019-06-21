@@ -576,6 +576,7 @@ def assign_tenure_to_new_units(residential_units, households, settings):
     residential_units.update_col_from_series(
         'tenure', units.tenure, cast=True)
 
+
 def unplaced_adjustment(households, units):
 
     """
@@ -603,8 +604,8 @@ def unplaced_adjustment(households, units):
         unplaced_hh = hh[(hh['tenure'] == tenure) & (hh['unit_id'] == -1)]
         unplaced_hh = len(unplaced_hh.index)
         min_new[tenure] = max(unplaced_hh - vacant_units_tenure, 0)
-    complement = {'own':'rent', 'rent':'own'}
-    price = {'own':'unit_residential_price','rent': 'unit_residential_rent'}
+    complement = {'own': 'rent', 'rent': 'own'}
+    price = {'own': 'unit_residential_price', 'rent': 'unit_residential_rent'}
     for tenure in ['own', 'rent']:
         units_tenure = vacant_units[vacant_units['tenure'] == tenure]
         units_comp = vacant_units[vacant_units['tenure'] == complement[tenure]]
@@ -617,6 +618,7 @@ def unplaced_adjustment(households, units):
             extra_units = units_comp.nlargest(extra_units, price[tenure])
             units.loc[extra_units.index, 'tenure'] = tenure
     return units
+
 
 @orca.step()
 def save_intermediate_tables(households, buildings, parcels,
@@ -891,7 +893,7 @@ def update_unit_ids(households, tenure):
     unit_ids = households.to_frame(['unit_id'])
     updated = orca.get_table(tenure+'_hh').to_frame(['unit_id'])
     unit_ids.loc[unit_ids.index.isin(updated.index),
-                 'unit_id']= updated['unit_id']
+                 'unit_id'] = updated['unit_id']
     households.update_col_from_series('unit_id', unit_ids.unit_id, cast=True)
 
 
@@ -993,8 +995,9 @@ def balance_rental_and_ownership_hedonics(households, settings,
 
     print "New cap rate = %.2f" % settings["cap_rate"]
 
+
 @orca.step()
-def save_tenure_indicators(households,buildings, residential_units, year):
+def save_tenure_indicators(households, buildings, residential_units, year):
     """
     Saves the tenure for households and residential units at the end of each
     year using the "households_tenure_track" and "units_tenure_track" Orca
@@ -1013,18 +1016,21 @@ def save_tenure_indicators(households,buildings, residential_units, year):
     added for the base year, and updated for all subsequent years
     """
 
-    households_tenure = households.to_frame(['building_id','unit_id', 'tenure'])
-    units_tenure = residential_units.to_frame(['unit_id', 'tenure', 'building_id'])
+    households_tenure = households.to_frame(['building_id', 'unit_id',
+                                             'tenure'])
+    units_tenure = residential_units.to_frame(['unit_id', 'tenure',
+                                               'building_id'])
     households_tenure['year'] = year
     units_tenure['year'] = year
     if not ('households_tenure_track' in orca.list_injectables()):
         orca.add_injectable('households_tenure_track', households_tenure)
         orca.add_injectable('units_tenure_track', units_tenure)
     else:
-        households_tenure_track = orca.get_injectable('households_tenure_track')
+        households_tenure_track = \
+            orca.get_injectable('households_tenure_track')
         units_tenure_track = orca.get_injectable('units_tenure_track')
-        households_tenure_track = households_tenure_track.append(households_tenure)
+        households_tenure_track = \
+            households_tenure_track.append(households_tenure)
         units_tenure_track = units_tenure_track.append(units_tenure)
         orca.add_injectable('households_tenure_track', households_tenure_track)
         orca.add_injectable('units_tenure_track', units_tenure_track)
-

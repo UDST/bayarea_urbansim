@@ -212,7 +212,6 @@ def simple_ipf(seed_matrix, col_marginals, row_marginals, tolerance=1, cnt=0):
     if isinstance(col_marginals, pd.Series):
         col_marginals = col_marginals.values
 
-
     # first normalize on columns
     ratios = col_marginals / seed_matrix.sum(axis=0)
     seed_matrix *= ratios

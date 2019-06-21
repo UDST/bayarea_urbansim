@@ -987,7 +987,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     taz_df["resacre"] = scaled_resacre(
         base_year_summary_taz.RESACRE_UNWEIGHTED, taz_df.resacre_unweighted)
     rc = regional_controls.to_frame()
-    taz_df = add_population(taz_df, year, rc, check_close = False)
+    taz_df = add_population(taz_df, year, rc, check_close=False)
     taz_df.totpop = taz_df.hhpop + taz_df.gqpop
     taz_df = add_employment(taz_df, year, rc)
     taz_df = add_age_categories(taz_df, year, rc)
@@ -1395,7 +1395,7 @@ def add_population(df, year, regional_controls, check_close=True):
     zfi = zone_forecast_inputs()
     s = df.tothh * zfi.meanhhsize
 
-    if check_close == True:
+    if check_close:
         s = scale_by_target(s, target, .15)
     else:
         s = scale_by_target(s, target)
