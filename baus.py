@@ -7,6 +7,7 @@ from baus import slr
 from baus import earthquake
 from baus import ual
 from baus import validation
+import numpy as np
 import pandas as pd
 import orca
 import socket
@@ -21,6 +22,7 @@ pd.set_option('display.float_format', lambda x: '%.3f' % x)
 
 SLACK = MAPS = "URBANSIM_SLACK" in os.environ
 LOGS = True
+RANDOM_SEED = False
 INTERACT = False
 SCENARIO = None
 MODE = "simulation"
@@ -66,6 +68,9 @@ parser.add_argument('-y', action='store', dest='out_year', type=int,
 parser.add_argument('--mode', action='store', dest='mode',
                     help='which mode to run (see code for mode options)')
 
+parser.add_argument('--random-seed', action='store_true', dest='random_seed',
+                    help='set a random seed for consistent stochastic output')
+
 parser.add_argument('--disable-slack', action='store_true', dest='noslack',
                     help='disable slack outputs')
 
@@ -89,6 +94,9 @@ SKIP_BASE_YEAR = options.skip_base_year
 if options.mode:
     MODE = options.mode
 
+if options.random_seed:
+    RANDOM_SEED = True
+
 if options.noslack:
     SLACK = False
 
@@ -105,6 +113,9 @@ if LOGS:
     print '***The Standard stream is being written to /runs/run{0}.log***'\
         .format(run_num)
     sys.stdout = sys.stderr = open("runs/run%d.log" % run_num, 'w')
+
+if RANDOM_SEED:
+    np.random.seed(12)
 
 if SLACK:
     from slacker import Slacker
