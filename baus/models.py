@@ -119,7 +119,7 @@ def _proportional_jobs_model(
     # city but not locations to put them in.  we need to drop this demand
     drop = need_more_jobs.index.difference(locations_series.unique())
     print "We don't have any locations for these locations:\n", drop
-    need_more_jobs = need_more_jobs.drop(drop)
+    need_more_jobs = need_more_jobs.drop(drop).astype('int')
 
     # choose random locations within jurises to match need_more_jobs totals
     choices = groupby_random_choice(locations_series, need_more_jobs,
@@ -523,7 +523,7 @@ def residential_developer(feasibility, households, buildings, parcels, year,
             year=year,
             form_to_btype_callback=form_to_btype_func,
             add_more_columns_callback=add_extra_columns_func,
-            num_units_to_build=target,
+            num_units_to_build=int(target),
             profit_to_prob_func=subsidies.profit_to_prob_func,
             **kwargs)
 
@@ -731,7 +731,7 @@ def office_developer(feasibility, jobs, buildings, parcels, year,
                 form_to_btype_callback=form_to_btype_func,
                 add_more_columns_callback=add_extra_columns_func,
                 residential=False,
-                num_units_to_build=target,
+                num_units_to_build=int(target),
                 profit_to_prob_func=subsidies.profit_to_prob_func,
                 **dev_settings['kwargs'])
 
