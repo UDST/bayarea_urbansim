@@ -1,5 +1,5 @@
 -e git+https://github.com/UDST/urbansim.git@master#egg=urbansim
--e git+https://github.com/UDST/urbansim_defaults.git@python3#egg=urbansim_defaults
+-e git+https://github.com/UDST/urbansim_defaults.git@python3-mtc#egg=urbansim_defaults
 -e git+https://github.com/UDST/orca.git@master#egg=orca
 -e git+https://github.com/UDST/orca_test.git@master#egg=orca_test
 boto
