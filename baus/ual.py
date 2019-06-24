@@ -813,6 +813,9 @@ def hlcm_owner_simulate(households, residential_units,
     # alternatives, for supply/demand equilibration, and needs to NOT be in the
     # choosers table, to avoid conflicting when the tables are joined
 
+    return hlcm_simulate(households, residential_units, aggregations,
+                         settings, hlcm_owner_config, 'price_equilibration')
+
     correct_alternative_filters_sample(residential_units, households, 'own')
     hlcm_simulate(orca.get_table('own_hh'), orca.get_table('own_units'),
                   aggregations, settings, hlcm_owner_config,
@@ -833,6 +836,9 @@ def hlcm_owner_lowincome_simulate(households, residential_units,
 @orca.step()
 def hlcm_renter_simulate(households, residential_units, aggregations,
                          settings, hlcm_renter_config):
+
+    return hlcm_simulate(households, residential_units, aggregations,
+                         settings, hlcm_renter_config, 'rent_equilibration')
 
     correct_alternative_filters_sample(residential_units, households, 'rent')
     hlcm_simulate(orca.get_table('rent_hh'), orca.get_table('rent_units'),
@@ -997,7 +1003,8 @@ def balance_rental_and_ownership_hedonics(households, settings,
 
 
 @orca.step()
-def save_tenure_indicators(households, buildings, residential_units, year):
+def save_tenure_indicators(households, buildings, residential_units, 
+                           year, run_number):
     """
     Saves the tenure for households and residential units at the end of each
     year using the "households_tenure_track" and "units_tenure_track" Orca
@@ -1034,3 +1041,7 @@ def save_tenure_indicators(households, buildings, residential_units, year):
         units_tenure_track = units_tenure_track.append(units_tenure)
         orca.add_injectable('households_tenure_track', households_tenure_track)
         orca.add_injectable('units_tenure_track', units_tenure_track)
+        households_tenure_track.to_csv(
+                "runs/run{}_hh_tenure_{}.csv".format(run_number, year))
+        units_tenure_track.to_csv(
+                "runs/run{}_units_tenure_{}.csv".format(run_number, year))
