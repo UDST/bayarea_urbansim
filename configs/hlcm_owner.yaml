@@ -23,7 +23,7 @@ estimation_sample_size: 6000
 prediction_sample_size: null
 
 default_config:
-    model_expression: np.log1p(total_jobs_45_gen_tt_min) + np.log1p(sum_income_45_gen_tt_min)
+    model_expression: np.log1p(total_jobs_gen_tt_CAR_45) + np.log1p(sum_income_gen_tt_CAR_45)
         + juris_ave_income + jobs_1500 + residential_units_1500 + np.log1p(unit_residential_price)
         + np.log1p(sqft_per_unit) + sfdu
 
@@ -31,282 +31,282 @@ models:
     1:
         fit_parameters:
             Coefficient:
-                jobs_1500: -0.028320011860910512
-                juris_ave_income: -0.39574100401202816
-                np.log1p(sqft_per_unit): -0.11256493784821853
-                np.log1p(sum_income_45_gen_tt_min): 0.14348845938975854
-                np.log1p(total_jobs_45_gen_tt_min): -0.19140546018811924
-                np.log1p(unit_residential_price): -0.23107546664791145
-                residential_units_1500: -0.2526936625076566
-                sfdu: 0.2341241870993695
+                jobs_1500: -0.025661128404660047
+                juris_ave_income: -0.3718767374861433
+                np.log1p(sqft_per_unit): -0.10467276266454029
+                np.log1p(sum_income_gen_tt_CAR_45): 0.6323676015617451
+                np.log1p(total_jobs_gen_tt_CAR_45): -0.6142636662849019
+                np.log1p(unit_residential_price): -0.3222504366819485
+                residential_units_1500: -0.27303175079887676
+                sfdu: 0.21729397499265712
             Std. Error:
-                jobs_1500: 0.01325127102832193
-                juris_ave_income: 0.047847539681498893
-                np.log1p(sqft_per_unit): 0.030912547122984805
-                np.log1p(sum_income_45_gen_tt_min): 0.03408456149003405
-                np.log1p(total_jobs_45_gen_tt_min): 0.035859601489551744
-                np.log1p(unit_residential_price): 0.039557764566539935
-                residential_units_1500: 0.026667239217094855
-                sfdu: 0.01718556308824958
+                jobs_1500: 0.012710757608270621
+                juris_ave_income: 0.060266521384063854
+                np.log1p(sqft_per_unit): 0.030826899992204455
+                np.log1p(sum_income_gen_tt_CAR_45): 0.04987920460032072
+                np.log1p(total_jobs_gen_tt_CAR_45): 0.052479237690429774
+                np.log1p(unit_residential_price): 0.03897814905111187
+                residential_units_1500: 0.026255810102845917
+                sfdu: 0.01657969618993065
             T-Score:
-                jobs_1500: -2.137154375635528
-                juris_ave_income: -8.27087467080462
-                np.log1p(sqft_per_unit): -3.6413996362183196
-                np.log1p(sum_income_45_gen_tt_min): 4.2097786539431645
-                np.log1p(total_jobs_45_gen_tt_min): -5.337634893792342
-                np.log1p(unit_residential_price): -5.841469283715981
-                residential_units_1500: -9.47580889234567
-                sfdu: 13.623306137664414
+                jobs_1500: -2.018851212138834
+                juris_ave_income: -6.170535961686978
+                np.log1p(sqft_per_unit): -3.3955007701393933
+                np.log1p(sum_income_gen_tt_CAR_45): 12.677980866552932
+                np.log1p(total_jobs_gen_tt_CAR_45): -11.704889272751771
+                np.log1p(unit_residential_price): -8.267463810541209
+                residential_units_1500: -10.39890788855463
+                sfdu: 13.106028753688884
         fitted: true
         log_likelihoods:
-            convergence: -21509.222969873816
-            'null': -21864.296577339213
-            ratio: 0.016239882504768377
+            convergence: -21423.605729522973
+            'null': -21782.144094225212
+            ratio: 0.016460196165780316
         name: 1
     2:
         fit_parameters:
             Coefficient:
-                jobs_1500: -0.03442025407417646
-                juris_ave_income: -0.4853061539089772
-                np.log1p(sqft_per_unit): -0.13440441235881373
-                np.log1p(sum_income_45_gen_tt_min): 0.035517848260062615
-                np.log1p(total_jobs_45_gen_tt_min): -0.064946323493494
-                np.log1p(unit_residential_price): -0.1880850881593235
-                residential_units_1500: -0.32146816411782675
-                sfdu: 0.2776741375215419
+                jobs_1500: -0.02668399705172651
+                juris_ave_income: -0.4556418332722915
+                np.log1p(sqft_per_unit): -0.13438373649201218
+                np.log1p(sum_income_gen_tt_CAR_45): -0.25914937822770445
+                np.log1p(total_jobs_gen_tt_CAR_45): 0.2095404421367441
+                np.log1p(unit_residential_price): -0.22401173490625007
+                residential_units_1500: -0.3375839997807816
+                sfdu: 0.2725655293440662
             Std. Error:
-                jobs_1500: 0.013281334954704708
-                juris_ave_income: 0.04816363915446928
-                np.log1p(sqft_per_unit): 0.030908311212484375
-                np.log1p(sum_income_45_gen_tt_min): 0.035002095463818064
-                np.log1p(total_jobs_45_gen_tt_min): 0.0364638740602394
-                np.log1p(unit_residential_price): 0.03999987960382763
-                residential_units_1500: 0.026691806793877445
-                sfdu: 0.017434312016519845
+                jobs_1500: 0.013170064606889808
+                juris_ave_income: 0.060997406717743695
+                np.log1p(sqft_per_unit): 0.031538106825414434
+                np.log1p(sum_income_gen_tt_CAR_45): 0.050850567842768465
+                np.log1p(total_jobs_gen_tt_CAR_45): 0.05333407633883874
+                np.log1p(unit_residential_price): 0.03992674922032543
+                residential_units_1500: 0.026802378200897755
+                sfdu: 0.017580737737890102
             T-Score:
-                jobs_1500: -2.5916260821344332
-                juris_ave_income: -10.076193627157508
-                np.log1p(sqft_per_unit): -4.348487739586548
-                np.log1p(sum_income_45_gen_tt_min): 1.0147349119934173
-                np.log1p(total_jobs_45_gen_tt_min): -1.7811141895181173
-                np.log1p(unit_residential_price): -4.702141356978621
-                residential_units_1500: -12.043701897001778
-                sfdu: 15.92687668193803
+                jobs_1500: -2.0261098064596434
+                juris_ave_income: -7.469855815030062
+                np.log1p(sqft_per_unit): -4.26099566584388
+                np.log1p(sum_income_gen_tt_CAR_45): -5.09629271061441
+                np.log1p(total_jobs_gen_tt_CAR_45): 3.92882855616557
+                np.log1p(unit_residential_price): -5.610567834363356
+                residential_units_1500: -12.595300209944583
+                sfdu: 15.50364571770111
         fitted: true
         log_likelihoods:
-            convergence: -21477.172092590175
-            'null': -21883.856692366357
-            ratio: 0.018583771841187535
+            convergence: -21449.433945270986
+            'null': -21876.0326463555
+            ratio: 0.019500734341589276
         name: 2
     3:
         fit_parameters:
             Coefficient:
-                jobs_1500: -0.04945627150709449
-                juris_ave_income: -0.46592760799334176
-                np.log1p(sqft_per_unit): -0.13782590869139572
-                np.log1p(sum_income_45_gen_tt_min): 0.21163072108773423
-                np.log1p(total_jobs_45_gen_tt_min): -0.21947459256329457
-                np.log1p(unit_residential_price): -0.36007756595136753
-                residential_units_1500: -0.3470959067667378
-                sfdu: 0.33835911430549814
+                jobs_1500: -0.03932954662054984
+                juris_ave_income: -0.3959042287941393
+                np.log1p(sqft_per_unit): -0.08382162142702539
+                np.log1p(sum_income_gen_tt_CAR_45): 0.008194477714081374
+                np.log1p(total_jobs_gen_tt_CAR_45): -0.039384502034744605
+                np.log1p(unit_residential_price): -0.3347743170017982
+                residential_units_1500: -0.3457280494570587
+                sfdu: 0.3000351956771397
             Std. Error:
-                jobs_1500: 0.013245431694327429
-                juris_ave_income: 0.04719770022963273
-                np.log1p(sqft_per_unit): 0.030537459053662667
-                np.log1p(sum_income_45_gen_tt_min): 0.033981539805623524
-                np.log1p(total_jobs_45_gen_tt_min): 0.035286395770870664
-                np.log1p(unit_residential_price): 0.04014640193723888
-                residential_units_1500: 0.02716936798760001
-                sfdu: 0.01814801304748244
+                jobs_1500: 0.013123481955980112
+                juris_ave_income: 0.060912100740924416
+                np.log1p(sqft_per_unit): 0.03116253131256224
+                np.log1p(sum_income_gen_tt_CAR_45): 0.0508563928916222
+                np.log1p(total_jobs_gen_tt_CAR_45): 0.052442265965032465
+                np.log1p(unit_residential_price): 0.040053177263109675
+                residential_units_1500: 0.02727567747140804
+                sfdu: 0.017925301772003716
             T-Score:
-                jobs_1500: -3.733836136747052
-                juris_ave_income: -9.871828621446529
-                np.log1p(sqft_per_unit): -4.513339123900187
-                np.log1p(sum_income_45_gen_tt_min): 6.227814345620441
-                np.log1p(total_jobs_45_gen_tt_min): -6.219807599178872
-                np.log1p(unit_residential_price): -8.969111765340243
-                residential_units_1500: -12.775266135198692
-                sfdu: 18.644416522085134
+                jobs_1500: -2.996883506410289
+                juris_ave_income: -6.499598995576046
+                np.log1p(sqft_per_unit): -2.689820688386608
+                np.log1p(sum_income_gen_tt_CAR_45): 0.16112974688441356
+                np.log1p(total_jobs_gen_tt_CAR_45): -0.751006870317264
+                np.log1p(unit_residential_price): -8.3582462086007
+                residential_units_1500: -12.67532400687283
+                sfdu: 16.73808338031686
         fitted: true
         log_likelihoods:
-            convergence: -21545.989668368904
-            'null': -22106.84200367579
-            ratio: 0.02537007932718882
+            convergence: -21367.152938720996
+            'null': -21872.12062335007
+            ratio: 0.02308727595850879
         name: 3
     4:
         fit_parameters:
             Coefficient:
-                jobs_1500: -0.07653285239641537
-                juris_ave_income: -0.3625420573116623
-                np.log1p(sqft_per_unit): -0.08156203945172275
-                np.log1p(sum_income_45_gen_tt_min): 0.08394222333241835
-                np.log1p(total_jobs_45_gen_tt_min): -0.09375912223569956
-                np.log1p(unit_residential_price): -0.2568616687719334
-                residential_units_1500: -0.3420456852818172
-                sfdu: 0.3598322322073558
+                jobs_1500: -0.03791281243757438
+                juris_ave_income: -0.5694407811479795
+                np.log1p(sqft_per_unit): -0.027919074863948946
+                np.log1p(sum_income_gen_tt_CAR_45): -0.2500631030128107
+                np.log1p(total_jobs_gen_tt_CAR_45): 0.20674038118260385
+                np.log1p(unit_residential_price): -0.03914364207490744
+                residential_units_1500: -0.4315118431569271
+                sfdu: 0.4054656283031076
             Std. Error:
-                jobs_1500: 0.0127550383816811
-                juris_ave_income: 0.04683611750702859
-                np.log1p(sqft_per_unit): 0.03097642100903412
-                np.log1p(sum_income_45_gen_tt_min): 0.034367192497314264
-                np.log1p(total_jobs_45_gen_tt_min): 0.03573841291036017
-                np.log1p(unit_residential_price): 0.03988738826730145
-                residential_units_1500: 0.02834395822341272
-                sfdu: 0.01897088747357973
+                jobs_1500: 0.013180895980963931
+                juris_ave_income: 0.059959649770351994
+                np.log1p(sqft_per_unit): 0.03135764725609639
+                np.log1p(sum_income_gen_tt_CAR_45): 0.05059104601937902
+                np.log1p(total_jobs_gen_tt_CAR_45): 0.05345691187809226
+                np.log1p(unit_residential_price): 0.041264968506452566
+                residential_units_1500: 0.028676658434887994
+                sfdu: 0.01960300888572718
             T-Score:
-                jobs_1500: -6.000205574162171
-                juris_ave_income: -7.740651373531472
-                np.log1p(sqft_per_unit): -2.633036251280791
-                np.log1p(sum_income_45_gen_tt_min): 2.4425103487571262
-                np.log1p(total_jobs_45_gen_tt_min): -2.6234830984483875
-                np.log1p(unit_residential_price): -6.439671282827542
-                residential_units_1500: -12.067675325575385
-                sfdu: 18.96760142130857
+                jobs_1500: -2.8763456211420446
+                juris_ave_income: -9.49706649937019
+                np.log1p(sqft_per_unit): -0.8903434188137653
+                np.log1p(sum_income_gen_tt_CAR_45): -4.9428332222469455
+                np.log1p(total_jobs_gen_tt_CAR_45): 3.867420954919214
+                np.log1p(unit_residential_price): -0.948592559056154
+                residential_units_1500: -15.047493909958149
+                sfdu: 20.683846580221896
         fitted: true
         log_likelihoods:
-            convergence: -21655.233115181385
-            'null': -22181.170440778933
-            ratio: 0.02371098166355723
+            convergence: -21540.898473460253
+            'null': -22044.24963558893
+            ratio: 0.022833671839573633
         name: 4
     5:
         fit_parameters:
             Coefficient:
-                jobs_1500: -0.0507332338260717
-                juris_ave_income: -0.16719649751113677
-                np.log1p(sqft_per_unit): -0.08540593221359205
-                np.log1p(sum_income_45_gen_tt_min): 0.10709689128271387
-                np.log1p(total_jobs_45_gen_tt_min): -0.04099672819784358
-                np.log1p(unit_residential_price): -0.06484745924996643
-                residential_units_1500: -0.44509300765995297
-                sfdu: 0.3872653763341559
+                jobs_1500: -0.0482965705945169
+                juris_ave_income: -0.2690351198054159
+                np.log1p(sqft_per_unit): -0.03825534689524476
+                np.log1p(sum_income_gen_tt_CAR_45): -0.46195785560490393
+                np.log1p(total_jobs_gen_tt_CAR_45): 0.4818326618566131
+                np.log1p(unit_residential_price): -0.17043826784143598
+                residential_units_1500: -0.37145761450690523
+                sfdu: 0.36029909009653777
             Std. Error:
-                jobs_1500: 0.013234577728927084
-                juris_ave_income: 0.055327084056205886
-                np.log1p(sqft_per_unit): 0.03096983423851044
-                np.log1p(sum_income_45_gen_tt_min): 0.04429814900784044
-                np.log1p(total_jobs_45_gen_tt_min): 0.04147333769455998
-                np.log1p(unit_residential_price): 0.038217650143755985
-                residential_units_1500: 0.028796721122518954
-                sfdu: 0.019728851279674407
+                jobs_1500: 0.013120514333688224
+                juris_ave_income: 0.05771847343010605
+                np.log1p(sqft_per_unit): 0.030996406541814847
+                np.log1p(sum_income_gen_tt_CAR_45): 0.05073382814444342
+                np.log1p(total_jobs_gen_tt_CAR_45): 0.053985098447639046
+                np.log1p(unit_residential_price): 0.03892527285211828
+                residential_units_1500: 0.028338126904878882
+                sfdu: 0.019472811157769717
             T-Score:
-                jobs_1500: -3.8333851570634585
-                juris_ave_income: -3.021964745897047
-                np.log1p(sqft_per_unit): -2.7577135723700867
-                np.log1p(sum_income_45_gen_tt_min): 2.41763806572953
-                np.log1p(total_jobs_45_gen_tt_min): -0.9885080506366162
-                np.log1p(unit_residential_price): -1.696793471237562
-                residential_units_1500: -15.456378028812853
-                sfdu: 19.62939305711808
+                jobs_1500: -3.680996748009387
+                juris_ave_income: -4.661161389363544
+                np.log1p(sqft_per_unit): -1.2341865126732494
+                np.log1p(sum_income_gen_tt_CAR_45): -9.105519384219768
+                np.log1p(total_jobs_gen_tt_CAR_45): 8.92529004691822
+                np.log1p(unit_residential_price): -4.378601750306315
+                residential_units_1500: -13.108051063281554
+                sfdu: 18.502674687151025
         fitted: true
         log_likelihoods:
-            convergence: -21741.282796012903
-            'null': -22177.258417773504
-            ratio: 0.01965867978573932
+            convergence: -21662.824880142256
+            'null': -22087.281888648646
+            ratio: 0.01921725863083823
         name: 5
     6:
         fit_parameters:
             Coefficient:
-                jobs_1500: -0.07528446015747292
-                juris_ave_income: -0.008856559829650083
-                np.log1p(sqft_per_unit): 0.08336598420806787
-                np.log1p(sum_income_45_gen_tt_min): 0.18947242042903764
-                np.log1p(total_jobs_45_gen_tt_min): -0.15719940706270405
-                np.log1p(unit_residential_price): 0.10525467535145601
-                residential_units_1500: -0.39316654529402295
-                sfdu: 0.4016414712112917
+                jobs_1500: -0.05205712006927544
+                juris_ave_income: 0.07140705782817704
+                np.log1p(sqft_per_unit): 0.051365395341854844
+                np.log1p(sum_income_gen_tt_CAR_45): -0.513766796448777
+                np.log1p(total_jobs_gen_tt_CAR_45): 0.5329537597720269
+                np.log1p(unit_residential_price): 0.061534040542412474
+                residential_units_1500: -0.41590865206005373
+                sfdu: 0.3822067597296367
             Std. Error:
-                jobs_1500: 0.013124703952126015
-                juris_ave_income: 0.05396290477886356
-                np.log1p(sqft_per_unit): 0.03120055223835443
-                np.log1p(sum_income_45_gen_tt_min): 0.04323374946805401
-                np.log1p(total_jobs_45_gen_tt_min): 0.04064961491884539
-                np.log1p(unit_residential_price): 0.03808028087643173
-                residential_units_1500: 0.02901558018517521
-                sfdu: 0.020415555173014664
+                jobs_1500: 0.013283960219908781
+                juris_ave_income: 0.05877497872673302
+                np.log1p(sqft_per_unit): 0.03085877369781468
+                np.log1p(sum_income_gen_tt_CAR_45): 0.05087450328895253
+                np.log1p(total_jobs_gen_tt_CAR_45): 0.0537101166792999
+                np.log1p(unit_residential_price): 0.038423432166864224
+                residential_units_1500: 0.02866245946103441
+                sfdu: 0.019854222740684196
             T-Score:
-                jobs_1500: -5.7360882525108625
-                juris_ave_income: -0.16412311134739102
-                np.log1p(sqft_per_unit): 2.6719393801494054
-                np.log1p(sum_income_45_gen_tt_min): 4.382511874641854
-                np.log1p(total_jobs_45_gen_tt_min): -3.8671807193387586
-                np.log1p(unit_residential_price): 2.764020457018194
-                residential_units_1500: -13.550187271281986
-                sfdu: 19.673306349375327
+                jobs_1500: -3.918795239333599
+                juris_ave_income: 1.2149227337057034
+                np.log1p(sqft_per_unit): 1.6645313208117656
+                np.log1p(sum_income_gen_tt_CAR_45): -10.09870884695875
+                np.log1p(total_jobs_gen_tt_CAR_45): 9.922781641943992
+                np.log1p(unit_residential_price): 1.60147173410184
+                residential_units_1500: -14.510570965672597
+                sfdu: 19.25065336083086
         fitted: true
         log_likelihoods:
-            convergence: -21695.71204097696
-            'null': -22161.61032575179
-            ratio: 0.021022763144312506
+            convergence: -21577.211195124204
+            'null': -22020.77749755636
+            ratio: 0.02014308089173411
         name: 6
     7:
         fit_parameters:
             Coefficient:
-                jobs_1500: -0.07280761857063864
-                juris_ave_income: 0.48828514199262385
-                np.log1p(sqft_per_unit): 0.31383242626165875
-                np.log1p(sum_income_45_gen_tt_min): -0.20720770172891034
-                np.log1p(total_jobs_45_gen_tt_min): 0.30671408231335856
-                np.log1p(unit_residential_price): 0.45191336087746975
-                residential_units_1500: -0.4169030428184143
-                sfdu: 0.3488184701317115
+                jobs_1500: -0.063197017919658
+                juris_ave_income: 0.45231362340727654
+                np.log1p(sqft_per_unit): 0.3444284677330499
+                np.log1p(sum_income_gen_tt_CAR_45): -0.5188839239352624
+                np.log1p(total_jobs_gen_tt_CAR_45): 0.614108099214781
+                np.log1p(unit_residential_price): 0.4058767177093224
+                residential_units_1500: -0.4109328009304792
+                sfdu: 0.37056882022747684
             Std. Error:
-                jobs_1500: 0.013419256255685097
-                juris_ave_income: 0.04295600807716047
-                np.log1p(sqft_per_unit): 0.030131508387157106
-                np.log1p(sum_income_45_gen_tt_min): 0.034454739067827825
-                np.log1p(total_jobs_45_gen_tt_min): 0.03811806920168078
-                np.log1p(unit_residential_price): 0.035384809530586314
-                residential_units_1500: 0.027191981232964686
-                sfdu: 0.01851174092925666
+                jobs_1500: 0.013335529835194539
+                juris_ave_income: 0.056241447331067236
+                np.log1p(sqft_per_unit): 0.030892762598288936
+                np.log1p(sum_income_gen_tt_CAR_45): 0.05085043542788211
+                np.log1p(total_jobs_gen_tt_CAR_45): 0.056340940683133126
+                np.log1p(unit_residential_price): 0.035491846767431
+                residential_units_1500: 0.02781302603042522
+                sfdu: 0.019361968769376344
             T-Score:
-                jobs_1500: -5.425607588333633
-                juris_ave_income: 11.367097732068894
-                np.log1p(sqft_per_unit): 10.415423689688994
-                np.log1p(sum_income_45_gen_tt_min): -6.0139100551886315
-                np.log1p(total_jobs_45_gen_tt_min): 8.046422306716266
-                np.log1p(unit_residential_price): 12.771394473293402
-                residential_units_1500: -15.33183769312863
-                sfdu: 18.843093767611318
+                jobs_1500: -4.738995653016443
+                juris_ave_income: 8.042353902180302
+                np.log1p(sqft_per_unit): 11.149163712284082
+                np.log1p(sum_income_gen_tt_CAR_45): -10.204119582636848
+                np.log1p(total_jobs_gen_tt_CAR_45): 10.899855269875314
+                np.log1p(unit_residential_price): 11.435773414917763
+                residential_units_1500: -14.774832500460455
+                sfdu: 19.139005162201435
         fitted: true
         log_likelihoods:
-            convergence: -21415.596835799955
-            'null': -22196.818532800648
-            ratio: 0.03519521033369111
+            convergence: -21554.502529248894
+            'null': -22310.267199958078
+            ratio: 0.03387519584304233
         name: 7
     8:
         fit_parameters:
             Coefficient:
-                jobs_1500: -0.04658787560406789
-                juris_ave_income: 0.9655034490572729
-                np.log1p(sqft_per_unit): 0.42870810681525207
-                np.log1p(sum_income_45_gen_tt_min): -0.0028954638762218165
-                np.log1p(total_jobs_45_gen_tt_min): 0.12073526425317528
-                np.log1p(unit_residential_price): 0.7612980815721163
-                residential_units_1500: -0.40912284919113223
-                sfdu: 0.3310101188238813
+                jobs_1500: -0.022261484675476746
+                juris_ave_income: 1.0513791668669825
+                np.log1p(sqft_per_unit): 0.3918765903287963
+                np.log1p(sum_income_gen_tt_CAR_45): 0.6560641281762126
+                np.log1p(total_jobs_gen_tt_CAR_45): -0.4076203170163265
+                np.log1p(unit_residential_price): 0.6788610975484278
+                residential_units_1500: -0.4347074583205045
+                sfdu: 0.29229557566823966
             Std. Error:
-                jobs_1500: 0.013598790728020439
-                juris_ave_income: 0.049357348279728284
-                np.log1p(sqft_per_unit): 0.031018512285670055
-                np.log1p(sum_income_45_gen_tt_min): 0.04264345649929549
-                np.log1p(total_jobs_45_gen_tt_min): 0.04272069778327283
-                np.log1p(unit_residential_price): 0.03363355694256855
-                residential_units_1500: 0.027759937973450374
-                sfdu: 0.018635099616297914
+                jobs_1500: 0.013473239715533469
+                juris_ave_income: 0.05231367045288706
+                np.log1p(sqft_per_unit): 0.03080833297034377
+                np.log1p(sum_income_gen_tt_CAR_45): 0.05034555875795593
+                np.log1p(total_jobs_gen_tt_CAR_45): 0.06019269287204281
+                np.log1p(unit_residential_price): 0.033462244374299045
+                residential_units_1500: 0.02665970217865729
+                sfdu: 0.018411924974304755
             T-Score:
-                jobs_1500: -3.4258837080324445
-                juris_ave_income: 19.561493530514845
-                np.log1p(sqft_per_unit): 13.821040250641124
-                np.log1p(sum_income_45_gen_tt_min): -0.06789937106223208
-                np.log1p(total_jobs_45_gen_tt_min): 2.8261538438739837
-                np.log1p(unit_residential_price): 22.63507493043574
-                residential_units_1500: -14.737887728078414
-                sfdu: 17.762723336041947
+                jobs_1500: -1.6522740740529687
+                juris_ave_income: 20.09759892137256
+                np.log1p(sqft_per_unit): 12.719824558700346
+                np.log1p(sum_income_gen_tt_CAR_45): 13.03122150913733
+                np.log1p(total_jobs_gen_tt_CAR_45): -6.77192359349735
+                np.log1p(unit_residential_price): 20.287374927840546
+                residential_units_1500: -16.30578824201998
+                sfdu: 15.875340360997583
         fitted: true
         log_likelihoods:
-            convergence: -21064.85839882193
-            'null': -22341.563384001507
-            ratio: 0.05714483643046253
+            convergence: -21040.97759415934
+            'null': -22404.155752088365
+            ratio: 0.06084487953990225
         name: 8
 
 fitted: true

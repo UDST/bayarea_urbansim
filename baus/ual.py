@@ -445,8 +445,8 @@ def remove_old_units(buildings, units):
 
     print "Removing %d units from %d buildings that no longer exist" % \
         ((len(units2) - len(current_units)),
-         (len(units2.groupby('building_id')) -
-          len(current_units.groupby('building_id'))))
+         (len(units2['building_id'].unique()) -
+          len(current_units['building_id'].unique())))
 
     orca.add_table('units', current_units)
 

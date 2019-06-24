@@ -7,6 +7,7 @@ import sys
 from urbansim_defaults.utils import _remove_developed_buildings
 from urbansim.developer.developer import Developer as dev
 from urbansim.developer import sqftproforma
+from urbansim.utils import misc
 
 
 #####################
@@ -457,3 +458,99 @@ def run_feasibility(parcels, parcel_price_callback,
     far_predictions = pd.concat(d.values(), keys=d.keys(), axis=1)
 
     orca.add_table("feasibility", far_predictions)
+
+
+def register_skim_access_variable(
+        column_name, variable_to_summarize, impedance_measure,
+        distance, log=False):
+    """
+    Register skim-based accessibility variable with orca.
+    Parameters
+    ----------
+    column_name : str
+        Name of the orca column to register this variable as.
+    impedance_measure : str
+        Name of the skims column to use to measure inter-zone impedance.
+    variable_to_summarize : str
+        Name of the zonal variable to summarize.
+    distance : int
+        Distance to query in the skims (e.g. 30 minutes travel time).
+    Returns
+    -------
+    column_func : function
+    """
+    @orca.column('zones', column_name, cache=True, cache_scope='iteration')
+    def column_func(zones, beam_skims_imputed):
+        results = misc.compute_range(
+            beam_skims_imputed.to_frame(),
+            zones.get_column(variable_to_summarize),
+            impedance_measure, distance, agg=np.sum)
+
+        if log:
+            results = results.apply(eval('np.log1p'))
+
+        if len(results) < len(zones):
+            results = results.reindex(zones.index).fillna(0)
+
+        return results
+    return column_func
+
+
+def impute_missing_skims(mtc_skims, beam_skims_raw):
+
+    df = beam_skims_raw.to_frame()
+
+    # seconds to minutes
+    df['gen_tt'] = df['generalizedTimeInS'] / 60
+
+    mtc = mtc_skims.to_frame(columns=['orig', 'dest', 'da_distance_AM'])
+    mtc.rename(
+        columns={'orig': 'from_zone_id', 'dest': 'to_zone_id'},
+        inplace=True)
+    mtc.set_index(['from_zone_id', 'to_zone_id'], inplace=True)
+
+    # miles to meters
+    mtc['dist'] = mtc['da_distance_AM'] * 1609.34
+
+    # create morning peak lookup
+    df['gen_time_per_m'] = df['gen_tt'] / df['distanceInM']
+    df['gen_cost_per_m'] = df['gen_cost'] / df['distanceInM']
+    df.loc[df['hour'].isin([7, 8, 9]), 'period'] = 'AM'
+    df_am = df[df['period'] == 'AM']
+    df_am = df_am.replace([np.inf, -np.inf], np.nan)
+    am_lookup = df_am[[
+        'mode', 'gen_time_per_m', 'gen_cost_per_m']].dropna().groupby(
+            ['mode']).mean().reset_index()
+
+    # morning averages
+    df_am_avg = df_am[[
+        'from_zone_id', 'to_zone_id', 'mode', 'gen_tt',
+        'gen_cost']].groupby(
+        ['from_zone_id', 'to_zone_id', 'mode']).mean().reset_index()
+
+    # long to wide
+    df_am_pivot = df_am_avg.pivot_table(
+        index=['from_zone_id', 'to_zone_id'], columns='mode')
+    df_am_pivot.columns = ['_'.join(col) for col in df_am_pivot.columns.values]
+
+    # combine with mtc-based dists
+    merged = pd.merge(
+        mtc[['dist']], df_am_pivot, left_index=True, right_index=True,
+        how='left')
+
+    # impute
+    for mode in am_lookup['mode'].values:
+        for impedance in ['gen_tt', 'gen_cost']:
+            if impedance == 'gen_tt':
+                lookup_col = 'gen_time_per_m'
+            elif impedance == 'gen_cost':
+                lookup_col = 'gen_cost_per_m'
+            colname = impedance + '_' + mode
+            lookup_val = am_lookup.loc[
+                am_lookup['mode'] == mode, lookup_col].values[0]
+            merged.loc[pd.isnull(merged[colname]), colname] = merged.loc[
+                pd.isnull(merged[colname]), 'dist'] * lookup_val
+
+    assert len(merged) == 2114116
+
+    return merged

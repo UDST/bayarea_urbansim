@@ -21,27 +21,30 @@ warnings.filterwarnings("ignore")
 # Suppress scientific notation in pandas output
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
 
+OUTPUT_STORE = False
+DATA_OUT = './output/model_data_output.h5'
+MODE = "simulation"
 SLACK = MAPS = "URBANSIM_SLACK" in os.environ
 LOGS = True
 INTERACT = False
 SCENARIO = None
-MODE = "simulation"
-S3 = False
-OUTPUT_TO_CSV = True
 EVERY_NTH_YEAR = 5
 BRANCH = os.popen('git rev-parse --abbrev-ref HEAD').read()
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
 COMPARE_TO_NO_PROJECT = True
 NO_PROJECT = 611
 EARTHQUAKE = False
-DATA_OUT = None
 OUTPUT_BUCKET = 'urbansim-outputs'
 OUT_TABLES = [
-    'parcels', 'beam_skims', 'jobs', 'households', 'buildings', 'units',
-    'zones', 'establishments', 'persons', 'craigslist', 'skims']
-OUTPUT_TO_CSV = True
+    'parcels', 'jobs', 'households', 'buildings', 'units', 'zones',
+    'establishments', 'persons', 'craigslist', 'mtc_skims',
+    'beam_skims_raw', 'beam_skims_imputed',
+    # these four tables are not used, just passed through from input
+    # to output because activitysynth needs them for the time being
+    'walk_nodes', 'walk_edges', 'drive_nodes', 'drive_edges'
+]
 
-IN_YEAR, OUT_YEAR = 2025, 2040
+IN_YEAR, OUT_YEAR = 2010, 2040
 COMPARE_AGAINST_LAST_KNOWN_GOOD = False
 
 LAST_KNOWN_GOOD_RUNS = {
@@ -52,12 +55,6 @@ LAST_KNOWN_GOOD_RUNS = {
     "4": 1059,
     "5": 1059
 }
-
-
-if S3:
-    DATA_OUT = None
-
-orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 
 orca.add_injectable("earthquake", EARTHQUAKE)
 
@@ -70,22 +67,36 @@ parser.add_argument(
 parser.add_argument('-i', action='store_true', dest='interactive',
                     help='enter interactive mode after imports')
 
+parser.add_argument('-o', action='store_true', dest='output_store',
+                    help='write output data tables to h5 data store')
+
+parser.add_argument('-d', action='store_true', dest='data_out',
+                    help='full filepath for output data')
+
 parser.add_argument('-s', action='store', dest='scenario',
                     help='specify which scenario to run')
 
 parser.add_argument('-k', action='store_true', dest='skip_base_year',
                     help='skip base year - used for debugging')
 
-parser.add_argument('-y', action='store', dest='out_year', type=int,
-                    help='The year to which to run the simulation.')
+parser.add_argument('--years', '-y', action='store', dest='years',
+                    help='comma separated input and output years.')
 
-parser.add_argument('--mode', action='store', dest='mode',
+parser.add_argument('--mode', '-m', action='store', dest='mode',
                     help='which mode to run (see code for mode options)')
 
 parser.add_argument('--disable-slack', action='store_true', dest='noslack',
                     help='disable slack outputs')
 
+parser.add_argument('--years-per-iter', '-n', action='store_true',
+                    dest='every_nth_year',
+                    help='simulation iteration frequency')
+
 options = parser.parse_args()
+
+if options.every_nth_year:
+    EVERY_NTH_YEAR = options.every_nth_year
+orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 
 if options.console:
     SLACK = MAPS = LOGS = False
@@ -94,8 +105,17 @@ if options.interactive:
     SLACK = MAPS = LOGS = False
     INTERACT = True
 
-if options.out_year:
-    OUT_YEAR = options.out_year
+if options.years:
+    IN_YEAR, OUT_YEAR = [int(x) for x in options.years.split(',')]
+    orca.add_injectable('in_year', IN_YEAR)
+
+if options.output_store:
+    if options.data_out:
+        DATA_OUT = options.data_out
+    if os.path.exists(DATA_OUT):
+        os.remove(DATA_OUT)
+else:
+    DATA_OUT = None
 
 if options.scenario:
     orca.add_injectable("scenario", options.scenario)
@@ -117,29 +137,6 @@ if LOGS:
         .format(run_num)
     sys.stdout = sys.stderr = open("runs/run%d.log" % run_num, 'w')
 
-if SLACK:
-    from slacker import Slacker
-    slack = Slacker(os.environ["SLACK_TOKEN"])
-    host = socket.gethostname()
-
-
-def send_output_to_s3(
-        output_bucket, output_tables, year, output_format='parquet'):
-
-    if output_format == 'csv':
-        s3 = s3fs.S3FileSystem(anon=False)
-
-    for table_name in output_tables:
-        table = orca.get_table(table_name)
-        df = table.to_frame(table.local_columns)
-        s3_url = 's3://{0}/{1}/{2}.{3}.gz'.format(
-            output_bucket, year, table_name, output_format)
-        if output_format == 'parquet':
-            df.to_parquet(s3_url, compression='gzip', engine='pyarrow')
-        elif output_format == 'csv':
-            with s3.open(s3_url, 'w') as f:
-                df.to_csv(f)
-
 
 def get_simulation_models(SCENARIO):
 
@@ -153,6 +150,8 @@ def get_simulation_models(SCENARIO):
         # "earthquake_demolish",
         "load_rental_listings",
         "neighborhood_vars",    # street network accessibility
+        "generate_skims_vars",
+        "skims_aggregations_drive",
         "regional_vars",        # road network accessibility
 
         "nrh_simulate",         # non-residential rent hedonic
@@ -256,7 +255,7 @@ def get_simulation_models(SCENARIO):
     return models
 
 
-def run_models(MODE, SCENARIO, write_to_s3=False):
+def run_models(MODE, SCENARIO):
 
     if MODE == "preprocessing":
 
@@ -264,7 +263,6 @@ def run_models(MODE, SCENARIO, write_to_s3=False):
             "preproc_jobs",
             "preproc_households",
             "preproc_buildings",
-            # "initialize_residential_units"     # ual already has a static units table
         ])
 
     elif MODE == "fetch_data":
@@ -286,6 +284,8 @@ def run_models(MODE, SCENARIO, write_to_s3=False):
                 # "eq_code_buildings",
                 # "earthquake_demolish",
                 "load_rental_listings",
+                "generate_skims_vars",
+                "skims_aggregations_drive",
                 "neighborhood_vars",   # local accessibility vars
                 "regional_vars",       # regional accessibility vars
 
@@ -332,8 +332,6 @@ def run_models(MODE, SCENARIO, write_to_s3=False):
                 out_run_tables=OUT_TABLES,
                 out_run_local=True
             )
-        if write_to_s3:
-            send_output_to_s3(OUTPUT_BUCKET, OUT_TABLES, IN_YEAR)
 
         # start the simulation in the next round - only the models above run
         # for the IN_YEAR
@@ -343,19 +341,18 @@ def run_models(MODE, SCENARIO, write_to_s3=False):
         orca.run(
             models, iter_vars=years_to_run,
             data_out=DATA_OUT,
-            out_interval=len(years_to_run) + 1,  # hack to store only last iter
+            out_interval=len(years_to_run),  # hack to store only last iter
             out_base_tables=[],
             out_base_local=True,
             out_run_tables=OUT_TABLES,
             out_run_local=True
         )
-        if write_to_s3:
-            send_output_to_s3(OUTPUT_BUCKET, OUT_TABLES, years_to_run[-1])
 
     elif MODE == "estimation":
 
         orca.run([
-
+            "generate_skims_vars",
+            "skims_aggregations_drive",
             "neighborhood_vars",         # local accessibility variables
             "regional_vars",             # regional accessibility variables
             "rsh_estimate",              # residential sales hedonic
@@ -371,6 +368,8 @@ def run_models(MODE, SCENARIO, write_to_s3=False):
 
         orca.run([
             "load_rental_listings",  # required to estimate rental hedonic
+            "generate_skims_vars",
+            "skims_aggregations_drive",
             "neighborhood_vars",        # street network accessibility
             "regional_vars",            # road network accessibility
             "rrh_estimate",         # estimate residential rental hedonic
@@ -405,107 +404,17 @@ def run_models(MODE, SCENARIO, write_to_s3=False):
         raise "Invalid mode"
 
 
-if INTERACT:
-    import code
-    code.interact(local=locals())
-    sys.exit()
-
 print "Started", time.ctime()
 print "Current Branch : ", BRANCH.rstrip()
 print "Current Commit : ", CURRENT_COMMIT.rstrip()
 print "Current Scenario : ", orca.get_injectable('scenario').rstrip()
 
-
-if SLACK:
-    slack.chat.post_message(
-        '#sim_updates',
-        'Starting simulation %d on host %s (scenario: %s)' %
-        (run_num, host, SCENARIO), as_user=True)
-
 try:
-    run_models(MODE, SCENARIO, S3)
+    run_models(MODE, SCENARIO)
 
 except Exception as e:
     print traceback.print_exc()
-    if SLACK:
-        slack.chat.post_message(
-            '#sim_updates',
-            'DANG!  Simulation failed for %d on host %s'
-            % (run_num, host), as_user=True)
-    else:
-        raise e
+    raise e
     sys.exit(0)
 
 print "Finished", time.ctime()
-
-if MAPS:
-
-    from urbansim_explorer import sim_explorer as se
-    se.start(
-        'runs/run%d_simulation_output.json' % run_num,
-        'runs/run%d_parcel_output.csv' % run_num,
-        write_static_file='/var/www/html/sim_explorer%d.html' % run_num
-    )
-
-if SLACK:
-    slack.chat.post_message(
-        '#sim_updates',
-        'Completed simulation %d on host %s' % (run_num, host), as_user=True)
-
-    slack.chat.post_message(
-        '#sim_updates',
-        'UrbanSim explorer is available at ' +
-        'http://urbanforecast.com/sim_explorer%d.html' % run_num, as_user=True)
-
-    slack.chat.post_message(
-        '#sim_updates',
-        'Final topsheet is available at ' +
-        'http://urbanforecast.com/runs/run%d_topsheet_2050.log' % run_num,
-        as_user=True)
-
-    slack.chat.post_message(
-        '#sim_updates',
-        'Targets comparison is available at ' +
-        'http://urbanforecast.com/runs/run%d_targets_comparison_2050.csv' %
-        run_num, as_user=True)
-
-
-summary = ""
-if MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
-    # compute and write the difference report at the superdistrict level
-    prev_run = LAST_KNOWN_GOOD_RUNS[SCENARIO]
-    # fetch the previous run off of the internet for comparison - the "last
-    # known good run" should always be available on EC2
-    df1 = pd.read_csv(("http://urbanforecast.com/runs/run%d_superdistrict" +
-                       "_summaries_2050.csv") % prev_run)
-    df1 = df1.set_index(df1.columns[0]).sort_index()
-
-    df2 = pd.read_csv("runs/run%d_superdistrict_summaries_2050.csv" % run_num)
-    df2 = df2.set_index(df2.columns[0]).sort_index()
-
-    supnames = \
-        pd.read_csv("data/superdistricts.csv", index_col="number").name
-
-    summary = compare_summary(df1, df2, supnames)
-    with open("runs/run%d_difference_report.log" % run_num, "w") as f:
-        f.write(summary)
-
-
-if SLACK and MODE == "simulation":
-
-    if len(summary.strip()) != 0:
-        sum_lines = len(summary.strip().split("\n"))
-        slack.chat.post_message(
-            '#sim_updates',
-            ('Difference report is available at ' +
-             'http://urbanforecast.com/runs/run%d_difference_report.log ' +
-             '- %d line(s)') % (run_num, sum_lines),
-            as_user=True)
-    else:
-        slack.chat.post_message(
-            '#sim_updates', "No differences with reference run.", as_user=True)
-
-if OUTPUT_TO_CSV:
-    os.system(
-        '/home/max/anaconda3/envs/baus/bin/python '
-        'scripts/make_csvs_from_output_store.py')

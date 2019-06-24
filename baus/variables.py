@@ -20,172 +20,15 @@ https://github.com/UDST/orca/issues/16
 In general I try to be very conservative on when to use the cache
 I don't trust myself to be able to use it right
 '''
-#####################
-# SKIMS VARS
-#####################
-geographic_levels = [('parcels', 'parcel_id')]
-# Define parcel -> agent/building disaggregation vars
-for base_geography in ['households', 'jobs', 'buildings']:
-    for geography in geographic_levels:
-        geography_name = geography[0]
-        geography_id = geography[1]
-        if geography_name != base_geography:
-            for var in orca.get_table(geography_name).columns:
-                generators.make_disagg_var(
-                    geography_name, base_geography, var,
-                    geography_id, name_based_on_geography=False)
 
-# Generate variables to serve as a pool of variables for location
-# choice model to select from
-
-aggregation_functions = ['mean', 'median', 'std', 'sum']
-
-geographic_levels = copy.copy(orca.get_injectable('aggregate_geos'))
-geographic_levels['parcels'] = 'parcel_id'
-
-variables_to_aggregate = {
-    'households': ['persons', 'income', 'race_of_head', 'age_of_head',
-                   'workers', 'children', 'cars',
-                   # 'hispanic_head',
-                   # 'tenure',
-                   'recent_mover', 'income_quartile', 'income'],
-    'jobs': ['sector_id'],
-    'parcels': [
-        'acres', 'x', 'y', 'land_value', 'proportion_undevelopable'],
-    'buildings': [
-        # 'building_type_id',
-        'residential_units', 'non_residential_sqft',
-        'year_built',
-        # 'value_per_unit',
-        # 'sqft_per_unit',
-        'job_spaces']
-}
-
-discrete_variables = {
-    'households': ['persons', 'race_of_head', 'workers', 'children',
-                   'cars', 'hispanic_head', 'tenure', 'recent_mover',
-                   'income_quartile'],
-    'jobs': ['sector_id'],
-    # 'buildings': ['building_type_id']
-}
-sum_vars = ['persons', 'workers', 'children', 'cars', 'hispanic_head',
-            'recent_mover', 'acres', 'land_value', 'residential_units',
-            'non_residential_sqft', 'job_spaces', 'income']
-
-geog_vars_to_dummify = orca.get_injectable('aggregate_geos').values()
-
-orca.add_column(
-    'parcels', 'sum_acres', orca.get_table('parcels').acres)  # temporary
-
-for agent in variables_to_aggregate.keys():
-    for geography_name, geography_id in geographic_levels.items():
-        if geography_name != agent:
-
-            # Define size variables
-            generators.make_size_var(agent, geography_name, geography_id)
-
-            # Define attribute variables
-            variables = variables_to_aggregate[agent]
-            for var in variables:
-                for aggregation_function in aggregation_functions:
-                    if aggregation_function == 'sum':
-                        if var in sum_vars:
-                            generators.make_agg_var(agent, geography_name,
-                                                    geography_id,
-                                                    var, aggregation_function)
-
-                    else:
-                        generators.make_agg_var(agent, geography_name,
-                                                geography_id, var,
-                                                aggregation_function)
+####################################
+#           ZONES VARS           ###
+####################################
 
 
-# Define prop_X_X variables
-for agent in discrete_variables.keys():
-    agents = orca.get_table(agent)
-    discrete_vars = discrete_variables[agent]
-    for var in discrete_vars:
-        agents_by_cat = agents[var].value_counts()
-        cats_to_measure = agents_by_cat[agents_by_cat > 500].index.values
-        for cat in cats_to_measure:
-            for geography_name, geography_id in geographic_levels.items():
-                generators.make_proportion_var(agent, geography_name,
-                                               geography_id, var, cat)
-
-# Define ratio variables
-for geography_name in geographic_levels.keys():
-
-    # Jobs-housing balance
-    generators.make_ratio_var('jobs', 'households', geography_name)
-
-    # # workers-persons ratio
-    generators.make_ratio_var(
-        'workers', 'persons', geography_name, prefix1='sum', prefix2='sum')
-
-    # Residential occupancy rate
-    generators.make_ratio_var(
-        'households', 'residential_units', geography_name, prefix2='sum')
-
-    # Density
-    for agent in discrete_variables.keys():
-        generators.make_density_var(agent, geography_name)
-
-
-for geog_var in geog_vars_to_dummify:
-    geog_ids = np.unique(orca.get_table('parcels')[geog_var])
-    if len(geog_ids) < 50:
-        for geog_id in geog_ids:
-            generators.make_dummy_variable('parcels', geog_var, geog_id)
-
-
-def register_skim_access_variable(
-        column_name, variable_to_summarize, impedance_measure,
-        distance, log=False):
-    """
-    Register skim-based accessibility variable with orca.
-    Parameters
-    ----------
-    column_name : str
-        Name of the orca column to register this variable as.
-    impedance_measure : str
-        Name of the skims column to use to measure inter-zone impedance.
-    variable_to_summarize : str
-        Name of the zonal variable to summarize.
-    distance : int
-        Distance to query in the skims (e.g. 30 minutes travel time).
-    Returns
-    -------
-    column_func : function
-    """
-    @orca.column('zones', column_name, cache=True, cache_scope='iteration')
-    def column_func(zones, beam_skims):
-        results = misc.compute_range(
-            beam_skims.to_frame(), zones.get_column(variable_to_summarize),
-            impedance_measure, distance, agg=np.sum)
-
-        if log:
-            results = results.apply(eval('np.log1p'))
-
-        if len(results) < len(zones):
-            results = results.reindex(zones.index).fillna(0)
-
-        return results
-    return column_func
-
-
-# Calculate skim-based accessibility variable
-variables_to_aggregate = [
-    'total_jobs', 'sum_residential_units', 'sum_persons', 'sum_income']
-skim_access_vars = []
-# Transit skim variables
-travel_times = [15, 45]  # 15 and 45 min travel times in s
-
-for time in travel_times:
-    for variable in variables_to_aggregate:
-        var_name = '_'.join([variable, str(time), 'gen_tt_min'])
-        skim_access_vars.append(var_name)
-        register_skim_access_variable(
-            var_name, variable, 'gen_tt_min', time)
+@orca.column('zones')
+def ave_unit_sqft(buildings):
+    return buildings.sqft_per_unit.groupby(buildings.zone_id).quantile(.6)
 
 
 #####################
@@ -1126,9 +969,6 @@ def parcels_zoning_by_scenario(parcels, parcels_zoning_calculations,
     return df
 
 
-@orca.column('zones')
-def ave_unit_sqft(buildings):
-    return buildings.sqft_per_unit.groupby(buildings.zone_id).quantile(.6)
 
 
 GROSS_AVE_UNIT_SIZE = 1000.0
