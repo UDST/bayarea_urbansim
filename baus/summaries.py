@@ -693,7 +693,7 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
     # Write Summary of Accounts
     if year == final_year:
 
-        for acct_name, acct in orca.get_injectable("coffer").iteritems():
+        for acct_name, acct in orca.get_injectable("coffer").items():
             fname = "runs/run{}_acctlog_{}_{}.csv".\
                 format(run_number, acct_name, year)
             acct.to_frame().to_csv(fname)
