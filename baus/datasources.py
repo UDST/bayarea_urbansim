@@ -84,8 +84,8 @@ def inclusionary_housing_settings(settings, scenario):
     for item in s:
         # this is a list of cities with an inclusionary rate that is the
         # same for all the cities in the list
-        print("Setting inclusionary rates for %d cities to %.2f" %\
-            (len(item["values"]), item["amount"]))
+        print("Setting inclusionary rates for %d cities to %.2f" %
+              (len(item["values"]), item["amount"]))
         # this is a list of inclusionary rates and the cities they apply
         # to - need tro turn it in a map of city names to rates
         for juris in item["values"]:

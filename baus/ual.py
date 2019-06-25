@@ -158,10 +158,10 @@ def assign_tenure_to_units(residential_units, households):
     units.loc[own, 'tenure'] = 'own'
     units.loc[rent, 'tenure'] = 'rent'
 
-    print("Init unit tenure assignment: %d%% owner occupied, %d%% unfilled" % \
-        (round(len(units[units.tenure == 'own'])*100 /
-         len(units[units.tenure.notnull()])),
-         round(len(units[units.tenure.isnull()])*100 / len(units))))
+    print("Init unit tenure assignment: %d%% owner occupied, %d%% unfilled" %
+          (round(len(units[units.tenure == 'own'])*100 /
+           len(units[units.tenure.notnull()])),
+           round(len(units[units.tenure.isnull()])*100 / len(units))))
 
     # Fill remaining units with random tenure assignment
     # TO DO: Make this weighted by existing allocation, rather than 50/50
@@ -366,14 +366,14 @@ def reconcile_unplaced_households(households):
     '''
 
     def _print_status():
-        print("Households not in a unit: %d" % \
-            (households.unit_id == -1).sum())
-        print("Househing missing a unit: %d" % \
-            households.unit_id.isnull().sum())
-        print("Households not in a building: %d" % \
-            (households.building_id == -1).sum())
-        print("Househing missing a building: %d" % \
-            households.building_id.isnull().sum())
+        print("Households not in a unit: %d" %
+              (households.unit_id == -1).sum())
+        print("Househing missing a unit: %d" %
+              households.unit_id.isnull().sum())
+        print("Households not in a building: %d" %
+              (households.building_id == -1).sum())
+        print("Househing missing a building: %d" %
+              households.building_id.isnull().sum())
 
     _print_status()
     print("Reconciling unplaced households...")
@@ -437,10 +437,10 @@ def remove_old_units(buildings, residential_units):
     units = residential_units.to_frame(residential_units.local_columns)
     current_units = units[units.building_id.isin(buildings.index)]
 
-    print("Removing %d units from %d buildings that no longer exist" % \
-        ((len(units) - len(current_units)),
-         (len(units.groupby('building_id')) -
-          len(current_units.groupby('building_id')))))
+    print("Removing %d units from %d buildings that no longer exist" %
+          ((len(units) - len(current_units)),
+           (len(units.groupby('building_id')) -
+            len(current_units.groupby('building_id')))))
 
     orca.add_table('residential_units', current_units)
 
@@ -503,8 +503,8 @@ def initialize_new_units(buildings, residential_units):
     all_units = dev.merge(old_units, new_units)
     all_units.index.name = 'unit_id'
 
-    print("Creating %d residential units for %d new buildings" % \
-        (len(new_units), len(new_bldgs)))
+    print("Creating %d residential units for %d new buildings" %
+          (len(new_units), len(new_bldgs)))
 
     orca.add_table('residential_units', all_units)
 
@@ -864,8 +864,8 @@ def balance_rental_and_ownership_hedonics(households, settings,
     print("Renter utilization = %.3f" % renter_utilization)
 
     utilization_ratio = renter_utilization / owner_utilization
-    print("Ratio of renter utilization to owner utilization = %.3f" %\
-        utilization_ratio)
+    print("Ratio of renter utilization to owner utilization = %.3f" %
+          utilization_ratio)
 
     if "original_cap_rate" not in settings:
         settings["original_cap_rate"] = settings["cap_rate"]

@@ -259,7 +259,8 @@ def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
         # using the lookup table created with "parcel_tract_assignment.ipynb"
         census_tract = pd.Series(parcels_tract['census_tract'],
                                  parcels_tract.index)
-        print("Number of parcels with census tracts is: %d" % len(census_tract))
+        print("Number of parcels with census tracts is: %d" %
+              len(census_tract))
         orca.add_column('parcels', 'tract', census_tract)
 
         # group parcels by their census tract
@@ -349,8 +350,8 @@ def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
             fire_buildings.extend(buildings_fire)
             eq_buildings.extend(buildings_fire)
 
-        print("Total number of buildings being destroyed is: %d" \
-            % len(eq_buildings))
+        print("Total number of buildings being destroyed is: %d" %
+              len(eq_buildings))
 
         orca.add_injectable("eq_buildings", eq_buildings)
         orca.add_injectable("existing_buildings", existing_buildings)

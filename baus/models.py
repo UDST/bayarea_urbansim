@@ -393,8 +393,8 @@ def add_extra_columns_func(df):
     if "deed_restricted_units" not in df.columns:
         df["deed_restricted_units"] = 0
     else:
-        print("Number of deed restricted units built = %d" %\
-            df.deed_restricted_units.sum())
+        print("Number of deed restricted units built = %d" %
+              df.deed_restricted_units.sum())
 
     df["redfin_sale_year"] = 2012
     df["redfin_sale_price"] = np.nan
@@ -503,8 +503,8 @@ def residential_developer(feasibility, households, buildings, parcels, year,
 
     for parcel_mask, target, final_target, juris in targets:
 
-        print("Running developer for %s with target of %d" % \
-            (str(juris), target))
+        print("Running developer for %s with target of %d" %
+              (str(juris), target))
 
         # this was a fairly heinous bug - have to get the building wrapper
         # again because the buildings df gets modified by the run_developer
@@ -693,8 +693,8 @@ def office_developer(feasibility, jobs, buildings, parcels, year,
 
                 if target <= 0:
                     print("Already met target for juris = %s" % juris)
-                    print("    target = %d, current_total = %d" %\
-                        (target, current_total))
+                    print("    target = %d, current_total = %d" %
+                          (target, current_total))
                     continue
 
                 targets.append((juris_name == juris, target, juris))
@@ -709,8 +709,8 @@ def office_developer(feasibility, jobs, buildings, parcels, year,
 
         for parcel_mask, target, juris in targets:
 
-            print("Running developer for %s with target of %d" % \
-                (str(juris), target))
+            print("Running developer for %s with target of %d" %
+                  (str(juris), target))
             print("Parcels in play:\n", pd.Series(parcel_mask).value_counts())
 
             # this was a fairly heinous bug - have to get the building wrapper
@@ -770,12 +770,12 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
         add_indexes = pd.Series(add_indexes).value_counts()
         # this is sqft per job for residential bldgs
         add_sizes = add_indexes * 400
-        print("Job spaces in res before adjustment: ", \
-            buildings.job_spaces[s].sum())
+        print("Job spaces in res before adjustment: ",
+              buildings.job_spaces[s].sum())
         buildings.local.loc[add_sizes.index,
                             "non_residential_sqft"] += add_sizes.values
-        print("Job spaces in res after adjustment: ",\
-            buildings.job_spaces[s].sum())
+        print("Job spaces in res after adjustment: ",
+              buildings.job_spaces[s].sum())
 
     # the second step here is to add retail to buildings that are greater than
     # X stories tall - presumably this is a ground floor retail policy
@@ -783,8 +783,8 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
     new_buildings = old_buildings.query(
        '%d == year_built and stories >= 4' % year)
 
-    print("Attempting to add ground floor retail to %d devs" % \
-        len(new_buildings))
+    print("Attempting to add ground floor retail to %d devs" %
+          len(new_buildings))
     retail = parcel_is_allowed_func("retail")
     new_buildings = new_buildings[retail.loc[new_buildings.parcel_id].values]
     print("Disallowing dev on these parcels:")
@@ -809,8 +809,8 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
     ratio = parcels.retail_ratio.loc[new_buildings.parcel_id]
     new_buildings = new_buildings[ratio.values > ratio.median()]
 
-    print("Adding %d sqft of ground floor retail in %d locations" % \
-        (new_buildings.non_residential_sqft.sum(), len(new_buildings)))
+    print("Adding %d sqft of ground floor retail in %d locations" %
+          (new_buildings.non_residential_sqft.sum(), len(new_buildings)))
 
     all_buildings = dev.merge(old_buildings, new_buildings)
     orca.add_table("buildings", all_buildings)
@@ -829,8 +829,8 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
         ['year_built', 'building_sqft', 'general_type'])
     sqft_by_gtype = buildings_df.query('year_built >= %d' % year).\
         groupby('general_type').building_sqft.sum()
-    print("New square feet by general type in millions:\n",\
-        sqft_by_gtype / 1000000.0)
+    print("New square feet by general type in millions:\n",
+          sqft_by_gtype / 1000000.0)
 
 
 def proportional_job_allocation(parcel_id):

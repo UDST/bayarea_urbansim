@@ -184,8 +184,8 @@ def constrained_normalization(marginals, constraint, total):
         num_constrained = len(constrained[constrained is True])
         num_exceeds = len(exceeds[exceeds is True])
 
-        print("Len constrained = %d, exceeds = %d" %\
-            (num_constrained, num_exceeds))
+        print("Len constrained = %d, exceeds = %d" %
+              (num_constrained, num_exceeds))
 
         if num_exceeds == 0:
             return marginals

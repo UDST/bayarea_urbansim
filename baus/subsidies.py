@@ -182,11 +182,11 @@ def policy_modifications_of_profit(feasibility, parcels):
 
     assert np.all(num_affordable_units <= units.fillna(0))
 
-    print("Describe of inclusionary revenue reduction:\n", \
-        revenue_reduction[revenue_reduction > 0].describe())
+    print("Describe of inclusionary revenue reduction:\n",
+          revenue_reduction[revenue_reduction > 0].describe())
 
-    print("Describe of number of affordable units:\n", \
-        num_affordable_units[num_affordable_units > 0].describe())
+    print("Describe of number of affordable units:\n",
+          num_affordable_units[num_affordable_units > 0].describe())
 
     feasibility[("residential", "policy_based_revenue_reduction")] = \
         revenue_reduction
@@ -207,7 +207,8 @@ def policy_modifications_of_profit(feasibility, parcels):
             pct_modifications = feasibility[("residential", "vmt_res_cat")].\
                 map(sb743_settings["sb743_pcts"]) + 1
 
-            print("Modifying profit for SB743:\n", pct_modifications.describe())
+            print("Modifying profit for SB743:\n", 
+                  pct_modifications.describe())
 
             feasibility[("residential", "max_profit")] *= pct_modifications
 
@@ -231,8 +232,8 @@ def policy_modifications_of_profit(feasibility, parcels):
             pct_modifications = \
                 pct_modifications.reindex(pzc.index).fillna(1.0)
 
-            print("Modifying profit for Land Value Tax:\n", \
-                pct_modifications.describe())
+            print("Modifying profit for Land Value Tax:\n",
+                  pct_modifications.describe())
 
             feasibility[("residential", "max_profit")] *= pct_modifications
 
@@ -252,13 +253,13 @@ def policy_modifications_of_profit(feasibility, parcels):
                         policy["profitability_adjustment_formula"])
                 pct_modifications += 1.0
 
-                print("Modifying profit for %s:\n" % policy["name"], \
-                    pct_modifications.describe())
+                print("Modifying profit for %s:\n" % policy["name"],
+                      pct_modifications.describe())
 
                 feasibility[("residential", "max_profit")] *= pct_modifications
 
-    print("There are %d affordable units if all feasible projects are built" %\
-        feasibility[("residential", "deed_restricted_units")].sum())
+    print("There are %d affordable units if all feasible projects are built" %
+          feasibility[("residential", "deed_restricted_units")].sum())
 
     return feasibility
 
@@ -294,8 +295,8 @@ def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
         df["com_for_res_fees"] = df.vmt_res_cat.map(
             vmt_settings["com_for_res_fee_amounts"])
         total_fees += (df.com_for_res_fees * df.non_residential_sqft).sum()
-        print("Applying vmt fees to %d commerical sqft" % \
-            df.non_residential_sqft.sum())
+        print("Applying vmt fees to %d commerical sqft" %
+              df.non_residential_sqft.sum())
 
     print("Adding total vmt fees for res amount of $%.2f" % total_fees)
 
@@ -315,8 +316,8 @@ def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
         df["com_for_com_fees"] = df.vmt_res_cat.map(
             vmt_settings["com_for_com_fee_amounts"])
         total_fees += (df.com_for_com_fees * df.non_residential_sqft).sum()
-        print("Applying vmt fees to %d commerical sqft" % \
-            df.non_residential_sqft.sum())
+        print("Applying vmt fees to %d commerical sqft" %
+              df.non_residential_sqft.sum())
 
     print("Adding total vmt fees for com amount of $%.2f" % total_fees)
 
@@ -629,8 +630,8 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
         assert np.all(buildings.local.deed_restricted_units.fillna(0) <=
                       buildings.local.residential_units.fillna(0))
 
-        print("Amount left after subsidy: ${:,.2f}".\
-            format(account.total_transactions_by_subacct(subacct)))
+        print("Amount left after subsidy: ${:,.2f}".
+              format(account.total_transactions_by_subacct(subacct)))
 
         new_buildings_list.append(new_buildings)
 
@@ -641,10 +642,10 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
 
     new_buildings = pd.concat(new_buildings_list)
     print("Built {} total subsidized buildings".format(len(new_buildings)))
-    print("    Total subsidy: ${:,.2f}".format(
-        -1*new_buildings.max_profit.sum()))
-    print("    Total subsidized units: {:.0f}".\
-        format(new_buildings.residential_units.sum()))
+    print("    Total subsidy: ${:,.2f}".
+          format(-1*new_buildings.max_profit.sum()))
+    print("    Total subsidized units: {:.0f}".
+          format(new_buildings.residential_units.sum()))
 
     new_buildings["subsidized"] = True
     new_buildings["policy_name"] = policy_name
