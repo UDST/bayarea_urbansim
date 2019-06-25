@@ -66,10 +66,10 @@ def _create_empty_units(buildings):
                 np.zeros(num_units - restricted_units)
             ])
             # iterate over number of units and deed restricted units too
-            for (num_units, restricted_units) in zip(
+            for (num_units, restricted_units) in list(zip(
                 buildings.residential_units.values.astype(int),
                 buildings.deed_restricted_units.values.astype(int)
-            )
+            ))
         ])
     }).sort_values(by=['building_id', 'unit_num']).reset_index(drop=True)
     df.index.name = 'unit_id'
