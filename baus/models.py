@@ -1,6 +1,7 @@
 from urbansim.utils import misc
 import os
 import sys
+sys.path.append('baus')
 import orca
 import yaml
 import datasources
