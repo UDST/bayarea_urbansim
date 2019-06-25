@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from urbansim.utils import misc
 import os
 import sys

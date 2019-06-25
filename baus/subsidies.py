@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import sys
 import time
 import orca
@@ -207,7 +209,7 @@ def policy_modifications_of_profit(feasibility, parcels):
             pct_modifications = feasibility[("residential", "vmt_res_cat")].\
                 map(sb743_settings["sb743_pcts"]) + 1
 
-            print("Modifying profit for SB743:\n", 
+            print("Modifying profit for SB743:\n",
                   pct_modifications.describe())
 
             feasibility[("residential", "max_profit")] *= pct_modifications
