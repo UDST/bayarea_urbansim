@@ -9,7 +9,7 @@ from cStringIO import StringIO
 from urbansim.utils import misc
 from utils import add_buildings
 from urbansim.developer import sqftproforma
-
+from functools import reduce
 
 # this method is a custom profit to probability function where we test the
 # combination of different metrics like return on cost and raw profit
