@@ -6,7 +6,7 @@ import yaml
 import datasources
 import variables
 from utils import parcel_id_to_geom_id, geom_id_to_parcel_id, \
-    add_buildings, run_feasibility
+    add_buildings, run_feasibility, register_skim_access_variable
 from utils import round_series_match_target, groupby_random_choice
 from urbansim.utils import networks
 import pandana.network as pdna
@@ -18,6 +18,8 @@ import subsidies
 import summaries
 import numpy as np
 import pandas as pd
+from variable_generators import generators
+import copy
 
 
 @orca.step()
@@ -1036,3 +1038,86 @@ def price_vars(net):
     nodes = orca.get_table('nodes')
     nodes = nodes.to_frame().join(nodes2)
     orca.add_table("nodes", nodes)
+
+
+@orca.step()
+def generate_skims_vars():
+    """
+    This model step just aggregates a bunch of variables to
+    the zone level and lazily defines them as  new columns in the
+    zones table. Only columns used in creating skim-based
+    accessibility variables are required to be generated here
+    so it might be useful in the future to clean this section up.
+    """
+    geographic_levels = [('parcels', 'parcel_id')]
+
+    aggregation_functions = ['mean', 'median', 'std', 'sum']
+
+    geographic_levels = {'zones': 'zone_id'}
+    geographic_levels['parcels'] = 'parcel_id'
+
+    variables_to_aggregate = {
+        'households': [
+            'persons', 'income',
+            # 'race_of_head', 'age_of_head',
+            # 'workers', 'children', 'cars',
+            # 'hispanic_head',
+            # 'tenure',
+            # 'recent_mover', 'income_quartile'
+        ],
+        'jobs': ['sector_id'],
+        # 'parcels': [
+        #     'acres', 'x', 'y', 'land_value', 'proportion_undevelopable'],
+        'buildings': [
+            # 'building_type_id',
+            'residential_units',
+            # 'non_residential_sqft',
+            # 'year_built',
+            # 'value_per_unit',
+            # 'sqft_per_unit',
+            # 'job_spaces'
+        ]
+    }
+    sum_vars = ['persons', 'residential_units', 'income']
+
+    for agent in variables_to_aggregate.keys():
+        for geography_name, geography_id in geographic_levels.items():
+            if geography_name != agent:
+
+                # Define size variables
+                generators.make_size_var(agent, geography_name, geography_id)
+
+                # Define attribute variables
+                variables = variables_to_aggregate[agent]
+                for var in variables:
+                    for aggregation_function in aggregation_functions:
+                        if aggregation_function == 'sum':
+                            if var in sum_vars:
+                                generators.make_agg_var(agent, geography_name,
+                                                        geography_id,
+                                                        var,
+                                                        aggregation_function)
+
+                        else:
+                            generators.make_agg_var(agent, geography_name,
+                                                    geography_id, var,
+                                                    aggregation_function)
+
+
+@orca.step()
+def skims_aggregations_drive():
+    # Calculate skim-based accessibility variables
+    variables_to_aggregate = [
+        'total_jobs', 'sum_residential_units', 'sum_persons', 'sum_income']
+    skim_access_vars = []
+
+    # drive skim variables
+    travel_times = [15, 45]  # 15 and 45 min travel times in s
+
+    for impedance in ['gen_tt_CAR']:
+        for time in travel_times:
+            for variable in variables_to_aggregate:
+                var_name = '_'.join([variable, impedance, str(time)])
+                skim_access_vars.append(var_name)
+                register_skim_access_variable(
+                    var_name, variable, impedance, time)

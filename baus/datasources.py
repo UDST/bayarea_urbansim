@@ -6,8 +6,8 @@ from urbansim_defaults import utils
 from urbansim.utils import misc
 import orca
 import preprocessing
-from utils import geom_id_to_parcel_id, parcel_id_to_geom_id
-from utils import nearest_neighbor
+from utils import geom_id_to_parcel_id, parcel_id_to_geom_id, \
+        impute_missing_skims, nearest_neighbor
 
 
 #####################
@@ -37,7 +37,8 @@ def final_year():
 
 @orca.injectable(cache=True)
 def store(settings):
-    return pd.HDFStore(os.path.join(misc.data_dir(), settings["store"]))
+
+    return pd.HDFStore(os.path.join(misc.data_dir(), settings['store']))
 
 
 @orca.injectable(cache=True)
@@ -390,46 +391,23 @@ def taz(zones):
 
 
 @orca.table()
-def beam_skims(store):
-    df = store['beam_skims']
-    df = df[(df['period'] == 'AM') & (df['mode'] == 'CAR')]
-    assert len(df) == 2114116
-    df = df.rename(
-        columns={'origTaz': 'from_zone_id', 'destTaz': 'to_zone_id'})
-    df = df.set_index(['from_zone_id', 'to_zone_id'])
-    df['gen_tt_min'] = df['generalizedTimeInS'] / 60
+def beam_skims_raw(store):
+    df = store['beam_skims_raw']
     return df
 
 
-def register_aggregation_table(table_name, table_id):
-    """
-    Generator function for tables representing aggregate geography.
-    """
+@orca.table(cache=True)
+def beam_skims_imputed(store, mtc_skims, beam_skims_raw):
 
-    @orca.table(table_name, cache=True)
-    def func(parcels):
-        geog_ids = parcels[table_id].value_counts().index.values
-        df = pd.DataFrame(index=geog_ids)
-        df.index.name = table_id
-        return df
+    try:
+        beam_skims_imputed = store['beam_skims_imputed']
 
-    return func
+    except KeyError:
+        beam_skims_imputed = impute_missing_skims(
+            mtc_skims, beam_skims_raw)
+        store['beam_skims_imputed'] = beam_skims_imputed
 
-
-aggregate_geos = {
-    # 'zonings': 'zoning_id',
-    # 'locations': 'location_id',
-    # 'block_groups': 'block_group_id',
-    'blocks': 'block_id',
-    'zones': 'zone_id',
-    # 'plans': 'plan_id',
-    # 'zone_districts': 'zone_district_id',
-    # 'zone_subdistricts': 'zone_subdistrict_id'
-}
-orca.add_injectable('aggregate_geos', aggregate_geos)
-
-for geog in aggregate_geos.items():
-    register_aggregation_table(geog[0], geog[1])
+    return beam_skims_imputed
 
 
 @orca.table(cache=True)
@@ -698,8 +676,8 @@ def persons(store):
 
 
 @orca.table(cache=True)
-def skims(store):
-    return print_error_if_not_available(store, 'skims')
+def mtc_skims(store):
+    return print_error_if_not_available(store, 'mtc_skims')
 
 
 @orca.table(cache=True)
@@ -891,6 +869,33 @@ def parcels_tract():
 def tracts_earthquake():
     return pd.read_csv(
         os.path.join(misc.data_dir(), "tract_damage_earthquake.csv"))
+
+# these four tables are only included here to pass the data through
+# to activitysynth which only temporarily requires them
+
+
+@orca.table(cache=True)
+def drive_nodes(store):
+    df = store['drive_nodes']
+    return df
+
+
+@orca.table(cache=True)
+def drive_edges(store):
+    edges = store['drive_edges']
+    return edges
+
+
+@orca.table(cache=True)
+def walk_nodes(store):
+    df = store['walk_nodes']
+    return df
+
+
+@orca.table(cache=True)
+def walk_edges(store):
+    edges = store['walk_edges']
+    return edges
 
 
 # this specifies the relationships between tables
