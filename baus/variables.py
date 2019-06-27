@@ -969,8 +969,6 @@ def parcels_zoning_by_scenario(parcels, parcels_zoning_calculations,
     return df
 
 
-
-
 GROSS_AVE_UNIT_SIZE = 1000.0
 PARCEL_USE_EFFICIENCY = .8
 HEIGHT_PER_STORY = 12.0

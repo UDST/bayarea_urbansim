@@ -21,6 +21,7 @@ import pandas as pd
 from variable_generators import generators
 import copy
 
+
 @orca.step()
 def elcm_simulate(jobs, buildings, aggregations, zones, elcm_config):
     buildings.local["non_residential_rent"] = \
@@ -1044,7 +1045,7 @@ def generate_skims_vars():
     """
     This model step just aggregates a bunch of variables to
     the zone level and lazily defines them as  new columns in the
-    zones table. Only columns used in creating skim-based 
+    zones table. Only columns used in creating skim-based
     accessibility variables are required to be generated here
     so it might be useful in the future to clean this section up.
     """
