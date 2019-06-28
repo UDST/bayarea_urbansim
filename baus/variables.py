@@ -10,8 +10,6 @@ from urbansim_defaults import utils
 from urbansim_defaults import variables
 from urbansim.utils import misc
 
-from variable_generators import generators
-
 
 '''
 There's some really interesting side-effects of orca cache behavior which
