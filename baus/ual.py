@@ -227,8 +227,8 @@ def load_rental_listings():
     @orca.table('craigslist', cache=True)
     def craigslist(store):
         df = store['rentals']
-        net = orca.get_injectable('net')
-        df['node_id'] = net['walk'].get_node_ids(
+        netwalk = orca.get_injectable('netwalk')
+        df['node_id'] = netwalk['walk'].get_node_ids(
             df['longitude'], df['latitude'])
         # df['tmnode_id'] = net['drive'].get_node_ids(
         #     df['longitude'], df['latitude'])
