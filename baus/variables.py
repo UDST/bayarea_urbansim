@@ -833,12 +833,12 @@ def node_id(parcels, net):
     return s
 
 
-@orca.column('parcels', cache=True)
-def tmnode_id(parcels, net):
-    s = net["drive"].get_node_ids(parcels.x, parcels.y)
-    fill_val = s.value_counts().index[0]
-    s = s.reindex(parcels.index).fillna(fill_val).astype('int')
-    return s
+# @orca.column('parcels', cache=True)
+# def tmnode_id(parcels, net):
+#     s = net["drive"].get_node_ids(parcels.x, parcels.y)
+#     fill_val = s.value_counts().index[0]
+#     s = s.reindex(parcels.index).fillna(fill_val).astype('int')
+#     return s
 
 
 @orca.column('parcels', cache=True)
