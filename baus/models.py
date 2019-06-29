@@ -935,8 +935,8 @@ def static_parcel_proportional_job_allocation(static_parcels):
 
 
 @orca.injectable(cache=True)
-def netwalk(settings, walk_nodes, walk_edges):
-    pdna.reserve_num_graphs(len(settings["build_networks"]))
+def netwalk(walk_nodes, walk_edges):
+    # pdna.reserve_num_graphs(len(settings["build_networks"]))
 
     # yeah, starting to hardcode stuff, not great, but can only
     # do nearest queries on the first graph I initialize due to crummy
@@ -945,6 +945,8 @@ def netwalk(settings, walk_nodes, walk_edges):
     #     nets[key] = make_network_from_settings(
     #         settings['build_networks'][key]
     #     )
+    walk_edges = walk_edges.to_frame()
+    walk_nodes = walk_nodes.to_frame()
     netwalk = pdna.Network(
         walk_nodes.x, walk_nodes.y, walk_edges.u,
         walk_edges.v, walk_edges[['length']], twoway=True)
@@ -953,7 +955,7 @@ def netwalk(settings, walk_nodes, walk_edges):
 
 
 @orca.step()
-def local_pois(settings, walk_nodes, walk_edges):
+def local_pois(walk_nodes, walk_edges):
     # because of the aforementioned limit of one netowrk at a time for the
     # POIS, as well as the large amount of memory used, this is now a
     # preprocessing step
@@ -984,7 +986,7 @@ def local_pois(settings, walk_nodes, walk_edges):
 
 
 @orca.step()
-def neighborhood_vars(net):
+def neighborhood_vars(netwalk):
     nodes = networks.from_yaml(netwalk, "neighborhood_vars.yaml")
     nodes = nodes.replace(-np.inf, np.nan)
     nodes = nodes.replace(np.inf, np.nan)
@@ -1034,8 +1036,8 @@ def neighborhood_vars(net):
 
 
 @orca.step()
-def price_vars(net):
-    nodes2 = networks.from_yaml(net["walk"], "price_vars.yaml")
+def price_vars(netwalk):
+    nodes2 = networks.from_yaml(netwalk, "price_vars.yaml")
     nodes2 = nodes2.fillna(0)
     print nodes2.describe()
     nodes = orca.get_table('nodes')

@@ -36,9 +36,9 @@ def ave_unit_sqft(buildings):
 #####################
 
 
-@orca.column('households', cache=True)
-def tmnode_id(households, buildings):
-    return misc.reindex(buildings.tmnode_id, households.building_id)
+# @orca.column('households', cache=True)
+# def tmnode_id(households, buildings):
+#     return misc.reindex(buildings.tmnode_id, households.building_id)
 
 
 @orca.column('households', cache=False)
@@ -71,9 +71,9 @@ def node_id(parcels, costar):
     return misc.reindex(parcels.node_id, costar.parcel_id)
 
 
-@orca.column('costar')
-def tmnode_id(parcels, costar):
-    return misc.reindex(parcels.tmnode_id, costar.parcel_id)
+# @orca.column('costar')
+# def tmnode_id(parcels, costar):
+#     return misc.reindex(parcels.tmnode_id, costar.parcel_id)
 
 
 @orca.column('costar')
@@ -102,9 +102,9 @@ def transit_type(costar, parcels_geography):
 #####################
 
 
-@orca.column('jobs', cache=True)
-def tmnode_id(jobs, buildings):
-    return misc.reindex(buildings.tmnode_id, jobs.building_id)
+# @orca.column('jobs', cache=True)
+# def tmnode_id(jobs, buildings):
+#     return misc.reindex(buildings.tmnode_id, jobs.building_id)
 
 
 @orca.column('jobs', cache=True)
@@ -224,9 +224,9 @@ def unit_price(buildings):
     return buildings.residential_price * buildings.sqft_per_unit
 
 
-@orca.column('buildings', cache=True)
-def tmnode_id(buildings, parcels):
-    return misc.reindex(parcels.tmnode_id, buildings.parcel_id)
+# @orca.column('buildings', cache=True)
+# def tmnode_id(buildings, parcels):
+#     return misc.reindex(parcels.tmnode_id, buildings.parcel_id)
 
 
 @orca.column('buildings')
@@ -826,8 +826,8 @@ def taz2_price_shifters(parcels, taz2_price_shifters, year):
 
 
 @orca.column('parcels', cache=True)
-def node_id(parcels, net):
-    s = net["walk"].get_node_ids(parcels.x, parcels.y)
+def node_id(parcels, netwalk):
+    s = netwalk.get_node_ids(parcels.x, parcels.y)
     fill_val = s.value_counts().index[0]
     s = s.reindex(parcels.index).fillna(fill_val).astype('int')
     return s

@@ -225,10 +225,10 @@ def load_rental_listings():
     - adds broadcasts linking 'craigslist' to 'nodes', 'tmnodes', 'logsums'
     """
     @orca.table('craigslist', cache=True)
-    def craigslist(store):
+    def craigslist(store, parcels):
         df = store['rentals']
         netwalk = orca.get_injectable('netwalk')
-        df['node_id'] = netwalk['walk'].get_node_ids(
+        df['node_id'] = netwalk.get_node_ids(
             df['longitude'], df['latitude'])
         # df['tmnode_id'] = net['drive'].get_node_ids(
         #     df['longitude'], df['latitude'])
@@ -239,13 +239,15 @@ def load_rental_listings():
         # gotta do this to use the same yaml for estimation and simulation
         df['sqft_per_unit'] = df['sqft']
         df['price_per_sqft'] = df['rent_sqft']
+
+        df['parcel_id'] = misc.reindex(parcels.node_id, df.node_id)
         return df
 
     # Is it simpler to just do this in the table definition since it
     # is never updated?
     @orca.column('craigslist', 'zone_id', cache=True)
     def zone_id(craigslist, parcels):
-        return misc.reindex(parcels.zone_id, craigslist.node_id)
+        return misc.reindex(parcels.zone_id, craigslist.parcel_id)
 
     orca.broadcast('nodes', 'craigslist', cast_index=True, onto_on='node_id')
     # orca.broadcast('tmnodes', 'craigslist', cast_index=True,
