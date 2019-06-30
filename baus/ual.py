@@ -10,6 +10,7 @@ from urbansim.developer.developer import Developer as dev
 from urbansim.models.relocation import RelocationModel
 from urbansim.utils import misc
 from urbansim_defaults import utils
+from utils import nearest_neighbor
 
 
 ###############################################################################
@@ -240,15 +241,17 @@ def load_rental_listings():
         df['sqft_per_unit'] = df['sqft']
         df['price_per_sqft'] = df['rent_sqft']
 
-        df['parcel_id'] = misc.reindex(parcels.node_id, df.node_id)
+        df["parcel_id"] = nearest_neighbor(
+            parcels.to_frame(['x', 'y']).dropna(subset=['x', 'y']),
+            df[['longitude', 'latitude']]
+        )
         return df
 
-    # Is it simpler to just do this in the table definition since it
-    # is never updated?
+    # # Is it simpler to just do this in the table definition since it
+    # # is never updated?
     @orca.column('craigslist', 'zone_id', cache=True)
     def zone_id(craigslist, parcels):
         return misc.reindex(parcels.zone_id, craigslist.parcel_id)
-
     orca.broadcast('nodes', 'craigslist', cast_index=True, onto_on='node_id')
     # orca.broadcast('tmnodes', 'craigslist', cast_index=True,
     #                onto_on='tmnode_id')
@@ -619,7 +622,7 @@ def rsh_estimate(buildings, aggregations, zones):
 
 
 @orca.step('rrh_estimate')
-def rrh_estimate(craigslist, aggregations, zones):
+def rrh_estimate(craigslist, aggregations, parcels, zones):
     """
     This model step estimates a residental rental hedonic using
     craigslist listings.

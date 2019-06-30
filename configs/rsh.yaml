@@ -28,54 +28,54 @@ fitted: true
 
 fit_parameters:
     Coefficient:
-        I(transit_type == "bart1")[T.True]: -41.192390550010074
-        I(transit_type == "bart2")[T.True]: 27.980881755890433
-        Intercept: -714.7959225564899
-        ave_income_1500: 376.7293879263692
-        historic: 45.75044862395587
-        is_sanfran: 70.60712791899397
-        modern_condo: 20.198561227103376
-        new_construction: -20.546303890088303
-        np.log1p(sum_income_gen_tt_CAR_45): -94.43835389162412
-        np.log1p(total_jobs_gen_tt_CAR_45): -46.129884726829474
-        pacheights: -2.0156918684756917
-        residential_units_1500: 79.56947578768603
-        sfdu: -78.31785889476986
-        sqft_per_unit: -0.0912999899260593
-        stanford: -3.0307540880826123
+        I(transit_type == "bart1")[T.True]: -40.467224440454075
+        I(transit_type == "bart2")[T.True]: 23.8616362245548
+        Intercept: -2739.294786186446
+        ave_income_1500: 375.2534727128609
+        historic: 35.436049522140465
+        is_sanfran: 70.32751310022905
+        modern_condo: 21.55483112596495
+        new_construction: -14.172913956726358
+        np.log1p(sum_income_gen_tt_CAR_45): 11.337953239922674
+        np.log1p(total_jobs_gen_tt_CAR_45): -103.7049713492764
+        pacheights: -1.6450035076765022
+        residential_units_1500: 87.91261999455611
+        sfdu: -71.51018522183548
+        sqft_per_unit: -0.07595739047277097
+        stanford: -2.9842715441993093
     Std. Error:
-        I(transit_type == "bart1")[T.True]: 3.389279647880033
-        I(transit_type == "bart2")[T.True]: 3.674768677720892
-        Intercept: 79.4027376253476
-        ave_income_1500: 1.6339610808915561
-        historic: 1.336872297138737
-        is_sanfran: 2.0581104810513597
-        modern_condo: 4.800056791741559
-        new_construction: 1.549308177685422
-        np.log1p(sum_income_gen_tt_CAR_45): 5.145048393783811
-        np.log1p(total_jobs_gen_tt_CAR_45): 4.529899804375858
-        pacheights: 0.02708616165203171
-        residential_units_1500: 0.9698772366778177
-        sfdu: 0.9471906125263986
-        sqft_per_unit: 0.000741462669584828
-        stanford: 0.0282104048596459
+        I(transit_type == "bart1")[T.True]: 3.437373227487863
+        I(transit_type == "bart2")[T.True]: 3.7189773871450846
+        Intercept: 85.40849162986368
+        ave_income_1500: 1.6606144723958594
+        historic: 1.320826075739505
+        is_sanfran: 1.973043172862239
+        modern_condo: 4.8576079113739015
+        new_construction: 1.5779815212700687
+        np.log1p(sum_income_gen_tt_CAR_45): 5.295109438071984
+        np.log1p(total_jobs_gen_tt_CAR_45): 4.58544445324052
+        pacheights: 0.02914781363238634
+        residential_units_1500: 0.9642907804828204
+        sfdu: 0.9912572307408373
+        sqft_per_unit: 0.0007259033139259919
+        stanford: 0.028557910798170036
     T-Score:
-        I(transit_type == "bart1")[T.True]: -12.153730240517504
-        I(transit_type == "bart2")[T.True]: 7.614324658183464
-        Intercept: -9.002157153940582
-        ave_income_1500: 230.56203255515132
-        historic: 34.22200364378409
-        is_sanfran: 34.30677243474568
-        modern_condo: 4.207983801744755
-        new_construction: -13.261599071130773
-        np.log1p(sum_income_gen_tt_CAR_45): -18.35519253924287
-        np.log1p(total_jobs_gen_tt_CAR_45): -10.183422750822935
-        pacheights: -74.41777444773155
-        residential_units_1500: 82.04077050023406
-        sfdu: -82.684369818527
-        sqft_per_unit: -123.13497856497818
-        stanford: -107.43390969259045
+        I(transit_type == "bart1")[T.True]: -11.772717642892902
+        I(transit_type == "bart2")[T.True]: 6.416182122277559
+        Intercept: -32.07286224018306
+        ave_income_1500: 225.97266189753375
+        historic: 26.828702259152863
+        is_sanfran: 35.64418359797312
+        modern_condo: 4.437334490397042
+        new_construction: -8.981672957310055
+        np.log1p(sum_income_gen_tt_CAR_45): 2.141212258693366
+        np.log1p(total_jobs_gen_tt_CAR_45): -22.61612203719716
+        pacheights: -56.43660030297186
+        residential_units_1500: 91.16816397491456
+        sfdu: -72.14089643350276
+        sqft_per_unit: -104.63844015528915
+        stanford: -104.49894480343214
 
-fit_rsquared_adj: 0.5336166338915943
+fit_rsquared_adj: 0.5219461038388964
 
-fit_rsquared: 0.5336665320003683
+fit_rsquared: 0.5219972505714858

@@ -759,7 +759,7 @@ def building_purchase_price_sqft(parcels, settings):
     # developer model comes into play
     for form in ["Office", "Retail", "Industrial", "Residential"]:
         # convert to price per sqft from yearly rent per sqft
-        factor = 1.4 if form == "Residential" else (1/cap_rate)
+        factor = 1.4 if form == "Residential" else (1 / cap_rate)
         # raise cost to convert from industrial
         if form == "Industrial":
             factor *= 3.0
