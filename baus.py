@@ -204,8 +204,7 @@ def get_simulation_models(SCENARIO):
         "travel_model_output",
         # "travel_model_2_output",
         "hazards_slr_summary",
-        "hazards_eq_summary",
-        "save_tenure_indicators"
+        "hazards_eq_summary"
 
     ]
 
@@ -266,6 +265,8 @@ def run_models(MODE, SCENARIO):
                 "rrh_simulate",    # residential rental hedonic for units
                 "nrh_simulate",
 
+                # (based on higher of predicted price or rent)
+                "assign_tenure_to_new_units",
 
                 # uses conditional probabilities
                 "households_relocation",
@@ -273,9 +274,6 @@ def run_models(MODE, SCENARIO):
                 # update building/unit/hh correspondence
                 "reconcile_unplaced_households",
                 "jobs_transition",
-
-                # (based on higher of predicted price or rent)
-                "assign_tenure_to_new_units",
 
                 # allocate owners to vacant owner-occupied units
                 "hlcm_owner_simulate",
@@ -298,8 +296,7 @@ def run_models(MODE, SCENARIO):
                 "hazards_slr_summary",
                 "hazards_eq_summary",
                 "diagnostic_output",
-                "config",
-                "save_tenure_indicators"
+                "config"
 
             ], iter_vars=[IN_YEAR])
 
