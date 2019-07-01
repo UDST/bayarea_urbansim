@@ -79,16 +79,16 @@ parser.add_argument('-s', action='store', dest='scenario',
 parser.add_argument('-k', action='store_true', dest='skip_base_year',
                     help='skip base year - used for debugging')
 
-parser.add_argument('--years', '-y', action='store', dest='years',
+parser.add_argument('-y', '--years', action='store', dest='years',
                     help='comma separated input and output years.')
 
-parser.add_argument('--mode', '-m', action='store', dest='mode',
+parser.add_argument('-m', '--mode', action='store', dest='mode',
                     help='which mode to run (see code for mode options)')
 
 parser.add_argument('--disable-slack', action='store_true', dest='noslack',
                     help='disable slack outputs')
 
-parser.add_argument('--years-per-iter', '-n', action='store_true',
+parser.add_argument('-n', '--years-per-iter', action='store_true',
                     dest='every_nth_year',
                     help='simulation iteration frequency')
 
