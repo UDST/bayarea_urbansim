@@ -578,23 +578,22 @@ def assign_tenure_to_new_units(residential_units, households, settings):
 
 
 def unplaced_adjustment(households, units):
-
     """
     Modifies tenure assignment to new units, so that it is not only based on
-    the highest value between buying price and rent (converted to equivalent),
+    the highest value between sale price and rent (converted to equivalent),
     but also considers the minimum number of units required by tenure category
-    to meet demand
+    to accommodate existing unplaced households.
 
-    Data expectations
-    -----------------
-    - households: Orca table of households
-    - units: Pandas DataFrame with initial tenure assignment
+    Parameters
+    ----------
+    households : Orca table
+    units : pd.DataFrame with initial tenure assignments
 
-    Results
+    Returns
     -------
-    - units: DataFrame with adjusted tenure values
+    units : pd.DataFrame with adjusted tenure assignments
+    
     """
-
     hh = households.to_frame(['unit_id', 'building_id', 'tenure'])
     vacant_units = units[units['vacant_units'] > 0]
     min_new = {}
@@ -848,16 +847,17 @@ def correct_alternative_filters_sample(residential_units, households, tenure):
     given to the hlcm_simulate() method are already filtered with the
     alternative filters defined in the hlcm_owner and hlcm_renter yaml files.
 
-    Data expectations
-    -----------------
-    - residential_units: Orca table of residential units
-    - households: Orca table of households
-    - tenure: String for tenure. Takes the values of 'rent' or 'own'
+    Parameters
+    ----------
+    residential_units: Orca table
+    households: Orca table
+    tenure: str, 'rent' or 'own'
 
-    Results
+    Returns
     -------
     None. New tables of residential units and households by tenure segment
-    are registered in Orca.
+    are registered in Orca, with broadcasts linking them to each other and
+    to the 'buildings' table.
     """
 
     units = residential_units.to_frame()
@@ -880,12 +880,12 @@ def update_unit_ids(households, tenure):
     Orca tables as applicable. It then updates the general households table
     with the new unit ids that were selected by unplaced households.
 
-    Data expectations
-    -----------------
-    - households: Orca table of households
-    - tenure: String for tenure. Takes the values of 'rent' or 'own'
+    Parameters
+    ----------
+    households : Orca table
+    tenure : str, 'rent' or 'own'
 
-    Results
+    Returns
     -------
     None. unit_id column gets updated in the households table.
     """
