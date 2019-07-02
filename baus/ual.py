@@ -820,10 +820,13 @@ def hlcm_owner_simulate(households, residential_units,
     # alternatives, for supply/demand equilibration, and needs to NOT be in the
     # choosers table, to avoid conflicting when the tables are joined
 
+    # Pre-filter the alternatives to avoid over-pruning (PR 103)
     correct_alternative_filters_sample(residential_units, households, 'own')
+
     hlcm_simulate(orca.get_table('own_hh'), orca.get_table('own_units'),
                   aggregations, settings, hlcm_owner_config,
                   'price_equilibration')
+
     update_unit_ids(households, 'own')
 
 
@@ -841,10 +844,13 @@ def hlcm_owner_lowincome_simulate(households, residential_units,
 def hlcm_renter_simulate(households, residential_units, aggregations,
                          settings, hlcm_renter_config):
 
+    # Pre-filter the alternatives to avoid over-pruning (PR 103)
     correct_alternative_filters_sample(residential_units, households, 'rent')
+
     hlcm_simulate(orca.get_table('rent_hh'), orca.get_table('rent_units'),
                   aggregations, settings, hlcm_renter_config,
                   'rent_equilibration')
+
     update_unit_ids(households, 'rent')
 
 
