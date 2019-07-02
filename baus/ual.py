@@ -596,10 +596,10 @@ def unplaced_adjustment(households, units):
     """
     hh = households.to_frame(['unit_id', 'building_id', 'tenure'])
     vacant_units = units[units['vacant_units'] > 0].copy()
-    vacant_units['rent_over_price'] = vacant_units.unit_residential_rent \
-            / vacant_units.unit_residential_price
-    vacant_units['price_over_rent'] = vacant_units.unit_residential_price \
-            / vacant_units.unit_residential_rent
+    vacant_units['rent_over_price'] = vacant_units['unit_residential_rent'] \
+        / vacant_units['unit_residential_price']
+    vacant_units['price_over_rent'] = vacant_units['unit_residential_price'] \
+        / vacant_units['unit_residential_rent']
     min_new = {}
 
     for tenure in ['own', 'rent']:
