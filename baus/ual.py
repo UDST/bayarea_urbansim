@@ -592,30 +592,38 @@ def unplaced_adjustment(households, units):
     Returns
     -------
     units : pd.DataFrame with adjusted tenure assignments
-    
+
     """
     hh = households.to_frame(['unit_id', 'building_id', 'tenure'])
-    vacant_units = units[units['vacant_units'] > 0]
+    vacant_units = units[units['vacant_units'] > 0].copy()
+    vacant_units['rent_over_price'] = vacant_units.unit_residential_rent \
+                                      / vacant_units.unit_residential_price
+    vacant_units['price_over_rent'] = vacant_units.unit_residential_price \
+                                      / vacant_units.unit_residential_rent
     min_new = {}
+
     for tenure in ['own', 'rent']:
         units_tenure = vacant_units[vacant_units['tenure'] == tenure]
         vacant_units_tenure = units_tenure.vacant_units.sum()
         unplaced_hh = hh[(hh['tenure'] == tenure) & (hh['unit_id'] == -1)]
         unplaced_hh = len(unplaced_hh.index)
         min_new[tenure] = max(unplaced_hh - vacant_units_tenure, 0)
+
     complement = {'own': 'rent', 'rent': 'own'}
-    price = {'own': 'unit_residential_price', 'rent': 'unit_residential_rent'}
+    price = {'own': 'price_over_rent', 'rent': 'rent_over_price'}
+
     for tenure in ['own', 'rent']:
         units_tenure = vacant_units[vacant_units['tenure'] == tenure]
         units_comp = vacant_units[vacant_units['tenure'] == complement[tenure]]
+
         if (min_new[complement[tenure]] < len(units_comp.index)) & \
                 (min_new[tenure] > len(units_tenure.index)):
-            available_units = len(units_tenure.index)
-            missing_units = min_new[tenure] - available_units
+            missing_units = min_new[tenure] - len(units_tenure.index)
             extra_units = len(units_comp.index) - min_new[complement[tenure]]
             extra_units = int(min(missing_units, extra_units))
             extra_units = units_comp.nlargest(extra_units, price[tenure])
             units.loc[extra_units.index, 'tenure'] = tenure
+
     return units
 
 
@@ -858,16 +866,18 @@ def correct_alternative_filters_sample(residential_units, households, tenure):
     None. New tables of residential units and households by tenure segment
     are registered in Orca, with broadcasts linking them to each other and
     to the 'buildings' table.
-    """
 
+    """
     units = residential_units.to_frame()
     units_tenure = units[units.tenure == tenure]
     units_name = tenure + '_units'
     orca.add_table(units_name, units_tenure, cache=True, cache_scope='step')
+
     hh = households.to_frame()
     hh_tenure = hh[hh.tenure == tenure]
     hh_name = tenure + '_hh'
     orca.add_table(hh_name, hh_tenure, cache=True, cache_scope='step')
+
     orca.broadcast('buildings', units_name,
                    cast_index=True, onto_on='building_id')
     orca.broadcast(units_name, hh_name, cast_index=True, onto_on='unit_id')
@@ -888,8 +898,8 @@ def update_unit_ids(households, tenure):
     Returns
     -------
     None. unit_id column gets updated in the households table.
-    """
 
+    """
     unit_ids = households.to_frame(['unit_id'])
     updated = orca.get_table(tenure+'_hh').to_frame(['unit_id'])
     unit_ids.loc[unit_ids.index.isin(updated.index),
