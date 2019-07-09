@@ -14,6 +14,10 @@
 # 16: forecast test base
 # 17: forecast test less constrained
 
+
+# the following set of lists is for use in Horizon: Futures Round 2
+# for ease in enabling and disabling individual strategies during testing
+
 # scenarios for hazards models
 slr_scenarios:
       enable_in: ["1", "2", "5", "11", "12", "15"]
@@ -22,7 +26,9 @@ slr_scenarios:
       bttf: ["5", "10", "15"]
 eq_scenarios:
       enable_in: ["1", "2", "5", "11", "12", "15"]
-            
+# scenarios for futures round 2 office caps
+office_caps_fr2_enable: ["11", "12", "15"]
+
 
 # these are the tables the get auto-merged to buildings/parcels in the hedonic and lcms
 aggregation_tables:
@@ -145,6 +151,7 @@ inclusionary_housing_settings:
       amount: .2
       values:
       - San Francisco
+# in the future scenarios with identical inclusionary settings could be grouped
   "1":
     - type: jurisdictions
       description: medium setting
@@ -1567,6 +1574,10 @@ cost_shifters:
 # general_type and in terms of resdential units and job spaces - believe scenarios
 # inherit settings from teh default scenario
 development_limits:
+# 07 09 2019 ET: believe the default settings include office caps to represent real-world caps
+# as well as caps added for PBA40 (existing: SF, Palo Alto?, added: Cupertino?)
+# they also include additional office caps to handle volatility
+# if this is true, in the future these could be split out more (default, s4, etc)
   default:
     Office:
       'Alameda': 100
@@ -1628,6 +1639,60 @@ development_limits:
       'Napa County': 25
       'Solano County': 230
       'Sonoma County': 50
+  "11":
+    Office:
+      # new:
+      'Emeryville': 0
+      'Brisbane': 0
+      'Menlo Park': 0
+      'Santa Clara': 0
+      'Mountainview': 0
+      'South San Francisco': 0
+       # reduced from fr1:
+      'Milpitas': 0
+      'Burlingame': 0
+      'Palo Alto': 0
+      # maintained from fr1:
+      'Colma': 0
+      'Cupertino': 0
+      # "removes" the default SF cap:
+      'San Francisco': 9999999
+  "12":
+    Office:
+      # new:
+      'Emeryville': 0
+      'Brisbane': 0
+      'Menlo Park': 0
+      'Santa Clara': 0
+      'Mountainview': 0
+      'South San Francisco': 0
+       # reduced from fr1:
+      'Milpitas': 0
+      'Burlingame': 0
+      'Palo Alto': 0
+      # maintained from fr1: :
+      'Colma': 0
+      'Cupertino': 0
+      # "removes" the default SF cap
+      'San Francisco': 9999999
+  "15":
+    Office:
+      # new:
+      'Emeryville': 0
+      'Brisbane': 0
+      'Menlo Park': 0
+      'Santa Clara': 0
+      'Mountainview': 0
+      'South San Francisco': 0
+       # reduced from fr1:
+      'Milpitas': 0
+      'Burlingame': 0
+      'Palo Alto': 0
+      # maintained from fr1: :
+      'Colma': 0
+      'Cupertino': 0
+      # "removes" the default SF cap
+      'San Francisco': 9999999
 
 
 # a list of parcel geom ids which urbansim doesn't touch - this are viewed as exceptions

@@ -120,6 +120,17 @@ def config(settings, run_number, scenario, parcels,
 
     write("")
 
+    # office caps
+    if scenario in settings['office_caps_fr2_enable']:
+        d = settings['development_limits'][scenario]['Office']
+        write("Using development limits for FR2 with %d office caps"
+              % (len(d)))
+    elif "default" in settings['development_limits'].keys():
+        d = settings['development_limits']["default"]['Office']
+        write("Using default development limits")
+
+    write("")
+
     # policies enabled
     if scenario in settings["inclusionary_housing_settings"]:
         prop = settings["inclusionary_housing_settings"][scenario][0]["amount"]
