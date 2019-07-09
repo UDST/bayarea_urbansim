@@ -47,19 +47,22 @@ def limits_settings(settings, scenario):
     # built per juris for each scenario - usually these represent actual
     # policies in place in each city which limit development
 
-    if scenario in settings['office_caps_fr2_enable']:
-        print "Using limits for FR2 scenario %s" % scenario
-        d = settings['development_limits']["fr2"]
+    d = settings['development_limits']
 
-    elif "default" in settings['development_limits'].keys():
-        print "Using default limits"
-        d = settings['development_limits']["default"]
+    if scenario in d.keys():
+        print "Using limits for scenario: %s" % scenario
+        assert "default" in d
 
-    for key, value in d.iteritems():
-        d.setdefault(key, {})
-        d[key].update(value)
+        d_scen = d[scenario]
+        d = d["default"]
+        for key, value in d_scen.iteritems():
+            d.setdefault(key, {})
+            d[key].update(value)
 
-    return d
+        return d
+
+    print "Using default limits"
+    return d["default"]
 
 
 @orca.injectable(cache=True)
