@@ -352,6 +352,11 @@ def maz_forecast_inputs(regional_demographic_forecast):
 
 @orca.table(cache=True)
 def zoning_scenario(parcels_geography, scenario, settings):
+
+    if (scenario in ["11", "12", "15"]) and\
+       (scenario not in settings["geographies_fr2_enable"]):
+        scenario = str(int(scenario) - 10)
+
     scenario_zoning = pd.read_csv(
         os.path.join(misc.data_dir(), 'zoning_mods_%s.csv' % scenario))
 
@@ -396,9 +401,9 @@ def parcel_rejections():
 
 
 @orca.table(cache=True)
-def parcels_geography(parcels):
+def parcels_geography(parcels, scenario, settings):
     df = pd.read_csv(
-        os.path.join(misc.data_dir(), "02_01_2016_parcels_geography.csv"),
+        os.path.join(misc.data_dir(), "07_11_2019_parcels_geography.csv"),
         index_col="geom_id")
     df = geom_id_to_parcel_id(df, parcels)
 
@@ -420,6 +425,12 @@ def parcels_geography(parcels):
 
     # danville wasn't supposed to be a pda
     df["pda_id"] = df.pda_id.replace("dan1", np.nan)
+
+    # for fr2 scenarios, use the policy geographies for Horizon
+    # the input file now has two sets of geographies
+    if (scenario in ["11", "12", "15"]) and\
+       (scenario in settings["geographies_fr2_enable"]):
+        df["zoningmodcat"] = df["zoninghzcat"]
 
     return df
 

@@ -22,7 +22,10 @@ slr_scenarios:
       bttf: ["5", "10", "15"]
 eq_scenarios:
       enable_in: ["1", "2", "5", "11", "12", "15"]
-            
+
+# scenarios for futures round 2 geographies
+geographies_fr2_enable: ["11", "12", "15"]
+
 
 # these are the tables the get auto-merged to buildings/parcels in the hedonic and lcms
 aggregation_tables:
