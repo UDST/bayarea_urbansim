@@ -373,9 +373,12 @@ def zoning_scenario(parcels_geography, scenario, settings):
     add_drop_helper("add_bldg", 1)
     add_drop_helper("drop_bldg", 0)
 
+    join_col = 'zoninghzcat' if 'zoninghzcat' in\
+        scenario_zoning.columns else 'zoningmodcat'
+
     return pd.merge(parcels_geography.to_frame().reset_index(),
                     scenario_zoning,
-                    on=['zoningmodcat'],
+                    on=join_col,
                     how='left').set_index('parcel_id')
 
 
