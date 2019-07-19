@@ -515,7 +515,7 @@ def residential_developer(feasibility, households, buildings, parcels, year,
             # and development is lumpy
 
             current_total = parcels.total_residential_units[
-                (juris_name == juris) and (parcels.newest_building >= 2010)]\
+                (juris_name == juris) & (parcels.newest_building >= 2010)]\
                 .sum()
 
             target = (year - 2010 + 1) * limit - current_total
@@ -724,7 +724,7 @@ def office_developer(feasibility, jobs, buildings, parcels, year,
                 # and development is lumpy
 
                 current_total = parcels.total_job_spaces[
-                    (juris_name == juris) and
+                    (juris_name == juris) &
                     (parcels.newest_building > 2015)].sum()
 
                 target = (year - 2015 + 1) * limit - current_total

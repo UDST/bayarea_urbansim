@@ -599,7 +599,7 @@ def parcel_rules(parcels):
     # removes parcels with buildings < 1940,
     # and single family homes on less then half an acre
     s = (parcels.oldest_building < 1940) | \
-        ((parcels.total_residential_units == 1) and
+        ((parcels.total_residential_units == 1) &
          (parcels.parcel_acres < .5)) | \
         (parcels.parcel_size < 2000)
     return (~s.reindex(parcels.index).fillna(False)).astype('int')
