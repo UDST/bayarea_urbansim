@@ -153,8 +153,8 @@ def assign_tenure_to_units(residential_units, households):
     # these values are now mapped to the string 'own' and 'rent' for clarity
 
     units['tenure'] = np.nan
-    own = hh[(hh.tenure == 'own') & (hh.unit_id != -1)].unit_id.values
-    rent = hh[(hh.tenure == 'rent') & (hh.unit_id != -1)].unit_id.values
+    own = hh[(hh.tenure == 'own') and (hh.unit_id != -1)].unit_id.values
+    rent = hh[(hh.tenure == 'rent') and (hh.unit_id != -1)].unit_id.values
     units.loc[own, 'tenure'] = 'own'
     units.loc[rent, 'tenure'] = 'rent'
 
@@ -307,7 +307,7 @@ def reconcile_placed_households(households, residential_units):
     units = residential_units.to_frame(['building_id']).reset_index()
 
     # Filter for households missing a 'building_id' but not a 'unit_id'
-    hh = hh[(hh.building_id == -1) & (hh.unit_id != -1)]
+    hh = hh[(hh.building_id == -1) and (hh.unit_id != -1)]
 
     # Join building id's to the filtered households, using mapping
     # from the units table
@@ -317,7 +317,8 @@ def reconcile_placed_households(households, residential_units):
     print "hh index.names: %s" % hh.index.names
 
     print "%d movers updated" % len(hh)
-    households.update_col_from_series('building_id', hh.building_id, cast=True)
+    households.update_col_from_series('building_id',
+                                      hh.building_id, cast=True)
 
     # Verify final data characteristics
     '''

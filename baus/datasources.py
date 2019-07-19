@@ -424,16 +424,12 @@ def parcels_geography(parcels, scenario, settings):
     # assert no empty juris values
     assert True not in df.juris_name.isnull().value_counts()
 
+    df['juris_trich'] = df.juris_id + df.trich_id
+
     df["pda_id"] = df.pda_id.str.lower()
 
     # danville wasn't supposed to be a pda
     df["pda_id"] = df.pda_id.replace("dan1", np.nan)
-
-    # for fr2 scenarios, use the policy geographies for Horizon
-    # the input file now has two sets of geographies
-    if (scenario in ["11", "12", "15"]) and\
-       (scenario in settings["geographies_fr2_enable"]):
-        df["zoningmodcat"] = df["zoninghzcat"]
 
     return df
 
