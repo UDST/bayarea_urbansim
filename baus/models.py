@@ -386,6 +386,8 @@ def scheduled_development_events(buildings, development_projects,
     del new_buildings["zone_id"]
     new_buildings["pda"] = parcels_geography.pda_id.loc[
         new_buildings.parcel_id].values
+    new_buildings["juris_trich"] = parcels_geography.juris_trich.loc[
+        new_buildings.parcel_id].values
 
     summary.add_parcel_output(new_buildings)
 
