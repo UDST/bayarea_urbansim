@@ -14,6 +14,7 @@
 # 16: forecast test base
 # 17: forecast test less constrained
 
+
 # scenarios for hazards models
 slr_scenarios:
       enable_in: ["1", "2", "5", "11", "12", "15"]
@@ -22,7 +23,12 @@ slr_scenarios:
       bttf: ["5", "10", "15"]
 eq_scenarios:
       enable_in: ["1", "2", "5", "11", "12", "15"]
-            
+
+
+# scenarios for futures round 2 renter protections - these are the scenarios
+# that use modified household relocation rates to slow down relocation
+reloc_fr2_enable: ["11", "12", "15"]
+
 
 # these are the tables the get auto-merged to buildings/parcels in the hedonic and lcms
 aggregation_tables:

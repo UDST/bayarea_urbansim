@@ -120,6 +120,10 @@ def config(settings, run_number, scenario, parcels,
 
     write("")
 
+    # household relocation
+    hh_reloc = orca.get_injectable("hh_reloc")
+    write("Renter protections through relocation rates are %s" % hh_reloc)
+
     # policies enabled
     if scenario in settings["inclusionary_housing_settings"]:
         prop = settings["inclusionary_housing_settings"][scenario][0]["amount"]
