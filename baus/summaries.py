@@ -127,44 +127,72 @@ def config(settings, run_number, scenario, parcels,
     else:
         write("Inclusionary housing is not activated")
 
-    def policy_activated(policy_loc, policy):
-        if scenario in policy_loc:
-            write(policy+" is activated")
+    def policy_activated(policy_loc, policy, scenario):
+        if "alternate_geography_scenarios" in policy_loc \
+                and scenario in policy_loc["alternate_geography_scenarios"]:
+            geog = policy_loc["alternate_buildings_filter"] if \
+                "alternate_buildings_filter" in policy_loc else \
+                policy_loc["alternate_adjustment_formula"]
+            write(policy+" is activated with formula: {}".format(geog))
+        elif scenario in policy_loc["enable_in_scenarios"]:
+            geog = policy_loc["receiving_buildings_filter"] if \
+                "receiving_buildings_filter" in policy_loc else \
+                policy_loc["profitability_adjustment_formula"]
+            write(policy+" is activated with formula: {}".format(geog))
         else:
             write(policy+" is not activated")
 
     policy_loc = (settings["acct_settings"]["lump_sum_accounts"]
-                  ["obag_settings"]["enable_in_scenarios"])
+                  ["obag_settings"])
     policy = "OBAG"
-    policy_activated(policy_loc, policy)
+    policy_activated(policy_loc, policy, scenario)
+
     policy_loc = (settings["acct_settings"]
-                  ["profitability_adjustment_policies"]["ceqa_tiering"]
-                  ["enable_in_scenarios"])
+                  ["profitability_adjustment_policies"]["ceqa_tiering"])
     policy = "CEQA"
-    policy_activated(policy_loc, policy)
+    policy_activated(policy_loc, policy, scenario)
+
     policy_loc = (settings["acct_settings"]
                   ["profitability_adjustment_policies"]
-                  ["parking_requirements_pdas"]["enable_in_scenarios"])
+                  ["parking_requirements_pdas"])
     policy = "Reduce Parking Requirements in PDAs"
-    policy_activated(policy_loc, policy)
+    policy_activated(policy_loc, policy, scenario)
+
     policy_loc = (settings["acct_settings"]
                   ["profitability_adjustment_policies"]
-                  ["parking_requirements_AVs_s1"]["enable_in_scenarios"])
+                  ["parking_requirements_AVs_s1"])
     policy = "Reduce Parking Requirements due to AVs (CAG)"
-    policy_activated(policy_loc, policy)
+    policy_activated(policy_loc, policy, scenario)
+
     policy_loc = (settings["acct_settings"]
                   ["profitability_adjustment_policies"]
-                  ["parking_requirements_AVs_s5"]["enable_in_scenarios"])
+                  ["parking_requirements_AVs_s5"])
     policy = "Reduce Parking Requirements due to AVs (BTTF)"
-    policy_activated(policy_loc, policy)
-    policy_loc = (settings["acct_settings"]["vmt_settings"]
-                  ["com_for_com_scenarios"])
-    policy = "VMT fees: com_for_com"
-    policy_activated(policy_loc, policy)
-    policy_loc = (settings["acct_settings"]["vmt_settings"]
-                  ["com_for_res_scenarios"])
-    policy = "VMT fees: com_for_res"
-    policy_activated(policy_loc, policy)
+    policy_activated(policy_loc, policy, scenario)
+
+    if scenario in settings["acct_settings"]["vmt_settings"]\
+            ["com_for_com_scenarios"] and scenario in \
+            settings["acct_settings"]["vmt_settings"]\
+            ["alternate_geography_scenarios"]:
+        write("VMT fees: com_for_com is activated with \
+              formula: trich_id > 0 | cat_id > 0")
+    elif scenario in settings["acct_settings"]["vmt_settings"]\
+            ["com_for_com_scenarios"]:
+        write("VMT fees: com_for_com is activated with formula: pda_id>0")
+    else:
+        write("VMT fees: com_for_com is not activated")
+
+    if scenario in settings["acct_settings"]["vmt_settings"]\
+            ["com_for_res_scenarios"] and scenario in \
+            settings["acct_settings"]["vmt_settings"]\
+            ["alternate_geography_scenarios"]:
+        write("VMT fees: com_for_res is activated with \
+              formula: trich_id > 0 | cat_id > 0")
+    elif scenario in settings["acct_settings"]["vmt_settings"]\
+            ["com_for_res_scenarios"]:
+        write("VMT fees: com_for_res is activated with formula: pda_id>0")
+    else:
+        write("VMT fees: com_for_res is not activated")
 
     # workplace preferences are in the development projects list
     # e-commerce should be embedded in the controls
