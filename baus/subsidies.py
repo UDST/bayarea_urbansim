@@ -542,7 +542,6 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
             acct_settings["alternate_geography_scenarios"]:
         feasibility = feasibility.\
             query(acct_settings["alternate_buildings_filter"])
-        print(feasibility.loc[(feasibility.trich_id.isnull()) & (feasibility.cat_id.isnull())])
     elif "receiving_buildings_filter" in acct_settings:
         feasibility = feasibility.\
             query(acct_settings["receiving_buildings_filter"])

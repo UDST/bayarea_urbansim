@@ -170,26 +170,26 @@ def config(settings, run_number, scenario, parcels,
     policy = "Reduce Parking Requirements due to AVs (BTTF)"
     policy_activated(policy_loc, policy, scenario)
 
-    if scenario in settings["acct_settings"]["vmt_settings"]\
-            ["com_for_com_scenarios"] and scenario in \
-            settings["acct_settings"]["vmt_settings"]\
-            ["alternate_geography_scenarios"]:
+    if scenario in (settings["acct_settings"]["vmt_settings"]
+                    ["com_for_com_scenarios"]) and scenario in \
+        (settings["acct_settings"]["vmt_settings"]
+         ["alternate_geography_scenarios"]):
         write("VMT fees: com_for_com is activated with \
               formula: trich_id > 0 | cat_id > 0")
-    elif scenario in settings["acct_settings"]["vmt_settings"]\
-            ["com_for_com_scenarios"]:
+    elif scenario in (settings["acct_settings"]["vmt_settings"]
+                      ["com_for_com_scenarios"]):
         write("VMT fees: com_for_com is activated with formula: pda_id>0")
     else:
         write("VMT fees: com_for_com is not activated")
 
-    if scenario in settings["acct_settings"]["vmt_settings"]\
-            ["com_for_res_scenarios"] and scenario in \
-            settings["acct_settings"]["vmt_settings"]\
-            ["alternate_geography_scenarios"]:
+    if scenario in (settings["acct_settings"]["vmt_settings"]
+                    ["com_for_res_scenarios"]) and scenario in \
+            (settings["acct_settings"]["vmt_settings"]
+             ["alternate_geography_scenarios"]):
         write("VMT fees: com_for_res is activated with \
               formula: trich_id > 0 | cat_id > 0")
-    elif scenario in settings["acct_settings"]["vmt_settings"]\
-            ["com_for_res_scenarios"]:
+    elif scenario in (settings["acct_settings"]["vmt_settings"]
+                      ["com_for_res_scenarios"]):
         write("VMT fees: com_for_res is activated with formula: pda_id>0")
     else:
         write("VMT fees: com_for_res is not activated")
