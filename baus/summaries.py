@@ -128,7 +128,8 @@ def config(settings, run_number, scenario, parcels,
         write("Inclusionary housing is not activated")
 
     def policy_activated(policy_loc, policy, scenario):
-        if "alternate_geography_scenarios" in policy_loc \
+        if scenario in policy_loc["enable_in_scenarios"] \
+                and "alternate_geography_scenarios" in policy_loc \
                 and scenario in policy_loc["alternate_geography_scenarios"]:
             geog = policy_loc["alternate_buildings_filter"] if \
                 "alternate_buildings_filter" in policy_loc else \
