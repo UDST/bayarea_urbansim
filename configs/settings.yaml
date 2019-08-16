@@ -1655,8 +1655,7 @@ development_limits:
       # maintained from fr1:
       'Colma': 0
       'Cupertino': 0
-      # "removes" the default SF cap:
-      'San Francisco': 9999999
+      'San Francisco': 3500
   "12":
     Office:
       # new:
@@ -1670,11 +1669,10 @@ development_limits:
       'Milpitas': 0
       'Burlingame': 0
       'Palo Alto': 0
-      # maintained from fr1: :
+      # maintained from fr1: 
       'Colma': 0
       'Cupertino': 0
-      # "removes" the default SF cap
-      'San Francisco': 9999999
+      'San Francisco': 3500
   "15":
     Office:
       # new:
@@ -1691,8 +1689,7 @@ development_limits:
       # maintained from fr1: :
       'Colma': 0
       'Cupertino': 0
-      # "removes" the default SF cap
-      'San Francisco': 9999999
+      'San Francisco': 3500
 
 
 # a list of parcel geom ids which urbansim doesn't touch - this are viewed as exceptions
