@@ -1113,10 +1113,19 @@ acct_settings:
       H: 30
       MH: 20
       M: 3
+    alternate_com_for_res_fee_amounts:
+      VH: 100
+      H: 60
+      MH: 40
+      M: 6
     com_for_com_fee_amounts:  # commercial fee subsidizing commercial devs
       VH: 40
       H: 20
       MH: 10
+    alternate_com_for_com_fee_amounts:
+      VH: 80
+      H: 40
+      MH: 20
   sb743_settings:
     enable: true
     sb743_pcts:

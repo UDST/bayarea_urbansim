@@ -302,8 +302,12 @@ def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
 
     if scenario in vmt_settings["com_for_res_scenarios"]:
 
-        df["com_for_res_fees"] = df.vmt_res_cat.map(
-            vmt_settings["com_for_res_fee_amounts"])
+        if scenario in vmt_settings["alternate_geography_scenarios"]:
+            df["com_for_res_fees"] = df.vmt_res_cat.map(
+                vmt_settings["alternate_com_for_res_fee_amounts"])
+        else:
+            df["com_for_res_fees"] = df.vmt_res_cat.map(
+                vmt_settings["com_for_res_fee_amounts"])
         total_fees += (df.com_for_res_fees * df.non_residential_sqft).sum()
         print "Applying vmt fees to %d commerical sqft" % \
             df.non_residential_sqft.sum()
@@ -323,8 +327,12 @@ def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
 
     if scenario in vmt_settings["com_for_com_scenarios"]:
 
-        df["com_for_com_fees"] = df.vmt_res_cat.map(
-            vmt_settings["com_for_com_fee_amounts"])
+        if scenario in vmt_settings["alternate_geography_scenarios"]:
+            df["com_for_com_fees"] = df.vmt_res_cat.map(
+                vmt_settings["alternate_com_for_com_fee_amounts"])
+        else:
+            df["com_for_com_fees"] = df.vmt_res_cat.map(
+                vmt_settings["com_for_com_fee_amounts"])
         total_fees += (df.com_for_com_fees * df.non_residential_sqft).sum()
         print "Applying vmt fees to %d commerical sqft" % \
             df.non_residential_sqft.sum()
