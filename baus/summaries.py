@@ -168,13 +168,13 @@ def config(settings, run_number, scenario, parcels,
 
     # fr2 affordable housing bonds
     counter = 0
-    counties = ["alameda", "contra_costa", "marin", "napa", "san_mateo", "san_francisco",
-                "santa_clara", "solano", "sonoma"]
+    counties = ["alameda", "contra_costa", "marin", "napa", "san_mateo",
+                "san_francisco", "santa_clara", "solano", "sonoma"]
     for county in counties:
-    		policy_loc = (settings["acct_settings"]["lump_sum_accounts"]
-    			          [county+"_bond_settings"]["enable_in_scenarios"])
-    		if scenario in policy_loc:
-    			counter += 1
+            policy_loc = (settings["acct_settings"]["lump_sum_accounts"]
+                          [county+"_bond_settings"]["enable_in_scenarios"])
+            if scenario in policy_loc:
+                counter += 1
     write("Affordable housing bonds are activated for %d counties" % counter)
 
     # workplace preferences are in the development projects list
