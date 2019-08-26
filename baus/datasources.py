@@ -798,11 +798,25 @@ def zones(store):
     return store['zones'].sort_index()
 
 
-# SLR inundation levels for parcels
+# SLR inundation levels for parcels, with full, partial, or no mitigation
 @orca.table(cache=True)
 def slr_parcel_inundation():
     return pd.read_csv(
         os.path.join(misc.data_dir(), "slr_parcel_inundation.csv"),
+        index_col='parcel_id')
+
+
+@orca.table(cache=True)
+def slr_parcel_inundation_mf():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "slr_parcel_inundation_mf.csv"),
+        index_col='parcel_id')
+
+
+@orca.table(cache=True)
+def slr_parcel_inundation_mp():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "slr_parcel_inundation_mp.csv"),
         index_col='parcel_id')
 
 
