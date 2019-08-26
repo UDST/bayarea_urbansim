@@ -47,6 +47,12 @@ def limits_settings(settings, scenario):
     # built per juris for each scenario - usually these represent actual
     # policies in place in each city which limit development
 
+    # set up so that fr2 limits can be turned off as needed
+    # instead of looking for fr2 limits, the fr1 scenario is used
+    if (scenario in ["11", "12", "15"]) and\
+       (scenario not in settings["office_caps_fr2_enable"]):
+        scenario = str(int(scenario) - 10)
+
     d = settings['development_limits']
 
     if scenario in d.keys():
