@@ -403,6 +403,21 @@ def pda(parcels, parcels_geography):
 
 
 @orca.column('parcels', cache=True)
+def trich_id(parcels, parcels_geography):
+    return parcels_geography.trich_id.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def cat_id(parcels, parcels_geography):
+    return parcels_geography.cat_id.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def juris_trich(parcels, parcels_geography):
+    return parcels_geography.juris_trich.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
 def superdistrict(parcels, taz_geography):
     return misc.reindex(taz_geography.superdistrict, parcels.zone_id)
 
