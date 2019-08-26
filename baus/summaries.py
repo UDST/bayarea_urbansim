@@ -116,6 +116,13 @@ def config(settings, run_number, scenario, parcels,
     else:
         write("Scenario is not in development projects list")
 
+    dev_proj = development_projects.to_frame()
+    projects_on = dev_proj.loc[dev_proj['building_name'] == 'pub', scen].sum()
+    if projects_on > 0:
+        write("Public lands are in development projects")
+    else:
+        write("Public lands are not in development projects")
+
     write("")
 
     # zoning mods
