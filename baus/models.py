@@ -393,6 +393,8 @@ def scheduled_development_events(buildings, development_projects,
     del new_buildings["zone_id"]
     new_buildings["pda"] = parcels_geography.pda_id.loc[
         new_buildings.parcel_id].values
+    new_buildings["juris_trich"] = parcels_geography.juris_trich.loc[
+        new_buildings.parcel_id].values
 
     summary.add_parcel_output(new_buildings)
 
@@ -533,7 +535,7 @@ def residential_developer(feasibility, households, buildings, parcels, year,
             max_target = (final_year - 2010 + 1) * limit - current_total
 
             if target <= 0:
-                    continue
+                continue
 
             targets.append((juris_name == juris, target, max_target, juris))
             num_units -= target
@@ -731,8 +733,8 @@ def office_developer(feasibility, jobs, buildings, parcels, year,
                 # and development is lumpy
 
                 current_total = parcels.total_job_spaces[
-                    (juris_name == juris) & (parcels.newest_building > 2015)]\
-                    .sum()
+                    (juris_name == juris) &
+                    (parcels.newest_building > 2015)].sum()
 
                 target = (year - 2015 + 1) * limit - current_total
 
