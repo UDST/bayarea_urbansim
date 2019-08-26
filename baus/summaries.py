@@ -185,9 +185,11 @@ def config(settings, run_number, scenario, parcels,
          ["alternate_geography_scenarios"]):
         write("VMT fees: com_for_com is activated with \
               formula: trich_id > 0 | cat_id > 0")
+        write("VMT fees: com_for_com is using alternate fee amounts")
     elif scenario in (settings["acct_settings"]["vmt_settings"]
                       ["com_for_com_scenarios"]):
         write("VMT fees: com_for_com is activated with formula: pda_id>0")
+        write("VMT fees: com_for_com is using default fee amounts")
     else:
         write("VMT fees: com_for_com is not activated")
 
@@ -197,9 +199,11 @@ def config(settings, run_number, scenario, parcels,
              ["alternate_geography_scenarios"]):
         write("VMT fees: com_for_res is activated with \
               formula: trich_id > 0 | cat_id > 0")
+        write("VMT fees: com_for_res is using alternate fee amounts")
     elif scenario in (settings["acct_settings"]["vmt_settings"]
                       ["com_for_res_scenarios"]):
         write("VMT fees: com_for_res is activated with formula: pda_id>0")
+        write("VMT fees: com_for_res is using default fee amounts")
     else:
         write("VMT fees: com_for_res is not activated")
 
