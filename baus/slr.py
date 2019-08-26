@@ -12,22 +12,34 @@ import summaries
 
 @orca.step()
 def slr_inundate(scenario, parcels, slr_progression_C, slr_progression_R,
-                 slr_progression_B, year, slr_parcel_inundation, settings):
+                 slr_progression_B, slr_parcel_inundation,
+                 slr_parcel_inundation_mf, slr_parcel_inundation_mp,
+                 year, settings):
 
     if scenario not in settings["slr_scenarios"]["enable_in"]:
         return
 
-    if scenario in settings["slr_scenarios"]["rtff"]:
+    if scenario in settings["slr_scenarios"]["rtff_prog"]:
         slr_progression = slr_progression_R.to_frame()
-    elif scenario in settings["slr_scenarios"]["cag"]:
+    elif scenario in settings["slr_scenarios"]["cag_prog"]:
         slr_progression = slr_progression_C.to_frame()
-    elif scenario in settings["slr_scenarios"]["bttf"]:
+    elif scenario in settings["slr_scenarios"]["bttf_prog"]:
         slr_progression = slr_progression_B.to_frame()
-
     orca.add_table("slr_progression", slr_progression)
+
     inundation_yr = slr_progression.query('year==@year')['inundated'].item()
     print "Inundation in model year is %d inches" % inundation_yr
-    slr_parcel_inundation = slr_parcel_inundation.to_frame()
+
+    if scenario in settings["slr_scenarios"]["mitigation_full"]:
+        slr_parcel_inundation = slr_parcel_inundation_mf.to_frame()
+        orca.add_injectable("slr_mitigation", 'full mitigation')
+    elif scenario in settings["slr_scenarios"]["mitigation_partial"]:
+        slr_parcel_inundation = slr_parcel_inundation_mp.to_frame()
+        orca.add_injectable("slr_mitigation", 'partial mitigation')
+    else:
+        slr_parcel_inundation = slr_parcel_inundation.to_frame()
+        orca.add_injectable("slr_mitigation", 'none')
+
     destroy_parcels = slr_parcel_inundation.\
         query('inundation<=@inundation_yr').astype('bool')
     orca.add_table('destroy_parcels', destroy_parcels)

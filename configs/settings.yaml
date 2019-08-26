@@ -14,17 +14,33 @@
 # 16: forecast test base
 # 17: forecast test less constrained
 
+
+# the following set of lists is for use in Horizon: Futures Round 2
+# for ease in enabling and disabling individual strategies during testing
+
 # scenarios for hazards models
 slr_scenarios:
       enable_in: ["1", "2", "5", "11", "12", "15"]
-      rtff: ["2", "7", "12"]
-      cag: ["1", "6", "11"]
-      bttf: ["5", "10", "15"]
+      rtff_prog: ["2", "7", "12"]
+      cag_prog: ["1", "6", "11"]
+      bttf_prog: ["5", "10", "15"]
+      mitigation_full: ["11", "15"]
+      mitigation_partial: ["12"]
 eq_scenarios:
       enable_in: ["1", "2", "5", "11", "12", "15"]
+      mitigation: ["11", "15"]
+      # rtff is not mitigated
+
+# scenarios for futures round 2 geographies
+geographies_fr2_enable: ["11", "12", "15"]
+
+# scenarios for futures round 2 office caps
+office_caps_fr2_enable: ["11", "12", "15"]
 
 # scenarios for Futures Round 2 inclusionary rates
 inclusionary_fr2_enable: ["11", "12", "15"]
+
+
 
 # these are the tables the get auto-merged to buildings/parcels in the hedonic and lcms
 aggregation_tables:
@@ -147,6 +163,7 @@ inclusionary_housing_settings:
       amount: .2
       values:
       - San Francisco
+# in the future scenarios with identical inclusionary settings could be grouped
   "1":
     - type: jurisdictions
       description: medium setting
@@ -1064,42 +1081,86 @@ acct_settings:
       sending_buildings_subaccount_def: regional
       total_amount: 40000000
       receiving_buildings_filter: pda_id > 0
+      alternate_buildings_filter: trich_id > 0 | cat_id > 0
       subsidize_affordable: False
       enable_in_scenarios: ["1", "2", "3", "4", "5", "6", "7", "10", "11", "12", "15"]
+      alternate_geography_scenarios: ["11", "12", "15"]
 
     # these are all county specific affordable housing bonds but right now
     # they aren't enabled in any scenarios
-    san_mateo_bond_settings:
-      name: "San Mateo Affordable Housing Bond"
-      sending_buildings_subaccount_def: regional
-      total_amount: 40000000
-      receiving_buildings_filter: county == 'San Mateo'
-      subsidize_affordable: True
-      enable_in_scenarios: []
 
     alameda_bond_settings:
       name: "Alameda Affordable Housing Bond"
       sending_buildings_subaccount_def: regional
-      total_amount: 20000000
+      total_amount: 30625010
       receiving_buildings_filter: county == 'Alameda'
       subsidize_affordable: True
-      enable_in_scenarios: []
+      enable_in_scenarios: ["11", "12", "15"]
+
+    contra_costa_bond_settings:
+      name: "Contra Costa Affordable Housing Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 21150756
+      receiving_buildings_filter: county == 'Contra Costa'
+      subsidize_affordable: True
+      enable_in_scenarios: ["11", "12", "15"]
+
+    marin_bond_settings:
+      name: "Marin Affordable Housing Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 4932118
+      receiving_buildings_filter: county == 'Marin'
+      subsidize_affordable: True
+      enable_in_scenarios: ["11", "12", "15"]
+
+    napa_bond_settings:
+      name: "Napa Affordable Housing Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 2661050
+      receiving_buildings_filter: county == 'Napa'
+      subsidize_affordable: True
+      enable_in_scenarios: ["11", "12", "15"]
+
+    san_francisco_bond_settings:
+      name: "San Francisco Affordable Housing Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 16310399
+      receiving_buildings_filter: county == 'San Francisco'
+      subsidize_affordable: True
+      enable_in_scenarios: ["11", "12", "15"]
+
+    san_mateo_bond_settings:
+      name: "San Mateo Affordable Housing Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 14406372
+      receiving_buildings_filter: county == 'San Mateo'
+      subsidize_affordable: True
+      enable_in_scenarios: ["11", "12", "15"]
 
     santa_clara_bond_settings:
       name: "Santa Clara Affordable Housing Bond"
       sending_buildings_subaccount_def: regional
-      total_amount: 31000000
+      total_amount: 36291210
       receiving_buildings_filter: county == 'Santa Clara'
       subsidize_affordable: True
-      enable_in_scenarios: []
+      enable_in_scenarios: ["11", "12", "15"]
 
-    santa_francisco_bond_settings:
-      name: "San Francisco Affordable Housing Bond"
+    solano_bond_settings:
+      name: "Solano Affordable Housing Bond"
       sending_buildings_subaccount_def: regional
-      total_amount: 19000000
-      receiving_buildings_filter: county == 'San Francisco'
+      total_amount: 8120789
+      receiving_buildings_filter: county == 'Solano'
       subsidize_affordable: True
-      enable_in_scenarios: []
+      enable_in_scenarios: ["11", "12", "15"]
+
+    sonoma_bond_settings:
+      name: "Sonoma Affordable Housing Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 9451314
+      receiving_buildings_filter: county == 'Sonoma'
+      subsidize_affordable: True
+      enable_in_scenarios: ["11", "12", "15"]
+
 
     # parcel tax settings
     parcel_tax_settings:
@@ -1130,6 +1191,8 @@ acct_settings:
       enable_in_scenarios: ["1", "2", "3", "4", "5", "6", "7", "10", "11", "12", "15"]
       # any parcel in a tpa
       profitability_adjustment_formula: "(tpp_id > 0) * .01"
+      alternate_geography_scenarios: ["11", "12", "15"]
+      alternate_adjustment_formula: "(trich_id > 0 | cat_id > 0) * .01"
 
     # reduce parking requirements in TPPs - would be nice to have better data
     # on how this impacts price as well, but we don't have it
@@ -1144,6 +1207,8 @@ acct_settings:
       enable_in_scenarios: ["1", "2", "4", "5", "6", "7", "10", "11", "12", "15"]
       # any parcel in a tpa
       profitability_adjustment_formula: "(pda_id > 0) * .01"
+      alternate_geography_scenarios: ["11", "12", "15"]
+      alternate_adjustment_formula: "(trich_id > 0 | cat_id > 0) * .01"
 
     parking_requirements_AVs_s1: # cag
       name: "Reduce Parking Requirements due to AVs- CAG"
@@ -1176,6 +1241,8 @@ acct_settings:
   vmt_settings:
     sending_buildings_subaccount_def: regional
     receiving_buildings_filter: pda_id>0
+    alternate_buildings_filter: trich_id > 0 | cat_id > 0
+    alternate_geography_scenarios: ["11", "12", "15"]
     res_for_res_scenarios:
       - "3"
     com_for_com_scenarios:
@@ -1209,10 +1276,19 @@ acct_settings:
       H: 30
       MH: 20
       M: 3
+    alternate_com_for_res_fee_amounts:
+      VH: 100
+      H: 60
+      MH: 40
+      M: 6
     com_for_com_fee_amounts:  # commercial fee subsidizing commercial devs
       VH: 40
       H: 20
       MH: 10
+    alternate_com_for_com_fee_amounts:
+      VH: 80
+      H: 40
+      MH: 20
   sb743_settings:
     enable: true
     sb743_pcts:
@@ -1460,6 +1536,8 @@ feasibility:
     - building_purchase_price_sqft
     - residential_sales_price_sqft
     - pda
+    - trich_id
+    - cat_id
     - juris
     - county
     - superdistrict
@@ -1674,6 +1752,10 @@ cost_shifters:
 # general_type and in terms of resdential units and job spaces - believe scenarios
 # inherit settings from teh default scenario
 development_limits:
+# 07 09 2019 ET: believe the default settings include office caps to represent real-world caps
+# as well as caps added for PBA40 (existing: SF, Palo Alto?, added: Cupertino?)
+# they also include additional office caps to handle volatility
+# if this is true, in the future these could be split out more (default, s4, etc)
   default:
     Office:
       'Alameda': 100
@@ -1735,6 +1817,57 @@ development_limits:
       'Napa County': 25
       'Solano County': 230
       'Sonoma County': 50
+  "11":
+    Office:
+      # new:
+      'Emeryville': 0
+      'Brisbane': 0
+      'Menlo Park': 0
+      'Santa Clara': 0
+      'Mountainview': 0
+      'South San Francisco': 0
+       # reduced from fr1:
+      'Milpitas': 0
+      'Burlingame': 0
+      'Palo Alto': 0
+      # maintained from fr1:
+      'Colma': 0
+      'Cupertino': 0
+      'San Francisco': 3500
+  "12":
+    Office:
+      # new:
+      'Emeryville': 0
+      'Brisbane': 0
+      'Menlo Park': 0
+      'Santa Clara': 0
+      'Mountainview': 0
+      'South San Francisco': 0
+       # reduced from fr1:
+      'Milpitas': 0
+      'Burlingame': 0
+      'Palo Alto': 0
+      # maintained from fr1: 
+      'Colma': 0
+      'Cupertino': 0
+      'San Francisco': 3500
+  "15":
+    Office:
+      # new:
+      'Emeryville': 0
+      'Brisbane': 0
+      'Menlo Park': 0
+      'Santa Clara': 0
+      'Mountainview': 0
+      'South San Francisco': 0
+       # reduced from fr1:
+      'Milpitas': 0
+      'Burlingame': 0
+      'Palo Alto': 0
+      # maintained from fr1: :
+      'Colma': 0
+      'Cupertino': 0
+      'San Francisco': 3500
 
 
 # a list of parcel geom ids which urbansim doesn't touch - this are viewed as exceptions
