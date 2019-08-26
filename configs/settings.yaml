@@ -37,6 +37,10 @@ geographies_fr2_enable: ["11", "12", "15"]
 # scenarios for futures round 2 office caps
 office_caps_fr2_enable: ["11", "12", "15"]
 
+# scenarios for Futures Round 2 inclusionary rates
+inclusionary_fr2_enable: ["11", "12", "15"]
+
+
 
 # these are the tables the get auto-merged to buildings/parcels in the hedonic and lcms
 aggregation_tables:
@@ -723,241 +727,346 @@ inclusionary_housing_settings:
       - Windsor
   "11":
     - type: jurisdictions
+      description: high setting
+      amount: .2
+      values:
+      - Los Altos
+      - Burlingame
+      - Los Altos Hills
+      - Cupertino
+      - Hillsborough
+      - Monte Sereno
+      - Saratoga
+      - Millbrae
+      - Belmont
+      - Ross
+      - Mountain View
+      - Piedmont
+      - Foster City
+      - Belvedere
+      - San Carlos
+      - Larkspur
+      - Los Gatos
+      - Mill Valley
+      - Palo Alto
+      - Atherton
+      - Menlo Park
+      - Tiburon
+      - San Anselmo
+      - Sausalito
+      - Sunnyvale
+      - Albany
+      - Corte Madera
+      - Berkeley
+      - San Francisco
+    - type: jurisdictions
+      description: medium-high setting
+      amount: .15
+      values:
+      - San Mateo
+      - Woodside
+      - Campbell
+      - Lafayette
+      - Portola Valley
+      - Orinda
+      - Redwood City
+      - Pleasanton
+      - San Bruno
+      - San Ramon
+      - Fairfax
+      - Santa Clara
+      - Walnut Creek
+      - Pacifica
+      - Alameda
+      - Danville
+      - South San Francisco
+      - Daly City
+      - Milpitas
+      - Clayton
+      - Fremont
+      - Moraga
+      - El Cerrito
+      - Dublin
+      - Pleasant Hill
+      - San Jose
+      - East Palo Alto
+      - Yountville
+      - Colma
+      - San Rafael
+      - St. Helena
+      - Brisbane
+      - Emeryville
+      - Newark
+      - Novato
+      - Oakland
+      - Livermore
+      - Half Moon Bay
+      - Union City
+      - Sonoma
+      - Benicia
+    - type: jurisdictions
       description: medium setting
       amount: .1
       values:
-      - Alameda
-      - Alameda County
-      - Albany
-      - American Canyon
-      - Antioch
-      - Belmont
-      - Benicia
-      - Berkeley
-      - Brisbane
-      - Burlingame
-      - Campbell
-      - Cloverdale
-      - Colma
-      - Concord
-      - Contra Costa County
-      - Cotati
-      - Cupertino
-      - Daly City
-      - Danville
-      - Dixon
-      - Dublin
-      - East Palo Alto
-      - El Cerrito
-      - Emeryville
-      - Fairfield
-      - Fremont
-      - Gilroy
-      - Hayward
-      - Hercules
-      - Lafayette
-      - Livermore
-      - Los Altos
       - Martinez
-      - Menlo Park
-      - Millbrae
-      - Milpitas
-      - Moraga
-      - Morgan Hill
-      - Mountain View
-      - Napa
-      - Newark
-      - Oakland
-      - Oakley
-      - Orinda
-      - Palo Alto
       - Petaluma
-      - Pinole
-      - Pittsburg
-      - Pleasant Hill
-      - Pleasanton
-      - Redwood City
-      - Richmond
-      - Rohnert Park
-      - San Bruno
-      - San Carlos
-      - San Francisco
-      - San Jose
+      - Healdsburg
+      - Calistoga
+      - Concord
       - San Leandro
-      - San Mateo
-      - San Mateo County
-      - San Pablo
-      - San Rafael
-      - San Ramon
-      - Santa Clara
-      - Santa Rosa
       - Sebastopol
-      - South San Francisco
-      - Suisun City
-      - Sunnyvale
-      - Union City
-      - Vacaville
-      - Vallejo
-      - Walnut Creek
+      - Santa Rosa
+      - Hayward
+      - Morgan Hill
+      - Napa
+      - Gilroy
+      - Richmond
+      - Cotati
+      - San Pablo
+      - Pinole
       - Windsor
+      - Rohnert Park
+      - Cloverdale
+      - Vallejo
+      - Hercules
+      - American Canyon
+      - Pittsburg
+      - Vacaville
+      - Brentwood
+      - Oakley
+      - Suisun City
+      - Fairfield
+      - Antioch
+      - Dixon
+      - Rio Vista
   "12":
     - type: jurisdictions
-      description: medium setting
-      amount: .1
+      description: high setting
+      amount: .2
       values:
-      - Alameda
-      - Alameda County
-      - Albany
-      - American Canyon
-      - Antioch
-      - Belmont
-      - Benicia
-      - Berkeley
-      - Brisbane
-      - Burlingame
-      - Campbell
-      - Cloverdale
-      - Colma
-      - Concord
-      - Contra Costa County
-      - Cotati
-      - Cupertino
-      - Daly City
-      - Danville
-      - Dixon
-      - Dublin
-      - East Palo Alto
-      - El Cerrito
-      - Emeryville
-      - Fairfield
-      - Fremont
-      - Gilroy
-      - Hayward
-      - Hercules
-      - Lafayette
-      - Livermore
       - Los Altos
-      - Martinez
-      - Menlo Park
+      - Burlingame
+      - Los Altos Hills
+      - Cupertino
+      - Hillsborough
+      - Monte Sereno
+      - Saratoga
       - Millbrae
-      - Milpitas
-      - Moraga
-      - Morgan Hill
+      - Belmont
+      - Ross
       - Mountain View
-      - Napa
-      - Newark
-      - Oakland
-      - Oakley
-      - Orinda
-      - Palo Alto
-      - Petaluma
-      - Pinole
-      - Pittsburg
-      - Pleasant Hill
-      - Pleasanton
-      - Redwood City
-      - Richmond
-      - Rohnert Park
-      - San Bruno
+      - Piedmont
+      - Foster City
+      - Belvedere
       - San Carlos
-      - San Francisco
-      - San Jose
-      - San Leandro
-      - San Mateo
-      - San Mateo County
-      - San Pablo
-      - San Rafael
-      - San Ramon
-      - Santa Clara
-      - Santa Rosa
-      - Sebastopol
-      - South San Francisco
-      - Suisun City
+      - Larkspur
+      - Los Gatos
+      - Mill Valley
+      - Palo Alto
+      - Atherton
+      - Menlo Park
+      - Tiburon
+      - San Anselmo
+      - Sausalito
       - Sunnyvale
-      - Union City
-      - Vacaville
-      - Vallejo
+      - Albany
+      - Corte Madera
+      - Berkeley
+      - San Francisco
+    - type: jurisdictions
+      description: medium-high setting
+      amount: .15
+      values:
+      - San Mateo
+      - Woodside
+      - Campbell
+      - Lafayette
+      - Portola Valley
+      - Orinda
+      - Redwood City
+      - Pleasanton
+      - San Bruno
+      - San Ramon
+      - Fairfax
+      - Santa Clara
       - Walnut Creek
-      - Windsor
-  "15":
+      - Pacifica
+      - Alameda
+      - Danville
+      - South San Francisco
+      - Daly City
+      - Milpitas
+      - Clayton
+      - Fremont
+      - Moraga
+      - El Cerrito
+      - Dublin
+      - Pleasant Hill
+      - San Jose
+      - East Palo Alto
+      - Yountville
+      - Colma
+      - San Rafael
+      - St. Helena
+      - Brisbane
+      - Emeryville
+      - Newark
+      - Novato
+      - Oakland
+      - Livermore
+      - Half Moon Bay
+      - Union City
+      - Sonoma
+      - Benicia
     - type: jurisdictions
       description: medium setting
       amount: .1
       values:
-      - Alameda
-      - Alameda County
-      - Albany
-      - American Canyon
-      - Antioch
-      - Belmont
-      - Benicia
-      - Berkeley
-      - Brisbane
-      - Burlingame
-      - Campbell
-      - Cloverdale
-      - Colma
-      - Concord
-      - Contra Costa County
-      - Cotati
-      - Cupertino
-      - Daly City
-      - Danville
-      - Dixon
-      - Dublin
-      - East Palo Alto
-      - El Cerrito
-      - Emeryville
-      - Fairfield
-      - Fremont
-      - Gilroy
-      - Hayward
-      - Hercules
-      - Lafayette
-      - Livermore
-      - Los Altos
       - Martinez
-      - Menlo Park
-      - Millbrae
-      - Milpitas
-      - Moraga
-      - Morgan Hill
-      - Mountain View
-      - Napa
-      - Newark
-      - Oakland
-      - Oakley
-      - Orinda
-      - Palo Alto
       - Petaluma
-      - Pinole
-      - Pittsburg
-      - Pleasant Hill
-      - Pleasanton
-      - Redwood City
-      - Richmond
-      - Rohnert Park
-      - San Bruno
-      - San Carlos
-      - San Francisco
-      - San Jose
+      - Healdsburg
+      - Calistoga
+      - Concord
       - San Leandro
-      - San Mateo
-      - San Mateo County
-      - San Pablo
-      - San Rafael
-      - San Ramon
-      - Santa Clara
-      - Santa Rosa
       - Sebastopol
-      - South San Francisco
-      - Suisun City
-      - Sunnyvale
-      - Union City
-      - Vacaville
-      - Vallejo
-      - Walnut Creek
+      - Santa Rosa
+      - Hayward
+      - Morgan Hill
+      - Napa
+      - Gilroy
+      - Richmond
+      - Cotati
+      - San Pablo
+      - Pinole
       - Windsor
+      - Rohnert Park
+      - Cloverdale
+      - Vallejo
+      - Hercules
+      - American Canyon
+      - Pittsburg
+      - Vacaville
+      - Brentwood
+      - Oakley
+      - Suisun City
+      - Fairfield
+      - Antioch
+      - Dixon
+      - Rio Vista
+  "15":
+    - type: jurisdictions
+      description: high setting
+      amount: .2
+      values:
+      - Los Altos
+      - Burlingame
+      - Los Altos Hills
+      - Cupertino
+      - Hillsborough
+      - Monte Sereno
+      - Saratoga
+      - Millbrae
+      - Belmont
+      - Ross
+      - Mountain View
+      - Piedmont
+      - Foster City
+      - Belvedere
+      - San Carlos
+      - Larkspur
+      - Los Gatos
+      - Mill Valley
+      - Palo Alto
+      - Atherton
+      - Menlo Park
+      - Tiburon
+      - San Anselmo
+      - Sausalito
+      - Sunnyvale
+      - Albany
+      - Corte Madera
+      - Berkeley
+      - San Francisco
+    - type: jurisdictions
+      description: medium-high setting
+      amount: .15
+      values:
+      - San Mateo
+      - Woodside
+      - Campbell
+      - Lafayette
+      - Portola Valley
+      - Orinda
+      - Redwood City
+      - Pleasanton
+      - San Bruno
+      - San Ramon
+      - Fairfax
+      - Santa Clara
+      - Walnut Creek
+      - Pacifica
+      - Alameda
+      - Danville
+      - South San Francisco
+      - Daly City
+      - Milpitas
+      - Clayton
+      - Fremont
+      - Moraga
+      - El Cerrito
+      - Dublin
+      - Pleasant Hill
+      - San Jose
+      - East Palo Alto
+      - Yountville
+      - Colma
+      - San Rafael
+      - St. Helena
+      - Brisbane
+      - Emeryville
+      - Newark
+      - Novato
+      - Oakland
+      - Livermore
+      - Half Moon Bay
+      - Union City
+      - Sonoma
+      - Benicia
+    - type: jurisdictions
+      description: medium setting
+      amount: .1
+      values:
+      - Martinez
+      - Petaluma
+      - Healdsburg
+      - Calistoga
+      - Concord
+      - San Leandro
+      - Sebastopol
+      - Santa Rosa
+      - Hayward
+      - Morgan Hill
+      - Napa
+      - Gilroy
+      - Richmond
+      - Cotati
+      - San Pablo
+      - Pinole
+      - Windsor
+      - Rohnert Park
+      - Cloverdale
+      - Vallejo
+      - Hercules
+      - American Canyon
+      - Pittsburg
+      - Vacaville
+      - Brentwood
+      - Oakley
+      - Suisun City
+      - Fairfield
+      - Antioch
+      - Dixon
+      - Rio Vista
 
 # these are the settings for various policies that are in play
 acct_settings:

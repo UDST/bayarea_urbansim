@@ -147,11 +147,21 @@ def config(settings, run_number, scenario, parcels,
     write("")
 
     # policies enabled
-    if scenario in settings["inclusionary_housing_settings"]:
-        prop = settings["inclusionary_housing_settings"][scenario][0]["amount"]
-        write("Inclusionary housing amount is %.2f" % prop)
+    s = settings["inclusionary_housing_settings"]
+    if (scenario in ["11", "12", "15"]) &\
+       (scenario not in settings["inclusionary_fr2_enable"]):
+        fr1 = str(int(scenario) - 10)
+        for item in s[fr1]:
+            write("Inclusionary rates are FR1: %d cities are set to %.2f" %
+                  (len(item["values"]), item["amount"]))
+    elif scenario in s.keys():
+        for item in s[scenario]:
+            write("Inclusionary rates for %d cities are set to %.2f" %
+                  (len(item["values"]), item["amount"]))
     else:
-        write("Inclusionary housing is not activated")
+        write("Inclusionary housing is using the default settings")
+
+    write("")
 
     def policy_activated(policy_loc, policy, scenario):
         if scenario in policy_loc["enable_in_scenarios"] \
