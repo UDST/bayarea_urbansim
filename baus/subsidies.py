@@ -61,6 +61,11 @@ def lump_sum_accounts(settings, year, buildings, coffer,
         if scenario not in acct["enable_in_scenarios"]:
             continue
 
+        if "alternate_geography_scenarios" in acct and \
+                scenario in acct["alternate_geography_scenarios"]:
+            acct["receiving_buildings_filter"] = \
+                acct["alternate_buildings_filter"]
+
         amt = float(acct["total_amount"])
 
         amt *= years_per_iter
@@ -247,9 +252,15 @@ def policy_modifications_of_profit(feasibility, parcels):
 
                 parcels_geography = orca.get_table("parcels_geography")
 
+                if "alternate_geography_scenarios" in policy and \
+                        orca.get_injectable("scenario") in \
+                        policy["alternate_geography_scenarios"]:
+                    formula = policy["alternate_adjustment_formula"]
+                else:
+                    formula = policy["profitability_adjustment_formula"]
+
                 pct_modifications = \
-                    parcels_geography.local.eval(
-                        policy["profitability_adjustment_formula"])
+                    parcels_geography.local.eval(formula)
                 pct_modifications += 1.0
 
                 print "Modifying profit for %s:\n" % policy["name"], \
@@ -291,8 +302,12 @@ def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
 
     if scenario in vmt_settings["com_for_res_scenarios"]:
 
-        df["com_for_res_fees"] = df.vmt_res_cat.map(
-            vmt_settings["com_for_res_fee_amounts"])
+        if scenario in vmt_settings["alternate_geography_scenarios"]:
+            df["com_for_res_fees"] = df.vmt_res_cat.map(
+                vmt_settings["alternate_com_for_res_fee_amounts"])
+        else:
+            df["com_for_res_fees"] = df.vmt_res_cat.map(
+                vmt_settings["com_for_res_fee_amounts"])
         total_fees += (df.com_for_res_fees * df.non_residential_sqft).sum()
         print "Applying vmt fees to %d commerical sqft" % \
             df.non_residential_sqft.sum()
@@ -312,8 +327,12 @@ def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
 
     if scenario in vmt_settings["com_for_com_scenarios"]:
 
-        df["com_for_com_fees"] = df.vmt_res_cat.map(
-            vmt_settings["com_for_com_fee_amounts"])
+        if scenario in vmt_settings["alternate_geography_scenarios"]:
+            df["com_for_com_fees"] = df.vmt_res_cat.map(
+                vmt_settings["alternate_com_for_com_fee_amounts"])
+        else:
+            df["com_for_com_fees"] = df.vmt_res_cat.map(
+                vmt_settings["com_for_com_fee_amounts"])
         total_fees += (df.com_for_com_fees * df.non_residential_sqft).sum()
         print "Applying vmt fees to %d commerical sqft" % \
             df.non_residential_sqft.sum()
@@ -338,9 +357,16 @@ def subsidized_office_developer(feasibility, coffer, acct_settings, year,
 
     feasibility["pda_id"] = feasibility.pda
 
+    if "alternate_geography_scenarios" in acct_settings["vmt_settings"] \
+            and orca.get_injectable("scenario") in \
+            acct_settings["vmt_settings"]["alternate_geography_scenarios"]:
+        formula = acct_settings["vmt_settings"]["alternate_buildings_filter"]
+    else:
+        formula = acct_settings["vmt_settings"]["receiving_buildings_filter"]
+
     # filter to receiving zone
     feasibility = feasibility.\
-        query(acct_settings["vmt_settings"]["receiving_buildings_filter"])
+        query(formula)
 
     feasibility["non_residential_sqft"] = \
         feasibility.non_residential_sqft.astype("int")
@@ -519,7 +545,12 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
     feasibility['subsidy_per_unit'] = feasibility.subsidy_per_unit.clip(10000)
 
     # step 5
-    if "receiving_buildings_filter" in acct_settings:
+    if "alternate_buildings_filter" in acct_settings and \
+            orca.get_injectable("scenario") in \
+            acct_settings["alternate_geography_scenarios"]:
+        feasibility = feasibility.\
+            query(acct_settings["alternate_buildings_filter"])
+    elif "receiving_buildings_filter" in acct_settings:
         feasibility = feasibility.\
             query(acct_settings["receiving_buildings_filter"])
     else:
@@ -677,7 +708,8 @@ def subsidized_residential_feasibility(
     # get rid of the multiindex that comes back from feasibility
     feasibility = feasibility.stack(level=0).reset_index(level=1, drop=True)
     # join to parcels_geography for filtering
-    feasibility = feasibility.join(parcels_geography.to_frame())
+    feasibility = feasibility.join(parcels_geography.to_frame(),
+                                   rsuffix='_y')
 
     # add the multiindex back
     feasibility.columns = pd.MultiIndex.from_tuples(

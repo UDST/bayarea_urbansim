@@ -21,11 +21,19 @@
 # scenarios for hazards models
 slr_scenarios:
       enable_in: ["1", "2", "5", "11", "12", "15"]
-      rtff: ["2", "7", "12"]
-      cag: ["1", "6", "11"]
-      bttf: ["5", "10", "15"]
+      rtff_prog: ["2", "7", "12"]
+      cag_prog: ["1", "6", "11"]
+      bttf_prog: ["5", "10", "15"]
+      mitigation_full: ["11", "15"]
+      mitigation_partial: ["12"]
 eq_scenarios:
       enable_in: ["1", "2", "5", "11", "12", "15"]
+      mitigation: ["11", "15"]
+      # rtff is not mitigated
+
+# scenarios for futures round 2 geographies
+geographies_fr2_enable: ["11", "12", "15"]
+
 # scenarios for futures round 2 office caps
 office_caps_fr2_enable: ["11", "12", "15"]
 
@@ -964,8 +972,10 @@ acct_settings:
       sending_buildings_subaccount_def: regional
       total_amount: 40000000
       receiving_buildings_filter: pda_id > 0
+      alternate_buildings_filter: trich_id > 0 | cat_id > 0
       subsidize_affordable: False
       enable_in_scenarios: ["1", "2", "3", "4", "5", "6", "7", "10", "11", "12", "15"]
+      alternate_geography_scenarios: ["11", "12", "15"]
 
     # these are all county specific affordable housing bonds but right now
     # they aren't enabled in any scenarios
@@ -1030,6 +1040,8 @@ acct_settings:
       enable_in_scenarios: ["1", "2", "3", "4", "5", "6", "7", "10", "11", "12", "15"]
       # any parcel in a tpa
       profitability_adjustment_formula: "(tpp_id > 0) * .01"
+      alternate_geography_scenarios: ["11", "12", "15"]
+      alternate_adjustment_formula: "(trich_id > 0 | cat_id > 0) * .01"
 
     # reduce parking requirements in TPPs - would be nice to have better data
     # on how this impacts price as well, but we don't have it
@@ -1044,6 +1056,8 @@ acct_settings:
       enable_in_scenarios: ["1", "2", "4", "5", "6", "7", "10", "11", "12", "15"]
       # any parcel in a tpa
       profitability_adjustment_formula: "(pda_id > 0) * .01"
+      alternate_geography_scenarios: ["11", "12", "15"]
+      alternate_adjustment_formula: "(trich_id > 0 | cat_id > 0) * .01"
 
     parking_requirements_AVs_s1: # cag
       name: "Reduce Parking Requirements due to AVs- CAG"
@@ -1076,6 +1090,8 @@ acct_settings:
   vmt_settings:
     sending_buildings_subaccount_def: regional
     receiving_buildings_filter: pda_id>0
+    alternate_buildings_filter: trich_id > 0 | cat_id > 0
+    alternate_geography_scenarios: ["11", "12", "15"]
     res_for_res_scenarios:
       - "3"
     com_for_com_scenarios:
@@ -1109,10 +1125,19 @@ acct_settings:
       H: 30
       MH: 20
       M: 3
+    alternate_com_for_res_fee_amounts:
+      VH: 100
+      H: 60
+      MH: 40
+      M: 6
     com_for_com_fee_amounts:  # commercial fee subsidizing commercial devs
       VH: 40
       H: 20
       MH: 10
+    alternate_com_for_com_fee_amounts:
+      VH: 80
+      H: 40
+      MH: 20
   sb743_settings:
     enable: true
     sb743_pcts:
@@ -1360,6 +1385,8 @@ feasibility:
     - building_purchase_price_sqft
     - residential_sales_price_sqft
     - pda
+    - trich_id
+    - cat_id
     - juris
     - county
     - superdistrict
