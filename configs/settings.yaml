@@ -979,37 +979,79 @@ acct_settings:
 
     # these are all county specific affordable housing bonds but right now
     # they aren't enabled in any scenarios
-    san_mateo_bond_settings:
-      name: "San Mateo Affordable Housing Bond"
-      sending_buildings_subaccount_def: regional
-      total_amount: 40000000
-      receiving_buildings_filter: county == 'San Mateo'
-      subsidize_affordable: True
-      enable_in_scenarios: []
 
     alameda_bond_settings:
       name: "Alameda Affordable Housing Bond"
       sending_buildings_subaccount_def: regional
-      total_amount: 20000000
+      total_amount: 30625010
       receiving_buildings_filter: county == 'Alameda'
       subsidize_affordable: True
-      enable_in_scenarios: []
+      enable_in_scenarios: ["11", "12", "15"]
+
+    contra_costa_bond_settings:
+      name: "Contra Costa Affordable Housing Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 21150756
+      receiving_buildings_filter: county == 'Contra Costa'
+      subsidize_affordable: True
+      enable_in_scenarios: ["11", "12", "15"]
+
+    marin_bond_settings:
+      name: "Marin Affordable Housing Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 4932118
+      receiving_buildings_filter: county == 'Marin'
+      subsidize_affordable: True
+      enable_in_scenarios: ["11", "12", "15"]
+
+    napa_bond_settings:
+      name: "Napa Affordable Housing Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 2661050
+      receiving_buildings_filter: county == 'Napa'
+      subsidize_affordable: True
+      enable_in_scenarios: ["11", "12", "15"]
+
+    san_francisco_bond_settings:
+      name: "San Francisco Affordable Housing Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 16310399
+      receiving_buildings_filter: county == 'San Francisco'
+      subsidize_affordable: True
+      enable_in_scenarios: ["11", "12", "15"]
+
+    san_mateo_bond_settings:
+      name: "San Mateo Affordable Housing Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 14406372
+      receiving_buildings_filter: county == 'San Mateo'
+      subsidize_affordable: True
+      enable_in_scenarios: ["11", "12", "15"]
 
     santa_clara_bond_settings:
       name: "Santa Clara Affordable Housing Bond"
       sending_buildings_subaccount_def: regional
-      total_amount: 31000000
+      total_amount: 36291210
       receiving_buildings_filter: county == 'Santa Clara'
       subsidize_affordable: True
-      enable_in_scenarios: []
+      enable_in_scenarios: ["11", "12", "15"]
 
-    santa_francisco_bond_settings:
-      name: "San Francisco Affordable Housing Bond"
+    solano_bond_settings:
+      name: "Solano Affordable Housing Bond"
       sending_buildings_subaccount_def: regional
-      total_amount: 19000000
-      receiving_buildings_filter: county == 'San Francisco'
+      total_amount: 8120789
+      receiving_buildings_filter: county == 'Solano'
       subsidize_affordable: True
-      enable_in_scenarios: []
+      enable_in_scenarios: ["11", "12", "15"]
+
+    sonoma_bond_settings:
+      name: "Sonoma Affordable Housing Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 9451314
+      receiving_buildings_filter: county == 'Sonoma'
+      subsidize_affordable: True
+      enable_in_scenarios: ["11", "12", "15"]
+
 
     # parcel tax settings
     parcel_tax_settings:
