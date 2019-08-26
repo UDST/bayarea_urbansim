@@ -352,6 +352,11 @@ def maz_forecast_inputs(regional_demographic_forecast):
 
 @orca.table(cache=True)
 def zoning_scenario(parcels_geography, scenario, settings):
+
+    if (scenario in ["11", "12", "15"]) and\
+       (scenario not in settings["geographies_fr2_enable"]):
+        scenario = str(int(scenario) - 10)
+
     scenario_zoning = pd.read_csv(
         os.path.join(misc.data_dir(), 'zoning_mods_%s.csv' % scenario))
 
@@ -368,9 +373,12 @@ def zoning_scenario(parcels_geography, scenario, settings):
     add_drop_helper("add_bldg", 1)
     add_drop_helper("drop_bldg", 0)
 
+    join_col = 'zoninghzcat' if 'zoninghzcat' in\
+        scenario_zoning.columns else 'zoningmodcat'
+
     return pd.merge(parcels_geography.to_frame().reset_index(),
                     scenario_zoning,
-                    on=['zoningmodcat'],
+                    on=join_col,
                     how='left').set_index('parcel_id')
 
 
@@ -396,9 +404,9 @@ def parcel_rejections():
 
 
 @orca.table(cache=True)
-def parcels_geography(parcels):
+def parcels_geography(parcels, scenario, settings):
     df = pd.read_csv(
-        os.path.join(misc.data_dir(), "02_01_2016_parcels_geography.csv"),
+        os.path.join(misc.data_dir(), "07_11_2019_parcels_geography.csv"),
         index_col="geom_id")
     df = geom_id_to_parcel_id(df, parcels)
 
@@ -415,6 +423,8 @@ def parcels_geography(parcels):
     df.loc[572927, "juris_name"] = "Contra Costa County"
     # assert no empty juris values
     assert True not in df.juris_name.isnull().value_counts()
+
+    df['juris_trich'] = df.juris_id + df.trich_id
 
     df["pda_id"] = df.pda_id.str.lower()
 

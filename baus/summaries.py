@@ -550,7 +550,8 @@ def diagnostic_output(households, buildings, parcels, taz, jobs, settings,
 
 @orca.step()
 def geographic_summary(parcels, households, jobs, buildings, taz_geography,
-                       run_number, year, summary, final_year):
+                       run_number, year, summary, final_year, scenario,
+                       settings):
     # using the following conditional b/c `year` is used to pull a column
     # from a csv based on a string of the year in add_population()
     # and in add_employment() and 2009 is the
@@ -565,19 +566,21 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
         'households',
         [parcels, buildings, households],
         columns=['pda', 'zone_id', 'juris', 'superdistrict',
-                 'persons', 'income', 'base_income_quartile'])
+                 'persons', 'income', 'base_income_quartile',
+                 'juris_trich'])
 
     jobs_df = orca.merge_tables(
         'jobs',
         [parcels, buildings, jobs],
-        columns=['pda', 'superdistrict', 'juris', 'zone_id', 'empsix'])
+        columns=['pda', 'superdistrict', 'juris', 'zone_id',
+                 'empsix', 'juris_trich'])
 
     buildings_df = orca.merge_tables(
         'buildings',
         [parcels, buildings],
         columns=['pda', 'superdistrict', 'juris', 'building_type',
                  'zone_id', 'residential_units', 'building_sqft',
-                 'non_residential_sqft'])
+                 'non_residential_sqft', 'juris_trich'])
 
     parcel_output = summary.parcel_output
 
@@ -585,6 +588,10 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
     buildings_df = buildings_df.rename(columns={'zone_id_x': 'zone_id'})
 
     geographies = ['superdistrict', 'pda', 'juris']
+
+    if (scenario in ["11", "12", "15"]) and\
+       (scenario in settings["geographies_fr2_enable"]):
+        geographies.append('juris_trich')
 
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
 
@@ -1529,9 +1536,9 @@ def adjust_hhsize(df, year, rdf, total_hh):
                         'hh_size_3', 'hh_size_4_plus']
     hhsizedf.index = df.index
     for ind, row in hhsizedf.iterrows():
-            target = df.hh.loc[ind]
-            row = row.round()
-            hhsizedf.loc[ind] = round_series_match_target(row, target, 0)
+        target = df.hh.loc[ind]
+        row = row.round()
+        hhsizedf.loc[ind] = round_series_match_target(row, target, 0)
 
     for col in hhsizedf.columns:
         df[col] = hhsizedf[col]
@@ -1560,9 +1567,9 @@ def adjust_hhwkrs(df, year, rdf, total_hh):
     hhwkrdf.columns = ['hh_wrks_0', 'hh_wrks_1', 'hh_wrks_2', 'hh_wrks_3_plus']
     hhwkrdf.index = df.index
     for ind, row in hhwkrdf.iterrows():
-            target = df.hh.loc[ind]
-            row = row.round()
-            hhwkrdf.loc[ind] = round_series_match_target(row, target, 0)
+        target = df.hh.loc[ind]
+        row = row.round()
+        hhwkrdf.loc[ind] = round_series_match_target(row, target, 0)
 
     for col in hhwkrdf.columns:
         df[col] = hhwkrdf[col]
@@ -1595,9 +1602,9 @@ def adjust_page(df, year, regional_controls):
                       'pers_age_35_64', 'pers_age_65_plus']
     pagedf.index = df.index
     for ind, row in pagedf.iterrows():
-            target = np.round(df['hhpop'].loc[ind])
-            row = row.round()
-            pagedf.loc[ind] = round_series_match_target(row, target, 0)
+        target = np.round(df['hhpop'].loc[ind])
+        row = row.round()
+        pagedf.loc[ind] = round_series_match_target(row, target, 0)
 
     for col in pagedf.columns:
         df[col] = pagedf[col]
@@ -1624,9 +1631,9 @@ def adjust_hhkids(df, year, rdf, total_hh):
     hhkidsdf.columns = ['hh_kids_no', 'hh_kids_yes']
     hhkidsdf.index = df.index
     for ind, row in hhkidsdf.iterrows():
-            target = np.round(df.hh.loc[ind])
-            row = row.round()
-            hhkidsdf.loc[ind] = round_series_match_target(row, target, 0)
+        target = np.round(df.hh.loc[ind])
+        row = row.round()
+        hhkidsdf.loc[ind] = round_series_match_target(row, target, 0)
 
     for col in hhkidsdf.columns:
         df[col] = hhkidsdf[col]

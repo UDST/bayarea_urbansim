@@ -27,6 +27,9 @@ eq_scenarios:
       mitigation: ["11", "15"]
       # rtff is not mitigated
 
+# scenarios for futures round 2 geographies
+geographies_fr2_enable: ["11", "12", "15"]
+
 
 # these are the tables the get auto-merged to buildings/parcels in the hedonic and lcms
 aggregation_tables:
