@@ -21,32 +21,7 @@ def config(settings, run_number, scenario, parcels,
         # print s
         f.write(s + "\n")
 
-    # sea level rise
-    # level
-    if scenario in settings["slr_scenarios"]["enable_in"]:
-        slr_progression = orca.get_table("slr_progression")
-        slr = slr_progression['inundated'].max()
-        write("Sea level rise in this scenario is %d inches" % slr)
-    else:
-        write("There is no sea level rise in this scenario")
-    # mitigation
-    slr_mitigation = orca.get_injectable("slr_mitigation")
-    write("Sea level rise mitigation is %s" % slr_mitigation)
-
-    write("")
-
-    # earthquake
-    # activation
-    if scenario in settings["eq_scenarios"]["enable_in"]:
-        write("Earthquake is activated")
-    else:
-        write("Earthquake is not activated")
-    # mitigation
-    if scenario in settings["eq_scenarios"]["mitigation"]:
-        write("Earthquake retrofit policies are applied")
-    else:
-        write("Earthquake retrofit policies are not applied")
-
+    write("INPUT FILES")
     write("")
 
     # control files
@@ -61,7 +36,6 @@ def config(settings, run_number, scenario, parcels,
     write("Regional control file used is: %s" % reg_fname)
     reg_dem_fname = orca.get_injectable("reg_dem_control_file")
     write("Regional demographic control file used is: %s" % reg_dem_fname)
-
     write("")
 
     # logsums files
@@ -98,73 +72,44 @@ def config(settings, run_number, scenario, parcels,
               % settings["logsums"]["segmentation"][acc_seg_fname_2030])
     else:
         write("No 2030 accessibility segmentation file is set")
-
     write("")
 
-    # residential sales hedonic config
-    rsh_fname = orca.get_injectable("rsh_file")
-    # could register rsh_config and print out density var
-    write("The config file used for the residential sales hedonic is: %s"
-          % rsh_fname)
-
-    write("")
-
-    # development projects list
-    scen = "scen"+scenario
-    if scen in development_projects.columns:
-        write("Scenario is in development projects list")
-    else:
-        write("Scenario is not in development projects list")
-
-    dev_proj = development_projects.to_frame()
-    projects_on = dev_proj.loc[dev_proj['building_name'] == 'pub', scen].sum()
-    if projects_on > 0:
-        write("Public lands are in development projects")
-    else:
-        write("Public lands are not in development projects")
-
-    write("")
-
-    # zoning mods
+    # zoning modifications
     zm_file_loc = os.path.isfile(os.path.join("data", "zoning_mods_%s.csv"
                                               % (scenario)))
     if zm_file_loc:
-        write("Zoning modifications exist")
+        write("Zoning modifications for this scenario exist")
     else:
-        write("Zoning modifications do not exist")
-
+        write("Zoning modifications for this scenario do not exist")
     write("")
 
-    # household relocation
-    hh_reloc = orca.get_injectable("hh_reloc")
-    write("Renter protections through relocation rates are %s" % hh_reloc)
-
-    # office caps
-    if scenario in settings['office_caps_fr2_enable']:
-        d = settings['development_limits'][scenario]['Office']
-        write("Using development limits for FR2 with %d office caps"
-              % (len(d)))
-    elif "default" in settings['development_limits'].keys():
-        d = settings['development_limits']["default"]['Office']
-        write("Using default development limits")
-
+    write("HAZARDS")
     write("")
 
-    # policies enabled
-    s = settings["inclusionary_housing_settings"]
-    if (scenario in ["11", "12", "15"]) &\
-       (scenario not in settings["inclusionary_fr2_enable"]):
-        fr1 = str(int(scenario) - 10)
-        for item in s[fr1]:
-            write("Inclusionary rates are FR1: %d cities are set to %.2f" %
-                  (len(item["values"]), item["amount"]))
-    elif scenario in s.keys():
-        for item in s[scenario]:
-            write("Inclusionary rates for %d cities are set to %.2f" %
-                  (len(item["values"]), item["amount"]))
+    # sea level rise
+    # level
+    if scenario in settings["slr_scenarios"]["enable_in"]:
+        slr_progression = orca.get_table("slr_progression")
+        slr = slr_progression['inundated'].max()
+        write("Sea level rise in this scenario is %d inches" % slr)
     else:
-        write("Inclusionary housing is using the default settings")
+        write("There is no sea level rise in this scenario")
+    # mitigation
+    slr_mitigation = orca.get_injectable("slr_mitigation")
+    write("Sea level rise mitigation is %s" % slr_mitigation)
+    write("")
 
+    # earthquake
+    # activation
+    if scenario in settings["eq_scenarios"]["enable_in"]:
+        write("Earthquake is activated")
+    else:
+        write("Earthquake is not activated")
+    # mitigation
+    if scenario in settings["eq_scenarios"]["mitigation"]:
+        write("Earthquake retrofit policies are applied")
+    else:
+        write("Earthquake retrofit policies are not applied")
     write("")
 
     def policy_activated(policy_loc, policy, scenario):
@@ -183,22 +128,16 @@ def config(settings, run_number, scenario, parcels,
         else:
             write(policy+" is not activated")
 
-    policy_loc = (settings["acct_settings"]["lump_sum_accounts"]
-                  ["obag_settings"])
-    policy = "OBAG"
-    policy_activated(policy_loc, policy, scenario)
+    write("FUTURES ROUND 1 FORCES")
+    write("")
 
-    policy_loc = (settings["acct_settings"]
-                  ["profitability_adjustment_policies"]["ceqa_tiering"])
-    policy = "CEQA"
-    policy_activated(policy_loc, policy, scenario)
+    # residential sales hedonic config
+    rsh_fname = orca.get_injectable("rsh_file")
+    write("The config file used for the residential sales hedonic is: %s"
+          % rsh_fname)
+    write("")
 
-    policy_loc = (settings["acct_settings"]
-                  ["profitability_adjustment_policies"]
-                  ["parking_requirements_pdas"])
-    policy = "Reduce Parking Requirements in PDAs"
-    policy_activated(policy_loc, policy, scenario)
-
+    # AV parking requirements
     policy_loc = (settings["acct_settings"]
                   ["profitability_adjustment_policies"]
                   ["parking_requirements_AVs_s1"])
@@ -210,17 +149,89 @@ def config(settings, run_number, scenario, parcels,
                   ["parking_requirements_AVs_s5"])
     policy = "Reduce Parking Requirements due to AVs (BTTF)"
     policy_activated(policy_loc, policy, scenario)
+    write("")
 
+    write("FUTURES ROUND 2 POLICIES")
+    write("")
+
+    # development projects list
+    scen = "scen"+scenario
+    if scen in development_projects.columns:
+        write("Scenario is in development projects list")
+    else:
+        write("Scenario is not in development projects list")
+    # public lands
+    dev_proj = development_projects.to_frame()
+    projects_on = dev_proj.loc[dev_proj['building_name'] == 'pub', scen].sum()
+    if projects_on > 0:
+        write("Public lands are in development projects")
+    else:
+        write("Public lands are not in development projects")
+    write("")
+
+    # household relocation
+    hh_reloc = orca.get_injectable("hh_reloc")
+    write("Renter protections through relocation rates are %s" % hh_reloc)
+    write ("")
+
+    # inclusionary rates
+    s = settings["inclusionary_housing_settings"]
+    if (scenario in ["11", "12", "15"]) &\
+       (scenario not in settings["inclusionary_fr2_enable"]):
+        fr1 = str(int(scenario) - 10)
+        for item in s[fr1]:
+            write("Inclusionary rates are FR1: %d cities are set to %.2f" %
+                  (len(item["values"]), item["amount"]))
+    elif scenario in s.keys():
+        for item in s[scenario]:
+            write("Inclusionary rates for %d cities are set to %.2f" %
+                  (len(item["values"]), item["amount"]))
+    else:
+        write("Inclusionary housing is using the default settings")
+    write("")
+
+    # office caps
+    if scenario in settings['office_caps_fr2_enable']:
+        d = settings['development_limits'][scenario]['Office']
+        write("Using development limits for FR2 with %d office caps"
+              % (len(d)))
+    elif "default" in settings['development_limits'].keys():
+        d = settings['development_limits']["default"]['Office']
+        write("Using default development limits")
+    write("")
+
+    # OBAG
+    policy_loc = (settings["acct_settings"]["lump_sum_accounts"]
+                  ["obag_settings"])
+    policy = "OBAG"
+    policy_activated(policy_loc, policy, scenario)
+    write("")
+
+    # CEQA
+    policy_loc = (settings["acct_settings"]
+                  ["profitability_adjustment_policies"]["ceqa_tiering"])
+    policy = "CEQA"
+    policy_activated(policy_loc, policy, scenario)
+    write ("")
+
+    # PDA parking requirements
+    policy_loc = (settings["acct_settings"]
+                  ["profitability_adjustment_policies"]
+                  ["parking_requirements_pdas"])
+    policy = "Reduce Parking Requirements in PDAs"
+    policy_activated(policy_loc, policy, scenario)
+    write("")
+
+    # VMT fees
     if scenario in (settings["acct_settings"]["vmt_settings"]
                     ["com_for_com_scenarios"]) and scenario in \
-        (settings["acct_settings"]["vmt_settings"]
-         ["alternate_geography_scenarios"]):
-        write("VMT fees: com_for_com is activated with \
-              formula: trich_id > 0 | cat_id > 0")
+            (settings["acct_settings"]["vmt_settings"]
+             ["alternate_geography_scenarios"]):
+        write("VMT fees: com_for_com is activated with trich_id and cat_id")
         write("VMT fees: com_for_com is using alternate fee amounts")
     elif scenario in (settings["acct_settings"]["vmt_settings"]
                       ["com_for_com_scenarios"]):
-        write("VMT fees: com_for_com is activated with formula: pda_id>0")
+        write("VMT fees: com_for_com is activated with pda_id")
         write("VMT fees: com_for_com is using default fee amounts")
     else:
         write("VMT fees: com_for_com is not activated")
@@ -229,17 +240,17 @@ def config(settings, run_number, scenario, parcels,
                     ["com_for_res_scenarios"]) and scenario in \
             (settings["acct_settings"]["vmt_settings"]
              ["alternate_geography_scenarios"]):
-        write("VMT fees: com_for_res is activated with \
-              formula: trich_id > 0 | cat_id > 0")
+        write("VMT fees: com_for_res is activated with trich_id and cat_id")
         write("VMT fees: com_for_res is using alternate fee amounts")
     elif scenario in (settings["acct_settings"]["vmt_settings"]
                       ["com_for_res_scenarios"]):
-        write("VMT fees: com_for_res is activated with formula: pda_id>0")
+        write("VMT fees: com_for_res is activated with pda_id")
         write("VMT fees: com_for_res is using default fee amounts")
     else:
         write("VMT fees: com_for_res is not activated")
+    write("")
 
-    # fr2 affordable housing bonds
+    # affordable housing bonds
     counter = 0
     counties = ["alameda", "contra_costa", "marin", "napa", "san_mateo",
                 "san_francisco", "santa_clara", "solano", "sonoma"]
