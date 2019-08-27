@@ -135,6 +135,10 @@ def config(settings, run_number, scenario, parcels,
 
     write("")
 
+    # household relocation
+    hh_reloc = orca.get_injectable("hh_reloc")
+    write("Renter protections through relocation rates are %s" % hh_reloc)
+
     # office caps
     if scenario in settings['office_caps_fr2_enable']:
         d = settings['development_limits'][scenario]['Office']
