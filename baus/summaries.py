@@ -172,7 +172,7 @@ def config(settings, run_number, scenario, parcels,
     # household relocation
     hh_reloc = orca.get_injectable("hh_reloc")
     write("Renter protections through relocation rates are %s" % hh_reloc)
-    write ("")
+    write("")
 
     # inclusionary rates
     s = settings["inclusionary_housing_settings"]
@@ -212,7 +212,7 @@ def config(settings, run_number, scenario, parcels,
                   ["profitability_adjustment_policies"]["ceqa_tiering"])
     policy = "CEQA"
     policy_activated(policy_loc, policy, scenario)
-    write ("")
+    write("")
 
     # PDA parking requirements
     policy_loc = (settings["acct_settings"]
