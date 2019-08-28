@@ -1357,9 +1357,9 @@ control_tables:
     s6_household_controls_input_file: household_controls_s6.csv
     s7_household_controls_input_file: household_controls_s7.csv
     s10_household_controls_input_file: household_controls_s10.csv
-    s11_household_controls_input_file: household_controls_s1.csv
-    s12_household_controls_input_file: household_controls_s2.csv
-    s15_household_controls_input_file: household_controls_s5.csv
+    s11_household_controls_input_file: household_controls_s11.csv
+    s12_household_controls_input_file: household_controls_s12.csv
+    s15_household_controls_input_file: household_controls_s15.csv
     s16_household_controls_input_file: household_controls_s16.csv
     s17_household_controls_input_file: household_controls_s17.csv
   employment:
@@ -1370,9 +1370,9 @@ control_tables:
     s6_employment_controls_input_file: employment_controls_s6.csv
     s7_employment_controls_input_file: employment_controls_s7.csv
     s10_employment_controls_input_file: employment_controls_s10.csv
-    s11_employment_controls_input_file: employment_controls_s1.csv
-    s12_employment_controls_input_file: employment_controls_s2.csv
-    s15_employment_controls_input_file: employment_controls_s5.csv
+    s11_employment_controls_input_file: employment_controls_s11.csv
+    s12_employment_controls_input_file: employment_controls_s12.csv
+    s15_employment_controls_input_file: employment_controls_s15.csv
   regional:
     regional_controls_input_file: regional_controls.csv
     s1_regional_controls_input_file: regional_controls_s1.csv
@@ -1381,9 +1381,9 @@ control_tables:
     s6_regional_controls_input_file: regional_controls_s6.csv
     s7_regional_controls_input_file: regional_controls_s7.csv
     s10_regional_controls_input_file: regional_controls_s10.csv
-    s11_regional_controls_input_file: regional_controls_s1.csv
-    s12_regional_controls_input_file: regional_controls_s2.csv
-    s15_regional_controls_input_file: regional_controls_s5.csv
+    s11_regional_controls_input_file: regional_controls_s11.csv
+    s12_regional_controls_input_file: regional_controls_s12.csv
+    s15_regional_controls_input_file: regional_controls_s15.csv
     s16_regional_controls_input_file: regional_controls_s16.csv
     s17_regional_controls_input_file: regional_controls_s17.csv
   demographic_forecast:
@@ -1394,9 +1394,9 @@ control_tables:
     s6_demographic_forecast_controls_input_file: regional_demographic_forecast_s6.csv
     s7_demographic_forecast_controls_input_file: regional_demographic_forecast_s7.csv
     s10_demographic_forecast_controls_input_file: regional_demographic_forecast_s10.csv
-    s11_demographic_forecast_controls_input_file: regional_demographic_forecast_s1.csv
-    s12_demographic_forecast_controls_input_file: regional_demographic_forecast_s2.csv
-    s15_demographic_forecast_controls_input_file: regional_demographic_forecast_s5.csv
+    s11_demographic_forecast_controls_input_file: regional_demographic_forecast_s11.csv
+    s12_demographic_forecast_controls_input_file: regional_demographic_forecast_s12.csv
+    s15_demographic_forecast_controls_input_file: regional_demographic_forecast_s15.csv
 
 
 logsums:

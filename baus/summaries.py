@@ -25,9 +25,6 @@ def config(settings, run_number, scenario, parcels,
     write("")
 
     # control files
-    write("Note: Control files differ between FR1 and PPA, FR2 files are")
-    write("currently set to FR1, but have files loaded for R2 changes")
-    write("")
     hh_fname = orca.get_injectable("household_control_file")
     write("Household control file used: %s" % hh_fname)
     emp_fname = orca.get_injectable("employment_control_file")
