@@ -869,6 +869,12 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
         df.to_csv(os.path.join("runs",
                                "run%d_taz_logsums_%d.csv"
                                % (run_number, year)))
+        parcels = orca.get_table('parcels')
+        df = parcels.to_frame()
+        df = df[['cml', 'cnml', 'combo_logsum']]
+        df.to_csv(os.path.join("runs",
+                               "run%d_parcel_logsums_%d.csv"
+                               % (run_number, year)))
 
 
 @orca.step()
