@@ -1414,12 +1414,12 @@ logsums:
     logsum_2030_s7: mandatoryAccessibilities_2050_s7.csv
     logsum_2010_s10: mandatoryAccessibilities_2030_s10.csv
     logsum_2030_s10: mandatoryAccessibilities_2050_s10.csv
-    logsum_2010_s11: mandatoryAccessibilities_2030_s1.csv
-    logsum_2030_s11: mandatoryAccessibilities_2050_s1.csv
-    logsum_2010_s12: mandatoryAccessibilities_2030_s2.csv
-    logsum_2030_s12: mandatoryAccessibilities_2050_s2.csv
-    logsum_2010_s15: mandatoryAccessibilities_2030_s5.csv
-    logsum_2030_s15: mandatoryAccessibilities_2050_s5.csv
+    logsum_2010_s11: mandatoryAccessibilities_2015.csv
+    logsum_2030_s11: mandatoryAccessibilities_2050_s11.csv
+    logsum_2010_s12: mandatoryAccessibilities_2015.csv
+    logsum_2030_s12: mandatoryAccessibilities_2050_s12.csv
+    logsum_2010_s15: mandatoryAccessibilities_2015.csv
+    logsum_2030_s15: mandatoryAccessibilities_2050_s15.csv
   non_mandatory:
     logsum: nonMandatoryAccessibilities_2015.csv
     logsum_2010_s1: nonMandatoryAccessibilities_2015.csv
@@ -1434,12 +1434,12 @@ logsums:
     logsum_2030_s7: nonMandatoryAccessibilities_2050_s7.csv
     logsum_2010_s10: nonMandatoryAccessibilities_2030_s10.csv
     logsum_2030_s10: nonMandatoryAccessibilities_2050_s10.csv
-    logsum_2010_s11: nonMandatoryAccessibilities_2030_s1.csv
-    logsum_2030_s11: nonMandatoryAccessibilities_2050_s1.csv
-    logsum_2010_s12: nonMandatoryAccessibilities_2030_s2.csv
-    logsum_2030_s12: nonMandatoryAccessibilities_2050_s2.csv
-    logsum_2010_s15: nonMandatoryAccessibilities_2030_s5.csv
-    logsum_2030_s15: nonMandatoryAccessibilities_2050_s5.csv
+    logsum_2010_s11: nonMandatoryAccessibilities_2015.csv
+    logsum_2030_s11: nonMandatoryAccessibilities_2050_s11.csv
+    logsum_2010_s12: nonMandatoryAccessibilities_2015.csv
+    logsum_2030_s12: nonMandatoryAccessibilities_2050_s12.csv
+    logsum_2010_s15: nonMandatoryAccessibilities_2015.csv
+    logsum_2030_s15: nonMandatoryAccessibilities_2050_s15.csv
   segmentation:
     logsum: AccessibilityMarkets_2015.csv
     logsum_2010_s1: AccessibilityMarkets_2015.csv
@@ -1454,12 +1454,12 @@ logsums:
     logsum_2030_s7: AccessibilityMarkets_2050_s7.csv
     logsum_2010_s10: AccessibilityMarkets_2030_s10.csv
     logsum_2030_s10: AccessibilityMarkets_2050_s10.csv
-    logsum_2010_s11: AccessibilityMarkets_2030_s1.csv
-    logsum_2030_s11: AccessibilityMarkets_2050_s1.csv
-    logsum_2010_s12: AccessibilityMarkets_2030_s2.csv
-    logsum_2030_s12: AccessibilityMarkets_2050_s2.csv
-    logsum_2010_s15: AccessibilityMarkets_2030_s5.csv
-    logsum_2030_s15: AccessibilityMarkets_2050_s5.csv
+    logsum_2010_s11: AccessibilityMarkets_2015.csv
+    logsum_2030_s11: AccessibilityMarkets_2050_s11.csv
+    logsum_2010_s12: AccessibilityMarkets_2015.csv
+    logsum_2030_s12: AccessibilityMarkets_2050_s12.csv
+    logsum_2010_s15: AccessibilityMarkets_2015.csv
+    logsum_2030_s15: AccessibilityMarkets_2050_s15.csv
 
 
 model_configs:

@@ -36,9 +36,6 @@ def config(settings, run_number, scenario, parcels,
     write("")
 
     # logsums files
-    write("Note: Logsum files differ between FR1 and PPA, FR2 files are")
-    write("currently set to FR1, but have files loaded for R2 changes")
-    write("")
     # mandatory
     mand_acc_fname_2010 = orca.get_injectable("mand_acc_file_2010")
     write("2010 mandatory accessibility file used: %s"
