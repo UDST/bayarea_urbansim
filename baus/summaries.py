@@ -864,14 +864,12 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
     # Summarize Logsums
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
         zones = orca.get_table('zones')
-        df = zones.to_frame()
-        df = df[['zone_cml', 'zone_cnml', 'zone_combo_logsum']]
+        df = zones.to_frame(['zone_cml', 'zone_cnml', 'zone_combo_logsum'])
         df.to_csv(os.path.join("runs",
                                "run%d_taz_logsums_%d.csv"
                                % (run_number, year)))
         parcels = orca.get_table('parcels')
-        df = parcels.to_frame()
-        df = df[['cml', 'cnml', 'combo_logsum']]
+        df = parcels.to_frame(['cml', 'cnml', 'combo_logsum'])
         df.to_csv(os.path.join("runs",
                                "run%d_parcel_logsums_%d.csv"
                                % (run_number, year)))

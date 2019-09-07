@@ -903,7 +903,7 @@ def zone_cnml(year, non_mandatory_accessibility,
 @orca.column('zones', cache=True, cache_scope='iteration')
 def zone_combo_logsum(zones):
     df = zones.to_frame(['zone_cml', 'zone_cnml'])
-    combo = df.cml + df.cnml
+    combo = df.zone_cml + df.zone_cnml
     # since the logsum methodology in the travel model has changed,
     # we need to shift the values to align with the ones used for estimation
     combo = combo - 170
