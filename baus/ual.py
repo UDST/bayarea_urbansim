@@ -319,7 +319,8 @@ def reconcile_placed_households(households, residential_units):
     print("hh index.names: %s" % hh.index.names)
 
     print("%d movers updated" % len(hh))
-    households.update_col_from_series('building_id', hh.building_id, cast=True)
+    households.update_col_from_series('building_id',
+                                      hh.building_id, cast=True)
 
     # Verify final data characteristics
     '''
