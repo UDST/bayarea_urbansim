@@ -31,7 +31,7 @@ def slr_inundate(scenario, parcels, slr_progression_C, slr_progression_R,
 
     inundation_yr = slr_progression.query('year==@year')['inundated'].item()
     print("Inundation in model year is %d inches" % inundation_yr)
-    
+
     if scenario in settings["slr_scenarios"]["mitigation_full"]:
         slr_parcel_inundation = slr_parcel_inundation_mf.to_frame()
         orca.add_injectable("slr_mitigation", 'full mitigation')
