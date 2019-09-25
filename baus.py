@@ -22,7 +22,7 @@ pd.set_option('display.float_format', lambda x: '%.3f' % x)
 
 SLACK = MAPS = "URBANSIM_SLACK" in os.environ
 LOGS = True
-RANDOM_SEED = False
+RANDOM_SEED = True
 INTERACT = False
 SCENARIO = None
 MODE = "simulation"
@@ -141,7 +141,7 @@ def get_simulation_models(SCENARIO):
         "nrh_simulate",         # non-residential rent hedonic
 
         # uses conditional probabilities
-        "households_relocation",
+        "household_relocation",
         "households_transition",
         # update building/unit/hh correspondence
         "reconcile_unplaced_households",
@@ -280,7 +280,7 @@ def run_models(MODE, SCENARIO):
                 "assign_tenure_to_new_units",
 
                 # uses conditional probabilities
-                "households_relocation",
+                "household_relocation",
                 "households_transition",
                 # update building/unit/hh correspondence
                 "reconcile_unplaced_households",
