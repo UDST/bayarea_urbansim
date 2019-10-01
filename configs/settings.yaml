@@ -1758,10 +1758,9 @@ cost_shifters:
 # general_type and in terms of resdential units and job spaces - believe scenarios
 # inherit settings from teh default scenario
 development_limits:
-# 07 09 2019 ET: believe the default settings include office caps to represent real-world caps
-# as well as caps added for PBA40 (real-world: SF, Palo Alto?, added: Cupertino?)
-# they also include additional office caps to handle volatility
-# if this is true, in the future these could be split out more (default/real-world/volatility)
+# 07 09 2019 ET: believe the default settings include office caps to represent
+# real-world caps (SF, Palo Alto, Cupertino) as well as caps to handle volatility
+# if this is true, these could be split out more (default/real-world/volatility)
   default:
     Office:
       'Alameda': 100
