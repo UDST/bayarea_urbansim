@@ -51,8 +51,15 @@ def employment_relocation_rates():
 
 
 @orca.table(cache=True)
-def household_relocation_rates():
-    df = pd.read_csv(os.path.join("data", "household_relocation_rates.csv"))
+def household_relocation_rates(scenario, settings):
+    if scenario in settings['reloc_fr2_enable']:
+        df = pd.read_csv(os.path.join("data",
+                                      "household_relocation_rates_fr2.csv"))
+        orca.add_injectable("hh_reloc", 'activated')
+    else:
+        df = pd.read_csv(os.path.join("data",
+                                      "household_relocation_rates.csv"))
+        orca.add_injectable("hh_reloc", 'not activated')
     return df
 
 
@@ -125,7 +132,7 @@ def _proportional_jobs_model(
     # city but not locations to put them in.  we need to drop this demand
     drop = need_more_jobs.index.difference(locations_series.unique())
     print "We don't have any locations for these locations:\n", drop
-    need_more_jobs = need_more_jobs.drop(drop)
+    need_more_jobs = need_more_jobs.drop(drop).astype('int')
 
     # choose random locations within jurises to match need_more_jobs totals
     choices = groupby_random_choice(locations_series, need_more_jobs,
@@ -386,6 +393,8 @@ def scheduled_development_events(buildings, development_projects,
     del new_buildings["zone_id"]
     new_buildings["pda"] = parcels_geography.pda_id.loc[
         new_buildings.parcel_id].values
+    new_buildings["juris_trich"] = parcels_geography.juris_trich.loc[
+        new_buildings.parcel_id].values
 
     summary.add_parcel_output(new_buildings)
 
@@ -526,7 +535,7 @@ def residential_developer(feasibility, households, buildings, parcels, year,
             max_target = (final_year - 2010 + 1) * limit - current_total
 
             if target <= 0:
-                    continue
+                continue
 
             targets.append((juris_name == juris, target, max_target, juris))
             num_units -= target
@@ -561,7 +570,7 @@ def residential_developer(feasibility, households, buildings, parcels, year,
             year=year,
             form_to_btype_callback=form_to_btype_func,
             add_more_columns_callback=add_extra_columns_func,
-            num_units_to_build=target,
+            num_units_to_build=int(target),
             profit_to_prob_func=subsidies.profit_to_prob_func,
             **kwargs)
 
@@ -724,8 +733,8 @@ def office_developer(feasibility, jobs, buildings, parcels, year,
                 # and development is lumpy
 
                 current_total = parcels.total_job_spaces[
-                    (juris_name == juris) & (parcels.newest_building > 2015)]\
-                    .sum()
+                    (juris_name == juris) &
+                    (parcels.newest_building > 2015)].sum()
 
                 target = (year - 2015 + 1) * limit - current_total
 
@@ -769,7 +778,7 @@ def office_developer(feasibility, jobs, buildings, parcels, year,
                 form_to_btype_callback=form_to_btype_func,
                 add_more_columns_callback=add_extra_columns_func,
                 residential=False,
-                num_units_to_build=target,
+                num_units_to_build=int(target),
                 profit_to_prob_func=subsidies.profit_to_prob_func,
                 **dev_settings['kwargs'])
 

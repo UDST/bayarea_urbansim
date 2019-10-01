@@ -14,15 +14,38 @@
 # 16: forecast test base
 # 17: forecast test less constrained
 
+
+# the following lists are used in horizon to enable and disable individual strategies
+# affordable housing, development streamlining (OBAG, CEQA, parking requirements, SB-743)
+# and vmt fee strategies are found further down
+
 # scenarios for hazards models
 slr_scenarios:
       enable_in: ["1", "2", "5", "11", "12", "15"]
-      rtff: ["2", "7", "12"]
-      cag: ["1", "6", "11"]
-      bttf: ["5", "10", "15"]
+      rtff_prog: ["2", "7", "12"]
+      cag_prog: ["1", "6", "11"]
+      bttf_prog: ["5", "10", "15"]
+      # scenarios for futures round 2 mitigation
+      mitigation_full: ["11", "15"]
+      mitigation_partial: ["12"]
 eq_scenarios:
       enable_in: ["1", "2", "5", "11", "12", "15"]
-            
+      # scenarios for futures rounds 2 mitigation
+      # rtff is not mitigated
+      mitigation: ["11", "15"]
+
+# scenarios for futures round 2 geographies
+geographies_fr2_enable: ["11", "12", "15"]
+
+# scenarios for futures round 2 office caps
+office_caps_fr2_enable: ["11", "12", "15"]
+
+# scenarios for futures rounds 2 inclusionary rates
+inclusionary_fr2_enable: ["11", "12", "15"]
+
+# scenarios for futures round 2 renter protections
+reloc_fr2_enable: ["11", "12", "15"]
+
 
 # these are the tables the get auto-merged to buildings/parcels in the hedonic and lcms
 aggregation_tables:
@@ -145,6 +168,7 @@ inclusionary_housing_settings:
       amount: .2
       values:
       - San Francisco
+# in the future scenarios with identical inclusionary settings could be grouped
   "1":
     - type: jurisdictions
       description: medium setting
@@ -708,241 +732,346 @@ inclusionary_housing_settings:
       - Windsor
   "11":
     - type: jurisdictions
+      description: high setting
+      amount: .2
+      values:
+      - Los Altos
+      - Burlingame
+      - Los Altos Hills
+      - Cupertino
+      - Hillsborough
+      - Monte Sereno
+      - Saratoga
+      - Millbrae
+      - Belmont
+      - Ross
+      - Mountain View
+      - Piedmont
+      - Foster City
+      - Belvedere
+      - San Carlos
+      - Larkspur
+      - Los Gatos
+      - Mill Valley
+      - Palo Alto
+      - Atherton
+      - Menlo Park
+      - Tiburon
+      - San Anselmo
+      - Sausalito
+      - Sunnyvale
+      - Albany
+      - Corte Madera
+      - Berkeley
+      - San Francisco
+    - type: jurisdictions
+      description: medium-high setting
+      amount: .15
+      values:
+      - San Mateo
+      - Woodside
+      - Campbell
+      - Lafayette
+      - Portola Valley
+      - Orinda
+      - Redwood City
+      - Pleasanton
+      - San Bruno
+      - San Ramon
+      - Fairfax
+      - Santa Clara
+      - Walnut Creek
+      - Pacifica
+      - Alameda
+      - Danville
+      - South San Francisco
+      - Daly City
+      - Milpitas
+      - Clayton
+      - Fremont
+      - Moraga
+      - El Cerrito
+      - Dublin
+      - Pleasant Hill
+      - San Jose
+      - East Palo Alto
+      - Yountville
+      - Colma
+      - San Rafael
+      - St. Helena
+      - Brisbane
+      - Emeryville
+      - Newark
+      - Novato
+      - Oakland
+      - Livermore
+      - Half Moon Bay
+      - Union City
+      - Sonoma
+      - Benicia
+    - type: jurisdictions
       description: medium setting
       amount: .1
       values:
-      - Alameda
-      - Alameda County
-      - Albany
-      - American Canyon
-      - Antioch
-      - Belmont
-      - Benicia
-      - Berkeley
-      - Brisbane
-      - Burlingame
-      - Campbell
-      - Cloverdale
-      - Colma
-      - Concord
-      - Contra Costa County
-      - Cotati
-      - Cupertino
-      - Daly City
-      - Danville
-      - Dixon
-      - Dublin
-      - East Palo Alto
-      - El Cerrito
-      - Emeryville
-      - Fairfield
-      - Fremont
-      - Gilroy
-      - Hayward
-      - Hercules
-      - Lafayette
-      - Livermore
-      - Los Altos
       - Martinez
-      - Menlo Park
-      - Millbrae
-      - Milpitas
-      - Moraga
-      - Morgan Hill
-      - Mountain View
-      - Napa
-      - Newark
-      - Oakland
-      - Oakley
-      - Orinda
-      - Palo Alto
       - Petaluma
-      - Pinole
-      - Pittsburg
-      - Pleasant Hill
-      - Pleasanton
-      - Redwood City
-      - Richmond
-      - Rohnert Park
-      - San Bruno
-      - San Carlos
-      - San Francisco
-      - San Jose
+      - Healdsburg
+      - Calistoga
+      - Concord
       - San Leandro
-      - San Mateo
-      - San Mateo County
-      - San Pablo
-      - San Rafael
-      - San Ramon
-      - Santa Clara
-      - Santa Rosa
       - Sebastopol
-      - South San Francisco
-      - Suisun City
-      - Sunnyvale
-      - Union City
-      - Vacaville
-      - Vallejo
-      - Walnut Creek
+      - Santa Rosa
+      - Hayward
+      - Morgan Hill
+      - Napa
+      - Gilroy
+      - Richmond
+      - Cotati
+      - San Pablo
+      - Pinole
       - Windsor
+      - Rohnert Park
+      - Cloverdale
+      - Vallejo
+      - Hercules
+      - American Canyon
+      - Pittsburg
+      - Vacaville
+      - Brentwood
+      - Oakley
+      - Suisun City
+      - Fairfield
+      - Antioch
+      - Dixon
+      - Rio Vista
   "12":
     - type: jurisdictions
-      description: medium setting
-      amount: .1
+      description: high setting
+      amount: .2
       values:
-      - Alameda
-      - Alameda County
-      - Albany
-      - American Canyon
-      - Antioch
-      - Belmont
-      - Benicia
-      - Berkeley
-      - Brisbane
-      - Burlingame
-      - Campbell
-      - Cloverdale
-      - Colma
-      - Concord
-      - Contra Costa County
-      - Cotati
-      - Cupertino
-      - Daly City
-      - Danville
-      - Dixon
-      - Dublin
-      - East Palo Alto
-      - El Cerrito
-      - Emeryville
-      - Fairfield
-      - Fremont
-      - Gilroy
-      - Hayward
-      - Hercules
-      - Lafayette
-      - Livermore
       - Los Altos
-      - Martinez
-      - Menlo Park
+      - Burlingame
+      - Los Altos Hills
+      - Cupertino
+      - Hillsborough
+      - Monte Sereno
+      - Saratoga
       - Millbrae
-      - Milpitas
-      - Moraga
-      - Morgan Hill
+      - Belmont
+      - Ross
       - Mountain View
-      - Napa
-      - Newark
-      - Oakland
-      - Oakley
-      - Orinda
-      - Palo Alto
-      - Petaluma
-      - Pinole
-      - Pittsburg
-      - Pleasant Hill
-      - Pleasanton
-      - Redwood City
-      - Richmond
-      - Rohnert Park
-      - San Bruno
+      - Piedmont
+      - Foster City
+      - Belvedere
       - San Carlos
-      - San Francisco
-      - San Jose
-      - San Leandro
-      - San Mateo
-      - San Mateo County
-      - San Pablo
-      - San Rafael
-      - San Ramon
-      - Santa Clara
-      - Santa Rosa
-      - Sebastopol
-      - South San Francisco
-      - Suisun City
+      - Larkspur
+      - Los Gatos
+      - Mill Valley
+      - Palo Alto
+      - Atherton
+      - Menlo Park
+      - Tiburon
+      - San Anselmo
+      - Sausalito
       - Sunnyvale
-      - Union City
-      - Vacaville
-      - Vallejo
+      - Albany
+      - Corte Madera
+      - Berkeley
+      - San Francisco
+    - type: jurisdictions
+      description: medium-high setting
+      amount: .15
+      values:
+      - San Mateo
+      - Woodside
+      - Campbell
+      - Lafayette
+      - Portola Valley
+      - Orinda
+      - Redwood City
+      - Pleasanton
+      - San Bruno
+      - San Ramon
+      - Fairfax
+      - Santa Clara
       - Walnut Creek
-      - Windsor
-  "15":
+      - Pacifica
+      - Alameda
+      - Danville
+      - South San Francisco
+      - Daly City
+      - Milpitas
+      - Clayton
+      - Fremont
+      - Moraga
+      - El Cerrito
+      - Dublin
+      - Pleasant Hill
+      - San Jose
+      - East Palo Alto
+      - Yountville
+      - Colma
+      - San Rafael
+      - St. Helena
+      - Brisbane
+      - Emeryville
+      - Newark
+      - Novato
+      - Oakland
+      - Livermore
+      - Half Moon Bay
+      - Union City
+      - Sonoma
+      - Benicia
     - type: jurisdictions
       description: medium setting
       amount: .1
       values:
-      - Alameda
-      - Alameda County
-      - Albany
-      - American Canyon
-      - Antioch
-      - Belmont
-      - Benicia
-      - Berkeley
-      - Brisbane
-      - Burlingame
-      - Campbell
-      - Cloverdale
-      - Colma
-      - Concord
-      - Contra Costa County
-      - Cotati
-      - Cupertino
-      - Daly City
-      - Danville
-      - Dixon
-      - Dublin
-      - East Palo Alto
-      - El Cerrito
-      - Emeryville
-      - Fairfield
-      - Fremont
-      - Gilroy
-      - Hayward
-      - Hercules
-      - Lafayette
-      - Livermore
-      - Los Altos
       - Martinez
-      - Menlo Park
-      - Millbrae
-      - Milpitas
-      - Moraga
-      - Morgan Hill
-      - Mountain View
-      - Napa
-      - Newark
-      - Oakland
-      - Oakley
-      - Orinda
-      - Palo Alto
       - Petaluma
-      - Pinole
-      - Pittsburg
-      - Pleasant Hill
-      - Pleasanton
-      - Redwood City
-      - Richmond
-      - Rohnert Park
-      - San Bruno
-      - San Carlos
-      - San Francisco
-      - San Jose
+      - Healdsburg
+      - Calistoga
+      - Concord
       - San Leandro
-      - San Mateo
-      - San Mateo County
-      - San Pablo
-      - San Rafael
-      - San Ramon
-      - Santa Clara
-      - Santa Rosa
       - Sebastopol
-      - South San Francisco
-      - Suisun City
-      - Sunnyvale
-      - Union City
-      - Vacaville
-      - Vallejo
-      - Walnut Creek
+      - Santa Rosa
+      - Hayward
+      - Morgan Hill
+      - Napa
+      - Gilroy
+      - Richmond
+      - Cotati
+      - San Pablo
+      - Pinole
       - Windsor
+      - Rohnert Park
+      - Cloverdale
+      - Vallejo
+      - Hercules
+      - American Canyon
+      - Pittsburg
+      - Vacaville
+      - Brentwood
+      - Oakley
+      - Suisun City
+      - Fairfield
+      - Antioch
+      - Dixon
+      - Rio Vista
+  "15":
+    - type: jurisdictions
+      description: high setting
+      amount: .2
+      values:
+      - Los Altos
+      - Burlingame
+      - Los Altos Hills
+      - Cupertino
+      - Hillsborough
+      - Monte Sereno
+      - Saratoga
+      - Millbrae
+      - Belmont
+      - Ross
+      - Mountain View
+      - Piedmont
+      - Foster City
+      - Belvedere
+      - San Carlos
+      - Larkspur
+      - Los Gatos
+      - Mill Valley
+      - Palo Alto
+      - Atherton
+      - Menlo Park
+      - Tiburon
+      - San Anselmo
+      - Sausalito
+      - Sunnyvale
+      - Albany
+      - Corte Madera
+      - Berkeley
+      - San Francisco
+    - type: jurisdictions
+      description: medium-high setting
+      amount: .15
+      values:
+      - San Mateo
+      - Woodside
+      - Campbell
+      - Lafayette
+      - Portola Valley
+      - Orinda
+      - Redwood City
+      - Pleasanton
+      - San Bruno
+      - San Ramon
+      - Fairfax
+      - Santa Clara
+      - Walnut Creek
+      - Pacifica
+      - Alameda
+      - Danville
+      - South San Francisco
+      - Daly City
+      - Milpitas
+      - Clayton
+      - Fremont
+      - Moraga
+      - El Cerrito
+      - Dublin
+      - Pleasant Hill
+      - San Jose
+      - East Palo Alto
+      - Yountville
+      - Colma
+      - San Rafael
+      - St. Helena
+      - Brisbane
+      - Emeryville
+      - Newark
+      - Novato
+      - Oakland
+      - Livermore
+      - Half Moon Bay
+      - Union City
+      - Sonoma
+      - Benicia
+    - type: jurisdictions
+      description: medium setting
+      amount: .1
+      values:
+      - Martinez
+      - Petaluma
+      - Healdsburg
+      - Calistoga
+      - Concord
+      - San Leandro
+      - Sebastopol
+      - Santa Rosa
+      - Hayward
+      - Morgan Hill
+      - Napa
+      - Gilroy
+      - Richmond
+      - Cotati
+      - San Pablo
+      - Pinole
+      - Windsor
+      - Rohnert Park
+      - Cloverdale
+      - Vallejo
+      - Hercules
+      - American Canyon
+      - Pittsburg
+      - Vacaville
+      - Brentwood
+      - Oakley
+      - Suisun City
+      - Fairfield
+      - Antioch
+      - Dixon
+      - Rio Vista
 
 # these are the settings for various policies that are in play
 acct_settings:
@@ -957,42 +1086,87 @@ acct_settings:
       sending_buildings_subaccount_def: regional
       total_amount: 40000000
       receiving_buildings_filter: pda_id > 0
+      alternate_buildings_filter: trich_id > 0 | cat_id > 0
       subsidize_affordable: False
       enable_in_scenarios: ["1", "2", "3", "4", "5", "6", "7", "10", "11", "12", "15"]
+      alternate_geography_scenarios: ["11", "12", "15"]
 
     # these are all county specific affordable housing bonds but right now
     # they aren't enabled in any scenarios
-    san_mateo_bond_settings:
-      name: "San Mateo Affordable Housing Bond"
-      sending_buildings_subaccount_def: regional
-      total_amount: 40000000
-      receiving_buildings_filter: county == 'San Mateo'
-      subsidize_affordable: True
-      enable_in_scenarios: []
+    # 08 27 2019 ET: they're being tested in horizon futures round 2 scenarios
 
     alameda_bond_settings:
       name: "Alameda Affordable Housing Bond"
       sending_buildings_subaccount_def: regional
-      total_amount: 20000000
+      total_amount: 30625010
       receiving_buildings_filter: county == 'Alameda'
       subsidize_affordable: True
-      enable_in_scenarios: []
+      enable_in_scenarios: ["11", "12", "15"]
+
+    contra_costa_bond_settings:
+      name: "Contra Costa Affordable Housing Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 21150756
+      receiving_buildings_filter: county == 'Contra Costa'
+      subsidize_affordable: True
+      enable_in_scenarios: ["11", "12", "15"]
+
+    marin_bond_settings:
+      name: "Marin Affordable Housing Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 4932118
+      receiving_buildings_filter: county == 'Marin'
+      subsidize_affordable: True
+      enable_in_scenarios: ["11", "12", "15"]
+
+    napa_bond_settings:
+      name: "Napa Affordable Housing Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 2661050
+      receiving_buildings_filter: county == 'Napa'
+      subsidize_affordable: True
+      enable_in_scenarios: ["11", "12", "15"]
+
+    san_francisco_bond_settings:
+      name: "San Francisco Affordable Housing Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 16310399
+      receiving_buildings_filter: county == 'San Francisco'
+      subsidize_affordable: True
+      enable_in_scenarios: ["11", "12", "15"]
+
+    san_mateo_bond_settings:
+      name: "San Mateo Affordable Housing Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 14406372
+      receiving_buildings_filter: county == 'San Mateo'
+      subsidize_affordable: True
+      enable_in_scenarios: ["11", "12", "15"]
 
     santa_clara_bond_settings:
       name: "Santa Clara Affordable Housing Bond"
       sending_buildings_subaccount_def: regional
-      total_amount: 31000000
+      total_amount: 36291210
       receiving_buildings_filter: county == 'Santa Clara'
       subsidize_affordable: True
-      enable_in_scenarios: []
+      enable_in_scenarios: ["11", "12", "15"]
 
-    santa_francisco_bond_settings:
-      name: "San Francisco Affordable Housing Bond"
+    solano_bond_settings:
+      name: "Solano Affordable Housing Bond"
       sending_buildings_subaccount_def: regional
-      total_amount: 19000000
-      receiving_buildings_filter: county == 'San Francisco'
+      total_amount: 8120789
+      receiving_buildings_filter: county == 'Solano'
       subsidize_affordable: True
-      enable_in_scenarios: []
+      enable_in_scenarios: ["11", "12", "15"]
+
+    sonoma_bond_settings:
+      name: "Sonoma Affordable Housing Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 9451314
+      receiving_buildings_filter: county == 'Sonoma'
+      subsidize_affordable: True
+      enable_in_scenarios: ["11", "12", "15"]
+
 
     # parcel tax settings
     parcel_tax_settings:
@@ -1023,6 +1197,8 @@ acct_settings:
       enable_in_scenarios: ["1", "2", "3", "4", "5", "6", "7", "10", "11", "12", "15"]
       # any parcel in a tpa
       profitability_adjustment_formula: "(tpp_id > 0) * .01"
+      alternate_geography_scenarios: ["11", "12", "15"]
+      alternate_adjustment_formula: "(trich_id > 0 | cat_id > 0) * .01"
 
     # reduce parking requirements in TPPs - would be nice to have better data
     # on how this impacts price as well, but we don't have it
@@ -1037,6 +1213,8 @@ acct_settings:
       enable_in_scenarios: ["1", "2", "4", "5", "6", "7", "10", "11", "12", "15"]
       # any parcel in a tpa
       profitability_adjustment_formula: "(pda_id > 0) * .01"
+      alternate_geography_scenarios: ["11", "12", "15"]
+      alternate_adjustment_formula: "(trich_id > 0 | cat_id > 0) * .01"
 
     parking_requirements_AVs_s1: # cag
       name: "Reduce Parking Requirements due to AVs- CAG"
@@ -1069,6 +1247,8 @@ acct_settings:
   vmt_settings:
     sending_buildings_subaccount_def: regional
     receiving_buildings_filter: pda_id>0
+    alternate_buildings_filter: trich_id > 0 | cat_id > 0
+    alternate_geography_scenarios: ["11", "12", "15"]
     res_for_res_scenarios:
       - "3"
     com_for_com_scenarios:
@@ -1102,10 +1282,19 @@ acct_settings:
       H: 30
       MH: 20
       M: 3
+    alternate_com_for_res_fee_amounts:
+      VH: 100
+      H: 60
+      MH: 40
+      M: 6
     com_for_com_fee_amounts:  # commercial fee subsidizing commercial devs
       VH: 40
       H: 20
       MH: 10
+    alternate_com_for_com_fee_amounts:
+      VH: 80
+      H: 40
+      MH: 20
   sb743_settings:
     enable: true
     sb743_pcts:
@@ -1168,9 +1357,9 @@ control_tables:
     s6_household_controls_input_file: household_controls_s6.csv
     s7_household_controls_input_file: household_controls_s7.csv
     s10_household_controls_input_file: household_controls_s10.csv
-    s11_household_controls_input_file: household_controls_s1.csv
-    s12_household_controls_input_file: household_controls_s2.csv
-    s15_household_controls_input_file: household_controls_s5.csv
+    s11_household_controls_input_file: household_controls_s11.csv
+    s12_household_controls_input_file: household_controls_s12.csv
+    s15_household_controls_input_file: household_controls_s15.csv
     s16_household_controls_input_file: household_controls_s16.csv
     s17_household_controls_input_file: household_controls_s17.csv
   employment:
@@ -1181,9 +1370,9 @@ control_tables:
     s6_employment_controls_input_file: employment_controls_s6.csv
     s7_employment_controls_input_file: employment_controls_s7.csv
     s10_employment_controls_input_file: employment_controls_s10.csv
-    s11_employment_controls_input_file: employment_controls_s1.csv
-    s12_employment_controls_input_file: employment_controls_s2.csv
-    s15_employment_controls_input_file: employment_controls_s5.csv
+    s11_employment_controls_input_file: employment_controls_s11.csv
+    s12_employment_controls_input_file: employment_controls_s12.csv
+    s15_employment_controls_input_file: employment_controls_s15.csv
   regional:
     regional_controls_input_file: regional_controls.csv
     s1_regional_controls_input_file: regional_controls_s1.csv
@@ -1192,9 +1381,9 @@ control_tables:
     s6_regional_controls_input_file: regional_controls_s6.csv
     s7_regional_controls_input_file: regional_controls_s7.csv
     s10_regional_controls_input_file: regional_controls_s10.csv
-    s11_regional_controls_input_file: regional_controls_s1.csv
-    s12_regional_controls_input_file: regional_controls_s2.csv
-    s15_regional_controls_input_file: regional_controls_s5.csv
+    s11_regional_controls_input_file: regional_controls_s11.csv
+    s12_regional_controls_input_file: regional_controls_s12.csv
+    s15_regional_controls_input_file: regional_controls_s15.csv
     s16_regional_controls_input_file: regional_controls_s16.csv
     s17_regional_controls_input_file: regional_controls_s17.csv
   demographic_forecast:
@@ -1205,19 +1394,19 @@ control_tables:
     s6_demographic_forecast_controls_input_file: regional_demographic_forecast_s6.csv
     s7_demographic_forecast_controls_input_file: regional_demographic_forecast_s7.csv
     s10_demographic_forecast_controls_input_file: regional_demographic_forecast_s10.csv
-    s11_demographic_forecast_controls_input_file: regional_demographic_forecast_s1.csv
-    s12_demographic_forecast_controls_input_file: regional_demographic_forecast_s2.csv
-    s15_demographic_forecast_controls_input_file: regional_demographic_forecast_s5.csv
+    s11_demographic_forecast_controls_input_file: regional_demographic_forecast_s11.csv
+    s12_demographic_forecast_controls_input_file: regional_demographic_forecast_s12.csv
+    s15_demographic_forecast_controls_input_file: regional_demographic_forecast_s15.csv
 
 
 logsums:
   mandatory:
     logsum: mandatoryAccessibilities_2015.csv
-    logsum_2010_s1: mandatoryAccessibilities_2030_s1.csv
+    logsum_2010_s1: mandatoryAccessibilities_2015.csv
     logsum_2030_s1: mandatoryAccessibilities_2050_s1.csv
-    logsum_2010_s2: mandatoryAccessibilities_2030_s2.csv
+    logsum_2010_s2: mandatoryAccessibilities_2015.csv
     logsum_2030_s2: mandatoryAccessibilities_2050_s2.csv
-    logsum_2010_s5: mandatoryAccessibilities_2030_s5.csv
+    logsum_2010_s5: mandatoryAccessibilities_2015.csv
     logsum_2030_s5: mandatoryAccessibilities_2050_s5.csv
     logsum_2010_s6: mandatoryAccessibilities_2030_s6.csv
     logsum_2030_s6: mandatoryAccessibilities_2050_s6.csv
@@ -1225,19 +1414,19 @@ logsums:
     logsum_2030_s7: mandatoryAccessibilities_2050_s7.csv
     logsum_2010_s10: mandatoryAccessibilities_2030_s10.csv
     logsum_2030_s10: mandatoryAccessibilities_2050_s10.csv
-    logsum_2010_s11: mandatoryAccessibilities_2030_s1.csv
-    logsum_2030_s11: mandatoryAccessibilities_2050_s1.csv
-    logsum_2010_s12: mandatoryAccessibilities_2030_s2.csv
-    logsum_2030_s12: mandatoryAccessibilities_2050_s2.csv
-    logsum_2010_s15: mandatoryAccessibilities_2030_s5.csv
-    logsum_2030_s15: mandatoryAccessibilities_2050_s5.csv
+    logsum_2010_s11: mandatoryAccessibilities_2015.csv
+    logsum_2030_s11: mandatoryAccessibilities_2050_s11.csv
+    logsum_2010_s12: mandatoryAccessibilities_2015.csv
+    logsum_2030_s12: mandatoryAccessibilities_2050_s12.csv
+    logsum_2010_s15: mandatoryAccessibilities_2015.csv
+    logsum_2030_s15: mandatoryAccessibilities_2050_s15.csv
   non_mandatory:
     logsum: nonMandatoryAccessibilities_2015.csv
-    logsum_2010_s1: nonMandatoryAccessibilities_2030_s1.csv
+    logsum_2010_s1: nonMandatoryAccessibilities_2015.csv
     logsum_2030_s1: nonMandatoryAccessibilities_2050_s1.csv
-    logsum_2010_s2: nonMandatoryAccessibilities_2030_s2.csv
+    logsum_2010_s2: nonMandatoryAccessibilities_2015.csv
     logsum_2030_s2: nonMandatoryAccessibilities_2050_s2.csv
-    logsum_2010_s5: nonMandatoryAccessibilities_2030_s5.csv
+    logsum_2010_s5: nonMandatoryAccessibilities_2015.csv
     logsum_2030_s5: nonMandatoryAccessibilities_2050_s5.csv
     logsum_2010_s6: nonMandatoryAccessibilities_2030_s6.csv
     logsum_2030_s6: nonMandatoryAccessibilities_2050_s6.csv
@@ -1245,19 +1434,19 @@ logsums:
     logsum_2030_s7: nonMandatoryAccessibilities_2050_s7.csv
     logsum_2010_s10: nonMandatoryAccessibilities_2030_s10.csv
     logsum_2030_s10: nonMandatoryAccessibilities_2050_s10.csv
-    logsum_2010_s11: nonMandatoryAccessibilities_2030_s1.csv
-    logsum_2030_s11: nonMandatoryAccessibilities_2050_s1.csv
-    logsum_2010_s12: nonMandatoryAccessibilities_2030_s2.csv
-    logsum_2030_s12: nonMandatoryAccessibilities_2050_s2.csv
-    logsum_2010_s15: nonMandatoryAccessibilities_2030_s5.csv
-    logsum_2030_s15: nonMandatoryAccessibilities_2050_s5.csv
+    logsum_2010_s11: nonMandatoryAccessibilities_2015.csv
+    logsum_2030_s11: nonMandatoryAccessibilities_2050_s11.csv
+    logsum_2010_s12: nonMandatoryAccessibilities_2015.csv
+    logsum_2030_s12: nonMandatoryAccessibilities_2050_s12.csv
+    logsum_2010_s15: nonMandatoryAccessibilities_2015.csv
+    logsum_2030_s15: nonMandatoryAccessibilities_2050_s15.csv
   segmentation:
     logsum: AccessibilityMarkets_2015.csv
-    logsum_2010_s1: AccessibilityMarkets_2030_s1.csv
+    logsum_2010_s1: AccessibilityMarkets_2015.csv
     logsum_2030_s1: AccessibilityMarkets_2050_s1.csv
-    logsum_2010_s2: AccessibilityMarkets_2030_s2.csv
+    logsum_2010_s2: AccessibilityMarkets_2015.csv
     logsum_2030_s2: AccessibilityMarkets_2050_s2.csv
-    logsum_2010_s5: AccessibilityMarkets_2030_s5.csv
+    logsum_2010_s5: AccessibilityMarkets_2015.csv
     logsum_2030_s5: AccessibilityMarkets_2050_s5.csv
     logsum_2010_s6: AccessibilityMarkets_2030_s6.csv
     logsum_2030_s6: AccessibilityMarkets_2050_s6.csv
@@ -1265,12 +1454,12 @@ logsums:
     logsum_2030_s7: AccessibilityMarkets_2050_s7.csv
     logsum_2010_s10: AccessibilityMarkets_2030_s10.csv
     logsum_2030_s10: AccessibilityMarkets_2050_s10.csv
-    logsum_2010_s11: AccessibilityMarkets_2030_s1.csv
-    logsum_2030_s11: AccessibilityMarkets_2050_s1.csv
-    logsum_2010_s12: AccessibilityMarkets_2030_s2.csv
-    logsum_2030_s12: AccessibilityMarkets_2050_s2.csv
-    logsum_2010_s15: AccessibilityMarkets_2030_s5.csv
-    logsum_2030_s15: AccessibilityMarkets_2050_s5.csv
+    logsum_2010_s11: AccessibilityMarkets_2015.csv
+    logsum_2030_s11: AccessibilityMarkets_2050_s11.csv
+    logsum_2010_s12: AccessibilityMarkets_2015.csv
+    logsum_2030_s12: AccessibilityMarkets_2050_s12.csv
+    logsum_2010_s15: AccessibilityMarkets_2015.csv
+    logsum_2030_s15: AccessibilityMarkets_2050_s15.csv
 
 
 model_configs:
@@ -1353,6 +1542,8 @@ feasibility:
     - building_purchase_price_sqft
     - residential_sales_price_sqft
     - pda
+    - trich_id
+    - cat_id
     - juris
     - county
     - superdistrict
@@ -1567,6 +1758,10 @@ cost_shifters:
 # general_type and in terms of resdential units and job spaces - believe scenarios
 # inherit settings from teh default scenario
 development_limits:
+# 07 09 2019 ET: believe the default settings include office caps to represent real-world caps
+# as well as caps added for PBA40 (real-world: SF, Palo Alto?, added: Cupertino?)
+# they also include additional office caps to handle volatility
+# if this is true, in the future these could be split out more (default/real-world/volatility)
   default:
     Office:
       'Alameda': 100
@@ -1628,6 +1823,57 @@ development_limits:
       'Napa County': 25
       'Solano County': 230
       'Sonoma County': 50
+  "11":
+    Office:
+      # new:
+      'Emeryville': 0
+      'Brisbane': 0
+      'Menlo Park': 0
+      'Santa Clara': 0
+      'Mountainview': 0
+      'South San Francisco': 0
+       # reduced from fr1:
+      'Milpitas': 0
+      'Burlingame': 0
+      'Palo Alto': 0
+      # maintained from fr1:
+      'Colma': 0
+      'Cupertino': 0
+      'San Francisco': 3500
+  "12":
+    Office:
+      # new:
+      'Emeryville': 0
+      'Brisbane': 0
+      'Menlo Park': 0
+      'Santa Clara': 0
+      'Mountainview': 0
+      'South San Francisco': 0
+       # reduced from fr1:
+      'Milpitas': 0
+      'Burlingame': 0
+      'Palo Alto': 0
+      # maintained from fr1:
+      'Colma': 0
+      'Cupertino': 0
+      'San Francisco': 3500
+  "15":
+    Office:
+      # new:
+      'Emeryville': 0
+      'Brisbane': 0
+      'Menlo Park': 0
+      'Santa Clara': 0
+      'Mountainview': 0
+      'South San Francisco': 0
+       # reduced from fr1:
+      'Milpitas': 0
+      'Burlingame': 0
+      'Palo Alto': 0
+      # maintained from fr1:
+      'Colma': 0
+      'Cupertino': 0
+      'San Francisco': 3500
 
 
 # a list of parcel geom ids which urbansim doesn't touch - this are viewed as exceptions

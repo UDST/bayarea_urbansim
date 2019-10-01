@@ -403,6 +403,21 @@ def pda(parcels, parcels_geography):
 
 
 @orca.column('parcels', cache=True)
+def trich_id(parcels, parcels_geography):
+    return parcels_geography.trich_id.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def cat_id(parcels, parcels_geography):
+    return parcels_geography.cat_id.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def juris_trich(parcels, parcels_geography):
+    return parcels_geography.juris_trich.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
 def superdistrict(parcels, taz_geography):
     return misc.reindex(taz_geography.superdistrict, parcels.zone_id)
 
@@ -841,7 +856,12 @@ def cnml(parcels, non_mandatory_accessibility,
 @orca.column('parcels', cache=True, cache_scope='iteration')
 def combo_logsum(parcels):
     df = parcels.to_frame(['cml', 'cnml'])
-    return df.cml + df.cnml
+    combo = df.cml + df.cnml
+    # since the logsum methodology in the travel model has changed,
+    # we need to shift the values to align with the ones used for estimation
+    combo = combo - 170
+    combo.loc[(combo <= 0)] = 1
+    return combo
 
 
 @orca.column('zones', cache=True, cache_scope='iteration')
@@ -883,7 +903,12 @@ def zone_cnml(year, non_mandatory_accessibility,
 @orca.column('zones', cache=True, cache_scope='iteration')
 def zone_combo_logsum(zones):
     df = zones.to_frame(['zone_cml', 'zone_cnml'])
-    return df.zone_cml + df.zone_cnml
+    combo = df.zone_cml + df.zone_cnml
+    # since the logsum methodology in the travel model has changed,
+    # we need to shift the values to align with the ones used for estimation
+    combo = combo - 170
+    combo.loc[(combo <= 0)] = 1
+    return combo
 
 
 # This is an all computed table which takes calculations from the below and
