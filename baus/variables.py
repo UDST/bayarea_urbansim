@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 from urbansim.utils import misc
 import orca
-import datasources
-from utils import nearest_neighbor, groupby_random_choice
+from baus import datasources
+from baus.utils import nearest_neighbor, groupby_random_choice
 from urbansim_defaults import utils
 from urbansim_defaults import variables
 

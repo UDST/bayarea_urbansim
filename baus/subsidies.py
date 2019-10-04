@@ -7,7 +7,7 @@ from urbansim import accounts
 from urbansim_defaults import utils
 from cStringIO import StringIO
 from urbansim.utils import misc
-from utils import add_buildings
+from baus.utils import add_buildings
 from urbansim.developer import sqftproforma
 
 
