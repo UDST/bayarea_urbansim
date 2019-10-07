@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 from urbansim import accounts
 from urbansim_defaults import utils
-from cStringIO import StringIO
+from io import StringIO
 from urbansim.utils import misc
 from utils import add_buildings
 from urbansim.developer import sqftproforma
