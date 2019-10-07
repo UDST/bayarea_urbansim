@@ -27,6 +27,7 @@ def config(settings, run_number, scenario, parcels,
         f.write(s + "\n")
 
     # package versions
+    write("python version: %s" % sys.version.split('|')[0])
     write("urbansim version: %s" % urbansim.__version__)
 #    write("urbansim_defaults version: %s" % urbansim_defaults.__version__)
     write("orca version: %s" % orca.__version__)
