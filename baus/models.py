@@ -1,24 +1,23 @@
 from __future__ import print_function
 
-from urbansim.utils import misc
 import os
 import sys
-import orca
 import yaml
-from baus import datasources
-from baus import variables
-from baus.utils import parcel_id_to_geom_id, geom_id_to_parcel_id, add_buildings
-from baus.utils import round_series_match_target, groupby_random_choice
-from urbansim.utils import networks
-import pandana.network as pdna
-from urbansim_defaults import models
-from urbansim_defaults import utils
-from urbansim.developer import sqftproforma, developer
-from urbansim.developer.developer import Developer as dev
-from baus import subsidies
-from baus import summaries
+
 import numpy as np
 import pandas as pd
+
+import orca
+import pandana.network as pdna
+from urbansim.developer import sqftproforma
+from urbansim.developer.developer import Developer as dev
+from urbansim.utils import misc, networks
+from urbansim_defaults import models, utils
+
+from baus import datasources, subsidies, summaries, variables
+from baus.utils import \
+    add_buildings, geom_id_to_parcel_id, groupby_random_choice, \
+    parcel_id_to_geom_id, round_series_match_target
 
 
 @orca.step()
