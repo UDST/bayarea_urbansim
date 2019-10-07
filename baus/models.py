@@ -5,8 +5,8 @@ import orca
 import yaml
 from baus import datasources
 from baus import variables
-from utils import parcel_id_to_geom_id, geom_id_to_parcel_id, add_buildings
-from utils import round_series_match_target, groupby_random_choice
+from baus.utils import parcel_id_to_geom_id, geom_id_to_parcel_id, add_buildings
+from baus.utils import round_series_match_target, groupby_random_choice
 from urbansim.utils import networks
 import pandana.network as pdna
 from urbansim_defaults import models
