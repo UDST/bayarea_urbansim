@@ -3,6 +3,10 @@ import numpy as np
 import orca
 import os
 import sys
+import time
+import requests
+import json
+import boto3
 from urbansim_defaults.utils import _remove_developed_buildings
 from urbansim.developer.developer import Developer as dev
 
@@ -356,3 +360,32 @@ def compare_summary(df1, df2, index_names=None, pctdiff=10,
             (geog_name, lab, val, col)
 
     return buf
+
+
+def export_urbanexplorer_config(run_num, host):
+    data = {
+        'taz_url': 'https://baus-urbanexplorer.s3.us-east-2.amazonaws.com/\
+            run{}_simulation_output.json'.format(run_num),
+        'parcel_url': 'https://baus-urbanexplorer.s3.us-east-2.amazonaws.com/\
+            run{}_parcel_output.csv'.format(run_num),
+        'timestamp': time.time(),
+        'name': 'Simulation run {}, Machine {}'.format(run_num, host)
+    }
+
+    r = requests.post('https://forecast-feedback.firebaseio.com/simulations.json', json.dumps(data))
+
+    return r.text
+
+def export_urbanexplorer_files(run_num, host):
+    s3 = boto3.client('s3')
+    resp1 = s3.upload_file(
+        'runs/run{}_simulation_output.json'.format(run_num),
+        'baus-urbanexplorer',
+        'run{}_simulation_output.json'.format(run_num),
+        ExtraArgs={'ACL': 'public-read'})
+    resp2 = s3.upload_file(
+        'runs/run{}_parcel_output.csv'.format(run_num),
+        'baus-urbanexplorer',
+        'run{}_parcel_output.csv'.format(run_num),
+        ExtraArgs={'ACL': 'public-read'})
+    return resp1, resp2
