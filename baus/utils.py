@@ -362,7 +362,7 @@ def compare_summary(df1, df2, index_names=None, pctdiff=10,
     return buf
 
 
-def export_urbanexplorer_config(run_num, host):
+def ue_config(run_num, host):
     data = {
         'taz_url': 'https://baus-urbanexplorer.s3.us-east-2.amazonaws.com/\
             run{}_simulation_output.json'.format(run_num),
@@ -376,7 +376,7 @@ def export_urbanexplorer_config(run_num, host):
 
     return r.text
 
-def export_urbanexplorer_files(run_num, host):
+def ue_files(run_num, host):
     s3 = boto3.client('s3')
     resp1 = s3.upload_file(
         'runs/run{}_simulation_output.json'.format(run_num),

@@ -13,8 +13,8 @@ import orca
 import socket
 import argparse
 import warnings
-from baus.utils import compare_summary, export_urbanexplorer_config, \
-    export_urbanexplorer_config
+from baus.utils import compare_summary
+from baus.utils import ue_config, ue_files
 
 warnings.filterwarnings("ignore")
 
@@ -404,8 +404,8 @@ except Exception as e:
 print "Finished", time.ctime()
 
 if MAPS and 'travel_model_output' in get_simulation_models(SCENARIO):
-    files_msg1, files_msg2 = export_urbanexplorer_files(run_num, host)
-    config_resp = export_urbanexplorer_config(run_num, host)
+    files_msg1, files_msg2 = ue_files(run_num, host)
+    config_resp = ue_config(run_num, host)
 
 if SLACK:
     slack.chat.post_message(
