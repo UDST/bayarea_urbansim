@@ -21,7 +21,7 @@ from baus.utils import nearest_neighbor
 def year():
     try:
         return orca.get_injectable("iter_var")
-    except:
+    except Exception as e:
         pass
     # if we're not running simulation, return base year
     return 2014
@@ -531,7 +531,7 @@ def get_logsum_file(type='mandatory'):
             else:
                 return orca.get_injectable('previous_{}_logsum_file'
                                            .format(type))
-    except:
+    except Exception as e:
         if 'logsum' in logsums:
             ls = logsums['logsum']
             ls_type = 'generic'
