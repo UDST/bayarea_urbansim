@@ -108,8 +108,11 @@ def config(settings, run_number, scenario, parcels,
     else:
         write("There is no sea level rise in this scenario")
     # mitigation
-    slr_mitigation = orca.get_injectable("slr_mitigation")
-    write("Sea level rise mitigation is %s" % slr_mitigation)
+    if scenario in settings["slr_scenarios"]["enable_in"]:
+        slr_mitigation = orca.get_injectable("slr_mitigation")
+        write("Sea level rise mitigation is %s" % slr_mitigation)
+    else:
+        write("Sea level rise mitigation is not applied")
     write("")
 
     # earthquake
