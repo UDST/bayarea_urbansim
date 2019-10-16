@@ -3,6 +3,14 @@ import pandas as pd
 from urbansim.utils import misc
 from validation import assert_series_equal
 
+# TO ADD: Housing Unit imputation
+# We want to match the target in baseyear_taz_controls.csv
+
+
+# TO ADD: Nonresidential space imputation
+# We want to match the target in baseyear_taz_controls.csv
+
+
 
 # the way this works is there is an orca step to do jobs allocation, which
 # reads base year totals and creates jobs and allocates them to buildings,
