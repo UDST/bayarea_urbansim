@@ -3,6 +3,14 @@ import pandas as pd
 from urbansim.utils import misc
 from validation import assert_series_equal
 
+# TO ADD: Housing Unit imputation
+# We want to match the target in baseyear_taz_controls.csv
+
+
+# TO ADD: Nonresidential space imputation
+# We want to match the target in baseyear_taz_controls.csv
+
+
 
 # the way this works is there is an orca step to do jobs allocation, which
 # reads base year totals and creates jobs and allocates them to buildings,
@@ -41,7 +49,7 @@ def allocate_jobs(baseyear_taz_controls, settings, buildings, parcels):
     for taz, cnt in df.groupby('taz').size().iteritems():
 
         potential_add_locations = buildings.non_residential_sqft[
-            (zone_id == taz) and
+            (zone_id == taz) &
             (buildings.non_residential_sqft > 0)]
 
         if len(potential_add_locations) == 0:
@@ -145,7 +153,7 @@ def assign_deed_restricted_units(df, parcels):
             continue
 
         potential_add_locations = df.residential_units[
-            (zone_ids == taz) and
+            (zone_ids == taz) &
             (df.residential_units > 0)]
 
         assert len(potential_add_locations) > 0

@@ -8,6 +8,11 @@ from utils import random_indexes, round_series_match_target,\
     scale_by_target, simple_ipf
 from urbansim.utils import misc
 from scripts.output_csv_utils import format_df
+import urbansim
+import urbansim_defaults
+import orca
+import orca_test
+import pandana
 
 
 @orca.step()
@@ -21,7 +26,21 @@ def config(settings, run_number, scenario, parcels,
         # print s
         f.write(s + "\n")
 
+    # package versions
+    write("python version: %s" % sys.version.split('|')[0])
+    write("urbansim version: %s" % urbansim.__version__)
+#    write("urbansim_defaults version: %s" % urbansim_defaults.__version__)
+    write("orca version: %s" % orca.__version__)
+    write("orca_test version: %s" % orca_test.__version__)
+    write("pandana version: %s" % pandana.__version__)
+    write("numpy version: %s" % np.__version__)
+    write("pandas version: %s" % pd.__version__)
+    write("")
+
     write("INPUT FILES")
+    write("")
+
+    write("Scenario %s" % scenario)
     write("")
 
     # control files
@@ -89,8 +108,11 @@ def config(settings, run_number, scenario, parcels,
     else:
         write("There is no sea level rise in this scenario")
     # mitigation
-    slr_mitigation = orca.get_injectable("slr_mitigation")
-    write("Sea level rise mitigation is %s" % slr_mitigation)
+    if scenario in settings["slr_scenarios"]["enable_in"]:
+        slr_mitigation = orca.get_injectable("slr_mitigation")
+        write("Sea level rise mitigation is %s" % slr_mitigation)
+    else:
+        write("Sea level rise mitigation is not applied")
     write("")
 
     # earthquake

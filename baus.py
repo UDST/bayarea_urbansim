@@ -377,6 +377,7 @@ print "Started", time.ctime()
 print "Current Branch : ", BRANCH.rstrip()
 print "Current Commit : ", CURRENT_COMMIT.rstrip()
 print "Current Scenario : ", orca.get_injectable('scenario').rstrip()
+print "Random Seed : ", RANDOM_SEED
 
 
 if SLACK:
