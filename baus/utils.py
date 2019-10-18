@@ -364,10 +364,10 @@ def compare_summary(df1, df2, index_names=None, pctdiff=10,
 
 def ue_config(run_num, host):
     data = {
-        'taz_url': 'https://baus-urbanexplorer.s3.us-east-2.amazonaws.com/\
-            run{}_simulation_output.json'.format(run_num),
-        'parcel_url': 'https://baus-urbanexplorer.s3.us-east-2.amazonaws.com/\
-            run{}_parcel_output.csv'.format(run_num),
+        'taz_url': ('https://baus-urbanexplorer.s3.us-east-2.amazonaws.com/' \
+            'run{}_simulation_output.json'.format(run_num)),
+        'parcel_url': ('https://baus-urbanexplorer.s3.us-east-2.amazonaws.com/' \
+            'run{}_parcel_output.csv'.format(run_num)),
         'timestamp': time.time(),
         'name': 'Simulation run {}, Machine {}'.format(run_num, host)
     }
