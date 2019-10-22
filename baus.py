@@ -24,7 +24,7 @@ pd.set_option('display.float_format', lambda x: '%.3f' % x)
 
 SLACK = MAPS = "URBANSIM_SLACK" in os.environ
 LOGS = True
-RANDOM_SEED = True
+RANDOM_SEED = False
 INTERACT = False
 SCENARIO = None
 MODE = "simulation"
