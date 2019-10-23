@@ -1,11 +1,11 @@
-# This environment pins requirements at their latest release as of 10-14-2019
+# This environment pins requirements at their versions as of 10-2019
 
 # Install with: pip install -r requirements-2019.txt
 
-numpy=1.17.2
-pandas=0.25.1
+numpy == 1.17.*
+pandas == 0.25.*
 
-orca=1.5.1
-pandana=0.4.4
-urbansim=3.1.1
-urbansim_defaults=0.2
+orca == 1.5.*
+pandana == 0.4.*
+urbansim == 3.1.*
+urbansim_defaults == 0.2.*
