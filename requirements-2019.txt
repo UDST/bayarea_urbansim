@@ -6,6 +6,7 @@ numpy == 1.17.*
 pandas == 0.25.*
 
 orca == 1.5.*
-pandana == 0.4.*
+orca_test == 0.1.*
+pandana == 0.3.*
 urbansim == 3.1.*
 urbansim_defaults == 0.2.*
