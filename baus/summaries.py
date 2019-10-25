@@ -925,7 +925,7 @@ def parcel_summary(parcels, buildings, households, jobs,
         return
 
     df = parcels.to_frame([
-    	"geom_id",
+        "geom_id",
         "x", "y",
         "total_residential_units",
         "total_job_spaces",
