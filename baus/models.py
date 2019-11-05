@@ -349,7 +349,8 @@ def household_relocation(households, household_relocation_rates,
 def scheduled_development_events(buildings, development_projects,
                                  demolish_events, summary, year, parcels,
                                  settings, years_per_iter, parcels_geography,
-                                 building_sqft_per_job, vmt_fee_categories):
+                                 building_sqft_per_job, vmt_fee_categories,
+                                 static_parcels):
 
     # first demolish
     demolish = demolish_events.to_frame().\
@@ -360,6 +361,10 @@ def scheduled_development_events(buildings, development_projects,
         buildings.to_frame(buildings.local_columns),
         demolish,
         unplace_agents=["households", "jobs"])
+    orca.add_injectable('static_parcels',
+                        np.append(static_parcels,
+                                  demolish.loc[demolish.action=='build',
+                                               'parcel_id']))
     orca.add_table("buildings", buildings)
     buildings = orca.get_table("buildings")
     print "Demolished %d buildings" % (l1 - len(buildings))
