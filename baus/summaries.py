@@ -101,14 +101,14 @@ def config(settings, run_number, scenario, parcels,
 
     # sea level rise
     # level
-    if scenario in settings["slr_scenarios"]["enable_in"]:
+    if scenario in hazards["slr_scenarios"]["enable_in"]:
         slr_progression = orca.get_table("slr_progression")
         slr = slr_progression['inundated'].max()
         write("Sea level rise in this scenario is %d inches" % slr)
     else:
         write("There is no sea level rise in this scenario")
     # mitigation
-    if scenario in settings["slr_scenarios"]["enable_in"]:
+    if scenario in hazards["slr_scenarios"]["enable_in"]:
         slr_mitigation = orca.get_injectable("slr_mitigation")
         write("Sea level rise mitigation is %s" % slr_mitigation)
     else:
@@ -117,12 +117,12 @@ def config(settings, run_number, scenario, parcels,
 
     # earthquake
     # activation
-    if scenario in settings["eq_scenarios"]["enable_in"]:
+    if scenario in hazards["eq_scenarios"]["enable_in"]:
         write("Earthquake is activated")
     else:
         write("Earthquake is not activated")
     # mitigation
-    if scenario in settings["eq_scenarios"]["mitigation"]:
+    if scenario in hazards["eq_scenarios"]["mitigation"]:
         write("Earthquake retrofit policies are applied")
     else:
         write("Earthquake retrofit policies are not applied")
@@ -1753,7 +1753,7 @@ def adjust_hhkids(df, year, rdf, total_hh):
 def hazards_slr_summary(run_number, year, scenario, households, jobs, parcels,
                         settings):
 
-    if scenario not in settings["slr_scenarios"]["enable_in"]:
+    if scenario not in hazards["slr_scenarios"]["enable_in"]:
         return
 
     destroy_parcels = orca.get_table("destroy_parcels")
@@ -1837,7 +1837,7 @@ def hazards_slr_summary(run_number, year, scenario, households, jobs, parcels,
 def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings,
                        scenario, settings):
 
-    if scenario not in settings["eq_scenarios"]["enable_in"]:
+    if scenario not in hazards["eq_scenarios"]["enable_in"]:
         return
 
     if year == 2035:
@@ -1938,7 +1938,7 @@ def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings,
                                         % (run_number, year)))
 
         # print out retrofit buildings that were saved
-        if scenario in settings["eq_scenarios"]["mitigation"]:
+        if scenario in hazards["eq_scenarios"]["mitigation"]:
             retrofit_bldgs_tot = orca.get_table("retrofit_bldgs_tot")
             retrofit_bldgs_tot = retrofit_bldgs_tot.to_frame()
             retrofit_bldgs_tot_taz = misc.reindex(parcels.zone_id,
@@ -1959,7 +1959,7 @@ def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings,
     # print out buildings in 2030, 2035, and 2050 so Horizon team can compare
     # building inventory by TAZ
     if year in [2030, 2035, 2050] and scenario in \
-       settings["eq_scenarios"]["enable_in"]:
+       hazards["eq_scenarios"]["enable_in"]:
         buildings = buildings.to_frame()
         buildings_taz = misc.reindex(parcels.zone_id,
                                      buildings.parcel_id)

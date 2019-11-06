@@ -16,7 +16,7 @@ import itertools
 @orca.step()
 def eq_code_buildings(buildings, year, scenario, settings):
 
-    if scenario not in settings["eq_scenarios"]["enable_in"]:
+    if scenario not in hazards["eq_scenarios"]["enable_in"]:
         return
 
     if year == 2035:
@@ -251,7 +251,7 @@ def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
                         households, jobs, residential_units, year, scenario,
                         settings):
 
-    if scenario not in settings["eq_scenarios"]["enable_in"]:
+    if scenario not in hazards["eq_scenarios"]["enable_in"]:
         return
 
     if year == 2035:
@@ -301,7 +301,7 @@ def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
                 len(build_frag) * existing_pct))]
             # in "strategies" scenarios, exclude some existing buildings
             # from destruction due to retrofit
-            if scenario in settings["eq_scenarios"]["mitigation"]:
+            if scenario in hazards["eq_scenarios"]["mitigation"]:
                 retrofit_codes = ['DU01G1N', 'DU01G2N', 'MF01G1N', 'MF01G2N',
                                   'MF25G1N', 'MF25G2N', 'MF25G3N', 'MF25G4N',
                                   'SF01G1N', 'SF2PG1N']
