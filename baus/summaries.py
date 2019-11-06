@@ -193,7 +193,7 @@ def config(settings, run_number, scenario, parcels,
     # inclusionary rates
     s = settings["inclusionary_housing_settings"]
     if (scenario in ["11", "12", "15"]) &\
-       (scenario not in settings["inclusionary_fr2_enable"]):
+       (scenario not in policy["inclusionary_fr2_enable"]):
         fr1 = str(int(scenario) - 10)
         for item in s[fr1]:
             write("Inclusionary rates are FR1: %d cities are set to %.2f" %
@@ -207,7 +207,7 @@ def config(settings, run_number, scenario, parcels,
     write("")
 
     # office caps
-    if scenario in settings['office_caps_fr2_enable']:
+    if scenario in policy['office_caps_fr2_enable']:
         d = settings['development_limits'][scenario]['Office']
         write("Using development limits for FR2 with %d office caps"
               % (len(d)))
@@ -693,7 +693,7 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
     geographies = ['superdistrict', 'pda', 'juris']
 
     if (scenario in ["11", "12", "15"]) and\
-       (scenario in settings["geographies_fr2_enable"]):
+       (scenario in policy["geographies_fr2_enable"]):
         geographies.append('juris_trich')
 
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:

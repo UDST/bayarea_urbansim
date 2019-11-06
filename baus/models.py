@@ -52,7 +52,7 @@ def employment_relocation_rates():
 
 @orca.table(cache=True)
 def household_relocation_rates(scenario, settings):
-    if scenario in settings['reloc_fr2_enable']:
+    if scenario in policy['reloc_fr2_enable']:
         df = pd.read_csv(os.path.join("data",
                                       "household_relocation_rates_fr2.csv"))
         orca.add_injectable("hh_reloc", 'activated')

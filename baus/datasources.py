@@ -50,7 +50,7 @@ def limits_settings(settings, scenario):
     # set up so that fr2 limits can be turned off as needed
     # instead of looking for fr2 limits, the fr1 scenario is used
     if (scenario in ["11", "12", "15"]) and\
-       (scenario not in settings["office_caps_fr2_enable"]):
+       (scenario not in policy["office_caps_fr2_enable"]):
         scenario = str(int(scenario) - 10)
 
     d = settings['development_limits']
@@ -79,7 +79,7 @@ def inclusionary_housing_settings(settings, scenario):
     s = settings['inclusionary_housing_settings']
 
     if (scenario in ["11", "12", "15"]) and\
-       (scenario not in settings["inclusionary_fr2_enable"]):
+       (scenario not in policy["inclusionary_fr2_enable"]):
         print "Using Futures Round 1 (PBA40) inclusionary settings"
         fr1 = str(int(scenario) - 10)
         s = s[fr1]
@@ -366,7 +366,7 @@ def maz_forecast_inputs(regional_demographic_forecast):
 def zoning_scenario(parcels_geography, scenario, settings):
 
     if (scenario in ["11", "12", "15"]) and\
-       (scenario not in settings["geographies_fr2_enable"]):
+       (scenario not in policy["geographies_fr2_enable"]):
         scenario = str(int(scenario) - 10)
 
     scenario_zoning = pd.read_csv(
