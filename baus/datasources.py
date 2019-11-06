@@ -164,7 +164,7 @@ def nrh_config():
 
 
 def get_config_file(type):
-    configs = orca.get_injectable('settings')['model_configs'][type.
+    configs = orca.get_injectable('inputs')['model_configs'][type.
                                                                split('_')[0]]
     sc = orca.get_injectable('scenario')
     sc_cfg = 's{}_{}_config'.format(sc, type)
@@ -496,7 +496,7 @@ def accessibilities_segmentation():
 
 
 def get_logsum_file(type='mandatory'):
-    logsums = orca.get_injectable('settings')['logsums'][type]
+    logsums = orca.get_injectable('inputs')['logsums'][type]
     sc = orca.get_injectable('scenario')
     yr = orca.get_injectable('year')
     try:
@@ -686,7 +686,7 @@ def regional_demographic_forecast():
 
 
 def get_control_file(type):
-    controls = orca.get_injectable('settings')['control_tables'][type]
+    controls = orca.get_injectable('inputs')['control_tables'][type]
     sc = orca.get_injectable('scenario')
     sc_file = 's{}_{}_controls_input_file'.format(sc, type)
     gen_file = '{}_controls_input_file'.format(type)

@@ -60,9 +60,9 @@ def config(settings, run_number, scenario, parcels,
     write("2010 mandatory accessibility file used: %s"
           % mand_acc_fname_2010)
     ma_fname_2030 = "logsum_2030_s"+scenario
-    if ma_fname_2030 in settings["logsums"]["mandatory"]:
+    if ma_fname_2030 in inputs["logsums"]["mandatory"]:
         write("2030 mandatory accessibility file used: %s"
-              % settings["logsums"]["mandatory"][ma_fname_2030])
+              % inputs["logsums"]["mandatory"][ma_fname_2030])
     else:
         write("No 2030 mandatory accessibility file is set")
     # non-mandatory
@@ -70,9 +70,9 @@ def config(settings, run_number, scenario, parcels,
     write("2010 non-mandatory accessibility file used: %s"
           % nonmand_acc_fname_2010)
     nma_fname_2030 = "logsum_2030_s"+scenario
-    if nma_fname_2030 in settings["logsums"]["mandatory"]:
+    if nma_fname_2030 in inputs["logsums"]["mandatory"]:
         write("2030 non-mandatory accessibility file used: %s"
-              % settings["logsums"]["non_mandatory"][nma_fname_2030])
+              % inputs["logsums"]["non_mandatory"][nma_fname_2030])
     else:
         write("No 2030 non-mandatory accessibility file is set")
     # segmentation
@@ -80,9 +80,9 @@ def config(settings, run_number, scenario, parcels,
     write("2010 accessibility segmentation file used: %s"
           % acc_seg_fname_2010)
     acc_seg_fname_2030 = "logsum_2030_s"+scenario
-    if acc_seg_fname_2030 in settings["logsums"]["segmentation"]:
+    if acc_seg_fname_2030 in inputs["logsums"]["segmentation"]:
         write("2030 accessibility segmentation file used: %s"
-              % settings["logsums"]["segmentation"][acc_seg_fname_2030])
+              % inputs["logsums"]["segmentation"][acc_seg_fname_2030])
     else:
         write("No 2030 accessibility segmentation file is set")
     write("")
