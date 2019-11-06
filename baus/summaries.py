@@ -154,13 +154,13 @@ def config(settings, run_number, scenario, parcels,
     write("")
 
     # AV parking requirements
-    policy_loc = (settings["acct_settings"]
+    policy_loc = (policy["acct_settings"]
                   ["profitability_adjustment_policies"]
                   ["parking_requirements_AVs_s1"])
     policy = "Reduce Parking Requirements due to AVs (CAG)"
     policy_activated(policy_loc, policy, scenario)
 
-    policy_loc = (settings["acct_settings"]
+    policy_loc = (policy["acct_settings"]
                   ["profitability_adjustment_policies"]
                   ["parking_requirements_AVs_s5"])
     policy = "Reduce Parking Requirements due to AVs (BTTF)"
@@ -191,7 +191,7 @@ def config(settings, run_number, scenario, parcels,
     write("")
 
     # inclusionary rates
-    s = settings["inclusionary_housing_settings"]
+    s = policy["inclusionary_housing_settings"]
     if (scenario in ["11", "12", "15"]) &\
        (scenario not in policy["inclusionary_fr2_enable"]):
         fr1 = str(int(scenario) - 10)
@@ -217,21 +217,21 @@ def config(settings, run_number, scenario, parcels,
     write("")
 
     # OBAG
-    policy_loc = (settings["acct_settings"]["lump_sum_accounts"]
+    policy_loc = (policy["acct_settings"]["lump_sum_accounts"]
                   ["obag_settings"])
     policy = "OBAG"
     policy_activated(policy_loc, policy, scenario)
     write("")
 
     # CEQA
-    policy_loc = (settings["acct_settings"]
+    policy_loc = (policy["acct_settings"]
                   ["profitability_adjustment_policies"]["ceqa_tiering"])
     policy = "CEQA"
     policy_activated(policy_loc, policy, scenario)
     write("")
 
     # PDA parking requirements
-    policy_loc = (settings["acct_settings"]
+    policy_loc = (policy["acct_settings"]
                   ["profitability_adjustment_policies"]
                   ["parking_requirements_pdas"])
     policy = "Reduce Parking Requirements in PDAs"
@@ -239,26 +239,26 @@ def config(settings, run_number, scenario, parcels,
     write("")
 
     # VMT fees
-    if scenario in (settings["acct_settings"]["vmt_settings"]
+    if scenario in (policy["acct_settings"]["vmt_settings"]
                     ["com_for_com_scenarios"]) and scenario in \
-            (settings["acct_settings"]["vmt_settings"]
+            (policy["acct_settings"]["vmt_settings"]
              ["alternate_geography_scenarios"]):
         write("VMT fees: com_for_com is activated with trich_id and cat_id")
         write("VMT fees: com_for_com is using alternate fee amounts")
-    elif scenario in (settings["acct_settings"]["vmt_settings"]
+    elif scenario in (policy["acct_settings"]["vmt_settings"]
                       ["com_for_com_scenarios"]):
         write("VMT fees: com_for_com is activated with pda_id")
         write("VMT fees: com_for_com is using default fee amounts")
     else:
         write("VMT fees: com_for_com is not activated")
 
-    if scenario in (settings["acct_settings"]["vmt_settings"]
+    if scenario in (policy["acct_settings"]["vmt_settings"]
                     ["com_for_res_scenarios"]) and scenario in \
-            (settings["acct_settings"]["vmt_settings"]
+            (policy["acct_settings"]["vmt_settings"]
              ["alternate_geography_scenarios"]):
         write("VMT fees: com_for_res is activated with trich_id and cat_id")
         write("VMT fees: com_for_res is using alternate fee amounts")
-    elif scenario in (settings["acct_settings"]["vmt_settings"]
+    elif scenario in (policy["acct_settings"]["vmt_settings"]
                       ["com_for_res_scenarios"]):
         write("VMT fees: com_for_res is activated with pda_id")
         write("VMT fees: com_for_res is using default fee amounts")
@@ -271,7 +271,7 @@ def config(settings, run_number, scenario, parcels,
     counties = ["alameda", "contra_costa", "marin", "napa", "san_mateo",
                 "san_francisco", "santa_clara", "solano", "sonoma"]
     for county in counties:
-            policy_loc = (settings["acct_settings"]["lump_sum_accounts"]
+            policy_loc = (policy["acct_settings"]["lump_sum_accounts"]
                           [county+"_bond_settings"]["enable_in_scenarios"])
             if scenario in policy_loc:
                 counter += 1

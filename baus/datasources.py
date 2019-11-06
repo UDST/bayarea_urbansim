@@ -76,7 +76,7 @@ def inclusionary_housing_settings(settings, scenario):
     # for inclustionary housing, each scenario is different
     # there is no inheritance
 
-    s = settings['inclusionary_housing_settings']
+    s = policy['inclusionary_housing_settings']
 
     if (scenario in ["11", "12", "15"]) and\
        (scenario not in policy["inclusionary_fr2_enable"]):

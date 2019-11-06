@@ -359,14 +359,14 @@ def vmt_res_cat(parcels, vmt_fee_categories):
 # residential fees
 @orca.column('parcels', cache=True)
 def vmt_res_fees(parcels, settings):
-    vmt_settings = settings["acct_settings"]["vmt_settings"]
+    vmt_settings = policy["acct_settings"]["vmt_settings"]
     return parcels.vmt_res_cat.map(vmt_settings["res_for_res_fee_amounts"])
 
 
 # commercial fees
 @orca.column('parcels', cache=True)
 def vmt_com_fees(parcels, settings):
-    vmt_settings = settings["acct_settings"]["vmt_settings"]
+    vmt_settings = policy["acct_settings"]["vmt_settings"]
     return parcels.vmt_res_cat.map(vmt_settings["com_for_res_fee_amounts"]) + \
         parcels.vmt_res_cat.map(vmt_settings["com_for_com_fee_amounts"])
 
@@ -377,7 +377,7 @@ def vmt_com_fees(parcels, settings):
 def fees_per_unit(parcels, settings, scenario):
     s = pd.Series(0, index=parcels.index)
 
-    vmt_settings = settings["acct_settings"]["vmt_settings"]
+    vmt_settings = policy["acct_settings"]["vmt_settings"]
     if scenario in vmt_settings["com_for_res_scenarios"] or \
             scenario in vmt_settings["res_for_res_scenarios"]:
         s += parcels.vmt_res_fees
@@ -390,7 +390,7 @@ def fees_per_unit(parcels, settings, scenario):
 def fees_per_sqft(parcels, settings, scenario):
     s = pd.Series(0, index=parcels.index)
 
-    vmt_settings = settings["acct_settings"]["vmt_settings"]
+    vmt_settings = policy["acct_settings"]["vmt_settings"]
     if scenario in vmt_settings["com_for_com_scenarios"]:
         s += parcels.vmt_com_fees
 
