@@ -1,0 +1,19 @@
+# active scenario if not specified on the command line
+scenario: "4"
+
+
+# current scenarios:
+# 0: no project
+# 1: clean and green
+# 2: rising tides, falling fortunes
+# 3: big 3
+# 4: preferred
+# 5: back to the future
+# 6: clean and green, ppa
+# 7: rising tides falling fortunes, ppa
+# 10: back to the future, ppa
+# 11: clean and green, strategies
+# 12: rising tides falling fortunes, strategies
+# 15: back to the future, strategies
+# 16: forecast test base
+# 17: forecast test less constrained
