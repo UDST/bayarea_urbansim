@@ -38,7 +38,7 @@ def check_job_controls(jobs, employment_controls, year, settings):
     current_employment_controls = current_employment_controls.\
         set_index("empsix_id").number_of_jobs
 
-    empsix_map = settings["empsix_name_to_id"]
+    empsix_map = mapping["empsix_name_to_id"]
     current_counts = jobs.empsix.map(empsix_map).value_counts()
 
     assert_series_equal(

@@ -376,7 +376,7 @@ def scheduled_development_events(buildings, development_projects,
         remove_developed_buildings=False,
         unplace_agents=['households', 'jobs'])
     new_buildings["form"] = new_buildings.building_type.map(
-        settings['building_type_map']).str.lower()
+        mapping['building_type_map']).str.lower()
     new_buildings["job_spaces"] = new_buildings.non_residential_sqft / \
         new_buildings.building_type.fillna("OF").map(building_sqft_per_job)
     new_buildings["job_spaces"] = new_buildings.job_spaces.\
@@ -418,7 +418,7 @@ def supply_and_demand_multiplier_func(demand, supply):
 # specific building type
 @orca.injectable(autocall=False)
 def form_to_btype_func(building):
-    settings = orca.get_injectable('settings')
+    mapping = orca.get_injectable('mapping')
     form = building.form
     dua = building.residential_units / (building.parcel_size / 43560.0)
     # precise mapping of form to building type for residential
@@ -428,7 +428,7 @@ def form_to_btype_func(building):
         elif dua < 32:
             return "HT"
         return "HM"
-    return settings["form_to_btype"][form][0]
+    return mapping["form_to_btype"][form][0]
 
 
 @orca.injectable(autocall=False)

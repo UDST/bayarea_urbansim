@@ -53,7 +53,7 @@ def limits_settings(settings, scenario):
        (scenario not in policy["office_caps_fr2_enable"]):
         scenario = str(int(scenario) - 10)
 
-    d = settings['development_limits']
+    d = policy['development_limits']
 
     if scenario in d.keys():
         print "Using limits for scenario: %s" % scenario
@@ -372,7 +372,7 @@ def zoning_scenario(parcels_geography, scenario, settings):
     scenario_zoning = pd.read_csv(
         os.path.join(misc.data_dir(), 'zoning_mods_%s.csv' % scenario))
 
-    for k in settings["building_type_map"].keys():
+    for k in mapping["building_type_map"].keys():
         scenario_zoning[k] = np.nan
 
     def add_drop_helper(col, val):
@@ -622,7 +622,7 @@ def development_projects(parcels, settings, scenario):
     df["building_type"] = df.building_type.replace("GV", "OF")
     df["building_type"] = df.building_type.replace("SC", "OF")
 
-    building_types = settings["building_type_map"].keys()
+    building_types = mapping["building_type_map"].keys()
     # only deal with building types we recorgnize
     # otherwise hedonics break
     df = df[df.building_type.isin(building_types)]

@@ -84,7 +84,7 @@ def naics(jobs):
 
 @orca.column('jobs', cache=True)
 def empsix_id(jobs, settings):
-    return jobs.empsix.map(settings['empsix_name_to_id'])
+    return jobs.empsix.map(mapping['empsix_name_to_id'])
 
 
 #############################
@@ -510,7 +510,7 @@ def parcel_average_price(use, quantile=.5):
 @orca.injectable("parcel_is_allowed_func", autocall=False)
 def parcel_is_allowed(form):
     settings = orca.get_injectable("settings")
-    form_to_btype = settings["form_to_btype"]
+    form_to_btype = mapping["form_to_btype"]
 
     # we have zoning by building type but want
     # to know if specific forms are allowed
@@ -550,7 +550,7 @@ def first_building_type(buildings, parcels):
 
 @orca.injectable(autocall=False)
 def parcel_first_building_type_is(form):
-    form_to_btype = orca.get_injectable('settings')["form_to_btype"]
+    form_to_btype = orca.get_injectable('mapping')["form_to_btype"]
     parcels = orca.get_table('parcels')
     return parcels.first_building_type.isin(form_to_btype[form])
 
@@ -763,7 +763,7 @@ def land_cost(parcels):
 
 @orca.column('parcels', cache=True)
 def county(parcels, settings):
-    return parcels.county_id.map(settings["county_id_map"])
+    return parcels.county_id.map(mapping["county_id_map"])
 
 
 @orca.column('parcels', cache=True)

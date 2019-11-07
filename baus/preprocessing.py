@@ -21,7 +21,7 @@ def allocate_jobs(baseyear_taz_controls, settings, buildings, parcels):
     # this does a new assignment from the controls to the buildings
 
     # first disaggregate the job totals
-    sector_map = settings["naics_to_empsix"]
+    sector_map = mapping["naics_to_empsix"]
     jobs = []
     for taz, row in baseyear_taz_controls.local.iterrows():
         for sector_col, num in row.iteritems():

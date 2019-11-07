@@ -208,11 +208,11 @@ def config(settings, run_number, scenario, parcels,
 
     # office caps
     if scenario in policy['office_caps_fr2_enable']:
-        d = settings['development_limits'][scenario]['Office']
+        d = policy['development_limits'][scenario]['Office']
         write("Using development limits for FR2 with %d office caps"
               % (len(d)))
-    elif "default" in settings['development_limits'].keys():
-        d = settings['development_limits']["default"]['Office']
+    elif "default" in policy['development_limits'].keys():
+        d = policy['development_limits']["default"]['Office']
         write("Using default development limits")
     write("")
 
@@ -484,7 +484,7 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
         write("Current share of units which are greenfield development:\n%s" %
               norm_and_round(df.residential_units.groupby(greenfield).sum()))
 
-    cmap = settings["county_id_tm_map"]
+    cmap = mapping["county_id_tm_map"]
     jobs_by_county = jobs.zone_id.map(taz_geography.county)\
         .map(cmap).value_counts()
     households_by_county = households.zone_id.map(taz_geography.county)\
