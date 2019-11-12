@@ -49,6 +49,19 @@ def employment_relocation_rates():
     return df
 
 
+@orca.table(cache=True)
+def household_relocation_rates(scenario, settings):
+    if scenario in settings['reloc_fr2_enable']:
+        df = pd.read_csv(os.path.join("data",
+                                      "household_relocation_rates_fr2.csv"))
+        orca.add_injectable("hh_reloc", 'activated')
+    else:
+        df = pd.read_csv(os.path.join("data",
+                                      "household_relocation_rates.csv"))
+        orca.add_injectable("hh_reloc", 'not activated')
+    return df
+
+
 # this is a list of parcel_ids which are to be treated as static
 @orca.injectable()
 def static_parcels(settings, parcels):
@@ -295,6 +308,37 @@ def jobs_relocation(jobs, employment_relocation_rates, years_per_iter,
                                 pd.Series(-1, index=index))
 
 
+@orca.step()
+def household_relocation(households, household_relocation_rates,
+                         settings, static_parcels, buildings):
+
+    # get buildings that are on those parcels
+    static_buildings = buildings.index[
+        buildings.parcel_id.isin(static_parcels)]
+
+    df = pd.merge(households.to_frame(["zone_id", "base_income_quartile",
+                                       "tenure"]),
+                  household_relocation_rates.local,
+                  on=["zone_id", "base_income_quartile", "tenure"],
+                  how="left")
+
+    df.index = households.index
+
+    # get random floats and move households if they're less than the rate
+    move = np.random.random(len(df.rate)) < df.rate
+
+    # also don't move households that are on static parcels
+    move &= ~households.building_id.isin(static_buildings)
+
+    # get the index of the moving jobs
+    index = households.index[move]
+    print("{} households are relocating".format(len(index)))
+
+    # set households that are moving to a building_id of -1 (means unplaced)
+    households.update_col_from_series("building_id",
+                                      pd.Series(-1, index=index).astype('int'))
+
+
 # this deviates from the step in urbansim_defaults only in how it deals with
 # demolished buildings - this version only demolishes when there is a row to
 # demolish in the csv file - this also allows building multiple buildings and
@@ -346,6 +390,8 @@ def scheduled_development_events(buildings, development_projects,
         vmt_fee_categories.res_cat, new_buildings.zone_id)
     del new_buildings["zone_id"]
     new_buildings["pda"] = parcels_geography.pda_id.loc[
+        new_buildings.parcel_id].values
+    new_buildings["juris_trich"] = parcels_geography.juris_trich.loc[
         new_buildings.parcel_id].values
 
     summary.add_parcel_output(new_buildings)
@@ -487,7 +533,7 @@ def residential_developer(feasibility, households, buildings, parcels, year,
             max_target = (final_year - 2010 + 1) * limit - current_total
 
             if target <= 0:
-                    continue
+                continue
 
             targets.append((juris_name == juris, target, max_target, juris))
             num_units -= target
@@ -685,8 +731,8 @@ def office_developer(feasibility, jobs, buildings, parcels, year,
                 # and development is lumpy
 
                 current_total = parcels.total_job_spaces[
-                    (juris_name == juris) & (parcels.newest_building > 2015)]\
-                    .sum()
+                    (juris_name == juris) &
+                    (parcels.newest_building > 2015)].sum()
 
                 target = (year - 2015 + 1) * limit - current_total
 
