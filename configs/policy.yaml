@@ -1,25 +1,11 @@
-# FUTURES ROUND 1- external forces
-# parking requirements related to AVs/TNCs(sharing) are found further down
-# household location preferences are controlled through inputs.yaml, rsh_config
-# job location preferences are controlled through the development projects list (removed)
-# slr and eq are found in hazards.py
-# e-commerce is handled in the controls at inputs.py, telecommute is handled in the TM
+# For information on the implementation of these policies in the context of
+# MTC's planning efforts (Plan Bay Area 2040, Horizon: Futures Round 1, Futures Round 2)
+# see the bayarea_urbansim GitHub Pages: http://bayareametro.github.io/bayarea_urbansim/
 
-# FUTURES ROUND 2- strategies
-# the following lists are used in horizon to enable and disable individual strategies
-# affordable housing, development streamlining (OBAG, CEQA, parking requirements, SB-743)
-# vmt fees, and affordable housing bond strategies are found further down
-# public lands development is controlled through the development projects list
-# hazards mitigation is controlled in hazards.yaml
 
-# SEE GH pages?? For FR2
-# as well as FOBA40 (FR1) policy descriptions
-
-# scenarios for futures round 2 geographies
-# these trigger the associated zoning_mods
-# development around transit is central
-# catalyst site upzoning is embedded (aging malls and office parks)
-# high resource area upzoning is embedded (HRAs)
+# scenarios for futures round 2 geographies- these trigger the associated
+# zoning_mods: transit areas, high resources areas (with transit), and
+# catalyst sites are upzoned
 geographies_fr2_enable: ["11", "12", "15"]
 
 # scenarios for futures round 2 office caps
@@ -29,6 +15,7 @@ office_caps_fr2_enable: ["11", "12", "15"]
 inclusionary_fr2_enable: ["11", "12", "15"]
 
 # scenarios for futures round 2 renter protections
+# these slow household relocation
 reloc_fr2_enable: ["11", "12", "15"]
 
 
@@ -109,11 +96,11 @@ development_limits:
       'Santa Clara': 0
       'Mountainview': 0
       'South San Francisco': 0
-       # reduced from fr1:
+       # reduced from fr1/pba40:
       'Milpitas': 0
       'Burlingame': 0
       'Palo Alto': 0
-      # maintained from fr1:
+      # maintained from fr1/pba40:
       'Colma': 0
       'Cupertino': 0
       'San Francisco': 3500
@@ -126,11 +113,11 @@ development_limits:
       'Santa Clara': 0
       'Mountainview': 0
       'South San Francisco': 0
-       # reduced from fr1:
+       # reduced from fr1/pba40:
       'Milpitas': 0
       'Burlingame': 0
       'Palo Alto': 0
-      # maintained from fr1:
+      # maintained from fr1/pba40:
       'Colma': 0
       'Cupertino': 0
       'San Francisco': 3500
@@ -143,11 +130,11 @@ development_limits:
       'Santa Clara': 0
       'Mountainview': 0
       'South San Francisco': 0
-       # reduced from fr1:
+       # reduced from fr1/pba40:
       'Milpitas': 0
       'Burlingame': 0
       'Palo Alto': 0
-      # maintained from fr1:
+      # maintained from fr1/pba40:
       'Colma': 0
       'Cupertino': 0
       'San Francisco': 3500
