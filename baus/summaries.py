@@ -16,8 +16,8 @@ import pandana
 
 
 @orca.step()
-def config(settings, run_number, scenario, parcels,
-           development_projects, year):
+def config(policy, inputs, run_number, scenario, parcels,
+           development_projects, year, hazards):
 
     f = open(os.path.join("runs", "run%d_configuration.log" %
              (run_number)), "w")
@@ -128,21 +128,21 @@ def config(settings, run_number, scenario, parcels,
         write("Earthquake retrofit policies are not applied")
     write("")
 
-    def policy_activated(policy_loc, policy, scenario):
+    def policy_activated(policy_loc, policy_nm, scenario):
         if scenario in policy_loc["enable_in_scenarios"] \
                 and "alternate_geography_scenarios" in policy_loc \
                 and scenario in policy_loc["alternate_geography_scenarios"]:
             geog = policy_loc["alternate_buildings_filter"] if \
                 "alternate_buildings_filter" in policy_loc else \
                 policy_loc["alternate_adjustment_formula"]
-            write(policy+" is activated with formula: {}".format(geog))
+            write(policy_nm+" is activated with formula: {}".format(geog))
         elif scenario in policy_loc["enable_in_scenarios"]:
             geog = policy_loc["receiving_buildings_filter"] if \
                 "receiving_buildings_filter" in policy_loc else \
                 policy_loc["profitability_adjustment_formula"]
-            write(policy+" is activated with formula: {}".format(geog))
+            write(policy_nm+" is activated with formula: {}".format(geog))
         else:
-            write(policy+" is not activated")
+            write(policy_nm+" is not activated")
 
     write("FUTURES ROUND 1 FORCES")
     write("")
@@ -157,14 +157,14 @@ def config(settings, run_number, scenario, parcels,
     policy_loc = (policy["acct_settings"]
                   ["profitability_adjustment_policies"]
                   ["parking_requirements_AVs_s1"])
-    policy = "Reduce Parking Requirements due to AVs (CAG)"
-    policy_activated(policy_loc, policy, scenario)
+    policy_nm = "Reduce Parking Requirements due to AVs (CAG)"
+    policy_activated(policy_loc, policy_nm, scenario)
 
     policy_loc = (policy["acct_settings"]
                   ["profitability_adjustment_policies"]
                   ["parking_requirements_AVs_s5"])
-    policy = "Reduce Parking Requirements due to AVs (BTTF)"
-    policy_activated(policy_loc, policy, scenario)
+    policy_nm = "Reduce Parking Requirements due to AVs (BTTF)"
+    policy_activated(policy_loc, policy_nm, scenario)
     write("")
 
     write("FUTURES ROUND 2 POLICIES")
@@ -219,23 +219,23 @@ def config(settings, run_number, scenario, parcels,
     # OBAG
     policy_loc = (policy["acct_settings"]["lump_sum_accounts"]
                   ["obag_settings"])
-    policy = "OBAG"
-    policy_activated(policy_loc, policy, scenario)
+    policy_nm = "OBAG"
+    policy_activated(policy_loc, policy_nm, scenario)
     write("")
 
     # CEQA
     policy_loc = (policy["acct_settings"]
                   ["profitability_adjustment_policies"]["ceqa_tiering"])
-    policy = "CEQA"
-    policy_activated(policy_loc, policy, scenario)
+    policy_nm = "CEQA"
+    policy_activated(policy_loc, policy_nm, scenario)
     write("")
 
     # PDA parking requirements
     policy_loc = (policy["acct_settings"]
                   ["profitability_adjustment_policies"]
                   ["parking_requirements_pdas"])
-    policy = "Reduce Parking Requirements in PDAs"
-    policy_activated(policy_loc, policy, scenario)
+    policy_nm = "Reduce Parking Requirements in PDAs"
+    policy_activated(policy_loc, policy_nm, scenario)
     write("")
 
     # VMT fees
@@ -288,7 +288,7 @@ def config(settings, run_number, scenario, parcels,
 def topsheet(households, jobs, buildings, parcels, zones, year,
              run_number, taz_geography, parcels_zoning_calculations,
              summary, settings, parcels_geography, abag_targets, new_tpp_id,
-             residential_units):
+             residential_units, mapping):
 
     hh_by_subregion = misc.reindex(taz_geography.subregion,
                                    households.zone_id).value_counts()
@@ -654,7 +654,7 @@ def diagnostic_output(households, buildings, parcels, taz, jobs, settings,
 @orca.step()
 def geographic_summary(parcels, households, jobs, buildings, taz_geography,
                        run_number, year, summary, final_year, scenario,
-                       settings):
+                       policy):
     # using the following conditional b/c `year` is used to pull a column
     # from a csv based on a string of the year in add_population()
     # and in add_employment() and 2009 is the
@@ -1751,7 +1751,7 @@ def adjust_hhkids(df, year, rdf, total_hh):
 
 @orca.step()
 def hazards_slr_summary(run_number, year, scenario, households, jobs, parcels,
-                        settings):
+                        hazards):
 
     if scenario not in hazards["slr_scenarios"]["enable_in"]:
         return
@@ -1835,7 +1835,7 @@ def hazards_slr_summary(run_number, year, scenario, households, jobs, parcels,
 
 @orca.step()
 def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings,
-                       scenario, settings):
+                       scenario, hazards):
 
     if scenario not in hazards["eq_scenarios"]["enable_in"]:
         return

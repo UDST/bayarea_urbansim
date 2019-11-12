@@ -33,7 +33,7 @@ def profit_to_prob_func(df):
 
 
 @orca.injectable(cache=True)
-def coffer(settings):
+def coffer(policy):
     d = {
         "vmt_res_acct":  accounts.Account("vmt_res_acct"),
         "vmt_com_acct":  accounts.Account("vmt_com_acct")
@@ -51,7 +51,7 @@ def acct_settings(policy):
 
 
 @orca.step()
-def lump_sum_accounts(settings, year, buildings, coffer,
+def lump_sum_accounts(policy, year, buildings, coffer,
                       summary, years_per_iter, scenario):
 
     s = policy["acct_settings"]["lump_sum_accounts"]
@@ -201,7 +201,7 @@ def policy_modifications_of_profit(feasibility, parcels):
     feasibility[("residential", "inclusionary_units")] = \
         num_affordable_units
 
-    settings = orca.get_injectable("settings")
+    policy = orca.get_injectable("policy")
 
     if "sb743_settings" in policy["acct_settings"]:
 
@@ -275,7 +275,7 @@ def policy_modifications_of_profit(feasibility, parcels):
 
 
 @orca.step()
-def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
+def calculate_vmt_fees(policy, year, buildings, vmt_fee_categories, coffer,
                        summary, years_per_iter, scenario):
 
     vmt_settings = policy["acct_settings"]["vmt_settings"]
@@ -755,8 +755,8 @@ def subsidized_residential_developer_vmt(
 def subsidized_residential_developer_lump_sum_accts(
         households, buildings, add_extra_columns_func,
         parcels_geography, year, acct_settings, parcels,
-        settings, summary, coffer, form_to_btype_func,
-        scenario):
+        policy, summary, coffer, form_to_btype_func,
+        scenario, settings):
 
     for key, acct in policy["acct_settings"]["lump_sum_accounts"].items():
 

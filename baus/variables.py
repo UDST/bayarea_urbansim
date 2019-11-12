@@ -83,7 +83,7 @@ def naics(jobs):
 
 
 @orca.column('jobs', cache=True)
-def empsix_id(jobs, settings):
+def empsix_id(jobs, mapping):
     return jobs.empsix.map(mapping['empsix_name_to_id'])
 
 
@@ -358,14 +358,14 @@ def vmt_res_cat(parcels, vmt_fee_categories):
 
 # residential fees
 @orca.column('parcels', cache=True)
-def vmt_res_fees(parcels, settings):
+def vmt_res_fees(parcels, policy):
     vmt_settings = policy["acct_settings"]["vmt_settings"]
     return parcels.vmt_res_cat.map(vmt_settings["res_for_res_fee_amounts"])
 
 
 # commercial fees
 @orca.column('parcels', cache=True)
-def vmt_com_fees(parcels, settings):
+def vmt_com_fees(parcels, policy):
     vmt_settings = policy["acct_settings"]["vmt_settings"]
     return parcels.vmt_res_cat.map(vmt_settings["com_for_res_fee_amounts"]) + \
         parcels.vmt_res_cat.map(vmt_settings["com_for_com_fee_amounts"])
@@ -374,7 +374,7 @@ def vmt_com_fees(parcels, settings):
 # compute the fees per unit for each parcel
 # (since feees are specified spatially)
 @orca.column('parcels', cache=True)
-def fees_per_unit(parcels, settings, scenario):
+def fees_per_unit(parcels, policy, scenario):
     s = pd.Series(0, index=parcels.index)
 
     vmt_settings = policy["acct_settings"]["vmt_settings"]
@@ -387,7 +387,7 @@ def fees_per_unit(parcels, settings, scenario):
 
 # since this is by sqft this implies commercial
 @orca.column('parcels', cache=True)
-def fees_per_sqft(parcels, settings, scenario):
+def fees_per_sqft(parcels, policy, scenario):
     s = pd.Series(0, index=parcels.index)
 
     vmt_settings = policy["acct_settings"]["vmt_settings"]
@@ -510,6 +510,7 @@ def parcel_average_price(use, quantile=.5):
 @orca.injectable("parcel_is_allowed_func", autocall=False)
 def parcel_is_allowed(form):
     settings = orca.get_injectable("settings")
+    mapping = orca.get_injectable("mapping")
     form_to_btype = mapping["form_to_btype"]
 
     # we have zoning by building type but want
@@ -762,7 +763,7 @@ def land_cost(parcels):
 
 
 @orca.column('parcels', cache=True)
-def county(parcels, settings):
+def county(parcels, mapping):
     return parcels.county_id.map(mapping["county_id_map"])
 
 

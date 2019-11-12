@@ -51,7 +51,7 @@ def employment_relocation_rates():
 
 
 @orca.table(cache=True)
-def household_relocation_rates(scenario, settings):
+def household_relocation_rates(scenario, policy):
     if scenario in policy['reloc_fr2_enable']:
         df = pd.read_csv(os.path.join("data",
                                       "household_relocation_rates_fr2.csv"))
@@ -347,7 +347,7 @@ def household_relocation(households, household_relocation_rates,
 @orca.step()
 def scheduled_development_events(buildings, development_projects,
                                  demolish_events, summary, year, parcels,
-                                 settings, years_per_iter, parcels_geography,
+                                 mapping, years_per_iter, parcels_geography,
                                  building_sqft_per_job, vmt_fee_categories):
 
     # first demolish

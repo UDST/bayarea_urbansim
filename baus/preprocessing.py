@@ -17,7 +17,7 @@ from validation import assert_series_equal
 # on the fly but it takes about 4 minutes so way to long to do on the fly
 
 
-def allocate_jobs(baseyear_taz_controls, settings, buildings, parcels):
+def allocate_jobs(baseyear_taz_controls, mapping, buildings, parcels):
     # this does a new assignment from the controls to the buildings
 
     # first disaggregate the job totals

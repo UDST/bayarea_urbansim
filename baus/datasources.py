@@ -8,11 +8,42 @@ import orca
 import preprocessing
 from utils import geom_id_to_parcel_id, parcel_id_to_geom_id
 from utils import nearest_neighbor
-
+import yaml
 
 #####################
 # TABLES AND INJECTABLES
 #####################
+
+
+# define new settings files- these have been subdivided from the
+# general settings file
+# this is similar to the code for settings in urbansim_defaults
+@orca.injectable('hazards', cache=True)
+def hazards():
+    with open(os.path.join(misc.configs_dir(), "hazards.yaml")) as f:
+        return yaml.load(f)
+
+@orca.injectable('policy', cache=True)
+def policy():
+    with open(os.path.join(misc.configs_dir(), "policy.yaml")) as f:
+        return yaml.load(f)
+
+@orca.injectable('inputs', cache=True)
+def inputs():
+    with open(os.path.join(misc.configs_dir(), "inputs.yaml")) as f:
+        return yaml.load(f)
+
+@orca.injectable('mapping', cache=True)
+def mapping():
+    with open(os.path.join(misc.configs_dir(), "mapping.yaml")) as f:
+        return yaml.load(f)
+
+# now that there are new settings files, override the locations of certain
+# settings already defined in urbansim_defaults
+@orca.injectable("building_type_map")
+def building_type_map(mapping):
+    return mapping["building_type_map"]
+
 
 
 @orca.injectable('year')
@@ -41,7 +72,7 @@ def store(settings):
 
 
 @orca.injectable(cache=True)
-def limits_settings(settings, scenario):
+def limits_settings(policy, scenario):
     # for limits, we inherit from the default
     # limits set the max number of job spaces or res units that may be
     # built per juris for each scenario - usually these represent actual
@@ -72,7 +103,7 @@ def limits_settings(settings, scenario):
 
 
 @orca.injectable(cache=True)
-def inclusionary_housing_settings(settings, scenario):
+def inclusionary_housing_settings(policy, scenario):
     # for inclustionary housing, each scenario is different
     # there is no inheritance
 
@@ -363,7 +394,7 @@ def maz_forecast_inputs(regional_demographic_forecast):
 
 
 @orca.table(cache=True)
-def zoning_scenario(parcels_geography, scenario, settings):
+def zoning_scenario(parcels_geography, scenario, policy, mapping):
 
     if (scenario in ["11", "12", "15"]) and\
        (scenario not in policy["geographies_fr2_enable"]):
@@ -604,7 +635,7 @@ def demolish_events(parcels, settings, scenario):
 
 
 @orca.table(cache=True)
-def development_projects(parcels, settings, scenario):
+def development_projects(parcels, mapping, scenario):
     df = get_dev_projects_table(scenario, parcels)
 
     for col in [
