@@ -23,27 +23,31 @@ def hazards():
     with open(os.path.join(misc.configs_dir(), "hazards.yaml")) as f:
         return yaml.load(f)
 
+
 @orca.injectable('policy', cache=True)
 def policy():
     with open(os.path.join(misc.configs_dir(), "policy.yaml")) as f:
         return yaml.load(f)
 
+
 @orca.injectable('inputs', cache=True)
 def inputs():
+
     with open(os.path.join(misc.configs_dir(), "inputs.yaml")) as f:
         return yaml.load(f)
+
 
 @orca.injectable('mapping', cache=True)
 def mapping():
     with open(os.path.join(misc.configs_dir(), "mapping.yaml")) as f:
         return yaml.load(f)
 
+
 # now that there are new settings files, override the locations of certain
 # settings already defined in urbansim_defaults
 @orca.injectable("building_type_map")
 def building_type_map(mapping):
     return mapping["building_type_map"]
-
 
 
 @orca.injectable('year')
