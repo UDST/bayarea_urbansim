@@ -313,7 +313,7 @@ def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
                 retrofit_bldgs = top_build_frag_bldgs[top_build_frag_bldgs.
                                                       earthquake_code.isin
                                                       (retrofit_codes)]
-                retro_no = round(float(len(retrofit_bldgs))/2)
+                retro_no = int(round(float(len(retrofit_bldgs))/2))
                 retrofit_set = np.random.choice(retrofit_bldgs.index,
                                                 retro_no, replace=False)
                 # update top_build_frag to remove retrofit buildings
