@@ -3,7 +3,7 @@ from __future__ import print_function
 import orca
 import pandas as pd
 from urbansim.utils import misc
-from validation import assert_series_equal
+from baus.validation import assert_series_equal
 
 
 # TO ADD: Housing Unit imputation

@@ -7,10 +7,11 @@ from urbansim_defaults import datasources
 from urbansim_defaults import utils
 from urbansim.utils import misc
 import orca
-import preprocessing
-from utils import geom_id_to_parcel_id, parcel_id_to_geom_id
-from utils import nearest_neighbor
+from baus import preprocessing
+from baus.utils import geom_id_to_parcel_id, parcel_id_to_geom_id
+from baus.utils import nearest_neighbor
 import yaml
+
 
 #####################
 # TABLES AND INJECTABLES
