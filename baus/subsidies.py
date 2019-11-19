@@ -5,6 +5,7 @@ import time
 import orca
 import pandas as pd
 import numpy as np
+from functools import reduce
 from urbansim import accounts
 from urbansim_defaults import utils
 from cStringIO import StringIO
