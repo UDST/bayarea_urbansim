@@ -1,0 +1,14 @@
+# scenarios for hazards models
+slr_scenarios:
+      enable_in: ["1", "2", "5", "11", "12", "15"]
+      rtff_prog: ["2", "7", "12"]
+      cag_prog: ["1", "6", "11"]
+      bttf_prog: ["5", "10", "15"]
+      # scenarios for futures round 2 mitigation
+      mitigation_full: ["11", "15"]
+      mitigation_partial: ["12"]
+eq_scenarios:
+      enable_in: ["1", "2", "5", "11", "12", "15"]
+      # scenarios for futures rounds 2 mitigation
+      # rtff is not mitigated
+      mitigation: ["11", "15"]

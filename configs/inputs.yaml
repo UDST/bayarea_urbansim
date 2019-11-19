@@ -1,0 +1,139 @@
+control_tables:
+  household:
+    household_controls_input_file: household_controls.csv
+    s1_household_controls_input_file: household_controls_s1.csv
+    s2_household_controls_input_file: household_controls_s2.csv
+    s5_household_controls_input_file: household_controls_s5.csv
+    s6_household_controls_input_file: household_controls_s6.csv
+    s7_household_controls_input_file: household_controls_s7.csv
+    s10_household_controls_input_file: household_controls_s10.csv
+    s11_household_controls_input_file: household_controls_s11.csv
+    s12_household_controls_input_file: household_controls_s12.csv
+    s15_household_controls_input_file: household_controls_s15.csv
+    s16_household_controls_input_file: household_controls_s16.csv
+    s17_household_controls_input_file: household_controls_s17.csv
+  employment:
+    employment_controls_input_file: employment_controls.csv
+    s1_employment_controls_input_file: employment_controls_s1.csv
+    s2_employment_controls_input_file: employment_controls_s2.csv
+    s5_employment_controls_input_file: employment_controls_s5.csv
+    s6_employment_controls_input_file: employment_controls_s6.csv
+    s7_employment_controls_input_file: employment_controls_s7.csv
+    s10_employment_controls_input_file: employment_controls_s10.csv
+    s11_employment_controls_input_file: employment_controls_s11.csv
+    s12_employment_controls_input_file: employment_controls_s12.csv
+    s15_employment_controls_input_file: employment_controls_s15.csv
+  regional:
+    regional_controls_input_file: regional_controls.csv
+    s1_regional_controls_input_file: regional_controls_s1.csv
+    s2_regional_controls_input_file: regional_controls_s2.csv
+    s5_regional_controls_input_file: regional_controls_s5.csv
+    s6_regional_controls_input_file: regional_controls_s6.csv
+    s7_regional_controls_input_file: regional_controls_s7.csv
+    s10_regional_controls_input_file: regional_controls_s10.csv
+    s11_regional_controls_input_file: regional_controls_s11.csv
+    s12_regional_controls_input_file: regional_controls_s12.csv
+    s15_regional_controls_input_file: regional_controls_s15.csv
+    s16_regional_controls_input_file: regional_controls_s16.csv
+    s17_regional_controls_input_file: regional_controls_s17.csv
+  demographic_forecast:
+    demographic_forecast_controls_input_file: regional_demographic_forecast.csv
+    s1_demographic_forecast_controls_input_file: regional_demographic_forecast_s1.csv
+    s2_demographic_forecast_controls_input_file: regional_demographic_forecast_s2.csv
+    s5_demographic_forecast_controls_input_file: regional_demographic_forecast_s5.csv
+    s6_demographic_forecast_controls_input_file: regional_demographic_forecast_s6.csv
+    s7_demographic_forecast_controls_input_file: regional_demographic_forecast_s7.csv
+    s10_demographic_forecast_controls_input_file: regional_demographic_forecast_s10.csv
+    s11_demographic_forecast_controls_input_file: regional_demographic_forecast_s11.csv
+    s12_demographic_forecast_controls_input_file: regional_demographic_forecast_s12.csv
+    s15_demographic_forecast_controls_input_file: regional_demographic_forecast_s15.csv
+
+
+logsums:
+  mandatory:
+    logsum: mandatoryAccessibilities_2015.csv
+    logsum_2010_s1: mandatoryAccessibilities_2015.csv
+    logsum_2030_s1: mandatoryAccessibilities_2050_s1.csv
+    logsum_2010_s2: mandatoryAccessibilities_2015.csv
+    logsum_2030_s2: mandatoryAccessibilities_2050_s2.csv
+    logsum_2010_s5: mandatoryAccessibilities_2015.csv
+    logsum_2030_s5: mandatoryAccessibilities_2050_s5.csv
+    logsum_2010_s6: mandatoryAccessibilities_2030_s6.csv
+    logsum_2030_s6: mandatoryAccessibilities_2050_s6.csv
+    logsum_2010_s7: mandatoryAccessibilities_2030_s7.csv
+    logsum_2030_s7: mandatoryAccessibilities_2050_s7.csv
+    logsum_2010_s10: mandatoryAccessibilities_2030_s10.csv
+    logsum_2030_s10: mandatoryAccessibilities_2050_s10.csv
+    logsum_2010_s11: mandatoryAccessibilities_2015.csv
+    logsum_2030_s11: mandatoryAccessibilities_2050_s11.csv
+    logsum_2010_s12: mandatoryAccessibilities_2015.csv
+    logsum_2030_s12: mandatoryAccessibilities_2050_s12.csv
+    logsum_2010_s15: mandatoryAccessibilities_2015.csv
+    logsum_2030_s15: mandatoryAccessibilities_2050_s15.csv
+  non_mandatory:
+    logsum: nonMandatoryAccessibilities_2015.csv
+    logsum_2010_s1: nonMandatoryAccessibilities_2015.csv
+    logsum_2030_s1: nonMandatoryAccessibilities_2050_s1.csv
+    logsum_2010_s2: nonMandatoryAccessibilities_2015.csv
+    logsum_2030_s2: nonMandatoryAccessibilities_2050_s2.csv
+    logsum_2010_s5: nonMandatoryAccessibilities_2015.csv
+    logsum_2030_s5: nonMandatoryAccessibilities_2050_s5.csv
+    logsum_2010_s6: nonMandatoryAccessibilities_2030_s6.csv
+    logsum_2030_s6: nonMandatoryAccessibilities_2050_s6.csv
+    logsum_2010_s7: nonMandatoryAccessibilities_2030_s7.csv
+    logsum_2030_s7: nonMandatoryAccessibilities_2050_s7.csv
+    logsum_2010_s10: nonMandatoryAccessibilities_2030_s10.csv
+    logsum_2030_s10: nonMandatoryAccessibilities_2050_s10.csv
+    logsum_2010_s11: nonMandatoryAccessibilities_2015.csv
+    logsum_2030_s11: nonMandatoryAccessibilities_2050_s11.csv
+    logsum_2010_s12: nonMandatoryAccessibilities_2015.csv
+    logsum_2030_s12: nonMandatoryAccessibilities_2050_s12.csv
+    logsum_2010_s15: nonMandatoryAccessibilities_2015.csv
+    logsum_2030_s15: nonMandatoryAccessibilities_2050_s15.csv
+  segmentation:
+    logsum: AccessibilityMarkets_2015.csv
+    logsum_2010_s1: AccessibilityMarkets_2015.csv
+    logsum_2030_s1: AccessibilityMarkets_2050_s1.csv
+    logsum_2010_s2: AccessibilityMarkets_2015.csv
+    logsum_2030_s2: AccessibilityMarkets_2050_s2.csv
+    logsum_2010_s5: AccessibilityMarkets_2015.csv
+    logsum_2030_s5: AccessibilityMarkets_2050_s5.csv
+    logsum_2010_s6: AccessibilityMarkets_2030_s6.csv
+    logsum_2030_s6: AccessibilityMarkets_2050_s6.csv
+    logsum_2010_s7: AccessibilityMarkets_2030_s7.csv
+    logsum_2030_s7: AccessibilityMarkets_2050_s7.csv
+    logsum_2010_s10: AccessibilityMarkets_2030_s10.csv
+    logsum_2030_s10: AccessibilityMarkets_2050_s10.csv
+    logsum_2010_s11: AccessibilityMarkets_2015.csv
+    logsum_2030_s11: AccessibilityMarkets_2050_s11.csv
+    logsum_2010_s12: AccessibilityMarkets_2015.csv
+    logsum_2030_s12: AccessibilityMarkets_2050_s12.csv
+    logsum_2010_s15: AccessibilityMarkets_2015.csv
+    logsum_2030_s15: AccessibilityMarkets_2050_s15.csv
+
+
+model_configs:
+  hlcm:
+    hlcm_owner_config: hlcm_owner.yaml
+    hlcm_owner_lowincome_config: hlcm_owner_lowincome.yaml
+    hlcm_owner_no_unplaced_config: hlcm_owner_no_unplaced.yaml
+    hlcm_renter_config: hlcm_renter.yaml
+    hlcm_renter_lowincome_config: hlcm_renter_lowincome.yaml
+    hlcm_renter_no_unplaced_config: hlcm_renter_no_unplaced.yaml
+  elcm:
+    elcm_config: elcm.yaml
+  rsh:
+    rsh_config: rsh.yaml
+    s1_rsh_config: rsh_s1.yaml
+    s2_rsh_config: rsh_s2.yaml
+    s5_rsh_config: rsh_s5.yaml
+    s6_rsh_config: rsh_s1.yaml
+    s7_rsh_config: rsh_s2.yaml
+    s10_rsh_config: rsh_s5.yaml
+    s11_rsh_config: rsh_s1.yaml
+    s12_rsh_config: rsh_s2.yaml
+    s15_rsh_config: rsh_s5.yaml
+  rrh:
+    rrh_config: rrh.yaml
+  nrh:
+    nrh_config: nrh.yaml
