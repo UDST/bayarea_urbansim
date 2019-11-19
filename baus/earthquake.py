@@ -16,9 +16,9 @@ import itertools
 # earthquake model removes further buildings temporarily
 
 @orca.step()
-def eq_code_buildings(buildings, year, scenario, settings):
+def eq_code_buildings(buildings, year, scenario, hazards):
 
-    if scenario not in settings["eq_scenarios"]["enable_in"]:
+    if scenario not in hazards["eq_scenarios"]["enable_in"]:
         return
 
     if year == 2035:
@@ -251,9 +251,9 @@ def eq_code_buildings(buildings, year, scenario, settings):
 @orca.step()
 def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
                         households, jobs, residential_units, year, scenario,
-                        settings):
+                        hazards):
 
-    if scenario not in settings["eq_scenarios"]["enable_in"]:
+    if scenario not in hazards["eq_scenarios"]["enable_in"]:
         return
 
     if year == 2035:
@@ -304,7 +304,7 @@ def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
                 len(build_frag) * existing_pct))]
             # in "strategies" scenarios, exclude some existing buildings
             # from destruction due to retrofit
-            if scenario in settings["eq_scenarios"]["mitigation"]:
+            if scenario in hazards["eq_scenarios"]["mitigation"]:
                 retrofit_codes = ['DU01G1N', 'DU01G2N', 'MF01G1N', 'MF01G2N',
                                   'MF25G1N', 'MF25G2N', 'MF25G3N', 'MF25G4N',
                                   'SF01G1N', 'SF2PG1N']
@@ -313,7 +313,7 @@ def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
                 retrofit_bldgs = top_build_frag_bldgs[top_build_frag_bldgs.
                                                       earthquake_code.isin
                                                       (retrofit_codes)]
-                retro_no = round(float(len(retrofit_bldgs))/2)
+                retro_no = int(round(float(len(retrofit_bldgs))/2))
                 retrofit_set = np.random.choice(retrofit_bldgs.index,
                                                 retro_no, replace=False)
                 # update top_build_frag to remove retrofit buildings

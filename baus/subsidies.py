@@ -35,28 +35,28 @@ def profit_to_prob_func(df):
 
 
 @orca.injectable(cache=True)
-def coffer(settings):
+def coffer(policy):
     d = {
         "vmt_res_acct":  accounts.Account("vmt_res_acct"),
         "vmt_com_acct":  accounts.Account("vmt_com_acct")
     }
 
-    for key, acct in settings["acct_settings"]["lump_sum_accounts"].items():
+    for key, acct in policy["acct_settings"]["lump_sum_accounts"].items():
         d[acct["name"]] = accounts.Account(acct["name"])
 
     return d
 
 
 @orca.injectable(cache=True)
-def acct_settings(settings):
-    return settings["acct_settings"]
+def acct_settings(policy):
+    return policy["acct_settings"]
 
 
 @orca.step()
-def lump_sum_accounts(settings, year, buildings, coffer,
+def lump_sum_accounts(policy, year, buildings, coffer,
                       summary, years_per_iter, scenario):
 
-    s = settings["acct_settings"]["lump_sum_accounts"]
+    s = policy["acct_settings"]["lump_sum_accounts"]
 
     for key, acct in s.items():
 
@@ -203,11 +203,11 @@ def policy_modifications_of_profit(feasibility, parcels):
     feasibility[("residential", "inclusionary_units")] = \
         num_affordable_units
 
-    settings = orca.get_injectable("settings")
+    policy = orca.get_injectable("policy")
 
-    if "sb743_settings" in settings["acct_settings"]:
+    if "sb743_settings" in policy["acct_settings"]:
 
-        sb743_settings = settings["acct_settings"]["sb743_settings"]
+        sb743_settings = policy["acct_settings"]["sb743_settings"]
 
         if sb743_settings["enable"]:
 
@@ -219,9 +219,9 @@ def policy_modifications_of_profit(feasibility, parcels):
 
             feasibility[("residential", "max_profit")] *= pct_modifications
 
-    if "land_value_tax_settings" in settings["acct_settings"]:
+    if "land_value_tax_settings" in policy["acct_settings"]:
 
-        s = settings["acct_settings"]["land_value_tax_settings"]
+        s = policy["acct_settings"]["land_value_tax_settings"]
 
         if orca.get_injectable("scenario") in s["enable_in_scenarios"]:
 
@@ -244,10 +244,10 @@ def policy_modifications_of_profit(feasibility, parcels):
 
             feasibility[("residential", "max_profit")] *= pct_modifications
 
-    if "profitability_adjustment_policies" in settings["acct_settings"]:
+    if "profitability_adjustment_policies" in policy["acct_settings"]:
 
         for key, policy in \
-                settings["acct_settings"][
+                policy["acct_settings"][
                     "profitability_adjustment_policies"].items():
 
             if orca.get_injectable("scenario") in \
@@ -278,10 +278,10 @@ def policy_modifications_of_profit(feasibility, parcels):
 
 
 @orca.step()
-def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
+def calculate_vmt_fees(policy, year, buildings, vmt_fee_categories, coffer,
                        summary, years_per_iter, scenario):
 
-    vmt_settings = settings["acct_settings"]["vmt_settings"]
+    vmt_settings = policy["acct_settings"]["vmt_settings"]
 
     # this is the frame that knows which devs are subsidized
     df = summary.parcel_output
@@ -758,10 +758,10 @@ def subsidized_residential_developer_vmt(
 def subsidized_residential_developer_lump_sum_accts(
         households, buildings, add_extra_columns_func,
         parcels_geography, year, acct_settings, parcels,
-        settings, summary, coffer, form_to_btype_func,
-        scenario):
+        policy, summary, coffer, form_to_btype_func,
+        scenario, settings):
 
-    for key, acct in settings["acct_settings"]["lump_sum_accounts"].items():
+    for key, acct in policy["acct_settings"]["lump_sum_accounts"].items():
 
         # quick return in order to save performance time
         if scenario not in acct["enable_in_scenarios"]:
