@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import os
 import sys
 import time
@@ -110,8 +112,8 @@ if INTERACT:
 run_num = orca.get_injectable("run_number")
 
 if LOGS:
-    print '***The Standard stream is being written to /runs/run{0}.log***'\
-        .format(run_num)
+    print('***The Standard stream is being written to /runs/run{0}.log***'
+          .format(run_num))
     sys.stdout = sys.stderr = open("runs/run%d.log" % run_num, 'w')
 
 if RANDOM_SEED:
@@ -373,11 +375,12 @@ def run_models(MODE, SCENARIO):
         raise "Invalid mode"
 
 
-print "Started", time.ctime()
-print "Current Branch : ", BRANCH.rstrip()
-print "Current Commit : ", CURRENT_COMMIT.rstrip()
-print "Current Scenario : ", orca.get_injectable('scenario').rstrip()
-print "Random Seed : ", RANDOM_SEED
+
+print("Started", time.ctime())
+print("Current Branch : ", BRANCH.rstrip())
+print("Current Commit : ", CURRENT_COMMIT.rstrip())
+print("Current Scenario : ", orca.get_injectable('scenario').rstrip())
+print("Random Seed : ", RANDOM_SEED)
 
 
 if SLACK:
@@ -391,7 +394,7 @@ try:
     run_models(MODE, SCENARIO)
 
 except Exception as e:
-    print traceback.print_exc()
+    print(traceback.print_exc())
     if SLACK:
         slack.chat.post_message(
             '#sim_updates',
@@ -401,7 +404,7 @@ except Exception as e:
         raise e
     sys.exit(0)
 
-print "Finished", time.ctime()
+print("Finished", time.ctime())
 
 if MAPS:
 

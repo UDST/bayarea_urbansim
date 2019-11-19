@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import orca
 import numpy as np
 import pandas as pd
@@ -259,7 +261,8 @@ def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
         # created with scripts/parcel_tract_assignment.py
         census_tract = pd.Series(parcels_tract['census_tract'],
                                  parcels_tract.index)
-        print "Number of parcels with census tracts is: %d" % len(census_tract)
+        print("Number of parcels with census tracts is: %d" %
+              len(census_tract))
         orca.add_column('parcels', 'tract', census_tract)
 
         # group parcels by their census tract
@@ -274,7 +277,7 @@ def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
                                                 key=itemgetter(0)):
             tract_parcels_grp.append(list(parcels))
             tracts.append(tract)
-        print "Number of census tract groups is: %d" % len(tract_parcels_grp)
+        print("Number of census tract groups is: %d" % len(tract_parcels_grp))
 
         # for the parcels in each tract, destroy X% of parcels in that tract
         tracts_earthquake = tracts_earthquake.to_frame()
@@ -373,8 +376,8 @@ def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
             fire_buildings.extend(buildings_fire)
             eq_buildings.extend(buildings_fire)
 
-        print "Total number of buildings being destroyed is: %d" \
-            % len(eq_buildings)
+        print("Total number of buildings being destroyed is: %d" %
+              len(eq_buildings))
 
         orca.add_injectable("eq_buildings", eq_buildings)
         orca.add_injectable("existing_buildings", existing_buildings)
@@ -386,7 +389,7 @@ def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
         eq_demolish = buildings.local[buildings.index.isin
                                       (eq_buildings)]
         orca.add_table("eq_demolish", eq_demolish)
-        print "Demolishing %d buildings" % len(eq_demolish)
+        print("Demolishing %d buildings" % len(eq_demolish))
 
         households = households.to_frame()
         hh_unplaced = households[households["building_id"] == -1]
@@ -416,4 +419,4 @@ def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
 
         orca.add_table("buildings", buildings)
         buildings = orca.get_table("buildings")
-        print "Demolished %d buildings" % (l1 - len(buildings))
+        print("Demolished %d buildings" % (l1 - len(buildings)))
