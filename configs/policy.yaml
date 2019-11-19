@@ -1067,8 +1067,8 @@ acct_settings:
       name: "OBAG"
       sending_buildings_subaccount_def: regional
       total_amount: 40000000
-      receiving_buildings_filter: pda_id > 0
-      alternate_buildings_filter: trich_id > 0 | cat_id > 0
+      receiving_buildings_filter: pda_id > ''
+      alternate_buildings_filter: trich_id > '' | cat_id > ''
       subsidize_affordable: False
       enable_in_scenarios: ["1", "2", "3", "4", "5", "6", "7", "10", "11", "12", "15"]
       alternate_geography_scenarios: ["11", "12", "15"]
@@ -1153,7 +1153,7 @@ acct_settings:
       name: "Parcel Tax"
       sending_buildings_subaccount_def: regional
       total_amount: 500000000
-      receiving_buildings_filter: pda_id > 0
+      receiving_buildings_filter: pda_id > ''
       subsidize_affordable: True
       enable_in_scenarios: []
 
@@ -1163,7 +1163,7 @@ acct_settings:
       name: "Capital Gains Tax"
       sending_buildings_subaccount_def: regional
       total_amount: 42000000
-      receiving_buildings_filter: pda_id > 0
+      receiving_buildings_filter: pda_id > ''
       subsidize_affordable: True
       enable_in_scenarios: []
 
@@ -1176,9 +1176,9 @@ acct_settings:
       name: "CEQA"
       enable_in_scenarios: ["1", "2", "3", "4", "5", "6", "7", "10", "11", "12", "15"]
       # any parcel in a tpa
-      profitability_adjustment_formula: "(tpp_id > 0) * .01"
+      profitability_adjustment_formula: "(tpp_id > '') * .01"
       alternate_geography_scenarios: ["11", "12", "15"]
-      alternate_adjustment_formula: "(trich_id > 0 | cat_id > 0) * .01"
+      alternate_adjustment_formula: "(trich_id > '' | cat_id > '') * .01"
 
     # reduce parking requirements in TPPs - would be nice to have better data
     # on how this impacts price as well, but we don't have it
@@ -1186,15 +1186,15 @@ acct_settings:
       name: "Reduce Parking Requirements in TPPs"
       enable_in_scenarios: ["3"]
       # any parcel in a tpa
-      profitability_adjustment_formula: "(tpp_id > 0) * .01"
+      profitability_adjustment_formula: "(tpp_id > '') * .01"
 
     parking_requirements_pdas:
       name: "Reduce Parking Requirements in PDAs"
       enable_in_scenarios: ["1", "2", "4", "5", "6", "7", "10", "11", "12", "15"]
       # any parcel in a tpa
-      profitability_adjustment_formula: "(pda_id > 0) * .01"
+      profitability_adjustment_formula: "(pda_id > '') * .01"
       alternate_geography_scenarios: ["11", "12", "15"]
-      alternate_adjustment_formula: "(trich_id > 0 | cat_id > 0) * .01"
+      alternate_adjustment_formula: "(trich_id > '' | cat_id > '') * .01"
 
     parking_requirements_AVs_s1: # cag
       name: "Reduce Parking Requirements due to AVs- CAG"
@@ -1226,8 +1226,8 @@ acct_settings:
   # com for com or com for res.
   vmt_settings:
     sending_buildings_subaccount_def: regional
-    receiving_buildings_filter: pda_id>0
-    alternate_buildings_filter: trich_id > 0 | cat_id > 0
+    receiving_buildings_filter: pda_id > ''
+    alternate_buildings_filter: trich_id > '' | cat_id > ''
     alternate_geography_scenarios: ["11", "12", "15"]
     res_for_res_scenarios:
       - "3"
