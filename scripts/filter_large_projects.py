@@ -21,6 +21,6 @@ grps = df.groupby('geom_id')
 df = grps.first()
 df["occurences"] = grps.size()
 
-print len(df), df.occurences.describe()
+print(len(df), df.occurences.describe())
 
 df.to_csv("large_projects.csv")

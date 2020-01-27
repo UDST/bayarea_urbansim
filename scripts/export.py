@@ -59,7 +59,7 @@ df = df.query(f)
 # get building types
 df["building_type"] = \
     df.first_building_type_id.map({v: k for k, v in
-                                  settings["building_type_map2"].items()})
+                                  list(settings["building_type_map2"].items())})
 
 df["oldest_building"][df.oldest_building > 2200] = np.nan
 

@@ -5,9 +5,9 @@ from urbansim_defaults import datasources
 from urbansim_defaults import utils
 from urbansim.utils import misc
 import orca
-import preprocessing
-from utils import geom_id_to_parcel_id, parcel_id_to_geom_id
-from utils import nearest_neighbor
+from . import preprocessing
+from .utils import geom_id_to_parcel_id, parcel_id_to_geom_id
+from .utils import nearest_neighbor
 
 
 #####################
@@ -49,19 +49,19 @@ def limits_settings(settings, scenario):
 
     d = settings['development_limits']
 
-    if scenario in d.keys():
-        print "Using limits for scenario: %s" % scenario
+    if scenario in list(d.keys()):
+        print("Using limits for scenario: %s" % scenario)
         assert "default" in d
 
         d_scen = d[scenario]
         d = d["default"]
-        for key, value in d_scen.iteritems():
+        for key, value in d_scen.items():
             d.setdefault(key, {})
             d[key].update(value)
 
         return d
 
-    print "Using default limits"
+    print("Using default limits")
     return d["default"]
 
 
@@ -72,20 +72,20 @@ def inclusionary_housing_settings(settings, scenario):
 
     s = settings['inclusionary_housing_settings']
 
-    if scenario in s.keys():
-        print "Using inclusionary settings for scenario: %s" % scenario
+    if scenario in list(s.keys()):
+        print("Using inclusionary settings for scenario: %s" % scenario)
         s = s[scenario]
 
-    elif "default" in s.keys():
-        print "Using default inclusionary settings"
+    elif "default" in list(s.keys()):
+        print("Using default inclusionary settings")
         s = s["default"]
 
     d = {}
     for item in s:
         # this is a list of cities with an inclusionary rate that is the
         # same for all the cities in the list
-        print "Setting inclusionary rates for %d cities to %.2f" %\
-            (len(item["values"]), item["amount"])
+        print("Setting inclusionary rates for %d cities to %.2f" %\
+            (len(item["values"]), item["amount"]))
         # this is a list of inclusionary rates and the cities they apply
         # to - need tro turn it in a map of city names to rates
         for juris in item["values"]:
@@ -176,7 +176,7 @@ def fetch_from_s3(settings):
         file = os.path.join("data", file)
         if os.path.exists(file):
             continue
-        print "Downloading " + file
+        print("Downloading " + file)
         key = bucket.get_key(file, validate=False)
         key.get_contents_to_filename(file)
 
@@ -353,11 +353,11 @@ def zoning_scenario(parcels_geography, scenario, settings):
     scenario_zoning = pd.read_csv(
         os.path.join(misc.data_dir(), 'zoning_mods_%s.csv' % scenario))
 
-    for k in settings["building_type_map"].keys():
+    for k in list(settings["building_type_map"].keys()):
         scenario_zoning[k] = np.nan
 
     def add_drop_helper(col, val):
-        for ind, item in scenario_zoning[col].iteritems():
+        for ind, item in scenario_zoning[col].items():
             if not isinstance(item, str):
                 continue
             for btype in item.split():
@@ -556,7 +556,7 @@ def get_dev_projects_table(scenario, parcels):
 
     cnts = df.geom_id.isin(parcels.geom_id).value_counts()
     if False in cnts.index:
-        print "%d MISSING GEOMIDS!" % cnts.loc[False]
+        print("%d MISSING GEOMIDS!" % cnts.loc[False])
 
     df = df[df.geom_id.isin(parcels.geom_id)]
 
@@ -595,7 +595,7 @@ def development_projects(parcels, settings, scenario):
     df["building_type"] = df.building_type.replace("GV", "OF")
     df["building_type"] = df.building_type.replace("SC", "OF")
 
-    building_types = settings["building_type_map"].keys()
+    building_types = list(settings["building_type_map"].keys())
     # only deal with building types we recorgnize
     # otherwise hedonics break
     df = df[df.building_type.isin(building_types)]
@@ -607,10 +607,10 @@ def development_projects(parcels, settings, scenario):
     df = df.dropna(subset=["year_built"])
     df = df[df.action.isin(["add", "build"])]
 
-    print "Describe of development projects"
+    print("Describe of development projects")
     # this makes sure dev projects has all the same columns as buildings
     # which is the point of this method
-    print df[orca.get_table('buildings').local_columns].describe()
+    print(df[orca.get_table('buildings').local_columns].describe())
 
     return df
 

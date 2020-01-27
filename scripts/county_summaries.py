@@ -31,7 +31,7 @@ for run in range(1308, 1312):
     growthnotinpdas = df[(df.building_type_id <= 3) & (df.pda.isnull())].\
         groupby("county").net_units.sum()
     pctgrowthinpdas = growthinpdas / (growthnotinpdas+growthinpdas)
-    print pctgrowthinpdas
+    print(pctgrowthinpdas)
 
     baseyear = pd.read_csv("output/baseyear_taz_summaries_2010.csv")
     baseyear["county"] = baseyear.zone_id.map(counties_map)

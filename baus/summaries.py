@@ -4,7 +4,7 @@ import orca
 import pandas as pd
 from pandas.util import testing as pdt
 import numpy as np
-from utils import random_indexes, round_series_match_target,\
+from .utils import random_indexes, round_series_match_target,\
     scale_by_target, simple_ipf
 from urbansim.utils import misc
 from scripts.output_csv_utils import format_df
@@ -371,7 +371,7 @@ def diagnostic_output(households, buildings, parcels, taz, jobs, settings,
     # save the dropped buildings to a csv
     if "dropped_buildings" in orca.orca._TABLES:
         df = orca.get_table("dropped_buildings").to_frame()
-        print "Dropped buildings", df.describe()
+        print("Dropped buildings", df.describe())
         df.to_csv(
             "runs/run{}_dropped_buildings.csv".format(run_number)
         )
@@ -527,7 +527,7 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
     # Write Summary of Accounts
     if year == final_year:
 
-        for acct_name, acct in orca.get_injectable("coffer").iteritems():
+        for acct_name, acct in orca.get_injectable("coffer").items():
             fname = "runs/run{}_acctlog_{}_{}.csv".\
                 format(run_number, acct_name, year)
             acct.to_frame().to_csv(fname)

@@ -4,8 +4,8 @@ import sys
 args = sys.argv[1:]
 
 if len(args) == 0:
-    print "Checks growth exceeds RHNA targets for given out year"
-    print "usage: <runnum> <outyear>"
+    print("Checks growth exceeds RHNA targets for given out year")
+    print("usage: <runnum> <outyear>")
     sys.exit(0)
 
 runnum = int(args[0])
@@ -22,4 +22,4 @@ juris_df2 = pd.read_csv(
 
 s = juris_df2.tothh - juris_df.tothh - controls_df.rhna14to22
 
-print s[s < 0]
+print(s[s < 0])
