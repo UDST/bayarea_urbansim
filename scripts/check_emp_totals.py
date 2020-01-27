@@ -9,7 +9,7 @@ controls_df = pd.read_csv("data/employment_controls.csv", index_col="year")
 
 for year in range(2010, 2045, 5):
 
-    print year
+    print(year)
     taz_df = pd.read_csv("runs/run{}_taz_summaries_{}.csv".
                          format(runnum, year))
     juris_df = pd.read_csv("runs/run{}_juris_summaries_{}.csv".

@@ -37,19 +37,19 @@ def save_and_restore_state(in_d, outhdf="save_state.h5"):
         store = pd.HDFStore(outhdf)
         out_d = {}
         for table_name in store:
-            print "Restoring", table_name
+            print("Restoring", table_name)
             out_d[table_name[1:]] = store[table_name]
         return out_d
 
     # the state doesn't exist and thus needs to be saved
     store = pd.HDFStore(outhdf, "w")
-    for table_name, table in in_d.items():
+    for table_name, table in list(in_d.items()):
         try:
             table = table.local
         except:
             # not a dataframe wrapper
             continue
-        print "Saving", table_name
+        print("Saving", table_name)
         store[table_name] = table
     store.close()
     sys.exit(0)
@@ -117,7 +117,7 @@ def groupby_random_choice(s, counts, replace=True):
 
     return pd.concat([
         s[s == grp].sample(cnt, replace=replace)
-        for grp, cnt in counts[counts > 0].iteritems()
+        for grp, cnt in counts[counts > 0].items()
     ])
 
 
@@ -184,8 +184,8 @@ def constrained_normalization(marginals, constraint, total):
         num_constrained = len(constrained[constrained is True])
         num_exceeds = len(exceeds[exceeds is True])
 
-        print "Len constrained = %d, exceeds = %d" %\
-            (num_constrained, num_exceeds)
+        print("Len constrained = %d, exceeds = %d" %\
+            (num_constrained, num_exceeds))
 
         if num_exceeds == 0:
             return marginals
@@ -212,7 +212,7 @@ def simple_ipf(seed_matrix, col_marginals, row_marginals, tolerance=1, cnt=0):
     seed_matrix *= ratios
     closeness = np.absolute(row_marginals - seed_matrix.sum(axis=1)).sum()
     assert np.absolute(col_marginals - seed_matrix.sum(axis=0)).sum() < .01
-    print "row closeness", closeness
+    print("row closeness", closeness)
     if closeness < tolerance:
         return seed_matrix
 
@@ -222,7 +222,7 @@ def simple_ipf(seed_matrix, col_marginals, row_marginals, tolerance=1, cnt=0):
     seed_matrix = seed_matrix * ratios.reshape((ratios.size, 1))
     assert np.absolute(row_marginals - seed_matrix.sum(axis=1)).sum() < .01
     closeness = np.absolute(col_marginals - seed_matrix.sum(axis=0)).sum()
-    print "col closeness", closeness
+    print("col closeness", closeness)
     if closeness < tolerance:
         return seed_matrix
 
@@ -255,7 +255,7 @@ def compare_dfs(df1, df2):
         rowcomp = df2.loc[label]
 
         # for each value
-        for col, val in row.iteritems():
+        for col, val in row.items():
 
             val2 = rowcomp[col]
 
@@ -313,7 +313,7 @@ def compare_dfs_excel(df1, df2, excelname="out.xlsx"):
 
         s = df.stack()
 
-        for (lab, col), val in filter(s).iteritems():
+        for (lab, col), val in filter(s).items():
 
             rowind = df.index.get_loc(lab)+2
             colind = df.columns.get_loc(col)+1
@@ -344,7 +344,7 @@ def compare_summary(df1, df2, index_names=None, pctdiff=10,
     s = df3[cols].stack()
 
     buf = ""
-    for (lab, col), val in s[s > 10].iteritems():
+    for (lab, col), val in s[s > 10].items():
         lab = index_names.loc[lab]
         buf += "%s '%s' is %d%% off in column '%s'\n" % \
             (geog_name, lab, val, col)

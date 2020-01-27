@@ -10,7 +10,7 @@ import random
 targets = pd.read_csv("data/juris_controls.csv",
                       index_col="Jurisdiction").Households
 
-print "Sum of cities", targets.sum()
+print("Sum of cities", targets.sum())
 
 households = orca.get_table("households")
 buildings = orca.get_table("buildings")
@@ -37,15 +37,15 @@ new_households = households_df.sample(4).reset_index()
 new_households.index += len(households_df)
 households_df = households_df.append(new_households)
 
-print "len households", len(households_df)
+print("len households", len(households_df))
 
 actual = households_df.juris.value_counts()
 
 # now compare the two
 diff = (actual - targets).sort_values(ascending=False)
-print diff.describe()
-print diff[diff > 0].sum()
-print diff[diff < 0].sum()
+print(diff.describe())
+print(diff[diff > 0].sum())
+print(diff[diff < 0].sum())
 
 overfull = diff[diff > 0]
 underfull = diff[diff < 0] * -1
@@ -53,9 +53,9 @@ underfull = diff[diff < 0] * -1
 hh_ids = np.concatenate([
     np.random.choice(household_ids_by_juris.loc[juris],
                      size=value, replace=False)
-    for juris, value in overfull.iteritems()])
+    for juris, value in overfull.items()])
 
-print (diff - households_df.loc[hh_ids].juris.value_counts()).describe()
+print((diff - households_df.loc[hh_ids].juris.value_counts()).describe())
 
 # unplaced
 movers = households_df[households_df.building_id == -1].index
@@ -79,7 +79,7 @@ building_destinations = [
     np.random.choice(buildings_ids_by_juris.loc[d])
     for d in juris_destinations]
 
-print len(building_destinations)
+print(len(building_destinations))
 
 # putting the unplaced in advantageous positions
 s = pd.Series(building_destinations, index=movers)
@@ -88,7 +88,7 @@ s.index.name = "household_id"
 pd.DataFrame({"building_id": s}).\
     to_csv("household_building_id_overrides.csv")
 
-print s.describe()
+print(s.describe())
 
 orig_zone_id_counts = households_df.zone_id.value_counts()
 
@@ -105,9 +105,9 @@ households_df["zone_id"] = misc.reindex(parcels.zone_id,
                                         households_df.parcel_id)
 
 diff = households_df.juris.value_counts() - targets
-print diff.describe()
-print diff[diff > 0].sum()
-print diff[diff < 0].sum()
+print(diff.describe())
+print(diff[diff > 0].sum())
+print(diff[diff < 0].sum())
 
-print (households_df.zone_id.value_counts() -
-       orig_zone_id_counts).describe()
+print((households_df.zone_id.value_counts() -
+       orig_zone_id_counts).describe())

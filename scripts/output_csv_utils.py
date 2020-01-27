@@ -10,13 +10,13 @@ def format_df(df, formatters=None, **kwargs):
     formatting_columns = list(set(formatters.keys()).intersection(df.columns))
     df_copy = df[formatting_columns].copy()
     na_rep = kwargs.get('na_rep') or ''
-    for col, formatter in formatters.items():
+    for col, formatter in list(formatters.items()):
         try:
             df[col] = df[col].apply(lambda x: na_rep if pd.isnull(x)
                                     else formatter.format(x))
         except KeyError:
-            print('{} does not exist in the dataframe.'.format(col)) +\
-                'Ignoring the formatting specifier'
+            print(('{} does not exist in the dataframe.'.format(col)) +\
+                'Ignoring the formatting specifier')
     return df
 
 

@@ -4,8 +4,8 @@ import sys
 args = sys.argv[1:]
 
 if len(args) != 2:
-    print "Identify buildings which are not in the baserun"
-    print "Usage <scenario runnum> <base runrum>"
+    print("Identify buildings which are not in the baserun")
+    print("Usage <scenario runnum> <base runrum>")
     sys.exit()
 
 scen = pd.read_csv("runs/run%d_parcel_output.csv" % int(args[0]),
@@ -46,8 +46,8 @@ for ind, row in scen.iterrows():
         else:
             cnt3 += 1
 
-print "%d new developments and %d changed developments (%d unchanged)" % \
-  (cnt1, cnt2, cnt3)
+print("%d new developments and %d changed developments (%d unchanged)" % \
+  (cnt1, cnt2, cnt3))
 
 base = pd.DataFrame(rows).\
   to_csv("runs/run%d_parcel_output_diff.csv" % int(args[0]))

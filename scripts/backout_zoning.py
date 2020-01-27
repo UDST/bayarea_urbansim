@@ -14,7 +14,7 @@ for runnum in range(1300, 1600):
     if "Current Scenario :  4" not in log:
         continue
 
-    print runnum
+    print(runnum)
 
     # now we know it's scenario 4
     df = pd.read_csv("runs/run%d_parcel_output.csv" % runnum).\
@@ -42,8 +42,8 @@ for runnum in range(1300, 1600):
     else:
         max_far = pd.concat([max_far, far], axis=1).max(axis=1)
 
-print max_dua.describe()
-print max_far.describe()
+print(max_dua.describe())
+print(max_far.describe())
 
 pd.DataFrame({
     "max_built_dua": max_dua,

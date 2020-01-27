@@ -2,9 +2,9 @@ import orca
 import numpy as np
 import pandas as pd
 from urbansim_defaults import utils
-import datasources
-import variables
-import summaries
+from . import datasources
+from . import variables
+from . import summaries
 
 
 # select and tag parcels that are indundated in the current year:
@@ -22,12 +22,12 @@ def slr_inundate(scenario, parcels, slr_progression_C, slr_progression_R,
     else:
         slr_progression = slr_progression_C.to_frame()  # placeholder
     inundation_yr = slr_progression.query('year==@year')['inundated'].item()
-    print "Inundation in model year is %d inches" % inundation_yr
+    print("Inundation in model year is %d inches" % inundation_yr)
     slr_parcel_inundation = slr_parcel_inundation.to_frame()
     destroy_parcels = slr_parcel_inundation.\
         query('inundation<=@inundation_yr').astype('bool')
     orca.add_table('destroy_parcels', destroy_parcels)
-    print "Number of parcels destroyed: %d" % len(destroy_parcels)
+    print("Number of parcels destroyed: %d" % len(destroy_parcels))
 
     slr_nodev = pd.Series(False, parcels.index)
     destroy = pd.Series(destroy_parcels['inundation'])
@@ -46,7 +46,7 @@ def slr_remove_dev(buildings, destroy_parcels, year, parcels,
                                    (destroy_parcels.index)]
     orca.add_table("slr_demolish", slr_demolish)
 
-    print "Demolishing %d buildings" % len(slr_demolish)
+    print("Demolishing %d buildings" % len(slr_demolish))
     households = households.to_frame()
     hh_unplaced = households[households["building_id"] == -1]
     jobs = jobs.to_frame()
@@ -70,4 +70,4 @@ def slr_remove_dev(buildings, destroy_parcels, year, parcels,
     orca.add_injectable("jobs_unplaced_slr", jobs_unplaced_slr)
     orca.add_table("buildings", buildings)
     buildings = orca.get_table("buildings")
-    print "Demolished %d buildings" % (l1 - len(buildings))
+    print("Demolished %d buildings" % (l1 - len(buildings)))

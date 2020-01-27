@@ -40,9 +40,9 @@ for feature in json.load(open('out.json'))['features']:
     nodes[edge["from"]] = {"x": p1[0], "y": p1[1]}
     nodes[edge["to"]] = {"x": p2[0], "y": p2[1]}
 
-store["nodes"] = pd.DataFrame(nodes.values(), index=nodes.keys())
+store["nodes"] = pd.DataFrame(list(nodes.values()), index=list(nodes.keys()))
 store["edges"] = pd.DataFrame(edges)
 
-print store["nodes"].describe()
-print store["nodes"].index
-print store["edges"].describe()
+print(store["nodes"].describe())
+print(store["nodes"].index)
+print(store["edges"].describe())

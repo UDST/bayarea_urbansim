@@ -14,7 +14,7 @@ for col in df.columns:
 
 gdf = gdf[gdf.zoned_du > 0]
 
-print len(gdf)
+print(len(gdf))
 
 gdf = gdf.reset_index()
 gdf["GEOM_ID"] = gdf.GEOM_ID.astype('int')

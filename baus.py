@@ -105,8 +105,8 @@ if INTERACT:
 run_num = orca.get_injectable("run_number")
 
 if LOGS:
-    print '***The Standard stream is being written to /runs/run{0}.log***'\
-        .format(run_num)
+    print('***The Standard stream is being written to /runs/run{0}.log***'\
+        .format(run_num))
     sys.stdout = sys.stderr = open("runs/run%d.log" % run_num, 'w')
 
 if SLACK:
@@ -304,8 +304,8 @@ def run_models(MODE, SCENARIO):
 
         # start the simulation in the next round - only the models above run
         # for the IN_YEAR
-        years_to_run = range(IN_YEAR+EVERY_NTH_YEAR, OUT_YEAR+1,
-                             EVERY_NTH_YEAR)
+        years_to_run = list(range(IN_YEAR+EVERY_NTH_YEAR, OUT_YEAR+1,
+                             EVERY_NTH_YEAR))
         models = get_simulation_models(SCENARIO)
         orca.run(models, iter_vars=years_to_run)
 
@@ -364,10 +364,10 @@ def run_models(MODE, SCENARIO):
         raise "Invalid mode"
 
 
-print "Started", time.ctime()
-print "Current Branch : ", BRANCH.rstrip()
-print "Current Commit : ", CURRENT_COMMIT.rstrip()
-print "Current Scenario : ", orca.get_injectable('scenario').rstrip()
+print("Started", time.ctime())
+print("Current Branch : ", BRANCH.rstrip())
+print("Current Commit : ", CURRENT_COMMIT.rstrip())
+print("Current Scenario : ", orca.get_injectable('scenario').rstrip())
 
 
 if SLACK:
@@ -381,7 +381,7 @@ try:
     run_models(MODE, SCENARIO)
 
 except Exception as e:
-    print traceback.print_exc()
+    print(traceback.print_exc())
     if SLACK:
         slack.chat.post_message(
             '#sim_updates',
@@ -391,7 +391,7 @@ except Exception as e:
         raise e
     sys.exit(0)
 
-print "Finished", time.ctime()
+print("Finished", time.ctime())
 
 if MAPS:
 

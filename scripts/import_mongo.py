@@ -26,5 +26,5 @@ numpy_arrays = mon.query(
 df = np.matrix(numpy_arrays).transpose()
 df = pd.DataFrame(df, columns=columns)
 
-print time.time()-t1
-print df.describe()
+print(time.time()-t1)
+print(df.describe())

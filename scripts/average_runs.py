@@ -1,13 +1,14 @@
 import pandas as pd
 import os
 import random
+from functools import reduce
 
 # this script takes multiple runs and averages them in order to reduce the
 # impacts of stochasticity - this also runs at different sample sizes to
 # find out how many runs we need to do in order to reduce stochasticity
 
-run_nums = range(334, 550)
-SAMPLE_SIZES = range(1, 45, 5)
+run_nums = list(range(334, 550))
+SAMPLE_SIZES = list(range(1, 45, 5))
 NUM_SAMPLES = 2
 
 flds = ("TOTHH,TOTEMP").split(',')
@@ -49,9 +50,9 @@ def variability_measure(dfs, N, M):
     return pct_diff.unstack().fillna(0).quantile(.95)
 
 dfs = get_2040_taz_summaries(run_nums)
-print "Total sims = {}".format(len(dfs))
+print("Total sims = {}".format(len(dfs)))
 
 # need to test different sample sizes
 for sample_size in SAMPLE_SIZES:
-    print sample_size
-    print variability_measure(dfs, NUM_SAMPLES, sample_size)
+    print(sample_size)
+    print(variability_measure(dfs, NUM_SAMPLES, sample_size))

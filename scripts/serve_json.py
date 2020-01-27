@@ -12,7 +12,7 @@ cors = CORS(app)
 
 MAX_PARCELS_RETURNED = 5000
 
-print "Loading"
+print("Loading")
 
 store = pd.HDFStore('data/bayarea_v3.h5')
 
@@ -28,20 +28,20 @@ flds = ['parcel_id', 'max_dua', 'max_far', 'max_height', 'type1',
         'type2', 'type3', 'type4']
 zoning = orca.get_table('zoning_baseline').to_frame(flds)
 
-print "Ready"
+print("Ready")
 
 
 @app.route('/extract/<query>')
 def get_data(query):
 
-    print "Got query:", query
+    print("Got query:", query)
 
     # global parcels, buildings, households, jobs, zoning_baseline
     global parcels, buildings, zoning_baseline
 
     p = parcels.reset_index().query(query).set_index('parcel_id')
 
-    print "Len parcels:", len(p)
+    print("Len parcels:", len(p))
 
     if len(p) > MAX_PARCELS_RETURNED:
         return jsonify(**{
