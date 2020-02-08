@@ -1517,7 +1517,6 @@ def zone_forecast_inputs():
 def add_population(df, year, regional_controls):
     rc = regional_controls
     target = rc.totpop.loc[year] - df.gqpop.sum()
-
     zfi = zone_forecast_inputs()
     s = df.tothh * zfi.meanhhsize
 
