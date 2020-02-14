@@ -164,10 +164,6 @@ def round_series_match_target(s, target, fillna=np.nan):
 def scale_by_target(s, target, check_close=None):
     ratio = float(target) / s.sum()
     if check_close:
-        print('-----TEST-TEST-TEST-----')
-        print('ratio', ratio)
-        print('check_close', check_close)
-        print('1.0-check_close < ratio < 1.0+check_close', 1.0-check_close < ratio < 1.0+check_close)
         assert 1.0-check_close < ratio < 1.0+check_close
     return s * ratio
 
