@@ -1063,6 +1063,9 @@ def travel_model_output(parcels, households, jobs, buildings,
     taz_df["hhincq4"] = gethhcounts("base_income_quartile == 4")
     taz_df["hhpop"] = households_df.groupby('zone_id').persons.sum()
     taz_df["tothh"] = households_df.groupby('zone_id').size()
+    print('----TEST-TEST-TEST-----')
+    print('taz_df.tothh.sum()', taz_df.tothh.sum())
+    print('taz_df.tothh', taz_df.tothh)
 
     taz_df["shpop62p"] = zone_forecast_inputs.sh_62plus
     taz_df["gqpop"] = zone_forecast_inputs["gqpop" + str(year)[-2:]].fillna(0)
@@ -1540,12 +1543,11 @@ def add_population_tm2(df, year, regional_controls):
 # temporary function to balance hh while some parcels have
 # unassigned MAZ
 def add_households(df, tothh):
+
     print('-----TEST-TEST-TEST-----')
-    print(tothh)
-    print(df.tothh.sum())
+    print('tothh', tothh)
+    print('df.tothh.sum()', df.tothh.sum())
     s = scale_by_target(df.tothh, tothh)  # , .15
-    print(s.sum())
-    print('-----TEST-TEST-TEST-----')
 
     df["tothh"] = round_series_match_target(s, tothh, 0)
     df["tothh"] = df.tothh.fillna(0)
