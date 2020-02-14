@@ -1520,7 +1520,7 @@ def add_population(df, year, regional_controls):
     zfi = zone_forecast_inputs()
     s = df.tothh * zfi.meanhhsize
 
-    s = scale_by_target(s, target, .15)
+    s = scale_by_target(s, target)  # , .15
 
     df["hhpop"] = round_series_match_target(s, target, 0)
     df["hhpop"] = df.hhpop.fillna(0)
@@ -1540,7 +1540,12 @@ def add_population_tm2(df, year, regional_controls):
 # temporary function to balance hh while some parcels have
 # unassigned MAZ
 def add_households(df, tothh):
-    s = scale_by_target(df.tothh, tothh, .15)
+    print('-----TEST-TEST-TEST-----')
+    print(tothh)
+    print(df.tothh.sum())
+    s = scale_by_target(df.tothh, tothh)  # , .15
+    print(s.sum())
+    print('-----TEST-TEST-TEST-----')
 
     df["tothh"] = round_series_match_target(s, tothh, 0)
     df["tothh"] = df.tothh.fillna(0)
