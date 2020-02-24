@@ -16,26 +16,26 @@ from baus import summaries
 def slr_inundate(scenario, parcels, slr_progression_C, slr_progression_R,
                  slr_progression_B, slr_parcel_inundation,
                  slr_parcel_inundation_mf, slr_parcel_inundation_mp,
-                 year, settings):
+                 year, hazards):
 
-    if scenario not in settings["slr_scenarios"]["enable_in"]:
+    if scenario not in hazards["slr_scenarios"]["enable_in"]:
         return
 
-    if scenario in settings["slr_scenarios"]["rtff_prog"]:
+    if scenario in hazards["slr_scenarios"]["rtff_prog"]:
         slr_progression = slr_progression_R.to_frame()
-    elif scenario in settings["slr_scenarios"]["cag_prog"]:
+    elif scenario in hazards["slr_scenarios"]["cag_prog"]:
         slr_progression = slr_progression_C.to_frame()
-    elif scenario in settings["slr_scenarios"]["bttf_prog"]:
+    elif scenario in hazards["slr_scenarios"]["bttf_prog"]:
         slr_progression = slr_progression_B.to_frame()
     orca.add_table("slr_progression", slr_progression)
 
     inundation_yr = slr_progression.query('year==@year')['inundated'].item()
     print("Inundation in model year is %d inches" % inundation_yr)
 
-    if scenario in settings["slr_scenarios"]["mitigation_full"]:
+    if scenario in hazards["slr_scenarios"]["mitigation_full"]:
         slr_parcel_inundation = slr_parcel_inundation_mf.to_frame()
         orca.add_injectable("slr_mitigation", 'full mitigation')
-    elif scenario in settings["slr_scenarios"]["mitigation_partial"]:
+    elif scenario in hazards["slr_scenarios"]["mitigation_partial"]:
         slr_parcel_inundation = slr_parcel_inundation_mp.to_frame()
         orca.add_injectable("slr_mitigation", 'partial mitigation')
     else:
@@ -59,9 +59,9 @@ def slr_inundate(scenario, parcels, slr_progression_C, slr_progression_R,
 
 @orca.step()
 def slr_remove_dev(buildings, year, parcels, households, jobs,
-                   scenario, settings):
+                   scenario, hazards):
 
-    if scenario not in settings["slr_scenarios"]["enable_in"]:
+    if scenario not in hazards["slr_scenarios"]["enable_in"]:
         return
 
     destroy_parcels = orca.get_table("destroy_parcels")

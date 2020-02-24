@@ -10,8 +10,9 @@ choosers_predict_filters: (tenure == 'own')
 
 alts_fit_filters: null
 
+alts_predict_filters: (tenure == 'own')
 #alts_predict_filters: (tenure == 'own' & deed_restricted == False)
-alts_predict_filters: null
+#alts_predict_filters: null
 
 interaction_predict_filters: null
 
