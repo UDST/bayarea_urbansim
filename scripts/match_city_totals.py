@@ -55,7 +55,7 @@ hh_ids = np.concatenate([
                      size=value, replace=False)
     for juris, value in overfull.iteritems()])
 
-print (diff - households_df.loc[hh_ids].juris.value_counts()).describe()
+print(diff - households_df.loc[hh_ids].juris.value_counts()).describe()
 
 # unplaced
 movers = households_df[households_df.building_id == -1].index
@@ -73,6 +73,7 @@ def make_city_list(overfull):
     move_hhs = pd.Series(move_hhs)
     move_hhs = move_hhs.sample(len(move_hhs))  # random reorder
     return move_hhs
+
 
 juris_destinations = make_city_list(underfull)
 building_destinations = [
@@ -109,5 +110,5 @@ print diff.describe()
 print diff[diff > 0].sum()
 print diff[diff < 0].sum()
 
-print (households_df.zone_id.value_counts() -
-       orig_zone_id_counts).describe()
+print(households_df.zone_id.value_counts() -
+      orig_zone_id_counts).describe()
