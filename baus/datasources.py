@@ -423,8 +423,12 @@ def zoning_scenario(parcels_geography, scenario, policy, mapping):
     add_drop_helper("add_bldg", 1)
     add_drop_helper("drop_bldg", 0)
 
-    join_col = 'zoninghzcat' if 'zoninghzcat' in\
-        scenario_zoning.columns else 'zoningmodcat'
+    if 'pba50zoningmodcat' in scenario_zoning.columns:
+        join_col = 'pba50zoningmodcat' 
+    elif 'zoninghzcat' in scenario_zoning.columns:
+        join_col = 'zoninghzcat' 
+    else:
+        join_col = 'zoningmodcat'
 
     return pd.merge(parcels_geography.to_frame().reset_index(),
                     scenario_zoning,
@@ -456,7 +460,7 @@ def parcel_rejections():
 @orca.table(cache=True)
 def parcels_geography(parcels, scenario, settings):
     df = pd.read_csv(
-        os.path.join(misc.data_dir(), "07_11_2019_parcels_geography.csv"),
+        os.path.join(misc.data_dir(), "02_21_2020_parcels_geography.csv"),
         index_col="geom_id")
     df = geom_id_to_parcel_id(df, parcels)
 
