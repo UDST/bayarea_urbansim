@@ -162,6 +162,10 @@ inclusionary_housing_settings:
       - Los Gatos
       - Morgan Hill
       - Richmond
+      - Daly City
+      - Redwood City
+      - Santa Clara
+      - Windsor
     - type: jurisdictions
       description: '0.125'
       amount: .125
@@ -198,6 +202,10 @@ inclusionary_housing_settings:
       - Larkspur
       - Sebastopol
       - Yountville
+      - Portola Valley
+      - Cupertino
+      - Milpitas
+      - Cloverdale
     - type: jurisdictions
       description: '0.2'
       amount: .2
