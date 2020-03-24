@@ -25,7 +25,7 @@
 * 17: Forecast test, less constrained
 
 
-* 20: No Project (Plan Bay Area 2050)
+* 20: Baseline (lower HH count)
 * 21: Blueprint Basic
 * 22: Blueprint Plus
 * 23: Blueprint Plus Crossing
