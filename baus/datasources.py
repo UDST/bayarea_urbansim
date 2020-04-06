@@ -434,7 +434,8 @@ def zoning_scenario(parcels_geography, scenario, policy, mapping):
 
 @orca.table(cache=True)
 def parcels(store):
-    return store['parcels']
+    df = store['parcels']
+    return df.loc[df.x.notnull()]
 
 
 @orca.table(cache=True)
