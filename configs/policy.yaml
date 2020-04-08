@@ -146,7 +146,83 @@ development_limits:
 inclusionary_housing_settings:
   default:
     - type: jurisdictions
+      description: '0.1'
+      amount: .1
+      values:
+      - Benicia
+      - Concord
+      - Danville
+      - Los Altos
+      - Menlo Park
+      - Mill Valley
+      - Mountain View
+      - San Rafael
+      - Clayton
+      - Marin County
+      - Los Gatos
+      - Morgan Hill
+      - Richmond
+      - Daly City
+      - Redwood City
+      - Santa Clara
+      - Windsor
+    - type: jurisdictions
+      description: '0.125'
+      amount: .125
+      values:
+      - Dublin
+      - Sunnyvale
+    - type: jurisdictions
+      description: '0.15'
+      amount: .15
+      values:
+      - Alameda
+      - Campbell
+      - Fremont
+      - Lafayette
+      - Livermore
+      - Pacifica
+      - Palo Alto
+      - Petaluma
+      - Pittsburg
+      - Pleasanton
+      - Rohnert Park
+      - San Bruno
+      - San Carlos
+      - San Jose
+      - San Leandro
+      - Santa Rosa
+      - Tiburon
+      - Union City
+      - Contra Costa County
+      - Corte Madera
+      - Cotati
+      - Healdsburg
+      - Hercules
+      - Larkspur
+      - Sebastopol
+      - Yountville
+      - Portola Valley
+      - Cupertino
+      - Milpitas
+      - Cloverdale
+    - type: jurisdictions
+      description: '0.2'
       amount: .2
+      values:
+      - San Mateo
+      - Berkeley
+      - Colma
+      - East Palo Alto
+      - Emeryville
+      - South San Francisco
+      - San Mateo County
+      - Sonoma County
+      - Sonoma
+      - Half Moon Bay
+    - type: jurisdictions
+      description: '0.22'
+      amount: .22
       values:
       - San Francisco
 # in the future scenarios with identical inclusionary settings could be grouped
