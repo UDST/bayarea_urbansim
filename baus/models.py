@@ -338,7 +338,7 @@ def household_relocation(households, household_relocation_rates,
 
     # set households that are moving to a building_id of -1 (means unplaced)
     households.update_col_from_series("building_id",
-                                      pd.Series(-1, index=index).astype('int'))
+                                      pd.Series(-1, index=index), cast=True)
 
 
 # this deviates from the step in urbansim_defaults only in how it deals with
