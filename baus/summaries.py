@@ -273,7 +273,7 @@ def config(policy, inputs, run_number, scenario, parcels,
     counties = ["alameda", "contra_costa", "marin", "napa", "san_mateo",
                 "san_francisco", "santa_clara", "solano", "sonoma"]
     for county in counties:
-        policy_loc = (settings["acct_settings"]["lump_sum_accounts"]
+        policy_loc = (policy["acct_settings"]["lump_sum_accounts"]
                       [county+"_bond_settings"]["enable_in_scenarios"])
         if scenario in policy_loc:
             counter += 1
