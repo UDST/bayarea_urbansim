@@ -10,3 +10,5 @@ orca_test == 0.1.*
 pandana == 0.3.*
 urbansim == 3.1.*
 urbansim_defaults == 0.2.*
+
+scikit-learn == 0.20.*
