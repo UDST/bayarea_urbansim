@@ -1,0 +1,24 @@
+# This environment pins dependencies at specific versions, to ensure consistent model
+# behavior. It also pins some of the more important sub-dependencies.
+
+# Install this environment by running `conda env create -f baus-env-2020.yml`
+
+name: baus-env-2020
+
+channels:
+  - conda-forge  # for orca, pandana
+
+dependencies:
+  - python=3.6
+  - numpy=1.17
+  - orca=1.5
+  - pandana=0.4
+  - pandas=0.25
+  - pip
+  - scikit-learn=0.22
+  - statsmodels=0.11
+  
+  - pip:
+    - orca_test==0.1.*
+    - urbansim==3.1.*
+    - urbansim_defaults==0.2.*

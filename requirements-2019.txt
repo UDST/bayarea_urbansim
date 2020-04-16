@@ -4,7 +4,8 @@
 # Install with: pip install -r requirements-2019.txt
 
 numpy == 1.16.*
-pandas == 0.25.*
+pandas == 0.24.*
+statsmodels == 0.10.*
 
 orca == 1.5.*
 orca_test == 0.1.*
