@@ -363,7 +363,7 @@ def scheduled_development_events(buildings, development_projects,
         unplace_agents=["households", "jobs"])
     orca.add_injectable('static_parcels',
                         np.append(static_parcels,
-                                  demolish.loc[demolish.action=='build',
+                                  demolish.loc[demolish.action == 'build',
                                                'parcel_id']))
     orca.add_table("buildings", buildings)
     buildings = orca.get_table("buildings")
