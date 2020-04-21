@@ -424,9 +424,9 @@ def zoning_scenario(parcels_geography, scenario, policy, mapping):
     add_drop_helper("drop_bldg", 0)
 
     if 'pba50zoningmodcat' in scenario_zoning.columns:
-        join_col = 'pba50zoningmodcat' 
+        join_col = 'pba50zoningmodcat'
     elif 'zoninghzcat' in scenario_zoning.columns:
-        join_col = 'zoninghzcat' 
+        join_col = 'zoninghzcat'
     else:
         join_col = 'zoningmodcat'
 
