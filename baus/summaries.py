@@ -273,10 +273,10 @@ def config(policy, inputs, run_number, scenario, parcels,
     counties = ["alameda", "contra_costa", "marin", "napa", "san_mateo",
                 "san_francisco", "santa_clara", "solano", "sonoma"]
     for county in counties:
-            policy_loc = (policy["acct_settings"]["lump_sum_accounts"]
-                          [county+"_bond_settings"]["enable_in_scenarios"])
-            if scenario in policy_loc:
-                counter += 1
+        policy_loc = (policy["acct_settings"]["lump_sum_accounts"]
+                      [county+"_bond_settings"]["enable_in_scenarios"])
+        if scenario in policy_loc:
+            counter += 1
     write("Affordable housing bonds are activated for %d counties" % counter)
 
     # workplace preferences are in the development projects list
@@ -346,7 +346,7 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
 
     try:
         base_year_measures = orca.get_injectable("base_year_measures")
-    except:
+    except Exception as e:
         # the base year measures don't exist - we didn't run year 2010
         # this can happen when we skip the first year, usually because
         # we don't want to waste time doing so
@@ -534,7 +534,7 @@ def compare_to_targets(parcels, buildings, jobs, households, abag_targets,
 
     # compute correlection for pda and juris, for households and for jobs
 
-    l = []
+    li = []
 
     df = pd.DataFrame()
 
@@ -558,7 +558,7 @@ def compare_to_targets(parcels, buildings, jobs, households, abag_targets,
 
             assert len(abag_distribution) == len(baus_distribution)
 
-            l.append((geo, typ, abag_distribution.corr(baus_distribution)))
+            li.append((geo, typ, abag_distribution.corr(baus_distribution)))
 
     if write_comparison_dfs:
 
@@ -568,7 +568,7 @@ def compare_to_targets(parcels, buildings, jobs, households, abag_targets,
         df.to_csv(os.path.join("runs", "run%d_targets_comparison_%d.csv" %
                   (run_number, year)))
 
-    return l
+    return li
 
 
 @orca.step()
@@ -1772,7 +1772,7 @@ def hazards_slr_summary(run_number, year, scenario, households, jobs, parcels,
 
         try:
             slr_demolish_cum = orca.get_table("slr_demolish_cum").to_frame()
-        except:
+        except Exception as e:
             slr_demolish_cum = pd.DataFrame()
         slr_demolish = orca.get_table("slr_demolish").to_frame()
         slr_demolish_cum = slr_demolish.append(slr_demolish_cum)
@@ -1787,7 +1787,7 @@ def hazards_slr_summary(run_number, year, scenario, households, jobs, parcels,
         try:
             hh_unplaced_slr_cum = \
                 orca.get_table("hh_unplaced_slr_cum").to_frame()
-        except:
+        except Exception as e:
             hh_unplaced_slr_cum = pd.DataFrame()
         hh_unplaced_slr = orca.get_injectable("hh_unplaced_slr")
         hh_unplaced_slr_cum = hh_unplaced_slr.append(hh_unplaced_slr_cum)
@@ -1811,7 +1811,7 @@ def hazards_slr_summary(run_number, year, scenario, households, jobs, parcels,
         try:
             jobs_unplaced_slr_cum = \
                 orca.get_table("jobs_unplaced_slr_cum").to_frame()
-        except:
+        except Exception as e:
             jobs_unplaced_slr_cum = pd.DataFrame()
         jobs_unplaced_slr = orca.get_injectable("jobs_unplaced_slr")
         jobs_unplaced_slr_cum = jobs_unplaced_slr.append(jobs_unplaced_slr_cum)

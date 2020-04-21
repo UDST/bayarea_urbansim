@@ -48,7 +48,7 @@ def save_and_restore_state(in_d, outhdf="save_state.h5"):
     for table_name, table in in_d.items():
         try:
             table = table.local
-        except:
+        except Exception as e:
             # not a dataframe wrapper
             continue
         print("Saving", table_name)
