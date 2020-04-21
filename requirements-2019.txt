@@ -1,0 +1,15 @@
+# This environment pins requirements at their versions as of 10-2019
+
+# Install with: pip install -r requirements-2019.txt
+
+numpy == 1.17.*
+pandas == 0.25.*
+
+orca == 1.5.*
+orca_test == 0.1.*
+pandana == 0.3.*
+urbansim == 3.1.*
+urbansim_defaults == 0.2.*
+
+scikit-learn == 0.20.*
+pytables == 3.5.*

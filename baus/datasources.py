@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import numpy as np
 import pandas as pd
 import os
@@ -5,9 +7,10 @@ from urbansim_defaults import datasources
 from urbansim_defaults import utils
 from urbansim.utils import misc
 import orca
-import preprocessing
-from utils import geom_id_to_parcel_id, parcel_id_to_geom_id
-from utils import nearest_neighbor
+from baus import preprocessing
+from baus.utils import geom_id_to_parcel_id, parcel_id_to_geom_id
+from baus.utils import nearest_neighbor
+import yaml
 
 
 #####################
@@ -15,11 +18,46 @@ from utils import nearest_neighbor
 #####################
 
 
+# define new settings files- these have been subdivided from the
+# general settings file
+# this is similar to the code for settings in urbansim_defaults
+@orca.injectable('hazards', cache=True)
+def hazards():
+    with open(os.path.join(misc.configs_dir(), "hazards.yaml")) as f:
+        return yaml.load(f)
+
+
+@orca.injectable('policy', cache=True)
+def policy():
+    with open(os.path.join(misc.configs_dir(), "policy.yaml")) as f:
+        return yaml.load(f)
+
+
+@orca.injectable('inputs', cache=True)
+def inputs():
+
+    with open(os.path.join(misc.configs_dir(), "inputs.yaml")) as f:
+        return yaml.load(f)
+
+
+@orca.injectable('mapping', cache=True)
+def mapping():
+    with open(os.path.join(misc.configs_dir(), "mapping.yaml")) as f:
+        return yaml.load(f)
+
+
+# now that there are new settings files, override the locations of certain
+# settings already defined in urbansim_defaults
+@orca.injectable("building_type_map")
+def building_type_map(mapping):
+    return mapping["building_type_map"]
+
+
 @orca.injectable('year')
 def year():
     try:
         return orca.get_injectable("iter_var")
-    except:
+    except Exception as e:
         pass
     # if we're not running simulation, return base year
     return 2014
@@ -41,7 +79,7 @@ def store(settings):
 
 
 @orca.injectable(cache=True)
-def limits_settings(settings, scenario):
+def limits_settings(policy, scenario):
     # for limits, we inherit from the default
     # limits set the max number of job spaces or res units that may be
     # built per juris for each scenario - usually these represent actual
@@ -50,54 +88,54 @@ def limits_settings(settings, scenario):
     # set up so that fr2 limits can be turned off as needed
     # instead of looking for fr2 limits, the fr1 scenario is used
     if (scenario in ["11", "12", "15"]) and\
-       (scenario not in settings["office_caps_fr2_enable"]):
+       (scenario not in policy["office_caps_fr2_enable"]):
         scenario = str(int(scenario) - 10)
 
-    d = settings['development_limits']
+    d = policy['development_limits']
 
     if scenario in d.keys():
-        print "Using limits for scenario: %s" % scenario
+        print("Using limits for scenario: %s" % scenario)
         assert "default" in d
 
         d_scen = d[scenario]
         d = d["default"]
-        for key, value in d_scen.iteritems():
+        for key, value in d_scen.items():
             d.setdefault(key, {})
             d[key].update(value)
 
         return d
 
-    print "Using default limits"
+    print("Using default limits")
     return d["default"]
 
 
 @orca.injectable(cache=True)
-def inclusionary_housing_settings(settings, scenario):
+def inclusionary_housing_settings(policy, scenario):
     # for inclustionary housing, each scenario is different
     # there is no inheritance
 
-    s = settings['inclusionary_housing_settings']
+    s = policy['inclusionary_housing_settings']
 
     if (scenario in ["11", "12", "15"]) and\
-       (scenario not in settings["inclusionary_fr2_enable"]):
-        print "Using Futures Round 1 (PBA40) inclusionary settings"
+       (scenario not in policy["inclusionary_fr2_enable"]):
+        print("Using Futures Round 1 (PBA40) inclusionary settings")
         fr1 = str(int(scenario) - 10)
         s = s[fr1]
 
     elif scenario in s.keys():
-        print "Using inclusionary settings for scenario: %s" % scenario
+        print("Using inclusionary settings for scenario: %s" % scenario)
         s = s[scenario]
 
     elif "default" in s.keys():
-        print "Using default inclusionary settings"
+        print("Using default inclusionary settings")
         s = s["default"]
 
     d = {}
     for item in s:
         # this is a list of cities with an inclusionary rate that is the
         # same for all the cities in the list
-        print "Setting inclusionary rates for %d cities to %.2f" %\
-            (len(item["values"]), item["amount"])
+        print("Setting inclusionary rates for %d cities to %.2f" %
+              (len(item["values"]), item["amount"]))
         # this is a list of inclusionary rates and the cities they apply
         # to - need tro turn it in a map of city names to rates
         for juris in item["values"]:
@@ -164,8 +202,8 @@ def nrh_config():
 
 
 def get_config_file(type):
-    configs = orca.get_injectable('settings')['model_configs'][type.
-                                                               split('_')[0]]
+    configs = orca.get_injectable('inputs')['model_configs'][type.
+                                                             split('_')[0]]
     sc = orca.get_injectable('scenario')
     sc_cfg = 's{}_{}_config'.format(sc, type)
     gen_cfg = '{}_config'.format(type)
@@ -190,7 +228,7 @@ def fetch_from_s3(settings):
         file = os.path.join("data", file)
         if os.path.exists(file):
             continue
-        print "Downloading " + file
+        print("Downloading " + file)
         key = bucket.get_key(file, validate=False)
         key.get_contents_to_filename(file)
 
@@ -363,20 +401,20 @@ def maz_forecast_inputs(regional_demographic_forecast):
 
 
 @orca.table(cache=True)
-def zoning_scenario(parcels_geography, scenario, settings):
+def zoning_scenario(parcels_geography, scenario, policy, mapping):
 
     if (scenario in ["11", "12", "15"]) and\
-       (scenario not in settings["geographies_fr2_enable"]):
+       (scenario not in policy["geographies_fr2_enable"]):
         scenario = str(int(scenario) - 10)
 
     scenario_zoning = pd.read_csv(
         os.path.join(misc.data_dir(), 'zoning_mods_%s.csv' % scenario))
 
-    for k in settings["building_type_map"].keys():
+    for k in mapping["building_type_map"].keys():
         scenario_zoning[k] = np.nan
 
     def add_drop_helper(col, val):
-        for ind, item in scenario_zoning[col].iteritems():
+        for ind, item in scenario_zoning[col].items():
             if not isinstance(item, str):
                 continue
             for btype in item.split():
@@ -396,7 +434,8 @@ def zoning_scenario(parcels_geography, scenario, settings):
 
 @orca.table(cache=True)
 def parcels(store):
-    return store['parcels']
+    df = store['parcels']
+    return df.loc[df.x.notnull()]
 
 
 @orca.table(cache=True)
@@ -496,7 +535,7 @@ def accessibilities_segmentation():
 
 
 def get_logsum_file(type='mandatory'):
-    logsums = orca.get_injectable('settings')['logsums'][type]
+    logsums = orca.get_injectable('inputs')['logsums'][type]
     sc = orca.get_injectable('scenario')
     yr = orca.get_injectable('year')
     try:
@@ -529,7 +568,7 @@ def get_logsum_file(type='mandatory'):
             else:
                 return orca.get_injectable('previous_{}_logsum_file'
                                            .format(type))
-    except:
+    except Exception as e:
         if 'logsum' in logsums:
             ls = logsums['logsum']
             ls_type = 'generic'
@@ -583,7 +622,7 @@ def get_dev_projects_table(scenario, parcels):
 
     cnts = df.geom_id.isin(parcels.geom_id).value_counts()
     if False in cnts.index:
-        print "%d MISSING GEOMIDS!" % cnts.loc[False]
+        print("%d MISSING GEOMIDS!" % cnts.loc[False])
 
     df = df[df.geom_id.isin(parcels.geom_id)]
 
@@ -604,7 +643,7 @@ def demolish_events(parcels, settings, scenario):
 
 
 @orca.table(cache=True)
-def development_projects(parcels, settings, scenario):
+def development_projects(parcels, mapping, scenario):
     df = get_dev_projects_table(scenario, parcels)
 
     for col in [
@@ -622,7 +661,7 @@ def development_projects(parcels, settings, scenario):
     df["building_type"] = df.building_type.replace("GV", "OF")
     df["building_type"] = df.building_type.replace("SC", "OF")
 
-    building_types = settings["building_type_map"].keys()
+    building_types = mapping["building_type_map"].keys()
     # only deal with building types we recorgnize
     # otherwise hedonics break
     df = df[df.building_type.isin(building_types)]
@@ -634,10 +673,10 @@ def development_projects(parcels, settings, scenario):
     df = df.dropna(subset=["year_built"])
     df = df[df.action.isin(["add", "build"])]
 
-    print "Describe of development projects"
+    print("Describe of development projects")
     # this makes sure dev projects has all the same columns as buildings
     # which is the point of this method
-    print df[orca.get_table('buildings').local_columns].describe()
+    print(df[orca.get_table('buildings').local_columns].describe())
 
     return df
 
@@ -686,7 +725,7 @@ def regional_demographic_forecast():
 
 
 def get_control_file(type):
-    controls = orca.get_injectable('settings')['control_tables'][type]
+    controls = orca.get_injectable('inputs')['control_tables'][type]
     sc = orca.get_injectable('scenario')
     sc_file = 's{}_{}_controls_input_file'.format(sc, type)
     gen_file = '{}_controls_input_file'.format(type)
