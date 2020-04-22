@@ -24,6 +24,10 @@ Commercial data for nores hedonic estimation
 ### 2015_06_01_osm_bayarea4326.h5
 Street net
 
+### 2020_04_13_1512_development_projects.csv	
+
+This is the list of projects that have happened since the base data, or that we think will happen in the future.  It is the development pipeline.  This file tends to have more attributes than we actually use in UrbanSim.
+
 ------------------
 
 ## Data files
@@ -51,10 +55,6 @@ For some reason the current parcels_geography file uses census id instead of nam
 ### deed_restricted_zone_totals.csv	
 
 This is the number of deed restricted units per taz.  We don't have a great idea of exactly where those units are, but we have an aggregate idea, so we usually do a random assignment within that taz.
-
-### development_projects.csv	
-
-This is the list of projects that have happened since the base data, or that we think will happen in the future.  It is the development pipeline.  This file tends to have more attributes than we actually use in UrbanSim.
 
 ### employment_controls.csv
 
