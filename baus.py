@@ -298,6 +298,7 @@ def run_models(MODE, SCENARIO):
                 "elcm_simulate",
 
                 "price_vars",
+                "scheduled_development_events",
 
                 "topsheet",
                 "simulation_validation",
