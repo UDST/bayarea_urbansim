@@ -10,6 +10,7 @@ channels:
 
 dependencies:
   - python=3.6
+  - boto=2.49
   - numpy=1.17
   - orca=1.5
   - pandana=0.4
