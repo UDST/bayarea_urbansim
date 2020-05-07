@@ -209,7 +209,7 @@ def get_simulation_models(SCENARIO):
         # save_intermediate_tables", # saves output for visualization
 
         "topsheet",
-        "simulation_validation",
+        # "simulation_validation",
         "parcel_summary",
         "building_summary",
         "diagnostic_output",
@@ -258,7 +258,8 @@ def run_models(MODE, SCENARIO):
 
     elif MODE == "debug":
 
-        orca.run(["simulation_validation"], [2010])
+        pass
+        # orca.run(["simulation_validation"], [2010])
 
     elif MODE == "simulation":
 
@@ -300,7 +301,7 @@ def run_models(MODE, SCENARIO):
                 "price_vars",
 
                 "topsheet",
-                "simulation_validation",
+                # "simulation_validation",
                 "parcel_summary",
                 "building_summary",
                 "geographic_summary",
