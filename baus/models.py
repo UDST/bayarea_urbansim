@@ -276,7 +276,7 @@ def proportional_elcm(jobs, households, buildings, parcels,
         target_jobs=target_jobs
     )
 
-    jobs.update_col_from_series("building_id", s, cast = True)
+    jobs.update_col_from_series("building_id", s, cast=True)
 
 
 @orca.step()
