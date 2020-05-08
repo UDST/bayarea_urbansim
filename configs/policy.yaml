@@ -12,7 +12,7 @@ geographies_fr2_enable: ["11", "12", "15"]
 office_caps_fr2_enable: ["11", "12", "15"]
 
 # scenarios for futures rounds 2 inclusionary rates
-inclusionary_fr2_enable: ["11", "12", "15"]
+inclusionary_fr2_enable: ["11", "12", "15", "20", "21", "22", "23"]
 
 # scenarios for futures round 2 renter protections
 # these slow household relocation
@@ -1130,6 +1130,274 @@ inclusionary_housing_settings:
       - Dixon
       - Rio Vista
 
+  "20":
+    - type: pba50chcat
+      description: high setting
+      amount: .2
+      values:
+      - GGtra1HRANA
+      - GGtra2HRANA
+      - GGtra3HRANA
+      - GGtra3c2HRANA
+    - type: pba50chcat
+      description: medium setting
+      amount: .15
+      values:
+      - GGNAHRANA
+      - GGtra1NANA
+      - GGtra2NANA
+      - GGtra2c1NANA
+    - type: pba50chcat
+      description: low setting
+      amount: .1
+      values:
+      - GGNADRNA
+      - GGNADRppa
+      - GGNAHRADRNA
+      - GGNANANA
+      - GGNANAppa
+      - GGtra1DRNA
+      - GGtra1HRADRNA
+      - GGtra2DRNA
+      - GGtra2DRppa
+      - GGtra2HRADRNA
+      - GGtra3DRNA
+      - GGtra3DRppa
+      - GGtra3HRADRNA
+      - GGtra3NANA
+      - GGtra3NAppa
+      - GGtra3c1DRNA
+      - GGtra3c1NANA
+      - GGtra3c2DRNA
+      - GGtra3c2HRADRNA
+      - GGtra3c2NANA
+      - NANADRNA
+      - NANADRppa
+      - NANAHRADRNA
+      - NANAHRADRppa
+      - NANAHRANA
+      - NANANANA
+      - NANANAppa
+      - NAtra1DRNA
+      - NAtra1HRADRNA
+      - NAtra1HRANA
+      - NAtra1NANA
+      - NAtra2DRNA
+      - NAtra2HRADRNA
+      - NAtra2HRANA
+      - NAtra2NANA
+      - NAtra2c1NANA
+      - NAtra3DRNA
+      - NAtra3DRppa
+      - NAtra3HRADRNA
+      - NAtra3HRANA
+      - NAtra3NANA
+      - NAtra3NAppa
+      - NAtra3c2DRNA
+      - NAtra3c2HRADRNA
+      - NAtra3c2HRANA
+      - NAtra3c2NANA
+  "21":
+    - type: pba50chcat
+      description: high setting
+      amount: .2
+      values:
+      - GGtra1HRANA
+      - GGtra2HRANA
+      - GGtra3HRANA
+      - GGtra3c2HRANA
+    - type: pba50chcat
+      description: medium setting
+      amount: .15
+      values:
+      - GGNAHRANA
+      - GGtra1NANA
+      - GGtra2NANA
+      - GGtra2c1NANA
+    - type: pba50chcat
+      description: low setting
+      amount: .1
+      values:
+      - GGNADRNA
+      - GGNADRppa
+      - GGNAHRADRNA
+      - GGNANANA
+      - GGNANAppa
+      - GGtra1DRNA
+      - GGtra1HRADRNA
+      - GGtra2DRNA
+      - GGtra2DRppa
+      - GGtra2HRADRNA
+      - GGtra3DRNA
+      - GGtra3DRppa
+      - GGtra3HRADRNA
+      - GGtra3NANA
+      - GGtra3NAppa
+      - GGtra3c1DRNA
+      - GGtra3c1NANA
+      - GGtra3c2DRNA
+      - GGtra3c2HRADRNA
+      - GGtra3c2NANA
+      - NANADRNA
+      - NANADRppa
+      - NANAHRADRNA
+      - NANAHRADRppa
+      - NANAHRANA
+      - NANANANA
+      - NANANAppa
+      - NAtra1DRNA
+      - NAtra1HRADRNA
+      - NAtra1HRANA
+      - NAtra1NANA
+      - NAtra2DRNA
+      - NAtra2HRADRNA
+      - NAtra2HRANA
+      - NAtra2NANA
+      - NAtra2c1NANA
+      - NAtra3DRNA
+      - NAtra3DRppa
+      - NAtra3HRADRNA
+      - NAtra3HRANA
+      - NAtra3NANA
+      - NAtra3NAppa
+      - NAtra3c2DRNA
+      - NAtra3c2HRADRNA
+      - NAtra3c2HRANA
+      - NAtra3c2NANA
+  "22":
+    - type: pba50chcat
+      description: high setting
+      amount: .2
+      values:
+      - GGtra1HRANA
+      - GGtra2HRANA
+      - GGtra3HRANA
+      - GGtra3c2HRANA
+    - type: pba50chcat
+      description: medium setting
+      amount: .15
+      values:
+      - GGNAHRANA
+      - GGtra1NANA
+      - GGtra2NANA
+      - GGtra2c1NANA
+    - type: pba50chcat
+      description: low setting
+      amount: .1
+      values:
+      - GGNADRNA
+      - GGNADRppa
+      - GGNAHRADRNA
+      - GGNANANA
+      - GGNANAppa
+      - GGtra1DRNA
+      - GGtra1HRADRNA
+      - GGtra2DRNA
+      - GGtra2DRppa
+      - GGtra2HRADRNA
+      - GGtra3DRNA
+      - GGtra3DRppa
+      - GGtra3HRADRNA
+      - GGtra3NANA
+      - GGtra3NAppa
+      - GGtra3c1DRNA
+      - GGtra3c1NANA
+      - GGtra3c2DRNA
+      - GGtra3c2HRADRNA
+      - GGtra3c2NANA
+      - NANADRNA
+      - NANADRppa
+      - NANAHRADRNA
+      - NANAHRADRppa
+      - NANAHRANA
+      - NANANANA
+      - NANANAppa
+      - NAtra1DRNA
+      - NAtra1HRADRNA
+      - NAtra1HRANA
+      - NAtra1NANA
+      - NAtra2DRNA
+      - NAtra2HRADRNA
+      - NAtra2HRANA
+      - NAtra2NANA
+      - NAtra2c1NANA
+      - NAtra3DRNA
+      - NAtra3DRppa
+      - NAtra3HRADRNA
+      - NAtra3HRANA
+      - NAtra3NANA
+      - NAtra3NAppa
+      - NAtra3c2DRNA
+      - NAtra3c2HRADRNA
+      - NAtra3c2HRANA
+      - NAtra3c2NANA
+  "23":
+    - type: pba50chcat
+      description: high setting
+      amount: .2
+      values:
+      - GGtra1HRANA
+      - GGtra2HRANA
+      - GGtra3HRANA
+      - GGtra3c2HRANA
+    - type: pba50chcat
+      description: medium setting
+      amount: .15
+      values:
+      - GGNAHRANA
+      - GGtra1NANA
+      - GGtra2NANA
+      - GGtra2c1NANA
+      - GGtra3c1NANA
+      - GGtra3c2NANA
+    - type: pba50chcat
+      description: low setting
+      amount: .1
+      values:
+      - GGNADRNA
+      - GGNADRppa
+      - GGNAHRADRNA
+      - GGNANANA
+      - GGNANAppa
+      - GGtra1DRNA
+      - GGtra1HRADRNA
+      - GGtra2DRNA
+      - GGtra2DRppa
+      - GGtra2HRADRNA
+      - GGtra3DRNA
+      - GGtra3DRppa
+      - GGtra3HRADRNA
+      - GGtra3NANA
+      - GGtra3NAppa
+      - GGtra3c1DRNA
+      - GGtra3c2DRNA
+      - GGtra3c2HRADRNA
+      - NANADRNA
+      - NANADRppa
+      - NANAHRADRNA
+      - NANAHRADRppa
+      - NANAHRANA
+      - NANANANA
+      - NANANAppa
+      - NAtra1DRNA
+      - NAtra1HRADRNA
+      - NAtra1HRANA
+      - NAtra1NANA
+      - NAtra2DRNA
+      - NAtra2HRADRNA
+      - NAtra2HRANA
+      - NAtra2NANA
+      - NAtra2c1NANA
+      - NAtra3DRNA
+      - NAtra3DRppa
+      - NAtra3HRADRNA
+      - NAtra3HRANA
+      - NAtra3NANA
+      - NAtra3NAppa
+      - NAtra3c2DRNA
+      - NAtra3c2HRADRNA
+      - NAtra3c2HRANA
+      - NAtra3c2NANA
 
 # these are the settings for various policies that are in play
 acct_settings:
