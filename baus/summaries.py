@@ -200,14 +200,9 @@ def config(policy, inputs, run_number, scenario, parcels,
         for item in s[fr1]:
             write("Inclusionary rates are FR1: %d cities are set to %.2f" %
                   (len(item["values"]), item["amount"]))
-    elif (scenario in s.keys()) &\
-         (scenario not in ["20", "21", "22", "23"]):
+    elif scenario in s.keys():
         for item in s[scenario]:
             write("Inclusionary rates for %d cities are set to %.2f" %
-                  (len(item["values"]), item["amount"]))
-    elif scenario in ["20", "21", "22", "23"]:
-        for item in s[scenario]:
-            write("Inclusionary rates for %d pba50zoningmodcat are set to %.2f" %
                   (len(item["values"]), item["amount"]))
     else:
         write("Inclusionary housing is using the default settings")
