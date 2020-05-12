@@ -615,7 +615,7 @@ def reprocess_dev_projects(df):
 # shared between demolish and build tables below
 def get_dev_projects_table(scenario, parcels):
     df = pd.read_csv(os.path.join(misc.data_dir(),
-                     "2020_04_13_1512_development_projects.csv"))
+                     "2020_0506_1650_development_projects.csv"))
     df = reprocess_dev_projects(df)
 
     # this filters project by scenario
