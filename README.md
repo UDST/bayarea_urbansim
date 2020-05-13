@@ -9,7 +9,7 @@ This is the DRAFT UrbanSim implementation for the Bay Area. Policy documentation
 
 Bay Area UrbanSim is written in Python and runs in a command line environment. It's compatible with MacOS, Windows, and Linux, and with Python 2.7 and 3.5+. Python 3 is recommended.
 
-1. Install the [Anaconda Python](https://www.anaconda.com/products/individual#Downloads) distribution (not strictly required, but easy and reliable)
+1. Install the [Anaconda Python](https://www.anaconda.com/products/individual#Downloads) distribution (not strictly required, but makes things easier and more reliable)
 2. Clone this repository
 3. Download base data from this [Box folder](https://app.box.com/folder/52679598048) and move the files to `bayarea_urbansim/data/` (ask an MTC contact for access)
 3. Create a Python environment with the current dependencies: `conda env create -f baus-env-2020.yml`
