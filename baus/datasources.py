@@ -285,7 +285,7 @@ def zoning_lookup():
 @orca.table(cache=True)
 def zoning_baseline(parcels, zoning_lookup, settings):
     df = pd.read_csv(os.path.join(misc.data_dir(),
-                     "2015_12_21_zoning_parcels.csv"),
+                     "2020_04_15_zoning_parcels.csv"),
                      index_col="geom_id")
     df = pd.merge(df, zoning_lookup.to_frame(),
                   left_on="zoning_id", right_index=True)
@@ -423,8 +423,12 @@ def zoning_scenario(parcels_geography, scenario, policy, mapping):
     add_drop_helper("add_bldg", 1)
     add_drop_helper("drop_bldg", 0)
 
-    join_col = 'zoninghzcat' if 'zoninghzcat' in\
-        scenario_zoning.columns else 'zoningmodcat'
+    if 'pba50zoningmodcat' in scenario_zoning.columns:
+        join_col = 'pba50zoningmodcat'
+    elif 'zoninghzcat' in scenario_zoning.columns:
+        join_col = 'zoninghzcat'
+    else:
+        join_col = 'zoningmodcat'
 
     return pd.merge(parcels_geography.to_frame().reset_index(),
                     scenario_zoning,
@@ -457,7 +461,7 @@ def parcel_rejections():
 @orca.table(cache=True)
 def parcels_geography(parcels, scenario, settings):
     df = pd.read_csv(
-        os.path.join(misc.data_dir(), "07_11_2019_parcels_geography.csv"),
+        os.path.join(misc.data_dir(), "2020_04_17_parcels_geography.csv"),
         index_col="geom_id")
     df = geom_id_to_parcel_id(df, parcels)
 
@@ -610,7 +614,8 @@ def reprocess_dev_projects(df):
 
 # shared between demolish and build tables below
 def get_dev_projects_table(scenario, parcels):
-    df = pd.read_csv(os.path.join(misc.data_dir(), "development_projects.csv"))
+    df = pd.read_csv(os.path.join(misc.data_dir(),
+                     "2020_0506_1650_development_projects.csv"))
     df = reprocess_dev_projects(df)
 
     # this filters project by scenario
