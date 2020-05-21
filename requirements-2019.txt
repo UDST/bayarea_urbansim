@@ -1,9 +1,11 @@
-# This environment pins requirements at their versions as of 10-2019
+# This environment pins requirements at their versions as of Oct-2019, updated Apr-2020
+# Compatible with both Python 2.7 and 3.6+
 
 # Install with: pip install -r requirements-2019.txt
 
-numpy == 1.17.*
-pandas == 0.25.*
+numpy == 1.16.*
+pandas == 0.24.*
+statsmodels == 0.10.*
 
 orca == 1.5.*
 orca_test == 0.1.*
