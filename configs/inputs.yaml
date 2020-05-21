@@ -12,6 +12,7 @@ control_tables:
     s15_household_controls_input_file: household_controls_s15.csv
     s16_household_controls_input_file: household_controls_s16.csv
     s17_household_controls_input_file: household_controls_s17.csv
+    s21_household_controls_input_file: household_controls_s21.csv
   employment:
     employment_controls_input_file: employment_controls.csv
     s1_employment_controls_input_file: employment_controls_s1.csv
@@ -23,6 +24,7 @@ control_tables:
     s11_employment_controls_input_file: employment_controls_s11.csv
     s12_employment_controls_input_file: employment_controls_s12.csv
     s15_employment_controls_input_file: employment_controls_s15.csv
+    s21_employment_controls_input_file: employment_controls_s21.csv
   regional:
     regional_controls_input_file: regional_controls.csv
     s1_regional_controls_input_file: regional_controls_s1.csv
@@ -36,6 +38,7 @@ control_tables:
     s15_regional_controls_input_file: regional_controls_s15.csv
     s16_regional_controls_input_file: regional_controls_s16.csv
     s17_regional_controls_input_file: regional_controls_s17.csv
+    s21_regional_controls_input_file: regional_controls_s21.csv
   demographic_forecast:
     demographic_forecast_controls_input_file: regional_demographic_forecast.csv
     s1_demographic_forecast_controls_input_file: regional_demographic_forecast_s1.csv
@@ -47,6 +50,7 @@ control_tables:
     s11_demographic_forecast_controls_input_file: regional_demographic_forecast_s11.csv
     s12_demographic_forecast_controls_input_file: regional_demographic_forecast_s12.csv
     s15_demographic_forecast_controls_input_file: regional_demographic_forecast_s15.csv
+    s21_demographic_forecast_controls_input_file: regional_demographic_forecast_s21.csv
 
 
 logsums:
