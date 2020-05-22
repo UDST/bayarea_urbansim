@@ -122,7 +122,8 @@ def inclusionary_housing_settings(policy, scenario):
         fr1 = str(int(scenario) - 10)
         s = s[fr1]
 
-    elif scenario in s.keys():
+    elif (scenario in policy["inclusionary_blp_enable"]) and\
+         (scenario in s.keys()):
         print("Using inclusionary settings for scenario: %s" % scenario)
         s = s[scenario]
 
@@ -130,28 +131,28 @@ def inclusionary_housing_settings(policy, scenario):
         print("Using default inclusionary settings")
         s = s["default"]
 
-    # d = {}
-    # for item in s:
-    #     # this is a list of cities with an inclusionary rate that is the
-    #     # same for all the cities in the list
-    #     print("Setting inclusionary rates for %d cities to %.2f" %
-    #           (len(item["values"]), item["amount"]))
-    #     # this is a list of inclusionary rates and the cities they apply
-    #     # to - need tro turn it in a map of city names to rates
-    #     for juris in item["values"]:
-    #         d[juris] = item["amount"]
-
     d = {}
-    for item in s:
-        # this is a list of pba50chcat with an inclusionary rate that is the
-        # same for all the pba50chcat in the list
-        print("Setting inclusionary rates for %d pba50chcat to %.2f" %
-              (len(item["values"]), item["amount"]))
-        # this is a list of inclusionary rates and the cities they apply
-        # to - need tro turn it in a map of city names to rates
-        for pba50chcat in item["values"]:
-            d[pba50chcat] = item["amount"]
-    
+    if (scenario in policy["inclusionary_blp_enable"]):
+        for item in s:
+            # this is a list of pba50chcat with an inclusionary rate that is the
+            # same for all the pba50chcat in the list
+            print("Setting inclusionary rates for %d pba50chcat to %.2f" %
+                (len(item["values"]), item["amount"]))
+            # this is a list of inclusionary rates and the cities they apply
+            # to - need tro turn it in a map of city names to rates
+            for pba50chcat in item["values"]:
+                d[pba50chcat] = item["amount"]
+    else: 
+        for item in s:
+            # this is a list of cities with an inclusionary rate that is the
+            # same for all the cities in the list
+            print("Setting inclusionary rates for %d cities to %.2f" %
+                (len(item["values"]), item["amount"]))
+            # this is a list of inclusionary rates and the cities they apply
+            # to - need tro turn it in a map of city names to rates
+            for juris in item["values"]:
+                d[juris] = item["amount"]
+
     return d
 
 
