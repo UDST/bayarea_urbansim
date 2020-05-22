@@ -103,8 +103,8 @@ def inclusionary_housing_revenue_reduction(feasibility, units):
     parcels_geography = orca.get_table("parcels_geography")
     h = orca.merge_tables("households",
                           [households, buildings, parcels_geography],
-                          columns=["juris_name", "income"])
-    AMI = h.groupby(h.juris_name).income.quantile(.5)
+                          columns=["juris_name", "income","pba50chcat"])
+    AMI = h.groupby(h.pba50chcat).income.quantile(.5)
 
     # per Aksel Olsen (@akselx)
     # take 90% of AMI and multiple by 33% to get the max amount a
