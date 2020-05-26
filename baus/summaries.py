@@ -201,8 +201,8 @@ def config(policy, inputs, run_number, scenario, parcels,
             write("Inclusionary rates are FR1: %d cities are set to %.2f" %
                   (len(item["values"]), item["amount"]))
     elif scenario in policy["inclusionary_blp_enable"]:
-    	for item in s[scenario]:
-    		write("Inclusionary rates for %d pba50zoningmodcat are set to %.2f" %
+        for item in s[scenario]:
+            write("Inclusionary rates for %d pba50zoningmodcat are set to %.2f" %
                   (len(item["values"]), item["amount"]))
     elif scenario in s.keys():
         for item in s[scenario]:
