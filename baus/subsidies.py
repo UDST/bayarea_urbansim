@@ -103,13 +103,15 @@ def inclusionary_housing_revenue_reduction(feasibility, units):
     parcels_geography = orca.get_table("parcels_geography")
     if orca.get_injectable("scenario") in ["20", "21", "22", "23"]:
         h = orca.merge_tables("households",
-                            [households, buildings, parcels_geography],
-                            columns=["juris_name", "income","pba50chcat"])
+                              [households, buildings, parcels_geography],
+                              columns=["juris_name",
+                                       "income",
+                                       "pba50chcat"])
         AMI = h.groupby(h.pba50chcat).income.quantile(.5)
     else:
         h = orca.merge_tables("households",
-                            [households, buildings, parcels_geography],
-                            columns=["juris_name", "income"])
+                              [households, buildings, parcels_geography],
+                              columns=["juris_name", "income"])
         AMI = h.groupby(h.juris_name).income.quantile(.5)
 
     # per Aksel Olsen (@akselx)
