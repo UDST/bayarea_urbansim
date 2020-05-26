@@ -1004,23 +1004,25 @@ def travel_model_output(parcels, households, jobs, buildings,
         # only summarize for years which are multiples of 5
         return
 
+    parcels = parcels.to_frame()
+    parcels["zone_id_x"] = parcels.zone_id
+    orca.add_table('parcels', parcels)
+    parcels = orca.get_table("parcels")
+
     households_df = orca.merge_tables('households',
                                       [parcels, buildings, households],
-                                      columns=['zone_id',
+                                      columns=['zone_id', 'zone_id_x',
                                                'base_income_quartile',
                                                'income', 'persons',
                                                'maz_id'])
+
+    households_df["zone_id"] = households_df.zone_id_x
 
     taz_df = pd.DataFrame(index=zones.index)
 
     taz_df["sd"] = taz_geography.superdistrict
     taz_df["zone"] = zones.index
     taz_df["county"] = taz_geography.county
-
-    parcels = parcels.to_frame()
-    parcels["zone_id_x"] = parcels.zone_id
-    orca.add_table('parcels', parcels)
-    parcels = orca.get_table("parcels")
 
     jobs_df = orca.merge_tables(
         'jobs',
@@ -1039,6 +1041,10 @@ def travel_model_output(parcels, households, jobs, buildings,
     # however on lumodel, these duplicate columns don't get created in the
     # merge so a copy of zone_id (zone_id_x) is added to parcels to ensure
     # it doesn't get dropped
+
+    # the same has now been repeated for households (as described with lumodel)
+    # no duplicate zone_ids emerged to use, so one was created from parcels
+    # a taz column existed, but was not consistently the same as zone_id
 
     jobs_df["zone_id"] = jobs_df.zone_id_x
 
