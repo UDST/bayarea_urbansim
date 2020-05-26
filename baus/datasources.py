@@ -134,20 +134,20 @@ def inclusionary_housing_settings(policy, scenario):
     d = {}
     if (scenario in policy["inclusionary_blp_enable"]):
         for item in s:
-            # this is a list of pba50chcat with an inclusionary rate that is the
-            # same for all the pba50chcat in the list
+            # this is a list of pba50chcat with an inclusionary rate that is
+            # the same for all the pba50chcat in the list
             print("Setting inclusionary rates for %d pba50chcat to %.2f" %
-                (len(item["values"]), item["amount"]))
+                  (len(item["values"]), item["amount"]))
             # this is a list of inclusionary rates and the cities they apply
             # to - need tro turn it in a map of city names to rates
             for pba50chcat in item["values"]:
                 d[pba50chcat] = item["amount"]
-    else: 
+    else:
         for item in s:
             # this is a list of cities with an inclusionary rate that is the
             # same for all the cities in the list
             print("Setting inclusionary rates for %d cities to %.2f" %
-                (len(item["values"]), item["amount"]))
+                  (len(item["values"]), item["amount"]))
             # this is a list of inclusionary rates and the cities they apply
             # to - need tro turn it in a map of city names to rates
             for juris in item["values"]:
@@ -437,7 +437,8 @@ def zoning_scenario(parcels_geography, scenario, policy, mapping):
 
     if 'pba50zoningmodcat' in scenario_zoning.columns:
         join_col = 'pba50zoningmodcat'
-        print("use column ", join_col, 'of pba50zoningmodcat scenario ', scenario)
+        print("use column ", join_col,
+              'of pba50zoningmodcat scenario ', scenario)
     elif 'zoninghzcat' in scenario_zoning.columns:
         join_col = 'zoninghzcat'
     else:
