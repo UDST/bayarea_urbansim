@@ -60,16 +60,16 @@ def allocate_jobs(baseyear_taz_controls, mapping, buildings, parcels):
 
         weights = potential_add_locations / potential_add_locations.sum()
 
-        try:
+        if len(potential_add_locations) > 0:
             buildings_ids = potential_add_locations.sample(
                 cnt, replace=True, weights=weights)
 
             df["building_id"][df.taz == taz] = buildings_ids.index.values
 
-        except:
-            # TO DO - determine how to deal with this
-            print("Error in TAZ {}: {} potential locations and {} jobs".format(
-                taz, len(potential_add_locations), cnt))                
+        else:
+            # no locations for jobs; needs to be dealt with on the data side
+            print("ERROR in TAZ {}: {} jobs, {} potential locations".format(
+                taz, cnt, len(potential_add_locations)))
 
     s = zone_id.loc[df.building_id].value_counts()
     # assert that we at least got the total employment right after assignment
