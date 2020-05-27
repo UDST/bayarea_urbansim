@@ -214,7 +214,7 @@ def proportional_elcm(jobs, households, buildings, parcels,
         location_options
     )
 
-    jobs.update_col_from_series("building_id", s)
+    jobs.update_col_from_series("building_id", s, cast=True)
 
     # first read the file from disk - it's small so no table source
     taz_assumptions_df = pd.read_csv(os.path.join(
