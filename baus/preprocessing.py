@@ -60,8 +60,8 @@ def allocate_jobs(baseyear_taz_controls, mapping, buildings, parcels):
 
         weights = potential_add_locations / potential_add_locations.sum()
 
-        # print taz, len(potential_add_locations),\
-        #     potential_add_locations.sum(), cnt
+        print(taz, len(potential_add_locations),\
+            potential_add_locations.sum(), cnt)
 
         buildings_ids = potential_add_locations.sample(
             cnt, replace=True, weights=weights)
@@ -97,10 +97,10 @@ def move_jobs_from_portola_to_san_mateo_county(parcels, buildings, jobs_df):
 
 
 @orca.step()
-def preproc_jobs(store, baseyear_taz_controls, settings, parcels):
+def preproc_jobs(store, baseyear_taz_controls, mapping, parcels):
     buildings = store['buildings']
 
-    jobs = allocate_jobs(baseyear_taz_controls, settings, buildings, parcels)
+    jobs = allocate_jobs(baseyear_taz_controls, mapping, buildings, parcels)
     jobs = move_jobs_from_portola_to_san_mateo_county(parcels, buildings, jobs)
     store['jobs_preproc'] = jobs
 
