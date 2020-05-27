@@ -434,7 +434,8 @@ def zoning_scenario(parcels_geography, scenario, policy, mapping):
 
 @orca.table(cache=True)
 def parcels(store):
-    return store['parcels']
+    df = store['parcels']
+    return df.loc[df.x.notnull()]
 
 
 @orca.table(cache=True)
@@ -613,9 +614,10 @@ def get_dev_projects_table(scenario, parcels):
     df = reprocess_dev_projects(df)
 
     # this filters project by scenario
-    if scenario in df:
+    scen = 'scen' + str(scenario)
+    if scen in df:
         # df[scenario] is 1s and 0s indicating whether to include it
-        df = df[df[scenario].astype('bool')]
+        df = df[df[scen].astype('bool')]
 
     df = df.dropna(subset=['geom_id'])
 

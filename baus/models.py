@@ -214,7 +214,7 @@ def proportional_elcm(jobs, households, buildings, parcels,
         location_options
     )
 
-    jobs.update_col_from_series("building_id", s)
+    jobs.update_col_from_series("building_id", s, cast=True)
 
     # first read the file from disk - it's small so no table source
     taz_assumptions_df = pd.read_csv(os.path.join(
@@ -276,7 +276,7 @@ def proportional_elcm(jobs, households, buildings, parcels,
         target_jobs=target_jobs
     )
 
-    jobs.update_col_from_series("building_id", s)
+    jobs.update_col_from_series("building_id", s, cast=True)
 
 
 @orca.step()
@@ -338,7 +338,7 @@ def household_relocation(households, household_relocation_rates,
 
     # set households that are moving to a building_id of -1 (means unplaced)
     households.update_col_from_series("building_id",
-                                      pd.Series(-1, index=index).astype('int'))
+                                      pd.Series(-1, index=index), cast=True)
 
 
 # this deviates from the step in urbansim_defaults only in how it deals with
@@ -349,8 +349,8 @@ def household_relocation(households, household_relocation_rates,
 def scheduled_development_events(buildings, development_projects,
                                  demolish_events, summary, year, parcels,
                                  mapping, years_per_iter, parcels_geography,
-                                 building_sqft_per_job, vmt_fee_categories):
-
+                                 building_sqft_per_job, vmt_fee_categories,
+                                 static_parcels):
     # first demolish
     demolish = demolish_events.to_frame().\
         query("%d <= year_built < %d" % (year, year + years_per_iter))
@@ -360,6 +360,10 @@ def scheduled_development_events(buildings, development_projects,
         buildings.to_frame(buildings.local_columns),
         demolish,
         unplace_agents=["households", "jobs"])
+    orca.add_injectable('static_parcels',
+                        np.append(static_parcels,
+                                  demolish.loc[demolish.action == 'build',
+                                               'parcel_id']))
     orca.add_table("buildings", buildings)
     buildings = orca.get_table("buildings")
     print("Demolished %d buildings" % (l1 - len(buildings)))
