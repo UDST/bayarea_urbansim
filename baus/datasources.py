@@ -122,8 +122,7 @@ def inclusionary_housing_settings(policy, scenario):
         fr1 = str(int(scenario) - 10)
         s = s[fr1]
 
-    elif (scenario in policy["inclusionary_d_b_enable"]) and\
-         (scenario in s.keys()):
+    elif scenario in s.keys():
         print("Using inclusionary settings for scenario: %s" % scenario)
         s = s[scenario]
 
