@@ -134,12 +134,14 @@ def inclusionary_housing_settings(policy, scenario):
     d = {}
     if (scenario in policy["inclusionary_d_b_enable"]):
         for item in s:
-            # this is a list of pba50chcat with an inclusionary rate that is
-            # the same for all the pba50chcat in the list
-            print("Setting inclusionary rates for %d pba50chcat to %.2f" %
-                  (len(item["values"]), item["amount"]))
-            # this is a list of inclusionary rates and the cities they apply
-            # to - need tro turn it in a map of city names to rates
+            # this is a list of Blueprint strategy geographies - represented
+            # by pba50chcat - with an inclusionary rate that is the same
+            # for all the pba50chcats in the list
+            print("Setting inclusionary rates for geographies %d pba50chcat \
+                  to %.2f" % (len(item["values"]), item["amount"]))
+            # this is a list of inclusionary rates and the pba50chcat
+            # geographies they apply to - need to turn it in a map
+            # of pba50chcat names to rates
             for pba50chcat in item["values"]:
                 d[pba50chcat] = item["amount"]
     else:
@@ -149,7 +151,7 @@ def inclusionary_housing_settings(policy, scenario):
             print("Setting inclusionary rates for %d cities to %.2f" %
                   (len(item["values"]), item["amount"]))
             # this is a list of inclusionary rates and the cities they apply
-            # to - need tro turn it in a map of city names to rates
+            # to - need to turn it in a map of city names to rates
             for juris in item["values"]:
                 d[juris] = item["amount"]
 
