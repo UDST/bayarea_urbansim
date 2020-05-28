@@ -439,8 +439,6 @@ def zoning_scenario(parcels_geography, scenario, policy, mapping):
 
     if 'pba50zoningmodcat' in scenario_zoning.columns:
         join_col = 'pba50zoningmodcat'
-        print("use column ", join_col,
-              'of pba50zoningmodcat scenario ', scenario)
     elif 'zoninghzcat' in scenario_zoning.columns:
         join_col = 'zoninghzcat'
     else:
