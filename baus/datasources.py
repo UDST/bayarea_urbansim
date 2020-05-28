@@ -122,7 +122,7 @@ def inclusionary_housing_settings(policy, scenario):
         fr1 = str(int(scenario) - 10)
         s = s[fr1]
 
-    elif (scenario in policy["inclusionary_blp_enable"]) and\
+    elif (scenario in policy["inclusionary_d_b_enable"]) and\
          (scenario in s.keys()):
         print("Using inclusionary settings for scenario: %s" % scenario)
         s = s[scenario]
@@ -132,7 +132,7 @@ def inclusionary_housing_settings(policy, scenario):
         s = s["default"]
 
     d = {}
-    if (scenario in policy["inclusionary_blp_enable"]):
+    if (scenario in policy["inclusionary_d_b_enable"]):
         for item in s:
             # this is a list of pba50chcat with an inclusionary rate that is
             # the same for all the pba50chcat in the list
