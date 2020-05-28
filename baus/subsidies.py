@@ -138,26 +138,51 @@ def inclusionary_housing_revenue_reduction(feasibility, units):
     # there's a lot more nuance to inclusionary percentages than this -
     # e.g. specific neighborhoods get specific amounts -
     # http://sf-moh.org/modules/showdocument.aspx?documentid=7253
-
+    
     pct_inclusionary = orca.get_injectable("inclusionary_housing_settings")
-    pba50chcat = parcels_geography.pba50chcat.loc[feasibility.index]
-    pct_affordable = pba50chcat.map(pct_inclusionary).fillna(0)
-    value_can_afford = pba50chcat.map(value_can_afford)
 
-    num_affordable_units = (units * pct_affordable).fillna(0).astype("int")
+    # for Blueprint scenarios, calculate revenue reduction by  
+    # Blueprint strategy geogrphies pba50chcat
+    if orca.get_injectable("scenario") in ["20", "21", "22", "23"]:
+        pba50chcat = parcels_geography.pba50chcat.loc[feasibility.index]
+        pct_affordable = pba50chcat.map(pct_inclusionary).fillna(0)
+        value_can_afford = pba50chcat.map(value_can_afford)
 
-    ave_price_per_unit = \
-        feasibility[('residential', 'building_revenue')] / units
+        num_affordable_units = (units * pct_affordable).fillna(0).astype("int")
 
-    revenue_diff_per_unit = (ave_price_per_unit - value_can_afford).fillna(0)
-    print("Revenue difference per unit (not zero values)")
-    print(revenue_diff_per_unit[revenue_diff_per_unit > 0].describe())
+        ave_price_per_unit = \
+            feasibility[('residential', 'building_revenue')] / units
 
-    revenue_reduction = revenue_diff_per_unit * num_affordable_units
+        revenue_diff_per_unit = (ave_price_per_unit - value_can_afford).fillna(0)
+        print("Revenue difference per unit (not zero values)")
+        print(revenue_diff_per_unit[revenue_diff_per_unit > 0].describe())
 
-    s = num_affordable_units.groupby(parcels_geography.pba50chcat).sum()
-    print("Feasibile affordable units by pba50chcat")
-    print(s[s > 0].sort_values())
+        revenue_reduction = revenue_diff_per_unit * num_affordable_units
+
+        s = num_affordable_units.groupby(parcels_geography.pba50chcat).sum()
+        print("Feasibile affordable units by Blueprint geogrphies pba50chcat")
+        print(s[s > 0].sort_values())
+
+    # otherwise, calculate by jurisdiction
+    else:
+        juris_name = parcels_geography.juris_name.loc[feasibility.index]
+        pct_affordable = juris_name.map(pct_inclusionary).fillna(0)
+        value_can_afford = juris_name.map(value_can_afford)
+
+        num_affordable_units = (units * pct_affordable).fillna(0).astype("int")
+
+        ave_price_per_unit = \
+            feasibility[('residential', 'building_revenue')] / units
+
+        revenue_diff_per_unit = (ave_price_per_unit - value_can_afford).fillna(0)
+        print("Revenue difference per unit (not zero values)")
+        print(revenue_diff_per_unit[revenue_diff_per_unit > 0].describe())
+
+        revenue_reduction = revenue_diff_per_unit * num_affordable_units
+
+        s = num_affordable_units.groupby(parcels_geography.juris_name).sum()
+        print("Feasibile affordable units by jurisdiction")
+        print(s[s > 0].sort_values())
 
     return revenue_reduction, num_affordable_units
 
