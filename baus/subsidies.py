@@ -138,10 +138,10 @@ def inclusionary_housing_revenue_reduction(feasibility, units):
     # there's a lot more nuance to inclusionary percentages than this -
     # e.g. specific neighborhoods get specific amounts -
     # http://sf-moh.org/modules/showdocument.aspx?documentid=7253
-    
+
     pct_inclusionary = orca.get_injectable("inclusionary_housing_settings")
 
-    # for Blueprint scenarios, calculate revenue reduction by  
+    # for Blueprint scenarios, calculate revenue reduction by
     # Blueprint strategy geogrphies pba50chcat
     if orca.get_injectable("scenario") in ["20", "21", "22", "23"]:
         pba50chcat = parcels_geography.pba50chcat.loc[feasibility.index]
@@ -153,7 +153,8 @@ def inclusionary_housing_revenue_reduction(feasibility, units):
         ave_price_per_unit = \
             feasibility[('residential', 'building_revenue')] / units
 
-        revenue_diff_per_unit = (ave_price_per_unit - value_can_afford).fillna(0)
+        revenue_diff_per_unit = \
+            (ave_price_per_unit - value_can_afford).fillna(0)
         print("Revenue difference per unit (not zero values)")
         print(revenue_diff_per_unit[revenue_diff_per_unit > 0].describe())
 
@@ -174,7 +175,8 @@ def inclusionary_housing_revenue_reduction(feasibility, units):
         ave_price_per_unit = \
             feasibility[('residential', 'building_revenue')] / units
 
-        revenue_diff_per_unit = (ave_price_per_unit - value_can_afford).fillna(0)
+        revenue_diff_per_unit = \
+            (ave_price_per_unit - value_can_afford).fillna(0)
         print("Revenue difference per unit (not zero values)")
         print(revenue_diff_per_unit[revenue_diff_per_unit > 0].describe())
 
