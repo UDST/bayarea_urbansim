@@ -116,7 +116,7 @@ def inclusionary_housing_settings(policy, scenario):
 
     s = policy['inclusionary_housing_settings']
 
-    if (scenario in ["11", "12", "15"]) and\
+    if (scenario in ["foo", "11", "12", "15"]) and\
        (scenario not in policy["inclusionary_fr2_enable"]):
         print("Using Futures Round 1 (PBA40) inclusionary settings")
         fr1 = str(int(scenario) - 10)
