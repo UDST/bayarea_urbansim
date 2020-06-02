@@ -886,6 +886,27 @@ def slr_parcel_inundation_mp():
         index_col='parcel_id')
 
 
+@orca.table(cache=True)
+def slr_parcel_inundation_d_b():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "slr_parcel_inundation_d_b.csv"),
+        index_col='parcel_id')
+
+
+@orca.table(cache=True)
+def slr_parcel_inundation_d_bb():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "slr_parcel_inundation_d_bb.csv"),
+        index_col='parcel_id')
+
+
+@orca.table(cache=True)
+def slr_parcel_inundation_d_bp():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "slr_parcel_inundation_d_bp.csv"),
+        index_col='parcel_id')
+
+
 # SLR progression by year, for "futures" C, B, R
 @orca.table(cache=True)
 def slr_progression_C():
@@ -903,6 +924,13 @@ def slr_progression_B():
 def slr_progression_R():
     return pd.read_csv(
         os.path.join(misc.data_dir(), "slr_progression_R.csv"))
+
+
+# SLR progression for drafte blueprint
+@orca.table(cache=True)
+def slr_progression_d_b():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "slr_progression_d_b.csv"))
 
 
 # census tracts for parcels, to assign earthquake probabilities
