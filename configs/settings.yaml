@@ -1,22 +1,11 @@
-# current scenarios:
-# 1: clean and green*
-# 2: rising tides falling fortunes*
-# 3: big 3
-# 4: preferred
-# 5: back to the future*
-# 6: clean and gree, no earthquake*
-# 7: rising tides falling fortunes, no earthquake*
-# 10: back to the future, no earthquake*
-# *used for Horizon
+# active scenario if not specified on the command line
+scenario: "4"
 
 
-# these are the tables the get auto-merged to buildings/parcels in the hedonic and lcms
-aggregation_tables:
-  - nodes
-  - tmnodes
-  - logsums
-  - buildings
+# STORAGE
 
+# location of the hdf store
+store: 2015_09_01_bayarea_v3.h5
 
 # large baus files are stored in s3 - this key gives the settings for fetching them
 s3_settings:
@@ -29,44 +18,209 @@ s3_settings:
     - 2015_08_29_costar.csv
     - 2015_08_03_tmnet.h5
 
+# some info on where to get the accessibliity networks
+build_networks:
+  walk:
+      name: 2015_06_01_osm_bayarea4326.h5
+      max_distance: 3000
+  drive:
+      name: 2015_08_03_tmnet.h5
+      max_distance: 45
+      weight_col: "CTIMEA"
 
-# towards the end of the process we got a new tpp_id and didn't have the ability to
-# quickly turn around a new parcels_geography file to replace the old one
-use_new_tpp_id_in_topsheet: True
-
-
-# the weight to use to combine profit vs ROC to create a probability.  A 1.0 would mean
-# equal weights.  0.5 means profit is half as much as ROC
-profit_vs_return_on_cost_combination_factor: 0.5
-
-
-# a settings to not build the most dense building in any zone, even if zoning allows
-# it - reduces zoning to match the most dense building
-dont_build_most_dense_building: True
-
-
-# sets nan to zero so later models can run - usually used when these prices aren't
-# used but there is a check to force the models to fail before filters are applied
-set_nan_price_to_zero: True
+# these are the tables the get auto-merged to buildings/parcels in the hedonic and lcms
+aggregation_tables:
+  - nodes
+  - tmnodes
+  - logsums
+  - buildings
 
 
-# if households or jobs are in building that don't exist, unplace them so they can be
-# places the next time through the LCMs
-remove_invalid_building_ids: True
+# RELOCATION
+
+# household relocation rates split by rent / own
+relocation_rates:
+  tenure:
+    - 1
+    - 2
+  probability_of_relocating:
+    - 0.15
+    - 0.25
 
 
-# add residential units if the number of households exceeds the number of units in
-# the base year data
-reconcile_residential_units_and_households: True
+# TRANSITION
+
+# inputs to the transition model for households
+households_transition:
+  add_columns:
+    - base_income_quartile
+  total_column: total_number_of_households
+
+# info to the transition model for jobs
+jobs_transition:
+  add_columns:
+    - empsix_id
+  total_column: number_of_jobs
 
 
-# same as above but for non-res
-reconcile_non_residential_sqft_and_jobs: True
+# DEVELOPER
+
+# cap rate for use in the developer model
+cap_rate: 0.01
+
+# settings for the feasibility model - parcel_filter is very important and is a rule of
+# which parcels to consider - we don't consider nodev properties, historic properties, and
+# optionally we don't look at small lot single family
+# pass_through are columns not used by the developer but which go in the debug output
+feasibility:
+  parcel_filter: (nodev != 1 and manual_nodev != 1 and sdem != 1 and oldest_building > 1906
+    and oldest_building_age > 20 and (total_residential_units != 1 or parcel_acres > 1.0)
+    and first_building_type != 'HO' and first_building_type != 'SC')
+  residential_to_yearly: True
+  simple_zoning: True
+  pass_through:
+    - oldest_building
+    - total_sqft
+    - total_residential_units
+    - max_far
+    - max_dua
+    - land_cost
+    - residential
+    - min_max_fars
+    - max_height
+    - building_purchase_price
+    - building_purchase_price_sqft
+    - residential_sales_price_sqft
+    - pda
+    - trich_id
+    - cat_id
+    - juris
+    - county
+    - superdistrict
+    - geom_id
+    - vmt_res_cat
+
+# settings that get passed to the residential developer as kwargs
+residential_developer:
+  target_vacancy: .03
+  min_unit_size: 1000
+  bldg_sqft_per_job: 400
+  max_parcel_size: 150000000
+
+# same as above for non-res
+non_residential_developer:
+  kwargs:
+    target_vacancy: .05
+    bldg_sqft_per_job: 400
+  type_splits:
+    Industrial: 0.0
+    Retail: 0.2
+    Office: 0.8
 
 
-# convert square meters to square feet
-parcel_size_factor: 10.764
+# BUILDINGS
 
+# jobs sqft per building type
+building_sqft_per_job:
+  HS: 400
+  HT: 400
+  HM: 400
+  OF: 355
+  HO: 1161
+  SC: 470
+  IL: 661
+  IW: 960
+  IH: 825
+  RS: 445
+  RB: 445
+  MR: 383
+  MT: 383
+  ME: 383
+
+# sqft per unit is often bad so we clip it to certain sizes - these are the
+# sizes the developer model will be testing
+ave_sqft_per_unit_clip:
+  lower: 800
+  upper: 2500
+
+# we don't have great sqft_per_unit info across the bay area (building data
+# is poor on this metric) so we use DUA to get a clue as to sqft per unit
+# we assume high DUA areas will yield slightly smaller units
+clip_sqft_per_unit_based_on_dua:
+  - threshold: 50
+    max: 1000
+  - threshold: 100
+    max: 900
+  - threshold: 150
+    max: 800
+
+
+# HEDONIC
+
+# clip the prices that come out of the sales hedonic
+rsh_simulate:
+  low: 200
+  high: 2000
+
+
+# EQUILIBRATION
+
+# price and rent equilibration, treated separately
+price_equilibration:
+  price_col: unit_residential_price
+  submarket_col: submarket_id
+  submarket_table: zones
+  warm_start: False
+  multiplier_func: supply_and_demand_multiplier_func
+  clip_final_price_low: null
+  clip_final_price_high: null
+  kwargs:
+    clip_change_low: 1.0
+    clip_change_high: 1.2
+    iterations: 8
+
+rent_equilibration:
+  price_col: unit_residential_rent
+  submarket_col: submarket_id
+  submarket_table: zones
+  warm_start: False
+  multiplier_func: supply_and_demand_multiplier_func
+  clip_final_price_low: null
+  clip_final_price_high: null
+  kwargs:
+    clip_change_low: 1.0
+    clip_change_high: 1.2
+    iterations: 8
+
+
+# SHIFTERS
+
+# price shisfters per pda - price is multiplied by this amount
+pda_price_shifters:
+  "ber1": 1
+  "ber2": 1
+  "ber3": 1
+  "ber4": 1
+  "ber5": 1
+  "ber6": 1
+  "sfo3": 1
+  "sfo5": 1
+  "sfo11": 1
+
+# cost shifters per county - cost is multiplied by this amount
+cost_shifters:
+  "Santa Clara": 1.3
+  "San Francisco": 0.8
+  "San Mateo": 0.8
+  "Sonoma": 1.0
+  "Solano": 0.75
+  "Alameda": 0.7
+  "Napa": 0.9
+  "Marin": 1.0
+  "Contra Costa": 0.75
+
+
+# DISALLOW
 
 # this is really because we don't have limits right now for retail
 # we can disallow new retail per city using this list of cities
@@ -102,1237 +256,6 @@ eliminate_retail_zoning_from_juris:
   - 'Belmont'
   - 'Clayton'
 
-
-# we don't have great sqft_per_unit info across the bay area (building data
-# is poor on this metric) so we use DUA to get a clue as to sqft per unit
-# we assume high DUA areas will yield slightly smaller units
-clip_sqft_per_unit_based_on_dua:
-  - threshold: 50
-    max: 1000
-  - threshold: 100
-    max: 900
-  - threshold: 150
-    max: 800
-
-
-# sqft per unit is often bad so we clip it to certain sizes - these are the
-# sizes the developer model will be testing
-ave_sqft_per_unit_clip:
-  lower: 800
-  upper: 2500
-
-
-# this is the percent of units (0 to 1.0) that must be set to inclusionary
-# in the developer model (revenue will be foregone based on the area AMI)
-# this is per scenario and per city
-inclusionary_housing_settings:
-  default:
-    - type: jurisdictions
-      amount: .2
-      values:
-      - San Francisco
-  "1":
-    - type: jurisdictions
-      description: medium setting
-      amount: .1
-      values:
-      - Alameda
-      - Alameda County
-      - Albany
-      - American Canyon
-      - Antioch
-      - Belmont
-      - Benicia
-      - Berkeley
-      - Brisbane
-      - Burlingame
-      - Campbell
-      - Cloverdale
-      - Colma
-      - Concord
-      - Contra Costa County
-      - Cotati
-      - Cupertino
-      - Daly City
-      - Danville
-      - Dixon
-      - Dublin
-      - East Palo Alto
-      - El Cerrito
-      - Emeryville
-      - Fairfield
-      - Fremont
-      - Gilroy
-      - Hayward
-      - Hercules
-      - Lafayette
-      - Livermore
-      - Los Altos
-      - Martinez
-      - Menlo Park
-      - Millbrae
-      - Milpitas
-      - Moraga
-      - Morgan Hill
-      - Mountain View
-      - Napa
-      - Newark
-      - Oakland
-      - Oakley
-      - Orinda
-      - Palo Alto
-      - Petaluma
-      - Pinole
-      - Pittsburg
-      - Pleasant Hill
-      - Pleasanton
-      - Redwood City
-      - Richmond
-      - Rohnert Park
-      - San Bruno
-      - San Carlos
-      - San Francisco
-      - San Jose
-      - San Leandro
-      - San Mateo
-      - San Mateo County
-      - San Pablo
-      - San Rafael
-      - San Ramon
-      - Santa Clara
-      - Santa Rosa
-      - Sebastopol
-      - South San Francisco
-      - Suisun City
-      - Sunnyvale
-      - Union City
-      - Vacaville
-      - Vallejo
-      - Walnut Creek
-      - Windsor
-  "2":
-    - type: jurisdictions
-      description: medium setting
-      amount: .1
-      values:
-      - Alameda
-      - Alameda County
-      - Albany
-      - American Canyon
-      - Antioch
-      - Belmont
-      - Benicia
-      - Berkeley
-      - Brisbane
-      - Burlingame
-      - Campbell
-      - Cloverdale
-      - Colma
-      - Concord
-      - Contra Costa County
-      - Cotati
-      - Cupertino
-      - Daly City
-      - Danville
-      - Dixon
-      - Dublin
-      - East Palo Alto
-      - El Cerrito
-      - Emeryville
-      - Fairfield
-      - Fremont
-      - Gilroy
-      - Hayward
-      - Hercules
-      - Lafayette
-      - Livermore
-      - Los Altos
-      - Martinez
-      - Menlo Park
-      - Millbrae
-      - Milpitas
-      - Moraga
-      - Morgan Hill
-      - Mountain View
-      - Napa
-      - Newark
-      - Oakland
-      - Oakley
-      - Orinda
-      - Palo Alto
-      - Petaluma
-      - Pinole
-      - Pittsburg
-      - Pleasant Hill
-      - Pleasanton
-      - Redwood City
-      - Richmond
-      - Rohnert Park
-      - San Bruno
-      - San Carlos
-      - San Francisco
-      - San Jose
-      - San Leandro
-      - San Mateo
-      - San Mateo County
-      - San Pablo
-      - San Rafael
-      - San Ramon
-      - Santa Clara
-      - Santa Rosa
-      - Sebastopol
-      - South San Francisco
-      - Suisun City
-      - Sunnyvale
-      - Union City
-      - Vacaville
-      - Vallejo
-      - Walnut Creek
-      - Windsor
-  "3":
-    - type: jurisdictions
-      description: high setting
-      amount: .2
-      values:
-      - San Jose
-      - Oakland
-      - San Francisco
-  "4":
-    - type: jurisdictions
-      description: medium setting
-      amount: .1
-      values:
-      - Alameda
-      - Alameda County
-      - Albany
-      - American Canyon
-      - Antioch
-      - Belmont
-      - Benicia
-      - Berkeley
-      - Brisbane
-      - Burlingame
-      - Campbell
-      - Cloverdale
-      - Colma
-      - Concord
-      - Contra Costa County
-      - Cotati
-      - Cupertino
-      - Daly City
-      - Danville
-      - Dixon
-      - Dublin
-      - East Palo Alto
-      - El Cerrito
-      - Emeryville
-      - Fairfield
-      - Fremont
-      - Gilroy
-      - Hayward
-      - Hercules
-      - Lafayette
-      - Livermore
-      - Los Altos
-      - Martinez
-      - Menlo Park
-      - Millbrae
-      - Milpitas
-      - Moraga
-      - Morgan Hill
-      - Mountain View
-      - Napa
-      - Newark
-      - Oakland
-      - Oakley
-      - Orinda
-      - Palo Alto
-      - Petaluma
-      - Pinole
-      - Pittsburg
-      - Pleasant Hill
-      - Pleasanton
-      - Redwood City
-      - Richmond
-      - Rohnert Park
-      - San Bruno
-      - San Carlos
-      - San Francisco
-      - San Jose
-      - San Leandro
-      - San Mateo
-      - San Mateo County
-      - San Pablo
-      - San Rafael
-      - San Ramon
-      - Santa Clara
-      - Santa Rosa
-      - Sebastopol
-      - South San Francisco
-      - Suisun City
-      - Sunnyvale
-      - Union City
-      - Vacaville
-      - Vallejo
-      - Walnut Creek
-      - Windsor
-  "5":
-    - type: jurisdictions
-      description: medium setting
-      amount: .1
-      values:
-      - Alameda
-      - Alameda County
-      - Albany
-      - American Canyon
-      - Antioch
-      - Belmont
-      - Benicia
-      - Berkeley
-      - Brisbane
-      - Burlingame
-      - Campbell
-      - Cloverdale
-      - Colma
-      - Concord
-      - Contra Costa County
-      - Cotati
-      - Cupertino
-      - Daly City
-      - Danville
-      - Dixon
-      - Dublin
-      - East Palo Alto
-      - El Cerrito
-      - Emeryville
-      - Fairfield
-      - Fremont
-      - Gilroy
-      - Hayward
-      - Hercules
-      - Lafayette
-      - Livermore
-      - Los Altos
-      - Martinez
-      - Menlo Park
-      - Millbrae
-      - Milpitas
-      - Moraga
-      - Morgan Hill
-      - Mountain View
-      - Napa
-      - Newark
-      - Oakland
-      - Oakley
-      - Orinda
-      - Palo Alto
-      - Petaluma
-      - Pinole
-      - Pittsburg
-      - Pleasant Hill
-      - Pleasanton
-      - Redwood City
-      - Richmond
-      - Rohnert Park
-      - San Bruno
-      - San Carlos
-      - San Francisco
-      - San Jose
-      - San Leandro
-      - San Mateo
-      - San Mateo County
-      - San Pablo
-      - San Rafael
-      - San Ramon
-      - Santa Clara
-      - Santa Rosa
-      - Sebastopol
-      - South San Francisco
-      - Suisun City
-      - Sunnyvale
-      - Union City
-      - Vacaville
-      - Vallejo
-      - Walnut Creek
-      - Windsor
-  "6":
-    - type: jurisdictions
-      description: medium setting
-      amount: .1
-      values:
-      - Alameda
-      - Alameda County
-      - Albany
-      - American Canyon
-      - Antioch
-      - Belmont
-      - Benicia
-      - Berkeley
-      - Brisbane
-      - Burlingame
-      - Campbell
-      - Cloverdale
-      - Colma
-      - Concord
-      - Contra Costa County
-      - Cotati
-      - Cupertino
-      - Daly City
-      - Danville
-      - Dixon
-      - Dublin
-      - East Palo Alto
-      - El Cerrito
-      - Emeryville
-      - Fairfield
-      - Fremont
-      - Gilroy
-      - Hayward
-      - Hercules
-      - Lafayette
-      - Livermore
-      - Los Altos
-      - Martinez
-      - Menlo Park
-      - Millbrae
-      - Milpitas
-      - Moraga
-      - Morgan Hill
-      - Mountain View
-      - Napa
-      - Newark
-      - Oakland
-      - Oakley
-      - Orinda
-      - Palo Alto
-      - Petaluma
-      - Pinole
-      - Pittsburg
-      - Pleasant Hill
-      - Pleasanton
-      - Redwood City
-      - Richmond
-      - Rohnert Park
-      - San Bruno
-      - San Carlos
-      - San Francisco
-      - San Jose
-      - San Leandro
-      - San Mateo
-      - San Mateo County
-      - San Pablo
-      - San Rafael
-      - San Ramon
-      - Santa Clara
-      - Santa Rosa
-      - Sebastopol
-      - South San Francisco
-      - Suisun City
-      - Sunnyvale
-      - Union City
-      - Vacaville
-      - Vallejo
-      - Walnut Creek
-      - Windsor
-  "7":
-    - type: jurisdictions
-      description: medium setting
-      amount: .1
-      values:
-      - Alameda
-      - Alameda County
-      - Albany
-      - American Canyon
-      - Antioch
-      - Belmont
-      - Benicia
-      - Berkeley
-      - Brisbane
-      - Burlingame
-      - Campbell
-      - Cloverdale
-      - Colma
-      - Concord
-      - Contra Costa County
-      - Cotati
-      - Cupertino
-      - Daly City
-      - Danville
-      - Dixon
-      - Dublin
-      - East Palo Alto
-      - El Cerrito
-      - Emeryville
-      - Fairfield
-      - Fremont
-      - Gilroy
-      - Hayward
-      - Hercules
-      - Lafayette
-      - Livermore
-      - Los Altos
-      - Martinez
-      - Menlo Park
-      - Millbrae
-      - Milpitas
-      - Moraga
-      - Morgan Hill
-      - Mountain View
-      - Napa
-      - Newark
-      - Oakland
-      - Oakley
-      - Orinda
-      - Palo Alto
-      - Petaluma
-      - Pinole
-      - Pittsburg
-      - Pleasant Hill
-      - Pleasanton
-      - Redwood City
-      - Richmond
-      - Rohnert Park
-      - San Bruno
-      - San Carlos
-      - San Francisco
-      - San Jose
-      - San Leandro
-      - San Mateo
-      - San Mateo County
-      - San Pablo
-      - San Rafael
-      - San Ramon
-      - Santa Clara
-      - Santa Rosa
-      - Sebastopol
-      - South San Francisco
-      - Suisun City
-      - Sunnyvale
-      - Union City
-      - Vacaville
-      - Vallejo
-      - Walnut Creek
-      - Windsor
-  "10":
-    - type: jurisdictions
-      description: medium setting
-      amount: .1
-      values:
-      - Alameda
-      - Alameda County
-      - Albany
-      - American Canyon
-      - Antioch
-      - Belmont
-      - Benicia
-      - Berkeley
-      - Brisbane
-      - Burlingame
-      - Campbell
-      - Cloverdale
-      - Colma
-      - Concord
-      - Contra Costa County
-      - Cotati
-      - Cupertino
-      - Daly City
-      - Danville
-      - Dixon
-      - Dublin
-      - East Palo Alto
-      - El Cerrito
-      - Emeryville
-      - Fairfield
-      - Fremont
-      - Gilroy
-      - Hayward
-      - Hercules
-      - Lafayette
-      - Livermore
-      - Los Altos
-      - Martinez
-      - Menlo Park
-      - Millbrae
-      - Milpitas
-      - Moraga
-      - Morgan Hill
-      - Mountain View
-      - Napa
-      - Newark
-      - Oakland
-      - Oakley
-      - Orinda
-      - Palo Alto
-      - Petaluma
-      - Pinole
-      - Pittsburg
-      - Pleasant Hill
-      - Pleasanton
-      - Redwood City
-      - Richmond
-      - Rohnert Park
-      - San Bruno
-      - San Carlos
-      - San Francisco
-      - San Jose
-      - San Leandro
-      - San Mateo
-      - San Mateo County
-      - San Pablo
-      - San Rafael
-      - San Ramon
-      - Santa Clara
-      - Santa Rosa
-      - Sebastopol
-      - South San Francisco
-      - Suisun City
-      - Sunnyvale
-      - Union City
-      - Vacaville
-      - Vallejo
-      - Walnut Creek
-      - Windsor
-
-# these are the settings for various policies that are in play
-acct_settings:
-  disable: False
-
-  lump_sum_accounts:
-
-    # obag, where to spend the funds, how much to add, and which scenarios to
-    # add it in - the amount is per year
-    obag_settings:
-      name: "OBAG"
-      sending_buildings_subaccount_def: regional
-      total_amount: 40000000
-      receiving_buildings_filter: pda_id > 0
-      subsidize_affordable: False
-      enable_in_scenarios: ["1", "2", "3", "4", "5", "6", "7", "10"]
-
-    # these are all county specific affordable housing bonds but right now
-    # they aren't enabled in any scenarios
-    san_mateo_bond_settings:
-      name: "San Mateo Affordable Housing Bond"
-      sending_buildings_subaccount_def: regional
-      total_amount: 40000000
-      receiving_buildings_filter: county == 'San Mateo'
-      subsidize_affordable: True
-      enable_in_scenarios: []
-
-    alameda_bond_settings:
-      name: "Alameda Affordable Housing Bond"
-      sending_buildings_subaccount_def: regional
-      total_amount: 20000000
-      receiving_buildings_filter: county == 'Alameda'
-      subsidize_affordable: True
-      enable_in_scenarios: []
-
-    santa_clara_bond_settings:
-      name: "Santa Clara Affordable Housing Bond"
-      sending_buildings_subaccount_def: regional
-      total_amount: 31000000
-      receiving_buildings_filter: county == 'Santa Clara'
-      subsidize_affordable: True
-      enable_in_scenarios: []
-
-    santa_francisco_bond_settings:
-      name: "San Francisco Affordable Housing Bond"
-      sending_buildings_subaccount_def: regional
-      total_amount: 19000000
-      receiving_buildings_filter: county == 'San Francisco'
-      subsidize_affordable: True
-      enable_in_scenarios: []
-
-    # parcel tax settings
-    parcel_tax_settings:
-      name: "Parcel Tax"
-      sending_buildings_subaccount_def: regional
-      total_amount: 500000000
-      receiving_buildings_filter: pda_id > 0
-      subsidize_affordable: True
-      enable_in_scenarios: []
-
-    # capital gains tax settings - see baus_docs for more information on the
-    # intent and use of these policies
-    capital_gains_tax_settings:
-      name: "Capital Gains Tax"
-      sending_buildings_subaccount_def: regional
-      total_amount: 42000000
-      receiving_buildings_filter: pda_id > 0
-      subsidize_affordable: True
-      enable_in_scenarios: []
-
-  profitability_adjustment_policies:
-
-    # rather than a lump sum pot of money to subsidized housing, these are
-    # adjustments to profitability using percentages (actually it's an open)
-    # ended formula - this is for CEQA review acceleration
-    ceqa_tiering:
-      name: "CEQA"
-      enable_in_scenarios: ["1", "2", "3", "4", "5", "6", "7", "10"]
-      # any parcel in a tpa
-      profitability_adjustment_formula: "(tpp_id > 0) * .01"
-
-    # reduce parking requirements in TPPs - would be nice to have better data
-    # on how this impacts price as well, but we don't have it
-    parking_requirements_tpps:
-      name: "Reduce Parking Requirements in TPPs"
-      enable_in_scenarios: ["3"]
-      # any parcel in a tpa
-      profitability_adjustment_formula: "(tpp_id > 0) * .01"
-
-    parking_requirements_pdas:
-      name: "Reduce Parking Requirements in PDAs"
-      enable_in_scenarios: ["1", "2", "4", "5", "6", "7", "10"]
-      # any parcel in a tpa
-      profitability_adjustment_formula: "(pda_id > 0) * .01"
-
-    parking_requirements_AVs_s1: # cag
-      name: "Reduce Parking Requirements due to AVs"
-      enable_in_scenarios: ["1", "6"]
-      # parcels in San Francisco, Oakland, San Jose
-      profitability_adjustment_formula: "(jurisdiction_id == 67000 or
-                                          jurisdiction_id == 53000 or
-                                          jurisdiction_id == 68000) * .02"
-
-    parking_requirements_AVs_s5: # bttf
-      name: "Reduce Parking Requirements due to AVs"
-      enable_in_scenarios: ["5", "10"]
-      # parcels in San Francisco, Oakland, San Jose
-      profitability_adjustment_formula: "(jurisdiction_id == 67000 or
-                                          jurisdiction_id == 53000 or
-                                          jurisdiction_id == 68000) * .01"
-
-  # this is a cutom policy which taxes land (reduces profit) based on the current
-  # built density - this is to incentive using land at its highest and best use
-  land_value_tax_settings:
-    enable_in_scenarios: ["3"]
-    bins:
-      pcts: [0.05, 0.02, 0.01, 0.0]
-      breaks: [0.1, 0.3, 0.5]
-
-  # these are the vmt policies which impose fees on new units / sqft in high vmt
-  # areas in order to subsidize development on new units / sqft in low vmt areas
-  # the areas are defined elsewhere - note that the policies can be res for res,
-  # com for com or com for res.
-  vmt_settings:
-    sending_buildings_subaccount_def: regional
-    receiving_buildings_filter: pda_id>0
-    res_for_res_scenarios:
-      - "3"
-    com_for_com_scenarios:
-      - "1"
-      - "2"
-      - "4"
-      - "5"
-      - "6"
-      - "7"
-      - "10"
-    com_for_res_scenarios:
-      - "1"
-      - "2"
-      - "4"
-      - "5"
-      - "6"
-      - "7"
-      - "10"
-    res_for_res_fee_amounts:
-      VH: 25000
-      H: 15000
-      MH: 5000
-    com_for_res_fee_amounts:
-      VH: 50
-      H: 30
-      MH: 20
-      M: 3
-    com_for_com_fee_amounts:  # commercial fee subsidizing commercial devs
-      VH: 40
-      H: 20
-      MH: 10
-  sb743_settings:
-    enable: true
-    sb743_pcts:
-      VH: -0.02
-      H: -0.01
-      MH: -0.005
-      M: 0.0
-      S: 0.02
-
-
-# cap rate for use in the developer model
-cap_rate: 0.05
-
-
-# household relocation rates split by rent / own
-relocation_rates:
-  tenure:
-    - 1
-    - 2
-  probability_of_relocating:
-    - 0.15
-    - 0.25
-
-
-# price and rent equilibration, treated separately
-price_equilibration:
-  price_col: unit_residential_price
-  submarket_col: submarket_id
-  submarket_table: zones
-  warm_start: False
-  multiplier_func: supply_and_demand_multiplier_func
-  clip_final_price_low: null
-  clip_final_price_high: null
-  kwargs:
-    clip_change_low: 1.0
-    clip_change_high: 1.2
-    iterations: 8
-
-
-rent_equilibration:
-  price_col: unit_residential_rent
-  submarket_col: submarket_id
-  submarket_table: zones
-  warm_start: False
-  multiplier_func: supply_and_demand_multiplier_func
-  clip_final_price_low: null
-  clip_final_price_high: null
-  kwargs:
-    clip_change_low: 1.0
-    clip_change_high: 1.2
-    iterations: 8
-
-
-control_tables:
-  household:
-    household_controls_input_file: household_controls.csv
-    s1_household_controls_input_file: household_controls_s1.csv
-    s2_household_controls_input_file: household_controls_s2.csv
-    s5_household_controls_input_file: household_controls_s5.csv
-    s6_household_controls_input_file: household_controls_s6.csv
-    s7_household_controls_input_file: household_controls_s7.csv
-    s10_household_controls_input_file: household_controls_s10.csv
-  employment:
-    employment_controls_input_file: employment_controls.csv
-    s1_employment_controls_input_file: employment_controls_s1.csv
-    s2_employment_controls_input_file: employment_controls_s2.csv
-    s5_employment_controls_input_file: employment_controls_s5.csv
-    s6_employment_controls_input_file: employment_controls_s6.csv
-    s7_employment_controls_input_file: employment_controls_s7.csv
-    s10_employment_controls_input_file: employment_controls_s10.csv
-  regional:
-    regional_controls_input_file: regional_controls.csv
-    s1_regional_controls_input_file: regional_controls_s1.csv
-    s2_regional_controls_input_file: regional_controls_s2.csv
-    s5_regional_controls_input_file: regional_controls_s5.csv
-    s6_regional_controls_input_file: regional_controls_s6.csv
-    s7_regional_controls_input_file: regional_controls_s7.csv
-    s10_regional_controls_input_file: regional_controls_s10.csv
-  demographic_forecast:
-    demographic_forecast_controls_input_file: regional_demographic_forecast.csv
-    s1_demographic_forecast_controls_input_file: regional_demographic_forecast_s1.csv
-    s2_demographic_forecast_controls_input_file: regional_demographic_forecast_s2.csv
-    s5_demographic_forecast_controls_input_file: regional_demographic_forecast_s5.csv
-    s6_demographic_forecast_controls_input_file: regional_demographic_forecast_s6.csv
-    s7_demographic_forecast_controls_input_file: regional_demographic_forecast_s7.csv
-    s10_demographic_forecast_controls_input_file: regional_demographic_forecast_s10.csv
-
-
-logsums:
-  mandatory:
-    logsum: mandatoryAccessibilities_2015.csv
-    logsum_2010_s1: mandatoryAccessibilities_2030_s1.csv
-    logsum_2030_s1: mandatoryAccessibilities_2050_s1.csv
-    logsum_2010_s2: mandatoryAccessibilities_2030_s2.csv
-    logsum_2030_s2: mandatoryAccessibilities_2050_s2.csv
-    logsum_2010_s5: mandatoryAccessibilities_2030_s5.csv
-    logsum_2030_s5: mandatoryAccessibilities_2050_s5.csv
-    logsum_2010_s6: mandatoryAccessibilities_2030_s6.csv
-    logsum_2030_s6: mandatoryAccessibilities_2050_s6.csv
-    logsum_2010_s7: mandatoryAccessibilities_2030_s7.csv
-    logsum_2030_s7: mandatoryAccessibilities_2050_s7.csv
-    logsum_2010_s10: mandatoryAccessibilities_2030_s10.csv
-    logsum_2030_s10: mandatoryAccessibilities_2050_s10.csv
-  non_mandatory:
-    logsum: nonMandatoryAccessibilities_2015.csv
-    logsum_2010_s1: nonMandatoryAccessibilities_2030_s1.csv
-    logsum_2030_s1: nonMandatoryAccessibilities_2050_s1.csv
-    logsum_2010_s2: nonMandatoryAccessibilities_2030_s2.csv
-    logsum_2030_s2: nonMandatoryAccessibilities_2050_s2.csv
-    logsum_2010_s5: nonMandatoryAccessibilities_2030_s5.csv
-    logsum_2030_s5: nonMandatoryAccessibilities_2050_s5.csv
-    logsum_2010_s6: nonMandatoryAccessibilities_2030_s6.csv
-    logsum_2030_s6: nonMandatoryAccessibilities_2050_s6.csv
-    logsum_2010_s7: nonMandatoryAccessibilities_2030_s7.csv
-    logsum_2030_s7: nonMandatoryAccessibilities_2050_s7.csv
-    logsum_2010_s10: nonMandatoryAccessibilities_2030_s10.csv
-    logsum_2030_s10: nonMandatoryAccessibilities_2050_s10.csv
-  segmentation:
-    logsum: AccessibilityMarkets_2015.csv
-    logsum_2010_s1: AccessibilityMarkets_2030_s1.csv
-    logsum_2030_s1: AccessibilityMarkets_2050_s1.csv
-    logsum_2010_s2: AccessibilityMarkets_2030_s2.csv
-    logsum_2030_s2: AccessibilityMarkets_2050_s2.csv
-    logsum_2010_s5: AccessibilityMarkets_2030_s5.csv
-    logsum_2030_s5: AccessibilityMarkets_2050_s5.csv
-    logsum_2010_s6: AccessibilityMarkets_2030_s6.csv
-    logsum_2030_s6: AccessibilityMarkets_2050_s6.csv
-    logsum_2010_s7: AccessibilityMarkets_2030_s7.csv
-    logsum_2030_s7: AccessibilityMarkets_2050_s7.csv
-    logsum_2010_s10: AccessibilityMarkets_2030_s10.csv
-    logsum_2030_s10: AccessibilityMarkets_2050_s10.csv
-
-
-model_configs:
-  hlcm:
-    hlcm_owner_config: hlcm_owner.yaml
-    hlcm_owner_lowincome_config: hlcm_owner_lowincome.yaml
-    hlcm_owner_no_unplaced_config: hlcm_owner_no_unplaced.yaml
-    hlcm_renter_config: hlcm_renter.yaml
-    hlcm_renter_lowincome_config: hlcm_renter_lowincome.yaml
-    hlcm_renter_no_unplaced_config: hlcm_renter_no_unplaced.yaml
-  elcm:
-    elcm_config: elcm.yaml
-  rsh:
-    rsh_config: rsh.yaml
-    s1_rsh_config: rsh_s1.yaml
-    s2_rsh_config: rsh_s2.yaml
-    s5_rsh_config: rsh_s5.yaml
-  rrh:
-    rrh_config: rrh.yaml
-  nrh:
-    nrh_config: nrh.yaml
-
-
-# some info on where to get the accessibliity networks
-build_networks:
-  walk:
-      name: 2015_06_01_osm_bayarea4326.h5
-      max_distance: 3000
-  drive:
-      name: 2015_08_03_tmnet.h5
-      max_distance: 45
-      weight_col: "CTIMEA"
-
-
-# inputs to the transition model for households
-households_transition:
-  add_columns:
-    - base_income_quartile
-  total_column: total_number_of_households
-
-
-# info to the transition model for jobs
-jobs_transition:
-  add_columns:
-    - empsix_id
-  total_column: number_of_jobs
-
-
-# clip the prices that come out of the sales hedonic
-rsh_simulate:
-  low: 200
-  high: 2000
-
-
-# settings for the feasibility model - parcel_filter is very important and is a rule of
-# which parcels to consider - we don't consider nodev properties, historic properties, and
-# optionally we don't look at small lot single family
-# pass_through are columns not used by the developer but which go in the debug output
-feasibility:
-  parcel_filter: nodev != 1 and manual_nodev != 1 and sdem != 1 and oldest_building > 1906 and oldest_building_age > 20  and (total_residential_units != 1 or parcel_acres > 1.0) and first_building_type != 'HO' and first_building_type != 'SC'
-  residential_to_yearly: True
-  simple_zoning: True
-  pass_through:
-    - oldest_building
-    - total_sqft
-    - total_residential_units
-    - max_far
-    - max_dua
-    - land_cost
-    - residential
-    - min_max_fars
-    - max_height
-    - building_purchase_price
-    - building_purchase_price_sqft
-    - residential_sales_price_sqft
-    - pda
-    - juris
-    - county
-    - superdistrict
-    - geom_id
-    - vmt_res_cat
-
-
-# settings that get passed to the residential developer as kwargs
-residential_developer:
-  target_vacancy: .03
-  min_unit_size: 1000
-  bldg_sqft_per_job: 400
-  max_parcel_size: 150000000
-
-
-# same as above for non-res
-non_residential_developer:
-  kwargs:
-    target_vacancy: 0.13
-    bldg_sqft_per_job: 400
-  type_splits:
-    Industrial: 0.0
-    Retail: 0.2
-    Office: 0.8
-
-
-# location of the hdf store
-store: 2015_09_01_bayarea_v3.h5
-
-
-# active scenario if not specified on the command line
-scenario: "4"
-
-
-# this maps Synthicity's 25 employment categories to
-# the six major employment categories traditionally
-# used by MTC and ABAG for use in output to the Travel Model
-naics_to_empsix:
-  10: AGREMPN
-  11: AGREMPN
-  21: AGREMPN
-  22: MWTEMPN
-  23: OTHEMPN
-  31: MWTEMPN
-  3133: MWTEMPN
-  32: MWTEMPN
-  33: MWTEMPN
-  42: MWTEMPN
-  44: RETEMPN
-  4445: RETEMPN
-  45: RETEMPN
-  48: MWTEMPN
-  4849: MWTEMPN
-  49: MWTEMPN
-  51: OTHEMPN
-  52: FPSEMPN
-  53: FPSEMPN
-  54: FPSEMPN
-  55: FPSEMPN
-  56: FPSEMPN
-  61: HEREMPN
-  62: HEREMPN
-  71: HEREMPN
-  72: HEREMPN
-  81: OTHEMPN
-  91: OTHEMPN
-  92: OTHEMPN
-  99: OTHEMPN
-  3133: MWTEMPN
-  4445: RETEMPN
-  4849: MWTEMPN
-
-
-# what it says
-empsix_name_to_id:
-  AGREMPN: 1
-  MWTEMPN: 2
-  RETEMPN: 3
-  FPSEMPN: 4
-  HEREMPN: 5
-  OTHEMPN: 6
-
-
-# this maps building type ids to general building types
-# basically just reduces dimensionality
-building_type_map:
-  HS: Residential
-  HT: Residential
-  HM: Residential
-  OF: Office
-  HO: Hotel
-  SC: School
-  IL: Industrial
-  IW: Industrial
-  IH: Industrial
-  RS: Retail
-  RB: Retail
-  MR: Residential
-  MT: Retail
-  ME: Office
-  PA: Parking
-  PA2: Parking
-
-
-# this maps building "forms" from the developer model
-# to building types so that when the developer builds a
-# "form" this can be converted for storing as a type
-# in the building table - in the long run, the developer
-# forms and the building types should be the same and the
-# developer model should account for the differences.
-# travel_model_ variables are for the travel_model_summary step.
-form_to_btype:
-  residential:
-    - HS
-    - HT
-    - HM
-  industrial:
-    - IL
-    - IW
-    - IH
-  retail:
-    - RS
-    - RB
-  office:
-    - OF
-  mixedresidential:
-    - MR
-  mixedoffice:
-    - ME
-  select_non_residential:
-    - OF
-    - HO
-    - SC
-    - IL
-    - IW
-    - IH
-    - RS
-    - RB
-    - MR
-
-
-# jobs sqft per building type
-building_sqft_per_job:
-  HS: 400
-  HT: 400
-  HM: 400
-  OF: 355
-  HO: 1161
-  SC: 470
-  IL: 661
-  IW: 960
-  IH: 825
-  RS: 445
-  RB: 445
-  MR: 383
-  MT: 383
-  ME: 383
-
-
-# county ids in parcels geography (I think FIPS codes)
-county_id_map:
-  85: Santa Clara
-  1: Alameda
-  13: Contra Costa
-  81: San Mateo
-  97: Sonoma
-  75: San Francisco
-  95: Solano
-  41: Marin
-  55: Napa
-
-
-# county ids for the travel model
-county_id_tm_map:
-  3: Santa Clara
-  4: Alameda
-  5: Contra Costa
-  2: San Mateo
-  8: Sonoma
-  1: San Francisco
-  6: Solano
-  9: Marin
-  7: Napa
-
-# price shisfters per pda - price is multiplied by this amount
-pda_price_shifters:
-  "ber1": 1
-  "ber2": 1
-  "ber3": 1
-  "ber4": 1
-  "ber5": 1
-  "ber6": 1
-  "sfo3": 1
-  "sfo5": 1
-  "sfo11": 1
-
-
-# cost shifters per county - cost is multiplied by this amount
-cost_shifters:
-  "Santa Clara": 1.3
-  "San Francisco": 0.8
-  "San Mateo": 0.8
-  "Sonoma": 1.0
-  "Solano": 0.75
-  "Alameda": 0.7
-  "Napa": 0.9
-  "Marin": 1.0
-  "Contra Costa": 0.75
-
-
-# limits!  these are very important as they give per scenario limits in terms of
-# general_type and in terms of resdential units and job spaces - believe scenarios
-# inherit settings from teh default scenario
-development_limits:
-  default:
-    Office:
-      'Alameda': 100
-      'Atherton': 0
-      'Belvedere': 0
-      'Belmont': 0
-      'Benicia': 25
-      'Burlingame': 275
-      'Clayton': 0
-      'Colma': 0
-      'Concord': 1000
-      'Cupertino': 0
-      'Daly City': 50
-      'Fairfax': 0
-      'Half Moon Bay': 0
-      'Healdsburg': 0
-      'Hillsborough': 0
-      'Larkspur': 0
-      'Los Altos Hills': 0
-      'Los Gatos': 0
-      'Milpitas': 325
-      'Mill Valley': 0
-      'Millbrae': 200
-      'Monte Sereno': 0
-      'Orinda': 0
-      'Palo Alto': 175
-      'Petaluma': 150
-      'Piedmont': 0
-      'Pleasanton': 275
-      'Portola Valley': 0
-      'Redwood City': 550
-      'Ross': 0
-      'San Anselmo': 0
-      'San Francisco': 3500
-      'San Mateo': 200
-      'San Rafael': 0
-      'St. Helena': 5
-      'Saratoga': 0
-      'Sonoma': 0
-      'Tiburon': 0
-      'Union City': 5
-      'Woodside': 0
-      'Alameda County': 0
-      'Contra Costa County': 0
-      'Marin County': 0
-      'Solano County': 0
-      'Sonoma County': 0
-    Residential:
-      'Cloverdale': 50
-      'Fairfax': 8
-      'Half Moon Bay': 44
-      'Petaluma': 75
-      'San Mateo': 400
-      'Sebastopol': 10
-      'St. Helena': 10
-      'Woodside': 5
-      'Yountville': 2
-      'Alameda County': 205
-      'Napa County': 25
-      'Solano County': 230
-      'Sonoma County': 50
-
-
 # a list of parcel geom ids which urbansim doesn't touch - this are viewed as exceptions
 # and are often dealt with using specific models (SDEM and possibly proportional jobs model)
 # which ignore this list
@@ -1356,6 +279,42 @@ static_parcels:
   - 7414256675266 # cal state east bay
   - 8817315949318 # san quentin
   - 12668875358422 # san quentin
+
+
+# MISCELLANY
+
+# the weight to use to combine profit vs ROC to create a probability.  A 1.0 would mean
+# equal weights.  0.5 means profit is half as much as ROC
+profit_vs_return_on_cost_combination_factor: 0.5
+
+# a settings to not build the most dense building in any zone, even if zoning allows
+# it - reduces zoning to match the most dense building
+dont_build_most_dense_building: True
+
+# add residential units if the number of households exceeds the number of units in
+# the base year data
+reconcile_residential_units_and_households: True
+
+# same as above but for non-res
+reconcile_non_residential_sqft_and_jobs: True
+
+# if households or jobs are in building that don't exist, unplace them so they can be
+# placed the next time through the LCMs
+remove_invalid_building_ids: True
+
+# sets nan to zero so later models can run - usually used when these prices aren't
+# used but there is a check to force the models to fail before filters are applied
+set_nan_price_to_zero: True
+
+# convert square meters to square feet
+parcel_size_factor: 10.764
+
+# towards the end of the process we got a new tpp_id and didn't have the ability to
+# quickly turn around a new parcels_geography file to replace the old one
+use_new_tpp_id_in_topsheet: True
+
+
+
 
 
 

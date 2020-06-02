@@ -1,13 +1,16 @@
+from __future__ import print_function
+
 import sys
 import time
 import orca
 import pandas as pd
 import numpy as np
+from functools import reduce
 from urbansim import accounts
 from urbansim_defaults import utils
-from cStringIO import StringIO
+from six import StringIO
 from urbansim.utils import misc
-from utils import add_buildings
+from baus.utils import add_buildings
 from urbansim.developer import sqftproforma
 
 
@@ -33,33 +36,38 @@ def profit_to_prob_func(df):
 
 
 @orca.injectable(cache=True)
-def coffer(settings):
+def coffer(policy):
     d = {
         "vmt_res_acct":  accounts.Account("vmt_res_acct"),
         "vmt_com_acct":  accounts.Account("vmt_com_acct")
     }
 
-    for key, acct in settings["acct_settings"]["lump_sum_accounts"].items():
+    for key, acct in policy["acct_settings"]["lump_sum_accounts"].items():
         d[acct["name"]] = accounts.Account(acct["name"])
 
     return d
 
 
 @orca.injectable(cache=True)
-def acct_settings(settings):
-    return settings["acct_settings"]
+def acct_settings(policy):
+    return policy["acct_settings"]
 
 
 @orca.step()
-def lump_sum_accounts(settings, year, buildings, coffer,
+def lump_sum_accounts(policy, year, buildings, coffer,
                       summary, years_per_iter, scenario):
 
-    s = settings["acct_settings"]["lump_sum_accounts"]
+    s = policy["acct_settings"]["lump_sum_accounts"]
 
     for key, acct in s.items():
 
         if scenario not in acct["enable_in_scenarios"]:
             continue
+
+        if "alternate_geography_scenarios" in acct and \
+                scenario in acct["alternate_geography_scenarios"]:
+            acct["receiving_buildings_filter"] = \
+                acct["alternate_buildings_filter"]
 
         amt = float(acct["total_amount"])
 
@@ -80,7 +88,7 @@ def lump_sum_accounts(settings, year, buildings, coffer,
 # comments alongside the code
 def inclusionary_housing_revenue_reduction(feasibility, units):
 
-    print "Computing adjustments due to inclusionary housing"
+    print("Computing adjustments due to inclusionary housing")
 
     # AMI by jurisdiction
     #
@@ -134,14 +142,14 @@ def inclusionary_housing_revenue_reduction(feasibility, units):
         feasibility[('residential', 'building_revenue')] / units
 
     revenue_diff_per_unit = (ave_price_per_unit - value_can_afford).fillna(0)
-    print "Revenue difference per unit (not zero values)"
-    print revenue_diff_per_unit[revenue_diff_per_unit > 0].describe()
+    print("Revenue difference per unit (not zero values)")
+    print(revenue_diff_per_unit[revenue_diff_per_unit > 0].describe())
 
     revenue_reduction = revenue_diff_per_unit * num_affordable_units
 
     s = num_affordable_units.groupby(parcels_geography.juris_name).sum()
-    print "Feasibile affordable units by jurisdiction"
-    print s[s > 0].sort_values()
+    print("Feasibile affordable units by jurisdiction")
+    print(s[s > 0].sort_values())
 
     return revenue_reduction, num_affordable_units
 
@@ -151,14 +159,14 @@ def inclusionary_housing_revenue_reduction(feasibility, units):
 # is done here as well
 def policy_modifications_of_profit(feasibility, parcels):
 
-    print "Making policy modifications to profitability"
+    print("Making policy modifications to profitability")
 
     # this first section adds parcel unit-based fees
 
     units = feasibility[('residential', 'residential_sqft')] / \
         parcels.ave_sqft_per_unit
     fees = (units * parcels.fees_per_unit).fillna(0)
-    print "Sum of residential fees: ", fees.sum()
+    print("Sum of residential fees: ", fees.sum())
 
     feasibility[("residential", "fees")] = fees
     feasibility[("residential", "max_profit")] -= fees
@@ -171,7 +179,7 @@ def policy_modifications_of_profit(feasibility, parcels):
 
         sqft = feasibility[(use, 'non_residential_sqft')]
         fees = (sqft * parcels.fees_per_sqft).fillna(0)
-        print "Sum of non-residential fees (%s): %.0f" % (use, fees.sum())
+        print("Sum of non-residential fees (%s): %.0f" % (use, fees.sum()))
 
         feasibility[(use, "fees")] = fees
         feasibility[(use, "max_profit")] -= fees
@@ -182,11 +190,11 @@ def policy_modifications_of_profit(feasibility, parcels):
 
     assert np.all(num_affordable_units <= units.fillna(0))
 
-    print "Describe of inclusionary revenue reduction:\n", \
-        revenue_reduction[revenue_reduction > 0].describe()
+    print("Describe of inclusionary revenue reduction:\n",
+          revenue_reduction[revenue_reduction > 0].describe())
 
-    print "Describe of number of affordable units:\n", \
-        num_affordable_units[num_affordable_units > 0].describe()
+    print("Describe of number of affordable units:\n",
+          num_affordable_units[num_affordable_units > 0].describe())
 
     feasibility[("residential", "policy_based_revenue_reduction")] = \
         revenue_reduction
@@ -196,24 +204,25 @@ def policy_modifications_of_profit(feasibility, parcels):
     feasibility[("residential", "inclusionary_units")] = \
         num_affordable_units
 
-    settings = orca.get_injectable("settings")
+    policy = orca.get_injectable("policy")
 
-    if "sb743_settings" in settings["acct_settings"]:
+    if "sb743_settings" in policy["acct_settings"]:
 
-        sb743_settings = settings["acct_settings"]["sb743_settings"]
+        sb743_settings = policy["acct_settings"]["sb743_settings"]
 
         if sb743_settings["enable"]:
 
             pct_modifications = feasibility[("residential", "vmt_res_cat")].\
                 map(sb743_settings["sb743_pcts"]) + 1
 
-            print "Modifying profit for SB743:\n", pct_modifications.describe()
+            print("Modifying profit for SB743:\n",
+                  pct_modifications.describe())
 
             feasibility[("residential", "max_profit")] *= pct_modifications
 
-    if "land_value_tax_settings" in settings["acct_settings"]:
+    if "land_value_tax_settings" in policy["acct_settings"]:
 
-        s = settings["acct_settings"]["land_value_tax_settings"]
+        s = policy["acct_settings"]["land_value_tax_settings"]
 
         if orca.get_injectable("scenario") in s["enable_in_scenarios"]:
 
@@ -231,15 +240,15 @@ def policy_modifications_of_profit(feasibility, parcels):
             pct_modifications = \
                 pct_modifications.reindex(pzc.index).fillna(1.0)
 
-            print "Modifying profit for Land Value Tax:\n", \
-                pct_modifications.describe()
+            print("Modifying profit for Land Value Tax:\n",
+                  pct_modifications.describe())
 
             feasibility[("residential", "max_profit")] *= pct_modifications
 
-    if "profitability_adjustment_policies" in settings["acct_settings"]:
+    if "profitability_adjustment_policies" in policy["acct_settings"]:
 
         for key, policy in \
-                settings["acct_settings"][
+                policy["acct_settings"][
                     "profitability_adjustment_policies"].items():
 
             if orca.get_injectable("scenario") in \
@@ -247,27 +256,33 @@ def policy_modifications_of_profit(feasibility, parcels):
 
                 parcels_geography = orca.get_table("parcels_geography")
 
+                if "alternate_geography_scenarios" in policy and \
+                        orca.get_injectable("scenario") in \
+                        policy["alternate_geography_scenarios"]:
+                    formula = policy["alternate_adjustment_formula"]
+                else:
+                    formula = policy["profitability_adjustment_formula"]
+
                 pct_modifications = \
-                    parcels_geography.local.eval(
-                        policy["profitability_adjustment_formula"])
+                    parcels_geography.local.eval(formula)
                 pct_modifications += 1.0
 
-                print "Modifying profit for %s:\n" % policy["name"], \
-                    pct_modifications.describe()
+                print("Modifying profit for %s:\n" % policy["name"],
+                      pct_modifications.describe())
 
                 feasibility[("residential", "max_profit")] *= pct_modifications
 
-    print "There are %d affordable units if all feasible projects are built" %\
-        feasibility[("residential", "deed_restricted_units")].sum()
+    print("There are %d affordable units if all feasible projects are built" %
+          feasibility[("residential", "deed_restricted_units")].sum())
 
     return feasibility
 
 
 @orca.step()
-def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
+def calculate_vmt_fees(policy, year, buildings, vmt_fee_categories, coffer,
                        summary, years_per_iter, scenario):
 
-    vmt_settings = settings["acct_settings"]["vmt_settings"]
+    vmt_settings = policy["acct_settings"]["vmt_settings"]
 
     # this is the frame that knows which devs are subsidized
     df = summary.parcel_output
@@ -278,7 +293,7 @@ def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
     if not len(df):
         return
 
-    print "%d projects pass the vmt filter" % len(df)
+    print("%d projects pass the vmt filter" % len(df))
 
     total_fees = 0
 
@@ -287,17 +302,21 @@ def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
         df["res_for_res_fees"] = df.vmt_res_cat.map(
             vmt_settings["res_for_res_fee_amounts"])
         total_fees += (df.res_for_res_fees * df.residential_units).sum()
-        print "Applying vmt fees to %d units" % df.residential_units.sum()
+        print("Applying vmt fees to %d units" % df.residential_units.sum())
 
     if scenario in vmt_settings["com_for_res_scenarios"]:
 
-        df["com_for_res_fees"] = df.vmt_res_cat.map(
-            vmt_settings["com_for_res_fee_amounts"])
+        if scenario in vmt_settings["alternate_geography_scenarios"]:
+            df["com_for_res_fees"] = df.vmt_res_cat.map(
+                vmt_settings["alternate_com_for_res_fee_amounts"])
+        else:
+            df["com_for_res_fees"] = df.vmt_res_cat.map(
+                vmt_settings["com_for_res_fee_amounts"])
         total_fees += (df.com_for_res_fees * df.non_residential_sqft).sum()
-        print "Applying vmt fees to %d commerical sqft" % \
-            df.non_residential_sqft.sum()
+        print("Applying vmt fees to %d commerical sqft" %
+              df.non_residential_sqft.sum())
 
-    print "Adding total vmt fees for res amount of $%.2f" % total_fees
+    print("Adding total vmt fees for res amount of $%.2f" % total_fees)
 
     metadata = {
         "description": "VMT development fees",
@@ -312,13 +331,17 @@ def calculate_vmt_fees(settings, year, buildings, vmt_fee_categories, coffer,
 
     if scenario in vmt_settings["com_for_com_scenarios"]:
 
-        df["com_for_com_fees"] = df.vmt_res_cat.map(
-            vmt_settings["com_for_com_fee_amounts"])
+        if scenario in vmt_settings["alternate_geography_scenarios"]:
+            df["com_for_com_fees"] = df.vmt_res_cat.map(
+                vmt_settings["alternate_com_for_com_fee_amounts"])
+        else:
+            df["com_for_com_fees"] = df.vmt_res_cat.map(
+                vmt_settings["com_for_com_fee_amounts"])
         total_fees += (df.com_for_com_fees * df.non_residential_sqft).sum()
-        print "Applying vmt fees to %d commerical sqft" % \
-            df.non_residential_sqft.sum()
+        print("Applying vmt fees to %d commerical sqft" %
+              df.non_residential_sqft.sum())
 
-    print "Adding total vmt fees for com amount of $%.2f" % total_fees
+    print("Adding total vmt fees for com amount of $%.2f" % total_fees)
 
     coffer["vmt_com_acct"].add_transaction(total_fees, subaccount="regional",
                                            metadata=metadata)
@@ -338,9 +361,16 @@ def subsidized_office_developer(feasibility, coffer, acct_settings, year,
 
     feasibility["pda_id"] = feasibility.pda
 
+    if "alternate_geography_scenarios" in acct_settings["vmt_settings"] \
+            and orca.get_injectable("scenario") in \
+            acct_settings["vmt_settings"]["alternate_geography_scenarios"]:
+        formula = acct_settings["vmt_settings"]["alternate_buildings_filter"]
+    else:
+        formula = acct_settings["vmt_settings"]["receiving_buildings_filter"]
+
     # filter to receiving zone
     feasibility = feasibility.\
-        query(acct_settings["vmt_settings"]["receiving_buildings_filter"])
+        query(formula)
 
     feasibility["non_residential_sqft"] = \
         feasibility.non_residential_sqft.astype("int")
@@ -355,8 +385,8 @@ def subsidized_office_developer(feasibility, coffer, acct_settings, year,
     # make parcel_id available
     feasibility = feasibility.reset_index()
 
-    print "%.0f subsidy with %d developments to choose from" % (
-        total_subsidy, len(feasibility))
+    print("%.0f subsidy with %d developments to choose from" % (
+        total_subsidy, len(feasibility)))
 
     devs = []
 
@@ -403,8 +433,8 @@ def subsidized_office_developer(feasibility, coffer, acct_settings, year,
     # add the buidings and demolish old buildings, and add to debug output
     devs = pd.DataFrame(devs, columns=feasibility.columns)
 
-    print "Building {:,} subsidized office sqft in {:,} projects".format(
-        devs.non_residential_sqft.sum(), len(devs))
+    print("Building {:,} subsidized office sqft in {:,} projects".format(
+        devs.non_residential_sqft.sum(), len(devs)))
 
     devs["form"] = "office"
     devs = add_extra_columns_func(devs)
@@ -519,7 +549,12 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
     feasibility['subsidy_per_unit'] = feasibility.subsidy_per_unit.clip(10000)
 
     # step 5
-    if "receiving_buildings_filter" in acct_settings:
+    if "alternate_buildings_filter" in acct_settings and \
+            orca.get_injectable("scenario") in \
+            acct_settings["alternate_geography_scenarios"]:
+        feasibility = feasibility.\
+            query(acct_settings["alternate_buildings_filter"])
+    elif "receiving_buildings_filter" in acct_settings:
         feasibility = feasibility.\
             query(acct_settings["receiving_buildings_filter"])
     else:
@@ -532,10 +567,10 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
     feasibility["subaccount"] = feasibility.eval(sending_bldgs)
     # step 6
     for subacct, amount in account.iter_subaccounts():
-        print "Subaccount: ", subacct
+        print("Subaccount: ", subacct)
 
         df = feasibility[feasibility.subaccount == subacct]
-        print "Number of feasible projects in receiving zone:", len(df)
+        print("Number of feasible projects in receiving zone:", len(df))
 
         if len(df) == 0:
             continue
@@ -546,7 +581,7 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
         #           (orca.get_injectable("year"), account.name, subacct))
 
         # step 8
-        print "Amount in subaccount: ${:,.2f}".format(amount)
+        print("Amount in subaccount: ${:,.2f}".format(amount))
         num_bldgs = int((-1*df.max_profit).cumsum().searchsorted(amount))
 
         if num_bldgs == 0:
@@ -629,22 +664,22 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
         assert np.all(buildings.local.deed_restricted_units.fillna(0) <=
                       buildings.local.residential_units.fillna(0))
 
-        print "Amount left after subsidy: ${:,.2f}".\
-            format(account.total_transactions_by_subacct(subacct))
+        print("Amount left after subsidy: ${:,.2f}".
+              format(account.total_transactions_by_subacct(subacct)))
 
         new_buildings_list.append(new_buildings)
 
     total_len = reduce(lambda x, y: x+len(y), new_buildings_list, 0)
     if total_len == 0:
-        print "No subsidized buildings"
+        print("No subsidized buildings")
         return
 
     new_buildings = pd.concat(new_buildings_list)
-    print "Built {} total subsidized buildings".format(len(new_buildings))
-    print "    Total subsidy: ${:,.2f}".format(
-        -1*new_buildings.max_profit.sum())
-    print "    Total subsidized units: {:.0f}".\
-        format(new_buildings.residential_units.sum())
+    print("Built {} total subsidized buildings".format(len(new_buildings)))
+    print("    Total subsidy: ${:,.2f}".
+          format(-1*new_buildings.max_profit.sum()))
+    print("    Total subsidized units: {:.0f}".
+          format(new_buildings.residential_units.sum()))
 
     new_buildings["subsidized"] = True
     new_buildings["policy_name"] = policy_name
@@ -677,7 +712,8 @@ def subsidized_residential_feasibility(
     # get rid of the multiindex that comes back from feasibility
     feasibility = feasibility.stack(level=0).reset_index(level=1, drop=True)
     # join to parcels_geography for filtering
-    feasibility = feasibility.join(parcels_geography.to_frame())
+    feasibility = feasibility.join(parcels_geography.to_frame(),
+                                   rsuffix='_y')
 
     # add the multiindex back
     feasibility.columns = pd.MultiIndex.from_tuples(
@@ -723,16 +759,16 @@ def subsidized_residential_developer_vmt(
 def subsidized_residential_developer_lump_sum_accts(
         households, buildings, add_extra_columns_func,
         parcels_geography, year, acct_settings, parcels,
-        settings, summary, coffer, form_to_btype_func,
-        scenario):
+        policy, summary, coffer, form_to_btype_func,
+        scenario, settings):
 
-    for key, acct in settings["acct_settings"]["lump_sum_accounts"].items():
+    for key, acct in policy["acct_settings"]["lump_sum_accounts"].items():
 
         # quick return in order to save performance time
         if scenario not in acct["enable_in_scenarios"]:
             continue
 
-        print "Running the subsidized developer for acct: %s" % acct["name"]
+        print("Running the subsidized developer for acct: %s" % acct["name"])
 
         # need to rerun the subsidized feasibility every time and get new
         # results - this is not ideal and is a story to fix in pivotal, but the

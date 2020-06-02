@@ -9,6 +9,7 @@ def readfile(year):
     return pd.read_csv(fname, low_memory=False) \
         if os.path.isfile(fname) else pd.DataFrame()
 
+
 df = pd.concat([
     readfile(runnum)
     for runnum in range(1338, 1344)
