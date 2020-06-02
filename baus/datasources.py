@@ -131,7 +131,7 @@ def inclusionary_housing_settings(policy, scenario):
         s = s["default"]
 
     d = {}
-    if (scenario in policy["inclusionary_d_b_enable"]):
+    if (scenario in policy["20", "21", "22", "23"]):
         for item in s:
             # this is a list of Blueprint strategy geographies - represented
             # by pba50chcat - with an inclusionary rate that is the same
