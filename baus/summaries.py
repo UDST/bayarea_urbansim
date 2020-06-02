@@ -169,6 +169,30 @@ def config(policy, inputs, run_number, scenario, parcels,
     policy_activated(policy_loc, policy_nm, scenario)
     write("")
 
+    write("Draft Blueprint POLICIES")
+    write("")
+
+    # Reduce housing development cost
+    policy_loc = (policy["acct_settings"]
+                  ["profitability_adjustment_policies"]
+                  ["reduce_housing_costs_tier_1_market_rate_developer"])
+    policy_nm = "Reduce Housing Cost Tier 1 for Market-rate Developers"
+    policy_activated(policy_loc, policy_nm, scenario)
+
+    policy_loc = (policy["acct_settings"]
+                  ["profitability_adjustment_policies"]
+                  ["reduce_housing_costs_tier_2_market_rate_developer"])
+    policy_nm = "Reduce Housing Cost Tier 2 for Market-rate Developers"
+    policy_activated(policy_loc, policy_nm, scenario)
+    write("")
+
+    policy_loc = (policy["acct_settings"]
+                  ["profitability_adjustment_policies"]
+                  ["reduce_housing_costs_tier_3_market_rate_developer"])
+    policy_nm = "Reduce Housing Cost Tier 3 for Market-rate Developers"
+    policy_activated(policy_loc, policy_nm, scenario)
+    write("")
+
     write("FUTURES ROUND 2 POLICIES")
     write("")
 
