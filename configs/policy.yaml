@@ -1288,6 +1288,76 @@ acct_settings:
                                           jurisdiction_id == 53000 or
                                           jurisdiction_id == 68000) * .01"
 
+    reduce_housing_costs_tier_1_market_rate_developer:
+      name: "Reduce Cost - Market Rate Developer - Tier 1: -2.5%"
+      enable_in_scenarios: ["20", "21", "22", "23"]
+      # GG + TRA1 + HRA or GG + TRA2 + HRA
+      profitability_adjustment_formula: "(gg_id == 'GG' &
+                                         (tra_id == 'tra1' |
+                                          tra_id == 'tra2' |
+                                          tra_id == 'tra2c1') &
+                                         sesit_id == 'HRA' &
+                                         ppa_id == '') * .025"
+      alternate_geography_scenarios: ["23"]
+      alternate_adjustment_formula: "(gg_id == 'GG' &
+                                     (tra_id == 'tra1' |
+                                      tra_id == 'tra2c1' |
+                                      tra_id == 'tra3c1' |
+                                      tra_id == 'tra2' |
+                                      tra_id == 'tra3c2') &
+                                     sesit_id == 'HRA' &
+                                     ppa_id == '') * .025"
+
+    reduce_housing_costs_tier_2_market_rate_developer:
+      name: "Reduce Cost - Market Rate Developer - Tier 2: -1.9%"
+      enable_in_scenarios: ["20", "21", "22", "23"]
+      # GG + TRA1 or GG + TRA3 + HRA
+      profitability_adjustment_formula: "((gg_id == 'GG' &
+                                           tra_id == 'tra1' &
+                                           sesit_id == '' &
+                                           ppa_id == '') |
+                                          (gg_id == 'GG' &
+                                          (tra_id == 'tra3' |
+                                           tra_id == 'tra3c2' |
+                                           tra_id == 'tra3c1') &
+                                          sesit_id == 'HRA' &
+                                          ppa_id == '')) * .019"
+      alternate_geography_scenarios: ["23"]
+      alternate_adjustment_formula: "((gg_id == 'GG' &
+                                      (tra_id == 'tra1'|
+                                       tra_id == 'tra2c1' |
+                                       tra_id == 'tra3c1') &
+                                      sesit_id == '' &
+                                      ppa_id == '') |
+                                     (gg_id == 'GG' &
+                                      tra_id == 'tra3' &
+                                      sesit_id == 'HRA' &
+                                      ppa_id == '')) * .019"
+
+    reduce_housing_costs_tier_3_market_rate_developer:
+      name: "Reduce Cost - Market Rate Developer - Tier 3: -1.3%"
+      enable_in_scenarios: ["20", "21", "22", "23"]
+      # GG + TRA3 or GG + HRA
+      profitability_adjustment_formula: "((gg_id == 'GG' &
+                                          (tra_id == 'tra3'|
+                                           tra_id == 'tra3c1' |
+                                           tra_id == 'tra3c1') &
+                                          sesit_id == '' &
+                                          ppa_id == '') |
+                                         (gg_id == 'GG' &
+                                          tra_id == '' &
+                                          sesit_id == 'HRA' &
+                                          ppa_id == '')) * .013"
+      alternate_geography_scenarios: ["23"]
+      alternate_adjustment_formula: "((gg_id == 'GG' &
+                                      tra_id == 'tra3' &
+                                      sesit_id == '' &
+                                      ppa_id == '') |
+                                     (gg_id == 'GG' &
+                                      tra_id == '' &
+                                      sesit_id == 'HRA' &
+                                      ppa_id == '')) * .013"
+                                                                           
   # this is a cutom policy which taxes land (reduces profit) based on the current
   # built density - this is to incentive using land at its highest and best use
   land_value_tax_settings:
