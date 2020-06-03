@@ -435,7 +435,16 @@ def zoning_scenario(parcels_geography, scenario, policy, mapping):
 @orca.table(cache=True)
 def parcels(store):
     df = store['parcels']
-    return df.loc[df.x.notnull()]
+    # add a lat/lon to synthetic parcels to avoid a Pandana error
+    df.loc[2054503, "x"] = -122.1697
+    df.loc[2054503, "y"] = 37.4275
+    df.loc[2054504, "x"] = -122.1697
+    df.loc[2054504, "y"] = 37.4275
+    df.loc[2054505, "x"] = -122.1697
+    df.loc[2054505, "y"] = 37.4275
+    df.loc[2054506, "x"] = -122.1697
+    df.loc[2054506, "y"] = 37.4275
+    return df
 
 
 @orca.table(cache=True)
