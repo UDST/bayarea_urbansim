@@ -116,8 +116,9 @@ def inclusionary_housing_settings(policy, scenario):
 
     s = policy['inclusionary_housing_settings']
 
-    print("inclusionary_fr2_enable": policy["inclusionary_fr2_enable"])
-    print("inclusionary_d_b_enable": policy["inclusionary_d_b_enable"])
+    for item, value in policy:
+        print("item is:", item)
+        print(policy[item])
 
     if (scenario in ["foo", "11", "12", "15"]) and\
        (scenario not in policy["inclusionary_fr2_enable"]):
@@ -301,7 +302,7 @@ def zoning_lookup():
 @orca.table(cache=True)
 def zoning_baseline(parcels, zoning_lookup, settings):
     df = pd.read_csv(os.path.join(misc.data_dir(),
-                     "2020_04_15_zoning_parcels.csv"),
+                     "2015_12_21_zoning_parcels.csv"),
                      index_col="geom_id")
     df = pd.merge(df, zoning_lookup.to_frame(),
                   left_on="zoning_id", right_index=True)
@@ -439,12 +440,8 @@ def zoning_scenario(parcels_geography, scenario, policy, mapping):
     add_drop_helper("add_bldg", 1)
     add_drop_helper("drop_bldg", 0)
 
-    if 'pba50zoningmodcat' in scenario_zoning.columns:
-        join_col = 'pba50zoningmodcat'
-    elif 'zoninghzcat' in scenario_zoning.columns:
-        join_col = 'zoninghzcat'
-    else:
-        join_col = 'zoningmodcat'
+    join_col = 'zoninghzcat' if 'zoninghzcat' in\
+        scenario_zoning.columns else 'zoningmodcat'
 
     return pd.merge(parcels_geography.to_frame().reset_index(),
                     scenario_zoning,
@@ -486,7 +483,7 @@ def parcel_rejections():
 @orca.table(cache=True)
 def parcels_geography(parcels, scenario, settings):
     df = pd.read_csv(
-        os.path.join(misc.data_dir(), "2020_04_17_parcels_geography.csv"),
+        os.path.join(misc.data_dir(), "07_11_2019_parcels_geography.csv"),
         index_col="geom_id")
     df = geom_id_to_parcel_id(df, parcels)
 
@@ -639,8 +636,7 @@ def reprocess_dev_projects(df):
 
 # shared between demolish and build tables below
 def get_dev_projects_table(scenario, parcels):
-    df = pd.read_csv(os.path.join(misc.data_dir(),
-                     "2020_05_28_development_projects.csv"))
+    df = pd.read_csv(os.path.join(misc.data_dir(), "development_projects.csv"))
     df = reprocess_dev_projects(df)
 
     # this filters project by scenario
@@ -902,27 +898,6 @@ def slr_parcel_inundation_mp():
         index_col='parcel_id')
 
 
-@orca.table(cache=True)
-def slr_parcel_inundation_d_b():
-    return pd.read_csv(
-        os.path.join(misc.data_dir(), "slr_parcel_inundation_d_b.csv"),
-        index_col='parcel_id')
-
-
-@orca.table(cache=True)
-def slr_parcel_inundation_d_bb():
-    return pd.read_csv(
-        os.path.join(misc.data_dir(), "slr_parcel_inundation_d_bb.csv"),
-        index_col='parcel_id')
-
-
-@orca.table(cache=True)
-def slr_parcel_inundation_d_bp():
-    return pd.read_csv(
-        os.path.join(misc.data_dir(), "slr_parcel_inundation_d_bp.csv"),
-        index_col='parcel_id')
-
-
 # SLR progression by year, for "futures" C, B, R
 @orca.table(cache=True)
 def slr_progression_C():
@@ -940,13 +915,6 @@ def slr_progression_B():
 def slr_progression_R():
     return pd.read_csv(
         os.path.join(misc.data_dir(), "slr_progression_R.csv"))
-
-
-# SLR progression for drafte blueprint
-@orca.table(cache=True)
-def slr_progression_d_b():
-    return pd.read_csv(
-        os.path.join(misc.data_dir(), "slr_progression_d_b.csv"))
 
 
 # census tracts for parcels, to assign earthquake probabilities
