@@ -50,12 +50,25 @@ def employment_relocation_rates():
     df.columns = ["zone_id", "empsix", "rate"]
     return df
 
-
+##this for future round2
 @orca.table(cache=True)
 def household_relocation_rates(scenario, policy):
     if scenario in policy['reloc_fr2_enable']:
         df = pd.read_csv(os.path.join("data",
                                       "household_relocation_rates_fr2.csv"))
+        orca.add_injectable("hh_reloc", 'activated')
+    else:
+        df = pd.read_csv(os.path.join("data",
+                                      "household_relocation_rates.csv"))
+        orca.add_injectable("hh_reloc", 'not activated')
+    return df
+
+##this is for draft blueprint
+@orca.table(cache=True)
+def household_relocation_rates(scenario, policy):
+    if scenario in policy['reloc_db_enable']:
+        df = pd.read_csv(os.path.join("data",
+                                      "household_relocation_rates_d_b.csv"))
         orca.add_injectable("hh_reloc", 'activated')
     else:
         df = pd.read_csv(os.path.join("data",
