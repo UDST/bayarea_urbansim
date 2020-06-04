@@ -26,8 +26,6 @@ def test_limits_settings():
 
 def test_inclusionary_housing_settings():
     inclusionary_housing_settings = {
-        "inclusionary_fr2_enable": "foo",
-        "inclusionary_d_b_enable": "foo",
         "foo": [{
             "amount": .2,
             "values": [
