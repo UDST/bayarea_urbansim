@@ -49,6 +49,8 @@ LAST_KNOWN_GOOD_RUNS = {
 
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 
+orca.add_injectable("base_year", IN_YEAR)
+
 parser = argparse.ArgumentParser(description='Run UrbanSim models.')
 
 parser.add_argument(
