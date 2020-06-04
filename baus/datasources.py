@@ -675,6 +675,8 @@ def development_projects(parcels, mapping, scenario):
     building_types = mapping["building_type_map"].keys()
     # only deal with building types we recorgnize
     # otherwise hedonics break
+    # currently: 'HS', 'HT', 'HM', 'OF', 'HO', 'SC', 'IL',
+    # 'IW', 'IH', 'RS', 'RB', 'MR', 'MT', 'ME', 'PA', 'PA2'
     df = df[df.building_type.isin(building_types)]
 
     # we don't predict prices for schools and hotels right now
