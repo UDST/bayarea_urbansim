@@ -644,7 +644,7 @@ haywardGGtra2NANAinNA,1389,331.4476952,1,839,hayward,GG,tra2,NA,NA,in,NA,HM,,75,
 haywardGGtra2NANAinsfd,958,137.7380007,1,819,hayward,GG,tra2,NA,NA,in,sfd,HM,,35,1.5,,,,,
 haywardGGtra3NANAinNA,208,118.7242347,1,839,hayward,GG,tra3,NA,NA,in,NA,HM,,35,2,,,,,
 haywardGGtra3NANAinsfd,54,7.934299721,1,824,hayward,GG,tra3,NA,NA,in,sfd,HM,,35,2,,,,,
-haywardGGtra3c2NANAinNA,110,73.61602689,1,828,hayward,GG,tra3c2,NA,NA,in,NA,HM,,35,2,,,,,
+haywardGGtra3c2NANAinNA,110,73.61602689,1,828,hayward,GG,tra3c2,NA,NA,in,NA,HM,,75,2,,,,,
 haywardGGtra3c2NANAinsfd,352,32.53639054,1,828,hayward,GG,tra3c2,NA,NA,in,sfd,HM,,35,2,,,,,
 haywardNANADRNAinNA,3234,2859.662849,1,810,hayward,NA,NA,DR,NA,in,NA,,,,,,,,,
 haywardNANADRNAinsfd,10174,1729.949424,1,820,hayward,NA,NA,DR,NA,in,sfd,,,,,,,,,
@@ -1074,9 +1074,9 @@ oaklandGGtra3HRADRNAinNA,16,25.56435739,1,916,oakland,GG,tra3,HRADR,NA,in,NA,HM,
 oaklandGGtra3HRADRNAinsfd,24,3.185260785,1,916,oakland,GG,tra3,HRADR,NA,in,sfd,HM,,50,2,,,,,3
 oaklandGGtra3NANAinNA,17546,4044.095217,1,878,oakland,GG,tra3,NA,NA,in,NA,HM,,35,2,,,,,3
 oaklandGGtra3NANAinsfd,18226,1770.575573,1,932,oakland,GG,tra3,NA,NA,in,sfd,HM,,35,2,,,,,3
-oaklandGGtra3c2DRNAinNA,69,22.25613134,1,967,oakland,GG,tra3c2,DR,NA,in,NA,HM,,35,2,,,,,3
+oaklandGGtra3c2DRNAinNA,69,22.25613134,1,967,oakland,GG,tra3c2,DR,NA,in,NA,HM,,100,2,,,,,3
 oaklandGGtra3c2DRNAinsfd,4,0.65086035,1,967,oakland,GG,tra3c2,DR,NA,in,sfd,HM,,35,2,,,,,3
-oaklandGGtra3c2NANAinNA,217,57.35715766,1,992,oakland,GG,tra3c2,NA,NA,in,NA,HM,,35,2,,,,,3
+oaklandGGtra3c2NANAinNA,217,57.35715766,1,992,oakland,GG,tra3c2,NA,NA,in,NA,HM,,75,2,,,,,3
 oaklandGGtra3c2NANAinsfd,219,19.21470648,1,993,oakland,GG,tra3c2,NA,NA,in,sfd,HM,,35,2,,,,,3
 oaklandNANADRNAinNA,898,2295.146864,1,884,oakland,NA,NA,DR,NA,in,NA,,,,,,,,,
 oaklandNANADRNAinsfd,3197,1328.379094,1,885,oakland,NA,NA,DR,NA,in,sfd,,,,,,,,,
