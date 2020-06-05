@@ -163,11 +163,11 @@ berkeleyGGtra3HRADRNAinNA,519,82.73235627,1,1015,berkeley,GG,tra3,HRADR,NA,in,NA
 berkeleyGGtra3HRADRNAinsfd,320,29.78621007,1,1027,berkeley,GG,tra3,HRADR,NA,in,sfd,HM,,50,2,,,,,3
 berkeleyGGtra3NANAinNA,78,16.55046137,1,1014,berkeley,GG,tra3,NA,NA,in,NA,HM,,35,2,,,,,3
 berkeleyGGtra3NANAinsfd,35,3.876054676,1,994,berkeley,GG,tra3,NA,NA,in,sfd,HM,,35,2,,,,,3
-berkeleyGGtra3c2HRANAinNA,216,29.39319275,1,1024,berkeley,GG,tra3c2,HRA,NA,in,NA,HM,,50,2.5,,,,,3
+berkeleyGGtra3c2HRANAinNA,216,29.39319275,1,1024,berkeley,GG,tra3c2,HRA,NA,in,NA,HM,,100,2.5,,,,,3
 berkeleyGGtra3c2HRANAinsfd,113,13.1131036,1,1024,berkeley,GG,tra3c2,HRA,NA,in,sfd,HM,,50,2,,,,,3
-berkeleyGGtra3c2HRADRNAinNA,191,33.8984899,1,1015,berkeley,GG,tra3c2,HRADR,NA,in,NA,HM,,50,2.5,,,,,3
+berkeleyGGtra3c2HRADRNAinNA,191,33.8984899,1,1015,berkeley,GG,tra3c2,HRADR,NA,in,NA,HM,,100,2.5,,,,,3
 berkeleyGGtra3c2HRADRNAinsfd,130,13.86927946,1,1015,berkeley,GG,tra3c2,HRADR,NA,in,sfd,HM,,50,2,,,,,3
-berkeleyGGtra3c2NANAinNA,19,15.58395168,1,1014,berkeley,GG,tra3c2,NA,NA,in,NA,HM,,35,2,,,,,3
+berkeleyGGtra3c2NANAinNA,19,15.58395168,1,1014,berkeley,GG,tra3c2,NA,NA,in,NA,HM,,75,2,,,,,3
 berkeleyGGtra3c2NANAinsfd,1,1.707978409,1,1014,berkeley,GG,tra3c2,NA,NA,in,sfd,HM,,35,2,,,,,3
 berkeleyNANADRNAinNA,421,127.1187137,1,1020,berkeley,NA,NA,DR,NA,in,NA,,,,,,,,,
 berkeleyNANADRNAinsfd,283,46.25156793,1,1007,berkeley,NA,NA,DR,NA,in,sfd,,,,,,,,,
