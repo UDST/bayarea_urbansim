@@ -1542,8 +1542,8 @@ san_franciscoGGtra3NANAinNA,10833,3383.002538,75,140,san_francisco,GG,tra3,NA,NA
 san_franciscoGGtra3NANAinsfd,12472,719.2895436,75,147,san_francisco,GG,tra3,NA,NA,in,sfd,HM,,35,2,,,,,2
 san_franciscoGGtra3NANAoutsfd,1,0.013529306,81,163,san_francisco,GG,tra3,NA,NA,out,sfd,,,,,0,0,,,2
 san_franciscoGGtra3NAppainNA,1,0.249260854,75,111,san_francisco,GG,tra3,NA,ppa,in,NA,IW,,,2,,,,,2
-san_franciscoGGtra3c1DRNAinNA,3,0.653431264,75,18,san_francisco,GG,tra3c1,DR,NA,in,NA,HM,,35,2,,,,,1
-san_franciscoGGtra3c1NANAinNA,103,49.19684767,75,17,san_francisco,GG,tra3c1,NA,NA,in,NA,HM,,35,2,,,,,1
+san_franciscoGGtra3c1DRNAinNA,3,0.653431264,75,18,san_francisco,GG,tra3c1,DR,NA,in,NA,HM,,150,2,,,,,1
+san_franciscoGGtra3c1NANAinNA,103,49.19684767,75,17,san_francisco,GG,tra3c1,NA,NA,in,NA,HM,,150,2,,,,,1
 san_franciscoNANADRNAinNA,16,1036.06416,75,190,san_francisco,NA,NA,DR,NA,in,NA,,,,,,,,,
 san_franciscoNANAHRANAinNA,1,1505.601773,75,52,san_francisco,NA,NA,HRA,NA,in,NA,,,,,,,,,
 san_franciscoNANANANAinNA,2,0.059007661,75,149,san_francisco,NA,NA,NA,NA,in,NA,,,,,,,,,
@@ -1932,7 +1932,7 @@ unincorporated_alamedaGGtra3NANAinunNA,1045,284.3389179,1,857,unincorporated_ala
 unincorporated_alamedaGGtra3NANAinunsfd,1146,174.6150997,1,856,unincorporated_alameda,GG,tra3,NA,NA,inun,sfd,HM,,35,2,,,,,
 unincorporated_alamedaGGtra3NANAoutNA,17,3.680895928,1,855,unincorporated_alameda,GG,tra3,NA,NA,out,NA,,,,,0,0,,,
 unincorporated_alamedaGGtra3c2HRANAoutNA,2,3.257936543,1,960,unincorporated_alameda,GG,tra3c2,HRA,NA,out,NA,,,,,0,0,,,
-unincorporated_alamedaGGtra3c2NANAinunNA,173,56.66977807,1,837,unincorporated_alameda,GG,tra3c2,NA,NA,inun,NA,HM,,35,2,,,,,
+unincorporated_alamedaGGtra3c2NANAinunNA,173,56.66977807,1,837,unincorporated_alameda,GG,tra3c2,NA,NA,inun,NA,HM,,75,2,,,,,
 unincorporated_alamedaGGtra3c2NANAinunsfd,99,16.67495713,1,828,unincorporated_alameda,GG,tra3c2,NA,NA,inun,sfd,HM,,35,2,,,,,
 unincorporated_alamedaGGtra3c2NANAoutNA,2,0.717553679,1,961,unincorporated_alameda,GG,tra3c2,NA,NA,out,NA,,,,,0,0,,,
 unincorporated_alamedaNANADRNAexp0NA,22,13.23401964,1,844,unincorporated_alameda,NA,NA,DR,NA,exp0,NA,,,,,0,0,,,
