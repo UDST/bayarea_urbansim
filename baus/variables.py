@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 from urbansim.utils import misc
 import orca
-import datasources
-from utils import nearest_neighbor, groupby_random_choice
+from baus import datasources
+from baus.utils import nearest_neighbor, groupby_random_choice
 from urbansim_defaults import utils
 from urbansim_defaults import variables
 
@@ -83,8 +83,8 @@ def naics(jobs):
 
 
 @orca.column('jobs', cache=True)
-def empsix_id(jobs, settings):
-    return jobs.empsix.map(settings['empsix_name_to_id'])
+def empsix_id(jobs, mapping):
+    return jobs.empsix.map(mapping['empsix_name_to_id'])
 
 
 #############################
@@ -358,15 +358,15 @@ def vmt_res_cat(parcels, vmt_fee_categories):
 
 # residential fees
 @orca.column('parcels', cache=True)
-def vmt_res_fees(parcels, settings):
-    vmt_settings = settings["acct_settings"]["vmt_settings"]
+def vmt_res_fees(parcels, policy):
+    vmt_settings = policy["acct_settings"]["vmt_settings"]
     return parcels.vmt_res_cat.map(vmt_settings["res_for_res_fee_amounts"])
 
 
 # commercial fees
 @orca.column('parcels', cache=True)
-def vmt_com_fees(parcels, settings):
-    vmt_settings = settings["acct_settings"]["vmt_settings"]
+def vmt_com_fees(parcels, policy):
+    vmt_settings = policy["acct_settings"]["vmt_settings"]
     return parcels.vmt_res_cat.map(vmt_settings["com_for_res_fee_amounts"]) + \
         parcels.vmt_res_cat.map(vmt_settings["com_for_com_fee_amounts"])
 
@@ -374,10 +374,10 @@ def vmt_com_fees(parcels, settings):
 # compute the fees per unit for each parcel
 # (since feees are specified spatially)
 @orca.column('parcels', cache=True)
-def fees_per_unit(parcels, settings, scenario):
+def fees_per_unit(parcels, policy, scenario):
     s = pd.Series(0, index=parcels.index)
 
-    vmt_settings = settings["acct_settings"]["vmt_settings"]
+    vmt_settings = policy["acct_settings"]["vmt_settings"]
     if scenario in vmt_settings["com_for_res_scenarios"] or \
             scenario in vmt_settings["res_for_res_scenarios"]:
         s += parcels.vmt_res_fees
@@ -387,10 +387,10 @@ def fees_per_unit(parcels, settings, scenario):
 
 # since this is by sqft this implies commercial
 @orca.column('parcels', cache=True)
-def fees_per_sqft(parcels, settings, scenario):
+def fees_per_sqft(parcels, policy, scenario):
     s = pd.Series(0, index=parcels.index)
 
-    vmt_settings = settings["acct_settings"]["vmt_settings"]
+    vmt_settings = policy["acct_settings"]["vmt_settings"]
     if scenario in vmt_settings["com_for_com_scenarios"]:
         s += parcels.vmt_com_fees
 
@@ -400,6 +400,21 @@ def fees_per_sqft(parcels, settings, scenario):
 @orca.column('parcels', cache=True)
 def pda(parcels, parcels_geography):
     return parcels_geography.pda_id.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def trich_id(parcels, parcels_geography):
+    return parcels_geography.trich_id.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def cat_id(parcels, parcels_geography):
+    return parcels_geography.cat_id.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def juris_trich(parcels, parcels_geography):
+    return parcels_geography.juris_trich.reindex(parcels.index)
 
 
 @orca.column('parcels', cache=True)
@@ -495,7 +510,8 @@ def parcel_average_price(use, quantile=.5):
 @orca.injectable("parcel_is_allowed_func", autocall=False)
 def parcel_is_allowed(form):
     settings = orca.get_injectable("settings")
-    form_to_btype = settings["form_to_btype"]
+    mapping = orca.get_injectable("mapping")
+    form_to_btype = mapping["form_to_btype"]
 
     # we have zoning by building type but want
     # to know if specific forms are allowed
@@ -535,7 +551,7 @@ def first_building_type(buildings, parcels):
 
 @orca.injectable(autocall=False)
 def parcel_first_building_type_is(form):
-    form_to_btype = orca.get_injectable('settings')["form_to_btype"]
+    form_to_btype = orca.get_injectable('mapping')["form_to_btype"]
     parcels = orca.get_table('parcels')
     return parcels.first_building_type.isin(form_to_btype[form])
 
@@ -747,8 +763,8 @@ def land_cost(parcels):
 
 
 @orca.column('parcels', cache=True)
-def county(parcels, settings):
-    return parcels.county_id.map(settings["county_id_map"])
+def county(parcels, mapping):
+    return parcels.county_id.map(mapping["county_id_map"])
 
 
 @orca.column('parcels', cache=True)
@@ -841,7 +857,12 @@ def cnml(parcels, non_mandatory_accessibility,
 @orca.column('parcels', cache=True, cache_scope='iteration')
 def combo_logsum(parcels):
     df = parcels.to_frame(['cml', 'cnml'])
-    return df.cml + df.cnml
+    combo = df.cml + df.cnml
+    # since the logsum methodology in the travel model has changed,
+    # we need to shift the values to align with the ones used for estimation
+    combo = combo - 170
+    combo.loc[(combo <= 0)] = 1
+    return combo
 
 
 @orca.column('zones', cache=True, cache_scope='iteration')
@@ -883,7 +904,12 @@ def zone_cnml(year, non_mandatory_accessibility,
 @orca.column('zones', cache=True, cache_scope='iteration')
 def zone_combo_logsum(zones):
     df = zones.to_frame(['zone_cml', 'zone_cnml'])
-    return df.zone_cml + df.zone_cnml
+    combo = df.zone_cml + df.zone_cnml
+    # since the logsum methodology in the travel model has changed,
+    # we need to shift the values to align with the ones used for estimation
+    combo = combo - 170
+    combo.loc[(combo <= 0)] = 1
+    return combo
 
 
 # This is an all computed table which takes calculations from the below and
