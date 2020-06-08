@@ -146,7 +146,7 @@ class SqFtProFormaConfig(object):
             }
         }
 
-        self.profit_factor = 1.07
+        self.profit_factor = 1.05
         self.building_efficiency = .7
         self.parcel_coverage = .8
         self.cap_rate = .04
