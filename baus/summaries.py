@@ -200,6 +200,10 @@ def config(policy, inputs, run_number, scenario, parcels,
         for item in s[fr1]:
             write("Inclusionary rates are FR1: %d cities are set to %.2f" %
                   (len(item["values"]), item["amount"]))
+    elif scenario in policy["inclusionary_d_b_enable"]:
+        for item in s[scenario]:
+            write("Inclusionary rates for %d pba50chcat are set to %.2f" %
+                  (len(item["values"]), item["amount"]))
     elif scenario in s.keys():
         for item in s[scenario]:
             write("Inclusionary rates for %d cities are set to %.2f" %
