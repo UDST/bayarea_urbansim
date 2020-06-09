@@ -625,9 +625,9 @@ def reprocess_dev_projects(df):
 def get_dev_projects_table(scenario, parcels):
     # requires the user has MTC's urban_data_internal
     # repository alongside bayarea_urbansim
-    df = pd.read_csv(os.path.join(misc.data_dir(),
-                     "././urban_data_internal/development_projects/\
-                     2020_0605_1127_development_projects.csv"))
+    urban_data_repo = ("../urban_data_internal/development_projects/")
+    current_dev_proj = ("2020_0605_1127_development_projects.csv")
+    df = pd.read_csv(os.path.join(urban_data_repo, current_dev_proj))
 
     # this filters project by scenario
     scen = 'scen' + str(scenario)
