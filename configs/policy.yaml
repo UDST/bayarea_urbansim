@@ -16,9 +16,11 @@ inclusionary_fr2_enable: ["11", "12", "15"]
 
 
 # scenarios for futures round 2 renter protections
+# these slow household relocation
 reloc_fr2_enable: ["11", "12", "15"]
 
-# scenarios for renter protections for draft blue print -- rent control is included in both basic and the two pluses.
+# scenarios for renter protections for draft blue print
+# rent control is included in all variants
 # these slow household relocation
 reloc_db_enable: ["21", "22", "23"]
 
