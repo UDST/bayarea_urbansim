@@ -58,7 +58,6 @@ def household_relocation_rates(scenario, policy):
         df = pd.read_csv(os.path.join("data",
                                       "household_relocation_rates_fr2.csv"))
         orca.add_injectable("hh_reloc", 'activated')
-        orca.add_injectable("hh_reloc", 'not activated')
     elif scenario in policy['reloc_db_enable']:
         df = pd.read_csv(os.path.join("data",
                                       "household_relocation_rates_d_b.csv"))
@@ -66,6 +65,7 @@ def household_relocation_rates(scenario, policy):
     else:
         df = pd.read_csv(os.path.join("data",
                                       "household_relocation_rates.csv"))
+        orca.add_injectable("hh_reloc", 'not activated')
     return df
 
 ##this is for draft blueprint
