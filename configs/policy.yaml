@@ -14,19 +14,9 @@ office_caps_fr2_enable: ["11", "12", "15"]
 # scenarios for futures rounds 2 inclusionary rates
 inclusionary_fr2_enable: ["11", "12", "15"]
 
-# this is added for housing relocation rate function in models.py
-# this is to differentiate futures baseline rates
-# from the baseline rates used for draft blueprint
-futures_scenarios: ["1", "2", "5", "11", "12", "15"]
-
 # scenarios for futures round 2 renter protections
 # these slow household relocation
 reloc_fr2_enable: ["11", "12", "15"]
-
-# scenarios for renter protections for draft blueprint
-# rent control is included in all variants
-# these slow household relocation
-reloc_db_enable: ["21", "22", "23"]
 
 
 # limits!  these are very important as they give per scenario limits in terms of
