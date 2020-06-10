@@ -54,18 +54,23 @@ def employment_relocation_rates():
 # also includes draft blueprint 
 @orca.table(cache=True)
 def household_relocation_rates(scenario, policy):
-    if scenario in policy['reloc_fr2_enable']:
-        df = pd.read_csv(os.path.join("data",
+    if scenario in policy['futures_scenarios']:
+    	if scenario in policy['reloc_fr2_enable']:
+    		df = pd.read_csv(os.path.join("data",
                                       "household_relocation_rates_fr2.csv"))
-        orca.add_injectable("hh_reloc", 'activated')
-    elif scenario in policy['reloc_db_enable']:
-        df = pd.read_csv(os.path.join("data",
-                                      "household_relocation_rates_d_b.csv"))
+    		orca.add_injectable("hh_reloc", 'activated')
+		else: 
+			df = pd.read_csv(os.path.join("data",
+                                      "household_relocation_rates_fr_base.csv"))
+			orca.add_injectable("hh_reloc", 'not activated')
+	elif scenario in policy['reloc_db_enable']:
+        	df = pd.read_csv(os.path.join("data",
+                                      "household_relocation_rates_db_var.csv"))
         orca.add_injectable("hh_reloc", 'activated')
     else:
-        df = pd.read_csv(os.path.join("data",
-                                      "household_relocation_rates.csv"))
-        orca.add_injectable("hh_reloc", 'not activated')
+		df = pd.read_csv(os.path.join("data",
+                                      "household_relocation_rates_db_base.csv"))
+		orca.add_injectable("hh_reloc", 'not activated')
     return df
 
 # this is a list of parcel_ids which are to be treated as static
