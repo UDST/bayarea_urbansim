@@ -1239,7 +1239,7 @@ acct_settings:
       alternate_amount_scenarios: ["22", "23"]
 
     contra_costa_bond_d_b_settings:
-      name: "Contra Costa Affordable Housing Bond - draft blueprint"
+      name: "Contra Costa Affordable Housing Bond - draft blueprint basic"
       sending_buildings_subaccount_def: regional
       total_amount: 419064814
       alternate_total_amount: 622403718
@@ -1249,7 +1249,7 @@ acct_settings:
       alternate_amount_scenarios: ["22", "23"]
 
     marin_bond_d_b_settings:
-      name: "Marin Affordable Housing Bond - draft blueprint"
+      name: "Marin Affordable Housing Bond - draft blueprint basic"
       sending_buildings_subaccount_def: regional
       total_amount: 86893367
       alternate_total_amount: 129055823
@@ -1259,7 +1259,7 @@ acct_settings:
       alternate_amount_scenarios: ["22", "23"]
 
     napa_bond_d_b_settings:
-      name: "Napa Affordable Housing Bond - draft blueprint"
+      name: "Napa Affordable Housing Bond - draft blueprint basic"
       sending_buildings_subaccount_def: regional
       total_amount: 47041014
       alternate_total_amount: 69866286
@@ -1269,7 +1269,7 @@ acct_settings:
       alternate_amount_scenarios: ["22", "23"]
 
     san_francisco_bond_d_b_settings:
-      name: "San Francisco Affordable Housing Bond - draft blueprint"
+      name: "San Francisco Affordable Housing Bond - draft blueprint basic"
       sending_buildings_subaccount_def: regional
       total_amount: 418432829
       alternate_total_amount: 621465080
@@ -1279,7 +1279,7 @@ acct_settings:
       alternate_amount_scenarios: ["22", "23"]
 
     san_mateo_bond_d_b_settings:
-      name: "San Mateo Affordable Housing Bond - draft blueprint"
+      name: "San Mateo Affordable Housing Bond - draft blueprint basic"
       sending_buildings_subaccount_def: regional
       total_amount: 375724437
       alternate_total_amount: 558033694
@@ -1289,7 +1289,7 @@ acct_settings:
       alternate_amount_scenarios: ["22", "23"]
 
     santa_clara_bond_d_b_settings:
-      name: "Santa Clara Affordable Housing Bond - draft blueprint"
+      name: "Santa Clara Affordable Housing Bond - draft blueprint basic"
       sending_buildings_subaccount_def: regional
       total_amount: 784087948
       alternate_total_amount: 1164543616
@@ -1299,7 +1299,7 @@ acct_settings:
       alternate_amount_scenarios: ["22", "23"]
 
     solano_bond_d_b_settings:
-      name: "Solano Affordable Housing Bond - draft blueprint"
+      name: "Solano Affordable Housing Bond - draft blueprint basic"
       sending_buildings_subaccount_def: regional
       total_amount: 142945054
       alternate_total_amount: 212304947
@@ -1309,7 +1309,7 @@ acct_settings:
       alternate_amount_scenarios: ["22", "23"]
 
     sonoma_bond_d_b_settings:
-      name: "Sonoma Affordable Housing Bond - draft blueprint"
+      name: "Sonoma Affordable Housing Bond - draft blueprint basic"
       sending_buildings_subaccount_def: regional
       total_amount: 166299924
       alternate_total_amount: 246992082
