@@ -44,7 +44,7 @@ def coffer(policy):
 
     for key, acct in policy["acct_settings"]["lump_sum_accounts"].items():
         d[acct["name"]] = accounts.Account(acct["name"])
-        
+
     if scenario not in ["20", "21", "22", "23"]:
         for key, acct in policy["acct_settings"]["lump_sum_accounts"].items():
             d[acct["name"]] = accounts.Account(acct["name"])
@@ -65,30 +65,58 @@ def acct_settings(policy):
 def lump_sum_accounts(policy, year, buildings, coffer,
                       summary, years_per_iter, scenario):
 
-    s = policy["acct_settings"]["lump_sum_accounts"]
+    if scenario not in ["20", "21", "22", "23"]:
+        s = policy["acct_settings"]["lump_sum_accounts"]
 
-    for key, acct in s.items():
+        for key, acct in s.items():
 
-        if scenario not in acct["enable_in_scenarios"]:
-            continue
+            if scenario not in acct["enable_in_scenarios"]:
+                continue
 
-        if "alternate_geography_scenarios" in acct and \
-                scenario in acct["alternate_geography_scenarios"]:
-            acct["receiving_buildings_filter"] = \
-                acct["alternate_buildings_filter"]
+            if "alternate_geography_scenarios" in acct and \
+                    scenario in acct["alternate_geography_scenarios"]:
+                acct["receiving_buildings_filter"] = \
+                    acct["alternate_buildings_filter"]
 
-        amt = float(acct["total_amount"])
+            amt = float(acct["total_amount"])
 
-        amt *= years_per_iter
+            amt *= years_per_iter
 
-        metadata = {
-            "description": "%s subsidies" % acct["name"],
-            "year": year
-        }
-        # the subaccount is meaningless here (it's a regional account) -
-        # but the subaccount number is referred to below
-        coffer[acct["name"]].add_transaction(amt, subaccount=1,
-                                             metadata=metadata)
+            metadata = {
+                "description": "%s subsidies" % acct["name"],
+                "year": year
+            }
+            # the subaccount is meaningless here (it's a regional account) -
+            # but the subaccount number is referred to below
+            coffer[acct["name"]].add_transaction(amt, subaccount=1,
+                                                metadata=metadata)
+
+    elif scenario in ["20", "21", "22", "23"]:
+
+        s = policy["acct_settings"]["lump_sum_accounts_d_b"]
+
+        for key, acct in s.items():
+
+            if scenario not in acct["enable_in_scenarios"]:
+                continue
+
+            if scenario in acct["enable_in_scenarios"]:
+                amt = float(acct["total_amount"])
+
+            elif scenario in acct["alternate_amount_scenarios"]:
+                amt = float(acct["alternate_total_amount"])
+
+            amt *= years_per_iter
+
+            metadata = {
+                "description": "%s subsidies" % acct["name"],
+                "year": year
+            }
+            print(metadata)
+            # the subaccount is meaningless here (it's a regional account) -
+            # but the subaccount number is referred to below
+            coffer[acct["name"]].add_transaction(amt, subaccount=1,
+                                                 metadata=metadata)
 
 
 # this will compute the reduction in revenue from a project due to
