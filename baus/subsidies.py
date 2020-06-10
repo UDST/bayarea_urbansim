@@ -44,6 +44,14 @@ def coffer(policy):
 
     for key, acct in policy["acct_settings"]["lump_sum_accounts"].items():
         d[acct["name"]] = accounts.Account(acct["name"])
+        
+    if scenario not in ["20", "21", "22", "23"]:
+        for key, acct in policy["acct_settings"]["lump_sum_accounts"].items():
+            d[acct["name"]] = accounts.Account(acct["name"])
+
+    elif scenario in ["20", "21", "22", "23"]:
+        for key, acct in policy["acct_settings"]["lump_sum_accounts_d_b"].items():
+            d[acct["name"]] = accounts.Account(acct["name"]) 
 
     return d
 
