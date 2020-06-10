@@ -36,14 +36,11 @@ def profit_to_prob_func(df):
 
 
 @orca.injectable(cache=True)
-def coffer(policy):
+def coffer(policy, scenario):
     d = {
         "vmt_res_acct":  accounts.Account("vmt_res_acct"),
         "vmt_com_acct":  accounts.Account("vmt_com_acct")
     }
-
-    for key, acct in policy["acct_settings"]["lump_sum_accounts"].items():
-        d[acct["name"]] = accounts.Account(acct["name"])
 
     if scenario not in ["20", "21", "22", "23"]:
         for key, acct in policy["acct_settings"]["lump_sum_accounts"].items():
