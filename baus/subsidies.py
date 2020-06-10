@@ -43,11 +43,13 @@ def coffer(policy, scenario):
     }
 
     if scenario not in ["20", "21", "22", "23"]:
-        for key, acct in policy["acct_settings"]["lump_sum_accounts"].items():
+        for key, acct in \
+                policy["acct_settings"]["lump_sum_accounts"].items():
             d[acct["name"]] = accounts.Account(acct["name"])
 
     elif scenario in ["20", "21", "22", "23"]:
-        for key, acct in policy["acct_settings"]["lump_sum_accounts_d_b"].items():
+        for key, acct in \
+                policy["acct_settings"]["lump_sum_accounts_d_b"].items():
             d[acct["name"]] = accounts.Account(acct["name"]) 
 
     return d
@@ -804,8 +806,8 @@ def subsidized_residential_developer_lump_sum_accts(
         print("Running the subsidized developer for acct: %s" % acct["name"])
 
         # need to rerun the subsidized feasibility every time and get new
-        # results - this is not ideal and is a story to fix in pivotal, but the
-        # only cost is in time - the results should be the same
+        # results - this is not ideal and is a story to fix in pivotal,
+        # but the only cost is in time - the results should be the same
         orca.eval_step("subsidized_residential_feasibility")
         feasibility = orca.get_table("feasibility").to_frame()
         feasibility = feasibility.stack(level=0).\
