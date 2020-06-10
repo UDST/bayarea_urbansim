@@ -1,0 +1,1362 @@
+# For information on the implementation of these policies in the context of
+# MTC's planning efforts (Plan Bay Area 2040, Horizon: Futures Round 1, Futures Round 2)
+# see the bayarea_urbansim GitHub Pages: http://bayareametro.github.io/bayarea_urbansim/
+
+
+# scenarios for futures round 2 geographies- these trigger the associated
+# zoning_mods: transit areas, high resources areas (with transit), and
+# catalyst sites are upzoned
+geographies_fr2_enable: ["11", "12", "15"]
+
+# scenarios for futures round 2 office caps
+office_caps_fr2_enable: ["11", "12", "15"]
+
+# scenarios for futures rounds 2 inclusionary rates
+inclusionary_fr2_enable: ["11", "12", "15"]
+
+# scenarios for futures round 2 renter protections
+# these slow household relocation
+reloc_fr2_enable: ["11", "12", "15"]
+
+
+# limits!  these are very important as they give per scenario limits in terms of
+# general_type and in terms of resdential units and job spaces - believe scenarios
+# inherit settings from teh default scenario
+development_limits:
+# 07 09 2019 ET: believe the default settings include office caps to represent
+# real-world caps (SF, Palo Alto, Cupertino) as well as caps to handle volatility
+# if this is true, these could be split out more (default/real-world/volatility)
+  default:
+    Office:
+      'Alameda': 100
+      'Atherton': 0
+      'Belvedere': 0
+      'Belmont': 0
+      'Benicia': 25
+      'Burlingame': 275
+      'Clayton': 0
+      'Colma': 0
+      'Concord': 1000
+      'Cupertino': 0
+      'Daly City': 50
+      'Fairfax': 0
+      'Half Moon Bay': 0
+      'Healdsburg': 0
+      'Hillsborough': 0
+      'Larkspur': 0
+      'Los Altos Hills': 0
+      'Los Gatos': 0
+      'Milpitas': 325
+      'Mill Valley': 0
+      'Millbrae': 200
+      'Monte Sereno': 0
+      'Orinda': 0
+      'Palo Alto': 175
+      'Petaluma': 150
+      'Piedmont': 0
+      'Pleasanton': 275
+      'Portola Valley': 0
+      'Redwood City': 550
+      'Ross': 0
+      'San Anselmo': 0
+      'San Francisco': 3500
+      'San Mateo': 200
+      'San Rafael': 0
+      'St. Helena': 5
+      'Saratoga': 0
+      'Sonoma': 0
+      'Tiburon': 0
+      'Union City': 5
+      'Woodside': 0
+      'Alameda County': 0
+      'Contra Costa County': 0
+      'Marin County': 0
+      'Solano County': 0
+      'Sonoma County': 0
+    Residential:
+      'Cloverdale': 50
+      'Fairfax': 8
+      'Half Moon Bay': 44
+      'Petaluma': 75
+      'San Mateo': 400
+      'Sebastopol': 10
+      'St. Helena': 10
+      'Woodside': 5
+      'Yountville': 2
+      'Alameda County': 205
+      'Napa County': 25
+      'Solano County': 230
+      'Sonoma County': 50
+  "11":
+    Office:
+      # new:
+      'Emeryville': 0
+      'Brisbane': 0
+      'Menlo Park': 0
+      'Santa Clara': 0
+      'Mountainview': 0
+      'South San Francisco': 0
+       # reduced from fr1/pba40:
+      'Milpitas': 0
+      'Burlingame': 0
+      'Palo Alto': 0
+      # maintained from fr1/pba40:
+      'Colma': 0
+      'Cupertino': 0
+      'San Francisco': 3500
+  "12":
+    Office:
+      # new:
+      'Emeryville': 0
+      'Brisbane': 0
+      'Menlo Park': 0
+      'Santa Clara': 0
+      'Mountainview': 0
+      'South San Francisco': 0
+       # reduced from fr1/pba40:
+      'Milpitas': 0
+      'Burlingame': 0
+      'Palo Alto': 0
+      # maintained from fr1/pba40:
+      'Colma': 0
+      'Cupertino': 0
+      'San Francisco': 3500
+  "15":
+    Office:
+      # new:
+      'Emeryville': 0
+      'Brisbane': 0
+      'Menlo Park': 0
+      'Santa Clara': 0
+      'Mountainview': 0
+      'South San Francisco': 0
+       # reduced from fr1/pba40:
+      'Milpitas': 0
+      'Burlingame': 0
+      'Palo Alto': 0
+      # maintained from fr1/pba40:
+      'Colma': 0
+      'Cupertino': 0
+      'San Francisco': 3500
+
+
+# this is the percent of units (0 to 1.0) that must be set to inclusionary
+# in the developer model (revenue will be foregone based on the area AMI)
+# this is per scenario and per city
+inclusionary_housing_settings:
+  default:
+    - type: jurisdictions
+      description: '0.1'
+      amount: .1
+      values:
+      - Benicia
+      - Concord
+      - Danville
+      - Los Altos
+      - Menlo Park
+      - Mill Valley
+      - Mountain View
+      - San Rafael
+      - Clayton
+      - Marin County
+      - Los Gatos
+      - Morgan Hill
+      - Richmond
+      - Daly City
+      - Redwood City
+      - Santa Clara
+      - Windsor
+    - type: jurisdictions
+      description: '0.125'
+      amount: .125
+      values:
+      - Dublin
+      - Sunnyvale
+    - type: jurisdictions
+      description: '0.15'
+      amount: .15
+      values:
+      - Alameda
+      - Campbell
+      - Fremont
+      - Lafayette
+      - Livermore
+      - Pacifica
+      - Palo Alto
+      - Petaluma
+      - Pittsburg
+      - Pleasanton
+      - Rohnert Park
+      - San Bruno
+      - San Carlos
+      - San Jose
+      - San Leandro
+      - Santa Rosa
+      - Tiburon
+      - Union City
+      - Contra Costa County
+      - Corte Madera
+      - Cotati
+      - Healdsburg
+      - Hercules
+      - Larkspur
+      - Sebastopol
+      - Yountville
+      - Portola Valley
+      - Cupertino
+      - Milpitas
+      - Cloverdale
+    - type: jurisdictions
+      description: '0.2'
+      amount: .2
+      values:
+      - San Mateo
+      - Berkeley
+      - Colma
+      - East Palo Alto
+      - Emeryville
+      - South San Francisco
+      - San Mateo County
+      - Sonoma County
+      - Sonoma
+      - Half Moon Bay
+    - type: jurisdictions
+      description: '0.22'
+      amount: .22
+      values:
+      - San Francisco
+# in the future scenarios with identical inclusionary settings could be grouped
+  "1":
+    - type: jurisdictions
+      description: medium setting
+      amount: .1
+      values:
+      - Alameda
+      - Alameda County
+      - Albany
+      - American Canyon
+      - Antioch
+      - Belmont
+      - Benicia
+      - Berkeley
+      - Brisbane
+      - Burlingame
+      - Campbell
+      - Cloverdale
+      - Colma
+      - Concord
+      - Contra Costa County
+      - Cotati
+      - Cupertino
+      - Daly City
+      - Danville
+      - Dixon
+      - Dublin
+      - East Palo Alto
+      - El Cerrito
+      - Emeryville
+      - Fairfield
+      - Fremont
+      - Gilroy
+      - Hayward
+      - Hercules
+      - Lafayette
+      - Livermore
+      - Los Altos
+      - Martinez
+      - Menlo Park
+      - Millbrae
+      - Milpitas
+      - Moraga
+      - Morgan Hill
+      - Mountain View
+      - Napa
+      - Newark
+      - Oakland
+      - Oakley
+      - Orinda
+      - Palo Alto
+      - Petaluma
+      - Pinole
+      - Pittsburg
+      - Pleasant Hill
+      - Pleasanton
+      - Redwood City
+      - Richmond
+      - Rohnert Park
+      - San Bruno
+      - San Carlos
+      - San Francisco
+      - San Jose
+      - San Leandro
+      - San Mateo
+      - San Mateo County
+      - San Pablo
+      - San Rafael
+      - San Ramon
+      - Santa Clara
+      - Santa Rosa
+      - Sebastopol
+      - South San Francisco
+      - Suisun City
+      - Sunnyvale
+      - Union City
+      - Vacaville
+      - Vallejo
+      - Walnut Creek
+      - Windsor
+  "2":
+    - type: jurisdictions
+      description: medium setting
+      amount: .1
+      values:
+      - Alameda
+      - Alameda County
+      - Albany
+      - American Canyon
+      - Antioch
+      - Belmont
+      - Benicia
+      - Berkeley
+      - Brisbane
+      - Burlingame
+      - Campbell
+      - Cloverdale
+      - Colma
+      - Concord
+      - Contra Costa County
+      - Cotati
+      - Cupertino
+      - Daly City
+      - Danville
+      - Dixon
+      - Dublin
+      - East Palo Alto
+      - El Cerrito
+      - Emeryville
+      - Fairfield
+      - Fremont
+      - Gilroy
+      - Hayward
+      - Hercules
+      - Lafayette
+      - Livermore
+      - Los Altos
+      - Martinez
+      - Menlo Park
+      - Millbrae
+      - Milpitas
+      - Moraga
+      - Morgan Hill
+      - Mountain View
+      - Napa
+      - Newark
+      - Oakland
+      - Oakley
+      - Orinda
+      - Palo Alto
+      - Petaluma
+      - Pinole
+      - Pittsburg
+      - Pleasant Hill
+      - Pleasanton
+      - Redwood City
+      - Richmond
+      - Rohnert Park
+      - San Bruno
+      - San Carlos
+      - San Francisco
+      - San Jose
+      - San Leandro
+      - San Mateo
+      - San Mateo County
+      - San Pablo
+      - San Rafael
+      - San Ramon
+      - Santa Clara
+      - Santa Rosa
+      - Sebastopol
+      - South San Francisco
+      - Suisun City
+      - Sunnyvale
+      - Union City
+      - Vacaville
+      - Vallejo
+      - Walnut Creek
+      - Windsor
+  "3":
+    - type: jurisdictions
+      description: high setting
+      amount: .2
+      values:
+      - San Jose
+      - Oakland
+      - San Francisco
+  "4":
+    - type: jurisdictions
+      description: medium setting
+      amount: .1
+      values:
+      - Alameda
+      - Alameda County
+      - Albany
+      - American Canyon
+      - Antioch
+      - Belmont
+      - Benicia
+      - Berkeley
+      - Brisbane
+      - Burlingame
+      - Campbell
+      - Cloverdale
+      - Colma
+      - Concord
+      - Contra Costa County
+      - Cotati
+      - Cupertino
+      - Daly City
+      - Danville
+      - Dixon
+      - Dublin
+      - East Palo Alto
+      - El Cerrito
+      - Emeryville
+      - Fairfield
+      - Fremont
+      - Gilroy
+      - Hayward
+      - Hercules
+      - Lafayette
+      - Livermore
+      - Los Altos
+      - Martinez
+      - Menlo Park
+      - Millbrae
+      - Milpitas
+      - Moraga
+      - Morgan Hill
+      - Mountain View
+      - Napa
+      - Newark
+      - Oakland
+      - Oakley
+      - Orinda
+      - Palo Alto
+      - Petaluma
+      - Pinole
+      - Pittsburg
+      - Pleasant Hill
+      - Pleasanton
+      - Redwood City
+      - Richmond
+      - Rohnert Park
+      - San Bruno
+      - San Carlos
+      - San Francisco
+      - San Jose
+      - San Leandro
+      - San Mateo
+      - San Mateo County
+      - San Pablo
+      - San Rafael
+      - San Ramon
+      - Santa Clara
+      - Santa Rosa
+      - Sebastopol
+      - South San Francisco
+      - Suisun City
+      - Sunnyvale
+      - Union City
+      - Vacaville
+      - Vallejo
+      - Walnut Creek
+      - Windsor
+  "5":
+    - type: jurisdictions
+      description: medium setting
+      amount: .1
+      values:
+      - Alameda
+      - Alameda County
+      - Albany
+      - American Canyon
+      - Antioch
+      - Belmont
+      - Benicia
+      - Berkeley
+      - Brisbane
+      - Burlingame
+      - Campbell
+      - Cloverdale
+      - Colma
+      - Concord
+      - Contra Costa County
+      - Cotati
+      - Cupertino
+      - Daly City
+      - Danville
+      - Dixon
+      - Dublin
+      - East Palo Alto
+      - El Cerrito
+      - Emeryville
+      - Fairfield
+      - Fremont
+      - Gilroy
+      - Hayward
+      - Hercules
+      - Lafayette
+      - Livermore
+      - Los Altos
+      - Martinez
+      - Menlo Park
+      - Millbrae
+      - Milpitas
+      - Moraga
+      - Morgan Hill
+      - Mountain View
+      - Napa
+      - Newark
+      - Oakland
+      - Oakley
+      - Orinda
+      - Palo Alto
+      - Petaluma
+      - Pinole
+      - Pittsburg
+      - Pleasant Hill
+      - Pleasanton
+      - Redwood City
+      - Richmond
+      - Rohnert Park
+      - San Bruno
+      - San Carlos
+      - San Francisco
+      - San Jose
+      - San Leandro
+      - San Mateo
+      - San Mateo County
+      - San Pablo
+      - San Rafael
+      - San Ramon
+      - Santa Clara
+      - Santa Rosa
+      - Sebastopol
+      - South San Francisco
+      - Suisun City
+      - Sunnyvale
+      - Union City
+      - Vacaville
+      - Vallejo
+      - Walnut Creek
+      - Windsor
+  "6":
+    - type: jurisdictions
+      description: medium setting
+      amount: .1
+      values:
+      - Alameda
+      - Alameda County
+      - Albany
+      - American Canyon
+      - Antioch
+      - Belmont
+      - Benicia
+      - Berkeley
+      - Brisbane
+      - Burlingame
+      - Campbell
+      - Cloverdale
+      - Colma
+      - Concord
+      - Contra Costa County
+      - Cotati
+      - Cupertino
+      - Daly City
+      - Danville
+      - Dixon
+      - Dublin
+      - East Palo Alto
+      - El Cerrito
+      - Emeryville
+      - Fairfield
+      - Fremont
+      - Gilroy
+      - Hayward
+      - Hercules
+      - Lafayette
+      - Livermore
+      - Los Altos
+      - Martinez
+      - Menlo Park
+      - Millbrae
+      - Milpitas
+      - Moraga
+      - Morgan Hill
+      - Mountain View
+      - Napa
+      - Newark
+      - Oakland
+      - Oakley
+      - Orinda
+      - Palo Alto
+      - Petaluma
+      - Pinole
+      - Pittsburg
+      - Pleasant Hill
+      - Pleasanton
+      - Redwood City
+      - Richmond
+      - Rohnert Park
+      - San Bruno
+      - San Carlos
+      - San Francisco
+      - San Jose
+      - San Leandro
+      - San Mateo
+      - San Mateo County
+      - San Pablo
+      - San Rafael
+      - San Ramon
+      - Santa Clara
+      - Santa Rosa
+      - Sebastopol
+      - South San Francisco
+      - Suisun City
+      - Sunnyvale
+      - Union City
+      - Vacaville
+      - Vallejo
+      - Walnut Creek
+      - Windsor
+  "7":
+    - type: jurisdictions
+      description: medium setting
+      amount: .1
+      values:
+      - Alameda
+      - Alameda County
+      - Albany
+      - American Canyon
+      - Antioch
+      - Belmont
+      - Benicia
+      - Berkeley
+      - Brisbane
+      - Burlingame
+      - Campbell
+      - Cloverdale
+      - Colma
+      - Concord
+      - Contra Costa County
+      - Cotati
+      - Cupertino
+      - Daly City
+      - Danville
+      - Dixon
+      - Dublin
+      - East Palo Alto
+      - El Cerrito
+      - Emeryville
+      - Fairfield
+      - Fremont
+      - Gilroy
+      - Hayward
+      - Hercules
+      - Lafayette
+      - Livermore
+      - Los Altos
+      - Martinez
+      - Menlo Park
+      - Millbrae
+      - Milpitas
+      - Moraga
+      - Morgan Hill
+      - Mountain View
+      - Napa
+      - Newark
+      - Oakland
+      - Oakley
+      - Orinda
+      - Palo Alto
+      - Petaluma
+      - Pinole
+      - Pittsburg
+      - Pleasant Hill
+      - Pleasanton
+      - Redwood City
+      - Richmond
+      - Rohnert Park
+      - San Bruno
+      - San Carlos
+      - San Francisco
+      - San Jose
+      - San Leandro
+      - San Mateo
+      - San Mateo County
+      - San Pablo
+      - San Rafael
+      - San Ramon
+      - Santa Clara
+      - Santa Rosa
+      - Sebastopol
+      - South San Francisco
+      - Suisun City
+      - Sunnyvale
+      - Union City
+      - Vacaville
+      - Vallejo
+      - Walnut Creek
+      - Windsor
+  "10":
+    - type: jurisdictions
+      description: medium setting
+      amount: .1
+      values:
+      - Alameda
+      - Alameda County
+      - Albany
+      - American Canyon
+      - Antioch
+      - Belmont
+      - Benicia
+      - Berkeley
+      - Brisbane
+      - Burlingame
+      - Campbell
+      - Cloverdale
+      - Colma
+      - Concord
+      - Contra Costa County
+      - Cotati
+      - Cupertino
+      - Daly City
+      - Danville
+      - Dixon
+      - Dublin
+      - East Palo Alto
+      - El Cerrito
+      - Emeryville
+      - Fairfield
+      - Fremont
+      - Gilroy
+      - Hayward
+      - Hercules
+      - Lafayette
+      - Livermore
+      - Los Altos
+      - Martinez
+      - Menlo Park
+      - Millbrae
+      - Milpitas
+      - Moraga
+      - Morgan Hill
+      - Mountain View
+      - Napa
+      - Newark
+      - Oakland
+      - Oakley
+      - Orinda
+      - Palo Alto
+      - Petaluma
+      - Pinole
+      - Pittsburg
+      - Pleasant Hill
+      - Pleasanton
+      - Redwood City
+      - Richmond
+      - Rohnert Park
+      - San Bruno
+      - San Carlos
+      - San Francisco
+      - San Jose
+      - San Leandro
+      - San Mateo
+      - San Mateo County
+      - San Pablo
+      - San Rafael
+      - San Ramon
+      - Santa Clara
+      - Santa Rosa
+      - Sebastopol
+      - South San Francisco
+      - Suisun City
+      - Sunnyvale
+      - Union City
+      - Vacaville
+      - Vallejo
+      - Walnut Creek
+      - Windsor
+  "11":
+    - type: jurisdictions
+      description: high setting
+      amount: .2
+      values:
+      - Los Altos
+      - Burlingame
+      - Los Altos Hills
+      - Cupertino
+      - Hillsborough
+      - Monte Sereno
+      - Saratoga
+      - Millbrae
+      - Belmont
+      - Ross
+      - Mountain View
+      - Piedmont
+      - Foster City
+      - Belvedere
+      - San Carlos
+      - Larkspur
+      - Los Gatos
+      - Mill Valley
+      - Palo Alto
+      - Atherton
+      - Menlo Park
+      - Tiburon
+      - San Anselmo
+      - Sausalito
+      - Sunnyvale
+      - Albany
+      - Corte Madera
+      - Berkeley
+      - San Francisco
+    - type: jurisdictions
+      description: medium-high setting
+      amount: .15
+      values:
+      - San Mateo
+      - Woodside
+      - Campbell
+      - Lafayette
+      - Portola Valley
+      - Orinda
+      - Redwood City
+      - Pleasanton
+      - San Bruno
+      - San Ramon
+      - Fairfax
+      - Santa Clara
+      - Walnut Creek
+      - Pacifica
+      - Alameda
+      - Danville
+      - South San Francisco
+      - Daly City
+      - Milpitas
+      - Clayton
+      - Fremont
+      - Moraga
+      - El Cerrito
+      - Dublin
+      - Pleasant Hill
+      - San Jose
+      - East Palo Alto
+      - Yountville
+      - Colma
+      - San Rafael
+      - St. Helena
+      - Brisbane
+      - Emeryville
+      - Newark
+      - Novato
+      - Oakland
+      - Livermore
+      - Half Moon Bay
+      - Union City
+      - Sonoma
+      - Benicia
+    - type: jurisdictions
+      description: medium setting
+      amount: .1
+      values:
+      - Martinez
+      - Petaluma
+      - Healdsburg
+      - Calistoga
+      - Concord
+      - San Leandro
+      - Sebastopol
+      - Santa Rosa
+      - Hayward
+      - Morgan Hill
+      - Napa
+      - Gilroy
+      - Richmond
+      - Cotati
+      - San Pablo
+      - Pinole
+      - Windsor
+      - Rohnert Park
+      - Cloverdale
+      - Vallejo
+      - Hercules
+      - American Canyon
+      - Pittsburg
+      - Vacaville
+      - Brentwood
+      - Oakley
+      - Suisun City
+      - Fairfield
+      - Antioch
+      - Dixon
+      - Rio Vista
+  "12":
+    - type: jurisdictions
+      description: high setting
+      amount: .2
+      values:
+      - Los Altos
+      - Burlingame
+      - Los Altos Hills
+      - Cupertino
+      - Hillsborough
+      - Monte Sereno
+      - Saratoga
+      - Millbrae
+      - Belmont
+      - Ross
+      - Mountain View
+      - Piedmont
+      - Foster City
+      - Belvedere
+      - San Carlos
+      - Larkspur
+      - Los Gatos
+      - Mill Valley
+      - Palo Alto
+      - Atherton
+      - Menlo Park
+      - Tiburon
+      - San Anselmo
+      - Sausalito
+      - Sunnyvale
+      - Albany
+      - Corte Madera
+      - Berkeley
+      - San Francisco
+    - type: jurisdictions
+      description: medium-high setting
+      amount: .15
+      values:
+      - San Mateo
+      - Woodside
+      - Campbell
+      - Lafayette
+      - Portola Valley
+      - Orinda
+      - Redwood City
+      - Pleasanton
+      - San Bruno
+      - San Ramon
+      - Fairfax
+      - Santa Clara
+      - Walnut Creek
+      - Pacifica
+      - Alameda
+      - Danville
+      - South San Francisco
+      - Daly City
+      - Milpitas
+      - Clayton
+      - Fremont
+      - Moraga
+      - El Cerrito
+      - Dublin
+      - Pleasant Hill
+      - San Jose
+      - East Palo Alto
+      - Yountville
+      - Colma
+      - San Rafael
+      - St. Helena
+      - Brisbane
+      - Emeryville
+      - Newark
+      - Novato
+      - Oakland
+      - Livermore
+      - Half Moon Bay
+      - Union City
+      - Sonoma
+      - Benicia
+    - type: jurisdictions
+      description: medium setting
+      amount: .1
+      values:
+      - Martinez
+      - Petaluma
+      - Healdsburg
+      - Calistoga
+      - Concord
+      - San Leandro
+      - Sebastopol
+      - Santa Rosa
+      - Hayward
+      - Morgan Hill
+      - Napa
+      - Gilroy
+      - Richmond
+      - Cotati
+      - San Pablo
+      - Pinole
+      - Windsor
+      - Rohnert Park
+      - Cloverdale
+      - Vallejo
+      - Hercules
+      - American Canyon
+      - Pittsburg
+      - Vacaville
+      - Brentwood
+      - Oakley
+      - Suisun City
+      - Fairfield
+      - Antioch
+      - Dixon
+      - Rio Vista
+  "15":
+    - type: jurisdictions
+      description: high setting
+      amount: .2
+      values:
+      - Los Altos
+      - Burlingame
+      - Los Altos Hills
+      - Cupertino
+      - Hillsborough
+      - Monte Sereno
+      - Saratoga
+      - Millbrae
+      - Belmont
+      - Ross
+      - Mountain View
+      - Piedmont
+      - Foster City
+      - Belvedere
+      - San Carlos
+      - Larkspur
+      - Los Gatos
+      - Mill Valley
+      - Palo Alto
+      - Atherton
+      - Menlo Park
+      - Tiburon
+      - San Anselmo
+      - Sausalito
+      - Sunnyvale
+      - Albany
+      - Corte Madera
+      - Berkeley
+      - San Francisco
+    - type: jurisdictions
+      description: medium-high setting
+      amount: .15
+      values:
+      - San Mateo
+      - Woodside
+      - Campbell
+      - Lafayette
+      - Portola Valley
+      - Orinda
+      - Redwood City
+      - Pleasanton
+      - San Bruno
+      - San Ramon
+      - Fairfax
+      - Santa Clara
+      - Walnut Creek
+      - Pacifica
+      - Alameda
+      - Danville
+      - South San Francisco
+      - Daly City
+      - Milpitas
+      - Clayton
+      - Fremont
+      - Moraga
+      - El Cerrito
+      - Dublin
+      - Pleasant Hill
+      - San Jose
+      - East Palo Alto
+      - Yountville
+      - Colma
+      - San Rafael
+      - St. Helena
+      - Brisbane
+      - Emeryville
+      - Newark
+      - Novato
+      - Oakland
+      - Livermore
+      - Half Moon Bay
+      - Union City
+      - Sonoma
+      - Benicia
+    - type: jurisdictions
+      description: medium setting
+      amount: .1
+      values:
+      - Martinez
+      - Petaluma
+      - Healdsburg
+      - Calistoga
+      - Concord
+      - San Leandro
+      - Sebastopol
+      - Santa Rosa
+      - Hayward
+      - Morgan Hill
+      - Napa
+      - Gilroy
+      - Richmond
+      - Cotati
+      - San Pablo
+      - Pinole
+      - Windsor
+      - Rohnert Park
+      - Cloverdale
+      - Vallejo
+      - Hercules
+      - American Canyon
+      - Pittsburg
+      - Vacaville
+      - Brentwood
+      - Oakley
+      - Suisun City
+      - Fairfield
+      - Antioch
+      - Dixon
+      - Rio Vista
+
+
+# these are the settings for various policies that are in play
+acct_settings:
+  disable: False
+
+  lump_sum_accounts:
+
+    # obag, where to spend the funds, how much to add, and which scenarios to
+    # add it in - the amount is per year
+    obag_settings:
+      name: "OBAG"
+      sending_buildings_subaccount_def: regional
+      total_amount: 40000000
+      receiving_buildings_filter: pda_id > ''
+      alternate_buildings_filter: trich_id > '' | cat_id > ''
+      subsidize_affordable: False
+      enable_in_scenarios: ["1", "2", "3", "4", "5", "6", "7", "10", "11", "12", "15"]
+      alternate_geography_scenarios: ["11", "12", "15"]
+
+    # these are all county specific affordable housing bonds but right now
+    # they aren't enabled in any scenarios
+    # 08 27 2019 ET: they're being tested in horizon futures round 2 scenarios
+    alameda_bond_settings:
+      name: "Alameda Affordable Housing Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 30625010
+      receiving_buildings_filter: county == 'Alameda'
+      subsidize_affordable: True
+      enable_in_scenarios: ["11", "12", "15"]
+
+    contra_costa_bond_settings:
+      name: "Contra Costa Affordable Housing Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 21150756
+      receiving_buildings_filter: county == 'Contra Costa'
+      subsidize_affordable: True
+      enable_in_scenarios: ["11", "12", "15"]
+
+    marin_bond_settings:
+      name: "Marin Affordable Housing Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 4932118
+      receiving_buildings_filter: county == 'Marin'
+      subsidize_affordable: True
+      enable_in_scenarios: ["11", "12", "15"]
+
+    napa_bond_settings:
+      name: "Napa Affordable Housing Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 2661050
+      receiving_buildings_filter: county == 'Napa'
+      subsidize_affordable: True
+      enable_in_scenarios: ["11", "12", "15"]
+
+    san_francisco_bond_settings:
+      name: "San Francisco Affordable Housing Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 16310399
+      receiving_buildings_filter: county == 'San Francisco'
+      subsidize_affordable: True
+      enable_in_scenarios: ["11", "12", "15"]
+
+    san_mateo_bond_settings:
+      name: "San Mateo Affordable Housing Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 14406372
+      receiving_buildings_filter: county == 'San Mateo'
+      subsidize_affordable: True
+      enable_in_scenarios: ["11", "12", "15"]
+
+    santa_clara_bond_settings:
+      name: "Santa Clara Affordable Housing Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 36291210
+      receiving_buildings_filter: county == 'Santa Clara'
+      subsidize_affordable: True
+      enable_in_scenarios: ["11", "12", "15"]
+
+    solano_bond_settings:
+      name: "Solano Affordable Housing Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 8120789
+      receiving_buildings_filter: county == 'Solano'
+      subsidize_affordable: True
+      enable_in_scenarios: ["11", "12", "15"]
+
+    sonoma_bond_settings:
+      name: "Sonoma Affordable Housing Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 9451314
+      receiving_buildings_filter: county == 'Sonoma'
+      subsidize_affordable: True
+      enable_in_scenarios: ["11", "12", "15"]
+
+    # parcel tax settings
+    parcel_tax_settings:
+      name: "Parcel Tax"
+      sending_buildings_subaccount_def: regional
+      total_amount: 500000000
+      receiving_buildings_filter: pda_id > ''
+      subsidize_affordable: True
+      enable_in_scenarios: []
+
+    # capital gains tax settings - see baus_docs for more information on the
+    # intent and use of these policies
+    capital_gains_tax_settings:
+      name: "Capital Gains Tax"
+      sending_buildings_subaccount_def: regional
+      total_amount: 42000000
+      receiving_buildings_filter: pda_id > ''
+      subsidize_affordable: True
+      enable_in_scenarios: []
+
+  profitability_adjustment_policies:
+
+    # rather than a lump sum pot of money to subsidized housing, these are
+    # adjustments to profitability using percentages (actually it's an open)
+    # ended formula - this is for CEQA review acceleration
+    ceqa_tiering:
+      name: "CEQA"
+      enable_in_scenarios: ["1", "2", "3", "4", "5", "6", "7", "10", "11", "12", "15"]
+      # any parcel in a tpa
+      profitability_adjustment_formula: "(tpp_id > '') * .01"
+      alternate_geography_scenarios: ["11", "12", "15"]
+      alternate_adjustment_formula: "(trich_id > '' | cat_id > '') * .01"
+
+    # reduce parking requirements in TPPs - would be nice to have better data
+    # on how this impacts price as well, but we don't have it
+    parking_requirements_tpps:
+      name: "Reduce Parking Requirements in TPPs"
+      enable_in_scenarios: ["3"]
+      # any parcel in a tpa
+      profitability_adjustment_formula: "(tpp_id > '') * .01"
+
+    parking_requirements_pdas:
+      name: "Reduce Parking Requirements in PDAs"
+      enable_in_scenarios: ["1", "2", "4", "5", "6", "7", "10", "11", "12", "15"]
+      # any parcel in a tpa
+      profitability_adjustment_formula: "(pda_id > '') * .01"
+      alternate_geography_scenarios: ["11", "12", "15"]
+      alternate_adjustment_formula: "(trich_id > '' | cat_id > '') * .01"
+
+    parking_requirements_AVs_s1: # cag
+      name: "Reduce Parking Requirements due to AVs- CAG"
+      enable_in_scenarios: ["1", "6", "11"]
+      # parcels in San Francisco, Oakland, San Jose
+      profitability_adjustment_formula: "(jurisdiction_id == 67000 or
+                                          jurisdiction_id == 53000 or
+                                          jurisdiction_id == 68000) * .02"
+
+    parking_requirements_AVs_s5: # bttf
+      name: "Reduce Parking Requirements due to AVs- BTTF"
+      enable_in_scenarios: ["5", "10", "15"]
+      # parcels in San Francisco, Oakland, San Jose
+      profitability_adjustment_formula: "(jurisdiction_id == 67000 or
+                                          jurisdiction_id == 53000 or
+                                          jurisdiction_id == 68000) * .01"
+
+  # this is a cutom policy which taxes land (reduces profit) based on the current
+  # built density - this is to incentive using land at its highest and best use
+  land_value_tax_settings:
+    enable_in_scenarios: ["3"]
+    bins:
+      pcts: [0.05, 0.02, 0.01, 0.0]
+      breaks: [0.1, 0.3, 0.5]
+
+  # these are the vmt policies which impose fees on new units / sqft in high vmt
+  # areas in order to subsidize development on new units / sqft in low vmt areas
+  # the areas are defined elsewhere - note that the policies can be res for res,
+  # com for com or com for res.
+  vmt_settings:
+    sending_buildings_subaccount_def: regional
+    receiving_buildings_filter: pda_id > ''
+    alternate_buildings_filter: trich_id > '' | cat_id > ''
+    alternate_geography_scenarios: ["11", "12", "15"]
+    res_for_res_scenarios:
+      - "3"
+    com_for_com_scenarios:
+      - "1"
+      - "2"
+      - "4"
+      - "5"
+      - "6"
+      - "7"
+      - "10"
+      - "11"
+      - "12"
+      - "15"
+    com_for_res_scenarios:
+      - "1"
+      - "2"
+      - "4"
+      - "5"
+      - "6"
+      - "7"
+      - "10"
+      - "11"
+      - "12"
+      - "15"
+    res_for_res_fee_amounts:
+      VH: 25000
+      H: 15000
+      MH: 5000
+    com_for_res_fee_amounts:
+      VH: 50
+      H: 30
+      MH: 20
+      M: 3
+    alternate_com_for_res_fee_amounts:
+      VH: 100
+      H: 60
+      MH: 40
+      M: 6
+    com_for_com_fee_amounts:  # commercial fee subsidizing commercial devs
+      VH: 40
+      H: 20
+      MH: 10
+    alternate_com_for_com_fee_amounts:
+      VH: 80
+      H: 40
+      MH: 20
+
+  sb743_settings:
+    enable: true
+    sb743_pcts:
+      VH: -0.02
+      H: -0.01
+      MH: -0.005
+      M: 0.0
+      S: 0.02

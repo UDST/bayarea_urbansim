@@ -48,6 +48,7 @@ def variability_measure(dfs, N, M):
         average_dfs.mean() * 100
     return pct_diff.unstack().fillna(0).quantile(.95)
 
+
 dfs = get_2040_taz_summaries(run_nums)
 print "Total sims = {}".format(len(dfs))
 
