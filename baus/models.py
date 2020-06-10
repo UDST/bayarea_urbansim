@@ -350,10 +350,19 @@ def scheduled_development_events(buildings, development_projects,
                                  demolish_events, summary, year, parcels,
                                  mapping, years_per_iter, parcels_geography,
                                  building_sqft_per_job, vmt_fee_categories,
-                                 static_parcels):
+                                 static_parcels, base_year):
     # first demolish
-    demolish = demolish_events.to_frame().\
-        query("%d <= year_built < %d" % (year, year + years_per_iter))
+    # 6/3/20: current approach is to grab projects from the simulation year
+    # and previous four years, however the base year is treated differently,
+    # eg 2015 pulls 2015-2010
+    # this should be improved in the future so that the base year
+    # also runs SDEM, eg 2015 pulls 2015-2014, while 2010 pulls 2010 projects
+    if year == (base_year + years_per_iter):
+        demolish = demolish_events.to_frame().\
+            query("%d <= year_built <= %d" % (year - years_per_iter, year))
+    else:
+        demolish = demolish_events.to_frame().\
+            query("%d < year_built <= %d" % (year - years_per_iter, year))
     print("Demolishing/building %d buildings" % len(demolish))
     l1 = len(buildings)
     buildings = utils._remove_developed_buildings(
@@ -370,8 +379,17 @@ def scheduled_development_events(buildings, development_projects,
     print("    (this number is smaller when parcel has no existing buildings)")
 
     # then build
-    dps = development_projects.to_frame().\
-        query("%d <= year_built < %d" % (year, year + years_per_iter))
+    # 6/3/20: current approach is to grab projects from the simulation year
+    # and previous four years, however the base year is treated differently,
+    # eg 2015 pulls 2015-2010
+    # this should be improved in the future so that the base year
+    # also runs SDEM, eg 2015 pulls 2015-2014, while 2010 pulls 2010 projects
+    if year == (base_year + years_per_iter):
+        dps = development_projects.to_frame().\
+            query("%d <= year_built <= %d" % (year - years_per_iter, year))
+    else:
+        dps = development_projects.to_frame().\
+            query("%d < year_built <= %d" % (year - years_per_iter, year))
 
     if len(dps) == 0:
         return
