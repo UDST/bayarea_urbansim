@@ -197,6 +197,8 @@ def config(policy, inputs, run_number, scenario, parcels,
     write("")
 
     # development projects list
+    write("Development projects list used is %s" %
+          orca.get_injectable("dev_proj_file"))
     scen = "scen"+scenario
     if scen in development_projects.columns:
         write("Scenario is in development projects list")
