@@ -627,6 +627,7 @@ def get_dev_projects_table(scenario, parcels):
     # repository alongside bayarea_urbansim
     urban_data_repo = ("../urban_data_internal/development_projects/")
     current_dev_proj = ("2020_0611_1926_development_projects.csv")
+    orca.add_injectable("dev_proj_file", current_dev_proj)
     df = pd.read_csv(os.path.join(urban_data_repo, current_dev_proj))
 
     # this filters project by scenario
