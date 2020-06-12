@@ -639,7 +639,7 @@ def get_dev_projects_table(scenario, parcels):
     # requires the user has MTC's urban_data_internal
     # repository alongside bayarea_urbansim
     urban_data_repo = ("../urban_data_internal/development_projects/")
-    current_dev_proj = ("2020_0605_1127_development_projects.csv")
+    current_dev_proj = ("2020_0611_1926_development_projects.csv")
     df = pd.read_csv(os.path.join(urban_data_repo, current_dev_proj))
 
     # this filters project by scenario
