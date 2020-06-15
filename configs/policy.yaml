@@ -1238,7 +1238,7 @@ acct_settings:
       enable_in_scenarios: ["21", "22", "23"]
       alternate_amount_scenarios: ["22", "23"]
 
-contra_costa_bond_d_b_settings:
+    contra_costa_bond_d_b_settings:
       name: "Contra Costa Affordable Housing Bond - draft blueprint"
       sending_buildings_subaccount_def: regional
       total_amount: 1647700000
