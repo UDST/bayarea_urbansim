@@ -223,15 +223,15 @@ def compare_outcome_for(variable, runs, set_geography):
 
 
 def subtract_base_year_urban_footprint(run_number):
-        base_year_filename = \
-            'runs/run{}_urban_footprint_summary_summaries_{}.csv'.\
-            format(run_number, 2010)
-        bdf = pd.read_csv(base_year_filename, index_col=0)
-        outcome_year_filename = \
-            'runs/run{}_urban_footprint_summary_summaries_{}.csv'.\
-            format(run_number, 2040)
-        odf = pd.read_csv(outcome_year_filename, index_col=0)
-        sdf = odf - bdf
-        sdf.to_csv(
-            'runs/run{}_urban_footprint_subtracted_summaries_{}.csv'
-            .format(run_number, 2040))
+    base_year_filename = \
+        'runs/run{}_urban_footprint_summary_summaries_{}.csv'.\
+        format(run_number, 2010)
+    bdf = pd.read_csv(base_year_filename, index_col=0)
+    outcome_year_filename = \
+        'runs/run{}_urban_footprint_summary_summaries_{}.csv'.\
+        format(run_number, 2040)
+    odf = pd.read_csv(outcome_year_filename, index_col=0)
+    sdf = odf - bdf
+    sdf.to_csv(
+        'runs/run{}_urban_footprint_subtracted_summaries_{}.csv'
+        .format(run_number, 2040))

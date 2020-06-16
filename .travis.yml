@@ -1,30 +1,25 @@
 language: python
-sudo: false
+
 python:
-- '2.7'
+  - '2.7'
+  - '3.6'
+
+# The Statsmodels line is to resolve a hopefully temporary problem --
+# Statsmodels 0.11 dropped support for Python 2.7, but as of 2020-02-23 is
+# being installed anyway by PyPI in Python 2.7 environments. If this isn't
+# fixed upstream, the best place to address it is in UrbanSim itself, where we
+# can make the Statsmodels version conditional on the Python version.
+
 install:
-- if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
-    wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh;
-  else
-    wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
-  fi
-- bash miniconda.sh -b -p $HOME/miniconda
-- export PATH="$HOME/miniconda/bin:$PATH"
-- hash -r
-- conda config --set always_yes yes --set changeps1 no
-- conda update -q conda
-# Useful for debugging any issues with conda
-- conda info -a
-# don't think we need all these packages, but copying from urbansim
-- >
-  conda create -q -c synthicity -n test-environment
-  python=$TRAVIS_PYTHON_VERSION
-  cytoolz ipython-notebook jinja2 matplotlib numpy pandas patsy pip scipy
-  statsmodels pytables pytest pyyaml pandana
-- source activate test-environment
-- pip install pep8
-- pip install -r requirements.txt
+  - pip install statsmodels==0.10.*  # see comment above
+  - pip install .  # baus and requirements
+  - pip install coverage pycodestyle pytest  # testing tools
+  - pip list
+
 script:
-- pep8 baus
-- pep8 scripts
-- py.test baus
+  - pycodestyle baus
+  - pycodestyle scripts
+  - coverage run --source baus --module pytest --verbose
+
+after_success:
+  - coverage report

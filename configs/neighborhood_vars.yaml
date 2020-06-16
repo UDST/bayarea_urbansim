@@ -68,7 +68,7 @@ variable_definitions:
     radius: 1500
     apply: np.log1p
     decay: flat
-    aggregation: average
+    aggregation: ave
 
   - name: ave_lot_size_per_unit
     dataframe: buildings
@@ -78,7 +78,7 @@ variable_definitions:
     radius: 1500
     apply: np.log1p
     decay: flat
-    aggregation: average
+    aggregation: ave
 
   - name: population
     filters:
@@ -116,7 +116,7 @@ variable_definitions:
     - building_id != -1
     varname: persons
     radius: 1500
-    aggregation: average
+    aggregation: ave
     decay: flat
     apply: np.log1p
 
