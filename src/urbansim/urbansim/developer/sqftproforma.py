@@ -146,10 +146,10 @@ class SqFtProFormaConfig(object):
             }
         }
 
-        self.profit_factor = 1.05
+        self.profit_factor = 1.01
         self.building_efficiency = .7
         self.parcel_coverage = .8
-        self.cap_rate = .04
+        self.cap_rate = .01
 
         self.parking_rates = {
             "retail": 2.0,
