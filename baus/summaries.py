@@ -248,6 +248,13 @@ def config(policy, inputs, run_number, scenario, parcels,
         write("VMT fees: com_for_com is activated with trich_id and cat_id")
         write("VMT fees: com_for_com is using alternate fee amounts")
     elif scenario in (policy["acct_settings"]["vmt_settings"]
+                     ["com_for_com_scenarios"]) and scenario in \
+            (policy["acct_settings"]["vmt_settings"]
+             ["dp_geography_scenarios"]):
+        write("VMT fees: com_for_com is activated but without subsidizing \
+              office development")
+        write("VMT fees: com_for_com is using Draft Blueprint fee amounts")
+    elif scenario in (policy["acct_settings"]["vmt_settings"]
                       ["com_for_com_scenarios"]):
         write("VMT fees: com_for_com is activated with pda_id")
         write("VMT fees: com_for_com is using default fee amounts")
