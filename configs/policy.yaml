@@ -18,6 +18,9 @@ inclusionary_fr2_enable: ["11", "12", "15"]
 # these slow household relocation
 reloc_fr2_enable: ["11", "12", "15"]
 
+# scenarios for draft blueprint ADUs
+adus_db_enable: ["21", "22", "23"]
+
 
 # limits!  these are very important as they give per scenario limits in terms of
 # general_type and in terms of resdential units and job spaces - believe scenarios
