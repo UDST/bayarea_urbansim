@@ -394,6 +394,8 @@ def scheduled_development_events(buildings, development_projects,
         parcels.zone_id, new_buildings.parcel_id)
     new_buildings["vmt_res_cat"] = misc.reindex(
         vmt_fee_categories.res_cat, new_buildings.zone_id)
+    new_buildings["vmt_nonres_cat"] = misc.reindex(
+        vmt_fee_categories.nonres_cat, new_buildings.zone_id)
     del new_buildings["zone_id"]
     new_buildings["pda"] = parcels_geography.pda_id.loc[
         new_buildings.parcel_id].values
