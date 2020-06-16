@@ -498,7 +498,7 @@ def parcels_geography(parcels, scenario, settings):
 def parcels_subzone():
     return pd.read_csv(os.path.join(misc.data_dir(),
                                     '2018_10_17_parcel_to_taz1454sub.csv'),
-                       usecols=['taz_sub', 'PARCEL_ID'],
+                       usecols=['taz_sub', 'PARCEL_ID', 'county'],
                        index_col='PARCEL_ID')
 
 
