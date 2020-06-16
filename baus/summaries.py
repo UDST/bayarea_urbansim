@@ -955,7 +955,7 @@ def building_summary(parcels, run_number, year,
                      buildings,
                      initial_year, final_year):
 
-    if year not in [initial_year, 2015, final_year]:
+    if year not in [initial_year, final_year]:
         return
 
     df = orca.merge_tables(
