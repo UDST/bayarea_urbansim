@@ -62,7 +62,9 @@ development_limits:
       'Redwood City': 550
       'Ross': 0
       'San Anselmo': 0
-      'San Francisco': 3500
+      # lowered from 3500 (Prop M) to 2000 6/16/20 to adjust for
+      # development projects additions which add office space
+      'San Francisco': 2000 
       'San Mateo': 200
       'San Rafael': 0
       'St. Helena': 5
