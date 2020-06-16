@@ -355,7 +355,7 @@ def calculate_vmt_fees(policy, year, buildings, vmt_fee_categories, coffer,
                 'santa_clara', 'san_francisco','san_mateo', 'solano', 'sonoma']
             for county3, county in zip(counties3, counties):
                 df.loc[df["county3"] == county3, "com_for_com_fees"] = \
-                    df.vmt_res_cat.\
+                    df.vmt_nonres_cat.\
                     map(vmt_settings["db_com_for_com_fee_amounts"][county])
         # assign fees for Horizon scenarios
         if scenario in vmt_settings["alternate_geography_scenarios"]:
