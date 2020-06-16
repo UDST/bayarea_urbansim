@@ -198,7 +198,7 @@ def to_frame(tbl, join_tbls, cfg, additional_columns=[]):
                                tables=tables, columns=columns)
     else:
         df = tables[0].to_frame(columns)
-    check_nas(df)
+ #   check_nas(df)
     return df
 
 

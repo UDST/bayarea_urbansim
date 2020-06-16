@@ -278,6 +278,13 @@ def config(policy, inputs, run_number, scenario, parcels,
         write("VMT fees: com_for_com is activated with trich_id and cat_id")
         write("VMT fees: com_for_com is using alternate fee amounts")
     elif scenario in (policy["acct_settings"]["vmt_settings"]
+                     ["com_for_com_scenarios"]) and scenario in \
+            (policy["acct_settings"]["vmt_settings"]
+             ["db_geography_scenarios"]):
+        write("VMT fees: com_for_com is activated but without subsidizing\
+              office development")
+        write("VMT fees: com_for_com is using Draft Blueprint fee amounts")
+    elif scenario in (policy["acct_settings"]["vmt_settings"]
                       ["com_for_com_scenarios"]):
         write("VMT fees: com_for_com is activated with pda_id")
         write("VMT fees: com_for_com is using default fee amounts")
@@ -302,11 +309,18 @@ def config(policy, inputs, run_number, scenario, parcels,
     counter = 0
     counties = ["alameda", "contra_costa", "marin", "napa", "san_mateo",
                 "san_francisco", "santa_clara", "solano", "sonoma"]
-    for county in counties:
-        policy_loc = (policy["acct_settings"]["lump_sum_accounts"]
-                      [county+"_bond_settings"]["enable_in_scenarios"])
-        if scenario in policy_loc:
-            counter += 1
+    if scenario not in ["20", "21", "22", "23"]:
+        for county in counties:
+            policy_loc = (policy["acct_settings"]["lump_sum_accounts"]
+                        [county+"_bond_settings"]["enable_in_scenarios"])
+            if scenario in policy_loc:
+                counter += 1
+    elif scenario in ["20", "21", "22", "23"]:
+        for county in counties:
+            policy_loc = (policy["acct_settings"]["lump_sum_accounts_d_b"]
+                          [county+"_bond_d_b_settings"]["enable_in_scenarios"])
+            if scenario in policy_loc:
+                counter += 1
     write("Affordable housing bonds are activated for %d counties" % counter)
 
     # workplace preferences are in the development projects list
@@ -320,7 +334,7 @@ def config(policy, inputs, run_number, scenario, parcels,
 def topsheet(households, jobs, buildings, parcels, zones, year,
              run_number, taz_geography, parcels_zoning_calculations,
              summary, settings, parcels_geography, abag_targets, new_tpp_id,
-             residential_units, mapping):
+             residential_units, coffer, mapping):
 
     hh_by_subregion = misc.reindex(taz_geography.subregion,
                                    households.zone_id).value_counts()
@@ -523,6 +537,16 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
         .map(cmap).value_counts()
     jobs_by_housing = jobs_by_county / households_by_county.replace(0, 1)
     write("Jobs/housing balance:\n" + str(jobs_by_housing))
+
+    # calculate vmt fees collected from office development for Draft Blueprint
+    vmt_res_accts = coffer.get("vmt_res_acct")
+    for subacct, amount in vmt_res_accts.iter_subaccounts():
+        write("Residential Subaccount from VMT Fees:\n" + str(subacct))
+        write("Amount in Residential subaccount:\n${:,.2f}".format(amount))
+    vmt_com_accts = coffer.get("vmt_com_acct")
+    for subacct, amount in vmt_com_accts.iter_subaccounts():
+        write("Commercial Subaccount from VMT Fees:\n" + str(subacct))
+        write("Amount in Commercial subaccount:\n${:,.2f}".format(amount))  
 
     for geo, typ, corr in compare_to_targets(parcels, buildings, jobs,
                                              households, abag_targets,
@@ -931,7 +955,7 @@ def building_summary(parcels, run_number, year,
                      buildings,
                      initial_year, final_year):
 
-    if year not in [initial_year, final_year]:
+    if year not in [initial_year, 2015, final_year]:
         return
 
     df = orca.merge_tables(

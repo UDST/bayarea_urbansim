@@ -1494,6 +1494,100 @@ acct_settings:
       subsidize_affordable: True
       enable_in_scenarios: ["11", "12", "15"]
 
+  # create lump sum accounts for draft blueprint
+  lump_sum_accounts_d_b:
+    # county-specific affordable housing bonds enabled in 
+    # scenarios 21 Blueprint Basis or scenario 22-23 Blueprint Plus
+    alameda_bond_d_b_settings:
+      name: "Alameda Affordable Housing Bond - draft blueprint"
+      sending_buildings_subaccount_def: regional
+      total_amount: 2470820000
+      alternate_total_amount: 3725535000
+      receiving_buildings_filter: county == 'Alameda'
+      subsidize_affordable: True
+      enable_in_scenarios: ["21", "22", "23"]
+      alternate_amount_scenarios: ["22", "23"]
+
+    contra_costa_bond_d_b_settings:
+      name: "Contra Costa Affordable Housing Bond - draft blueprint"
+      sending_buildings_subaccount_def: regional
+      total_amount: 1647700000
+      alternate_total_amount: 2484420000
+      receiving_buildings_filter: county == 'Contra Costa'
+      subsidize_affordable: True
+      enable_in_scenarios: ["21", "22", "23"]
+      alternate_amount_scenarios: ["22", "23"]
+
+    marin_bond_d_b_settings:
+      name: "Marin Affordable Housing Bond - draft blueprint"
+      sending_buildings_subaccount_def: regional
+      total_amount: 341650000
+      alternate_total_amount: 515145000
+      receiving_buildings_filter: county == 'Marin'
+      subsidize_affordable: True
+      enable_in_scenarios: ["21", "22", "23"]
+      alternate_amount_scenarios: ["22", "23"]
+
+    napa_bond_d_b_settings:
+      name: "Napa Affordable Housing Bond - draft blueprint"
+      sending_buildings_subaccount_def: regional
+      total_amount: 184960000
+      alternate_total_amount: 278880000
+      receiving_buildings_filter: county == 'Napa'
+      subsidize_affordable: True
+      enable_in_scenarios: ["21", "22", "23"]
+      alternate_amount_scenarios: ["22", "23"]
+
+    san_francisco_bond_d_b_settings:
+      name: "San Francisco Affordable Housing Bond - draft blueprint"
+      sending_buildings_subaccount_def: regional
+      total_amount: 1645215000
+      alternate_total_amount: 2480675000
+      receiving_buildings_filter: county == 'San Francisco'
+      subsidize_affordable: True
+      enable_in_scenarios: ["21", "22", "23"]
+      alternate_amount_scenarios: ["22", "23"]
+
+    san_mateo_bond_d_b_settings:
+      name: "San Mateo Affordable Housing Bond - draft blueprint basic"
+      sending_buildings_subaccount_def: regional
+      total_amount: 1477290000
+      alternate_total_amount: 2227480000
+      receiving_buildings_filter: county == 'San Mateo'
+      subsidize_affordable: True
+      enable_in_scenarios: ["21", "22", "23"]
+      alternate_amount_scenarios: ["22", "23"]
+
+    santa_clara_bond_d_b_settings:
+      name: "Santa Clara Affordable Housing Bond - draft blueprint"
+      sending_buildings_subaccount_def: regional
+      total_amount: 3082915000
+      alternate_total_amount: 4648455000
+      receiving_buildings_filter: county == 'Santa Clara'
+      subsidize_affordable: True
+      enable_in_scenarios: ["21", "22", "23"]
+      alternate_amount_scenarios: ["22", "23"]
+
+    solano_bond_d_b_settings:
+      name: "Solano Affordable Housing Bond - draft blueprint"
+      sending_buildings_subaccount_def: regional
+      total_amount: 562040000
+      alternate_total_amount: 847450000
+      receiving_buildings_filter: county == 'Solano'
+      subsidize_affordable: True
+      enable_in_scenarios: ["21", "22", "23"]
+      alternate_amount_scenarios: ["22", "23"]
+
+    sonoma_bond_d_b_settings:
+      name: "Sonoma Affordable Housing Bond - draft blueprint"
+      sending_buildings_subaccount_def: regional
+      total_amount: 653865000
+      alternate_total_amount: 985905000
+      receiving_buildings_filter: county == 'Sonoma'
+      subsidize_affordable: True
+      enable_in_scenarios: ["21", "22", "23"]
+      alternate_amount_scenarios: ["22", "23"]
+
     # parcel tax settings
     parcel_tax_settings:
       name: "Parcel Tax"
@@ -1645,6 +1739,7 @@ acct_settings:
     receiving_buildings_filter: pda_id > ''
     alternate_buildings_filter: trich_id > '' | cat_id > ''
     alternate_geography_scenarios: ["11", "12", "15"]
+    db_geography_scenarios: ["21", "22", "23"]
     res_for_res_scenarios:
       - "3"
     com_for_com_scenarios:
@@ -1658,6 +1753,9 @@ acct_settings:
       - "11"
       - "12"
       - "15"
+      - "21"
+      - "22"
+      - "23"
     com_for_res_scenarios:
       - "1"
       - "2"
@@ -1678,7 +1776,7 @@ acct_settings:
       H: 30
       MH: 20
       M: 3
-    alternate_com_for_res_fee_amounts:
+    alternate_com_for_res_fee_amounts: # horizon
       VH: 100
       H: 60
       MH: 40
@@ -1687,10 +1785,50 @@ acct_settings:
       VH: 40
       H: 20
       MH: 10
-    alternate_com_for_com_fee_amounts:
+    alternate_com_for_com_fee_amounts: # horizon
       VH: 80
       H: 40
       MH: 20
+    db_com_for_com_fee_amounts: # draft blueprint
+      alameda:
+            VH: 40
+            H: 30
+            MH: 15
+            M: 4
+      contra_costa:
+            VH: 40
+            H: 30
+            MH: 10
+      marin:
+            VH: 40
+            H: 30
+            MH: 8
+      napa:
+            VH: 40
+            H: 30
+            MH: 10
+      san_francisco:
+            VH: 60
+            H: 40
+            MH: 20
+            M: 10
+      san_mateo:
+            VH: 40
+            H: 30
+            MH: 10
+      santa_clara:
+            VH: 40
+            H: 30
+            MH: 15
+            M: 4
+      solano:
+            VH: 40
+            H: 30
+            MH: 10
+      sonoma:
+            VH: 40
+            H: 30
+            MH: 10
 
   sb743_settings:
     enable: true
