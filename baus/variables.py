@@ -234,6 +234,11 @@ def vmt_res_cat(buildings, vmt_fee_categories):
 
 
 @orca.column('buildings', cache=True)
+def vmt_nonres_cat(buildings, vmt_fee_categories):
+    return misc.reindex(vmt_fee_categories.nonres_cat, buildings.zone_id)
+
+
+@orca.column('buildings', cache=True)
 def residential_price(buildings, residential_units, settings):
     """
     This was originally an orca.step in the ual code.  This allows model steps
@@ -354,6 +359,11 @@ def height(parcels):
 @orca.column('parcels', cache=True)
 def vmt_res_cat(parcels, vmt_fee_categories):
     return misc.reindex(vmt_fee_categories.res_cat, parcels.zone_id)
+
+
+@orca.column('parcels', cache=True)
+def vmt_nonres_cat(parcels, vmt_fee_categories):
+    return misc.reindex(vmt_fee_categories.nonres_cat, parcels.zone_id)
 
 
 # residential fees
