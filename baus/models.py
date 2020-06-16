@@ -50,32 +50,19 @@ def employment_relocation_rates():
     df.columns = ["zone_id", "empsix", "rate"]
     return df
 
-# this for future round2
-# also includes draft blueprint 
+
 @orca.table(cache=True)
 def household_relocation_rates(scenario, policy):
-    if scenario in policy['futures_scenarios']:
-        if scenario in policy['reloc_fr2_enable']:
-            df = pd.read_csv(os.path.join("data",
-                                      "household_relocation_rates_fr2.csv"))
-            orca.add_injectable("hh_reloc", 'activated')
-            print("File used is: household_relocation_rates_fr2.csv")
-        else:
-            df = pd.read_csv(os.path.join("data",
-                                      "household_relocation_rates_fr_base.csv"))
-            orca.add_injectable("hh_reloc", 'not activated')
-            print("File used is: household_relocation_rates_fr_base.csv")
-    elif scenario in policy['reloc_db_enable']:
+    if scenario in policy['reloc_fr2_enable']:
         df = pd.read_csv(os.path.join("data",
-                                      "household_relocation_rates_db_var.csv"))
+                                      "household_relocation_rates_fr2.csv"))
         orca.add_injectable("hh_reloc", 'activated')
-        print("File used is: household_relocation_rates_db_var.csv")
     else:
         df = pd.read_csv(os.path.join("data",
-                                      "household_relocation_rates_db_base.csv"))
+                                      "household_relocation_rates.csv"))
         orca.add_injectable("hh_reloc", 'not activated')
-        print("File used is: household_relocation_rates_db_base.csv")
     return df
+
 
 # this is a list of parcel_ids which are to be treated as static
 @orca.injectable()
@@ -425,6 +412,8 @@ def scheduled_development_events(buildings, development_projects,
         parcels.zone_id, new_buildings.parcel_id)
     new_buildings["vmt_res_cat"] = misc.reindex(
         vmt_fee_categories.res_cat, new_buildings.zone_id)
+    new_buildings["vmt_nonres_cat"] = misc.reindex(
+        vmt_fee_categories.nonres_cat, new_buildings.zone_id)
     del new_buildings["zone_id"]
     new_buildings["pda"] = parcels_geography.pda_id.loc[
         new_buildings.parcel_id].values
