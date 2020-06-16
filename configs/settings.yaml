@@ -99,6 +99,7 @@ feasibility:
     - superdistrict
     - geom_id
     - vmt_res_cat
+    - vmt_nonres_cat
 
 # settings that get passed to the residential developer as kwargs
 residential_developer:

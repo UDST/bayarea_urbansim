@@ -359,6 +359,7 @@ def calculate_vmt_fees(policy, year, buildings, vmt_fee_categories, coffer,
     # this is the frame that knows which devs are subsidized
     df = summary.parcel_output
 
+    # grabs projects in the simulation period that are not subsidized
     df = df.query("%d <= year_built < %d and subsidized != True" %
                   (year, year + years_per_iter))
 
@@ -371,6 +372,8 @@ def calculate_vmt_fees(policy, year, buildings, vmt_fee_categories, coffer,
 
     if scenario in vmt_settings["res_for_res_scenarios"]:
 
+        # maps the vmt fee amounts designated in the policy settings to
+        # the projects based on their categorized vmt levels
         df["res_for_res_fees"] = df.vmt_res_cat.map(
             vmt_settings["res_for_res_fee_amounts"])
         total_fees += (df.res_for_res_fees * df.residential_units).sum()
@@ -379,10 +382,10 @@ def calculate_vmt_fees(policy, year, buildings, vmt_fee_categories, coffer,
     if scenario in vmt_settings["com_for_res_scenarios"]:
 
         if scenario in vmt_settings["alternate_geography_scenarios"]:
-            df["com_for_res_fees"] = df.vmt_res_cat.map(
+            df["com_for_res_fees"] = df.vmt_nonres_cat.map(
                 vmt_settings["alternate_com_for_res_fee_amounts"])
         else:
-            df["com_for_res_fees"] = df.vmt_res_cat.map(
+            df["com_for_res_fees"] = df.vmt_nonres_cat.map(
                 vmt_settings["com_for_res_fee_amounts"])
         total_fees += (df.com_for_res_fees * df.non_residential_sqft).sum()
         print("Applying vmt fees to %d commerical sqft" %
@@ -396,18 +399,42 @@ def calculate_vmt_fees(policy, year, buildings, vmt_fee_categories, coffer,
     }
     # the subaccount is meaningless here (it's a regional account) -
     # but the subaccount number is referred to below
+    # adds the total fees collected to the coffer for residential dev
     coffer["vmt_res_acct"].add_transaction(total_fees, subaccount=1,
                                            metadata=metadata)
 
     total_fees = 0
 
     if scenario in vmt_settings["com_for_com_scenarios"]:
-
+        # assign fees by county for Draft Blueprint scenarios
+        if scenario in vmt_settings["db_geography_scenarios"]:
+            # assign county to parcels
+            county_lookup = orca.get_table("parcels_subzone").to_frame()
+            county_lookup = county_lookup[["county"]].\
+                rename(columns={'county': 'county3'})
+            # parcels_subzone has parcel_ids in XXXXXX.99999 format by this step
+            # temporarily fix them here
+            county_lookup.reset_index(inplace=True)
+            county_lookup["PARCEL_ID"] = county_lookup["PARCEL_ID"].round().astype(int)
+            df = df.merge(county_lookup, 
+                          left_on='parcel_id',
+                          right_on='PARCEL_ID', 
+                          how='left').drop(["PARCEL_ID"], axis=1)
+            # assign fee to parcels based on county
+            counties3 = ['ala', 'cnc', 'mar', 'nap', 'scl', 'sfr', 'smt',
+                'sol', 'son']
+            counties = ['alameda', 'contra_costa', 'marin', 'napa',
+                'santa_clara', 'san_francisco','san_mateo', 'solano', 'sonoma']
+            for county3, county in zip(counties3, counties):
+                df.loc[df["county3"] == county3, "com_for_com_fees"] = \
+                    df.vmt_nonres_cat.\
+                    map(vmt_settings["db_com_for_com_fee_amounts"][county])
+        # assign fees for Horizon scenarios
         if scenario in vmt_settings["alternate_geography_scenarios"]:
-            df["com_for_com_fees"] = df.vmt_res_cat.map(
+            df["com_for_com_fees"] = df.vmt_nonres_cat.map(
                 vmt_settings["alternate_com_for_com_fee_amounts"])
         else:
-            df["com_for_com_fees"] = df.vmt_res_cat.map(
+            df["com_for_com_fees"] = df.vmt_nonres_cat.map(
                 vmt_settings["com_for_com_fee_amounts"])
         total_fees += (df.com_for_com_fees * df.non_residential_sqft).sum()
         print("Applying vmt fees to %d commerical sqft" %
