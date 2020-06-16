@@ -335,7 +335,7 @@ def calculate_vmt_fees(policy, year, buildings, vmt_fee_categories, coffer,
 
     if scenario in vmt_settings["com_for_com_scenarios"]:
         # assign fees by county for Draft Blueprint scenarios
-        if scenario in vmt_settings["dp_geography_scenarios"]:
+        if scenario in vmt_settings["db_geography_scenarios"]:
             # assign county to parcels
             county_lookup = orca.get_table("parcels_subzone").to_frame()
             county_lookup = county_lookup[["county"]].\
