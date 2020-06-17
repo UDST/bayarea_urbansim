@@ -234,6 +234,11 @@ def vmt_res_cat(buildings, vmt_fee_categories):
 
 
 @orca.column('buildings', cache=True)
+def vmt_nonres_cat(buildings, vmt_fee_categories):
+    return misc.reindex(vmt_fee_categories.nonres_cat, buildings.zone_id)
+
+
+@orca.column('buildings', cache=True)
 def residential_price(buildings, residential_units, settings):
     """
     This was originally an orca.step in the ual code.  This allows model steps
@@ -356,6 +361,11 @@ def vmt_res_cat(parcels, vmt_fee_categories):
     return misc.reindex(vmt_fee_categories.res_cat, parcels.zone_id)
 
 
+@orca.column('parcels', cache=True)
+def vmt_nonres_cat(parcels, vmt_fee_categories):
+    return misc.reindex(vmt_fee_categories.nonres_cat, parcels.zone_id)
+
+
 # residential fees
 @orca.column('parcels', cache=True)
 def vmt_res_fees(parcels, policy):
@@ -367,8 +377,8 @@ def vmt_res_fees(parcels, policy):
 @orca.column('parcels', cache=True)
 def vmt_com_fees(parcels, policy):
     vmt_settings = policy["acct_settings"]["vmt_settings"]
-    return parcels.vmt_res_cat.map(vmt_settings["com_for_res_fee_amounts"]) + \
-        parcels.vmt_res_cat.map(vmt_settings["com_for_com_fee_amounts"])
+    return parcels.vmt_nonres_cat.map(vmt_settings["com_for_res_fee_amounts"]) + \
+        parcels.vmt_nonres_cat.map(vmt_settings["com_for_com_fee_amounts"])
 
 
 # compute the fees per unit for each parcel

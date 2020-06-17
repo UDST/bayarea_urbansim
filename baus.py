@@ -49,6 +49,8 @@ LAST_KNOWN_GOOD_RUNS = {
 
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 
+orca.add_injectable("base_year", IN_YEAR)
+
 parser = argparse.ArgumentParser(description='Run UrbanSim models.')
 
 parser.add_argument(
@@ -167,6 +169,7 @@ def get_simulation_models(SCENARIO):
         "retail_developer",
         "office_developer",
         "accessory_units",
+        "calculate_vmt_fees",
 
         # (for buildings that were removed)
         "remove_old_units",
@@ -224,7 +227,8 @@ def get_simulation_models(SCENARIO):
     # calculate VMT taxes
     vmt_settings = \
         orca.get_injectable("policy")["acct_settings"]["vmt_settings"]
-    if SCENARIO in vmt_settings["com_for_com_scenarios"]:
+    if SCENARIO in vmt_settings["com_for_com_scenarios"] and \
+            SCENARIO not in vmt_settings["db_geography_scenarios"]:
         models.insert(models.index("office_developer"),
                       "subsidized_office_developer")
 
@@ -298,7 +302,7 @@ def run_models(MODE, SCENARIO):
                 "elcm_simulate",
 
                 "price_vars",
-                "scheduled_development_events",
+#                "scheduled_development_events",
 
                 "topsheet",
                 "simulation_validation",
