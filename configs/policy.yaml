@@ -1360,3 +1360,183 @@ acct_settings:
       MH: -0.005
       M: 0.0
       S: 0.02
+
+  # Draft Blueprint strategy: charge Jobs-Housing Imbalances Fees on new office 
+  # developments occuring in job-rich places to fund affordable housing
+  jobs_housing_fee_settings:
+    jobs_housing_com_for_res_scenarios:
+      - "21"
+      - "22"
+      - "23"
+    alameda_jobs_housing_fee_settings:
+      name: 'Alameda Jobs-housing Fee Acct'
+      county_name: 'ala'
+      sending_buildings_subaccount_def: regional
+      receiving_buildings_filter: county == 'Alameda'
+      subsidize_affordable: True
+      jobs_housing_fee_com_for_res_amounts:
+        'Alameda': 3
+        'Albany': 3
+        'Berkeley': 10
+        'Dublin': 5
+        'Emeryville': 23
+        'Fremont': 5
+        'Hayward': 8
+        'Livermore': 8
+        'Newark': 5
+        'Oakland': 5
+        'Piedmont': 3
+        'Pleasanton': 10
+        'San Leandro': 5
+        'Unincorporated Alameda': 5
+        'Union City': 3
+    contra_costa_jobs_housing_fee_settings:
+      name: 'Contra Costa Jobs-housing Fee Acct'
+      county_name: 'cnc'
+      sending_buildings_subaccount_def: regional
+      receiving_buildings_filter: county == 'Contra Costa'
+      subsidize_affordable: True
+      jobs_housing_fee_com_for_res_amounts:
+        'Antioch': 0
+        'Brentwood': 0
+        'Clayton': 0
+        'Concord': 3
+        'Danville': 0
+        'El Cerrito': 0
+        'Hercules': 0
+        'Lafayette': 3
+        'Martinez': 3
+        'Moraga': 0
+        'Oakley': 0
+        'Orinda': 0
+        'Pinole': 0
+        'Pittsburg': 0
+        'Pleasant Hill': 3
+        'Richmond': 3
+        'San Pablo': 0
+        'San Ramon': 8
+        'Unincorporated Contra Costa': 0
+        'Walnut Creek': 8
+    marin_jobs_housing_fee_settings:
+      name: 'Marin Jobs-housing Fee Acct'
+      county_name: 'mar'
+      sending_buildings_subaccount_def: regional
+      receiving_buildings_filter: county == 'Marin'
+      subsidize_affordable: True
+      jobs_housing_fee_com_for_res_amounts:
+        'Belvedere': 23
+        'Corte Madera': 10
+        'Fairfax': 3
+        'Larkspur': 5
+        'Mill Valley': 5
+        'Novato': 5
+        'Ross': 5
+        'San Anselmo': 3
+        'San Rafael': 10
+        'Sausalito': 8
+        'Tiburon': 3
+        'Unincorporated Marin': 5
+    napa_jobs_housing_fee_settings:
+      name: 'Napa Jobs-housing Fee Acct'
+      county_name: 'nap'
+      sending_buildings_subaccount_def: regional
+      receiving_buildings_filter: county == 'Napa'
+      subsidize_affordable: True
+      jobs_housing_fee_com_for_res_amounts:
+        'American Canyon': 5
+        'Calistoga': 8
+        'Napa': 8
+        'St. Helena': 13
+        'Unincorporated Napa': 10
+        'Yountville': 13
+    san_francisco_jobs_housing_fee_settings:
+      name: 'San Francisco Jobs-housing Fee Acct'
+      county_name: 'sfr'
+      sending_buildings_subaccount_def: regional
+      receiving_buildings_filter: county == 'San Francisco'
+      subsidize_affordable: True
+      jobs_housing_fee_com_for_res_amounts:
+        'San Francisco': 15
+    san_mateo_jobs_housing_fee_settings:
+      name: 'San Mateo Jobs-housing Fee Acct'
+      county_name: 'smt'
+      sending_buildings_subaccount_def: regional
+      receiving_buildings_filter: county == 'San Mateo'
+      subsidize_affordable: True
+      jobs_housing_fee_com_for_res_amounts:
+        'Atherton': 10
+        'Belmont': 5
+        'Brisbane': 20
+        'Burlingame': 15
+        'Colma': 25
+        'Daly City': 5
+        'East Palo Alto': 5
+        'Foster City': 10
+        'Half Moon Bay': 8
+        'Hillsborough': 5
+        'Menlo Park': 20
+        'Millbrae': 5
+        'Pacifica': 5
+        'Portola Valley': 5
+        'Redwood City': 13
+        'San Bruno': 8
+        'San Carlos': 10
+        'San Mateo': 10
+        'South San Francisco': 15
+        'Unincorporated San Mateo': 10
+        'Woodside': 10
+    santa_clara_jobs_housing_fee_settings:
+      name: 'Santa Clara Jobs-housing Fee Acct'
+      county_name: 'scl'
+      sending_buildings_subaccount_def: regional
+      receiving_buildings_filter: county == 'Santa Clara'
+      subsidize_affordable: True
+      jobs_housing_fee_com_for_res_amounts:
+        'Campbell': 13
+        'Cupertino': 18
+        'Gilroy': 11
+        'Los Altos': 11
+        'Los Altos Hills': 8
+        'Los Gatos': 13
+        'Milpitas': 18
+        'Monte Sereno': 8
+        'Morgan Hill': 11
+        'Mountain View': 18
+        'Palo Alto': 28
+        'San Jose': 11
+        'Santa Clara': 23
+        'Saratoga': 8
+        'Sunnyvale': 16
+        'Unincorporated Santa Clara': 15
+    solano_jobs_housing_fee_settings:
+      name: 'Solano Jobs-housing Fee Acct'
+      county_name: 'sol'
+      sending_buildings_subaccount_def: regional
+      receiving_buildings_filter: county == 'Solano'
+      subsidize_affordable: True
+      jobs_housing_fee_com_for_res_amounts:
+        'Benicia': 3
+        'Dixon': 3
+        'Fairfield': 5
+        'Rio Vista': 0
+        'Suisun City': 0
+        'Unincorporated Solano': 0
+        'Vacaville': 3
+        'Vallejo': 0
+    sonoma_jobs_housing_fee_settings:
+      name: 'Sonoma Jobs-housing Fee Acct'
+      county_name: 'son'
+      sending_buildings_subaccount_def: regional
+      receiving_buildings_filter: county == 'Sonoma'
+      subsidize_affordable: True
+      jobs_housing_fee_com_for_res_amounts:
+        'Cloverdale': 3
+        'Cotati': 3
+        'Healdsburg': 8
+        'Petaluma': 8
+        'Rohnert Park': 3
+        'Santa Rosa': 5
+        'Sebastopol': 10
+        'Sonoma': 10
+        'Unincorporated Sonoma': 5
+        'Windsor': 3
