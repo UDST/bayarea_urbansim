@@ -1,10 +1,12 @@
+from __future__ import print_function
+
 import orca
 import numpy as np
 import pandas as pd
 from urbansim_defaults import utils
-import datasources
-import variables
-import summaries
+from baus import datasources
+from baus import variables
+from baus import summaries
 
 from operator import itemgetter
 import itertools
@@ -14,8 +16,12 @@ import itertools
 # earthquake model removes further buildings temporarily
 
 @orca.step()
-def eq_code_buildings(buildings, year, earthquake):
-    if year == 2035 and earthquake:
+def eq_code_buildings(buildings, year, scenario, hazards):
+
+    if scenario not in hazards["eq_scenarios"]["enable_in"]:
+        return
+
+    if year == 2035:
         # tags buildings that exist in 2035 with a fragility coefficient
         # keeping in-model adds run time, but is important given developer
         # model stochastisitcy, that will change the building stock in 2035
@@ -244,13 +250,19 @@ def eq_code_buildings(buildings, year, earthquake):
 
 @orca.step()
 def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
-                        households, jobs, residential_units, year, earthquake):
-    if year == 2035 and earthquake:
-        # assign each parcel to a census tract
-        # using the lookup table created with "parcel_tract_assignment.ipynb"
+                        households, jobs, residential_units, year, scenario,
+                        hazards):
+
+    if scenario not in hazards["eq_scenarios"]["enable_in"]:
+        return
+
+    if year == 2035:
+        # assign each parcel to a census tract using the lookup table
+        # created with scripts/parcel_tract_assignment.py
         census_tract = pd.Series(parcels_tract['census_tract'],
                                  parcels_tract.index)
-        print "Number of parcels with census tracts is: %d" % len(census_tract)
+        print("Number of parcels with census tracts is: %d" %
+              len(census_tract))
         orca.add_column('parcels', 'tract', census_tract)
 
         # group parcels by their census tract
@@ -265,7 +277,7 @@ def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
                                                 key=itemgetter(0)):
             tract_parcels_grp.append(list(parcels))
             tracts.append(tract)
-        print "Number of census tract groups is: %d" % len(tract_parcels_grp)
+        print("Number of census tract groups is: %d" % len(tract_parcels_grp))
 
         # for the parcels in each tract, destroy X% of parcels in that tract
         tracts_earthquake = tracts_earthquake.to_frame()
@@ -277,6 +289,7 @@ def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
         existing_buildings = []
         new_buildings = []
         fire_buildings = []
+        retrofit_bldgs_tot = pd.DataFrame()
 
         for i in range(len(tracts)):
             grp = [x[1] for x in tract_parcels_grp[i]]
@@ -289,6 +302,29 @@ def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
             build_frag = buildings_i['eq_destroy'].sort_values(ascending=False)
             top_build_frag = build_frag[: int(round(
                 len(build_frag) * existing_pct))]
+            # in "strategies" scenarios, exclude some existing buildings
+            # from destruction due to retrofit
+            if scenario in hazards["eq_scenarios"]["mitigation"]:
+                retrofit_codes = ['DU01G1N', 'DU01G2N', 'MF01G1N', 'MF01G2N',
+                                  'MF25G1N', 'MF25G2N', 'MF25G3N', 'MF25G4N',
+                                  'SF01G1N', 'SF2PG1N']
+                top_build_frag_bldgs = buildings[buildings.index.isin
+                                                 (top_build_frag.index)]
+                retrofit_bldgs = top_build_frag_bldgs[top_build_frag_bldgs.
+                                                      earthquake_code.isin
+                                                      (retrofit_codes)]
+                retro_no = int(round(float(len(retrofit_bldgs))/2))
+                retrofit_set = np.random.choice(retrofit_bldgs.index,
+                                                retro_no, replace=False)
+                # update top_build_frag to remove retrofit buildings
+                top_build_frag = top_build_frag[~top_build_frag.index.isin
+                                                (retrofit_set)]
+                # add table of retrofit buildings that weren't destroyed
+                retrofit_bldgs_set = buildings[buildings.index.isin
+                                               (retrofit_set)]
+                retrofit_bldgs_tot = retrofit_bldgs_tot. \
+                    append(retrofit_bldgs_set)
+                orca.add_table("retrofit_bldgs_tot", retrofit_bldgs_tot)
             # add to a list of buildings to destroy
             buildings_top = top_build_frag.index
             existing_buildings.extend(buildings_top)
@@ -340,8 +376,8 @@ def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
             fire_buildings.extend(buildings_fire)
             eq_buildings.extend(buildings_fire)
 
-        print "Total number of buildings being destroyed is: %d" \
-            % len(eq_buildings)
+        print("Total number of buildings being destroyed is: %d" %
+              len(eq_buildings))
 
         orca.add_injectable("eq_buildings", eq_buildings)
         orca.add_injectable("existing_buildings", existing_buildings)
@@ -353,7 +389,7 @@ def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
         eq_demolish = buildings.local[buildings.index.isin
                                       (eq_buildings)]
         orca.add_table("eq_demolish", eq_demolish)
-        print "Demolishing %d buildings" % len(eq_demolish)
+        print("Demolishing %d buildings" % len(eq_demolish))
 
         households = households.to_frame()
         hh_unplaced = households[households["building_id"] == -1]
@@ -383,4 +419,4 @@ def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
 
         orca.add_table("buildings", buildings)
         buildings = orca.get_table("buildings")
-        print "Demolished %d buildings" % (l1 - len(buildings))
+        print("Demolished %d buildings" % (l1 - len(buildings)))

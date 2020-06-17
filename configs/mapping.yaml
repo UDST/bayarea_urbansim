@@ -1,0 +1,131 @@
+# this maps Synthicity's 25 employment categories to
+# the six major employment categories traditionally
+# used by MTC and ABAG for use in output to the Travel Model
+naics_to_empsix:
+  10: AGREMPN
+  11: AGREMPN
+  21: AGREMPN
+  22: MWTEMPN
+  23: OTHEMPN
+  31: MWTEMPN
+  3133: MWTEMPN
+  32: MWTEMPN
+  33: MWTEMPN
+  42: MWTEMPN
+  44: RETEMPN
+  4445: RETEMPN
+  45: RETEMPN
+  48: MWTEMPN
+  4849: MWTEMPN
+  49: MWTEMPN
+  51: OTHEMPN
+  52: FPSEMPN
+  53: FPSEMPN
+  54: FPSEMPN
+  55: FPSEMPN
+  56: FPSEMPN
+  61: HEREMPN
+  62: HEREMPN
+  71: HEREMPN
+  72: HEREMPN
+  81: OTHEMPN
+  91: OTHEMPN
+  92: OTHEMPN
+  99: OTHEMPN
+  3133: MWTEMPN
+  4445: RETEMPN
+  4849: MWTEMPN
+
+
+# what it says
+empsix_name_to_id:
+  AGREMPN: 1
+  MWTEMPN: 2
+  RETEMPN: 3
+  FPSEMPN: 4
+  HEREMPN: 5
+  OTHEMPN: 6
+
+
+# this maps building type ids to general building types
+# basically just reduces dimensionality
+building_type_map:
+  HS: Residential
+  HT: Residential
+  HM: Residential
+  OF: Office
+  HO: Hotel
+  SC: School
+  IL: Industrial
+  IW: Industrial
+  IH: Industrial
+  RS: Retail
+  RB: Retail
+  MR: Residential
+  MT: Retail
+  ME: Office
+  PA: Parking
+  PA2: Parking
+
+
+# this maps building "forms" from the developer model
+# to building types so that when the developer builds a
+# "form" this can be converted for storing as a type
+# in the building table - in the long run, the developer
+# forms and the building types should be the same and the
+# developer model should account for the differences.
+# travel_model_ variables are for the travel_model_summary step.
+form_to_btype:
+  residential:
+    - HS
+    - HT
+    - HM
+  industrial:
+    - IL
+    - IW
+    - IH
+  retail:
+    - RS
+    - RB
+  office:
+    - OF
+  mixedresidential:
+    - MR
+  mixedoffice:
+    - ME
+  select_non_residential:
+    - OF
+    - HO
+    - SC
+    - IL
+    - IW
+    - IH
+    - RS
+    - RB
+    - MR
+
+
+# county ids in parcels geography (I think FIPS codes)
+county_id_map:
+  85: Santa Clara
+  1: Alameda
+  13: Contra Costa
+  81: San Mateo
+  97: Sonoma
+  75: San Francisco
+  95: Solano
+  41: Marin
+  55: Napa
+
+
+# county ids for the travel model
+county_id_tm_map:
+  3: Santa Clara
+  4: Alameda
+  5: Contra Costa
+  2: San Mateo
+  8: Sonoma
+  1: San Francisco
+  6: Solano
+  9: Marin
+  7: Napa
