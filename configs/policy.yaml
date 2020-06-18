@@ -1856,7 +1856,7 @@ acct_settings:
       county_name: 'ala'
       sending_buildings_subaccount_def: regional
       receiving_buildings_filter: county == 'Alameda'
-      subsidize_affordable: True
+      subsidize_affordable: False
       jobs_housing_fee_com_for_res_amounts:
         'Alameda': 3
         'Albany': 3
@@ -1878,7 +1878,7 @@ acct_settings:
       county_name: 'cnc'
       sending_buildings_subaccount_def: regional
       receiving_buildings_filter: county == 'Contra Costa'
-      subsidize_affordable: True
+      subsidize_affordable: False
       jobs_housing_fee_com_for_res_amounts:
         'Antioch': 0
         'Brentwood': 0
@@ -1905,7 +1905,7 @@ acct_settings:
       county_name: 'mar'
       sending_buildings_subaccount_def: regional
       receiving_buildings_filter: county == 'Marin'
-      subsidize_affordable: True
+      subsidize_affordable: False
       jobs_housing_fee_com_for_res_amounts:
         'Belvedere': 23
         'Corte Madera': 10
@@ -1924,7 +1924,7 @@ acct_settings:
       county_name: 'nap'
       sending_buildings_subaccount_def: regional
       receiving_buildings_filter: county == 'Napa'
-      subsidize_affordable: True
+      subsidize_affordable: False
       jobs_housing_fee_com_for_res_amounts:
         'American Canyon': 5
         'Calistoga': 8
@@ -1937,7 +1937,7 @@ acct_settings:
       county_name: 'sfr'
       sending_buildings_subaccount_def: regional
       receiving_buildings_filter: county == 'San Francisco'
-      subsidize_affordable: True
+      subsidize_affordable: False
       jobs_housing_fee_com_for_res_amounts:
         'San Francisco': 15
     san_mateo_jobs_housing_fee_settings:
@@ -1945,7 +1945,7 @@ acct_settings:
       county_name: 'smt'
       sending_buildings_subaccount_def: regional
       receiving_buildings_filter: county == 'San Mateo'
-      subsidize_affordable: True
+      subsidize_affordable: False
       jobs_housing_fee_com_for_res_amounts:
         'Atherton': 10
         'Belmont': 5
@@ -1973,7 +1973,7 @@ acct_settings:
       county_name: 'scl'
       sending_buildings_subaccount_def: regional
       receiving_buildings_filter: county == 'Santa Clara'
-      subsidize_affordable: True
+      subsidize_affordable: False
       jobs_housing_fee_com_for_res_amounts:
         'Campbell': 13
         'Cupertino': 18
@@ -1996,7 +1996,7 @@ acct_settings:
       county_name: 'sol'
       sending_buildings_subaccount_def: regional
       receiving_buildings_filter: county == 'Solano'
-      subsidize_affordable: True
+      subsidize_affordable: False
       jobs_housing_fee_com_for_res_amounts:
         'Benicia': 3
         'Dixon': 3
@@ -2011,7 +2011,7 @@ acct_settings:
       county_name: 'son'
       sending_buildings_subaccount_def: regional
       receiving_buildings_filter: county == 'Sonoma'
-      subsidize_affordable: True
+      subsidize_affordable: False
       jobs_housing_fee_com_for_res_amounts:
         'Cloverdale': 3
         'Cotati': 3
