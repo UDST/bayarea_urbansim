@@ -242,6 +242,17 @@ def get_simulation_models(SCENARIO):
         models.insert(models.index("alt_feasibility"),
                       "subsidized_residential_developer_vmt")
 
+    # calculate jobs-housing fees
+    jobs_housing_settings = \
+        orca.get_injectable("policy")["acct_settings"]["jobs_housing_fee_settings"]
+    if SCENARIO in jobs_housing_settings["jobs_housing_com_for_res_scenarios"]:
+        models.insert(models.index("diagnostic_output"),
+                      "calculate_jobs_housing_fees")
+    #    models.insert(models.index("alt_feasibility"),
+    #                  "subsidized_residential_feasibility")
+    #    models.insert(models.index("alt_feasibility"),
+    #                  "subsidized_residential_developer_jobs_housing")
+
     return models
 
 
