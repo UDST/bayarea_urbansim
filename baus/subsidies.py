@@ -496,8 +496,7 @@ def calculate_jobs_housing_fees(policy, year, buildings,
                     acct["jobs_housing_fee_com_for_res_amounts"])
                 total_fees += (df_sub.com_for_res_jobs_housing_fees *\
                     df_sub.non_residential_sqft).sum()
-                print("Adding total jobs-housing fees for res amount\
-                        of $%.2f" % total_fees)
+                print("Adding total jobs-housing fees for res amount of $%.2f" % total_fees)
 
                 metadata = {
                     "description": "%s subsidies from\
@@ -506,7 +505,7 @@ def calculate_jobs_housing_fees(policy, year, buildings,
                 }
 
                 # add to the subaccount in coffer
-                coffer[acct["name"]].add_transaction(total_fees, subaccount=1,
+                coffer[acct["name"]].add_transaction(total_fees, subaccount=acct["name"],
                                                     metadata=metadata)
 
 @orca.step()
