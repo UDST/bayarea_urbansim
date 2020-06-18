@@ -52,6 +52,13 @@ def coffer(policy, scenario):
                 policy["acct_settings"]["lump_sum_accounts_d_b"].items():
             d[acct["name"]] = accounts.Account(acct["name"])
 
+    if scenario in policy["acct_settings"]["jobs_housing_fee_settings"]\
+            ["jobs_housing_com_for_res_scenarios"]:
+        for key, acct in \
+                policy["acct_settings"]["jobs_housing_fee_settings"].items():
+            if key != "jobs_housing_com_for_res_scenarios":
+                d[acct["name"]] = accounts.Account(acct["name"]) 
+
     return d
 
 
@@ -442,6 +449,61 @@ def calculate_vmt_fees(policy, year, buildings, vmt_fee_categories, coffer,
     coffer["vmt_com_acct"].add_transaction(total_fees, subaccount="regional",
                                            metadata=metadata)
 
+@orca.step()
+def calculate_jobs_housing_fees(policy, year, buildings,
+                                coffer, summary, years_per_iter, scenario):
+
+    jobs_housing_settings = policy["acct_settings"]["jobs_housing_fee_settings"]
+
+    # this is the frame that knows which devs are subsidized
+    df = summary.parcel_output
+
+    df = df.query("%d <= year_built < %d and subsidized != True" %
+                  (year, year + years_per_iter))
+
+    if not len(df):
+        return
+
+    print("%d projects pass the jobs_housing filter" % len(df))
+
+    if scenario in jobs_housing_settings["jobs_housing_com_for_res_scenarios"]:
+        # assign jurisdiction to parcels
+        juris_lookup = orca.get_table("parcels_geography").to_frame()
+        juris_lookup = juris_lookup[['PARCEL_ID','juris_name']]
+
+        county_lookup = orca.get_table("parcels_subzone").to_frame().reset_index()
+        county_lookup = county_lookup[['PARCEL_ID','county']]
+        county_lookup["PARCEL_ID"] = county_lookup["PARCEL_ID"].round().astype(int)
+        df = df.merge(juris_lookup, 
+                      left_on = 'parcel_id', 
+                      right_on = 'PARCEL_ID',
+                      how = 'left').merge(county_lookup,
+                                          on = 'PARCEL_ID',
+                                          how = 'left')
+        df.columns = list(df)[:-1] + ['county']
+        # calculate jobs-housing fees for each county's acct
+        for key, acct in jobs_housing_settings.items():
+            if key != "jobs_housing_com_for_res_scenarios":
+                df_sub = df.loc[df.county == acct["county_name"]]
+                print("Applying jobs-housing fees to %d commerical sqft" %
+                      df_sub.non_residential_sqft.sum())
+                total_fees = 0
+                df_sub["com_for_res_jobs_housing_fees"] = \
+                    df_sub.juris_name.map(
+                    acct["jobs_housing_fee_com_for_res_amounts"])
+                total_fees += (df_sub.com_for_res_jobs_housing_fees *\
+                    df_sub.non_residential_sqft).sum()
+                print("Adding total jobs-housing fees for res amount of $%.2f" % total_fees)
+
+                metadata = {
+                    "description": "%s subsidies from\
+                        jobs-housing development fees" % acct["name"],
+                    "year": year
+                }
+
+                # add to the subaccount in coffer
+                coffer[acct["name"]].add_transaction(total_fees, subaccount=acct["name"],
+                                                    metadata=metadata)
 
 @orca.step()
 def subsidized_office_developer(feasibility, coffer, acct_settings, year,
@@ -849,6 +911,42 @@ def subsidized_residential_developer_vmt(
                              summary,
                              create_deed_restricted=True,
                              policy_name="VMT")
+
+
+@orca.step()
+def subsidized_residential_developer_jobs_housing(
+        households, buildings, add_extra_columns_func,
+        parcels_geography, year, acct_settings, parcels,
+        policy, summary, coffer, form_to_btype_func, settings):
+    
+    for key, acct in policy["acct_settings"]["jobs_housing_fee_settings"].items():
+
+        if key != "jobs_housing_com_for_res_scenarios":
+            print("Running the subsidized developer for jobs-housing acct: %s" % acct["name"])
+            orca.eval_step("subsidized_residential_feasibility")
+            feasibility = orca.get_table("feasibility").to_frame()
+            feasibility = feasibility.stack(level=0).\
+                reset_index(level=1, drop=True)
+
+            run_subsidized_developer(feasibility,
+                                    parcels,
+                                    buildings,
+                                    households,
+                                    acct,
+                                    settings,
+                                    coffer[acct["name"]],
+                                    year,
+                                    form_to_btype_func,
+                                    add_extra_columns_func,
+                                    summary,
+                                    create_deed_restricted=acct[
+                                        "subsidize_affordable"],
+                                    policy_name=acct["name"])
+
+            buildings = orca.get_table("buildings")
+
+            # set to an empty dataframe to save memory
+            orca.add_table("feasibility", pd.DataFrame())
 
 
 @orca.step()

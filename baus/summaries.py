@@ -327,6 +327,16 @@ def config(policy, inputs, run_number, scenario, parcels,
     # e-commerce should be embedded in the controls
     # telecommuting should be handled in the TM
 
+    # jobs-housing fees
+    jobs_housing_fees = policy["acct_settings"]["jobs_housing_fee_settings"]
+    if scenario in (jobs_housing_fees["jobs_housing_com_for_res_scenarios"]):
+        counter = 0
+        for key, acct in \
+                policy["acct_settings"]["jobs_housing_fee_settings"].items():
+            if key != "jobs_housing_com_for_res_scenarios":
+                counter += 1
+        write("Jobs-housing fees are activated for %d counties" % counter)
+
     f.close()
 
 
@@ -334,7 +344,7 @@ def config(policy, inputs, run_number, scenario, parcels,
 def topsheet(households, jobs, buildings, parcels, zones, year,
              run_number, taz_geography, parcels_zoning_calculations,
              summary, settings, parcels_geography, abag_targets, new_tpp_id,
-             residential_units, coffer, mapping):
+             residential_units, coffer, mapping, scenario, policy):
 
     hh_by_subregion = misc.reindex(taz_geography.subregion,
                                    households.zone_id).value_counts()
@@ -529,6 +539,18 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
 
         write("Current share of units which are greenfield development:\n%s" %
               norm_and_round(df.residential_units.groupby(greenfield).sum()))
+
+    # calculate Draft Blueprint jobs-housing fees collected    
+    jobs_housing_fees = policy["acct_settings"]["jobs_housing_fee_settings"]
+    if scenario in (jobs_housing_fees["jobs_housing_com_for_res_scenarios"]):
+        for key, acct in \
+                policy["acct_settings"]["jobs_housing_fee_settings"].items():
+            if key != "jobs_housing_com_for_res_scenarios":
+                county_acct = coffer.get(acct["name"])
+                for subacct, amount in county_acct.iter_subaccounts():
+                    write("Residential Subaccount from Jobs-housing Fees:\n" +
+                          str(subacct))
+                    write("Amount in Residential subaccount:\n${:,.2f}".format(amount))
 
     cmap = mapping["county_id_tm_map"]
     jobs_by_county = jobs.zone_id.map(taz_geography.county)\
