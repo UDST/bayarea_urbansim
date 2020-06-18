@@ -118,10 +118,13 @@ if LOGS:
 if RANDOM_SEED:
     np.random.seed(12)
 
+MAPS = True
+host = socket.gethostname()
+
 if SLACK:
     from slacker import Slacker
     slack = Slacker(os.environ["SLACK_TOKEN"])
-    host = socket.gethostname()
+    
 
 
 def get_simulation_models(SCENARIO):
@@ -404,7 +407,7 @@ except Exception as e:
 print "Finished", time.ctime()
 
 if MAPS and 'travel_model_output' in get_simulation_models(SCENARIO):
-    files_msg1, files_msg2 = ue_files(run_num, host)
+    files_msg1, files_msg2 = ue_files(run_num)
     config_resp = ue_config(run_num, host)
 
 if SLACK:
