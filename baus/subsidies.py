@@ -106,10 +106,7 @@ def lump_sum_accounts(policy, year, buildings, coffer,
             if scenario not in acct["enable_in_scenarios"]:
                 continue
 
-            if scenario in acct["enable_in_scenarios"]:
-                amt = float(acct["total_amount"])
-
-            elif scenario in acct["alternate_amount_scenarios"]:
+            if scenario in acct["alternate_amount_scenarios"]:
                 amt = float(acct["alternate_total_amount"])
 
             amt *= years_per_iter
@@ -959,7 +956,7 @@ def subsidized_residential_developer_lump_sum_accts(
         policy, summary, coffer, form_to_btype_func,
         scenario, settings):
 
-    for key, acct in policy["acct_settings"]["lump_sum_accounts"].items():
+    for key, acct in policy["acct_settings"]["lump_sum_accounts_d_b"].items():
 
         # quick return in order to save performance time
         if scenario not in acct["enable_in_scenarios"]:
