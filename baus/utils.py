@@ -364,9 +364,9 @@ def compare_summary(df1, df2, index_names=None, pctdiff=10,
 
 def ue_config(run_num, host):
     data = {
-        'taz_url': ('https://baus-urbanexplorer.s3.us-east-2.amazonaws.com/' \
+        'taz_url': ('https://landuse.s3.us-east-2.amazonaws.com/' \
             'run{}_simulation_output.json'.format(run_num)),
-        'parcel_url': ('https://baus-urbanexplorer.s3.us-east-2.amazonaws.com/' \
+        'parcel_url': ('https://landuse.s3.us-east-2.amazonaws.com/' \
             'run{}_parcel_output.csv'.format(run_num)),
         'timestamp': time.time(),
         'name': 'Simulation run {}, Machine {}'.format(run_num, host)
@@ -376,16 +376,14 @@ def ue_config(run_num, host):
 
     return r.text
 
-def ue_files(run_num, host):
+def ue_files(run_num):
     s3 = boto3.client('s3')
     resp1 = s3.upload_file(
         'runs/run{}_simulation_output.json'.format(run_num),
-        'baus-urbanexplorer',
-        'run{}_simulation_output.json'.format(run_num),
-        ExtraArgs={'ACL': 'public-read'})
+        'landuse',
+        'run{}_simulation_output.json'.format(run_num))
     resp2 = s3.upload_file(
         'runs/run{}_parcel_output.csv'.format(run_num),
-        'baus-urbanexplorer',
-        'run{}_parcel_output.csv'.format(run_num),
-        ExtraArgs={'ACL': 'public-read'})
+        'landuse',
+        'run{}_parcel_output.csv'.format(run_num))
     return resp1, resp2
