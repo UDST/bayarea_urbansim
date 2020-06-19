@@ -540,18 +540,6 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
         write("Current share of units which are greenfield development:\n%s" %
               norm_and_round(df.residential_units.groupby(greenfield).sum()))
 
-    # calculate Draft Blueprint jobs-housing fees collected    
-    jobs_housing_fees = policy["acct_settings"]["jobs_housing_fee_settings"]
-    if scenario in (jobs_housing_fees["jobs_housing_com_for_res_scenarios"]):
-        for key, acct in \
-                policy["acct_settings"]["jobs_housing_fee_settings"].items():
-            if key != "jobs_housing_com_for_res_scenarios":
-                county_acct = coffer.get(acct["name"])
-                for subacct, amount in county_acct.iter_subaccounts():
-                    write("Residential Subaccount from Jobs-housing Fees:\n" +
-                          str(subacct))
-                    write("Amount in Residential subaccount:\n${:,.2f}".format(amount))
-
     cmap = mapping["county_id_tm_map"]
     jobs_by_county = jobs.zone_id.map(taz_geography.county)\
         .map(cmap).value_counts()
