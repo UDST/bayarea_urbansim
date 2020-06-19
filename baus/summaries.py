@@ -297,7 +297,7 @@ def config(policy, inputs, run_number, scenario, parcels,
 def topsheet(households, jobs, buildings, parcels, zones, year,
              run_number, taz_geography, parcels_zoning_calculations,
              summary, settings, parcels_geography, abag_targets, new_tpp_id,
-             residential_units, coffer, mapping):
+             residential_units, mapping):
 
     hh_by_subregion = misc.reindex(taz_geography.subregion,
                                    households.zone_id).value_counts()
@@ -500,16 +500,6 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
         .map(cmap).value_counts()
     jobs_by_housing = jobs_by_county / households_by_county.replace(0, 1)
     write("Jobs/housing balance:\n" + str(jobs_by_housing))
-
-    # calculate vmt fees collected from office development for Draft Blueprint
-    vmt_res_accts = coffer.get("vmt_res_acct")
-    for subacct, amount in vmt_res_accts.iter_subaccounts():
-        write("Residential Subaccount from VMT Fees:\n" + str(subacct))
-        write("Amount in Residential subaccount:\n${:,.2f}".format(amount))
-    vmt_com_accts = coffer.get("vmt_com_acct")
-    for subacct, amount in vmt_com_accts.iter_subaccounts():
-        write("Commercial Subaccount from VMT Fees:\n" + str(subacct))
-        write("Amount in Commercial subaccount:\n${:,.2f}".format(amount))  
 
     for geo, typ, corr in compare_to_targets(parcels, buildings, jobs,
                                              households, abag_targets,
