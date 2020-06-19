@@ -1152,171 +1152,115 @@ acct_settings:
     # these are all county specific affordable housing bonds but right now
     # they aren't enabled in any scenarios
     # 08 27 2019 ET: they're being tested in horizon futures round 2 scenarios
+    # 06 19 2020 YW: draft blueprint sets county-level affordable housing bond account
+    # labeled with '_db', s21 Blueprint Basis, s22-23 Blueprint Plus
     alameda_bond_settings:
       name: "Alameda Affordable Housing Bond"
       sending_buildings_subaccount_def: regional
       total_amount: 30625010
+      total_amount_db: 2470820000
+      alternate_total_amount_db: 3725535000
       receiving_buildings_filter: county == 'Alameda'
       subsidize_affordable: True
-      enable_in_scenarios: ["11", "12", "15"]
+      enable_in_scenarios: ["11", "12", "15", "21", "22", "23"]
+      enable_in_scenarios_db: ["21", "22", "23"]
+      alternate_amount_scenarios_db: ["22", "23"]
 
     contra_costa_bond_settings:
       name: "Contra Costa Affordable Housing Bond"
       sending_buildings_subaccount_def: regional
       total_amount: 21150756
+      total_amount_db: 1647700000
+      alternate_total_amount_db: 2484420000
       receiving_buildings_filter: county == 'Contra Costa'
       subsidize_affordable: True
-      enable_in_scenarios: ["11", "12", "15"]
+      enable_in_scenarios: ["11", "12", "15", "21", "22", "23"]
+      enable_in_scenarios_db: ["21", "22", "23"]
+      alternate_amount_scenarios_db: ["22", "23"]
 
     marin_bond_settings:
       name: "Marin Affordable Housing Bond"
       sending_buildings_subaccount_def: regional
       total_amount: 4932118
+      total_amount_db: 341650000
+      alternate_total_amount_db: 515145000
       receiving_buildings_filter: county == 'Marin'
       subsidize_affordable: True
-      enable_in_scenarios: ["11", "12", "15"]
+      enable_in_scenarios: ["11", "12", "15", "21", "22", "23"]
+      enable_in_scenarios_db: ["21", "22", "23"]
+      alternate_amount_scenarios_db: ["22", "23"]
 
     napa_bond_settings:
       name: "Napa Affordable Housing Bond"
       sending_buildings_subaccount_def: regional
       total_amount: 2661050
+      total_amount_db: 184960000
+      alternate_total_amount_db: 278880000
       receiving_buildings_filter: county == 'Napa'
       subsidize_affordable: True
-      enable_in_scenarios: ["11", "12", "15"]
+      enable_in_scenarios: ["11", "12", "15", "21", "22", "23"]
+      enable_in_scenarios_db: ["21", "22", "23"]
+      alternate_amount_scenarios_db: ["22", "23"]
 
     san_francisco_bond_settings:
       name: "San Francisco Affordable Housing Bond"
       sending_buildings_subaccount_def: regional
       total_amount: 16310399
+      total_amount_db: 1645215000
+      alternate_total_amount_db: 2480675000
       receiving_buildings_filter: county == 'San Francisco'
       subsidize_affordable: True
-      enable_in_scenarios: ["11", "12", "15"]
+      enable_in_scenarios: ["11", "12", "15", "21", "22", "23"]
+      enable_in_scenarios_db: ["21", "22", "23"]
+      alternate_amount_scenarios_db: ["22", "23"]
 
     san_mateo_bond_settings:
       name: "San Mateo Affordable Housing Bond"
       sending_buildings_subaccount_def: regional
       total_amount: 14406372
+      total_amount_db: 1477290000
+      alternate_total_amount_db: 2227480000
       receiving_buildings_filter: county == 'San Mateo'
       subsidize_affordable: True
-      enable_in_scenarios: ["11", "12", "15"]
+      enable_in_scenarios: ["11", "12", "15", "21", "22", "23"]
+      enable_in_scenarios_db: ["21", "22", "23"]
+      alternate_amount_scenarios_db: ["22", "23"]
 
     santa_clara_bond_settings:
       name: "Santa Clara Affordable Housing Bond"
       sending_buildings_subaccount_def: regional
       total_amount: 36291210
+      total_amount_db: 3082915000
+      alternate_total_amount_db: 4648455000
       receiving_buildings_filter: county == 'Santa Clara'
       subsidize_affordable: True
-      enable_in_scenarios: ["11", "12", "15"]
+      enable_in_scenarios: ["11", "12", "15", "21", "22", "23"]
+      enable_in_scenarios_db: ["21", "22", "23"]
+      alternate_amount_scenarios_db: ["22", "23"]
 
     solano_bond_settings:
       name: "Solano Affordable Housing Bond"
       sending_buildings_subaccount_def: regional
       total_amount: 8120789
+      total_amount_db: 562040000
+      alternate_total_amount_db: 847450000
       receiving_buildings_filter: county == 'Solano'
       subsidize_affordable: True
-      enable_in_scenarios: ["11", "12", "15"]
+      enable_in_scenarios: ["11", "12", "15", "21", "22", "23"]
+      enable_in_scenarios_db: ["21", "22", "23"]
+      alternate_amount_scenarios_db: ["22", "23"]
 
     sonoma_bond_settings:
       name: "Sonoma Affordable Housing Bond"
       sending_buildings_subaccount_def: regional
       total_amount: 9451314
+      total_amount_db: 653865000
+      alternate_total_amount_db: 985905000
       receiving_buildings_filter: county == 'Sonoma'
       subsidize_affordable: True
-      enable_in_scenarios: ["11", "12", "15"]
-
-  # create lump sum accounts for draft blueprint
-  lump_sum_accounts_d_b:
-    # county-specific affordable housing bonds enabled in 
-    # scenarios 21 Blueprint Basis or scenario 22-23 Blueprint Plus
-    alameda_bond_d_b_settings:
-      name: "Alameda Affordable Housing Bond - draft blueprint"
-      sending_buildings_subaccount_def: regional
-      total_amount: 2470820000
-      alternate_total_amount: 3725535000
-      receiving_buildings_filter: county == 'Alameda'
-      subsidize_affordable: True
-      enable_in_scenarios: ["21", "22", "23"]
-      alternate_amount_scenarios: ["22", "23"]
-
-contra_costa_bond_d_b_settings:
-      name: "Contra Costa Affordable Housing Bond - draft blueprint"
-      sending_buildings_subaccount_def: regional
-      total_amount: 1647700000
-      alternate_total_amount: 2484420000
-      receiving_buildings_filter: county == 'Contra Costa'
-      subsidize_affordable: True
-      enable_in_scenarios: ["21", "22", "23"]
-      alternate_amount_scenarios: ["22", "23"]
-
-    marin_bond_d_b_settings:
-      name: "Marin Affordable Housing Bond - draft blueprint"
-      sending_buildings_subaccount_def: regional
-      total_amount: 341650000
-      alternate_total_amount: 515145000
-      receiving_buildings_filter: county == 'Marin'
-      subsidize_affordable: True
-      enable_in_scenarios: ["21", "22", "23"]
-      alternate_amount_scenarios: ["22", "23"]
-
-    napa_bond_d_b_settings:
-      name: "Napa Affordable Housing Bond - draft blueprint"
-      sending_buildings_subaccount_def: regional
-      total_amount: 184960000
-      alternate_total_amount: 278880000
-      receiving_buildings_filter: county == 'Napa'
-      subsidize_affordable: True
-      enable_in_scenarios: ["21", "22", "23"]
-      alternate_amount_scenarios: ["22", "23"]
-
-    san_francisco_bond_d_b_settings:
-      name: "San Francisco Affordable Housing Bond - draft blueprint"
-      sending_buildings_subaccount_def: regional
-      total_amount: 1645215000
-      alternate_total_amount: 2480675000
-      receiving_buildings_filter: county == 'San Francisco'
-      subsidize_affordable: True
-      enable_in_scenarios: ["21", "22", "23"]
-      alternate_amount_scenarios: ["22", "23"]
-
-    san_mateo_bond_d_b_settings:
-      name: "San Mateo Affordable Housing Bond - draft blueprint basic"
-      sending_buildings_subaccount_def: regional
-      total_amount: 1477290000
-      alternate_total_amount: 2227480000
-      receiving_buildings_filter: county == 'San Mateo'
-      subsidize_affordable: True
-      enable_in_scenarios: ["21", "22", "23"]
-      alternate_amount_scenarios: ["22", "23"]
-
-    santa_clara_bond_d_b_settings:
-      name: "Santa Clara Affordable Housing Bond - draft blueprint"
-      sending_buildings_subaccount_def: regional
-      total_amount: 3082915000
-      alternate_total_amount: 4648455000
-      receiving_buildings_filter: county == 'Santa Clara'
-      subsidize_affordable: True
-      enable_in_scenarios: ["21", "22", "23"]
-      alternate_amount_scenarios: ["22", "23"]
-
-    solano_bond_d_b_settings:
-      name: "Solano Affordable Housing Bond - draft blueprint"
-      sending_buildings_subaccount_def: regional
-      total_amount: 562040000
-      alternate_total_amount: 847450000
-      receiving_buildings_filter: county == 'Solano'
-      subsidize_affordable: True
-      enable_in_scenarios: ["21", "22", "23"]
-      alternate_amount_scenarios: ["22", "23"]
-
-    sonoma_bond_d_b_settings:
-      name: "Sonoma Affordable Housing Bond - draft blueprint"
-      sending_buildings_subaccount_def: regional
-      total_amount: 653865000
-      alternate_total_amount: 985905000
-      receiving_buildings_filter: county == 'Sonoma'
-      subsidize_affordable: True
-      enable_in_scenarios: ["21", "22", "23"]
-      alternate_amount_scenarios: ["22", "23"]
+      enable_in_scenarios: ["11", "12", "15", "21", "22", "23"]
+      enable_in_scenarios_db: ["21", "22", "23"]
+      alternate_amount_scenarios_db: ["22", "23"]
 
     # parcel tax settings
     parcel_tax_settings:
