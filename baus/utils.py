@@ -381,9 +381,11 @@ def ue_files(run_num):
     resp1 = s3.upload_file(
         'runs/run{}_simulation_output.json'.format(run_num),
         'landuse',
-        'run{}_simulation_output.json'.format(run_num))
+        'run{}_simulation_output.json'.format(run_num),
+        ExtraArgs={'ACL': 'public-read'})
     resp2 = s3.upload_file(
         'runs/run{}_parcel_output.csv'.format(run_num),
         'landuse',
-        'run{}_parcel_output.csv'.format(run_num))
+        'run{}_parcel_output.csv'.format(run_num),
+        ExtraArgs={'ACL': 'public-read'})
     return resp1, resp2
