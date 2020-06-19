@@ -419,11 +419,13 @@ def calculate_vmt_fees(policy, year, buildings, vmt_fee_categories, coffer,
             # parcels_subzone has parcel_ids in XXXXXX.99999 format by this step
             # temporarily fix them here
             county_lookup.reset_index(inplace=True)
-            county_lookup["PARCEL_ID"] = county_lookup["PARCEL_ID"].round().astype(int)
+            county_lookup = county_lookup.\
+                rename(columns={'PARCEL_ID': 'PARCELID'})
+            county_lookup["PARCELID"] = county_lookup["PARCELID"].round().astype(int)
             df = df.merge(county_lookup, 
                           left_on='parcel_id',
-                          right_on='PARCEL_ID', 
-                          how='left').drop(["PARCEL_ID"], axis=1)
+                          right_on='PARCELID', 
+                          how='left')
             # assign fee to parcels based on county
             counties3 = ['ala', 'cnc', 'mar', 'nap', 'scl', 'sfr', 'smt',
                 'sol', 'son']
@@ -469,27 +471,29 @@ def calculate_jobs_housing_fees(policy, year, buildings,
     if scenario in jobs_housing_settings["jobs_housing_com_for_res_scenarios"]:
         # assign jurisdiction to parcels
         juris_lookup = orca.get_table("parcels_geography").to_frame()
-        juris_lookup = juris_lookup[['PARCEL_ID','juris_name']]
+        juris_lookup = juris_lookup[['PARCEL_ID','juris_name']].\
+            rename(columns={'PARCEL_ID': 'PARCELID', 'juris_name': 'jurisname'})
 
         county_lookup = orca.get_table("parcels_subzone").to_frame().reset_index()
-        county_lookup = county_lookup[['PARCEL_ID','county']]
-        county_lookup["PARCEL_ID"] = county_lookup["PARCEL_ID"].round().astype(int)
+        county_lookup = county_lookup[['PARCEL_ID','county']].\
+            rename(columns={'PARCEL_ID': 'PARCELID', 'county': 'county3'})
+        county_lookup["PARCELID"] = county_lookup["PARCELID"].round().astype(int)
         df = df.merge(juris_lookup, 
                       left_on = 'parcel_id', 
-                      right_on = 'PARCEL_ID',
+                      right_on = 'PARCELID',
                       how = 'left').merge(county_lookup,
-                                          on = 'PARCEL_ID',
+                                          on = 'PARCELID',
                                           how = 'left')
-        df.columns = list(df)[:-1] + ['county']
+
         # calculate jobs-housing fees for each county's acct
         for key, acct in jobs_housing_settings.items():
             if key != "jobs_housing_com_for_res_scenarios":
-                df_sub = df.loc[df.county == acct["county_name"]]
+                df_sub = df.loc[df.county3 == acct["county_name"]]
                 print("Applying jobs-housing fees to %d commerical sqft" %
                       df_sub.non_residential_sqft.sum())
                 total_fees = 0
                 df_sub["com_for_res_jobs_housing_fees"] = \
-                    df_sub.juris_name.map(
+                    df_sub.jurisname.map(
                     acct["jobs_housing_fee_com_for_res_amounts"])
                 total_fees += (df_sub.com_for_res_jobs_housing_fees *\
                     df_sub.non_residential_sqft).sum()
