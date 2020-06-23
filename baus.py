@@ -89,6 +89,7 @@ if options.out_year:
 
 if options.scenario:
     orca.add_injectable("scenario", options.scenario)
+    SLACK = MAP = True
 
 SKIP_BASE_YEAR = options.skip_base_year
 
@@ -118,13 +119,10 @@ if LOGS:
 if RANDOM_SEED:
     np.random.seed(12)
 
-MAPS = True
-host = socket.gethostname()
-
 if SLACK:
     from slacker import Slacker
     slack = Slacker(os.environ["SLACK_TOKEN"])
-    
+    host = socket.gethostname()
 
 
 def get_simulation_models(SCENARIO):
