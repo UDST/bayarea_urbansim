@@ -464,7 +464,7 @@ if SLACK and MODE == "simulation":
             as_user=True)
     else:
         slack.chat.post_message(
-            '#surbansim_sim_update', "No differences with reference run.", as_user=True)
+            '#urbansim_sim_update', "No differences with reference run.", as_user=True)
 
 if S3:
     os.system('ls runs/run%d_* ' % run_num +
