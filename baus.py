@@ -383,7 +383,7 @@ print "Current Scenario : ", orca.get_injectable('scenario').rstrip()
 
 if SLACK:
     slack.chat.post_message(
-        '#sim_updates',
+        '#urbansim_sim_update',
         'Starting simulation %d on host %s (scenario: %s)' %
         (run_num, host, SCENARIO), as_user=True)
 
@@ -395,7 +395,7 @@ except Exception as e:
     print traceback.print_exc()
     if SLACK:
         slack.chat.post_message(
-            '#sim_updates',
+            '#urbansim_sim_update',
             'DANG!  Simulation failed for %d on host %s'
             % (run_num, host), as_user=True)
     else:
@@ -410,7 +410,7 @@ if MAPS and 'travel_model_output' in get_simulation_models(SCENARIO):
 
 if SLACK:
     slack.chat.post_message(
-        '#sim_updates',
+        '#urbansim_sim_update',
         'Completed simulation %d on host %s' % (run_num, host), as_user=True)
 
     """slack.chat.post_message(
@@ -457,14 +457,14 @@ if SLACK and MODE == "simulation":
     if len(summary.strip()) != 0:
         sum_lines = len(summary.strip().split("\n"))
         slack.chat.post_message(
-            '#sim_updates',
+            '#urbansim_sim_update',
             ('Difference report is available at ' +
              'http://urbanforecast.com/runs/run%d_difference_report.log ' +
              '- %d line(s)') % (run_num, sum_lines),
             as_user=True)
     else:
         slack.chat.post_message(
-            '#sim_updates', "No differences with reference run.", as_user=True)
+            '#surbansim_sim_update', "No differences with reference run.", as_user=True)
 
 if S3:
     os.system('ls runs/run%d_* ' % run_num +
