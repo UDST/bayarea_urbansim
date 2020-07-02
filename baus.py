@@ -309,7 +309,7 @@ def run_models(MODE, SCENARIO):
                 "hazards_slr_summary",
                 "hazards_eq_summary",
                 "diagnostic_output",
-                # "config"
+                "config"
 
             ], iter_vars=[IN_YEAR])
 
