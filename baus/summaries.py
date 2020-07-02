@@ -169,10 +169,36 @@ def config(policy, inputs, run_number, scenario, parcels,
     policy_activated(policy_loc, policy_nm, scenario)
     write("")
 
+    write("Draft Blueprint POLICIES")
+    write("")
+
+    # Reduce housing development cost
+    policy_loc = (policy["acct_settings"]
+                  ["profitability_adjustment_policies"]
+                  ["reduce_housing_costs_tier_1_market_rate_developer"])
+    policy_nm = "Reduce Housing Cost Tier 1 for Market-rate Developers"
+    policy_activated(policy_loc, policy_nm, scenario)
+
+    policy_loc = (policy["acct_settings"]
+                  ["profitability_adjustment_policies"]
+                  ["reduce_housing_costs_tier_2_market_rate_developer"])
+    policy_nm = "Reduce Housing Cost Tier 2 for Market-rate Developers"
+    policy_activated(policy_loc, policy_nm, scenario)
+    write("")
+
+    policy_loc = (policy["acct_settings"]
+                  ["profitability_adjustment_policies"]
+                  ["reduce_housing_costs_tier_3_market_rate_developer"])
+    policy_nm = "Reduce Housing Cost Tier 3 for Market-rate Developers"
+    policy_activated(policy_loc, policy_nm, scenario)
+    write("")
+
     write("FUTURES ROUND 2 POLICIES")
     write("")
 
     # development projects list
+    write("Development projects list used is %s" %
+          orca.get_injectable("dev_proj_file"))
     scen = "scen"+scenario
     if scen in development_projects.columns:
         write("Scenario is in development projects list")
@@ -199,6 +225,10 @@ def config(policy, inputs, run_number, scenario, parcels,
         fr1 = str(int(scenario) - 10)
         for item in s[fr1]:
             write("Inclusionary rates are FR1: %d cities are set to %.2f" %
+                  (len(item["values"]), item["amount"]))
+    elif scenario in policy["inclusionary_d_b_enable"]:
+        for item in s[scenario]:
+            write("Inclusionary rates for %d pba50chcat are set to %.2f" %
                   (len(item["values"]), item["amount"]))
     elif scenario in s.keys():
         for item in s[scenario]:
@@ -279,16 +309,33 @@ def config(policy, inputs, run_number, scenario, parcels,
     counter = 0
     counties = ["alameda", "contra_costa", "marin", "napa", "san_mateo",
                 "san_francisco", "santa_clara", "solano", "sonoma"]
-    for county in counties:
-        policy_loc = (policy["acct_settings"]["lump_sum_accounts"]
-                      [county+"_bond_settings"]["enable_in_scenarios"])
-        if scenario in policy_loc:
-            counter += 1
+    if scenario not in ["20", "21", "22", "23"]:
+        for county in counties:
+            policy_loc = (policy["acct_settings"]["lump_sum_accounts"]
+                        [county+"_bond_settings"]["enable_in_scenarios"])
+            if scenario in policy_loc:
+                counter += 1
+    elif scenario in ["20", "21", "22", "23"]:
+        for county in counties:
+            policy_loc = (policy["acct_settings"]["lump_sum_accounts_d_b"]
+                          [county+"_bond_d_b_settings"]["enable_in_scenarios"])
+            if scenario in policy_loc:
+                counter += 1
     write("Affordable housing bonds are activated for %d counties" % counter)
 
     # workplace preferences are in the development projects list
     # e-commerce should be embedded in the controls
     # telecommuting should be handled in the TM
+
+    # jobs-housing fees
+    jobs_housing_fees = policy["acct_settings"]["jobs_housing_fee_settings"]
+    if scenario in (jobs_housing_fees["jobs_housing_com_for_res_scenarios"]):
+        counter = 0
+        for key, acct in \
+                policy["acct_settings"]["jobs_housing_fee_settings"].items():
+            if key != "jobs_housing_com_for_res_scenarios":
+                counter += 1
+        write("Jobs-housing fees are activated for %d counties" % counter)
 
     f.close()
 
@@ -908,7 +955,7 @@ def building_summary(parcels, run_number, year,
                      buildings,
                      initial_year, final_year):
 
-    if year not in [initial_year, final_year]:
+    if year not in [initial_year, 2015, final_year]:
         return
 
     df = orca.merge_tables(
@@ -1011,23 +1058,25 @@ def travel_model_output(parcels, households, jobs, buildings,
         # only summarize for years which are multiples of 5
         return
 
+    parcels = parcels.to_frame()
+    parcels["zone_id_x"] = parcels.zone_id
+    orca.add_table('parcels', parcels)
+    parcels = orca.get_table("parcels")
+
     households_df = orca.merge_tables('households',
                                       [parcels, buildings, households],
-                                      columns=['zone_id',
+                                      columns=['zone_id', 'zone_id_x',
                                                'base_income_quartile',
                                                'income', 'persons',
                                                'maz_id'])
+
+    households_df["zone_id"] = households_df.zone_id_x
 
     taz_df = pd.DataFrame(index=zones.index)
 
     taz_df["sd"] = taz_geography.superdistrict
     taz_df["zone"] = zones.index
     taz_df["county"] = taz_geography.county
-
-    parcels = parcels.to_frame()
-    parcels["zone_id_x"] = parcels.zone_id
-    orca.add_table('parcels', parcels)
-    parcels = orca.get_table("parcels")
 
     jobs_df = orca.merge_tables(
         'jobs',
@@ -1046,6 +1095,10 @@ def travel_model_output(parcels, households, jobs, buildings,
     # however on lumodel, these duplicate columns don't get created in the
     # merge so a copy of zone_id (zone_id_x) is added to parcels to ensure
     # it doesn't get dropped
+
+    # the same has now been repeated for households (as described with lumodel)
+    # no duplicate zone_ids emerged to use, so one was created from parcels
+    # a taz column existed, but was not consistently the same as zone_id
 
     jobs_df["zone_id"] = jobs_df.zone_id_x
 
