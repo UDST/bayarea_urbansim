@@ -71,13 +71,13 @@ def lump_sum_accounts(policy, year, buildings, coffer,
                 acct["alternate_buildings_filter"]
             amt = float(acct["total_amount"])
 
-        if "enable_in_scenarios_db" in acct and \
-                scenario in acct["enable_in_scenarios_db"]:
-            amt = float(acct["total_amount_db"])
-
-        if "alternate_amount_scenarios_db" in acct and \
-                scenario in acct["alternate_amount_scenarios_db"]:
+        elif "alternate_amount_scenarios_db" in acct and \
+                  scenario in acct["alternate_amount_scenarios_db"]:
             amt = float(acct["alternate_total_amount_db"])
+
+        elif "enable_in_scenarios_db" in acct and \
+                  scenario in acct["enable_in_scenarios_db"]:
+            amt = float(acct["total_amount_db"])
         
         else:
             amt = float(acct["total_amount"])
