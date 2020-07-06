@@ -1,10 +1,10 @@
 ## Large Files (not stored on GitHub)
 
 ### 02_01_2016_parcels_geography.csv
-Lookup toble from parcel's geom_id to ids for juris, pda, tpp, exp (expansion area), opp_id (catalyst site), and a concatenation of these used to join to the zoning_mod tables below. Also has perfoot, perfarea, and urbanized/ 
+Lookup toble from parcel's geom_id to ids for juris, pda, tpp, exp (expansion area), opp_id (catalyst site), and a concatenation of these used to join to the zoning_mod tables below. Also has perfoot, perfarea, and urbanized/
 
 ### 2018_10_17_parcel_to_taz1454sub.csv
-Lookup table from parcel's parcel_id to 
+Lookup table from parcel's parcel_id to
 
 ### 2015_12_21_zoning_parcels.csv
 Lookup table from parcel's geom_id to zoning_id, some zoning area info and a nodev flag which seems all zeros--IS THIS FLAG IN USE?
@@ -23,6 +23,10 @@ Commercial data for nores hedonic estimation
 
 ### 2015_06_01_osm_bayarea4326.h5
 Street net
+
+### 2020_0506_1650_development_projects.csv
+
+This is the list of projects that have happened since the base data, or that we think will happen in the future.  It is the development pipeline.  This file tends to have more attributes than we actually use in UrbanSim.
 
 ------------------
 
@@ -48,13 +52,9 @@ This contains our expected base year control totals by taz - number of units, va
 
 For some reason the current parcels_geography file uses census id instead of name.  This is the file that maps those ids to names so we can use it within UrbanSim.
 
-### deed_restricted_zone_totals.csv	
+### deed_restricted_zone_totals.csv
 
 This is the number of deed restricted units per taz.  We don't have a great idea of exactly where those units are, but we have an aggregate idea, so we usually do a random assignment within that taz.
-
-### development_projects.csv	
-
-This is the list of projects that have happened since the base data, or that we think will happen in the future.  It is the development pipeline.  This file tends to have more attributes than we actually use in UrbanSim.
 
 ### employment_controls.csv
 
@@ -62,7 +62,7 @@ The number of jobs by sector for 5 year increments over the duration of the Plan
 
 ### employment_relocation_rates.csv
 
-Relocation rates by sector by zone so we can e.g. leave City Hall populated by civic sector jobs. 
+Relocation rates by sector by zone so we can e.g. leave City Hall populated by civic sector jobs.
 
 ### household_building_id_overrides.csv
 
@@ -132,7 +132,7 @@ This is closely related to regional_controls.csv.  Both are only used in the sum
 
 The zoning lookup is the current, BASELINE zoning for each jurisdiction, and can be assigned to parcels.  The lookup is identified by the unique id ("id" column), has the city name, city id, and the name of the zoning.
 
-The active attributes are max_dua, max_far, and max_height, all of which must be respected by each development, so this means the most constraining constraint has the power.  dua is "Dwelling Units per Acre", far is "Floor Area Ratio" (ratio of square footage in building to square footage on parcel), and height is... height. 
+The active attributes are max_dua, max_far, and max_height, all of which must be respected by each development, so this means the most constraining constraint has the power.  dua is "Dwelling Units per Acre", far is "Floor Area Ratio" (ratio of square footage in building to square footage on parcel), and height is... height.
 
 In some cases there is an equivlance between dua and far if they are not both present.  This is tricky, and requires knowing things like average unit sizes, as well as net to gross factors for the unit square footage.  We make our best guesses on this, but this logic can be configured.  There also must be an equivalance between far and height, which generally is made by taking far and multiplying is by a net to gross building footprint factor (e.g. a calculation to figure out the height of a building with FAR 4.0, when the footprint of the building takes up 80% or so of the parcel, when stories are all 12 feet, and where partial stories count as full stories in terms of height).  As you are thinking at this point, we are bad building architects, but we're making rough approximations here in order to allocate built space in the region and this feels like the appropriate level of detail.
 
@@ -140,7 +140,7 @@ The other columns are building types, and the values are 0 or 1 to indicate whet
 
 max_du_per_parcel is not currently used because we don't necessarily trust our data, but in theory is used to say, e.g., that only a single unit can be built on each parcel.
 
-Note that a blank value in the csv means that there is no constraint for that attribute and the other constraints will be used.  If there is no constraint for any of far, height, and dua, a building will NOT be built. 
+Note that a blank value in the csv means that there is no constraint for that attribute and the other constraints will be used.  If there is no constraint for any of far, height, and dua, a building will NOT be built.
 
 *By convention a 0 in dua, far, and height is discouraged.  It is preferred to use the "building type not allowed" columns for this*
 

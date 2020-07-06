@@ -40,7 +40,9 @@ def test_inclusionary_housing_settings():
         }]
     }
     out = datasources.inclusionary_housing_settings({
-        "inclusionary_housing_settings": inclusionary_housing_settings
+        "inclusionary_housing_settings": inclusionary_housing_settings,
+        "inclusionary_fr2_enable": "foo",
+        "inclusionary_d_b_enable": "foo"
     }, "foo")
 
     assert out["Berkeley"] == .2
