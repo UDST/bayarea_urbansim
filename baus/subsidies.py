@@ -42,15 +42,9 @@ def coffer(policy, scenario):
         "vmt_com_acct":  accounts.Account("vmt_com_acct")
     }
 
-    if scenario not in ["20", "21", "22", "23"]:
-        for key, acct in \
-                policy["acct_settings"]["lump_sum_accounts"].items():
-            d[acct["name"]] = accounts.Account(acct["name"])
-
-    elif scenario in ["20", "21", "22", "23"]:
-        for key, acct in \
-                policy["acct_settings"]["lump_sum_accounts_d_b"].items():
-            d[acct["name"]] = accounts.Account(acct["name"])
+    for key, acct in \
+            policy["acct_settings"]["lump_sum_accounts"].items():
+        d[acct["name"]] = accounts.Account(acct["name"])
 
     if scenario in policy["acct_settings"]["jobs_housing_fee_settings"]\
             ["jobs_housing_com_for_res_scenarios"]:
@@ -71,55 +65,39 @@ def acct_settings(policy):
 def lump_sum_accounts(policy, year, buildings, coffer,
                       summary, years_per_iter, scenario):
 
-    if scenario not in ["20", "21", "22", "23"]:
-        s = policy["acct_settings"]["lump_sum_accounts"]
+    s = policy["acct_settings"]["lump_sum_accounts"]
 
-        for key, acct in s.items():
+    for key, acct in s.items():
 
-            if scenario not in acct["enable_in_scenarios"]:
-                continue
+        if scenario not in acct["enable_in_scenarios"]:
+            continue
 
-            if "alternate_geography_scenarios" in acct and \
-                    scenario in acct["alternate_geography_scenarios"]:
-                acct["receiving_buildings_filter"] = \
-                    acct["alternate_buildings_filter"]
+        if "alternate_geography_scenarios" in acct and \
+                scenario in acct["alternate_geography_scenarios"]:
+            acct["receiving_buildings_filter"] = \
+                acct["alternate_buildings_filter"]
 
+        if "default_amount_scenarios_db" in acct and \
+                  scenario in acct["default_amount_scenarios_db"]:
+            amt = float(acct["total_amount_db"])
+
+        elif "alternate_amount_scenarios_db" in acct and \
+                  scenario in acct["alternate_amount_scenarios_db"]:
+            amt = float(acct["alternate_total_amount_db"])
+
+        else:
             amt = float(acct["total_amount"])
+        
+        amt *= years_per_iter
 
-            amt *= years_per_iter
-
-            metadata = {
-                "description": "%s subsidies" % acct["name"],
-                "year": year
-            }
-            # the subaccount is meaningless here (it's a regional account) -
-            # but the subaccount number is referred to below
-            coffer[acct["name"]].add_transaction(amt, subaccount=1,
-                                                metadata=metadata)
-
-    elif scenario in ["20", "21", "22", "23"]:
-
-        s = policy["acct_settings"]["lump_sum_accounts_d_b"]
-
-        for key, acct in s.items():
-
-            if scenario not in acct["enable_in_scenarios"]:
-                continue
-
-            if scenario in acct["alternate_amount_scenarios"]:
-                amt = float(acct["alternate_total_amount"])
-
-            amt *= years_per_iter
-
-            metadata = {
-                "description": "%s subsidies" % acct["name"],
-                "year": year
-            }
-            print(metadata)
-            # the subaccount is meaningless here (it's a regional account) -
-            # but the subaccount number is referred to below
-            coffer[acct["name"]].add_transaction(amt, subaccount=1,
-                                                 metadata=metadata)
+        metadata = {
+            "description": "%s subsidies" % acct["name"],
+            "year": year
+        }
+        # the subaccount is meaningless here (it's a regional account) -
+        # but the subaccount number is referred to below
+        coffer[acct["name"]].add_transaction(amt, subaccount=1,
+                                            metadata=metadata)
 
 
 # this will compute the reduction in revenue from a project due to
@@ -963,7 +941,7 @@ def subsidized_residential_developer_lump_sum_accts(
         policy, summary, coffer, form_to_btype_func,
         scenario, settings):
 
-    for key, acct in policy["acct_settings"]["lump_sum_accounts_d_b"].items():
+    for key, acct in policy["acct_settings"]["lump_sum_accounts"].items():
 
         # quick return in order to save performance time
         if scenario not in acct["enable_in_scenarios"]:
