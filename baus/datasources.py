@@ -423,6 +423,11 @@ def zoning_scenario(parcels_geography, scenario, policy, mapping):
     scenario_zoning = pd.read_csv(
         os.path.join(misc.data_dir(), 'zoning_mods_%s.csv' % scenario))
 
+    if "ppa_id" in scenario_zoning.columns:
+        orca.add_injectable("ppa", "are included")
+    else:
+        orca.add_injectable("ppa", "are not included")
+
     for k in mapping["building_type_map"].keys():
         scenario_zoning[k] = np.nan
 
