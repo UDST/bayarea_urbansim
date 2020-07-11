@@ -434,11 +434,31 @@ def scheduled_development_events(buildings, development_projects,
     new_buildings["vmt_nonres_cat"] = misc.reindex(
         vmt_fee_categories.nonres_cat, new_buildings.zone_id)
     del new_buildings["zone_id"]
-    new_buildings["pda"] = parcels_geography.pda_id.loc[
+
+    # add PBA40 geographies
+    new_buildings["pda_pda40"] = parcels_geography.pda_id_pda40.loc[
         new_buildings.parcel_id].values
+
+    # add Horizon geographies
     new_buildings["juris_trich"] = parcels_geography.juris_trich.loc[
         new_buildings.parcel_id].values
 
+    # add Draft Blueprint geographies
+    new_buildings["pda_pda50"] = parcels_geography.pda_id_pda50.loc[
+        new_buildings.parcel_id].values
+    new_buildings["tra_id"] = parcels_geography.tra_id.loc[
+        new_buildings.parcel_id].values
+    new_buildings["ppa_id"] = parcels_geography.ppa_id.loc[
+        new_buildings.parcel_id].values
+    new_buildings["sesit_id"] = parcels_geography.sesit_id.loc[
+        new_buildings.parcel_id].values
+    new_buildings["juris_tra"] = parcels_geography.juris_tra.loc[
+        new_buildings.parcel_id].values
+    new_buildings["juris_ppa"] = parcels_geography.juris_ppa.loc[
+        new_buildings.parcel_id].values
+    new_buildings["juris_sesit"] = parcels_geography.juris_sesit.loc[
+        new_buildings.parcel_id].values
+    
     summary.add_parcel_output(new_buildings)
 
 
