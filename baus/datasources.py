@@ -487,9 +487,9 @@ def parcel_rejections():
 
 
 @orca.table(cache=True)
-def parcels_geography(parcels, scenario, settings):
+def parcels_geography(parcels, scenario, policy, settings):
     df = pd.read_csv(
-        os.path.join(misc.data_dir(), "2020_04_17_parcels_geography.csv"),
+        os.path.join(misc.data_dir(), "2020_07_10_parcels_geography.csv"),
         index_col="geom_id")
     df = geom_id_to_parcel_id(df, parcels)
 
@@ -511,8 +511,17 @@ def parcels_geography(parcels, scenario, settings):
 
     df["pda_id"] = df.pda_id.str.lower()
 
-    # danville wasn't supposed to be a pda
-    df["pda_id"] = df.pda_id.replace("dan1", np.nan)
+    if scenario not in policy["geographies_db_enable"]:
+        # danville wasn't supposed to be a pda
+        df["pda_id"] = df.pda_id.replace("dan1", np.nan)
+
+    # Add Draft Blueprint geographies: TRAs, PPA, sesit
+    df["tra_id"] = df.tra_id.str.lower()
+    df['juris_tra'] = df.juris_id + df.tra_id
+    df["ppa_id"] = df.ppa_id.str.lower()
+    df['juris_ppa'] = df.juris_id + df.ppa_id
+    df["sesit_id"] = df.sesit_id.str.lower()
+    df['juris_sesit'] = df.juris_id + df.sesit_id
 
     return df
 
