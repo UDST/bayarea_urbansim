@@ -409,8 +409,13 @@ def fees_per_sqft(parcels, policy, scenario):
 
 
 @orca.column('parcels', cache=True)
-def pda(parcels, parcels_geography):
-    return parcels_geography.pda_id.reindex(parcels.index)
+def pda_pba40(parcels, parcels_geography):
+    return parcels_geography.pda_id_pba40.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def pda_pba50(parcels, parcels_geography):
+    return parcels_geography.pda_id_pba50.reindex(parcels.index)
 
 
 @orca.column('parcels', cache=True)
@@ -426,6 +431,36 @@ def cat_id(parcels, parcels_geography):
 @orca.column('parcels', cache=True)
 def juris_trich(parcels, parcels_geography):
     return parcels_geography.juris_trich.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def tra_id(parcels, parcels_geography):
+    return parcels_geography.tra_id.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def juris_tra(parcels, parcels_geography):
+    return parcels_geography.juris_tra.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def sesit_id(parcels, parcels_geography):
+    return parcels_geography.sesit_id.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def juris_sesit(parcels, parcels_geography):
+    return parcels_geography.juris_sesit.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def ppa_id(parcels, parcels_geography):
+    return parcels_geography.ppa_id.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def juris_ppa(parcels, parcels_geography):
+    return parcels_geography.juris_ppa.reindex(parcels.index)
 
 
 @orca.column('parcels', cache=True)
