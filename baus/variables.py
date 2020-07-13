@@ -819,8 +819,12 @@ def cost_shifters(parcels, settings):
 
 
 @orca.column('parcels', cache=True)
-def price_shifters(parcels, settings):
-    return parcels.pda.map(settings["pda_price_shifters"]).fillna(1.0)
+def price_shifters(parcels, settings, scenario, policy):
+    if scenario in policy["geographies_pba40_enable"] or \
+            scenario in policy["geographies_horizon_enable"] :
+        return parcels.pda_pba40.map(settings["pda_price_shifters"]).fillna(1.0)
+    elif scenario in policy["geographies_db_enable"]:
+        return parcels.pda_pba50.map(settings["pda_price_shifters"]).fillna(1.0)
 
 
 @orca.column('parcels', cache=True)
