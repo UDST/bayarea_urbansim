@@ -436,7 +436,7 @@ def scheduled_development_events(buildings, development_projects,
     del new_buildings["zone_id"]
 
     # add PBA40 geographies
-    new_buildings["pda_pda40"] = parcels_geography.pda_id_pda40.loc[
+    new_buildings["pda_pba40"] = parcels_geography.pda_id_pba40.loc[
         new_buildings.parcel_id].values
 
     # add Horizon geographies
@@ -444,7 +444,7 @@ def scheduled_development_events(buildings, development_projects,
         new_buildings.parcel_id].values
 
     # add Draft Blueprint geographies
-    new_buildings["pda_pda50"] = parcels_geography.pda_id_pda50.loc[
+    new_buildings["pda_pba50"] = parcels_geography.pda_id_pba50.loc[
         new_buildings.parcel_id].values
     new_buildings["tra_id"] = parcels_geography.tra_id.loc[
         new_buildings.parcel_id].values
