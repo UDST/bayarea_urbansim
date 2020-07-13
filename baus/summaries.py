@@ -395,7 +395,7 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
         hh_by_inpda_pba40 = households_df.pda_id_pba40.notnull().value_counts()
 
         hhincome_by_inpda_pba40 = households_df.income.groupby(
-            households_df.inpda_pba40.notnull()).mean()
+            households_df.pda_id_pba40.notnull()).mean()
         # round to nearest 100s
         hhincome_by_inpda_pba40 = (hhincome_by_inpda_pba40/100).round()*100
 
@@ -413,7 +413,7 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
         hh_by_inpda_pba50 = households_df.pda_id_pba50.notnull().value_counts()
 
         hhincome_by_inpda_pba50 = households_df.income.groupby(
-            households_df.inpda_pba50.notnull()).mean()
+            households_df.pda_id_pba50.notnull()).mean()
         # round to nearest 100s
         hhincome_by_inpda_pba50 = (hhincome_by_inpda_pba50/100).round()*100
 
@@ -437,7 +437,7 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
     jobs_df = orca.merge_tables(
         'jobs',
         [parcels, buildings, jobs],
-        columns=['pda_pba40', 'pda_pba50'])
+        columns=['pda_pba40', 'pda_pba50', 'trich_id', 'tra_id'])
 
     if settings["use_new_tpp_id_in_topsheet"]:
         jobs_df["tpp_id"] = misc.reindex(new_tpp_id.tpp_id,
@@ -447,8 +447,12 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
         jobs_by_inpda_pba40 = jobs_df.pda_pba40.notnull().value_counts()
         jobs_by_intpp = jobs_df.tpp_id.notnull().value_counts()
 
+    if scenario in policy["geographies_horizon_enable"]:
+        jobs_by_intrich = jobs_df.trich_id.notnull().value_counts()
+
     if scenario in policy["geographies_db_enable"]:
         jobs_by_inpda_pba50 = jobs_df.pda_pba50.notnull().value_counts()
+        jobs_by_intra = jobs_df.tra_id.notnull().value_counts()
 
     capacity = parcels_zoning_calculations.\
         zoned_du_underbuild_nodev.groupby(parcels.subregion).sum()
@@ -459,8 +463,8 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
             orca.add_injectable("base_year_measures", {
                 "hh_by_subregion": hh_by_subregion,
                 "jobs_by_subregion": jobs_by_subregion,
-                "hh_by_inpda_pba40": hh_by_inpda,
-                "jobs_by_inpda_pba40": jobs_by_inpda,
+                "hh_by_inpda_pba40": hh_by_inpda_pba40,
+                "jobs_by_inpda_pba40": jobs_by_inpda_pba40,
                 "hh_by_intpp": hh_by_intpp,
                 "jobs_by_intpp": jobs_by_intpp,
                 "hhincome_by_intpp": hhincome_by_intpp,
@@ -477,13 +481,12 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
             })
         if scenario in policy["geographies_db_enable"]:
             orca.add_injectable("base_year_measures", {
-            orca.add_injectable("base_year_measures", {
                 "hh_by_subregion": hh_by_subregion,
                 "jobs_by_subregion": jobs_by_subregion,
-                "hh_by_inpda_pba50": hh_by_inpda_db,
+                "hh_by_inpda_pba50": hh_by_inpda_pba50,
                 "hh_by_intra": hh_by_intra,
                 "hh_by_insesit": hh_by_insesit,
-                "jobs_by_inpda_pba50": jobs_by_inpda_db,
+                "jobs_by_inpda_pba50": jobs_by_inpda_pba50,
                 "jobs_by_intra": jobs_by_intra,
                 "hhincome_by_intra": hhincome_by_intra,
                 "hhincome_by_insesit": hhincome_by_insesit,
