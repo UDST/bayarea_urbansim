@@ -841,7 +841,7 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
 
 @orca.step()
 def subsidized_residential_feasibility(
-        parcels, settings,
+        parcels, settings, scenario, policy,
         add_extra_columns_func, parcel_sales_price_sqft_func,
         parcel_is_allowed_func, parcels_geography):
 
