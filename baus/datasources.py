@@ -509,13 +509,12 @@ def parcels_geography(parcels, scenario, policy, settings):
 
     df['juris_trich'] = df.juris_id + df.trich_id
 
-    df["pda_id"] = df.pda_id.str.lower()
+    df["pda_id_pba40"] = df.pda_id_pba40.str.lower()
+    # danville wasn't supposed to be a pda
+    df["pda_id_pba40"] = df.pda_id_pba40.replace("dan1", np.nan)
 
-    if scenario not in policy["geographies_db_enable"]:
-        # danville wasn't supposed to be a pda
-        df["pda_id"] = df.pda_id.replace("dan1", np.nan)
-
-    # Add Draft Blueprint geographies: TRAs, PPA, sesit
+    # Add Draft Blueprint geographies: PDA, TRA, PPA, sesit
+    df["pad_id_pba50"] = df.pda_id_pba50.str.lower()
     df["tra_id"] = df.tra_id.str.lower()
     df['juris_tra'] = df.juris_id + df.tra_id
     df["ppa_id"] = df.ppa_id.str.lower()
