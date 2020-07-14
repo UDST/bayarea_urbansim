@@ -148,7 +148,7 @@ def inclusionary_housing_settings(policy, scenario):
             # this is a list of cities with an inclusionary rate that is the
             # same for all the cities in the list
             print("Setting inclusionary rates for %d cities to %.2f" %
-                  (len(item["values"]), item["amount"]))
+                (len(item["values"]), item["amount"]))
             # this is a list of inclusionary rates and the cities they apply
             # to - need tro turn it in a map of city names to rates
             for juris in item["values"]:
@@ -290,8 +290,7 @@ def costar(store, parcels):
 
 @orca.table(cache=True)
 def zoning_lookup():
-    return pd.read_csv(os.path.join(misc.data_dir(),
-                       "2020_06_22_zoning_lookup_hybrid_pba50.csv"),
+    return pd.read_csv(os.path.join(misc.data_dir(), "2020_06_22_zoning_lookup_hybrid_pba50.csv"),
                        index_col='id')
 
 
@@ -423,11 +422,6 @@ def zoning_scenario(parcels_geography, scenario, policy, mapping):
 
     scenario_zoning = pd.read_csv(
         os.path.join(misc.data_dir(), 'zoning_mods_%s.csv' % scenario))
-
-    if "ppa_id" in scenario_zoning.columns:
-        orca.add_injectable("ppa", "are included")
-    else:
-        orca.add_injectable("ppa", "are not included")
 
     for k in mapping["building_type_map"].keys():
         scenario_zoning[k] = np.nan
