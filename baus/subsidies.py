@@ -46,12 +46,12 @@ def coffer(policy, scenario):
             policy["acct_settings"]["lump_sum_accounts"].items():
         d[acct["name"]] = accounts.Account(acct["name"])
 
-    if scenario in policy["acct_settings"]["jobs_housing_fee_settings"]\
-            ["jobs_housing_com_for_res_scenarios"]:
+    if scenario in (policy["acct_settings"]["jobs_housing_fee_settings"]
+                    ["jobs_housing_com_for_res_scenarios"]):
         for key, acct in \
                 policy["acct_settings"]["jobs_housing_fee_settings"].items():
             if key != "jobs_housing_com_for_res_scenarios":
-                d[acct["name"]] = accounts.Account(acct["name"]) 
+                d[acct["name"]] = accounts.Account(acct["name"])
 
     return d
 
@@ -78,16 +78,16 @@ def lump_sum_accounts(policy, year, buildings, coffer,
                 acct["alternate_buildings_filter"]
 
         if "default_amount_scenarios_db" in acct and \
-                  scenario in acct["default_amount_scenarios_db"]:
+                scenario in acct["default_amount_scenarios_db"]:
             amt = float(acct["total_amount_db"])
 
         elif "alternate_amount_scenarios_db" in acct and \
-                  scenario in acct["alternate_amount_scenarios_db"]:
+                scenario in acct["alternate_amount_scenarios_db"]:
             amt = float(acct["alternate_total_amount_db"])
 
         else:
             amt = float(acct["total_amount"])
-        
+
         amt *= years_per_iter
 
         metadata = {
@@ -97,7 +97,7 @@ def lump_sum_accounts(policy, year, buildings, coffer,
         # the subaccount is meaningless here (it's a regional account) -
         # but the subaccount number is referred to below
         coffer[acct["name"]].add_transaction(amt, subaccount=1,
-                                            metadata=metadata)
+                                             metadata=metadata)
 
 
 # this will compute the reduction in revenue from a project due to
@@ -129,8 +129,8 @@ def inclusionary_housing_revenue_reduction(feasibility, units):
         AMI = h.groupby(h.pba50chcat).income.quantile(.5)
     else:
         h = orca.merge_tables("households",
-                            [households, buildings, parcels_geography],
-                            columns=["juris_name", "income"])
+                              [households, buildings, parcels_geography],
+                              columns=["juris_name", "income"])
         AMI = h.groupby(h.juris_name).income.quantile(.5)
 
     # per Aksel Olsen (@akselx)
@@ -394,21 +394,23 @@ def calculate_vmt_fees(policy, year, buildings, vmt_fee_categories, coffer,
             county_lookup = orca.get_table("parcels_subzone").to_frame()
             county_lookup = county_lookup[["county"]].\
                 rename(columns={'county': 'county3'})
-            # parcels_subzone has parcel_ids in XXXXXX.99999 format by this step
-            # temporarily fix them here
+            # parcels_subzone has parcel_ids in XXXXXX.99999 format
+            # by this step, temporarily fix them here
             county_lookup.reset_index(inplace=True)
             county_lookup = county_lookup.\
                 rename(columns={'PARCEL_ID': 'PARCELID'})
-            county_lookup["PARCELID"] = county_lookup["PARCELID"].round().astype(int)
-            df = df.merge(county_lookup, 
+            county_lookup["PARCELID"] = county_lookup["PARCELID"].\
+                round().astype(int)
+            df = df.merge(county_lookup,
                           left_on='parcel_id',
-                          right_on='PARCELID', 
+                          right_on='PARCELID',
                           how='left')
             # assign fee to parcels based on county
             counties3 = ['ala', 'cnc', 'mar', 'nap', 'scl', 'sfr', 'smt',
-                'sol', 'son']
+                         'sol', 'son']
             counties = ['alameda', 'contra_costa', 'marin', 'napa',
-                'santa_clara', 'san_francisco','san_mateo', 'solano', 'sonoma']
+                        'santa_clara', 'san_francisco', 'san_mateo',
+                        'solano', 'sonoma']
             for county3, county in zip(counties3, counties):
                 df.loc[df["county3"] == county3, "com_for_com_fees"] = \
                     df.vmt_nonres_cat.\
@@ -429,11 +431,13 @@ def calculate_vmt_fees(policy, year, buildings, vmt_fee_categories, coffer,
     coffer["vmt_com_acct"].add_transaction(total_fees, subaccount="regional",
                                            metadata=metadata)
 
+
 @orca.step()
 def calculate_jobs_housing_fees(policy, year, buildings,
                                 coffer, summary, years_per_iter, scenario):
 
-    jobs_housing_settings = policy["acct_settings"]["jobs_housing_fee_settings"]
+    jobs_housing_settings = \
+        policy["acct_settings"]["jobs_housing_fee_settings"]
 
     # this is the frame that knows which devs are subsidized
     df = summary.parcel_output
@@ -449,19 +453,21 @@ def calculate_jobs_housing_fees(policy, year, buildings,
     if scenario in jobs_housing_settings["jobs_housing_com_for_res_scenarios"]:
         # assign jurisdiction to parcels
         juris_lookup = orca.get_table("parcels_geography").to_frame()
-        juris_lookup = juris_lookup[['PARCEL_ID','juris_name']].\
-            rename(columns={'PARCEL_ID': 'PARCELID', 'juris_name': 'jurisname'})
+        juris_lookup = juris_lookup[['PARCEL_ID', 'juris_name']].\
+            rename(columns={'PARCEL_ID': 'PARCELID',
+                   'juris_name': 'jurisname'})
 
-        county_lookup = orca.get_table("parcels_subzone").to_frame().reset_index()
-        county_lookup = county_lookup[['PARCEL_ID','county']].\
+        county_lookup = orca.get_table("parcels_subzone").\
+            to_frame().reset_index()
+        county_lookup = county_lookup[['PARCEL_ID', 'county']].\
             rename(columns={'PARCEL_ID': 'PARCELID', 'county': 'county3'})
-        county_lookup["PARCELID"] = county_lookup["PARCELID"].round().astype(int)
-        df = df.merge(juris_lookup, 
-                      left_on = 'parcel_id', 
-                      right_on = 'PARCELID',
-                      how = 'left').merge(county_lookup,
-                                          on = 'PARCELID',
-                                          how = 'left')
+        county_lookup["PARCELID"] = county_lookup["PARCELID"].\
+            round().astype(int)
+        df = df.merge(juris_lookup,
+                      left_on='parcel_id',
+                      right_on='PARCELID',
+                      how='left').merge(county_lookup,
+                                        on='PARCELID', how='left')
 
         # calculate jobs-housing fees for each county's acct
         for key, acct in jobs_housing_settings.items():
@@ -473,9 +479,10 @@ def calculate_jobs_housing_fees(policy, year, buildings,
                 df_sub["com_for_res_jobs_housing_fees"] = \
                     df_sub.jurisname.map(
                     acct["jobs_housing_fee_com_for_res_amounts"])
-                total_fees += (df_sub.com_for_res_jobs_housing_fees *\
-                    df_sub.non_residential_sqft).sum()
-                print("Adding total jobs-housing fees for res amount of $%.2f" % total_fees)
+                total_fees += (df_sub.com_for_res_jobs_housing_fees *
+                               df_sub.non_residential_sqft).sum()
+                print("Adding total jobs-housing fees for res amount of $%.2f"
+                      % total_fees)
 
                 metadata = {
                     "description": "%s subsidies from\
@@ -484,8 +491,10 @@ def calculate_jobs_housing_fees(policy, year, buildings,
                 }
 
                 # add to the subaccount in coffer
-                coffer[acct["name"]].add_transaction(total_fees, subaccount=acct["name"],
-                                                    metadata=metadata)
+                coffer[acct["name"]].add_transaction(total_fees,
+                                                     subaccount=acct["name"],
+                                                     metadata=metadata)
+
 
 @orca.step()
 def subsidized_office_developer(feasibility, coffer, acct_settings, year,
@@ -801,8 +810,8 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
                 new_buildings.loc[index, "deed_restricted_units"] =\
                     int(round(subsidized_units))
 
-        # turn off this assertion for the Draft Blueprint 
-        # affordable housing policy since the number of deed restricted units 
+        # turn off this assertion for the Draft Blueprint
+        # affordable housing policy since the number of deed restricted units
         # vs units from development projects looks reasonable
 #        assert np.all(buildings.local.deed_restricted_units.fillna(0) <=
 #                      buildings.local.residential_units.fillna(0))
@@ -903,30 +912,32 @@ def subsidized_residential_developer_jobs_housing(
         households, buildings, add_extra_columns_func,
         parcels_geography, year, acct_settings, parcels,
         policy, summary, coffer, form_to_btype_func, settings):
-    
-    for key, acct in policy["acct_settings"]["jobs_housing_fee_settings"].items():
+
+    for key, acct in (policy["acct_settings"]
+                      ["jobs_housing_fee_settings"].items()):
 
         if key != "jobs_housing_com_for_res_scenarios":
-            print("Running the subsidized developer for jobs-housing acct: %s" % acct["name"])
+            print("Running the subsidized developer for jobs-housing acct: %s"
+                  % acct["name"])
             orca.eval_step("subsidized_residential_feasibility")
             feasibility = orca.get_table("feasibility").to_frame()
             feasibility = feasibility.stack(level=0).\
                 reset_index(level=1, drop=True)
 
             run_subsidized_developer(feasibility,
-                                    parcels,
-                                    buildings,
-                                    households,
-                                    acct,
-                                    settings,
-                                    coffer[acct["name"]],
-                                    year,
-                                    form_to_btype_func,
-                                    add_extra_columns_func,
-                                    summary,
-                                    create_deed_restricted=acct[
+                                     parcels,
+                                     buildings,
+                                     households,
+                                     acct,
+                                     settings,
+                                     coffer[acct["name"]],
+                                     year,
+                                     form_to_btype_func,
+                                     add_extra_columns_func,
+                                     summary,
+                                     create_deed_restricted=acct[
                                         "subsidize_affordable"],
-                                    policy_name=acct["name"])
+                                     policy_name=acct["name"])
 
             buildings = orca.get_table("buildings")
 
