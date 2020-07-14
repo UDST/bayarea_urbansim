@@ -91,9 +91,13 @@ feasibility:
     - building_purchase_price
     - building_purchase_price_sqft
     - residential_sales_price_sqft
-    - pda
+    - pda_pba40
+    - pda_pba50
     - trich_id
     - cat_id
+    - tra_id
+    - ppa_id
+    - sesit_id
     - juris
     - county
     - superdistrict
@@ -196,7 +200,8 @@ rent_equilibration:
 
 # SHIFTERS
 
-# price shisfters per pda - price is multiplied by this amount
+# only for PBA40
+# price shifters per pda - price is multiplied by this amount
 pda_price_shifters:
   "ber1": 1
   "ber2": 1
