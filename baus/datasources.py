@@ -487,7 +487,7 @@ def parcel_rejections():
 
 
 @orca.table(cache=True)
-def parcels_geography(parcels, scenario, policy, settings):
+def parcels_geography(parcels, scenario, settings):
     df = pd.read_csv(
         os.path.join(misc.data_dir(), "2020_07_10_parcels_geography.csv"),
         index_col="geom_id")
