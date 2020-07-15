@@ -736,13 +736,15 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
     jobs_by_housing = jobs_by_county / households_by_county.replace(0, 1)
     write("Jobs/housing balance:\n" + str(jobs_by_housing))
 
-    for geo, typ, corr in compare_to_targets(parcels, buildings, jobs,
-                                             households, abag_targets,
-                                             settings, scenario, policy,
-                                             write_comparison_dfs=True):
-        write("{} in {} have correlation of {:,.4f} with targets".format(
-            typ, geo, corr
-        ))
+    # for PBA40, compare pda jobs and households with ABAG targets
+    if scenario in policy["geographies_pba40_enable"]:
+        for geo, typ, corr in compare_to_targets(parcels, buildings, jobs,
+                                                households, abag_targets,
+                                                settings, scenario, policy,
+                                                write_comparison_dfs=True):
+            write("{} in {} have correlation of {:,.4f} with targets".format(
+                typ, geo, corr
+            ))
 
     f.close()
 
