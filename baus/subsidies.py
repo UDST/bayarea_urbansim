@@ -843,7 +843,8 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
 def subsidized_residential_feasibility(
         parcels, settings,
         add_extra_columns_func, parcel_sales_price_sqft_func,
-        parcel_is_allowed_func, parcels_geography):
+        parcel_is_allowed_func, parcels_geography,
+        scenario, policy):
 
     kwargs = settings['feasibility'].copy()
     kwargs["only_built"] = False

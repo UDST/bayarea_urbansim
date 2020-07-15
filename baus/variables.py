@@ -330,8 +330,9 @@ def maz_id(parcels, parcel_to_maz):
 
 
 @orca.column("parcels")
-def residential_sales_price_sqft(parcel_sales_price_sqft_func):
-    return parcel_sales_price_sqft_func("residential")
+def residential_sales_price_sqft(parcel_sales_price_sqft_func,
+                                 scenario, policy):
+    return parcel_sales_price_sqft_func("residential", scenario, policy)
 
 
 @orca.column('parcels')
@@ -523,17 +524,18 @@ def ave_sqft_per_unit(parcels, zones, settings):
 # these are actually functions that take parameters,
 # but are parcel-related so are defined here
 @orca.injectable("parcel_sales_price_sqft_func", autocall=False)
-def parcel_average_price(use, quantile=.5):
+def parcel_average_price(use, scenario, policy, quantile=.5):
     if use == "residential":
         # get node price average and put it on parcels
         s = misc.reindex(orca.get_table('nodes')[use],
                          orca.get_table('parcels').node_id)
 
-        # apply shifters
-        cost_shifters = orca.get_table("parcels").cost_shifters
-        price_shifters = orca.get_table("parcels").price_shifters
-        taz2_shifters = orca.get_table("parcels").taz2_price_shifters
-        s = s / cost_shifters * price_shifters * taz2_shifters
+        # apply shifters for PBA40
+        if scenario in policy["geographies_pba40_enable"]:
+            cost_shifters = orca.get_table("parcels").cost_shifters
+            price_shifters = orca.get_table("parcels").price_shifters
+            taz2_shifters = orca.get_table("parcels").taz2_price_shifters
+            s = s / cost_shifters * price_shifters * taz2_shifters
 
         # just to make sure we're in a reasonable range
         return s.fillna(0).clip(150, 1250)
@@ -758,7 +760,7 @@ def general_type(parcels, buildings):
 
 # for debugging reasons this is split out into its own function
 @orca.column('parcels')
-def building_purchase_price_sqft(parcels, settings):
+def building_purchase_price_sqft(parcels, settings, scenario, policy):
     price = pd.Series(0, parcels.index)
     gentype = parcels.general_type
     cap_rate = settings["cap_rate"]
@@ -775,7 +777,7 @@ def building_purchase_price_sqft(parcels, settings):
             factor *= 2.0
         if form == "Office":
             factor *= 1.4
-        tmp = parcel_average_price(form.lower())
+        tmp = parcel_average_price(form.lower(), scenario, policy)
         price += tmp * (gentype == form) * factor
 
     # this is not a very constraining clip
