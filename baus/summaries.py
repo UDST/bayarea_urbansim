@@ -553,10 +553,10 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
               base_year_measures["hhincome_by_intra"])
         write("Draft Blueprint year mean income by whether household\
               is in tra:\n%s" % hhincome_by_intra)
-        write("Base year mean income by whether household is in hra:\n%s" %
+        write("Base year mean income by whether household is in hra/dr:\n%s" %
               base_year_measures["hhincome_by_insesit"])
         write("Draft Blueprint year mean income by whether household\
-              is in hra:\n%s" % hhincome_by_insesit)
+              is in hra/dr:\n%s" % hhincome_by_insesit)
 
     jsp = buildings.job_spaces.sum()
     write("Number of job spaces = %d" % jsp)
@@ -702,14 +702,14 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
               norm_and_round(diff))
 
         tmp = base_year_measures["hh_by_insesit"]
-        write("Households base year share in hras:\n%s" %
+        write("Households base year share in hra/drs:\n%s" %
               norm_and_round(tmp))
 
-        write("Households share in hras:\n%s" %
+        write("Households share in hra/drs:\n%s" %
               norm_and_round(hh_by_insesit))
 
         diff = hh_by_insesit - base_year_measures["hh_by_insesit"]
-        write("Households pct of regional growth in hras:\n%s" %
+        write("Households pct of regional growth in hra/drs:\n%s" %
               norm_and_round(diff))
 
     write("Base year dwelling unit raw capacity:\n%s" %
