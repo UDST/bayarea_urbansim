@@ -400,7 +400,7 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
         hhincome_by_inpda_pba40 = (hhincome_by_inpda_pba40/100).round()*100
 
     # Summaries for Horizon geographies
-    if scenario in policy["geographies_horizon_enable"]:
+    if scenario in policy["geographies_fr2_enable"]:
         hh_by_intrich = households_df.trich_id.notnull().value_counts()
 
         hhincome_by_intrich = households_df.income.groupby(
@@ -447,7 +447,7 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
         jobs_by_inpda_pba40 = jobs_df.pda_pba40.notnull().value_counts()
         jobs_by_intpp = jobs_df.tpp_id.notnull().value_counts()
 
-    if scenario in policy["geographies_horizon_enable"]:
+    if scenario in policy["geographies_fr2_enable"]:
         jobs_by_intrich = jobs_df.trich_id.notnull().value_counts()
 
     if scenario in policy["geographies_db_enable"]:
@@ -470,7 +470,7 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
                 "hhincome_by_intpp": hhincome_by_intpp,
                 "capacity": capacity
             })
-        if scenario in policy["geographies_horizon_enable"]:
+        if scenario in policy["geographies_fr2_enable"]:
             orca.add_injectable("base_year_measures", {
                 "hh_by_subregion": hh_by_subregion,
                 "jobs_by_subregion": jobs_by_subregion,
@@ -632,7 +632,7 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
               norm_and_round(diff))
 
     # write Horizon additional summaries: trich
-    if scenario in policy["geographies_horizon_enable"]:
+    if scenario in policy["geographies_fr2_enable"]:
         tmp = base_year_measures["hh_by_intrich"]
         write("Households base year share in trichs:\n%s" %
               norm_and_round(tmp))
