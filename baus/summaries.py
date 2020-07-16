@@ -929,8 +929,8 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
         'buildings',
         [parcels, buildings],
         columns=['pda_pba40', 'pda_pba50', 'superdistrict', 'juris',
-                 'building_type', 'zone_id', 'residential_units', 
-                 'building_sqft', 'non_residential_sqft', 
+                 'building_type', 'zone_id', 'residential_units',
+                 'building_sqft', 'non_residential_sqft',
                  'juris_trich', 'juris_tra', 'juris_sesit'])
 
     parcel_output = summary.parcel_output
