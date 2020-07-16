@@ -532,7 +532,7 @@ def parcel_average_price(use, quantile=.5):
         cost_shifters = orca.get_table("parcels").cost_shifters
         price_shifters = orca.get_table("parcels").price_shifters
         taz2_shifters = orca.get_table("parcels").taz2_price_shifters
-     
+
         s = s / cost_shifters * price_shifters * taz2_shifters
 
         # just to make sure we're in a reasonable range
@@ -820,8 +820,9 @@ def cost_shifters(parcels, settings):
 
 @orca.column('parcels', cache=True)
 def price_shifters(parcels, settings, scenario, policy):
-    if scenario not in policy["geographies_db_enable"] :
-        return parcels.pda_pba40.map(settings["pda_price_shifters"]).fillna(1.0)
+    if scenario not in policy["geographies_db_enable"]:
+        return parcels.pda_pba40.map(
+                    settings["pda_price_shifters"]).fillna(1.0)
     elif scenario in policy["geographies_db_enable"]:
         return pd.Series(1.0, parcels.index)
 

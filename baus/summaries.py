@@ -429,7 +429,7 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
         hhincome_by_insesit = households_df.income.groupby(
             households_df.sesit_id.notnull()).mean()
         # round to nearest 100s
-        hhincome_by_insesit = (hhincome_by_insesit/100).round()*100    
+        hhincome_by_insesit = (hhincome_by_insesit/100).round()*100
 
     jobs_by_subregion = misc.reindex(taz_geography.subregion,
                                      jobs.zone_id).value_counts()
@@ -459,7 +459,7 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
 
     if year == 2010:
         # save some info for computing growth measures
-        if scenario in policy["geographies_pba40_enable"]:    
+        if scenario in policy["geographies_pba40_enable"]:
             orca.add_injectable("base_year_measures", {
                 "hh_by_subregion": hh_by_subregion,
                 "jobs_by_subregion": jobs_by_subregion,
@@ -583,7 +583,6 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
 
     write("Jobs pct of regional growth by subregion:\n%s" %
           norm_and_round(diff))
-
 
     # write PBA40 additional summaries: pda, tpp
     if scenario in policy["geographies_pba40_enable"]:
@@ -739,9 +738,9 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
     # for PBA40, compare pda jobs and households with ABAG targets
     if scenario in policy["geographies_pba40_enable"]:
         for geo, typ, corr in compare_to_targets(parcels, buildings, jobs,
-                                                households, abag_targets,
-                                                settings, scenario, policy,
-                                                write_comparison_dfs=True):
+                                                 households, abag_targets,
+                                                 settings,
+                                                 write_comparison_dfs=True):
             write("{} in {} have correlation of {:,.4f} with targets".format(
                 typ, geo, corr
             ))
@@ -750,8 +749,7 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
 
 
 def compare_to_targets(parcels, buildings, jobs, households, abag_targets,
-                       settings, scenario, policy,
-                       write_comparison_dfs=False):
+                       settings, write_comparison_dfs=False):
 
     # yes a similar join is used in the summarize step below - but it's
     # better to keep it clean and separate
@@ -771,21 +769,13 @@ def compare_to_targets(parcels, buildings, jobs, households, abag_targets,
         [parcels, buildings, jobs],
         columns=['pda_pba40', 'pda_pba50', 'juris'])
 
-    if scenario not in policy["geographies_db_enable"]:
-        households_df["pda_fill_juris"] = \
-            households_df.pda_pba40.str.upper().replace("Total", np.nan).\
-            str.upper().fillna(households_df.juris)
+    # only runs for pda_PBA40
+    households_df["pda_fill_juris"] = \
+        households_df.pda_pba40.str.upper().replace("Total", np.nan).\
+        str.upper().fillna(households_df.juris)
 
-        jobs_df["pda_fill_juris"] = \
-            jobs_df.pda_pba40.str.upper().fillna(jobs_df.juris)
-
-    if scenario in policy["geographies_db_enable"]:
-        households_df["pda_fill_juris"] = \
-            households_df.pda_pba50.str.upper().replace("Total", np.nan).\
-            str.upper().fillna(households_df.juris)
-
-        jobs_df["pda_fill_juris"] = \
-            jobs_df.pda_pba50.str.upper().fillna(jobs_df.juris)
+    jobs_df["pda_fill_juris"] = \
+        jobs_df.pda_pba40.str.upper().fillna(jobs_df.juris)
 
     # compute correlection for pda and juris, for households and for jobs
 
@@ -938,9 +928,10 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
     buildings_df = orca.merge_tables(
         'buildings',
         [parcels, buildings],
-        columns=['pda_pba40', 'pda_pba50', 'superdistrict', 'juris', 'building_type',
-                 'zone_id', 'residential_units', 'building_sqft',
-                 'non_residential_sqft', 'juris_trich', 'juris_tra', 'juris_sesit'])
+        columns=['pda_pba40', 'pda_pba50', 'superdistrict', 'juris',
+                 'building_type', 'zone_id', 'residential_units', 
+                 'building_sqft', 'non_residential_sqft', 
+                 'juris_trich', 'juris_tra', 'juris_sesit'])
 
     parcel_output = summary.parcel_output
 
