@@ -200,7 +200,7 @@ rent_equilibration:
 
 # SHIFTERS
 
-# only for PBA40
+# for all scenarios besides Draft Blueprint (geographies_db_enable var)
 # price shifters per pda - price is multiplied by this amount
 pda_price_shifters:
   "ber1": 1
