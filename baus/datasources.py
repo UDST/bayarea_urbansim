@@ -656,6 +656,7 @@ def get_dev_projects_table(scenario, parcels):
     current_dev_proj = ("2020_0619_1208_development_projects.csv")
     orca.add_injectable("dev_proj_file", current_dev_proj)
     df = pd.read_csv(os.path.join(urban_data_repo, current_dev_proj))
+    df = reprocess_dev_projects(df)
 
     # this filters project by scenario
     scen = 'scen' + str(scenario)
