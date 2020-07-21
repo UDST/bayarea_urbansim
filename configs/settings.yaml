@@ -66,7 +66,7 @@ jobs_transition:
 # DEVELOPER
 
 # cap rate for use in the developer model
-cap_rate: 0.01
+cap_rate: 0.04
 
 # settings for the feasibility model - parcel_filter is very important and is a rule of
 # which parcels to consider - we don't consider nodev properties, historic properties, and
@@ -91,14 +91,19 @@ feasibility:
     - building_purchase_price
     - building_purchase_price_sqft
     - residential_sales_price_sqft
-    - pda
+    - pda_pba40
+    - pda_pba50
     - trich_id
     - cat_id
+    - tra_id
+    - ppa_id
+    - sesit_id
     - juris
     - county
     - superdistrict
     - geom_id
     - vmt_res_cat
+    - vmt_nonres_cat
 
 # settings that get passed to the residential developer as kwargs
 residential_developer:
@@ -195,7 +200,9 @@ rent_equilibration:
 
 # SHIFTERS
 
-# price shisfters per pda - price is multiplied by this amount
+# for all scenarios besides Draft Blueprint (geographies_db_enable var)
+# using pba40 pdas
+# price shifters per pda - price is multiplied by this amount
 pda_price_shifters:
   "ber1": 1
   "ber2": 1
