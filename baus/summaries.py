@@ -7,14 +7,14 @@ import pandas as pd
 from pandas.util import testing as pdt
 import numpy as np
 from baus.utils import random_indexes, round_series_match_target,\
-    scale_by_target, simple_ipf
+    scale_by_target, simple_ipf, format_df
 from urbansim.utils import misc
-from baus.output_csv_utils import format_df
 import urbansim
 import urbansim_defaults
 import orca
 import orca_test
 import pandana
+import itertools as it
 
 
 @orca.step()
