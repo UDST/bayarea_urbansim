@@ -1176,7 +1176,7 @@ def parcel_summary(parcels, buildings, households, jobs,
                    parcels_zoning_calculations,
                    initial_year, final_year):
 
-    if year not in [2010, 2015, 2030, 2050]:
+    if year not in [2010, 2015, 2035, 2050]:
         return
 
     df = parcels.to_frame([
