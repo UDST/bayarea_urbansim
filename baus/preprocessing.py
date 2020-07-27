@@ -73,7 +73,9 @@ def allocate_jobs(baseyear_taz_controls, mapping, buildings, parcels):
 
     s = zone_id.loc[df.building_id].value_counts()
     # assert that we at least got the total employment right after assignment
-    # assert_series_equal(baseyear_taz_controls.emp_tot, s)
+    # 07/27/2020 ET: re-enabling this assertion
+    # see: https://github.com/BayAreaMetro/bayarea_urbansim/issues/199
+    assert_series_equal(baseyear_taz_controls.emp_tot, s)
     print("Jobs to assign: {}".format(baseyear_taz_controls.emp_tot.sum()))
     print("Jobs assigned: {}".format(s.sum()))
 
