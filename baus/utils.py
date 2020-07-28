@@ -360,9 +360,10 @@ def compare_summary(df1, df2, index_names=None, pctdiff=10,
     return buf
 
 
-### MIGRATED FROM OUTPUT_CSV_UTILS.PY
+# MIGRATED FROM OUTPUT_CSV_UTILS.PY
 
 geography = 'taz'
+
 
 # loosely borrowed from https://gist.github.com/haleemur/aac0ac216b3b9103d149
 def format_df(df, formatters=None, **kwargs):
