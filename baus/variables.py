@@ -234,6 +234,11 @@ def vmt_res_cat(buildings, vmt_fee_categories):
 
 
 @orca.column('buildings', cache=True)
+def vmt_nonres_cat(buildings, vmt_fee_categories):
+    return misc.reindex(vmt_fee_categories.nonres_cat, buildings.zone_id)
+
+
+@orca.column('buildings', cache=True)
 def residential_price(buildings, residential_units, settings):
     """
     This was originally an orca.step in the ual code.  This allows model steps
@@ -356,6 +361,11 @@ def vmt_res_cat(parcels, vmt_fee_categories):
     return misc.reindex(vmt_fee_categories.res_cat, parcels.zone_id)
 
 
+@orca.column('parcels', cache=True)
+def vmt_nonres_cat(parcels, vmt_fee_categories):
+    return misc.reindex(vmt_fee_categories.nonres_cat, parcels.zone_id)
+
+
 # residential fees
 @orca.column('parcels', cache=True)
 def vmt_res_fees(parcels, policy):
@@ -367,8 +377,9 @@ def vmt_res_fees(parcels, policy):
 @orca.column('parcels', cache=True)
 def vmt_com_fees(parcels, policy):
     vmt_settings = policy["acct_settings"]["vmt_settings"]
-    return parcels.vmt_res_cat.map(vmt_settings["com_for_res_fee_amounts"]) + \
-        parcels.vmt_res_cat.map(vmt_settings["com_for_com_fee_amounts"])
+    return parcels.vmt_nonres_cat.map(
+        vmt_settings["com_for_res_fee_amounts"]) + \
+        parcels.vmt_nonres_cat.map(vmt_settings["com_for_com_fee_amounts"])
 
 
 # compute the fees per unit for each parcel
@@ -398,8 +409,13 @@ def fees_per_sqft(parcels, policy, scenario):
 
 
 @orca.column('parcels', cache=True)
-def pda(parcels, parcels_geography):
-    return parcels_geography.pda_id.reindex(parcels.index)
+def pda_pba40(parcels, parcels_geography):
+    return parcels_geography.pda_id_pba40.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def pda_pba50(parcels, parcels_geography):
+    return parcels_geography.pda_id_pba50.reindex(parcels.index)
 
 
 @orca.column('parcels', cache=True)
@@ -415,6 +431,36 @@ def cat_id(parcels, parcels_geography):
 @orca.column('parcels', cache=True)
 def juris_trich(parcels, parcels_geography):
     return parcels_geography.juris_trich.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def tra_id(parcels, parcels_geography):
+    return parcels_geography.tra_id.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def juris_tra(parcels, parcels_geography):
+    return parcels_geography.juris_tra.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def sesit_id(parcels, parcels_geography):
+    return parcels_geography.sesit_id.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def juris_sesit(parcels, parcels_geography):
+    return parcels_geography.juris_sesit.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def ppa_id(parcels, parcels_geography):
+    return parcels_geography.ppa_id.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def juris_ppa(parcels, parcels_geography):
+    return parcels_geography.juris_ppa.reindex(parcels.index)
 
 
 @orca.column('parcels', cache=True)
@@ -483,10 +529,10 @@ def parcel_average_price(use, quantile=.5):
         s = misc.reindex(orca.get_table('nodes')[use],
                          orca.get_table('parcels').node_id)
 
-        # apply shifters
         cost_shifters = orca.get_table("parcels").cost_shifters
         price_shifters = orca.get_table("parcels").price_shifters
         taz2_shifters = orca.get_table("parcels").taz2_price_shifters
+
         s = s / cost_shifters * price_shifters * taz2_shifters
 
         # just to make sure we're in a reasonable range
@@ -773,8 +819,12 @@ def cost_shifters(parcels, settings):
 
 
 @orca.column('parcels', cache=True)
-def price_shifters(parcels, settings):
-    return parcels.pda.map(settings["pda_price_shifters"]).fillna(1.0)
+def price_shifters(parcels, settings, scenario, policy):
+    if scenario not in policy["geographies_db_enable"]:
+        return parcels.pda_pba40.map(
+                    settings["pda_price_shifters"]).fillna(1.0)
+    elif scenario in policy["geographies_db_enable"]:
+        return pd.Series(1.0, parcels.index)
 
 
 @orca.column('parcels', cache=True)

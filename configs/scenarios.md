@@ -23,3 +23,9 @@
 
 * 16: Forecast test, base
 * 17: Forecast test, less constrained
+
+
+* 20: Baseline (lower HH count)
+* 21: Blueprint Basic
+* 22: Blueprint Plus
+* 23: Blueprint Plus Crossing
