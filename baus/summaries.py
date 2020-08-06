@@ -14,7 +14,6 @@ import urbansim_defaults
 import orca
 import orca_test
 import pandana
-import itertools as it
 
 
 @orca.step()

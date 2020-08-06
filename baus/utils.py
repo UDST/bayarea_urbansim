@@ -7,6 +7,7 @@ import os
 import sys
 from urbansim_defaults.utils import _remove_developed_buildings
 from urbansim.developer.developer import Developer as dev
+import itertools as it
 
 
 #####################
