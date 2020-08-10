@@ -994,6 +994,8 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
                 groupby(geography).size()
 
             # residential buildings by type
+            summary_table['res_units'] = buildings_df.groupby(geography).\
+                residential_units.sum()
             summary_table['sfdu'] = buildings_df.\
                 query("building_type == 'HS' or building_type == 'HT'").\
                 groupby(geography).residential_units.sum()
