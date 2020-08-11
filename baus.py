@@ -89,7 +89,6 @@ if options.out_year:
 
 if options.scenario:
     orca.add_injectable("scenario", options.scenario)
-    SLACK = MAP = True
 
 SKIP_BASE_YEAR = options.skip_base_year
 
