@@ -916,13 +916,13 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
         [parcels, buildings, households],
         columns=['pda_pba40', 'pda_pba50', 'zone_id', 'juris', 'superdistrict',
                  'persons', 'income', 'base_income_quartile',
-                 'juris_trich', 'juris_tra', 'juris_sesit'])
+                 'juris_trich', 'juris_tra', 'juris_sesit', 'juris_ppa'])
 
     jobs_df = orca.merge_tables(
         'jobs',
         [parcels, buildings, jobs],
         columns=['pda_pba40', 'pda_pba50', 'superdistrict', 'juris', 'zone_id',
-                 'empsix', 'juris_trich', 'juris_tra', 'juris_sesit'])
+                 'empsix', 'juris_trich', 'juris_tra', 'juris_sesit', 'juris_ppa'])
 
     buildings_df = orca.merge_tables(
         'buildings',
@@ -930,7 +930,7 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
         columns=['pda_pba40', 'pda_pba50', 'superdistrict', 'juris',
                  'building_type', 'zone_id', 'residential_units',
                  'building_sqft', 'non_residential_sqft',
-                 'juris_trich', 'juris_tra', 'juris_sesit'])
+                 'juris_trich', 'juris_tra', 'juris_sesit', 'juris_ppa'])
 
     parcel_output = summary.parcel_output
 
@@ -948,7 +948,8 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
 
     # append Draft Blueprint strategy geographis
     if scenario in policy["geographies_db_enable"]:
-        geographies.extend(['pda_pba50', 'juris_tra', 'juris_sesit'])
+        geographies.extend(['pda_pba50', 'juris_tra',
+                            'juris_sesit', 'juris_ppa'])
 
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
 
