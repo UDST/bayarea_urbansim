@@ -12,7 +12,7 @@ Bay Area UrbanSim is written in Python and runs in a command line environment. I
 1. Install the [Anaconda Python](https://www.anaconda.com/products/individual#Downloads) distribution (not strictly required, but makes things easier and more reliable)
 2. Clone this repository
 3. Download base data from this [Box folder](https://app.box.com/folder/52679598048) and move the files to `bayarea_urbansim/data/` (ask an MTC contact for access)
-4. Clone the MTC [urban_data_internal repository](https://github.com/BayAreaMetro/urban_data_internal) and move the files to `bayarea_urbansim/data/` (ask an MTC contact for access)
+4. Clone the MTC [urban_data_internal repository](https://github.com/BayAreaMetro/urban_data_internal) to the same location as this repository (ask an MTC contact for access)
 5. Create a Python environment with the current dependencies: `conda env create -f baus-env-2020.yml`
 6. Activate the environment: `conda activate baus-env-2020`
 7. Pre-process the base data: `python baus.py --mode preprocessing` (only needed once)
@@ -21,10 +21,10 @@ Bay Area UrbanSim is written in Python and runs in a command line environment. I
 More info about the command line arguments: `python baus.py --help`
 
 Optional visualization tool: 
-* Configure Amazon Web Services (AWS) to get s3 permission (you will need an appropriately configured AWS credentials file which you must get from your MTC contact)
+* Configure Amazon Web Services (AWS) to get s3 permission (you will need an appropriately configured AWS credentials file from your MTC contact) and set up environment variable `URBANSIM_SLACK = TRUE`
 * Install AWS SDK for Python -- boto3 using `pip install boto3`
-Optional Slack messenger
-* Install Slacker to use Slack API using `pip install slacker` (you will need an appropriate slack token to access the slack bot from your MTC contact)
+Optional Slack messenger:
+* Install Slacker to use Slack API using `pip install slacker` (you will need an appropriate slack token to access the slack bot from your MTC contact) and set up environment variable `URBANSIM_SLACK = TRUE`
 
 ### An overview of baus.py
  
@@ -87,7 +87,3 @@ run[runnum]_simulation_output.json | Used by the web output viewer.
 * data/ contains BAUS inputs which are small enough to store and render in GitHub (large files are stored on Amazon S3) - this also contains lots of scenario inputs in the form of csv files.  See the readme in the data directory for detailed docs on each file.
 * configs/ contains the model configuration files used by UrbanSim.  This also contains settings.yaml which provides simulation inputs and settings in a non-tabular form. 
 * scripts/ these are one-off scripts which are used to perform various input munging and output analysis tasks.  See the docs in that directory for more information.
-
-
-
-
