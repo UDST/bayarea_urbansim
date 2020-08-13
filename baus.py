@@ -16,6 +16,10 @@ import socket
 import argparse
 import warnings
 from baus.utils import compare_summary
+# for urbanforecast.com visualizer
+import importlib
+if importlib.util.find_spec("boto3") is not None:
+    from baus.utils import ue_config, ue_files 
 
 warnings.filterwarnings("ignore")
 
@@ -23,9 +27,6 @@ warnings.filterwarnings("ignore")
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
 
 SLACK = MAPS  = "URBANSIM_SLACK" in os.environ
-if MAPS:
-    from baus.utils import ue_config, ue_files
-
 LOGS = True
 RANDOM_SEED = False
 INTERACT = False
