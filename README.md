@@ -20,12 +20,11 @@ Bay Area UrbanSim is written in Python and runs in a command line environment. I
 
 More info about the command line arguments: `python baus.py --help`
 
-Optional visualization tool: 
-* Configure Amazon Web Services (AWS) to get s3 permission (you will need an appropriately configured AWS credentials file from your MTC contact) and set up environment variable `URBANSIM_SLACK = TRUE`
+Optional visualization tool and Slack messenger: 
+* Configure Amazon Web Services (AWS) to get s3 permission (you will need an appropriately configured AWS credentials file from your MTC contact) 
 * Install AWS SDK for Python -- boto3 using `pip install boto3`
-
-Optional Slack messenger:
-* Install Slacker to use Slack API using `pip install slacker` (you will need an appropriate slack token to access the slack bot from your MTC contact) and set up environment variable `URBANSIM_SLACK = TRUE`
+* Install Slacker to use Slack API using `pip install slacker` (you will need an appropriate slack token to access the slack bot from your MTC contact)
+* Set environment variable `URBANSIM_SLACK = TRUE`
 
 ### An overview of baus.py
  
