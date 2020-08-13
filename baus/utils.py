@@ -3,10 +3,7 @@ import numpy as np
 import orca
 import os
 import sys
-import time
-import requests
-import json
-import boto3
+import importlib
 from urbansim_defaults.utils import _remove_developed_buildings
 from urbansim.developer.developer import Developer as dev
 
@@ -362,30 +359,39 @@ def compare_summary(df1, df2, index_names=None, pctdiff=10,
     return buf
 
 
-def ue_config(run_num, host):
-    data = {
-        'taz_url': ('https://landuse.s3.us-west-2.amazonaws.com/' \
-            'run{}_simulation_output.json'.format(run_num)),
-        'parcel_url': ('https://landuse.s3.us-west-2.amazonaws.com/' \
-            'run{}_parcel_output.csv'.format(run_num)),
-        'timestamp': time.time(),
-        'name': 'Simulation run {}, Machine {}'.format(run_num, host)
-    }
+#visualize urbanforecast.com
+if importlib.util.find_spec("boto3") is not None #visualizer is optional, aws s3 requires boto3
+    import time
+    import requests
+    import json
+    import boto3
 
-    r = requests.post('https://forecast-feedback.firebaseio.com/simulations.json', json.dumps(data))
+    def ue_config(run_num, host):
+        data = {
+            'taz_url': ('https://landuse.s3.us-west-2.amazonaws.com/' \
+                'run{}_simulation_output.json'.format(run_num)),
+            'parcel_url': ('https://landuse.s3.us-west-2.amazonaws.com/' \
+                'run{}_parcel_output.csv'.format(run_num)),
+            'timestamp': time.time(),
+            'name': 'Simulation run {}, Machine {}'.format(run_num, host)
+        }
 
-    return r.text
+        r = requests.post('https://forecast-feedback.firebaseio.com/simulations.json', json.dumps(data))
 
-def ue_files(run_num):
-    s3 = boto3.client('s3')
-    resp1 = s3.upload_file(
-        'runs/run{}_simulation_output.json'.format(run_num),
-        'landuse',
-        'run{}_simulation_output.json'.format(run_num),
-        ExtraArgs={'ACL': 'public-read'})
-    resp2 = s3.upload_file(
-        'runs/run{}_parcel_output.csv'.format(run_num),
-        'landuse',
-        'run{}_parcel_output.csv'.format(run_num),
-        ExtraArgs={'ACL': 'public-read'})
-    return resp1, resp2
+        return r.text
+
+    def ue_files(run_num):
+        s3 = boto3.client('s3')
+        resp1 = s3.upload_file(
+            'runs/run{}_simulation_output.json'.format(run_num),
+            'landuse',
+            'run{}_simulation_output.json'.format(run_num),
+            ExtraArgs={'ACL': 'public-read'})
+        resp2 = s3.upload_file(
+            'runs/run{}_parcel_output.csv'.format(run_num),
+            'landuse',
+            'run{}_parcel_output.csv'.format(run_num),
+            ExtraArgs={'ACL': 'public-read'})
+        return resp1, resp2
+else:
+    pass

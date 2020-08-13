@@ -13,15 +13,21 @@ import orca
 import socket
 import argparse
 import warnings
+import importlib
 from baus.utils import compare_summary
-from baus.utils import ue_config, ue_files
 
 warnings.filterwarnings("ignore")
 
 # Suppress scientific notation in pandas output
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
 
-SLACK = MAPS = "URBANSIM_SLACK" in os.environ
+if importlib.util.find_spec("boto3") is not None: #visualizing in urbanforecast.com setup is optional
+    from baus.utils import ue_config, ue_files
+    MAPS = True
+else:
+    MAPS = False
+
+SLACK = "URBANSIM_SLACK" in os.environ
 LOGS = True
 RANDOM_SEED = True
 INTERACT = False
