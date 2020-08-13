@@ -1,22 +1,23 @@
-from urbansim.utils import misc
+from __future__ import print_function
+
 import os
 import sys
-import orca
 import yaml
-import datasources
-import variables
-from utils import parcel_id_to_geom_id, geom_id_to_parcel_id, add_buildings
-from utils import round_series_match_target, groupby_random_choice
-from urbansim.utils import networks
-import pandana.network as pdna
-from urbansim_defaults import models
-from urbansim_defaults import utils
-from urbansim.developer import sqftproforma, developer
-from urbansim.developer.developer import Developer as dev
-import subsidies
-import summaries
+
 import numpy as np
 import pandas as pd
+
+import orca
+import pandana.network as pdna
+from urbansim.developer import sqftproforma
+from urbansim.developer.developer import Developer as dev
+from urbansim.utils import misc, networks
+from urbansim_defaults import models, utils
+
+from baus import datasources, subsidies, summaries, variables
+from baus.utils import \
+    add_buildings, geom_id_to_parcel_id, groupby_random_choice, \
+    parcel_id_to_geom_id, round_series_match_target
 
 
 @orca.step()
@@ -31,14 +32,14 @@ def elcm_simulate(jobs, buildings, aggregations, elcm_config):
 @orca.step()
 def households_transition(households, household_controls, year, settings):
     s = orca.get_table('households').base_income_quartile.value_counts()
-    print "Distribution by income before:\n", (s/s.sum())
+    print("Distribution by income before:\n", (s/s.sum()))
     ret = utils.full_transition(households,
                                 household_controls,
                                 year,
                                 settings['households_transition'],
                                 "building_id")
     s = orca.get_table('households').base_income_quartile.value_counts()
-    print "Distribution by income after:\n", (s/s.sum())
+    print("Distribution by income after:\n", (s/s.sum()))
     return ret
 
 
@@ -50,16 +51,31 @@ def employment_relocation_rates():
     return df
 
 
+# this for future round2
+# also includes draft blueprint
 @orca.table(cache=True)
-def household_relocation_rates(scenario, settings):
-    if scenario in settings['reloc_fr2_enable']:
+def household_relocation_rates(scenario, policy):
+    if scenario in policy['futures_scenarios']:
+        if scenario in policy['reloc_fr2_enable']:
+            df = pd.read_csv(os.path.join("data",
+                             "household_relocation_rates_fr2.csv"))
+            orca.add_injectable("hh_reloc", 'activated')
+            print("File used is: household_relocation_rates_fr2.csv")
+        else:
+            df = pd.read_csv(os.path.join("data",
+                             "household_relocation_rates_fr_base.csv"))
+            orca.add_injectable("hh_reloc", 'not activated')
+            print("File used is: household_relocation_rates_fr_base.csv")
+    elif scenario in policy['reloc_db_enable']:
         df = pd.read_csv(os.path.join("data",
-                                      "household_relocation_rates_fr2.csv"))
+                         "household_relocation_rates_db_var.csv"))
         orca.add_injectable("hh_reloc", 'activated')
+        print("File used is: household_relocation_rates_db_var.csv")
     else:
         df = pd.read_csv(os.path.join("data",
-                                      "household_relocation_rates.csv"))
+                         "household_relocation_rates_db_base.csv"))
         orca.add_injectable("hh_reloc", 'not activated')
+        print("File used is: household_relocation_rates_db_base.csv")
     return df
 
 
@@ -97,8 +113,8 @@ def _proportional_jobs_model(
     available_jobs = \
         jobs_df.query("empsix == '%s' and building_id == -1" % sector)
 
-    print "Need more jobs total: %d" % need_more_jobs_total
-    print "Available jobs: %d" % len(available_jobs)
+    print("Need more jobs total: %d" % need_more_jobs_total)
+    print("Available jobs: %d" % len(available_jobs))
 
     if len(available_jobs) == 0:
         # corner case
@@ -122,16 +138,16 @@ def _proportional_jobs_model(
     if need_more_jobs_total <= 0:
         return pd.Series()
 
-    print "Need more jobs\n", need_more_jobs
+    print("Need more jobs\n", need_more_jobs)
 
     excess = need_more_jobs.sub(locations_series.value_counts(), fill_value=0)
-    print "Excess demand\n", excess[excess > 0]
+    print("Excess demand\n", excess[excess > 0])
 
     # there's an issue with groupby_random_choice where it can't choose from
     # a set of locations that don't exist - e.g. we have 2 jobs in a certain
     # city but not locations to put them in.  we need to drop this demand
     drop = need_more_jobs.index.difference(locations_series.unique())
-    print "We don't have any locations for these locations:\n", drop
+    print("We don't have any locations for these locations:\n", drop)
     need_more_jobs = need_more_jobs.drop(drop).astype('int')
 
     # choose random locations within jurises to match need_more_jobs totals
@@ -145,9 +161,13 @@ def _proportional_jobs_model(
 
 
 @orca.step()
-def accessory_units(year, buildings, parcels):
-    add_units = pd.read_csv("data/accessory_units.csv",
-                            index_col="juris")[str(year)]
+def accessory_units(year, buildings, parcels, scenario, policy):
+    if scenario in policy["adus_db_enable"]:
+        add_units = pd.read_csv("data/accessory_units_db.csv",
+                                index_col="juris")[str(year)]
+    else:
+        add_units = pd.read_csv("data/accessory_units.csv",
+                                index_col="juris")[str(year)]
     buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
     res_buildings = buildings_juris[buildings.general_type == "Residential"]
     add_buildings = groupby_random_choice(res_buildings, add_units)
@@ -199,7 +219,7 @@ def proportional_elcm(jobs, households, buildings, parcels,
     location_options = building_subset.juris.repeat(
         building_subset.vacant_job_spaces.clip(0))
 
-    print "Running proportional jobs model for retail"
+    print("Running proportional jobs model for retail")
 
     s = _proportional_jobs_model(
         # we now take the ratio of retail jobs to households as an input
@@ -213,7 +233,7 @@ def proportional_elcm(jobs, households, buildings, parcels,
         location_options
     )
 
-    jobs.update_col_from_series("building_id", s)
+    jobs.update_col_from_series("building_id", s, cast=True)
 
     # first read the file from disk - it's small so no table source
     taz_assumptions_df = pd.read_csv(os.path.join(
@@ -255,7 +275,7 @@ def proportional_elcm(jobs, households, buildings, parcels,
 
     target_jobs = target_jobs.astype('int')
 
-    print "Running proportional jobs model for gov/edu"
+    print("Running proportional jobs model for gov/edu")
 
     # location options are vacant job spaces in retail buildings - this will
     # overfill certain location because we don't have enough space
@@ -275,7 +295,7 @@ def proportional_elcm(jobs, households, buildings, parcels,
         target_jobs=target_jobs
     )
 
-    jobs.update_col_from_series("building_id", s)
+    jobs.update_col_from_series("building_id", s, cast=True)
 
 
 @orca.step()
@@ -337,8 +357,7 @@ def household_relocation(households, household_relocation_rates,
 
     # set households that are moving to a building_id of -1 (means unplaced)
     households.update_col_from_series("building_id",
-                                      pd.Series(-1,
-                                                index=index).astype('int32'))
+                                      pd.Series(-1, index=index), cast=True)
 
 
 # this deviates from the step in urbansim_defaults only in how it deals with
@@ -348,26 +367,48 @@ def household_relocation(households, household_relocation_rates,
 @orca.step()
 def scheduled_development_events(buildings, development_projects,
                                  demolish_events, summary, year, parcels,
-                                 settings, years_per_iter, parcels_geography,
-                                 building_sqft_per_job, vmt_fee_categories):
-
+                                 mapping, years_per_iter, parcels_geography,
+                                 building_sqft_per_job, vmt_fee_categories,
+                                 static_parcels, base_year):
     # first demolish
-    demolish = demolish_events.to_frame().\
-        query("%d <= year_built < %d" % (year, year + years_per_iter))
-    print "Demolishing/building %d buildings" % len(demolish)
+    # 6/3/20: current approach is to grab projects from the simulation year
+    # and previous four years, however the base year is treated differently,
+    # eg 2015 pulls 2015-2010
+    # this should be improved in the future so that the base year
+    # also runs SDEM, eg 2015 pulls 2015-2014, while 2010 pulls 2010 projects
+    if year == (base_year + years_per_iter):
+        demolish = demolish_events.to_frame().\
+            query("%d <= year_built <= %d" % (year - years_per_iter, year))
+    else:
+        demolish = demolish_events.to_frame().\
+            query("%d < year_built <= %d" % (year - years_per_iter, year))
+    print("Demolishing/building %d buildings" % len(demolish))
     l1 = len(buildings)
     buildings = utils._remove_developed_buildings(
         buildings.to_frame(buildings.local_columns),
         demolish,
         unplace_agents=["households", "jobs"])
+    orca.add_injectable('static_parcels',
+                        np.append(static_parcels,
+                                  demolish.loc[demolish.action == 'build',
+                                               'parcel_id']))
     orca.add_table("buildings", buildings)
     buildings = orca.get_table("buildings")
-    print "Demolished %d buildings" % (l1 - len(buildings))
-    print "    (this number is smaller when parcel has no existing buildings)"
+    print("Demolished %d buildings" % (l1 - len(buildings)))
+    print("    (this number is smaller when parcel has no existing buildings)")
 
     # then build
-    dps = development_projects.to_frame().\
-        query("%d <= year_built < %d" % (year, year + years_per_iter))
+    # 6/3/20: current approach is to grab projects from the simulation year
+    # and previous four years, however the base year is treated differently,
+    # eg 2015 pulls 2015-2010
+    # this should be improved in the future so that the base year
+    # also runs SDEM, eg 2015 pulls 2015-2014, while 2010 pulls 2010 projects
+    if year == (base_year + years_per_iter):
+        dps = development_projects.to_frame().\
+            query("%d <= year_built <= %d" % (year - years_per_iter, year))
+    else:
+        dps = development_projects.to_frame().\
+            query("%d < year_built <= %d" % (year - years_per_iter, year))
 
     if len(dps) == 0:
         return
@@ -377,7 +418,7 @@ def scheduled_development_events(buildings, development_projects,
         remove_developed_buildings=False,
         unplace_agents=['households', 'jobs'])
     new_buildings["form"] = new_buildings.building_type.map(
-        settings['building_type_map']).str.lower()
+        mapping['building_type_map']).str.lower()
     new_buildings["job_spaces"] = new_buildings.non_residential_sqft / \
         new_buildings.building_type.fillna("OF").map(building_sqft_per_job)
     new_buildings["job_spaces"] = new_buildings.job_spaces.\
@@ -390,10 +431,32 @@ def scheduled_development_events(buildings, development_projects,
         parcels.zone_id, new_buildings.parcel_id)
     new_buildings["vmt_res_cat"] = misc.reindex(
         vmt_fee_categories.res_cat, new_buildings.zone_id)
+    new_buildings["vmt_nonres_cat"] = misc.reindex(
+        vmt_fee_categories.nonres_cat, new_buildings.zone_id)
     del new_buildings["zone_id"]
-    new_buildings["pda"] = parcels_geography.pda_id.loc[
+
+    # add PBA40 geographies
+    new_buildings["pda_pba40"] = parcels_geography.pda_id_pba40.loc[
         new_buildings.parcel_id].values
+
+    # add Horizon geographies
     new_buildings["juris_trich"] = parcels_geography.juris_trich.loc[
+        new_buildings.parcel_id].values
+
+    # add Draft Blueprint geographies
+    new_buildings["pda_pba50"] = parcels_geography.pda_id_pba50.loc[
+        new_buildings.parcel_id].values
+    new_buildings["tra_id"] = parcels_geography.tra_id.loc[
+        new_buildings.parcel_id].values
+    new_buildings["ppa_id"] = parcels_geography.ppa_id.loc[
+        new_buildings.parcel_id].values
+    new_buildings["sesit_id"] = parcels_geography.sesit_id.loc[
+        new_buildings.parcel_id].values
+    new_buildings["juris_tra"] = parcels_geography.juris_tra.loc[
+        new_buildings.parcel_id].values
+    new_buildings["juris_ppa"] = parcels_geography.juris_ppa.loc[
+        new_buildings.parcel_id].values
+    new_buildings["juris_sesit"] = parcels_geography.juris_sesit.loc[
         new_buildings.parcel_id].values
 
     summary.add_parcel_output(new_buildings)
@@ -403,7 +466,7 @@ def scheduled_development_events(buildings, development_projects,
 def supply_and_demand_multiplier_func(demand, supply):
     s = demand / supply
     settings = orca.get_injectable('settings')
-    print "Number of submarkets where demand exceeds supply:", len(s[s > 1.0])
+    print("Number of submarkets where demand exceeds supply:", len(s[s > 1.0]))
     # print "Raw relationship of supply and demand\n", s.describe()
     supply_correction = settings["price_equilibration"]
     clip_change_high = supply_correction["kwargs"]["clip_change_high"]
@@ -419,7 +482,7 @@ def supply_and_demand_multiplier_func(demand, supply):
 # specific building type
 @orca.injectable(autocall=False)
 def form_to_btype_func(building):
-    settings = orca.get_injectable('settings')
+    mapping = orca.get_injectable('mapping')
     form = building.form
     dua = building.residential_units / (building.parcel_size / 43560.0)
     # precise mapping of form to building type for residential
@@ -429,7 +492,7 @@ def form_to_btype_func(building):
         elif dua < 32:
             return "HT"
         return "HM"
-    return settings["form_to_btype"][form][0]
+    return mapping["form_to_btype"][form][0]
 
 
 @orca.injectable(autocall=False)
@@ -440,8 +503,8 @@ def add_extra_columns_func(df):
     if "deed_restricted_units" not in df.columns:
         df["deed_restricted_units"] = 0
     else:
-        print "Number of deed restricted units built = %d" %\
-            df.deed_restricted_units.sum()
+        print("Number of deed restricted units built = %d" %
+              df.deed_restricted_units.sum())
 
     df["redfin_sale_year"] = 2012
     df["redfin_sale_price"] = np.nan
@@ -550,8 +613,8 @@ def residential_developer(feasibility, households, buildings, parcels, year,
 
     for parcel_mask, target, final_target, juris in targets:
 
-        print "Running developer for %s with target of %d" % \
-            (str(juris), target)
+        print("Running developer for %s with target of %d" %
+              (str(juris), target))
 
         # this was a fairly heinous bug - have to get the building wrapper
         # again because the buildings df gets modified by the run_developer
@@ -638,7 +701,7 @@ def retail_developer(jobs, buildings, parcels, nodes, feasibility,
     p = f1 * 1.5 + f2
     p = p.clip(lower=1.0/len(p)/10)
 
-    print "Attempting to build {:,} retail sqft".format(target)
+    print("Attempting to build {:,} retail sqft".format(target))
 
     # order by weighted random sample
     feasibility = feasibility.sample(frac=1.0, weights=p)
@@ -671,10 +734,10 @@ def retail_developer(jobs, buildings, parcels, nodes, feasibility,
     # add the buidings and demolish old buildings, and add to debug output
     devs = pd.DataFrame(devs, columns=feasibility.columns)
 
-    print "Building {:,} retail sqft in {:,} projects".format(
-        devs.non_residential_sqft.sum(), len(devs))
+    print("Building {:,} retail sqft in {:,} projects".format(
+        devs.non_residential_sqft.sum(), len(devs)))
     if target > 0:
-        print "   WARNING: retail target not met"
+        print("   WARNING: retail target not met")
 
     devs["form"] = "retail"
     devs = add_extra_columns_func(devs)
@@ -705,13 +768,13 @@ def office_developer(feasibility, jobs, buildings, parcels, year,
         buildings.job_spaces.sum(),
         dev_settings['kwargs']['target_vacancy'])
 
-    print "Total units to build = %d" % all_units
+    print("Total units to build = %d" % all_units)
     if all_units <= 0:
         return
 
     for typ in ["Office"]:
 
-        print "\nRunning for type: ", typ
+        print("\nRunning for type: ", typ)
 
         num_units = all_units * float(dev_settings['type_splits'][typ])
 
@@ -739,9 +802,9 @@ def office_developer(feasibility, jobs, buildings, parcels, year,
                 target = (year - 2015 + 1) * limit - current_total
 
                 if target <= 0:
-                    print "Already met target for juris = %s" % juris
-                    print "    target = %d, current_total = %d" %\
-                        (target, current_total)
+                    print("Already met target for juris = %s" % juris)
+                    print("    target = %d, current_total = %d" %
+                          (target, current_total))
                     continue
 
                 targets.append((juris_name == juris, target, juris))
@@ -756,9 +819,9 @@ def office_developer(feasibility, jobs, buildings, parcels, year,
 
         for parcel_mask, target, juris in targets:
 
-            print "Running developer for %s with target of %d" % \
-                (str(juris), target)
-            print "Parcels in play:\n", pd.Series(parcel_mask).value_counts()
+            print("Running developer for %s with target of %d" %
+                  (str(juris), target))
+            print("Parcels in play:\n", pd.Series(parcel_mask).value_counts())
 
             # this was a fairly heinous bug - have to get the building wrapper
             # again because the buildings df gets modified by the run_developer
@@ -805,11 +868,11 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
 
     to_add = res_units * .05 - job_spaces
     if to_add > 0:
-        print "Adding %d job_spaces" % to_add
+        print("Adding %d job_spaces" % to_add)
         res_units = buildings.residential_units[s]
         # bias selection of places to put job spaces based on res units
-        print res_units.describe()
-        print res_units[res_units < 0]
+        print(res_units.describe())
+        print(res_units[res_units < 0])
         add_indexes = np.random.choice(res_units.index.values, size=to_add,
                                        replace=True,
                                        p=(res_units/res_units.sum()))
@@ -817,12 +880,12 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
         add_indexes = pd.Series(add_indexes).value_counts()
         # this is sqft per job for residential bldgs
         add_sizes = add_indexes * 400
-        print "Job spaces in res before adjustment: ", \
-            buildings.job_spaces[s].sum()
+        print("Job spaces in res before adjustment: ",
+              buildings.job_spaces[s].sum())
         buildings.local.loc[add_sizes.index,
                             "non_residential_sqft"] += add_sizes.values
-        print "Job spaces in res after adjustment: ",\
-            buildings.job_spaces[s].sum()
+        print("Job spaces in res after adjustment: ",
+              buildings.job_spaces[s].sum())
 
     # the second step here is to add retail to buildings that are greater than
     # X stories tall - presumably this is a ground floor retail policy
@@ -830,12 +893,12 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
     new_buildings = old_buildings.query(
        '%d == year_built and stories >= 4' % year)
 
-    print "Attempting to add ground floor retail to %d devs" % \
-        len(new_buildings)
+    print("Attempting to add ground floor retail to %d devs" %
+          len(new_buildings))
     retail = parcel_is_allowed_func("retail")
     new_buildings = new_buildings[retail.loc[new_buildings.parcel_id].values]
-    print "Disallowing dev on these parcels:"
-    print "    %d devs left after retail disallowed" % len(new_buildings)
+    print("Disallowing dev on these parcels:")
+    print("    %d devs left after retail disallowed" % len(new_buildings))
 
     # this is the key point - make these new buildings' nonres sqft equal
     # to one story of the new buildings
@@ -856,8 +919,8 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
     ratio = parcels.retail_ratio.loc[new_buildings.parcel_id]
     new_buildings = new_buildings[ratio.values > ratio.median()]
 
-    print "Adding %d sqft of ground floor retail in %d locations" % \
-        (new_buildings.non_residential_sqft.sum(), len(new_buildings))
+    print("Adding %d sqft of ground floor retail in %d locations" %
+          (new_buildings.non_residential_sqft.sum(), len(new_buildings)))
 
     all_buildings = dev.merge(old_buildings, new_buildings)
     orca.add_table("buildings", all_buildings)
@@ -876,8 +939,8 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
         ['year_built', 'building_sqft', 'general_type'])
     sqft_by_gtype = buildings_df.query('year_built >= %d' % year).\
         groupby('general_type').building_sqft.sum()
-    print "New square feet by general type in millions:\n",\
-        sqft_by_gtype / 1000000.0
+    print("New square feet by general type in millions:\n",
+          sqft_by_gtype / 1000000.0)
 
 
 def proportional_job_allocation(parcel_id):
@@ -915,9 +978,9 @@ def proportional_job_allocation(parcel_id):
         # make sure index is incrementing
         new_jobs.index = new_jobs.index + 1 + np.max(all_jobs.index.values)
 
-        print "Adding {} new jobs to parcel {} with proportional model".format(
-            num_new_jobs, parcel_id)
-        print new_jobs.head()
+        print("Adding {} new jobs to parcel {} with proportional model".format(
+            num_new_jobs, parcel_id))
+        print(new_jobs.head())
         all_jobs = all_jobs.append(new_jobs)
         orca.add_table("jobs", all_jobs)
 
@@ -998,7 +1061,7 @@ def neighborhood_vars(net):
     nodes = nodes.replace(np.inf, np.nan)
     nodes = nodes.fillna(0)
 
-    print nodes.describe()
+    print(nodes.describe())
     orca.add_table("nodes", nodes)
 
 
@@ -1011,7 +1074,7 @@ def regional_vars(net):
                          index_col="tmnode_id")
     nodes = pd.concat([nodes, nodes2], axis=1)
 
-    print nodes.describe()
+    print(nodes.describe())
     orca.add_table("tmnodes", nodes)
 
 
@@ -1036,7 +1099,7 @@ def regional_pois(settings, landmarks):
         cols[locname] = n.nearest_pois(75, "tmp", num_pois=1)[1]
 
     df = pd.DataFrame(cols)
-    print df.describe()
+    print(df.describe())
     df.index.name = "tmnode_id"
     df.to_csv('regional_poi_distances.csv')
 
@@ -1045,7 +1108,7 @@ def regional_pois(settings, landmarks):
 def price_vars(net):
     nodes2 = networks.from_yaml(net["walk"], "price_vars.yaml")
     nodes2 = nodes2.fillna(0)
-    print nodes2.describe()
+    print(nodes2.describe())
     nodes = orca.get_table('nodes')
     nodes = nodes.to_frame().join(nodes2)
     orca.add_table("nodes", nodes)

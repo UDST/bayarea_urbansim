@@ -1,7 +1,16 @@
+from __future__ import print_function
+
 import orca
 import pandas as pd
 from urbansim.utils import misc
-from validation import assert_series_equal
+from baus.validation import assert_series_equal
+
+
+# TO ADD: Housing Unit imputation
+# We want to match the target in baseyear_taz_controls.csv
+
+# TO ADD: Nonresidential space imputation
+# We want to match the target in baseyear_taz_controls.csv
 
 
 # the way this works is there is an orca step to do jobs allocation, which
@@ -11,11 +20,11 @@ from validation import assert_series_equal
 # on the fly but it takes about 4 minutes so way to long to do on the fly
 
 
-def allocate_jobs(baseyear_taz_controls, settings, buildings, parcels):
+def allocate_jobs(baseyear_taz_controls, mapping, buildings, parcels):
     # this does a new assignment from the controls to the buildings
 
     # first disaggregate the job totals
-    sector_map = settings["naics_to_empsix"]
+    sector_map = mapping["naics_to_empsix"]
     jobs = []
     for taz, row in baseyear_taz_controls.local.iterrows():
         for sector_col, num in row.iteritems():
@@ -41,7 +50,7 @@ def allocate_jobs(baseyear_taz_controls, settings, buildings, parcels):
     for taz, cnt in df.groupby('taz').size().iteritems():
 
         potential_add_locations = buildings.non_residential_sqft[
-            (zone_id == taz) and
+            (zone_id == taz) &
             (buildings.non_residential_sqft > 0)]
 
         if len(potential_add_locations) == 0:
@@ -51,17 +60,24 @@ def allocate_jobs(baseyear_taz_controls, settings, buildings, parcels):
 
         weights = potential_add_locations / potential_add_locations.sum()
 
-        # print taz, len(potential_add_locations),\
-        #     potential_add_locations.sum(), cnt
+        if len(potential_add_locations) > 0:
+            buildings_ids = potential_add_locations.sample(
+                cnt, replace=True, weights=weights)
 
-        buildings_ids = potential_add_locations.sample(
-            cnt, replace=True, weights=weights)
+            df["building_id"][df.taz == taz] = buildings_ids.index.values
 
-        df["building_id"][df.taz == taz] = buildings_ids.index.values
+        else:
+            # no locations for jobs; needs to be dealt with on the data side
+            print("ERROR in TAZ {}: {} jobs, {} potential locations".format(
+                taz, cnt, len(potential_add_locations)))
 
     s = zone_id.loc[df.building_id].value_counts()
     # assert that we at least got the total employment right after assignment
+    # 07/27/2020 ET: re-enabling this assertion
+    # see: https://github.com/BayAreaMetro/bayarea_urbansim/issues/199
     assert_series_equal(baseyear_taz_controls.emp_tot, s)
+    print("Jobs to assign: {}".format(baseyear_taz_controls.emp_tot.sum()))
+    print("Jobs assigned: {}".format(s.sum()))
 
     return df
 
@@ -88,10 +104,10 @@ def move_jobs_from_portola_to_san_mateo_county(parcels, buildings, jobs_df):
 
 
 @orca.step()
-def preproc_jobs(store, baseyear_taz_controls, settings, parcels):
+def preproc_jobs(store, baseyear_taz_controls, mapping, parcels):
     buildings = store['buildings']
 
-    jobs = allocate_jobs(baseyear_taz_controls, settings, buildings, parcels)
+    jobs = allocate_jobs(baseyear_taz_controls, mapping, buildings, parcels)
     jobs = move_jobs_from_portola_to_san_mateo_county(parcels, buildings, jobs)
     store['jobs_preproc'] = jobs
 
@@ -145,7 +161,7 @@ def assign_deed_restricted_units(df, parcels):
             continue
 
         potential_add_locations = df.residential_units[
-            (zone_ids == taz) and
+            (zone_ids == taz) &
             (df.residential_units > 0)]
 
         assert len(potential_add_locations) > 0
@@ -158,14 +174,14 @@ def assign_deed_restricted_units(df, parcels):
         units = pd.Series(buildings_ids.index.values).value_counts()
         df.loc[units.index, "deed_restricted_units"] += units.values
 
-    print "Total deed restricted units after random selection: %d" % \
-        df.deed_restricted_units.sum()
+    print("Total deed restricted units after random selection: %d" %
+          df.deed_restricted_units.sum())
 
     df["deed_restricted_units"] = \
         df[["deed_restricted_units", "residential_units"]].min(axis=1)
 
-    print "Total deed restricted units after truncating to res units: %d" % \
-        df.deed_restricted_units.sum()
+    print("Total deed restricted units after truncating to res units: %d" %
+          df.deed_restricted_units.sum())
 
     return df
 
@@ -250,15 +266,15 @@ def correct_baseyear_vacancies(buildings, parcels, jobs, store):
 
     jobs_county = misc.reindex(buildings_county, jobs.building_id)
 
-    print "Vacancy rate by county:\n", \
-        buildings.job_spaces.groupby(buildings_county).sum() / \
-        jobs_county.value_counts() - 1.0
+    print("Vacancy rate by county:\n",
+          buildings.job_spaces.groupby(buildings_county).sum() /
+          jobs_county.value_counts() - 1.0)
 
     jobs_juris = misc.reindex(buildings_juris, jobs.building_id)
 
     s = buildings.job_spaces.groupby(buildings_juris).sum() / \
         jobs_juris.value_counts() - 1.0
-    print "Vacancy rate by juris:\n", s.to_string()
+    print("Vacancy rate by juris:\n", s.to_string())
 
     return buildings
 

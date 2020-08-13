@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 from urbansim.utils import misc
 import orca
-import datasources
-from utils import nearest_neighbor, groupby_random_choice
+from baus import datasources
+from baus.utils import nearest_neighbor, groupby_random_choice
 from urbansim_defaults import utils
 from urbansim_defaults import variables
 
@@ -83,8 +83,8 @@ def naics(jobs):
 
 
 @orca.column('jobs', cache=True)
-def empsix_id(jobs, settings):
-    return jobs.empsix.map(settings['empsix_name_to_id'])
+def empsix_id(jobs, mapping):
+    return jobs.empsix.map(mapping['empsix_name_to_id'])
 
 
 #############################
@@ -234,6 +234,11 @@ def vmt_res_cat(buildings, vmt_fee_categories):
 
 
 @orca.column('buildings', cache=True)
+def vmt_nonres_cat(buildings, vmt_fee_categories):
+    return misc.reindex(vmt_fee_categories.nonres_cat, buildings.zone_id)
+
+
+@orca.column('buildings', cache=True)
 def residential_price(buildings, residential_units, settings):
     """
     This was originally an orca.step in the ual code.  This allows model steps
@@ -356,28 +361,34 @@ def vmt_res_cat(parcels, vmt_fee_categories):
     return misc.reindex(vmt_fee_categories.res_cat, parcels.zone_id)
 
 
+@orca.column('parcels', cache=True)
+def vmt_nonres_cat(parcels, vmt_fee_categories):
+    return misc.reindex(vmt_fee_categories.nonres_cat, parcels.zone_id)
+
+
 # residential fees
 @orca.column('parcels', cache=True)
-def vmt_res_fees(parcels, settings):
-    vmt_settings = settings["acct_settings"]["vmt_settings"]
+def vmt_res_fees(parcels, policy):
+    vmt_settings = policy["acct_settings"]["vmt_settings"]
     return parcels.vmt_res_cat.map(vmt_settings["res_for_res_fee_amounts"])
 
 
 # commercial fees
 @orca.column('parcels', cache=True)
-def vmt_com_fees(parcels, settings):
-    vmt_settings = settings["acct_settings"]["vmt_settings"]
-    return parcels.vmt_res_cat.map(vmt_settings["com_for_res_fee_amounts"]) + \
-        parcels.vmt_res_cat.map(vmt_settings["com_for_com_fee_amounts"])
+def vmt_com_fees(parcels, policy):
+    vmt_settings = policy["acct_settings"]["vmt_settings"]
+    return parcels.vmt_nonres_cat.map(
+        vmt_settings["com_for_res_fee_amounts"]) + \
+        parcels.vmt_nonres_cat.map(vmt_settings["com_for_com_fee_amounts"])
 
 
 # compute the fees per unit for each parcel
 # (since feees are specified spatially)
 @orca.column('parcels', cache=True)
-def fees_per_unit(parcels, settings, scenario):
+def fees_per_unit(parcels, policy, scenario):
     s = pd.Series(0, index=parcels.index)
 
-    vmt_settings = settings["acct_settings"]["vmt_settings"]
+    vmt_settings = policy["acct_settings"]["vmt_settings"]
     if scenario in vmt_settings["com_for_res_scenarios"] or \
             scenario in vmt_settings["res_for_res_scenarios"]:
         s += parcels.vmt_res_fees
@@ -387,10 +398,10 @@ def fees_per_unit(parcels, settings, scenario):
 
 # since this is by sqft this implies commercial
 @orca.column('parcels', cache=True)
-def fees_per_sqft(parcels, settings, scenario):
+def fees_per_sqft(parcels, policy, scenario):
     s = pd.Series(0, index=parcels.index)
 
-    vmt_settings = settings["acct_settings"]["vmt_settings"]
+    vmt_settings = policy["acct_settings"]["vmt_settings"]
     if scenario in vmt_settings["com_for_com_scenarios"]:
         s += parcels.vmt_com_fees
 
@@ -398,8 +409,13 @@ def fees_per_sqft(parcels, settings, scenario):
 
 
 @orca.column('parcels', cache=True)
-def pda(parcels, parcels_geography):
-    return parcels_geography.pda_id.reindex(parcels.index)
+def pda_pba40(parcels, parcels_geography):
+    return parcels_geography.pda_id_pba40.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def pda_pba50(parcels, parcels_geography):
+    return parcels_geography.pda_id_pba50.reindex(parcels.index)
 
 
 @orca.column('parcels', cache=True)
@@ -415,6 +431,36 @@ def cat_id(parcels, parcels_geography):
 @orca.column('parcels', cache=True)
 def juris_trich(parcels, parcels_geography):
     return parcels_geography.juris_trich.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def tra_id(parcels, parcels_geography):
+    return parcels_geography.tra_id.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def juris_tra(parcels, parcels_geography):
+    return parcels_geography.juris_tra.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def sesit_id(parcels, parcels_geography):
+    return parcels_geography.sesit_id.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def juris_sesit(parcels, parcels_geography):
+    return parcels_geography.juris_sesit.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def ppa_id(parcels, parcels_geography):
+    return parcels_geography.ppa_id.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def juris_ppa(parcels, parcels_geography):
+    return parcels_geography.juris_ppa.reindex(parcels.index)
 
 
 @orca.column('parcels', cache=True)
@@ -483,10 +529,10 @@ def parcel_average_price(use, quantile=.5):
         s = misc.reindex(orca.get_table('nodes')[use],
                          orca.get_table('parcels').node_id)
 
-        # apply shifters
         cost_shifters = orca.get_table("parcels").cost_shifters
         price_shifters = orca.get_table("parcels").price_shifters
         taz2_shifters = orca.get_table("parcels").taz2_price_shifters
+
         s = s / cost_shifters * price_shifters * taz2_shifters
 
         # just to make sure we're in a reasonable range
@@ -510,7 +556,8 @@ def parcel_average_price(use, quantile=.5):
 @orca.injectable("parcel_is_allowed_func", autocall=False)
 def parcel_is_allowed(form):
     settings = orca.get_injectable("settings")
-    form_to_btype = settings["form_to_btype"]
+    mapping = orca.get_injectable("mapping")
+    form_to_btype = mapping["form_to_btype"]
 
     # we have zoning by building type but want
     # to know if specific forms are allowed
@@ -550,7 +597,7 @@ def first_building_type(buildings, parcels):
 
 @orca.injectable(autocall=False)
 def parcel_first_building_type_is(form):
-    form_to_btype = orca.get_injectable('settings')["form_to_btype"]
+    form_to_btype = orca.get_injectable('mapping')["form_to_btype"]
     parcels = orca.get_table('parcels')
     return parcels.first_building_type.isin(form_to_btype[form])
 
@@ -762,8 +809,8 @@ def land_cost(parcels):
 
 
 @orca.column('parcels', cache=True)
-def county(parcels, settings):
-    return parcels.county_id.map(settings["county_id_map"])
+def county(parcels, mapping):
+    return parcels.county_id.map(mapping["county_id_map"])
 
 
 @orca.column('parcels', cache=True)
@@ -772,8 +819,12 @@ def cost_shifters(parcels, settings):
 
 
 @orca.column('parcels', cache=True)
-def price_shifters(parcels, settings):
-    return parcels.pda.map(settings["pda_price_shifters"]).fillna(1.0)
+def price_shifters(parcels, settings, scenario, policy):
+    if scenario not in policy["geographies_db_enable"]:
+        return parcels.pda_pba40.map(
+                    settings["pda_price_shifters"]).fillna(1.0)
+    elif scenario in policy["geographies_db_enable"]:
+        return pd.Series(1.0, parcels.index)
 
 
 @orca.column('parcels', cache=True)

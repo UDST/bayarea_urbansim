@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import numpy as np
 import pandas as pd
 import os
@@ -5,9 +7,10 @@ from urbansim_defaults import datasources
 from urbansim_defaults import utils
 from urbansim.utils import misc
 import orca
-import preprocessing
-from utils import geom_id_to_parcel_id, parcel_id_to_geom_id
-from utils import nearest_neighbor
+from baus import preprocessing
+from baus.utils import geom_id_to_parcel_id, parcel_id_to_geom_id
+from baus.utils import nearest_neighbor
+import yaml
 
 
 #####################
@@ -15,11 +18,46 @@ from utils import nearest_neighbor
 #####################
 
 
+# define new settings files- these have been subdivided from the
+# general settings file
+# this is similar to the code for settings in urbansim_defaults
+@orca.injectable('hazards', cache=True)
+def hazards():
+    with open(os.path.join(misc.configs_dir(), "hazards.yaml")) as f:
+        return yaml.load(f)
+
+
+@orca.injectable('policy', cache=True)
+def policy():
+    with open(os.path.join(misc.configs_dir(), "policy.yaml")) as f:
+        return yaml.load(f)
+
+
+@orca.injectable('inputs', cache=True)
+def inputs():
+
+    with open(os.path.join(misc.configs_dir(), "inputs.yaml")) as f:
+        return yaml.load(f)
+
+
+@orca.injectable('mapping', cache=True)
+def mapping():
+    with open(os.path.join(misc.configs_dir(), "mapping.yaml")) as f:
+        return yaml.load(f)
+
+
+# now that there are new settings files, override the locations of certain
+# settings already defined in urbansim_defaults
+@orca.injectable("building_type_map")
+def building_type_map(mapping):
+    return mapping["building_type_map"]
+
+
 @orca.injectable('year')
 def year():
     try:
         return orca.get_injectable("iter_var")
-    except:
+    except Exception as e:
         pass
     # if we're not running simulation, return base year
     return 2014
@@ -41,7 +79,7 @@ def store(settings):
 
 
 @orca.injectable(cache=True)
-def limits_settings(settings, scenario):
+def limits_settings(policy, scenario):
     # for limits, we inherit from the default
     # limits set the max number of job spaces or res units that may be
     # built per juris for each scenario - usually these represent actual
@@ -50,58 +88,71 @@ def limits_settings(settings, scenario):
     # set up so that fr2 limits can be turned off as needed
     # instead of looking for fr2 limits, the fr1 scenario is used
     if (scenario in ["11", "12", "15"]) and\
-       (scenario not in settings["office_caps_fr2_enable"]):
+       (scenario not in policy["office_caps_fr2_enable"]):
         scenario = str(int(scenario) - 10)
 
-    d = settings['development_limits']
+    d = policy['development_limits']
 
     if scenario in d.keys():
-        print "Using limits for scenario: %s" % scenario
+        print("Using limits for scenario: %s" % scenario)
         assert "default" in d
 
         d_scen = d[scenario]
         d = d["default"]
-        for key, value in d_scen.iteritems():
+        for key, value in d_scen.items():
             d.setdefault(key, {})
             d[key].update(value)
 
         return d
 
-    print "Using default limits"
+    print("Using default limits")
     return d["default"]
 
 
 @orca.injectable(cache=True)
-def inclusionary_housing_settings(settings, scenario):
+def inclusionary_housing_settings(policy, scenario):
     # for inclustionary housing, each scenario is different
     # there is no inheritance
 
-    s = settings['inclusionary_housing_settings']
+    s = policy['inclusionary_housing_settings']
 
     if (scenario in ["11", "12", "15"]) and\
-       (scenario not in settings["inclusionary_fr2_enable"]):
-        print "Using Futures Round 1 (PBA40) inclusionary settings"
+       (scenario not in policy["inclusionary_fr2_enable"]):
+        print("Using Futures Round 1 (PBA40) inclusionary settings")
         fr1 = str(int(scenario) - 10)
         s = s[fr1]
 
     elif scenario in s.keys():
-        print "Using inclusionary settings for scenario: %s" % scenario
+        print("Using inclusionary settings for scenario: %s" % scenario)
         s = s[scenario]
 
     elif "default" in s.keys():
-        print "Using default inclusionary settings"
+        print("Using default inclusionary settings")
         s = s["default"]
 
     d = {}
-    for item in s:
-        # this is a list of cities with an inclusionary rate that is the
-        # same for all the cities in the list
-        print "Setting inclusionary rates for %d cities to %.2f" %\
-            (len(item["values"]), item["amount"])
-        # this is a list of inclusionary rates and the cities they apply
-        # to - need tro turn it in a map of city names to rates
-        for juris in item["values"]:
-            d[juris] = item["amount"]
+    if (scenario in policy["inclusionary_d_b_enable"]):
+        for item in s:
+            # this is a list of Blueprint strategy geographies - represented
+            # by pba50chcat - with an inclusionary rate that is the same
+            # for all the pba50chcats in the list
+            print("Setting inclusionary rates for geographies %d pba50chcat \
+                  to %.2f" % (len(item["values"]), item["amount"]))
+            # this is a list of inclusionary rates and the pba50chcat
+            # geographies they apply to - need to turn it in a map
+            # of pba50chcat names to rates
+            for pba50chcat in item["values"]:
+                d[pba50chcat] = item["amount"]
+    else:
+        for item in s:
+            # this is a list of cities with an inclusionary rate that is the
+            # same for all the cities in the list
+            print("Setting inclusionary rates for %d cities to %.2f" %
+                  (len(item["values"]), item["amount"]))
+            # this is a list of inclusionary rates and the cities they apply
+            # to - need tro turn it in a map of city names to rates
+            for juris in item["values"]:
+                d[juris] = item["amount"]
 
     return d
 
@@ -164,8 +215,8 @@ def nrh_config():
 
 
 def get_config_file(type):
-    configs = orca.get_injectable('settings')['model_configs'][type.
-                                                               split('_')[0]]
+    configs = orca.get_injectable('inputs')['model_configs'][type.
+                                                             split('_')[0]]
     sc = orca.get_injectable('scenario')
     sc_cfg = 's{}_{}_config'.format(sc, type)
     gen_cfg = '{}_config'.format(type)
@@ -190,7 +241,7 @@ def fetch_from_s3(settings):
         file = os.path.join("data", file)
         if os.path.exists(file):
             continue
-        print "Downloading " + file
+        print("Downloading " + file)
         key = bucket.get_key(file, validate=False)
         key.get_contents_to_filename(file)
 
@@ -239,7 +290,8 @@ def costar(store, parcels):
 
 @orca.table(cache=True)
 def zoning_lookup():
-    return pd.read_csv(os.path.join(misc.data_dir(), "zoning_lookup.csv"),
+    return pd.read_csv(os.path.join(misc.data_dir(),
+                       "2020_06_22_zoning_lookup_hybrid_pba50.csv"),
                        index_col='id')
 
 
@@ -247,7 +299,7 @@ def zoning_lookup():
 @orca.table(cache=True)
 def zoning_baseline(parcels, zoning_lookup, settings):
     df = pd.read_csv(os.path.join(misc.data_dir(),
-                     "2015_12_21_zoning_parcels.csv"),
+                     "2020_06_22_zoning_parcels_hybrid_pba50.csv"),
                      index_col="geom_id")
     df = pd.merge(df, zoning_lookup.to_frame(),
                   left_on="zoning_id", right_index=True)
@@ -363,20 +415,25 @@ def maz_forecast_inputs(regional_demographic_forecast):
 
 
 @orca.table(cache=True)
-def zoning_scenario(parcels_geography, scenario, settings):
+def zoning_scenario(parcels_geography, scenario, policy, mapping):
 
     if (scenario in ["11", "12", "15"]) and\
-       (scenario not in settings["geographies_fr2_enable"]):
+       (scenario not in policy["geographies_fr2_enable"]):
         scenario = str(int(scenario) - 10)
 
     scenario_zoning = pd.read_csv(
         os.path.join(misc.data_dir(), 'zoning_mods_%s.csv' % scenario))
 
-    for k in settings["building_type_map"].keys():
+    if "ppa_id" in scenario_zoning.columns:
+        orca.add_injectable("ppa", "are included")
+    else:
+        orca.add_injectable("ppa", "are not included")
+
+    for k in mapping["building_type_map"].keys():
         scenario_zoning[k] = np.nan
 
     def add_drop_helper(col, val):
-        for ind, item in scenario_zoning[col].iteritems():
+        for ind, item in scenario_zoning[col].items():
             if not isinstance(item, str):
                 continue
             for btype in item.split():
@@ -385,8 +442,12 @@ def zoning_scenario(parcels_geography, scenario, settings):
     add_drop_helper("add_bldg", 1)
     add_drop_helper("drop_bldg", 0)
 
-    join_col = 'zoninghzcat' if 'zoninghzcat' in\
-        scenario_zoning.columns else 'zoningmodcat'
+    if 'pba50zoningmodcat' in scenario_zoning.columns:
+        join_col = 'pba50zoningmodcat'
+    elif 'zoninghzcat' in scenario_zoning.columns:
+        join_col = 'zoninghzcat'
+    else:
+        join_col = 'zoningmodcat'
 
     return pd.merge(parcels_geography.to_frame().reset_index(),
                     scenario_zoning,
@@ -396,7 +457,17 @@ def zoning_scenario(parcels_geography, scenario, settings):
 
 @orca.table(cache=True)
 def parcels(store):
-    return store['parcels']
+    df = store['parcels']
+    # add a lat/lon to synthetic parcels to avoid a Pandana error
+    df.loc[2054503, "x"] = -122.1697
+    df.loc[2054503, "y"] = 37.4275
+    df.loc[2054504, "x"] = -122.1697
+    df.loc[2054504, "y"] = 37.4275
+    df.loc[2054505, "x"] = -122.1697
+    df.loc[2054505, "y"] = 37.4275
+    df.loc[2054506, "x"] = -122.1697
+    df.loc[2054506, "y"] = 37.4275
+    return df
 
 
 @orca.table(cache=True)
@@ -418,7 +489,7 @@ def parcel_rejections():
 @orca.table(cache=True)
 def parcels_geography(parcels, scenario, settings):
     df = pd.read_csv(
-        os.path.join(misc.data_dir(), "07_11_2019_parcels_geography.csv"),
+        os.path.join(misc.data_dir(), "2020_07_10_parcels_geography.csv"),
         index_col="geom_id")
     df = geom_id_to_parcel_id(df, parcels)
 
@@ -438,10 +509,18 @@ def parcels_geography(parcels, scenario, settings):
 
     df['juris_trich'] = df.juris_id + df.trich_id
 
-    df["pda_id"] = df.pda_id.str.lower()
-
+    df["pda_id_pba40"] = df.pda_id_pba40.str.lower()
     # danville wasn't supposed to be a pda
-    df["pda_id"] = df.pda_id.replace("dan1", np.nan)
+    df["pda_id_pba40"] = df.pda_id_pba40.replace("dan1", np.nan)
+
+    # Add Draft Blueprint geographies: PDA, TRA, PPA, sesit
+    df["pad_id_pba50"] = df.pda_id_pba50.str.lower()
+    df["tra_id"] = df.tra_id.str.lower()
+    df['juris_tra'] = df.juris_id + df.tra_id
+    df["ppa_id"] = df.ppa_id.str.lower()
+    df['juris_ppa'] = df.juris_id + df.ppa_id
+    df["sesit_id"] = df.sesit_id.str.lower()
+    df['juris_sesit'] = df.juris_id + df.sesit_id
 
     return df
 
@@ -450,7 +529,7 @@ def parcels_geography(parcels, scenario, settings):
 def parcels_subzone():
     return pd.read_csv(os.path.join(misc.data_dir(),
                                     '2018_10_17_parcel_to_taz1454sub.csv'),
-                       usecols=['taz_sub', 'PARCEL_ID'],
+                       usecols=['taz_sub', 'PARCEL_ID', 'county'],
                        index_col='PARCEL_ID')
 
 
@@ -496,7 +575,7 @@ def accessibilities_segmentation():
 
 
 def get_logsum_file(type='mandatory'):
-    logsums = orca.get_injectable('settings')['logsums'][type]
+    logsums = orca.get_injectable('inputs')['logsums'][type]
     sc = orca.get_injectable('scenario')
     yr = orca.get_injectable('year')
     try:
@@ -529,7 +608,7 @@ def get_logsum_file(type='mandatory'):
             else:
                 return orca.get_injectable('previous_{}_logsum_file'
                                            .format(type))
-    except:
+    except Exception as e:
         if 'logsum' in logsums:
             ls = logsums['logsum']
             ls_type = 'generic'
@@ -571,19 +650,25 @@ def reprocess_dev_projects(df):
 
 # shared between demolish and build tables below
 def get_dev_projects_table(scenario, parcels):
-    df = pd.read_csv(os.path.join(misc.data_dir(), "development_projects.csv"))
+    # requires the user has MTC's urban_data_internal
+    # repository alongside bayarea_urbansim
+    urban_data_repo = ("../urban_data_internal/development_projects/")
+    current_dev_proj = ("2020_0731_1607_development_projects.csv")
+    orca.add_injectable("dev_proj_file", current_dev_proj)
+    df = pd.read_csv(os.path.join(urban_data_repo, current_dev_proj))
     df = reprocess_dev_projects(df)
 
     # this filters project by scenario
-    if scenario in df:
+    scen = 'scen' + str(scenario)
+    if scen in df:
         # df[scenario] is 1s and 0s indicating whether to include it
-        df = df[df[scenario].astype('bool')]
+        df = df[df[scen].astype('bool')]
 
     df = df.dropna(subset=['geom_id'])
 
     cnts = df.geom_id.isin(parcels.geom_id).value_counts()
     if False in cnts.index:
-        print "%d MISSING GEOMIDS!" % cnts.loc[False]
+        print("%d MISSING GEOMIDS!" % cnts.loc[False])
 
     df = df[df.geom_id.isin(parcels.geom_id)]
 
@@ -604,7 +689,7 @@ def demolish_events(parcels, settings, scenario):
 
 
 @orca.table(cache=True)
-def development_projects(parcels, settings, scenario):
+def development_projects(parcels, mapping, scenario):
     df = get_dev_projects_table(scenario, parcels)
 
     for col in [
@@ -616,15 +701,16 @@ def development_projects(parcels, settings, scenario):
     df["building_sqft"] = df.building_sqft.fillna(0)
     df["non_residential_sqft"] = df.non_residential_sqft.fillna(0)
     df["residential_units"] = df.residential_units.fillna(0).astype("int")
-    df["deed_restricted_units"] = 0
 
     df["building_type"] = df.building_type.replace("HP", "OF")
     df["building_type"] = df.building_type.replace("GV", "OF")
     df["building_type"] = df.building_type.replace("SC", "OF")
 
-    building_types = settings["building_type_map"].keys()
+    building_types = mapping["building_type_map"].keys()
     # only deal with building types we recorgnize
     # otherwise hedonics break
+    # currently: 'HS', 'HT', 'HM', 'OF', 'HO', 'SC', 'IL',
+    # 'IW', 'IH', 'RS', 'RB', 'MR', 'MT', 'ME', 'PA', 'PA2'
     df = df[df.building_type.isin(building_types)]
 
     # we don't predict prices for schools and hotels right now
@@ -634,10 +720,10 @@ def development_projects(parcels, settings, scenario):
     df = df.dropna(subset=["year_built"])
     df = df[df.action.isin(["add", "build"])]
 
-    print "Describe of development projects"
+    print("Describe of development projects")
     # this makes sure dev projects has all the same columns as buildings
     # which is the point of this method
-    print df[orca.get_table('buildings').local_columns].describe()
+    print(df[orca.get_table('buildings').local_columns].describe())
 
     return df
 
@@ -686,7 +772,7 @@ def regional_demographic_forecast():
 
 
 def get_control_file(type):
-    controls = orca.get_injectable('settings')['control_tables'][type]
+    controls = orca.get_injectable('inputs')['control_tables'][type]
     sc = orca.get_injectable('scenario')
     sc_file = 's{}_{}_controls_input_file'.format(sc, type)
     gen_file = '{}_controls_input_file'.format(type)
@@ -832,6 +918,27 @@ def slr_parcel_inundation_mp():
         index_col='parcel_id')
 
 
+@orca.table(cache=True)
+def slr_parcel_inundation_d_b():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "slr_parcel_inundation_d_b.csv"),
+        index_col='parcel_id')
+
+
+@orca.table(cache=True)
+def slr_parcel_inundation_d_bb():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "slr_parcel_inundation_d_bb.csv"),
+        index_col='parcel_id')
+
+
+@orca.table(cache=True)
+def slr_parcel_inundation_d_bp():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "slr_parcel_inundation_d_bp.csv"),
+        index_col='parcel_id')
+
+
 # SLR progression by year, for "futures" C, B, R
 @orca.table(cache=True)
 def slr_progression_C():
@@ -849,6 +956,13 @@ def slr_progression_B():
 def slr_progression_R():
     return pd.read_csv(
         os.path.join(misc.data_dir(), "slr_progression_R.csv"))
+
+
+# SLR progression for drafte blueprint
+@orca.table(cache=True)
+def slr_progression_d_b():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "slr_progression_d_b.csv"))
 
 
 # census tracts for parcels, to assign earthquake probabilities

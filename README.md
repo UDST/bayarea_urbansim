@@ -5,12 +5,20 @@ DRAFT Bay Area UrbanSim (BAUS) Implementation
 
 This is the DRAFT UrbanSim implementation for the Bay Area. Policy documentation for the Bay Area model is available [here](http://data.mtc.ca.gov/bayarea_urbansim/) and documentation for the UrbanSim framework is available [here](https://udst.github.io/urbansim/).
 
-* Install Python for your OS ([Anaconda](https://www.continuum.io/downloads) highly suggested)
-* Clone this repository
-* Install dependencies using `pip install -r requirements.txt` (may need to uncomment out pandana)
-* Get data using `python baus.py -c --mode fetch_data` (you will need an appropriately configured AWS credentials file which you must get from your MTC contact)
-* Preprocess data using `python baus.py -c --mode preprocessing`
-* Run a simulation using `python baus.py -c` (default mode is simulation)
+### Installation
+
+Bay Area UrbanSim is written in Python and runs in a command line environment. It's compatible with Mac, Windows, and Linux, and with Python 2.7 and 3.5+. Python 3 is recommended.
+
+1. Install the [Anaconda Python](https://www.anaconda.com/products/individual#Downloads) distribution (not strictly required, but makes things easier and more reliable)
+2. Clone this repository
+3. Download base data from this [Box folder](https://app.box.com/folder/52679598048) and move the files to `bayarea_urbansim/data/` (ask an MTC contact for access)
+4. Clone the MTC [urban_data_internal repository](https://github.com/BayAreaMetro/urban_data_internal) and move the files to `bayarea_urbansim/data/` (ask an MTC contact for access)
+5. Create a Python environment with the current dependencies: `conda env create -f baus-env-2020.yml`
+6. Activate the environment: `conda activate baus-env-2020`
+7. Pre-process the base data: `python baus.py --mode preprocessing` (only needed once)
+8. Run the model: `python baus.py`
+
+More info about the command line arguments: `python baus.py --help`
 
 Optional visualization tool: 
 * Configure Amazon Web Services (AWS) to get s3 permission (you will need an appropriately configured AWS credentials file which you must get from your MTC contact)

@@ -1,18 +1,24 @@
+from __future__ import print_function
+
 import sys
 import os
 import orca
 import pandas as pd
 from pandas.util import testing as pdt
 import numpy as np
-from utils import random_indexes, round_series_match_target,\
-    scale_by_target, simple_ipf
+from baus.utils import random_indexes, round_series_match_target,\
+    scale_by_target, simple_ipf, format_df
 from urbansim.utils import misc
-from scripts.output_csv_utils import format_df
+import urbansim
+import urbansim_defaults
+import orca
+import orca_test
+import pandana
 
 
 @orca.step()
-def config(settings, run_number, scenario, parcels,
-           development_projects, year):
+def config(policy, inputs, run_number, scenario, parcels,
+           development_projects, year, hazards):
 
     f = open(os.path.join("runs", "run%d_configuration.log" %
              (run_number)), "w")
@@ -21,7 +27,21 @@ def config(settings, run_number, scenario, parcels,
         # print s
         f.write(s + "\n")
 
+    # package versions
+    write("python version: %s" % sys.version.split('|')[0])
+    write("urbansim version: %s" % urbansim.__version__)
+#    write("urbansim_defaults version: %s" % urbansim_defaults.__version__)
+    write("orca version: %s" % orca.__version__)
+    write("orca_test version: %s" % orca_test.__version__)
+    write("pandana version: %s" % pandana.__version__)
+    write("numpy version: %s" % np.__version__)
+    write("pandas version: %s" % pd.__version__)
+    write("")
+
     write("INPUT FILES")
+    write("")
+
+    write("Scenario %s" % scenario)
     write("")
 
     # control files
@@ -41,9 +61,9 @@ def config(settings, run_number, scenario, parcels,
     write("2010 mandatory accessibility file used: %s"
           % mand_acc_fname_2010)
     ma_fname_2030 = "logsum_2030_s"+scenario
-    if ma_fname_2030 in settings["logsums"]["mandatory"]:
+    if ma_fname_2030 in inputs["logsums"]["mandatory"]:
         write("2030 mandatory accessibility file used: %s"
-              % settings["logsums"]["mandatory"][ma_fname_2030])
+              % inputs["logsums"]["mandatory"][ma_fname_2030])
     else:
         write("No 2030 mandatory accessibility file is set")
     # non-mandatory
@@ -51,9 +71,9 @@ def config(settings, run_number, scenario, parcels,
     write("2010 non-mandatory accessibility file used: %s"
           % nonmand_acc_fname_2010)
     nma_fname_2030 = "logsum_2030_s"+scenario
-    if nma_fname_2030 in settings["logsums"]["mandatory"]:
+    if nma_fname_2030 in inputs["logsums"]["mandatory"]:
         write("2030 non-mandatory accessibility file used: %s"
-              % settings["logsums"]["non_mandatory"][nma_fname_2030])
+              % inputs["logsums"]["non_mandatory"][nma_fname_2030])
     else:
         write("No 2030 non-mandatory accessibility file is set")
     # segmentation
@@ -61,9 +81,9 @@ def config(settings, run_number, scenario, parcels,
     write("2010 accessibility segmentation file used: %s"
           % acc_seg_fname_2010)
     acc_seg_fname_2030 = "logsum_2030_s"+scenario
-    if acc_seg_fname_2030 in settings["logsums"]["segmentation"]:
+    if acc_seg_fname_2030 in inputs["logsums"]["segmentation"]:
         write("2030 accessibility segmentation file used: %s"
-              % settings["logsums"]["segmentation"][acc_seg_fname_2030])
+              % inputs["logsums"]["segmentation"][acc_seg_fname_2030])
     else:
         write("No 2030 accessibility segmentation file is set")
     write("")
@@ -75,6 +95,9 @@ def config(settings, run_number, scenario, parcels,
         write("Zoning modifications for this scenario exist")
     else:
         write("Zoning modifications for this scenario do not exist")
+    # add whether PPAs are included, which aren't tracked in the summaries
+    ppa = orca.get_injectable("ppa")
+    write("PPAs %s in the system" % ppa)
     write("")
 
     write("HAZARDS")
@@ -82,45 +105,49 @@ def config(settings, run_number, scenario, parcels,
 
     # sea level rise
     # level
-    if scenario in settings["slr_scenarios"]["enable_in"]:
+    if scenario in hazards["slr_scenarios"]["enable_in"]:
         slr_progression = orca.get_table("slr_progression")
         slr = slr_progression['inundated'].max()
         write("Sea level rise in this scenario is %d inches" % slr)
     else:
         write("There is no sea level rise in this scenario")
     # mitigation
-    slr_mitigation = orca.get_injectable("slr_mitigation")
-    write("Sea level rise mitigation is %s" % slr_mitigation)
+    if scenario in hazards["slr_scenarios"]["enable_in"]:
+        slr_mitigation = orca.get_injectable("slr_mitigation")
+        write("Sea level rise mitigation is %s" % slr_mitigation)
+    else:
+        write("Sea level rise mitigation is not applied")
     write("")
 
     # earthquake
     # activation
-    if scenario in settings["eq_scenarios"]["enable_in"]:
+    if scenario in hazards["eq_scenarios"]["enable_in"]:
         write("Earthquake is activated")
     else:
         write("Earthquake is not activated")
     # mitigation
-    if scenario in settings["eq_scenarios"]["mitigation"]:
+    if scenario in hazards["eq_scenarios"]["mitigation"]:
         write("Earthquake retrofit policies are applied")
     else:
         write("Earthquake retrofit policies are not applied")
     write("")
 
-    def policy_activated(policy_loc, policy, scenario):
+    # policies and forces
+    def policy_activated(policy_loc, policy_nm, scenario):
         if scenario in policy_loc["enable_in_scenarios"] \
                 and "alternate_geography_scenarios" in policy_loc \
                 and scenario in policy_loc["alternate_geography_scenarios"]:
             geog = policy_loc["alternate_buildings_filter"] if \
                 "alternate_buildings_filter" in policy_loc else \
                 policy_loc["alternate_adjustment_formula"]
-            write(policy+" is activated with formula: {}".format(geog))
+            write(policy_nm+" is activated with formula: {}".format(geog))
         elif scenario in policy_loc["enable_in_scenarios"]:
             geog = policy_loc["receiving_buildings_filter"] if \
                 "receiving_buildings_filter" in policy_loc else \
                 policy_loc["profitability_adjustment_formula"]
-            write(policy+" is activated with formula: {}".format(geog))
+            write(policy_nm+" is activated with formula: {}".format(geog))
         else:
-            write(policy+" is not activated")
+            write(policy_nm+" is not activated")
 
     write("FUTURES ROUND 1 FORCES")
     write("")
@@ -132,23 +159,45 @@ def config(settings, run_number, scenario, parcels,
     write("")
 
     # AV parking requirements
-    policy_loc = (settings["acct_settings"]
+    policy_loc = (policy["acct_settings"]
                   ["profitability_adjustment_policies"]
                   ["parking_requirements_AVs_s1"])
-    policy = "Reduce Parking Requirements due to AVs (CAG)"
-    policy_activated(policy_loc, policy, scenario)
+    policy_nm = "Reduce Parking Requirements due to AVs (CAG)"
+    policy_activated(policy_loc, policy_nm, scenario)
 
-    policy_loc = (settings["acct_settings"]
+    policy_loc = (policy["acct_settings"]
                   ["profitability_adjustment_policies"]
                   ["parking_requirements_AVs_s5"])
-    policy = "Reduce Parking Requirements due to AVs (BTTF)"
-    policy_activated(policy_loc, policy, scenario)
+    policy_nm = "Reduce Parking Requirements due to AVs (BTTF)"
+    policy_activated(policy_loc, policy_nm, scenario)
     write("")
 
-    write("FUTURES ROUND 2 POLICIES")
+    write("FUTURES ROUND 2 / DRAFT BLUEPRINT POLICIES")
+    write("")
+
+    # Reduce housing development cost
+    policy_loc = (policy["acct_settings"]
+                  ["profitability_adjustment_policies"]
+                  ["reduce_housing_costs_tier_1_market_rate_developer"])
+    policy_nm = "Reduce Housing Cost Tier 1 for Market-rate Developers"
+    policy_activated(policy_loc, policy_nm, scenario)
+
+    policy_loc = (policy["acct_settings"]
+                  ["profitability_adjustment_policies"]
+                  ["reduce_housing_costs_tier_2_market_rate_developer"])
+    policy_nm = "Reduce Housing Cost Tier 2 for Market-rate Developers"
+    policy_activated(policy_loc, policy_nm, scenario)
+
+    policy_loc = (policy["acct_settings"]
+                  ["profitability_adjustment_policies"]
+                  ["reduce_housing_costs_tier_3_market_rate_developer"])
+    policy_nm = "Reduce Housing Cost Tier 3 for Market-rate Developers"
+    policy_activated(policy_loc, policy_nm, scenario)
     write("")
 
     # development projects list
+    write("Development projects list used is %s" %
+          orca.get_injectable("dev_proj_file"))
     scen = "scen"+scenario
     if scen in development_projects.columns:
         write("Scenario is in development projects list")
@@ -156,11 +205,20 @@ def config(settings, run_number, scenario, parcels,
         write("Scenario is not in development projects list")
     # public lands
     dev_proj = development_projects.to_frame()
-    projects_on = dev_proj.loc[dev_proj['building_name'] == 'pub', scen].sum()
-    if projects_on > 0:
+    pub_proj_on = dev_proj.loc[dev_proj['building_name'] == 'pub', scen].sum()
+    if pub_proj_on > 0:
         write("Public lands are in development projects")
     else:
         write("Public lands are not in development projects")
+    # incubators
+    inc_proj_on = dev_proj.\
+        loc[dev_proj['building_name'] == 'incubator', scen].sum()
+    if inc_proj_on > 0:
+        write("Incubators are in development projects")
+    else:
+        write("Incubators are not in development projects")
+    # mall and office park conversion projects are only identifiable
+    # through the more general "oppsites" tag
     write("")
 
     # household relocation
@@ -169,12 +227,16 @@ def config(settings, run_number, scenario, parcels,
     write("")
 
     # inclusionary rates
-    s = settings["inclusionary_housing_settings"]
+    s = policy["inclusionary_housing_settings"]
     if (scenario in ["11", "12", "15"]) &\
-       (scenario not in settings["inclusionary_fr2_enable"]):
+       (scenario not in policy["inclusionary_fr2_enable"]):
         fr1 = str(int(scenario) - 10)
         for item in s[fr1]:
             write("Inclusionary rates are FR1: %d cities are set to %.2f" %
+                  (len(item["values"]), item["amount"]))
+    elif scenario in policy["inclusionary_d_b_enable"]:
+        for item in s[scenario]:
+            write("Inclusionary rates for %d pba50chcat are set to %.2f" %
                   (len(item["values"]), item["amount"]))
     elif scenario in s.keys():
         for item in s[scenario]:
@@ -185,79 +247,115 @@ def config(settings, run_number, scenario, parcels,
     write("")
 
     # office caps
-    if scenario in settings['office_caps_fr2_enable']:
-        d = settings['development_limits'][scenario]['Office']
+    if scenario in policy['office_caps_fr2_enable']:
+        d = policy['development_limits'][scenario]['Office']
         write("Using development limits for FR2 with %d office caps"
               % (len(d)))
-    elif "default" in settings['development_limits'].keys():
-        d = settings['development_limits']["default"]['Office']
+    elif "default" in policy['development_limits'].keys():
+        d = policy['development_limits']["default"]['Office']
         write("Using default development limits")
     write("")
 
+    # SB 743
+    if policy["acct_settings"]["sb743_settings"]["enable"]:
+        write("SB-743 is activated")
+    else:
+        write("SB-743 is not activated")
+    write("")
+
     # OBAG
-    policy_loc = (settings["acct_settings"]["lump_sum_accounts"]
+    policy_loc = (policy["acct_settings"]["lump_sum_accounts"]
                   ["obag_settings"])
-    policy = "OBAG"
-    policy_activated(policy_loc, policy, scenario)
+    policy_nm = "OBAG"
+    policy_activated(policy_loc, policy_nm, scenario)
     write("")
 
     # CEQA
-    policy_loc = (settings["acct_settings"]
+    policy_loc = (policy["acct_settings"]
                   ["profitability_adjustment_policies"]["ceqa_tiering"])
-    policy = "CEQA"
-    policy_activated(policy_loc, policy, scenario)
+    policy_nm = "CEQA"
+    policy_activated(policy_loc, policy_nm, scenario)
     write("")
 
     # PDA parking requirements
-    policy_loc = (settings["acct_settings"]
+    policy_loc = (policy["acct_settings"]
                   ["profitability_adjustment_policies"]
                   ["parking_requirements_pdas"])
-    policy = "Reduce Parking Requirements in PDAs"
-    policy_activated(policy_loc, policy, scenario)
+    policy_nm = "Reduce Parking Requirements in PDAs"
+    policy_activated(policy_loc, policy_nm, scenario)
     write("")
 
     # VMT fees
-    if scenario in (settings["acct_settings"]["vmt_settings"]
-                    ["com_for_com_scenarios"]) and scenario in \
-            (settings["acct_settings"]["vmt_settings"]
-             ["alternate_geography_scenarios"]):
+    policy_loc = policy["acct_settings"]["vmt_settings"]
+    if scenario in (policy_loc["com_for_com_scenarios"]) and scenario in \
+                   (policy_loc["alternate_geography_scenarios"]):
         write("VMT fees: com_for_com is activated with trich_id and cat_id")
         write("VMT fees: com_for_com is using alternate fee amounts")
-    elif scenario in (settings["acct_settings"]["vmt_settings"]
-                      ["com_for_com_scenarios"]):
+    elif scenario in (policy_loc["com_for_com_scenarios"]) and scenario in \
+                     (policy_loc["db_geography_scenarios"]):
+        write("VMT fees: com_for_com is activated but without subsidizing")
+        write("VMT fees: com_for_com is using Draft Blueprint fee amounts")
+    elif scenario in (policy_loc["com_for_com_scenarios"]):
         write("VMT fees: com_for_com is activated with pda_id")
         write("VMT fees: com_for_com is using default fee amounts")
     else:
         write("VMT fees: com_for_com is not activated")
 
-    if scenario in (settings["acct_settings"]["vmt_settings"]
-                    ["com_for_res_scenarios"]) and scenario in \
-            (settings["acct_settings"]["vmt_settings"]
-             ["alternate_geography_scenarios"]):
+    if scenario in (policy_loc["com_for_res_scenarios"]) and scenario in \
+                   (policy_loc["alternate_geography_scenarios"]):
         write("VMT fees: com_for_res is activated with trich_id and cat_id")
         write("VMT fees: com_for_res is using alternate fee amounts")
-    elif scenario in (settings["acct_settings"]["vmt_settings"]
-                      ["com_for_res_scenarios"]):
+    elif scenario in (policy_loc["com_for_res_scenarios"]):
         write("VMT fees: com_for_res is activated with pda_id")
         write("VMT fees: com_for_res is using default fee amounts")
     else:
         write("VMT fees: com_for_res is not activated")
     write("")
 
+    # for futures round 2:
+    # workplace preferences are in the development projects list
+    # e-commerce should be embedded in the controls
+    # telecommuting should be handled in the TM
+
+    # jobs-housing fees
+    jobs_housing_fees = policy["acct_settings"]["jobs_housing_fee_settings"]
+    if scenario in (jobs_housing_fees["jobs_housing_com_for_res_scenarios"]):
+        counter = 0
+        for key, acct in \
+                policy["acct_settings"]["jobs_housing_fee_settings"].items():
+            if key != "jobs_housing_com_for_res_scenarios":
+                counter += 1
+        write("Jobs-housing fees are activated for %d counties" % counter)
+    write("")
+
     # affordable housing bonds
+    # activation
     counter = 0
     counties = ["alameda", "contra_costa", "marin", "napa", "san_mateo",
                 "san_francisco", "santa_clara", "solano", "sonoma"]
     for county in counties:
-            policy_loc = (settings["acct_settings"]["lump_sum_accounts"]
-                          [county+"_bond_settings"]["enable_in_scenarios"])
-            if scenario in policy_loc:
-                counter += 1
+        policy_loc = (policy["acct_settings"]["lump_sum_accounts"]
+                      [county+"_bond_settings"]["enable_in_scenarios"])
+        if scenario in policy_loc:
+            counter += 1
     write("Affordable housing bonds are activated for %d counties" % counter)
-
-    # workplace preferences are in the development projects list
-    # e-commerce should be embedded in the controls
-    # telecommuting should be handled in the TM
+    # funding applied
+    regional_funding = 0
+    counties = ["alameda", "contra_costa", "marin", "napa", "san_mateo",
+                "san_francisco", "santa_clara", "solano", "sonoma"]
+    for county in counties:
+        policy_loc = (policy["acct_settings"]["lump_sum_accounts"]
+                      [county+"_bond_settings"])
+        if scenario in policy_loc["default_amount_scenarios_db"]:
+            amount = float(policy_loc["total_amount_db"])
+        elif scenario in policy_loc["alternate_amount_scenarios_db"]:
+            amount = float(policy_loc["alternate_total_amount_db"])
+        else:
+            amount = float(policy_loc["total_amount"])
+        # sum annual ammount over the simulation period
+        regional_funding += amount*5*7
+    write("Total funding for deed-restricted housing is $%d"
+          % regional_funding)
 
     f.close()
 
@@ -266,7 +364,7 @@ def config(settings, run_number, scenario, parcels,
 def topsheet(households, jobs, buildings, parcels, zones, year,
              run_number, taz_geography, parcels_zoning_calculations,
              summary, settings, parcels_geography, abag_targets, new_tpp_id,
-             residential_units):
+             residential_units, mapping, scenario, policy):
 
     hh_by_subregion = misc.reindex(taz_geography.subregion,
                                    households.zone_id).value_counts()
@@ -274,20 +372,63 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
     households_df = orca.merge_tables(
         'households',
         [parcels_geography, buildings, households],
-        columns=['pda_id', 'tpp_id', 'income'])
+        columns=['pda_id_pba40', 'tpp_id', 'trich_id',
+                 'pda_id_pba50', 'tra_id', 'ppa_id', 'sesit_id',
+                 'income'])
 
+    # use PBA40 new tpp_id
     if settings["use_new_tpp_id_in_topsheet"]:
         del households_df["tpp_id"]
         households_df["tpp_id"] = misc.reindex(new_tpp_id.tpp_id,
                                                households_df.parcel_id)
 
-    hh_by_inpda = households_df.pda_id.notnull().value_counts()
-    hh_by_intpp = households_df.tpp_id.notnull().value_counts()
+    # Summaries for PBA40 geographies
+    if scenario in policy["geographies_pba40_enable"]:
+        hh_by_intpp = households_df.tpp_id.notnull().value_counts()
 
-    hhincome_by_intpp = households_df.income.groupby(
-        households_df.tpp_id.notnull()).mean()
-    # round to nearest 100s
-    hhincome_by_intpp = (hhincome_by_intpp/100).round()*100
+        hhincome_by_intpp = households_df.income.groupby(
+            households_df.tpp_id.notnull()).mean()
+        # round to nearest 100s
+        hhincome_by_intpp = (hhincome_by_intpp/100).round()*100
+
+        hh_by_inpda_pba40 = households_df.pda_id_pba40.notnull().value_counts()
+
+        hhincome_by_inpda_pba40 = households_df.income.groupby(
+            households_df.pda_id_pba40.notnull()).mean()
+        # round to nearest 100s
+        hhincome_by_inpda_pba40 = (hhincome_by_inpda_pba40/100).round()*100
+
+    # Summaries for Horizon geographies
+    if scenario in policy["geographies_fr2_enable"]:
+        hh_by_intrich = households_df.trich_id.notnull().value_counts()
+
+        hhincome_by_intrich = households_df.income.groupby(
+            households_df.trich_id.notnull()).mean()
+        # round to nearest 100s
+        hhincome_by_intrich = (hhincome_by_intrich/100).round()*100
+
+    # Summaries for Draft Blueprint geographies
+    if scenario in policy["geographies_db_enable"]:
+        hh_by_inpda_pba50 = households_df.pda_id_pba50.notnull().value_counts()
+
+        hhincome_by_inpda_pba50 = households_df.income.groupby(
+            households_df.pda_id_pba50.notnull()).mean()
+        # round to nearest 100s
+        hhincome_by_inpda_pba50 = (hhincome_by_inpda_pba50/100).round()*100
+
+        hh_by_intra = households_df.tra_id.notnull().value_counts()
+
+        hhincome_by_intra = households_df.income.groupby(
+            households_df.tra_id.notnull()).mean()
+        # round to nearest 100s
+        hhincome_by_intra = (hhincome_by_intra/100).round()*100
+
+        hh_by_insesit = households_df.sesit_id.notnull().value_counts()
+
+        hhincome_by_insesit = households_df.income.groupby(
+            households_df.sesit_id.notnull()).mean()
+        # round to nearest 100s
+        hhincome_by_insesit = (hhincome_by_insesit/100).round()*100
 
     jobs_by_subregion = misc.reindex(taz_geography.subregion,
                                      jobs.zone_id).value_counts()
@@ -295,34 +436,64 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
     jobs_df = orca.merge_tables(
         'jobs',
         [parcels, buildings, jobs],
-        columns=['pda'])
+        columns=['pda_pba40', 'pda_pba50', 'trich_id', 'tra_id'])
 
     if settings["use_new_tpp_id_in_topsheet"]:
         jobs_df["tpp_id"] = misc.reindex(new_tpp_id.tpp_id,
                                          jobs_df.parcel_id)
 
-    jobs_by_inpda = jobs_df.pda.notnull().value_counts()
-    jobs_by_intpp = jobs_df.tpp_id.notnull().value_counts()
+    if scenario in policy["geographies_pba40_enable"]:
+        jobs_by_inpda_pba40 = jobs_df.pda_pba40.notnull().value_counts()
+        jobs_by_intpp = jobs_df.tpp_id.notnull().value_counts()
+
+    if scenario in policy["geographies_fr2_enable"]:
+        jobs_by_intrich = jobs_df.trich_id.notnull().value_counts()
+
+    if scenario in policy["geographies_db_enable"]:
+        jobs_by_inpda_pba50 = jobs_df.pda_pba50.notnull().value_counts()
+        jobs_by_intra = jobs_df.tra_id.notnull().value_counts()
 
     capacity = parcels_zoning_calculations.\
         zoned_du_underbuild_nodev.groupby(parcels.subregion).sum()
 
     if year == 2010:
         # save some info for computing growth measures
-        orca.add_injectable("base_year_measures", {
-            "hh_by_subregion": hh_by_subregion,
-            "jobs_by_subregion": jobs_by_subregion,
-            "hh_by_inpda": hh_by_inpda,
-            "jobs_by_inpda": jobs_by_inpda,
-            "hh_by_intpp": hh_by_intpp,
-            "jobs_by_intpp": jobs_by_intpp,
-            "hhincome_by_intpp": hhincome_by_intpp,
-            "capacity": capacity
-        })
-
+        if scenario in policy["geographies_pba40_enable"]:
+            orca.add_injectable("base_year_measures", {
+                "hh_by_subregion": hh_by_subregion,
+                "jobs_by_subregion": jobs_by_subregion,
+                "hh_by_inpda_pba40": hh_by_inpda_pba40,
+                "jobs_by_inpda_pba40": jobs_by_inpda_pba40,
+                "hh_by_intpp": hh_by_intpp,
+                "jobs_by_intpp": jobs_by_intpp,
+                "hhincome_by_intpp": hhincome_by_intpp,
+                "capacity": capacity
+            })
+        if scenario in policy["geographies_fr2_enable"]:
+            orca.add_injectable("base_year_measures", {
+                "hh_by_subregion": hh_by_subregion,
+                "jobs_by_subregion": jobs_by_subregion,
+                "hh_by_intrich": hh_by_intrich,
+                "jobs_by_intrich": jobs_by_intrich,
+                "hhincome_by_intrich": hhincome_by_intrich,
+                "capacity": capacity
+            })
+        if scenario in policy["geographies_db_enable"]:
+            orca.add_injectable("base_year_measures", {
+                "hh_by_subregion": hh_by_subregion,
+                "jobs_by_subregion": jobs_by_subregion,
+                "hh_by_inpda_pba50": hh_by_inpda_pba50,
+                "hh_by_intra": hh_by_intra,
+                "hh_by_insesit": hh_by_insesit,
+                "jobs_by_inpda_pba50": jobs_by_inpda_pba50,
+                "jobs_by_intra": jobs_by_intra,
+                "hhincome_by_intra": hhincome_by_intra,
+                "hhincome_by_insesit": hhincome_by_insesit,
+                "capacity": capacity
+            })
     try:
         base_year_measures = orca.get_injectable("base_year_measures")
-    except:
+    except Exception as e:
         # the base year measures don't exist - we didn't run year 2010
         # this can happen when we skip the first year, usually because
         # we don't want to waste time doing so
@@ -370,11 +541,21 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
     du = buildings.deed_restricted_units.sum()
     write("Number of deed restricted units = %d" % du)
 
-    write("Base year mean income by whether household is in tpp:\n%s" %
-          base_year_measures["hhincome_by_intpp"])
+    if scenario in policy["geographies_pba40_enable"]:
+        write("Base year mean income by whether household is in tpp:\n%s" %
+              base_year_measures["hhincome_by_intpp"])
+        write("Horizon year mean income by whether household is in tpp:\n%s" %
+              hhincome_by_intpp)
 
-    write("Horizon year mean income by whether household is in tpp:\n%s" %
-          hhincome_by_intpp)
+    if scenario in policy["geographies_db_enable"]:
+        write("Base year mean income by whether household is in tra:\n%s" %
+              base_year_measures["hhincome_by_intra"])
+        write("Draft Blueprint year mean income by whether household\
+              is in tra:\n%s" % hhincome_by_intra)
+        write("Base year mean income by whether household is in hra/dr:\n%s" %
+              base_year_measures["hhincome_by_insesit"])
+        write("Draft Blueprint year mean income by whether household\
+              is in hra/dr:\n%s" % hhincome_by_insesit)
 
     jsp = buildings.job_spaces.sum()
     write("Number of job spaces = %d" % jsp)
@@ -402,49 +583,132 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
     write("Jobs pct of regional growth by subregion:\n%s" %
           norm_and_round(diff))
 
-    tmp = base_year_measures["hh_by_inpda"]
-    write("Households base year share in pdas:\n%s" %
-          norm_and_round(tmp))
+    # write PBA40 additional summaries: pda, tpp
+    if scenario in policy["geographies_pba40_enable"]:
+        tmp = base_year_measures["hh_by_inpda_pba40"]
+        write("Households base year share in pdas:\n%s" %
+              norm_and_round(tmp))
 
-    write("Households share in pdas:\n%s" %
-          norm_and_round(hh_by_inpda))
+        write("Households share in pdas:\n%s" %
+              norm_and_round(hh_by_inpda_pba40))
 
-    diff = hh_by_inpda - base_year_measures["hh_by_inpda"]
-    write("Households pct of regional growth in pdas:\n%s" %
-          norm_and_round(diff))
+        diff = hh_by_inpda_pba40 - base_year_measures["hh_by_inpda_pba40"]
+        write("Households pct of regional growth in pdas:\n%s" %
+              norm_and_round(diff))
 
-    tmp = base_year_measures["jobs_by_inpda"]
-    write("Jobs base year share in pdas:\n%s" %
-          norm_and_round(tmp))
+        tmp = base_year_measures["jobs_by_inpda_pba40"]
+        write("Jobs base year share in pdas:\n%s" %
+              norm_and_round(tmp))
 
-    write("Jobs share in pdas:\n%s" %
-          norm_and_round(jobs_by_inpda))
+        write("Jobs share in pdas:\n%s" %
+              norm_and_round(jobs_by_inpda_pba40))
 
-    diff = jobs_by_inpda - base_year_measures["jobs_by_inpda"]
-    write("Jobs pct of regional growth in pdas:\n%s" %
-          norm_and_round(diff))
+        diff = jobs_by_inpda_pba40 - base_year_measures["jobs_by_inpda_pba40"]
+        write("Jobs pct of regional growth in pdas:\n%s" %
+              norm_and_round(diff))
 
-    tmp = base_year_measures["hh_by_intpp"]
-    write("Households base year share in tpps:\n%s" %
-          norm_and_round(tmp))
+        tmp = base_year_measures["hh_by_intpp"]
+        write("Households base year share in tpps:\n%s" %
+              norm_and_round(tmp))
 
-    write("Households share in tpps:\n%s" %
-          norm_and_round(hh_by_intpp))
+        write("Households share in tpps:\n%s" %
+              norm_and_round(hh_by_intpp))
 
-    diff = hh_by_intpp - base_year_measures["hh_by_intpp"]
-    write("Households pct of regional growth in tpps:\n%s" %
-          norm_and_round(diff))
+        diff = hh_by_intpp - base_year_measures["hh_by_intpp"]
+        write("Households pct of regional growth in tpps:\n%s" %
+              norm_and_round(diff))
 
-    tmp = base_year_measures["jobs_by_intpp"]
-    write("Jobs base year share in tpps:\n%s" %
-          norm_and_round(tmp))
+        tmp = base_year_measures["jobs_by_intpp"]
+        write("Jobs base year share in tpps:\n%s" %
+              norm_and_round(tmp))
 
-    write("Jobs share in tpps:\n%s" %
-          norm_and_round(jobs_by_intpp))
+        write("Jobs share in tpps:\n%s" %
+              norm_and_round(jobs_by_intpp))
 
-    diff = jobs_by_intpp - base_year_measures["jobs_by_intpp"]
-    write("Jobs pct of regional growth in tpps:\n%s" %
-          norm_and_round(diff))
+        diff = jobs_by_intpp - base_year_measures["jobs_by_intpp"]
+        write("Jobs pct of regional growth in tpps:\n%s" %
+              norm_and_round(diff))
+
+    # write Horizon additional summaries: trich
+    if scenario in policy["geographies_fr2_enable"]:
+        tmp = base_year_measures["hh_by_intrich"]
+        write("Households base year share in trichs:\n%s" %
+              norm_and_round(tmp))
+
+        write("Households share in trichs:\n%s" %
+              norm_and_round(hh_by_intrich))
+
+        diff = hh_by_intrich - base_year_measures["hh_by_intrich"]
+        write("Households pct of regional growth in trichs:\n%s" %
+              norm_and_round(diff))
+
+        tmp = base_year_measures["jobs_by_intrich"]
+        write("Jobs base year share in trichs:\n%s" %
+              norm_and_round(tmp))
+
+        write("Jobs share in trichs:\n%s" %
+              norm_and_round(jobs_by_intrich))
+
+        diff = jobs_by_intrich - base_year_measures["jobs_by_intrich"]
+        write("Jobs pct of regional growth in trichs:\n%s" %
+              norm_and_round(diff))
+
+    # write Draft Blueprint additional summaries: pda, tra, sesit(hra/dr)
+    if scenario in policy["geographies_db_enable"]:
+        tmp = base_year_measures["hh_by_inpda_pba50"]
+        write("Households base year share in pdas:\n%s" %
+              norm_and_round(tmp))
+
+        write("Households share in pdas:\n%s" %
+              norm_and_round(hh_by_inpda_pba50))
+
+        diff = hh_by_inpda_pba50 - base_year_measures["hh_by_inpda_pba50"]
+        write("Households pct of regional growth in pdas:\n%s" %
+              norm_and_round(diff))
+
+        tmp = base_year_measures["jobs_by_inpda_pba50"]
+        write("Jobs base year share in pdas:\n%s" %
+              norm_and_round(tmp))
+
+        write("Jobs share in pdas:\n%s" %
+              norm_and_round(jobs_by_inpda_pba50))
+
+        diff = jobs_by_inpda_pba50 - base_year_measures["jobs_by_inpda_pba50"]
+        write("Jobs pct of regional growth in pdas:\n%s" %
+              norm_and_round(diff))
+
+        tmp = base_year_measures["hh_by_intra"]
+        write("Households base year share in tras:\n%s" %
+              norm_and_round(tmp))
+
+        write("Households share in tras:\n%s" %
+              norm_and_round(hh_by_intra))
+
+        diff = hh_by_intra - base_year_measures["hh_by_intra"]
+        write("Households pct of regional growth in tras:\n%s" %
+              norm_and_round(diff))
+
+        tmp = base_year_measures["jobs_by_intra"]
+        write("Jobs base year share in tras:\n%s" %
+              norm_and_round(tmp))
+
+        write("Jobs share in tras:\n%s" %
+              norm_and_round(jobs_by_intra))
+
+        diff = jobs_by_intra - base_year_measures["jobs_by_intra"]
+        write("Jobs pct of regional growth in tras:\n%s" %
+              norm_and_round(diff))
+
+        tmp = base_year_measures["hh_by_insesit"]
+        write("Households base year share in hra/drs:\n%s" %
+              norm_and_round(tmp))
+
+        write("Households share in hra/drs:\n%s" %
+              norm_and_round(hh_by_insesit))
+
+        diff = hh_by_insesit - base_year_measures["hh_by_insesit"]
+        write("Households pct of regional growth in hra/drs:\n%s" %
+              norm_and_round(diff))
 
     write("Base year dwelling unit raw capacity:\n%s" %
           base_year_measures["capacity"])
@@ -462,7 +726,7 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
         write("Current share of units which are greenfield development:\n%s" %
               norm_and_round(df.residential_units.groupby(greenfield).sum()))
 
-    cmap = settings["county_id_tm_map"]
+    cmap = mapping["county_id_tm_map"]
     jobs_by_county = jobs.zone_id.map(taz_geography.county)\
         .map(cmap).value_counts()
     households_by_county = households.zone_id.map(taz_geography.county)\
@@ -470,18 +734,21 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
     jobs_by_housing = jobs_by_county / households_by_county.replace(0, 1)
     write("Jobs/housing balance:\n" + str(jobs_by_housing))
 
-    for geo, typ, corr in compare_to_targets(parcels, buildings, jobs,
-                                             households, abag_targets,
-                                             write_comparison_dfs=True):
-        write("{} in {} have correlation of {:,.4f} with targets".format(
-            typ, geo, corr
-        ))
+    # for PBA40, compare pda jobs and households with ABAG targets
+    if scenario in policy["geographies_pba40_enable"]:
+        for geo, typ, corr in compare_to_targets(parcels, buildings, jobs,
+                                                 households, abag_targets,
+                                                 settings,
+                                                 write_comparison_dfs=True):
+            write("{} in {} have correlation of {:,.4f} with targets".format(
+                typ, geo, corr
+            ))
 
     f.close()
 
 
 def compare_to_targets(parcels, buildings, jobs, households, abag_targets,
-                       write_comparison_dfs=False):
+                       settings, write_comparison_dfs=False):
 
     # yes a similar join is used in the summarize step below - but it's
     # better to keep it clean and separate
@@ -494,23 +761,24 @@ def compare_to_targets(parcels, buildings, jobs, households, abag_targets,
     households_df = orca.merge_tables(
         'households',
         [parcels, buildings, households],
-        columns=['pda', 'juris'])
-
-    households_df["pda_fill_juris"] = \
-        households_df.pda.str.upper().replace("Total", np.nan).\
-        str.upper().fillna(households_df.juris)
+        columns=['pda_pba40', 'pda_pba50', 'juris'])
 
     jobs_df = orca.merge_tables(
         'jobs',
         [parcels, buildings, jobs],
-        columns=['pda', 'juris'])
+        columns=['pda_pba40', 'pda_pba50', 'juris'])
+
+    # only runs for pda_PBA40
+    households_df["pda_fill_juris"] = \
+        households_df.pda_pba40.str.upper().replace("Total", np.nan).\
+        str.upper().fillna(households_df.juris)
 
     jobs_df["pda_fill_juris"] = \
-        jobs_df.pda.str.upper().fillna(jobs_df.juris)
+        jobs_df.pda_pba40.str.upper().fillna(jobs_df.juris)
 
     # compute correlection for pda and juris, for households and for jobs
 
-    l = []
+    li = []
 
     df = pd.DataFrame()
 
@@ -534,7 +802,7 @@ def compare_to_targets(parcels, buildings, jobs, households, abag_targets,
 
             assert len(abag_distribution) == len(baus_distribution)
 
-            l.append((geo, typ, abag_distribution.corr(baus_distribution)))
+            li.append((geo, typ, abag_distribution.corr(baus_distribution)))
 
     if write_comparison_dfs:
 
@@ -544,7 +812,7 @@ def compare_to_targets(parcels, buildings, jobs, households, abag_targets,
         df.to_csv(os.path.join("runs", "run%d_targets_comparison_%d.csv" %
                   (run_number, year)))
 
-    return l
+    return li
 
 
 @orca.step()
@@ -623,7 +891,7 @@ def diagnostic_output(households, buildings, parcels, taz, jobs, settings,
     # save the dropped buildings to a csv
     if "dropped_buildings" in orca.orca._TABLES:
         df = orca.get_table("dropped_buildings").to_frame()
-        print "Dropped buildings", df.describe()
+        print("Dropped buildings", df.describe())
         df.to_csv(
             "runs/run{}_dropped_buildings.csv".format(run_number)
         )
@@ -632,7 +900,7 @@ def diagnostic_output(households, buildings, parcels, taz, jobs, settings,
 @orca.step()
 def geographic_summary(parcels, households, jobs, buildings, taz_geography,
                        run_number, year, summary, final_year, scenario,
-                       settings):
+                       policy, settings):
     # using the following conditional b/c `year` is used to pull a column
     # from a csv based on a string of the year in add_population()
     # and in add_employment() and 2009 is the
@@ -646,33 +914,41 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
     households_df = orca.merge_tables(
         'households',
         [parcels, buildings, households],
-        columns=['pda', 'zone_id', 'juris', 'superdistrict',
+        columns=['pda_pba40', 'pda_pba50', 'zone_id', 'juris', 'superdistrict',
                  'persons', 'income', 'base_income_quartile',
-                 'juris_trich'])
+                 'juris_trich', 'juris_tra', 'juris_sesit'])
 
     jobs_df = orca.merge_tables(
         'jobs',
         [parcels, buildings, jobs],
-        columns=['pda', 'superdistrict', 'juris', 'zone_id',
-                 'empsix', 'juris_trich'])
+        columns=['pda_pba40', 'pda_pba50', 'superdistrict', 'juris', 'zone_id',
+                 'empsix', 'juris_trich', 'juris_tra', 'juris_sesit'])
 
     buildings_df = orca.merge_tables(
         'buildings',
         [parcels, buildings],
-        columns=['pda', 'superdistrict', 'juris', 'building_type',
-                 'zone_id', 'residential_units', 'building_sqft',
-                 'non_residential_sqft', 'juris_trich'])
+        columns=['pda_pba40', 'pda_pba50', 'superdistrict', 'juris',
+                 'building_type', 'zone_id', 'residential_units',
+                 'building_sqft', 'non_residential_sqft',
+                 'juris_trich', 'juris_tra', 'juris_sesit'])
 
     parcel_output = summary.parcel_output
 
     # because merge_tables returns multiple zone_id_'s, but not the one we need
     buildings_df = buildings_df.rename(columns={'zone_id_x': 'zone_id'})
 
-    geographies = ['superdistrict', 'pda', 'juris']
+    geographies = ['superdistrict', 'juris']
+
+    if scenario in policy["geographies_pba40_enable"]:
+        geographies.append('pda_pba40')
 
     if (scenario in ["11", "12", "15"]) and\
-       (scenario in settings["geographies_fr2_enable"]):
+       (scenario in policy["geographies_fr2_enable"]):
         geographies.append('juris_trich')
+
+    # append Draft Blueprint strategy geographis
+    if scenario in policy["geographies_db_enable"]:
+        geographies.extend(['pda_pba50', 'juris_tra', 'juris_sesit'])
 
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
 
@@ -718,6 +994,8 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
                 groupby(geography).size()
 
             # residential buildings by type
+            summary_table['res_units'] = buildings_df.groupby(geography).\
+                residential_units.sum()
             summary_table['sfdu'] = buildings_df.\
                 query("building_type == 'HS' or building_type == 'HT'").\
                 groupby(geography).residential_units.sum()
@@ -789,7 +1067,7 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
     # Write Summary of Accounts
     if year == final_year:
 
-        for acct_name, acct in orca.get_injectable("coffer").iteritems():
+        for acct_name, acct in orca.get_injectable("coffer").items():
             fname = "runs/run{}_acctlog_{}_{}.csv".\
                 format(run_number, acct_name, year)
             acct.to_frame().to_csv(fname)
@@ -877,7 +1155,7 @@ def building_summary(parcels, run_number, year,
                      buildings,
                      initial_year, final_year):
 
-    if year not in [initial_year, final_year]:
+    if year not in [initial_year, 2015, final_year]:
         return
 
     df = orca.merge_tables(
@@ -885,7 +1163,7 @@ def building_summary(parcels, run_number, year,
         [parcels, buildings],
         columns=['performance_zone', 'year_built', 'residential_units',
                  'unit_price', 'zone_id', 'non_residential_sqft',
-                 'deed_restricted_units', 'job_spaces', 'x', 'y'])
+                 'deed_restricted_units', 'job_spaces', 'x', 'y', 'geom_id'])
 
     df.to_csv(
         os.path.join("runs", "run%d_building_data_%d.csv" %
@@ -899,10 +1177,11 @@ def parcel_summary(parcels, buildings, households, jobs,
                    parcels_zoning_calculations,
                    initial_year, final_year):
 
-    if year not in [2010, 2015, 2030, 2050]:
+    if year not in [2010, 2015, 2035, 2050]:
         return
 
     df = parcels.to_frame([
+        "geom_id",
         "x", "y",
         "total_residential_units",
         "total_job_spaces",
@@ -979,23 +1258,25 @@ def travel_model_output(parcels, households, jobs, buildings,
         # only summarize for years which are multiples of 5
         return
 
+    parcels = parcels.to_frame()
+    parcels["zone_id_x"] = parcels.zone_id
+    orca.add_table('parcels', parcels)
+    parcels = orca.get_table("parcels")
+
     households_df = orca.merge_tables('households',
                                       [parcels, buildings, households],
-                                      columns=['zone_id',
+                                      columns=['zone_id', 'zone_id_x',
                                                'base_income_quartile',
                                                'income', 'persons',
                                                'maz_id'])
+
+    households_df["zone_id"] = households_df.zone_id_x
 
     taz_df = pd.DataFrame(index=zones.index)
 
     taz_df["sd"] = taz_geography.superdistrict
     taz_df["zone"] = zones.index
     taz_df["county"] = taz_geography.county
-
-    parcels = parcels.to_frame()
-    parcels["zone_id_x"] = parcels.zone_id
-    orca.add_table('parcels', parcels)
-    parcels = orca.get_table("parcels")
 
     jobs_df = orca.merge_tables(
         'jobs',
@@ -1014,6 +1295,10 @@ def travel_model_output(parcels, households, jobs, buildings,
     # however on lumodel, these duplicate columns don't get created in the
     # merge so a copy of zone_id (zone_id_x) is added to parcels to ensure
     # it doesn't get dropped
+
+    # the same has now been repeated for households (as described with lumodel)
+    # no duplicate zone_ids emerged to use, so one was created from parcels
+    # a taz column existed, but was not consistently the same as zone_id
 
     jobs_df["zone_id"] = jobs_df.zone_id_x
 
@@ -1492,11 +1777,10 @@ def zone_forecast_inputs():
 def add_population(df, year, regional_controls):
     rc = regional_controls
     target = rc.totpop.loc[year] - df.gqpop.sum()
-
     zfi = zone_forecast_inputs()
     s = df.tothh * zfi.meanhhsize
 
-    s = scale_by_target(s, target, .15)
+    s = scale_by_target(s, target)  # , .15
 
     df["hhpop"] = round_series_match_target(s, target, 0)
     df["hhpop"] = df.hhpop.fillna(0)
@@ -1516,7 +1800,7 @@ def add_population_tm2(df, year, regional_controls):
 # temporary function to balance hh while some parcels have
 # unassigned MAZ
 def add_households(df, tothh):
-    s = scale_by_target(df.tothh, tothh, .15)
+    s = scale_by_target(df.tothh, tothh)  # , .15
 
     df["tothh"] = round_series_match_target(s, tothh, 0)
     df["tothh"] = df.tothh.fillna(0)
@@ -1728,9 +2012,9 @@ def adjust_hhkids(df, year, rdf, total_hh):
 
 @orca.step()
 def hazards_slr_summary(run_number, year, scenario, households, jobs, parcels,
-                        settings):
+                        hazards):
 
-    if scenario not in settings["slr_scenarios"]["enable_in"]:
+    if scenario not in hazards["slr_scenarios"]["enable_in"]:
         return
 
     destroy_parcels = orca.get_table("destroy_parcels")
@@ -1748,7 +2032,7 @@ def hazards_slr_summary(run_number, year, scenario, households, jobs, parcels,
 
         try:
             slr_demolish_cum = orca.get_table("slr_demolish_cum").to_frame()
-        except:
+        except Exception as e:
             slr_demolish_cum = pd.DataFrame()
         slr_demolish = orca.get_table("slr_demolish").to_frame()
         slr_demolish_cum = slr_demolish.append(slr_demolish_cum)
@@ -1763,7 +2047,7 @@ def hazards_slr_summary(run_number, year, scenario, households, jobs, parcels,
         try:
             hh_unplaced_slr_cum = \
                 orca.get_table("hh_unplaced_slr_cum").to_frame()
-        except:
+        except Exception as e:
             hh_unplaced_slr_cum = pd.DataFrame()
         hh_unplaced_slr = orca.get_injectable("hh_unplaced_slr")
         hh_unplaced_slr_cum = hh_unplaced_slr.append(hh_unplaced_slr_cum)
@@ -1787,7 +2071,7 @@ def hazards_slr_summary(run_number, year, scenario, households, jobs, parcels,
         try:
             jobs_unplaced_slr_cum = \
                 orca.get_table("jobs_unplaced_slr_cum").to_frame()
-        except:
+        except Exception as e:
             jobs_unplaced_slr_cum = pd.DataFrame()
         jobs_unplaced_slr = orca.get_injectable("jobs_unplaced_slr")
         jobs_unplaced_slr_cum = jobs_unplaced_slr.append(jobs_unplaced_slr_cum)
@@ -1812,9 +2096,9 @@ def hazards_slr_summary(run_number, year, scenario, households, jobs, parcels,
 
 @orca.step()
 def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings,
-                       scenario, settings):
+                       scenario, hazards):
 
-    if scenario not in settings["eq_scenarios"]["enable_in"]:
+    if scenario not in hazards["eq_scenarios"]["enable_in"]:
         return
 
     if year == 2035:
@@ -1915,7 +2199,7 @@ def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings,
                                         % (run_number, year)))
 
         # print out retrofit buildings that were saved
-        if scenario in settings["eq_scenarios"]["mitigation"]:
+        if scenario in hazards["eq_scenarios"]["mitigation"]:
             retrofit_bldgs_tot = orca.get_table("retrofit_bldgs_tot")
             retrofit_bldgs_tot = retrofit_bldgs_tot.to_frame()
             retrofit_bldgs_tot_taz = misc.reindex(parcels.zone_id,
@@ -1936,7 +2220,7 @@ def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings,
     # print out buildings in 2030, 2035, and 2050 so Horizon team can compare
     # building inventory by TAZ
     if year in [2030, 2035, 2050] and scenario in \
-       settings["eq_scenarios"]["enable_in"]:
+       hazards["eq_scenarios"]["enable_in"]:
         buildings = buildings.to_frame()
         buildings_taz = misc.reindex(parcels.zone_id,
                                      buildings.parcel_id)

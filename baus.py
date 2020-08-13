@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import os
 import sys
 import time
@@ -23,7 +25,7 @@ pd.set_option('display.float_format', lambda x: '%.3f' % x)
 
 SLACK = MAPS = "URBANSIM_SLACK" in os.environ
 LOGS = True
-RANDOM_SEED = True
+RANDOM_SEED = False
 INTERACT = False
 SCENARIO = None
 MODE = "simulation"
@@ -47,6 +49,8 @@ LAST_KNOWN_GOOD_RUNS = {
 }
 
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
+
+orca.add_injectable("base_year", IN_YEAR)
 
 parser = argparse.ArgumentParser(description='Run UrbanSim models.')
 
@@ -111,8 +115,8 @@ if INTERACT:
 run_num = orca.get_injectable("run_number")
 
 if LOGS:
-    print '***The Standard stream is being written to /runs/run{0}.log***'\
-        .format(run_num)
+    print('***The Standard stream is being written to /runs/run{0}.log***'
+          .format(run_num))
     sys.stdout = sys.stderr = open("runs/run%d.log" % run_num, 'w')
 
 if RANDOM_SEED:
@@ -166,6 +170,7 @@ def get_simulation_models(SCENARIO):
         "retail_developer",
         "office_developer",
         "accessory_units",
+        "calculate_vmt_fees",
 
         # (for buildings that were removed)
         "remove_old_units",
@@ -222,8 +227,9 @@ def get_simulation_models(SCENARIO):
 
     # calculate VMT taxes
     vmt_settings = \
-        orca.get_injectable("settings")["acct_settings"]["vmt_settings"]
-    if SCENARIO in vmt_settings["com_for_com_scenarios"]:
+        orca.get_injectable("policy")["acct_settings"]["vmt_settings"]
+    if SCENARIO in vmt_settings["com_for_com_scenarios"] and \
+            SCENARIO not in vmt_settings["db_geography_scenarios"]:
         models.insert(models.index("office_developer"),
                       "subsidized_office_developer")
 
@@ -236,6 +242,17 @@ def get_simulation_models(SCENARIO):
                       "subsidized_residential_feasibility")
         models.insert(models.index("alt_feasibility"),
                       "subsidized_residential_developer_vmt")
+
+    # calculate jobs-housing fees
+    jobs_housing_settings = \
+        orca.get_injectable("policy")["acct_settings"]["jobs_housing_fee_settings"]
+    if SCENARIO in jobs_housing_settings["jobs_housing_com_for_res_scenarios"]:
+        models.insert(models.index("diagnostic_output"),
+                      "calculate_jobs_housing_fees")
+    #    models.insert(models.index("alt_feasibility"),
+    #                  "subsidized_residential_feasibility")
+    #    models.insert(models.index("alt_feasibility"),
+    #                  "subsidized_residential_developer_jobs_housing")
 
     return models
 
@@ -297,6 +314,7 @@ def run_models(MODE, SCENARIO):
                 "elcm_simulate",
 
                 "price_vars",
+#                "scheduled_development_events",
 
                 "topsheet",
                 "simulation_validation",
@@ -374,10 +392,12 @@ def run_models(MODE, SCENARIO):
         raise "Invalid mode"
 
 
-print "Started", time.ctime()
-print "Current Branch : ", BRANCH.rstrip()
-print "Current Commit : ", CURRENT_COMMIT.rstrip()
-print "Current Scenario : ", orca.get_injectable('scenario').rstrip()
+
+print("Started", time.ctime())
+print("Current Branch : ", BRANCH.rstrip())
+print("Current Commit : ", CURRENT_COMMIT.rstrip())
+print("Current Scenario : ", orca.get_injectable('scenario').rstrip())
+print("Random Seed : ", RANDOM_SEED)
 
 
 if SLACK:
@@ -391,7 +411,7 @@ try:
     run_models(MODE, SCENARIO)
 
 except Exception as e:
-    print traceback.print_exc()
+    print(traceback.print_exc())
     if SLACK:
         slack.chat.post_message(
             '#urbansim_sim_update',
@@ -401,7 +421,7 @@ except Exception as e:
         raise e
     sys.exit(0)
 
-print "Finished", time.ctime()
+print("Finished", time.ctime())
 
 if MAPS and 'travel_model_output' in get_simulation_models(SCENARIO):
     files_msg1, files_msg2 = ue_files(run_num)
