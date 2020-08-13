@@ -26,7 +26,7 @@ warnings.filterwarnings("ignore")
 # Suppress scientific notation in pandas output
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
 
-SLACK = MAPS  = "URBANSIM_SLACK" in os.environ
+SLACK = MAPS = "URBANSIM_SLACK" in os.environ
 LOGS = True
 RANDOM_SEED = False
 INTERACT = False
