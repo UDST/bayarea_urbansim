@@ -12,6 +12,12 @@ This is the DRAFT UrbanSim implementation for the Bay Area. Policy documentation
 * Preprocess data using `python baus.py -c --mode preprocessing`
 * Run a simulation using `python baus.py -c` (default mode is simulation)
 
+Optional visualization tool: 
+* Configure Amazon Web Services (AWS) to get s3 permission (you will need an appropriately configured AWS credentials file which you must get from your MTC contact)
+* Install AWS SDK for Python -- boto3 using `pip install boto3`
+Optional Slack messenger
+* Install Slacker to use Slack API using `pip install slacker` (you will need an appropriate slack token to access the slack bot from your MTC contact)
+
 ### An overview of baus.py
  
 baus.py is a command line interface (cli) used to run Bay Area UrbanSim in various modes.  These modes currently include:
