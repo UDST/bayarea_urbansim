@@ -17,8 +17,7 @@ import argparse
 import warnings
 from baus.utils import compare_summary
 # for urbanforecast.com visualizer
-import importlib
-if importlib.util.find_spec("boto3") is not None:
+if "URBANSIM_SLACK" in os.environ:
     from baus.utils import ue_config, ue_files 
 
 warnings.filterwarnings("ignore")
