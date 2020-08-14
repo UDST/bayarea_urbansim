@@ -1239,7 +1239,7 @@ def parcel_summary(parcels, buildings, households, jobs,
 
         for col in df.columns:
 
-            if col in ["x", "y", "first_building_type"]:
+            if col in ["x", "y", "first_building_type", "juris", join_col]:
                 continue
 
             df[col] = df[col] - df2[col]
