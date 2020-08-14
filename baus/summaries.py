@@ -1175,7 +1175,7 @@ def building_summary(parcels, run_number, year,
 def parcel_summary(parcels, buildings, households, jobs,
                    run_number, year,
                    parcels_zoning_calculations,
-                   initial_year, final_year):
+                   initial_year, final_year, parcels_geography):
 
     if year not in [2010, 2015, 2035, 2050]:
         return
@@ -1196,6 +1196,11 @@ def parcel_summary(parcels, buildings, households, jobs,
 
     df = df.join(df2)
 
+    # bringing in zoning modifications growth geography tag
+    join_col = "pba50chcat"
+    if join_col in parcels_geography.to_frame().columns:
+        parcel_gg = parcels_geography.to_frame(["parcel_id", join_col])
+        df = df.merge(parcel_gg, on = 'parcel_id', how = 'left')
     households_df = orca.merge_tables(
         'households',
         [buildings, households],
