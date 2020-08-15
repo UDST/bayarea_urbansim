@@ -1453,8 +1453,8 @@ def travel_model_output(parcels, households, jobs, buildings,
 
     # aggregate TAZ summaries to create county summaries
 
-    county_df = pd.DataFrame(index=['San Francisco', 
-                                    'San Mateo', 
+    county_df = pd.DataFrame(index=['San Francisco',
+                                    'San Mateo',
                                     'Santa Clara',
                                     'Alameda',
                                     'Contra Costa',
