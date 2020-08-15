@@ -1200,10 +1200,10 @@ def parcel_summary(parcels, buildings, households, jobs,
     join_col = "pba50chcat"
     if join_col in parcels_geography.to_frame().columns:
         parcel_gg = parcels_geography.to_frame([
-            "parcel_id", 
-            join_col, 
+            "parcel_id",
+            join_col,
             "juris"])
-        df = df.merge(parcel_gg, on = 'parcel_id', how = 'left')
+        df = df.merge(parcel_gg, on='parcel_id', how='left')
 
     households_df = orca.merge_tables(
         'households',
