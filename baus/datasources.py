@@ -514,7 +514,7 @@ def parcels_geography(parcels, scenario, settings):
     df["pda_id_pba40"] = df.pda_id_pba40.replace("dan1", np.nan)
 
     # Add Draft Blueprint geographies: PDA, TRA, PPA, sesit
-    df["pad_id_pba50"] = df.pda_id_pba50.str.lower()
+    df["pda_id_pba50"] = df.pda_id_pba50.str.lower()
     df["tra_id"] = df.tra_id.str.lower()
     df['juris_tra'] = df.juris_id + df.tra_id
     df["ppa_id"] = df.ppa_id.str.lower()
