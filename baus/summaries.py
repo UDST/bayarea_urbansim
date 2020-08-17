@@ -922,7 +922,8 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
         'jobs',
         [parcels, buildings, jobs],
         columns=['pda_pba40', 'pda_pba50', 'superdistrict', 'juris', 'zone_id',
-                 'empsix', 'juris_trich', 'juris_tra', 'juris_sesit', 'juris_ppa'])
+                 'empsix', 'juris_trich', 'juris_tra', 
+                 'juris_sesit', 'juris_ppa'])
 
     buildings_df = orca.merge_tables(
         'buildings',
