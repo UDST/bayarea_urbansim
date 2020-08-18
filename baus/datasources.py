@@ -260,10 +260,13 @@ def baseyear_taz_controls():
 
 
 @orca.table(cache=True)
-def base_year_summary_taz():
-    return pd.read_csv(os.path.join('output',
-                       'baseyear_taz_summaries_2010.csv'),
-                       index_col="zone_id")
+def base_year_summary_taz(mapping):
+    df = pd.read_csv(os.path.join('output',
+                                  'baseyear_taz_summaries_2010.csv'),
+                     index_col="zone_id")
+    cmap = mapping["county_id_tm_map"]
+    df['COUNTY_NAME'] = df.COUNTY.map(cmap)
+    return df
 
 
 # non-residential rent data
@@ -863,10 +866,12 @@ def abag_targets():
 
 
 @orca.table(cache=True)
-def taz_geography(superdistricts):
+def taz_geography(superdistricts, mapping):
     tg = pd.read_csv(
         os.path.join(misc.data_dir(), "taz_geography.csv"),
         index_col="zone")
+    cmap = mapping["county_id_tm_map"]
+    tg['county_name'] = tg.county.map(cmap)
 
     # we want "subregion" geography on the taz_geography table
     # we have to go get it from the superdistricts table and join

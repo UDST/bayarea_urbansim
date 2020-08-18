@@ -1288,6 +1288,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     taz_df["sd"] = taz_geography.superdistrict
     taz_df["zone"] = zones.index
     taz_df["county"] = taz_geography.county
+    taz_df["county_name"] = taz_geography.county_name
 
     jobs_df = orca.merge_tables(
         'jobs',
@@ -1409,7 +1410,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     taz_df.columns = \
         [x.upper() for x in taz_df.columns]
 
-    maz = maz.to_frame(['TAZ', 'COUNTY', 'taz1454'])
+    maz = maz.to_frame(['TAZ', 'COUNTY', 'county_name', 'taz1454'])
     mazi = maz_forecast_inputs.to_frame()
     mazi_yr = str(year)[2:]
     households_df.maz_id = households_df.maz_id.fillna(213906)
@@ -1441,6 +1442,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     taz_df['hh_size_4_plus'] = taz_df['TOTHH'] * tfi.shrs4_2010
 
     taz_df['county'] = maz.groupby('taz1454').COUNTY.first()
+    taz_df['county_name'] = maz.groupby('taz1454').county_name.first()
 
     taz_df['hh_wrks_0'] = taz_df['TOTHH'] * tfi.shrw0_2010
     taz_df['hh_wrks_1'] = taz_df['TOTHH'] * tfi.shrw1_2010
@@ -1461,9 +1463,17 @@ def travel_model_output(parcels, households, jobs, buildings,
 
     # aggregate TAZ summaries to create county summaries
 
-    county_df = pd.DataFrame(index=[1, 2, 3, 4, 5, 6, 7, 8, 9])
+    county_df = pd.DataFrame(index=['San Francisco',
+                                    'San Mateo',
+                                    'Santa Clara',
+                                    'Alameda',
+                                    'Contra Costa',
+                                    'Solano',
+                                    'Napa',
+                                    'Sonoma',
+                                    'Marin'])
 
-    county_df["COUNTY"] = county_df.index
+    county_df["COUNTY_NAME"] = county_df.index
 
     taz_cols = ["AGREMPN", "FPSEMPN", "HEREMPN", "RETEMPN", "MWTEMPN",
                 "OTHEMPN", "TOTEMP", "HHINCQ1", "HHINCQ2", "HHINCQ3",
@@ -1473,7 +1483,7 @@ def travel_model_output(parcels, households, jobs, buildings,
                 "AGE0004", "AGE0519", "AGE2044", "AGE4564", "AGE65P"]
 
     for col in taz_cols:
-        taz_df_grouped = taz_df.groupby('COUNTY').sum()
+        taz_df_grouped = taz_df.groupby('county_name').sum()
         county_df[col] = taz_df_grouped[col]
 
     county_df["DENSITY"] = \
@@ -1488,7 +1498,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     base_year_summary_taz = \
         base_year_summary_taz.to_frame()
     base_year_summary_county = \
-        base_year_summary_taz.groupby('COUNTY').sum()
+        base_year_summary_taz.groupby('COUNTY_NAME').sum()
     base_year_summary_county_ciacre = \
         base_year_summary_county['CIACRE_UNWEIGHTED']
     base_year_summary_county_resacre = \
@@ -1499,7 +1509,7 @@ def travel_model_output(parcels, households, jobs, buildings,
     county_df["RESACRE"] = scaled_resacre(
         base_year_summary_county_resacre, county_df.RESACRE_UNWEIGHTED)
 
-    county_df = county_df[["COUNTY", "AGREMPN", "FPSEMPN", "HEREMPN",
+    county_df = county_df[["COUNTY_NAME", "AGREMPN", "FPSEMPN", "HEREMPN",
                            "RETEMPN", "MWTEMPN", "OTHEMPN", "TOTEMP",
                            "HHINCQ1", "HHINCQ2", "HHINCQ3", "HHINCQ4",
                            "HHPOP", "TOTHH", "SHPOP62P", "GQPOP",
@@ -1508,7 +1518,7 @@ def travel_model_output(parcels, households, jobs, buildings,
                            "CIACRE_UNWEIGHTED", "CIACRE", "RESACRE", "EMPRES",
                            "AGE0004", "AGE0519", "AGE2044", "AGE4564",
                            "AGE65P"]]
-    county_df = county_df.set_index('COUNTY')
+    county_df = county_df.set_index('COUNTY_NAME')
 
     county_df.fillna(0).to_csv(
         "runs/run{}_county_summaries_{}.csv".format(run_number, year))
@@ -1532,7 +1542,7 @@ def travel_model_2_output(parcels, households, jobs, buildings,
         # only summarize for years which are multiples of 5
         return
 
-    maz = maz.to_frame(['TAZ', 'COUNTY', 'taz1454'])
+    maz = maz.to_frame(['TAZ', 'COUNTY', 'county_name', 'taz1454'])
     rc = regional_controls.to_frame()
 
     pcl = parcels.to_frame(['maz_id', 'acres'])
@@ -1671,7 +1681,7 @@ def travel_model_2_output(parcels, households, jobs, buildings,
         + taz2.pop_hhsize3 + taz2.pop_hhsize4
 
     taz2['hhpop'] = maz.groupby('TAZ').hhpop.sum()
-    taz2['county'] = maz.groupby('TAZ').COUNTY.first()
+    taz2['county_name'] = maz.groupby('TAZ').county_name.first()
 
     taz2['pers_age_00_19'] = taz2['hhpop'] * t2fi.shra1_2010
     taz2['pers_age_20_34'] = taz2['hhpop'] * t2fi.shra2_2010
@@ -1692,17 +1702,18 @@ def travel_model_2_output(parcels, households, jobs, buildings,
 
     cfi = county_forecast_inputs.to_frame()
     county = pd.DataFrame(index=cfi.index)
-    county['pop'] = maz.groupby('COUNTY').POP.sum()
+    county['pop'] = maz.groupby('county_name').POP.sum()
 
     county[['hh_wrks_1', 'hh_wrks_2', 'hh_wrks_3_plus']] =\
-        taz2.groupby('county').agg({'hh_wrks_1': 'sum', 'hh_wrks_2': 'sum',
-                                    'hh_wrks_3_plus': 'sum'})
+        taz2.groupby('county_name').agg({'hh_wrks_1': 'sum',
+                                         'hh_wrks_2': 'sum',
+                                         'hh_wrks_3_plus': 'sum'})
 
     county['workers'] = county.hh_wrks_1 + county.hh_wrks_2 * 2\
         + county.hh_wrks_3_plus * 3.474036
 
     cef = county_employment_forecast.to_frame()
-    cef = cef.loc[cef.year == year].set_index('county')
+    cef = cef.loc[cef.year == year].set_index('county_name')
     county['pers_occ_management'] = county.workers * cef.shr_occ_management
     county['pers_occ_management'] = round_series_match_target(
         county['pers_occ_management'], np.round(
@@ -1729,7 +1740,7 @@ def travel_model_2_output(parcels, households, jobs, buildings,
         county['pers_occ_military'], np.round(
             county['pers_occ_military'].sum()), 0)
 
-    county['gq_tot_pop'] = maz.groupby('COUNTY').gq_tot_pop.sum()
+    county['gq_tot_pop'] = maz.groupby('county_name').gq_tot_pop.sum()
 
     maz[['HH', 'POP', 'emp_total', 'ag', 'natres', 'logis',
          'man_bio', 'man_hvy', 'man_lgt', 'man_tech',
