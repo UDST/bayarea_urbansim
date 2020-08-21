@@ -497,6 +497,8 @@ def form_to_btype_func(building):
 
 @orca.injectable(autocall=False)
 def add_extra_columns_func(df):
+    df['source'] = 'developer_model'
+
     for col in ["residential_price", "non_residential_rent"]:
         df[col] = 0
 
