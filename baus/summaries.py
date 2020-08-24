@@ -525,6 +525,10 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
     # this is considered an error for the MTC-style model
     # could be configured in settings.yaml
 
+    n = buildings.vacant_res_units[buildings.vacant_res_units < 0]
+    write("Number of overfull buildings = %d" % len(n))  
+    write("Number of vacant units in overfull buildings = %d" % n.sum())   
+
     du = buildings.residential_units.sum()
     write("Number of residential units in buildings table = %d" % du)
     write("Residential vacancy rate = %.2f" % (1-0 - float(nhh)/du))
