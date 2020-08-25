@@ -517,7 +517,7 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
 
     n = len(households.building_id[households.building_id == -1])
     write("Number of unplaced households = %d" % n)
-    orca.add_injectable(("unplaced_hh_%d" % year), n)
+    orca.add_injectable("unplaced_hh", n)
 
     n = len(jobs.building_id[jobs.building_id == -1])
     write("Number of unplaced jobs = %d" % n)

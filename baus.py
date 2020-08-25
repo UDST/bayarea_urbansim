@@ -129,6 +129,17 @@ if SLACK:
     slack = Slacker(os.environ["SLACK_TOKEN"])
     host = socket.gethostname()
 
+@orca.step()
+def slack_report(year):
+
+    if SLACK:
+        unplaced_hh = orca.get_injectable("unplaced_hh")
+        if unplaced_hh > 0:
+            slack.chat.post_message(
+                '#urbansim_sim_update',
+                'WARNING: unplaced households in %d for run %d on %d' 
+                % (year, run_num, host), as_user=True)
+
 
 def get_simulation_models(SCENARIO):
 
@@ -223,7 +234,8 @@ def get_simulation_models(SCENARIO):
         "travel_model_output",
         # "travel_model_2_output",
         "hazards_slr_summary",
-        "hazards_eq_summary"
+        "hazards_eq_summary", 
+        "slack_report"
 
     ]
 
@@ -328,7 +340,8 @@ def run_models(MODE, SCENARIO):
                 "hazards_slr_summary",
                 "hazards_eq_summary",
                 "diagnostic_output",
-                "config"
+                "config",
+                "slack_report"
 
             ], iter_vars=[IN_YEAR])
 
@@ -450,24 +463,6 @@ if SLACK:
         'Targets comparison is available at ' +
         'http://urbanforecast.com/runs/run%d_targets_comparison_2050.csv' %
         run_num, as_user=True)"""
-
-if SLACK and MODE == "simulation":
-
-    sim_years = range(IN_YEAR+EVERY_NTH_YEAR, OUT_YEAR+1,
-                      EVERY_NTH_YEAR)
-    unplaced_household_years = []
-    for year in sim_years:
-        unplaced_hh = orca.get_injectable("hh_unplaced_%d" % year)
-        if unplaced_households > 0:
-            unplaced_household_years.append(year)
-    if unplaced_household_years:
-            slack.chat.post_message(
-            '#urbansim_sim_update',
-            'WARNING: unplaced households in %d' % (unplaced_household_years), 
-                                                    as_user=True)
-
-# next: just def slack warnings: in baus.py
-# then call it as a model step
 
 summary = ""
 if MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
