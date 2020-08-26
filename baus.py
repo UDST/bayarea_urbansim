@@ -16,9 +16,6 @@ import socket
 import argparse
 import warnings
 from baus.utils import compare_summary
-# for urbanforecast.com visualizer
-if "URBANSIM_SLACK" in os.environ:
-    from baus.utils import ue_config, ue_files 
 
 warnings.filterwarnings("ignore")
 
@@ -53,6 +50,8 @@ LAST_KNOWN_GOOD_RUNS = {
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 
 orca.add_injectable("base_year", IN_YEAR)
+
+orca.add_injectable("slack_enabled", SLACK)
 
 parser = argparse.ArgumentParser(description='Run UrbanSim models.')
 
@@ -129,16 +128,8 @@ if SLACK:
     slack = Slacker(os.environ["SLACK_TOKEN"])
     host = socket.gethostname()
 
-@orca.step()
-def slack_report(year):
-
-    if SLACK:
-        unplaced_hh = orca.get_injectable("unplaced_hh")
-        if unplaced_hh > 0:
-            slack.chat.post_message(
-                '#urbansim_sim_update',
-                'WARNING: unplaced households in %d for run %d on %d' 
-                % (year, run_num, host), as_user=True)
+if MAPS:
+    from baus.utils import ue_config, ue_files 
 
 
 def get_simulation_models(SCENARIO):
@@ -463,6 +454,7 @@ if SLACK:
         'Targets comparison is available at ' +
         'http://urbanforecast.com/runs/run%d_targets_comparison_2050.csv' %
         run_num, as_user=True)"""
+        
 
 summary = ""
 if MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
