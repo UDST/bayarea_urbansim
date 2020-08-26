@@ -35,7 +35,7 @@ CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
 COMPARE_TO_NO_PROJECT = True
 NO_PROJECT = 611
 
-IN_YEAR, OUT_YEAR = 2010, 2050
+IN_YEAR, OUT_YEAR = 2010, 2015
 COMPARE_AGAINST_LAST_KNOWN_GOOD = False
 
 LAST_KNOWN_GOOD_RUNS = {
@@ -406,7 +406,7 @@ print("Current Scenario : ", orca.get_injectable('scenario').rstrip())
 print("Random Seed : ", RANDOM_SEED)
 
 
-if SLACK:
+if SLACK and MODE == "simulation":
     slack.chat.post_message(
         '#urbansim_sim_update',
         'Starting simulation %d on host %s (scenario: %s)' %
@@ -418,7 +418,7 @@ try:
 
 except Exception as e:
     print(traceback.print_exc())
-    if SLACK:
+    if SLACK and MODE == "simulation":
         slack.chat.post_message(
             '#urbansim_sim_update',
             'DANG!  Simulation failed for %d on host %s'
@@ -429,11 +429,12 @@ except Exception as e:
 
 print("Finished", time.ctime())
 
-if MAPS and 'travel_model_output' in get_simulation_models(SCENARIO):
+if MAPS and MODE == "simulation" and 'travel_model_output' \
+   in get_simulation_models(SCENARIO):
     files_msg1, files_msg2 = ue_files(run_num)
     config_resp = ue_config(run_num, host)
 
-if SLACK:
+if SLACK and MODE == "simulation":
     slack.chat.post_message(
         '#urbansim_sim_update',
         'Completed simulation %d on host %s' % (run_num, host), as_user=True)
@@ -454,7 +455,7 @@ if SLACK:
         'Targets comparison is available at ' +
         'http://urbanforecast.com/runs/run%d_targets_comparison_2050.csv' %
         run_num, as_user=True)"""
-        
+
 
 summary = ""
 if MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
