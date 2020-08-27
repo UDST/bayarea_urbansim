@@ -2289,4 +2289,4 @@ def slack_report(year, base_year, slack_enabled, run_number, devproj_len,
             slack.chat.post_message(
                 '#urbansim_sim_update',
                 'WARNING: unplaced households in %d for run %d on %s' 
-                % (year, run_num, host), as_user=True)
+                % (year, run_number, host), as_user=True)
