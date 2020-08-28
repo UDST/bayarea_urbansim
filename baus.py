@@ -16,9 +16,6 @@ import socket
 import argparse
 import warnings
 from baus.utils import compare_summary
-# for urbanforecast.com visualizer
-if "URBANSIM_SLACK" in os.environ:
-    from baus.utils import ue_config, ue_files 
 
 warnings.filterwarnings("ignore")
 
@@ -53,6 +50,8 @@ LAST_KNOWN_GOOD_RUNS = {
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 
 orca.add_injectable("base_year", IN_YEAR)
+
+orca.add_injectable("slack_enabled", SLACK)
 
 parser = argparse.ArgumentParser(description='Run UrbanSim models.')
 
@@ -128,6 +127,9 @@ if SLACK:
     from slacker import Slacker
     slack = Slacker(os.environ["SLACK_TOKEN"])
     host = socket.gethostname()
+
+if MAPS:
+    from baus.utils import ue_config, ue_files 
 
 
 def get_simulation_models(SCENARIO):
@@ -223,7 +225,8 @@ def get_simulation_models(SCENARIO):
         "travel_model_output",
         # "travel_model_2_output",
         "hazards_slr_summary",
-        "hazards_eq_summary"
+        "hazards_eq_summary", 
+        "slack_report"
 
     ]
 
@@ -328,7 +331,8 @@ def run_models(MODE, SCENARIO):
                 "hazards_slr_summary",
                 "hazards_eq_summary",
                 "diagnostic_output",
-                "config"
+                "config",
+                "slack_report"
 
             ], iter_vars=[IN_YEAR])
 
@@ -402,7 +406,7 @@ print("Current Scenario : ", orca.get_injectable('scenario').rstrip())
 print("Random Seed : ", RANDOM_SEED)
 
 
-if SLACK:
+if SLACK and MODE == "simulation":
     slack.chat.post_message(
         '#urbansim_sim_update',
         'Starting simulation %d on host %s (scenario: %s)' %
@@ -414,7 +418,7 @@ try:
 
 except Exception as e:
     print(traceback.print_exc())
-    if SLACK:
+    if SLACK and MODE == "simulation":
         slack.chat.post_message(
             '#urbansim_sim_update',
             'DANG!  Simulation failed for %d on host %s'
@@ -425,11 +429,12 @@ except Exception as e:
 
 print("Finished", time.ctime())
 
-if MAPS and 'travel_model_output' in get_simulation_models(SCENARIO):
+if MAPS and MODE == "simulation" and 'travel_model_output' \
+   in get_simulation_models(SCENARIO):
     files_msg1, files_msg2 = ue_files(run_num)
     config_resp = ue_config(run_num, host)
 
-if SLACK:
+if SLACK and MODE == "simulation":
     slack.chat.post_message(
         '#urbansim_sim_update',
         'Completed simulation %d on host %s' % (run_num, host), as_user=True)
@@ -473,7 +478,7 @@ if MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
         f.write(summary)
 
 
-if SLACK and MODE == "simulation":
+if SLACK and MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
 
     if len(summary.strip()) != 0:
         sum_lines = len(summary.strip().split("\n"))

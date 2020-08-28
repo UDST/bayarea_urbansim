@@ -517,6 +517,7 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
 
     n = len(households.building_id[households.building_id == -1])
     write("Number of unplaced households = %d" % n)
+    orca.add_injectable("unplaced_hh", n)
 
     n = len(jobs.building_id[jobs.building_id == -1])
     write("Number of unplaced jobs = %d" % n)
@@ -2258,3 +2259,34 @@ def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings,
         buildings.to_csv(os.path.join("runs",
                          "run%d_hazards_eq_buildings_list_%d.csv"
                                       % (run_number, year)))
+
+
+@orca.step()
+def slack_report(year, base_year, slack_enabled, run_number, devproj_len, 
+                 devproj_len_scen, devproj_len_geomid, devproj_len_proc):
+
+    if slack_enabled:
+        from slacker import Slacker
+        import socket
+        slack = Slacker(os.environ["SLACK_TOKEN"])
+        host = socket.gethostname()
+        
+        if year == base_year:
+            dropped_devproj_scen = devproj_len - devproj_len_scen
+            dropped_devproj_geomid = devproj_len_scen - devproj_len_geomid
+            dropped_devproj_proc = devproj_len_geomid - devproj_len_proc
+            slack.chat.post_message(
+                '#urbansim_sim_update',
+                'Development projects for run %d on %s: %d to start, ' 
+                '%d dropped by scenario filter, '
+                '%d dropped by geom_id check, ' 
+                '%d dropped by processing'  
+                % (run_number, host, devproj_len, dropped_devproj_scen, 
+                   dropped_devproj_geomid, dropped_devproj_proc), as_user=True)
+
+        unplaced_hh = orca.get_injectable("unplaced_hh")
+        if unplaced_hh > 0:
+            slack.chat.post_message(
+                '#urbansim_sim_update',
+                'WARNING: unplaced households in %d for run %d on %s' 
+                % (year, run_number, host), as_user=True)
