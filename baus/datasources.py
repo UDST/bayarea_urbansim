@@ -726,7 +726,7 @@ def development_projects(parcels, mapping, scenario):
     df = df.dropna(subset=["year_built"])
     df = df[df.action.isin(["add", "build"])]
 
-    orca.add_injectable("devproj_len_proc", len(df)) 
+    orca.add_injectable("devproj_len_proc", len(df))
 
     print("Describe of development projects")
     # this makes sure dev projects has all the same columns as buildings
