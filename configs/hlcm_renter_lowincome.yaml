@@ -5,7 +5,7 @@ model_type: segmented_discretechoice
 
 segmentation_col: base_income_octile
 
-choosers_fit_filters: (tenure == 'own' & income > 0)
+choosers_fit_filters: (tenure == 'rent' & income > 0)
 
 # filters follow the format from urbansim\urbansim\models\util.py line 21
 choosers_predict_filters: 'tenure == "rent" and base_income_quartile == 1'
