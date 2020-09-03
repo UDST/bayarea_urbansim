@@ -192,6 +192,11 @@ def get_simulation_models(SCENARIO):
         # allocate renters to vacant rental units
         "hlcm_renter_simulate",
 
+        # we first put Q1/Q2/Q3 in market-rate units, then allow
+        # Q1 into deed-restricted and market-rate units
+        "hlcm_owner_lowincome_simulate",
+        "hlcm_renter_lowincome_simulate",
+
         # we have to run the hlcm above before this one - we first want to
         # try and put unplaced households into their appropraite tenured
         # units and then when that fails, force them to place using the
@@ -310,6 +315,10 @@ def run_models(MODE, SCENARIO):
                 "hlcm_owner_simulate",
                 # allocate renters to vacant rental units
                 "hlcm_renter_simulate",
+                # we first put Q1/Q2/Q3 in market-rate units, then allow
+                # Q1 into deed-restricted and market-rate units
+                "hlcm_owner_lowincome_simulate",
+                "hlcm_renter_lowincome_simulate",
                 # update building/unit/hh correspondence
                 "reconcile_placed_households",
 
