@@ -260,10 +260,13 @@ def baseyear_taz_controls():
 
 
 @orca.table(cache=True)
-def base_year_summary_taz():
-    return pd.read_csv(os.path.join('output',
-                       'baseyear_taz_summaries_2010.csv'),
-                       index_col="zone_id")
+def base_year_summary_taz(mapping):
+    df = pd.read_csv(os.path.join('output',
+                                  'baseyear_taz_summaries_2010.csv'),
+                     index_col="zone_id")
+    cmap = mapping["county_id_tm_map"]
+    df['COUNTY_NAME'] = df.COUNTY.map(cmap)
+    return df
 
 
 # non-residential rent data
@@ -507,20 +510,20 @@ def parcels_geography(parcels, scenario, settings):
     # assert no empty juris values
     assert True not in df.juris_name.isnull().value_counts()
 
-    df['juris_trich'] = df.juris_id + df.trich_id
+    df['juris_trich'] = df.juris + '-' + df.trich_id
 
     df["pda_id_pba40"] = df.pda_id_pba40.str.lower()
     # danville wasn't supposed to be a pda
     df["pda_id_pba40"] = df.pda_id_pba40.replace("dan1", np.nan)
 
     # Add Draft Blueprint geographies: PDA, TRA, PPA, sesit
-    df["pad_id_pba50"] = df.pda_id_pba50.str.lower()
+    df["pda_id_pba50"] = df.pda_id_pba50.str.lower()
     df["tra_id"] = df.tra_id.str.lower()
-    df['juris_tra'] = df.juris_id + df.tra_id
+    df['juris_tra'] = df.juris + '-' + df.tra_id
     df["ppa_id"] = df.ppa_id.str.lower()
-    df['juris_ppa'] = df.juris_id + df.ppa_id
+    df['juris_ppa'] = df.juris + '-' + df.ppa_id
     df["sesit_id"] = df.sesit_id.str.lower()
-    df['juris_sesit'] = df.juris_id + df.sesit_id
+    df['juris_sesit'] = df.juris + '-' + df.sesit_id
 
     return df
 
@@ -657,12 +660,14 @@ def get_dev_projects_table(scenario, parcels):
     orca.add_injectable("dev_proj_file", current_dev_proj)
     df = pd.read_csv(os.path.join(urban_data_repo, current_dev_proj))
     df = reprocess_dev_projects(df)
+    orca.add_injectable("devproj_len", len(df))
 
     # this filters project by scenario
     scen = 'scen' + str(scenario)
     if scen in df:
         # df[scenario] is 1s and 0s indicating whether to include it
         df = df[df[scen].astype('bool')]
+    orca.add_injectable("devproj_len_scen", len(df))
 
     df = df.dropna(subset=['geom_id'])
 
@@ -676,6 +681,7 @@ def get_dev_projects_table(scenario, parcels):
     df = df.set_index("geom_id")
     df = geom_id_to_parcel_id(df, parcels).reset_index()  # use parcel id
     df["geom_id"] = geom_id.values  # add it back again cause it goes away
+    orca.add_injectable("devproj_len_geomid", len(df))
 
     return df
 
@@ -719,6 +725,8 @@ def development_projects(parcels, mapping, scenario):
     # need a year built to get built
     df = df.dropna(subset=["year_built"])
     df = df[df.action.isin(["add", "build"])]
+
+    orca.add_injectable("devproj_len_proc", len(df))
 
     print("Describe of development projects")
     # this makes sure dev projects has all the same columns as buildings
@@ -863,10 +871,12 @@ def abag_targets():
 
 
 @orca.table(cache=True)
-def taz_geography(superdistricts):
+def taz_geography(superdistricts, mapping):
     tg = pd.read_csv(
         os.path.join(misc.data_dir(), "taz_geography.csv"),
         index_col="zone")
+    cmap = mapping["county_id_tm_map"]
+    tg['county_name'] = tg.county.map(cmap)
 
     # we want "subregion" geography on the taz_geography table
     # we have to go get it from the superdistricts table and join
