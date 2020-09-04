@@ -394,13 +394,10 @@ def calculate_vmt_fees(policy, year, buildings, vmt_fee_categories, coffer,
             county_lookup = orca.get_table("parcels_subzone").to_frame()
             county_lookup = county_lookup[["county"]].\
                 rename(columns={'county': 'county3'})
-            # parcels_subzone has parcel_ids in XXXXXX.99999 format
-            # by this step, temporarily fix them here
             county_lookup.reset_index(inplace=True)
             county_lookup = county_lookup.\
                 rename(columns={'PARCEL_ID': 'PARCELID'})
-            county_lookup["PARCELID"] = county_lookup["PARCELID"].\
-                round().astype(int)
+
             df = df.merge(county_lookup,
                           left_on='parcel_id',
                           right_on='PARCELID',
@@ -461,8 +458,7 @@ def calculate_jobs_housing_fees(policy, year, buildings,
             to_frame().reset_index()
         county_lookup = county_lookup[['PARCEL_ID', 'county']].\
             rename(columns={'PARCEL_ID': 'PARCELID', 'county': 'county3'})
-        county_lookup["PARCELID"] = county_lookup["PARCELID"].\
-            round().astype(int)
+
         df = df.merge(juris_lookup,
                       left_on='parcel_id',
                       right_on='PARCELID',
