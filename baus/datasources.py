@@ -257,7 +257,7 @@ def landmarks():
 def baseyear_taz_controls():
     return pd.read_csv(os.path.join("data",
                                     "baseyear_taz_controls.csv"),
-                       dtype={'taz1454': np.int64}
+                       dtype={'taz1454': np.int64},
                        index_col="taz1454")
 
 
