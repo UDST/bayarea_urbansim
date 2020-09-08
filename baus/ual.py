@@ -494,7 +494,8 @@ def initialize_new_units(buildings, residential_units):
     '''
 
     old_units = residential_units.to_frame(residential_units.local_columns)
-    bldgs = buildings.to_frame(['residential_units', 'deed_restricted_units'])
+    bldgs = buildings.to_frame(['residential_units', 
+                                'deed_restricted_units'])
 
     # Filter for residential buildings not currently represented in
     # the units table, and create new units
@@ -512,17 +513,12 @@ def initialize_new_units(buildings, residential_units):
                              inplace=True)
     old_bldgs = bldgs[bldgs.index.isin(old_units.building_id)]
     old_bldgs = old_bldgs[old_bldgs.residential_units > 0]
-    old_bldgs.to_csv(
-        os.path.join("runs", "run%d_old_bldgs_%d.csv" %
-                         (run_number, year)))
+
     adu_bldgs = pd.merge(old_bldgs, old_units_by_bldg,
                          left_index=True, right_on='building_id')
     adu_bldgs['adu_count'] = \
             adu_bldgs.residential_units - adu_bldgs.num_units_old
     adu_bldgs = adu_bldgs[adu_bldgs.adu_count > 0]
-    adu_bldgs.to_csv(
-        os.path.join("runs", "run%d_adu_bldgs_%d.csv" %
-                         (run_number, year)))
 
     if len(adu_bldgs) > 0:
         new_adus = pd.DataFrame({
