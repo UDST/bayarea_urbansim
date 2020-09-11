@@ -8,13 +8,13 @@ segmentation_col: base_income_octile
 choosers_fit_filters: (tenure == 'own' & income > 0)
 
 # filters follow the format from urbansim\urbansim\models\util.py line 21
-choosers_predict_filters: 'tenure == "own" and base_income_quartile == 1'
+choosers_predict_filters: (tenure == "own" and base_income_quartile == 1)
 
 alts_fit_filters: null
 
 # filters follow the format from urbansim\urbansim\models\util.py line 21
 # allow low-income into deed-restricted or non-deed-restricted units
-alts_predict_filters: 'tenure == "own"'
+alts_predict_filters: (tenure == "own")
 
 interaction_predict_filters: null
 
