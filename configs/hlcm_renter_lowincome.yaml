@@ -1,4 +1,4 @@
-# a copy of hlcm_owner, no new estimation, used only to set household filters
+# a copy of hlcm_renter, no new estimation, used only to set household filters
 name: hlcm_renter_lowincome
 
 model_type: segmented_discretechoice
