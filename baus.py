@@ -327,8 +327,8 @@ def run_models(MODE, SCENARIO):
                 # allocate renters to vacant rental units
                 "hlcm_renter_simulate",
 
-                # we first put Q1/Q2/Q3 in market-rate units only, then allow 
-                # Q1 into either deed-restricted or market-rate units
+                # we first put Q1/Q2/Q3 in market-rate units only, then  
+                # allow Q1 into either deed-restricted or market-rate units
                 # this leaves deed-restricted units and the remaining 
                 # market-rate units for Q1, whereas placing Q1 first could 
                 # leave deed-restricted units vacant-- since deed-restricted 
