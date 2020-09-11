@@ -926,16 +926,21 @@ def hlcm_renter_lowincome_simulate(households, residential_units, aggregations,
 
 # this opens the yaml file, deletes the predict filters and writes it to the
 # out name - since the alts don't have a filter, all hhlds should be placed
-def drop_predict_filters_from_yaml(in_yaml_name, out_yaml_name):
+def drop_tenure_predict_filters_from_yaml(in_yaml_name, out_yaml_name):
     fname = misc.config(in_yaml_name)
     cfg = yaml.load(open(fname))
     cfg["alts_predict_filters"] = None
+    if 'lowincome' not in in_yaml_name:
+        cfg["alts_predict_filters"] = 'deed_restricted == False'
     open(misc.config(out_yaml_name), "w").write(yaml.dump(cfg))
 
 
 # see comment above - these hlcms ignore tenure in the alternatives and so
 # place households as long as there are empty units - this should only run
 # in the final year
+# 09 08 2020 ET: we'll run these every year for now, because
+# allowing only Q1 into deed-restricted units exacerbates the tenure
+# units-households alignment issue
 @orca.step()
 def hlcm_owner_simulate_no_unplaced(households, residential_units,
                                     year, final_year,
@@ -944,15 +949,35 @@ def hlcm_owner_simulate_no_unplaced(households, residential_units,
                                     hlcm_owner_no_unplaced_config):
 
     # only run in the last year, but make sure to run before summaries
-    if year != final_year:
-        return
+#    if year != final_year:
+#        return
 
-    drop_predict_filters_from_yaml(
+    drop_tenure_predict_filters_from_yaml(
         hlcm_owner_config,
         hlcm_owner_no_unplaced_config)
 
     return hlcm_simulate(households, residential_units, aggregations,
                          settings, hlcm_owner_no_unplaced_config,
+                         "price_equilibration")
+
+
+@orca.step()
+def hlcm_owner_lowincome_simulate_no_unplaced(households, residential_units,
+                                              year, final_year,
+                                              aggregations, settings,
+                                              hlcm_owner_lowincome_config,
+                                              hlcm_owner_lowincome_no_unplaced_config):
+
+    # only run in the last year, but make sure to run before summaries
+#    if year != final_year:
+#        return
+
+    drop_tenure_predict_filters_from_yaml(
+        hlcm_owner_lowincome_config,
+        hlcm_owner_lowincome_no_unplaced_config)
+
+    return hlcm_simulate(households, residential_units, aggregations,
+                         settings, hlcm_owner_lowincome_no_unplaced_config,
                          "price_equilibration")
 
 
@@ -964,15 +989,35 @@ def hlcm_renter_simulate_no_unplaced(households, residential_units,
                                      hlcm_renter_no_unplaced_config):
 
     # only run in the last year, but make sure to run before summaries
-    if year != final_year:
-        return
+#    if year != final_year:
+#        return
 
-    drop_predict_filters_from_yaml(
+    drop_tenure_predict_filters_from_yaml(
         hlcm_renter_config,
         hlcm_renter_no_unplaced_config)
 
     return hlcm_simulate(households, residential_units, aggregations,
                          settings, hlcm_renter_no_unplaced_config,
+                         "rent_equilibration")
+
+
+@orca.step()
+def hlcm_renter_lowincome_simulate_no_unplaced(households, residential_units,
+                                               year, final_year,
+                                               aggregations, settings,
+                                               hlcm_renter_lowincome_config,
+                                               hlcm_renter_lowincome_no_unplaced_config):
+
+    # only run in the last year, but make sure to run before summaries
+#    if year != final_year:
+#        return
+
+    drop_tenure_predict_filters_from_yaml(
+        hlcm_renter_lowincome_config,
+        hlcm_renter_lowincome_no_unplaced_config)
+
+    return hlcm_simulate(households, residential_units, aggregations,
+                         settings, hlcm_renter_lowincome_no_unplaced_config,
                          "rent_equilibration")
 
 
