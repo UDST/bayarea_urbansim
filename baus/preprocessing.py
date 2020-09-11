@@ -284,6 +284,9 @@ def preproc_buildings(store, parcels, manual_edits):
     # start with buildings from urbansim_defaults
     df = store['buildings']
 
+    # add source of buildings data (vs pipeline, developer model)
+    df['source'] = 'h5_inputs'
+
     # this is code from urbansim_defaults
     df["residential_units"] = pd.concat(
         [df.residential_units,
