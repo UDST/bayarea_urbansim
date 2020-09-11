@@ -340,9 +340,7 @@ def run_models(MODE, SCENARIO):
                 # we have to run the hlcm above before this one - we first want 
                 # to try and put unplaced households into their appropraite 
                 # tenured units and then when that fails, force them to place 
-                # using the code below.  technically the hlcms above could be 
-                # moved above the developer again, but we would have to run the 
-                # hedonics twice and also the assign_tenure_to_new_units twice.
+                # using the code below. 
 
                 # force placement of any unplaced households, in terms of 
                 # rent/own, is a noop except in the final simulation year
