@@ -838,9 +838,15 @@ def hlcm_owner_lowincome_simulate(households, residential_units,
                                   aggregations, settings,
                                   hlcm_owner_lowincome_config):
 
-    return hlcm_simulate(households, residential_units, aggregations,
-                         settings, hlcm_owner_lowincome_config,
-                         'price_equilibration')
+
+    # Pre-filter the alternatives to avoid over-pruning (PR 103)
+    correct_alternative_filters_sample(residential_units, households, 'own')
+
+    hlcm_simulate(orca.get_table('own_hh'), orca.get_table('own_units'),
+                  aggregations, settings, hlcm_owner_lowincome_config,
+                  'price_equilibration')
+
+    update_unit_ids(households, 'own')
 
 
 @orca.step()
@@ -852,6 +858,20 @@ def hlcm_renter_simulate(households, residential_units, aggregations,
 
     hlcm_simulate(orca.get_table('rent_hh'), orca.get_table('rent_units'),
                   aggregations, settings, hlcm_renter_config,
+                  'rent_equilibration')
+
+    update_unit_ids(households, 'rent')
+
+
+@orca.step()
+def hlcm_renter_lowincome_simulate(households, residential_units, aggregations,
+                                   settings, hlcm_renter_lowincome_config):
+
+    # Pre-filter the alternatives to avoid over-pruning (PR 103)
+    correct_alternative_filters_sample(residential_units, households, 'rent')
+
+    hlcm_simulate(orca.get_table('rent_hh'), orca.get_table('rent_units'),
+                  aggregations, settings, hlcm_renter_lowincome_config,
                   'rent_equilibration')
 
     update_unit_ids(households, 'rent')
@@ -914,14 +934,6 @@ def update_unit_ids(households, tenure):
     unit_ids.loc[unit_ids.index.isin(updated.index),
                  'unit_id'] = updated['unit_id']
     households.update_col_from_series('unit_id', unit_ids.unit_id, cast=True)
-
-
-@orca.step()
-def hlcm_renter_lowincome_simulate(households, residential_units, aggregations,
-                                   settings, hlcm_renter_lowincome_config):
-    return hlcm_simulate(households, residential_units, aggregations,
-                         settings, hlcm_renter_lowincome_config,
-                         'rent_equilibration')
 
 
 # this opens the yaml file, deletes the predict filters and writes it to the
