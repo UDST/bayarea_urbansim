@@ -151,9 +151,11 @@ model_configs:
     hlcm_owner_config: hlcm_owner.yaml
     hlcm_owner_lowincome_config: hlcm_owner_lowincome.yaml
     hlcm_owner_no_unplaced_config: hlcm_owner_no_unplaced.yaml
+    hlcm_owner_lowincome_no_unplaced_config: hlcm_owner_lowincome_no_unplaced.yaml
     hlcm_renter_config: hlcm_renter.yaml
     hlcm_renter_lowincome_config: hlcm_renter_lowincome.yaml
     hlcm_renter_no_unplaced_config: hlcm_renter_no_unplaced.yaml
+    hlcm_renter_lowincome_no_unplaced_config: hlcm_renter_lowincome_no_unplaced.yaml
   elcm:
     elcm_config: elcm.yaml
   rsh:
