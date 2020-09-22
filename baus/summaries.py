@@ -356,6 +356,17 @@ def config(policy, inputs, run_number, scenario, parcels,
         regional_funding += amount*5*7
     write("Total funding for deed-restricted housing is $%d"
           % regional_funding)
+    write("")
+
+    # preservation units
+    regional_units = 0
+    for geog, value in policy["unit_preservation"]["settings"].items(): 
+        l = ['first', 'second', 'third', 'fourth']
+        for item in l:
+            units = value[item+"_unit_target"]
+            if units is not None:
+                regional_units += units*8
+    write("Total unit target for preserving units is %d" % regional_units)
 
     f.close()
 
