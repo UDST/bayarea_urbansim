@@ -407,8 +407,9 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
         # round to nearest 100s
         hhincome_by_intrich = (hhincome_by_intrich/100).round()*100
 
-    # Summaries for Draft Blueprint geographies
-    if scenario in policy["geographies_db_enable"]:
+    # Summaries for Draft/Final Blueprint geographies
+    if scenario in policy["geographies_db_enable"] or \
+            scenario in policy["geographies_fb_enable"]:
         hh_by_inpda_pba50 = households_df.pda_id_pba50.notnull().value_counts()
 
         hhincome_by_inpda_pba50 = households_df.income.groupby(
@@ -449,7 +450,8 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
     if scenario in policy["geographies_fr2_enable"]:
         jobs_by_intrich = jobs_df.trich_id.notnull().value_counts()
 
-    if scenario in policy["geographies_db_enable"]:
+    if scenario in policy["geographies_db_enable"] or \
+            scenario in policy["geographies_fb_enable"]:
         jobs_by_inpda_pba50 = jobs_df.pda_pba50.notnull().value_counts()
         jobs_by_intra = jobs_df.tra_id.notnull().value_counts()
 
@@ -478,7 +480,8 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
                 "hhincome_by_intrich": hhincome_by_intrich,
                 "capacity": capacity
             })
-        if scenario in policy["geographies_db_enable"]:
+        if scenario in policy["geographies_db_enable"] or \
+                scenario in policy["geographies_fb_enable"]:
             orca.add_injectable("base_year_measures", {
                 "hh_by_subregion": hh_by_subregion,
                 "jobs_by_subregion": jobs_by_subregion,
@@ -560,6 +563,16 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
         write("Base year mean income by whether household is in hra/dr:\n%s" %
               base_year_measures["hhincome_by_insesit"])
         write("Draft Blueprint year mean income by whether household\
+              is in hra/dr:\n%s" % hhincome_by_insesit)
+
+    if scenario in policy["geographies_fb_enable"]:
+        write("Base year mean income by whether household is in tra:\n%s" %
+              base_year_measures["hhincome_by_intra"])
+        write("Final Blueprint year mean income by whether household\
+              is in tra:\n%s" % hhincome_by_intra)
+        write("Base year mean income by whether household is in hra/dr:\n%s" %
+              base_year_measures["hhincome_by_insesit"])
+        write("Final Blueprint year mean income by whether household\
               is in hra/dr:\n%s" % hhincome_by_insesit)
 
     jsp = buildings.job_spaces.sum()
@@ -658,8 +671,9 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
         write("Jobs pct of regional growth in trichs:\n%s" %
               norm_and_round(diff))
 
-    # write Draft Blueprint additional summaries: pda, tra, sesit(hra/dr)
-    if scenario in policy["geographies_db_enable"]:
+    # write Draft/Final Blueprint additional summaries: pda, tra, sesit(hra/dr)
+    if scenario in policy["geographies_db_enable"] or \
+            scenario in policy["geographies_fb_enable"]:
         tmp = base_year_measures["hh_by_inpda_pba50"]
         write("Households base year share in pdas:\n%s" %
               norm_and_round(tmp))
@@ -952,8 +966,9 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
        (scenario in policy["geographies_fr2_enable"]):
         geographies.append('juris_trich')
 
-    # append Draft Blueprint strategy geographis
-    if scenario in policy["geographies_db_enable"]:
+    # append Draft/Final Blueprint strategy geographis
+    if scenario in policy["geographies_db_enable"] or \
+            scenario in policy["geographies_fb_enable"]:
         geographies.extend(['pda_pba50', 'juris_tra',
                             'juris_sesit', 'juris_ppa'])
 
