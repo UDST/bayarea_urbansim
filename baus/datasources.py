@@ -454,8 +454,17 @@ def zoning_scenario(parcels_geography, scenario, policy, mapping):
     add_drop_helper("add_bldg", 1)
     add_drop_helper("drop_bldg", 0)
 
-    if 'pba50zoningmodcat' in scenario_zoning.columns:
-        join_col = 'pba50zoningmodcat'
+    if scenario in policy['geographies_fb_enable']:
+        try:
+            join_col = 'fbpzoningm'
+        except:
+            print("Join column for scenario {} not found!".format(scenario))
+    
+    elif scenario in policy['geographies_db_enable']:
+        try:
+            join_col = 'pba50zoningmodcat'
+        except:
+            print("Join column for scenario {} not found!".format(scenario))
     elif 'zoninghzcat' in scenario_zoning.columns:
         join_col = 'zoninghzcat'
     else:
@@ -499,7 +508,7 @@ def parcel_rejections():
 
 
 @orca.table(cache=True)
-def parcels_geography(parcels, scenario, settings):
+def parcels_geography(parcels, scenario, settings, policy):
     df = pd.read_csv(
         os.path.join(misc.data_dir(), "2020_07_10_parcels_geography.csv"),
         index_col="geom_id")
@@ -526,13 +535,23 @@ def parcels_geography(parcels, scenario, settings):
     df["pda_id_pba40"] = df.pda_id_pba40.replace("dan1", np.nan)
 
     # Add Draft Blueprint geographies: PDA, TRA, PPA, sesit
-    df["pda_id_pba50"] = df.pda_id_pba50.str.lower()
-    df["tra_id"] = df.tra_id.str.lower()
-    df['juris_tra'] = df.juris + '-' + df.tra_id
-    df["ppa_id"] = df.ppa_id.str.lower()
-    df['juris_ppa'] = df.juris + '-' + df.ppa_id
-    df["sesit_id"] = df.sesit_id.str.lower()
-    df['juris_sesit'] = df.juris + '-' + df.sesit_id
+    if scenario in policy['geographies_db_enable']:
+        df["pda_id_pba50"] = df.pda_id_pba50.str.lower()
+        df["tra_id"] = df.tra_id.str.lower()
+        df['juris_tra'] = df.juris + '-' + df.tra_id
+        df["ppa_id"] = df.ppa_id.str.lower()
+        df['juris_ppa'] = df.juris + '-' + df.ppa_id
+        df["sesit_id"] = df.sesit_id.str.lower()
+        df['juris_sesit'] = df.juris + '-' + df.sesit_id
+    # Use Final Blueprint geographies: PDA, TRA, PPA, sesit
+    elif scenario in policy['geographies_fb_enable']:
+        df["pda_id_pba50"] = df.pda_id_pba50_fb.str.lower()
+        df["tra_id"] = df.fbp_tra_id.str.lower()
+        df['juris_tra'] = df.juris + '-' + df.tra_id
+        df["ppa_id"] = df.fbp_ppa_id.str.lower()
+        df['juris_ppa'] = df.juris + '-' + df.ppa_id
+        df["sesit_id"] = df.fbp_sesit_id.str.lower()
+        df['juris_sesit'] = df.juris + '-' + df.sesit_id 
 
     return df
 
