@@ -455,16 +455,9 @@ def zoning_scenario(parcels_geography, scenario, policy, mapping):
     add_drop_helper("drop_bldg", 0)
 
     if scenario in policy['geographies_fb_enable']:
-        try:
-            join_col = 'fbpzoningm'
-        except:
-            print("Join column for scenario {} not found!".format(scenario))
-    
+        join_col = 'fbpzoningm'
     elif scenario in policy['geographies_db_enable']:
-        try:
-            join_col = 'pba50zoningmodcat'
-        except:
-            print("Join column for scenario {} not found!".format(scenario))
+        join_col = 'pba50zoningmodcat'
     elif 'zoninghzcat' in scenario_zoning.columns:
         join_col = 'zoninghzcat'
     else:
@@ -684,7 +677,7 @@ def get_dev_projects_table(scenario, parcels):
     # requires the user has MTC's urban_data_internal
     # repository alongside bayarea_urbansim
     urban_data_repo = ("../urban_data_internal/development_projects/")
-    current_dev_proj = ("2020_0731_1607_development_projects.csv")
+    current_dev_proj = ("2020_0910_1940_development_projects.csv")
     orca.add_injectable("dev_proj_file", current_dev_proj)
     df = pd.read_csv(os.path.join(urban_data_repo, current_dev_proj))
     df = reprocess_dev_projects(df)

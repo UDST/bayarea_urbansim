@@ -11,10 +11,10 @@ geographies_fr2_enable: ["11", "12", "15"]
 # scenarios for PBA40
 geographies_pba40_enable: ["0", "3", "4"]
 
-# scenarios for Draft Blueprint geographis - PDA, TRA, SESIT (HRA, DR)
+# scenarios for Draft Blueprint geographies - PDA, TRA, SESIT (HRA, DR)
 geographies_db_enable: ["20", "21", "22", "23"]
 
-# scenarios for Final Blueprint geographis - PDA, TRA, SESIT (HRA, DIS)
+# scenarios for Final Blueprint geographies - PDA, TRA, SESIT (HRA, DIS)
 geographies_fb_enable: ["24"]
 
 # scenarios for futures round 2 office caps
