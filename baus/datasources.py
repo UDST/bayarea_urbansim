@@ -181,6 +181,10 @@ def hlcm_owner_no_unplaced_config():
 def hlcm_owner_lowincome_config():
     return get_config_file('hlcm_owner_lowincome')
 
+@orca.injectable(cache=True)
+def hlcm_owner_lowincome_no_unplaced_config():
+    return get_config_file('hlcm_owner_lowincome_no_unplaced')
+
 
 @orca.injectable(cache=True)
 def hlcm_renter_config():
@@ -195,6 +199,11 @@ def hlcm_renter_no_unplaced_config():
 @orca.injectable(cache=True)
 def hlcm_renter_lowincome_config():
     return get_config_file('hlcm_renter_lowincome')
+
+
+@orca.injectable(cache=True)
+def hlcm_renter_lowincome_no_unplaced_config():
+    return get_config_file('hlcm_renter_lowincome_no_unplaced')
 
 
 @orca.injectable(cache=True)
