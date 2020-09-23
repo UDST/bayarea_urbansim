@@ -60,9 +60,6 @@ def coffer(policy, scenario):
 def preserve_affordable(year, base_year, scenario, policy, residential_units,
                         taz_geography, buildings, parcels_geography):
 
-    # preserve affordable units in the base year to start
-#    if year != base_year:
-#        return
     if scenario not in policy["unit_preservation"]["enable_in_scenarios"]:
         return
 
