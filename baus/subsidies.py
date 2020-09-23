@@ -71,11 +71,6 @@ def preserve_affordable(year, base_year, scenario, policy, residential_units,
     bldgs = buildings.to_frame()
     parcels_geog = parcels_geography.to_frame()
     taz_geog = taz_geography.to_frame()
-    parcels_geog.to_csv("parcgeo.csv")
-    print("index")
-    print(parcels_geog.index)
-
-    res_units.to_csv("res_begin_%d.csv" % year)
 
     res_units = res_units.merge(bldgs[['parcel_id']], left_on='building_id', 
                                 right_index=True, how='left').\
@@ -85,8 +80,6 @@ def preserve_affordable(year, base_year, scenario, policy, residential_units,
 
     s = policy["unit_preservation"]["settings"]
 
-    res_units.to_csv("res_begin_wgeog_%d.csv" % year)
-
     # only preserve units that are not already deed-restricted
     res_units = res_units.loc[res_units.deed_restricted != 1]
 
@@ -95,7 +88,6 @@ def preserve_affordable(year, base_year, scenario, policy, residential_units,
     
     # apply deed-restriced units by geography (county here)
     for geog, value in s.items(): 
-        print(geog)
 
         # apply deed-restriced units by filters within each geography 
         l = ['first', 'second', 'third', 'fourth']
@@ -106,25 +98,16 @@ def preserve_affordable(year, base_year, scenario, policy, residential_units,
                     continue
             
             filter_nm = value[item+"_unit_filter"]
-            print(filter_nm)
             unit_target = value[item+"_unit_target"]
-            print(unit_target)
 
             # exclude units that have been preserved through this loop
-            print("len res units at beginning")
-            print(len(res_units))
             res_units = res_units[~res_units.index.isin(dr_units)]
-            print("len res units after removing preserve")
-            print(len(res_units))
 
             # subset units to the geography
             geography = policy["unit_preservation"]["geography"]
             geog_units = res_units.loc[res_units[geography] == geog]
-            geog_units.to_csv("geog_units.csv")
-
             # subset units to the filters within the geography
             filter_units = geog_units.query(filter_nm)
-            filter_units.to_csv("filter_units.csv")
 
             # pull a random set of units based on the target except in cases
             # where there aren't enough units in the filtered geography or
@@ -141,20 +124,14 @@ def preserve_affordable(year, base_year, scenario, policy, residential_units,
                 dr_units_set = np.random.choice(filter_units.index, 
                                                 unit_target, replace=False)
 
-            #print(dr_units_set)
-            print("len of set")
-            print(len(dr_units_set))
             dr_units.extend(dr_units_set)
-            #print(dr_units)
-            print("len of preserve set")
-            print(len(dr_units))
 
     # mark units as deed restriced in residential units table
     residential_units = residential_units.to_frame()
     residential_units.loc[residential_units.index.isin(dr_units), 
                           'deed_restricted'] = 1
     orca.add_table("residential_units", residential_units)
-    residential_units.to_csv("res_end_%d.csv" % year)
+
 
 @orca.injectable(cache=True)
 def acct_settings(policy):
