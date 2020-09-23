@@ -194,6 +194,15 @@ def get_simulation_models(SCENARIO):
         # allocate renters to vacant rental units
         "hlcm_renter_simulate",
 
+        # we first put Q1/Q2/Q3 in market-rate units only, then allow Q1 into 
+        # either deed-restricted or market-rate units
+        # this leaves deed-restricted units and the remaining market-rate
+        # units for Q1, whereas placing Q1 first could leave deed-restricted
+        # units vacant-- since deed-restricted units are not explicitly
+        # tied to price, there is not a greater probability Q1 will choose them
+        "hlcm_owner_lowincome_simulate",
+        "hlcm_renter_lowincome_simulate",
+
         # we have to run the hlcm above before this one - we first want to
         # try and put unplaced households into their appropraite tenured
         # units and then when that fails, force them to place using the
@@ -203,10 +212,14 @@ def get_simulation_models(SCENARIO):
 
         # force placement of any unplaced households, in terms of rent/own
         # is a noop except in the final simulation year
+        # 09 11 2020 ET: enabled for all simulation years
         "hlcm_owner_simulate_no_unplaced",
+        "hlcm_owner_lowincome_simulate_no_unplaced",
         # this one crashes right no because there are no unplaced, so
         # need to fix the crash in urbansim
+        # 09 11 2020 ET: appears to be working
         "hlcm_renter_simulate_no_unplaced",
+        "hlcm_renter_lowincome_simulate_no_unplaced",
 
         # update building/unit/hh correspondence
         "reconcile_placed_households",
@@ -313,6 +326,33 @@ def run_models(MODE, SCENARIO):
                 "hlcm_owner_simulate",
                 # allocate renters to vacant rental units
                 "hlcm_renter_simulate",
+
+                # we first put Q1/Q2/Q3 in market-rate units only, then  
+                # allow Q1 into either deed-restricted or market-rate units
+                # this leaves deed-restricted units and the remaining 
+                # market-rate units for Q1, whereas placing Q1 first could 
+                # leave deed-restricted units vacant-- since deed-restricted 
+                # units are not explicitly tied to price, there is not a 
+                # greater probability Q1 will choose them
+                "hlcm_owner_lowincome_simulate",
+                "hlcm_renter_lowincome_simulate",
+
+                # we have to run the hlcm above before this one - we first want 
+                # to try and put unplaced households into their appropraite 
+                # tenured units and then when that fails, force them to place 
+                # using the code below. 
+
+                # force placement of any unplaced households, in terms of 
+                # rent/own, is a noop except in the final simulation year
+                # 09 11 2020 ET: enabled for all simulation years
+                "hlcm_owner_simulate_no_unplaced",
+                "hlcm_owner_lowincome_simulate_no_unplaced",
+                # this one crashes right no because there are no unplaced, so
+                # need to fix the crash in urbansim
+                # 09 11 2020 ET: appears to be working
+                "hlcm_renter_simulate_no_unplaced",
+                "hlcm_renter_lowincome_simulate_no_unplaced",
+
                 # update building/unit/hh correspondence
                 "reconcile_placed_households",
 
