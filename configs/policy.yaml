@@ -3,22 +3,20 @@
 # see the bayarea_urbansim GitHub Pages: http://bayareametro.github.io/bayarea_urbansim/
 
 
-# 1) scenarios for futures round 2 upzoning- this allows you to
-# remove a FR2 scenario from the list, and use its FR1 zoningmods
-# 2) this also now enables the use of FR2 geographies in the model 
-# in the following scenarios
-# which breaks the use of #1 so we should not use it for #1 for now
+# enables Futures Round 2 upzoning, or reverts to Futures Round 1 upzoning 
+# if removed from list
+# this now also enables the use of Futures Round 2 geographies
 geographies_fr2_enable: ["11", "12", "15"]
 
-# scenarios for PBA40 geographies- this enables the use of these geographies
-# in the model
+# enables the use of PBA40 geographies
 geographies_pba40_enable: ["0", "3", "4"]
 
-# scenarios for Draft Blueprint geographies - PDA, TRA, SESIT (HRA, DR)
-# this enables the use of these geographiesin the model
+# enables the use of Draft Blueprint geographies - PDA, TRA, SESIT (HRA, DR)
+# this now also enables Draft Blueprint upzoning
 geographies_db_enable: ["20", "21", "22", "23"]
 
-# scenarios for Final Blueprint geographies - PDA, TRA, SESIT (HRA, DIS)
+# enables the use of Final Blueprint geographies - PDA, TRA, SESIT (HRA, DIS)
+# this now also enables Draft Blueprint upzoning 
 geographies_fb_enable: ["24"]
 
 # scenarios for futures round 2 office caps
