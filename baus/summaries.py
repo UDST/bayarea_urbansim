@@ -966,11 +966,12 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
        (scenario in policy["geographies_fr2_enable"]):
         geographies.append('juris_trich')
 
-    # append Draft/Final Blueprint strategy geographis
-    if scenario in policy["geographies_db_enable"] or \
-            scenario in policy["geographies_fb_enable"]:
-        geographies.extend(['pda_pba50', 'juris_tra',
-                            'juris_sesit', 'juris_ppa'])
+# disable final blueprint summaries being handled in post processing summaries
+#    # append Draft/Final Blueprint strategy geographis
+#    if scenario in policy["geographies_db_enable"] or \
+#            scenario in policy["geographies_fb_enable"]:
+#        geographies.extend(['pda_pba50', 'juris_tra',
+#                            'juris_sesit', 'juris_ppa'])
 
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
 
