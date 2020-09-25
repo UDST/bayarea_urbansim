@@ -181,6 +181,7 @@ def hlcm_owner_no_unplaced_config():
 def hlcm_owner_lowincome_config():
     return get_config_file('hlcm_owner_lowincome')
 
+
 @orca.injectable(cache=True)
 def hlcm_owner_lowincome_no_unplaced_config():
     return get_config_file('hlcm_owner_lowincome_no_unplaced')
@@ -544,7 +545,7 @@ def parcels_geography(parcels, scenario, settings, policy):
         df["ppa_id"] = df.fbp_ppa_id.str.lower()
         df['juris_ppa'] = df.juris + '-' + df.ppa_id
         df["sesit_id"] = df.fbp_sesit_id.str.lower()
-        df['juris_sesit'] = df.juris + '-' + df.sesit_id 
+        df['juris_sesit'] = df.juris + '-' + df.sesit_id
 
     return df
 

@@ -1188,8 +1188,8 @@ def building_summary(parcels, run_number, year,
         'buildings',
         [parcels, buildings],
         columns=['performance_zone', 'year_built', 'residential_units',
-                 'unit_price', 'zone_id', 'non_residential_sqft', 
-                 'vacant_res_units', 'deed_restricted_units', 'job_spaces', 
+                 'unit_price', 'zone_id', 'non_residential_sqft',
+                 'vacant_res_units', 'deed_restricted_units', 'job_spaces',
                  'x', 'y', 'geom_id', 'source'])
 
     df.to_csv(
@@ -1246,11 +1246,11 @@ def parcel_summary(parcels, buildings, households, jobs,
     building_df = orca.merge_tables(
         'buildings',
         [parcels, buildings],
-        columns=['parcel_id','residential_units','deed_restricted_units'])
-    df['residential_units'] = building_df.groupby('parcel_id')\
-                               ['residential_units'].sum()
-    df['deed_restricted_units'] = building_df.groupby('parcel_id')\
-                                    ['deed_restricted_units'].sum()
+        columns=['parcel_id', 'residential_units', 'deed_restricted_units'])
+    df['residential_units'] = \
+        building_df.groupby('parcel_id')['residential_units'].sum()
+    df['deed_restricted_units'] = \
+        building_df.groupby('parcel_id')['deed_restricted_units'].sum()
 
     jobs_df = orca.merge_tables(
         'jobs',

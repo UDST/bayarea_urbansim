@@ -838,7 +838,6 @@ def hlcm_owner_lowincome_simulate(households, residential_units,
                                   aggregations, settings,
                                   hlcm_owner_lowincome_config):
 
-
     # Pre-filter the alternatives to avoid over-pruning (PR 103)
     correct_alternative_filters_sample(residential_units, households, 'own')
 
@@ -961,8 +960,8 @@ def hlcm_owner_simulate_no_unplaced(households, residential_units,
                                     hlcm_owner_no_unplaced_config):
 
     # only run in the last year, but make sure to run before summaries
-#    if year != final_year:
-#        return
+    # if year != final_year:
+    #     return
 
     drop_tenure_predict_filters_from_yaml(
         hlcm_owner_config,
@@ -981,8 +980,8 @@ def hlcm_owner_lowincome_simulate_no_unplaced(households, residential_units,
                                               hlcm_owner_lowincome_no_unplaced_config):
 
     # only run in the last year, but make sure to run before summaries
-#    if year != final_year:
-#        return
+    # if year != final_year:
+    #     return
 
     drop_tenure_predict_filters_from_yaml(
         hlcm_owner_lowincome_config,
@@ -1001,8 +1000,8 @@ def hlcm_renter_simulate_no_unplaced(households, residential_units,
                                      hlcm_renter_no_unplaced_config):
 
     # only run in the last year, but make sure to run before summaries
-#    if year != final_year:
-#        return
+    # if year != final_year:
+    #     return
 
     drop_tenure_predict_filters_from_yaml(
         hlcm_renter_config,
@@ -1021,8 +1020,8 @@ def hlcm_renter_lowincome_simulate_no_unplaced(households, residential_units,
                                                hlcm_renter_lowincome_no_unplaced_config):
 
     # only run in the last year, but make sure to run before summaries
-#    if year != final_year:
-#        return
+    # if year != final_year:
+    #     return
 
     drop_tenure_predict_filters_from_yaml(
         hlcm_renter_lowincome_config,
