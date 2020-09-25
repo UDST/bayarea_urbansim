@@ -352,13 +352,12 @@ def config(policy, inputs, run_number, scenario, parcels,
             amount = float(policy_loc["total_amount_db"])
         elif scenario in policy_loc["alternate_amount_scenarios_db"]:
             amount = float(policy_loc["alternate_total_amount_db"])
-        else:
+        elif scenario in (policy["acct_settings"]["lump_sum_accounts"]
+                          [county+"_bond_settings"]["enable_in_scenarios"]):
             amount = float(policy_loc["total_amount"])
         # sum annual ammount over the simulation period
         regional_funding += amount*5*7
-    if counter > 0:
-        write("Total funding for deed-restricted housing is $%d"
-              % regional_funding)
+    write("Total funding is $%d" % regional_funding)
 
     f.close()
 
