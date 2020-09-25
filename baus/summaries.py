@@ -355,8 +355,8 @@ def config(policy, inputs, run_number, scenario, parcels,
         elif scenario in (policy["acct_settings"]["lump_sum_accounts"]
                           [county+"_bond_settings"]["enable_in_scenarios"]):
             amount = float(policy_loc["total_amount"])
-        # sum annual ammount over the simulation period
-        if amount > 0:
+        # sum annual amount over the simulation period
+        if 'amount' in locals():
             regional_funding += amount*5*7
     write("Total funding is $%d" % regional_funding)
 
