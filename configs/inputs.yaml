@@ -15,6 +15,7 @@ control_tables:
     s17_household_controls_input_file: household_controls_s17.csv
     s22_household_controls_input_file: household_controls_s22.csv
     s23_household_controls_input_file: household_controls_s23.csv
+    s24_household_controls_input_file: household_controls_s24.csv
   employment:
     employment_controls_input_file: employment_controls.csv
     s1_employment_controls_input_file: employment_controls_s1.csv
@@ -29,6 +30,7 @@ control_tables:
     s21_employment_controls_input_file: employment_controls_s21.csv
     s22_employment_controls_input_file: employment_controls_s22.csv
     s23_employment_controls_input_file: employment_controls_s23.csv
+    s24_employment_controls_input_file: employment_controls_s24.csv
   regional:
     regional_controls_input_file: regional_controls.csv
     s1_regional_controls_input_file: regional_controls_s1.csv
@@ -45,6 +47,7 @@ control_tables:
     s21_regional_controls_input_file: regional_controls_s21.csv
     s22_regional_controls_input_file: regional_controls_s22.csv
     s23_regional_controls_input_file: regional_controls_s23.csv
+    s24_regional_controls_input_file: regional_controls_s24.csv
   demographic_forecast:
     demographic_forecast_controls_input_file: regional_demographic_forecast.csv
     s1_demographic_forecast_controls_input_file: regional_demographic_forecast_s1.csv
@@ -59,6 +62,7 @@ control_tables:
     s21_demographic_forecast_controls_input_file: regional_demographic_forecast_s21.csv
     s22_demographic_forecast_controls_input_file: regional_demographic_forecast_s22.csv
     s23_demographic_forecast_controls_input_file: regional_demographic_forecast_s23.csv
+    s24_demographic_forecast_controls_input_file: regional_demographic_forecast_s24.csv
 
 
 logsums:
@@ -86,6 +90,8 @@ logsums:
     logsum_2030_s21: mandatoryAccessibilities_2050_s21.csv
     logsum_2010_s23: mandatoryAccessibilities_2035_s23.csv
     logsum_2030_s23: mandatoryAccessibilities_2050_s23.csv
+    logsum_2010_s24: mandatoryAccessibilities_2035_s24.csv
+    logsum_2030_s24: mandatoryAccessibilities_2050_s24.csv
   non_mandatory:
     logsum: nonMandatoryAccessibilities_2015.csv
     logsum_2010_s1: nonMandatoryAccessibilities_2015.csv
@@ -110,6 +116,8 @@ logsums:
     logsum_2030_s21: nonMandatoryAccessibilities_2050_s21.csv
     logsum_2010_s23: nonMandatoryAccessibilities_2035_s23.csv
     logsum_2030_s23: nonMandatoryAccessibilities_2050_s23.csv
+    logsum_2010_s24: nonMandatoryAccessibilities_2035_s24.csv
+    logsum_2030_s24: nonMandatoryAccessibilities_2050_s24.csv
   segmentation:
     logsum: AccessibilityMarkets_2015.csv
     logsum_2010_s1: AccessibilityMarkets_2015.csv
@@ -134,6 +142,8 @@ logsums:
     logsum_2030_s21: AccessibilityMarkets_2050_s21.csv
     logsum_2010_s23: AccessibilityMarkets_2035_s23.csv
     logsum_2030_s23: AccessibilityMarkets_2050_s23.csv
+    logsum_2010_s24: AccessibilityMarkets_2035_s24.csv
+    logsum_2030_s24: AccessibilityMarkets_2050_s24.csv
 
 
 model_configs:
@@ -141,9 +151,11 @@ model_configs:
     hlcm_owner_config: hlcm_owner.yaml
     hlcm_owner_lowincome_config: hlcm_owner_lowincome.yaml
     hlcm_owner_no_unplaced_config: hlcm_owner_no_unplaced.yaml
+    hlcm_owner_lowincome_no_unplaced_config: hlcm_owner_lowincome_no_unplaced.yaml
     hlcm_renter_config: hlcm_renter.yaml
     hlcm_renter_lowincome_config: hlcm_renter_lowincome.yaml
     hlcm_renter_no_unplaced_config: hlcm_renter_no_unplaced.yaml
+    hlcm_renter_lowincome_no_unplaced_config: hlcm_renter_lowincome_no_unplaced.yaml
   elcm:
     elcm_config: elcm.yaml
   rsh:
