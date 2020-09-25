@@ -326,7 +326,9 @@ def config(policy, inputs, run_number, scenario, parcels,
             if key != "jobs_housing_com_for_res_scenarios":
                 counter += 1
         write("Jobs-housing fees are activated for %d counties" % counter)
-        write("")
+    else:
+        write("Jobs-housing fees are not activated")
+    write("")
 
     # affordable housing bonds
     # activation
@@ -354,8 +356,9 @@ def config(policy, inputs, run_number, scenario, parcels,
             amount = float(policy_loc["total_amount"])
         # sum annual ammount over the simulation period
         regional_funding += amount*5*7
-    write("Total funding for deed-restricted housing is $%d"
-          % regional_funding)
+    if counter > 0:
+        write("Total funding for deed-restricted housing is $%d"
+              % regional_funding)
 
     f.close()
 
