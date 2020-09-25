@@ -1210,7 +1210,6 @@ def parcel_summary(parcels, buildings, households, jobs,
     df = parcels.to_frame([
         "geom_id",
         "x", "y",
-        "total_residential_units",
         "total_job_spaces",
         "first_building_type"
     ])
@@ -1243,6 +1242,15 @@ def parcel_summary(parcels, buildings, households, jobs,
             households_df.base_income_quartile == i].\
             parcel_id.value_counts()
     df["tothh"] = households_df.groupby('parcel_id').size()
+
+    building_df = orca.merge_tables(
+        'buildings',
+        [parcels, buildings],
+        columns=['parcel_id','residential_units','deed_restricted_units'])
+    df['residential_units'] = building_df.groupby('parcel_id')\
+                               ['residential_units'].sum()
+    df['deed_restricted_units'] = building_df.groupby('parcel_id')\
+                                    ['deed_restricted_units'].sum()
 
     jobs_df = orca.merge_tables(
         'jobs',
