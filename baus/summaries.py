@@ -326,7 +326,7 @@ def config(policy, inputs, run_number, scenario, parcels,
             if key != "jobs_housing_com_for_res_scenarios":
                 counter += 1
         write("Jobs-housing fees are activated for %d counties" % counter)
-    write("")
+        write("")
 
     # affordable housing bonds
     # activation
