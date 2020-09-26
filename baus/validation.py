@@ -51,6 +51,7 @@ def check_job_controls(jobs, employment_controls, year, mapping):
 
 def check_residential_units(residential_units, buildings):
     print("Check residential units")
+
     # assert we fanned out the residential units correctly
     assert len(residential_units) == buildings.residential_units.sum()
 
@@ -119,7 +120,7 @@ def simulation_validation(
 
     check_household_controls(households, household_controls, year)
 
-#    check_residential_units(residential_units, buildings)
+    check_residential_units(residential_units, buildings)
 
     # change this to a Slack warning, while model will still complete
 #    check_no_unplaced_households(households, year)
