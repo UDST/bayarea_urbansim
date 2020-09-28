@@ -389,8 +389,7 @@ def fees_per_unit(parcels, policy, scenario):
     s = pd.Series(0, index=parcels.index)
 
     vmt_settings = policy["acct_settings"]["vmt_settings"]
-    if scenario in vmt_settings["com_for_res_scenarios"] or \
-            scenario in vmt_settings["res_for_res_scenarios"]:
+    if scenario in vmt_settings["res_for_res_scenarios"]:
         s += parcels.vmt_res_fees
 
     return s
@@ -402,7 +401,8 @@ def fees_per_sqft(parcels, policy, scenario):
     s = pd.Series(0, index=parcels.index)
 
     vmt_settings = policy["acct_settings"]["vmt_settings"]
-    if scenario in vmt_settings["com_for_com_scenarios"]:
+    if scenario in vmt_settings["com_for_com_scenarios"] or\
+            scenario in vmt_settings["com_for_res_scenarios"]:
         s += parcels.vmt_com_fees
 
     return s
