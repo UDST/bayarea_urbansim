@@ -3,16 +3,21 @@
 # see the bayarea_urbansim GitHub Pages: http://bayareametro.github.io/bayarea_urbansim/
 
 
-# scenarios for futures round 2 geographies- these trigger the associated
-# zoning_mods: transit areas, high resources areas (with transit), and
-# catalyst sites are upzoned
+# enables Futures Round 2 upzoning, or reverts to Futures Round 1 upzoning 
+# if removed from list
+# this now also enables the use of Futures Round 2 geographies
 geographies_fr2_enable: ["11", "12", "15"]
 
-# scenarios for PBA40
+# enables the use of PBA40 geographies
 geographies_pba40_enable: ["0", "3", "4"]
 
-# scenarios for Draft Blueprint geographis - PDA, TRA, SESIT (HRA, DR)
+# enables the use of Draft Blueprint geographies - PDA, TRA, SESIT (HRA, DR)
+# this now also enables Draft Blueprint upzoning
 geographies_db_enable: ["20", "21", "22", "23"]
+
+# enables the use of Final Blueprint geographies - PDA, TRA, SESIT (HRA, DIS)
+# this now also enables Draft Blueprint upzoning 
+geographies_fb_enable: ["24"]
 
 # scenarios for futures round 2 office caps
 office_caps_fr2_enable: ["11", "12", "15"]
