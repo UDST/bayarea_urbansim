@@ -797,8 +797,6 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
                 "inclusionary_units": new_building.inclusionary_units,
                 "building_id": index
             }
-            account.add_transaction(amt, subaccount=subacct,
-                                    metadata=metadata)
 
             if create_deed_restricted:
 
