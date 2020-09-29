@@ -352,6 +352,8 @@ def config(policy, inputs, run_number, scenario, parcels,
             amount = float(policy_loc["total_amount_db"])
         elif scenario in policy_loc["alternate_amount_scenarios_db"]:
             amount = float(policy_loc["alternate_total_amount_db"])
+        elif scenario in policy_loc["default_amount_scenarios_fb"]:
+            amount = float(policy_loc["total_amount_fb"])
         elif scenario in (policy["acct_settings"]["lump_sum_accounts"]
                           [county+"_bond_settings"]["enable_in_scenarios"]):
             amount = float(policy_loc["total_amount"])
@@ -1190,7 +1192,7 @@ def building_summary(parcels, run_number, year,
         columns=['performance_zone', 'year_built', 'building_type',
                  'residential_units', 'unit_price', 'zone_id', 
                  'non_residential_sqft', 'vacant_res_units', 
-                 'deed_restricted_units', 'job_spaces', 
+                 'deed_restricted_units', 'job_spaces',
                  'x', 'y', 'geom_id', 'source'])
 
     df.to_csv(
