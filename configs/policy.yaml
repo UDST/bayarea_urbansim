@@ -1992,83 +1992,83 @@ unit_preservation:
     geography: county_name
     settings: # change geography as needed
       'Alameda':
-        first_unit_filter: (sesit_id == 'DIS' or sesit_id == 'HRADIS') and tra_id == tra_id
+        first_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id == tra_id
         first_unit_target: 3438
-        second_unit_filter: (sesit_id == 'DIS' or sesit_id == 'HRADIS') and tra_id != tra_id 
+        second_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id != tra_id 
         second_unit_target: 
-        third_unit_filter: tra_id == tra_id and (sesit_id != 'DIS' and sesit_id != 'HRADIS') 
+        third_unit_filter: tra_id == tra_id and (sesit_id != 'dis' and sesit_id != 'hradis') 
         third_unit_target: 12375
         fourth_unit_filter: gg_id == gg_id
         fourth_unit_target: 313
       'Contra Costa':
-        first_unit_filter: (sesit_id == 'DIS' or sesit_id == 'HRADIS') and tra_id == tra_id
+        first_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id == tra_id
         first_unit_target: 1063
-        second_unit_filter: (sesit_id == 'DIS' or sesit_id == 'HRADIS') and tra_id != tra_id 
+        second_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id != tra_id 
         second_unit_target: 
-        third_unit_filter: tra_id == tra_id and (sesit_id != 'DIS' and sesit_id != 'HRADIS') 
+        third_unit_filter: tra_id == tra_id and (sesit_id != 'dis' and sesit_id != 'hradis') 
         third_unit_target: 1563
         fourth_unit_filter: gg_id == gg_id
         fourth_unit_target: 125
       'Marin':
-        first_unit_filter: (sesit_id == 'DIS' or sesit_id == 'HRADIS') and tra_id == tra_id
+        first_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id == tra_id
         first_unit_target: 625
-        second_unit_filter: (sesit_id == 'DIS' or sesit_id == 'HRADIS') and tra_id != tra_id 
+        second_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id != tra_id 
         second_unit_target: 750
-        third_unit_filter: tra_id == tra_id and (sesit_id != ''DIS' and sesit_id != 'HRADIS') 
+        third_unit_filter: tra_id == tra_id and (sesit_id != 'dis' and sesit_id != 'hradis') 
         third_unit_target: 625
         fourth_unit_filter: gg_id == gg_id
         fourth_unit_target: 1500
       'Napa':
-        first_unit_filter: (sesit_id == 'DIS' or sesit_id == 'HRADIS') and tra_id == tra_id
+        first_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id == tra_id
         first_unit_target: 
-        second_unit_filter: (sesit_id == 'DIS' or sesit_id == 'HRADIS') and tra_id != tra_id 
+        second_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id != tra_id 
         second_unit_target: 
-        third_unit_filter: tra_id == tra_id and (sesit_id != 'DIS' and sesit_id != 'HRADIS') 
+        third_unit_filter: tra_id == tra_id and (sesit_id != 'dis' and sesit_id != 'hradis') 
         third_unit_target: 63
         fourth_unit_filter: gg_id == gg_id
         fourth_unit_target: 
       'San Francisco':
-        first_unit_filter: (sesit_id == 'DIS' or sesit_id == 'HRADIS') and tra_id == tra_id
+        first_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id == tra_id
         first_unit_target: 3438
-        second_unit_filter: (sesit_id == 'DIS' or sesit_id == 'HRADIS') and tra_id != tra_id 
+        second_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id != tra_id 
         second_unit_target: 63
-        third_unit_filter: tra_id == tra_id and (sesit_id != 'DIS' and sesit_id != 'HRADIS') 
+        third_unit_filter: tra_id == tra_id and (sesit_id != 'dis' and sesit_id != 'hradis') 
         third_unit_target: 11625
         fourth_unit_filter: gg_id == gg_id
         fourth_unit_target: 6750
       'San Mateo':
-        first_unit_filter: (sesit_id == 'DIS' or sesit_id == 'HRADIS') and tra_id == tra_id
+        first_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id == tra_id
         first_unit_target: 938
-        second_unit_filter: (sesit_id == 'DIS' or sesit_id == 'HRADIS') and tra_id != tra_id 
+        second_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id != tra_id 
         second_unit_target: 
-        third_unit_filter: tra_id == tra_id and (sesit_id != 'DIS' and sesit_id != 'HRADIS') 
+        third_unit_filter: tra_id == tra_id and (sesit_id != 'dis' and sesit_id != 'hradis') 
         third_unit_target: 2125
         fourth_unit_filter: gg_id == gg_id
         fourth_unit_target: 5188
       'Santa Clara':
-        first_unit_filter: (sesit_id == 'DIS' or sesit_id == 'HRADIS') and tra_id == tra_id
+        first_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id == tra_id
         first_unit_target: 4813
-        second_unit_filter: (sesit_id == 'DIS' or sesit_id == 'HRADIS') and tra_id != tra_id 
+        second_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id != tra_id 
         second_unit_target:
-        third_unit_filter: tra_id == tra_id and (sesit_id != 'DIS' and sesit_id != 'HRADIS') 
+        third_unit_filter: tra_id == tra_id and (sesit_id != 'dis' and sesit_id != 'hradis') 
         third_unit_target: 8000
         fourth_unit_filter: gg_id == gg_id
         fourth_unit_target: 250
       'Solano':
-        first_unit_filter: (sesit_id == 'DIS' or sesit_id == 'HRADIS') and tra_id == tra_id
+        first_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id == tra_id
         first_unit_target: 63
-        second_unit_filter: (sesit_id == 'DIS' or sesit_id == 'HRADIS') and tra_id != tra_id 
+        second_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id != tra_id 
         second_unit_target: 
-        third_unit_filter: tra_id == tra_id and (sesit_id != 'DIS' and sesit_id != 'HRADIS') 
+        third_unit_filter: tra_id == tra_id and (sesit_id != 'dis' and sesit_id != 'hradis') 
         third_unit_target: 375
         fourth_unit_filter: gg_id == gg_id
         fourth_unit_target: 63
       'Sonoma':
-        first_unit_filter: (sesit_id == 'DIS' or sesit_id == 'HRADIS') and tra_id == tra_id
+        first_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id == tra_id
         first_unit_target: 625
-        second_unit_filter: (sesit_id == 'DIS' or sesit_id == 'HRADIS') and tra_id != tra_id 
+        second_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id != tra_id 
         second_unit_target: 
-        third_unit_filter: tra_id == tra_id and (sesit_id != 'DIS' and sesit_id != 'HRADIS') 
+        third_unit_filter: tra_id == tra_id and (sesit_id != 'dis' and sesit_id != 'hradis') 
         third_unit_target: 625
         fourth_unit_filter: gg_id == gg_id
         fourth_unit_target: 63
