@@ -507,6 +507,7 @@ def add_extra_columns_func(df):
     else:
         print("Number of deed restricted units built = %d" %
               df.deed_restricted_units.sum())
+    df["preserved_units"] = 0
 
     df["redfin_sale_year"] = 2012
     df["redfin_sale_price"] = np.nan

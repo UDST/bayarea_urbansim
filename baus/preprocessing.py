@@ -293,6 +293,8 @@ def preproc_buildings(store, parcels, manual_edits):
          store.households_preproc.building_id.value_counts()],
         axis=1).max(axis=1)
 
+    df["preserved_units"] = 0
+
     # XXX need to make sure jobs don't exceed capacity
 
     # drop columns we don't needed
