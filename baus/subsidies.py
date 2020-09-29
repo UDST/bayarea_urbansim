@@ -133,9 +133,10 @@ def preserve_affordable(year, base_year, scenario, policy, residential_units,
     buildings = buildings.to_frame(buildings.local_columns)
     new_dr_res_units = residential_units.building_id.loc[residential_units.\
         index.isin(dr_units)].value_counts()
-    buildings["preserved_units"] = buildings.index.map(new_dr_res_units)
-    buildings["deed_restricted_units"] = (buildings.deed_restricted_units + 
-        buildings.preserved_units)
+    buildings["preserved_units"] = (buildings["preserved_units"] + 
+        buildings.index.map(new_dr_res_units).fillna(0.0))     
+    buildings["deed_restricted_units"] = (buildings["deed_restricted_units"] + 
+        buildings.index.map(new_dr_res_units).fillna(0.0))
     orca.add_table("buildings", buildings)
 
 
