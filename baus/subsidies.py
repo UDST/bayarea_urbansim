@@ -398,6 +398,10 @@ def policy_modifications_of_profit(feasibility, parcels):
                         orca.get_injectable("scenario") in \
                         policy["alternate_geography_scenarios"]:
                     formula = policy["alternate_adjustment_formula"]
+                elif "geography_scenarios_fb" in policy and \
+                        orca.get_injectable("scenario") in \
+                        policy["geography_scenarios_fb"]:
+                    formula = policy["profitability_adjustment_formula_fb"]
                 else:
                     formula = policy["profitability_adjustment_formula"]
 
