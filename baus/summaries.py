@@ -362,6 +362,16 @@ def config(policy, inputs, run_number, scenario, parcels,
             regional_funding += amount*5*7
     write("Total funding is $%d" % regional_funding)
 
+    # preservation units
+    regional_units = 0
+    for geog, value in policy["unit_preservation"]["settings"].items(): 
+        l = ['first', 'second', 'third', 'fourth']
+        for item in l:
+            units = value[item+"_unit_target"]
+            if units is not None:
+                regional_units += units*8
+    write("Total unit target for preserving units is %d" % regional_units)
+
     f.close()
 
 
@@ -953,8 +963,8 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
         'buildings',
         [parcels, buildings],
         columns=['pda_pba40', 'pda_pba50', 'superdistrict', 'juris',
-                 'building_type', 'zone_id', 'residential_units',
-                 'building_sqft', 'non_residential_sqft',
+                 'building_type', 'zone_id', 'residential_units', 
+                 'preserved_units', 'building_sqft', 'non_residential_sqft',
                  'juris_trich', 'juris_tra', 'juris_sesit', 'juris_ppa'])
 
     parcel_output = summary.parcel_output
@@ -1081,6 +1091,9 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
                     summary_table.total_subsidy / \
                     summary_table.subsidized_units
 
+            summary_table['preserved_units'] = buildings_df.\
+            	groupby(geography).preserved_units.sum()
+
             summary_table = summary_table.sort_index()
 
             if base is False:
@@ -1206,7 +1219,7 @@ def building_summary(parcels, run_number, year,
         columns=['performance_zone', 'year_built', 'building_type',
                  'residential_units', 'unit_price', 'zone_id', 
                  'non_residential_sqft', 'vacant_res_units', 
-                 'deed_restricted_units', 'job_spaces', 
+                 'deed_restricted_units', 'preserved_units', 'job_spaces', 
                  'x', 'y', 'geom_id', 'source'])
 
     df.to_csv(
@@ -1263,11 +1276,14 @@ def parcel_summary(parcels, buildings, households, jobs,
     building_df = orca.merge_tables(
         'buildings',
         [parcels, buildings],
-        columns=['parcel_id', 'residential_units', 'deed_restricted_units'])
+        columns=['parcel_id', 'residential_units', 'deed_restricted_units', 
+                 'preserved_units'])
     df['residential_units'] = \
         building_df.groupby('parcel_id')['residential_units'].sum()
     df['deed_restricted_units'] = \
         building_df.groupby('parcel_id')['deed_restricted_units'].sum()
+    df['preserved_units'] = \
+        building_df.groupby('parcel_id')['preserved_units'].sum()
 
     jobs_df = orca.merge_tables(
         'jobs',

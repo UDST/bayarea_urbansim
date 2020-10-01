@@ -537,6 +537,7 @@ def parcels_geography(parcels, scenario, settings, policy):
         df['juris_ppa'] = df.juris + '-' + df.ppa_id
         df["sesit_id"] = df.sesit_id.str.lower()
         df['juris_sesit'] = df.juris + '-' + df.sesit_id
+        df['gg_id'] = df.gg_id.str.lower()
     # Use Final Blueprint geographies: PDA, TRA, PPA, sesit
     elif scenario in policy['geographies_fb_enable']:
         df["pda_id_pba50"] = df.pda_id_pba50_fb.str.lower()
@@ -546,6 +547,7 @@ def parcels_geography(parcels, scenario, settings, policy):
         df['juris_ppa'] = df.juris + '-' + df.ppa_id
         df["sesit_id"] = df.fbp_sesit_id.str.lower()
         df['juris_sesit'] = df.juris + '-' + df.sesit_id
+        df['gg_id'] = df.fbp_gg_id.str.lower()
 
     return df
 
@@ -729,6 +731,7 @@ def development_projects(parcels, mapping, scenario):
     df["building_sqft"] = df.building_sqft.fillna(0)
     df["non_residential_sqft"] = df.non_residential_sqft.fillna(0)
     df["residential_units"] = df.residential_units.fillna(0).astype("int")
+    df["preserved_units"] = 0.0
 
     df["building_type"] = df.building_type.replace("HP", "OF")
     df["building_type"] = df.building_type.replace("GV", "OF")
