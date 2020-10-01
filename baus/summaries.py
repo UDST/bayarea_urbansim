@@ -14,8 +14,8 @@ import urbansim_defaults
 import orca
 import orca_test
 import pandana
-import postprocessing
-from postprocessing import juris_to_county, cn_to_county
+import baus.postprocessing
+from baus.postprocessing import juris_to_county, cn_to_county
 
 
 @orca.step()
