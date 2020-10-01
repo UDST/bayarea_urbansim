@@ -3,16 +3,21 @@
 # see the bayarea_urbansim GitHub Pages: http://bayareametro.github.io/bayarea_urbansim/
 
 
-# scenarios for futures round 2 geographies- these trigger the associated
-# zoning_mods: transit areas, high resources areas (with transit), and
-# catalyst sites are upzoned
+# enables Futures Round 2 upzoning, or reverts to Futures Round 1 upzoning 
+# if removed from list
+# this now also enables the use of Futures Round 2 geographies
 geographies_fr2_enable: ["11", "12", "15"]
 
-# scenarios for PBA40
+# enables the use of PBA40 geographies
 geographies_pba40_enable: ["0", "3", "4"]
 
-# scenarios for Draft Blueprint geographis - PDA, TRA, SESIT (HRA, DR)
+# enables the use of Draft Blueprint geographies - PDA, TRA, SESIT (HRA, DR)
+# this now also enables Draft Blueprint upzoning
 geographies_db_enable: ["20", "21", "22", "23"]
+
+# enables the use of Final Blueprint geographies - PDA, TRA, SESIT (HRA, DIS)
+# this now also enables Draft Blueprint upzoning 
+geographies_fb_enable: ["24"]
 
 # scenarios for futures round 2 office caps
 office_caps_fr2_enable: ["11", "12", "15"]
@@ -1980,3 +1985,90 @@ acct_settings:
         'Sonoma': 10
         'Unincorporated Sonoma': 5
         'Windsor': 3
+
+
+unit_preservation:
+    enable_in_scenarios: ["24"]
+    geography: county_name
+    settings: # change geography as needed
+      'Alameda':
+        first_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id == tra_id
+        first_unit_target: 3438
+        second_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id != tra_id 
+        second_unit_target: 
+        third_unit_filter: tra_id == tra_id and (sesit_id != 'dis' and sesit_id != 'hradis') 
+        third_unit_target: 12375
+        fourth_unit_filter: gg_id == gg_id
+        fourth_unit_target: 313
+      'Contra Costa':
+        first_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id == tra_id
+        first_unit_target: 1063
+        second_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id != tra_id 
+        second_unit_target: 
+        third_unit_filter: tra_id == tra_id and (sesit_id != 'dis' and sesit_id != 'hradis') 
+        third_unit_target: 1563
+        fourth_unit_filter: gg_id == gg_id
+        fourth_unit_target: 125
+      'Marin':
+        first_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id == tra_id
+        first_unit_target: 625
+        second_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id != tra_id 
+        second_unit_target: 750
+        third_unit_filter: tra_id == tra_id and (sesit_id != 'dis' and sesit_id != 'hradis') 
+        third_unit_target: 625
+        fourth_unit_filter: gg_id == gg_id
+        fourth_unit_target: 1500
+      'Napa':
+        first_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id == tra_id
+        first_unit_target: 
+        second_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id != tra_id 
+        second_unit_target: 
+        third_unit_filter: tra_id == tra_id and (sesit_id != 'dis' and sesit_id != 'hradis') 
+        third_unit_target: 63
+        fourth_unit_filter: gg_id == gg_id
+        fourth_unit_target: 
+      'San Francisco':
+        first_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id == tra_id
+        first_unit_target: 3438
+        second_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id != tra_id 
+        second_unit_target: 63
+        third_unit_filter: tra_id == tra_id and (sesit_id != 'dis' and sesit_id != 'hradis') 
+        third_unit_target: 11625
+        fourth_unit_filter: gg_id == gg_id
+        fourth_unit_target: 6750
+      'San Mateo':
+        first_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id == tra_id
+        first_unit_target: 938
+        second_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id != tra_id 
+        second_unit_target: 
+        third_unit_filter: tra_id == tra_id and (sesit_id != 'dis' and sesit_id != 'hradis') 
+        third_unit_target: 2125
+        fourth_unit_filter: gg_id == gg_id
+        fourth_unit_target: 5188
+      'Santa Clara':
+        first_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id == tra_id
+        first_unit_target: 4813
+        second_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id != tra_id 
+        second_unit_target:
+        third_unit_filter: tra_id == tra_id and (sesit_id != 'dis' and sesit_id != 'hradis') 
+        third_unit_target: 8000
+        fourth_unit_filter: gg_id == gg_id
+        fourth_unit_target: 250
+      'Solano':
+        first_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id == tra_id
+        first_unit_target: 63
+        second_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id != tra_id 
+        second_unit_target: 
+        third_unit_filter: tra_id == tra_id and (sesit_id != 'dis' and sesit_id != 'hradis') 
+        third_unit_target: 375
+        fourth_unit_filter: gg_id == gg_id
+        fourth_unit_target: 63
+      'Sonoma':
+        first_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id == tra_id
+        first_unit_target: 625
+        second_unit_filter: (sesit_id == 'dis' or sesit_id == 'hradis') and tra_id != tra_id 
+        second_unit_target: 
+        third_unit_filter: tra_id == tra_id and (sesit_id != 'dis' and sesit_id != 'hradis') 
+        third_unit_target: 625
+        fourth_unit_filter: gg_id == gg_id
+        fourth_unit_target: 63
