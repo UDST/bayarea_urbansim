@@ -1100,6 +1100,21 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
                 format(run_number, acct_name, year)
             acct.to_frame().to_csv(fname)
 
+    if year == final_year:
+        baseyear = 2010
+        for geography in geographies:
+            df_base = pd.read_csv(os.path.join("runs",
+                                                "run%d_%d_summaries_%d.csv"
+                                                % (run_number, geography, baseyear)))
+            df_final = pd.read_csv(os.path.join("runs",
+                                                "run%d_%d_summaries_%d.csv"
+                                                % (run_number, geography, final_year)))
+            df_growth = postprocessing.nontaz_calculator(run_number,
+                                                        df_base, df_final)
+            df_growth.to_csv(os.path.join("runs",
+                                        "run%d_%d_growth_summaries.csv"
+                                        %(run_number, geography)))
+
     # Write Urban Footprint Summary
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
         # 02 15 2019 ET: Using perffoot there was no greenfield change
@@ -1176,7 +1191,6 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
         df.to_csv(os.path.join("runs",
                                "run%d_parcel_logsums_%d.csv"
                                % (run_number, year)))
-
 
 @orca.step()
 def building_summary(parcels, run_number, year,
@@ -1290,7 +1304,6 @@ def parcel_summary(parcels, buildings, households, jobs,
             os.path.join("runs", "run%d_parcel_data_diff.csv" %
                          run_number)
         )
-
 
 @orca.step()
 def travel_model_output(parcels, households, jobs, buildings,
