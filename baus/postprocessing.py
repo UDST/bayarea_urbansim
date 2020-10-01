@@ -267,7 +267,7 @@ def nontaz_calculator(run_num, DF1, DF2):
                   'hhincq4 growth',
                   'tothh growth',
                   'mfdu growth',
-                  'sfdu growth',
+                  'sfdu growth'
                   #'occupancy_rate growth',
                   'non_residential_sqft growth',
                   'deed_restricted_units growth',
@@ -334,6 +334,8 @@ def GEO_SUMMARY_LOADER(run_num, geo, parcel_baseyear, parcel_endyear):
     parcel_geo_no['geo_category'] = 'no_%s'%(geo)
     
     parcel_geo_summary = pd.concat([parcel_geo, parcel_geo_no], ignore_index = True)
+    dropindex = parcel_geo_summary[parcel_geo_summary['juris'] == 0].index
+    parcel_geo_summary.drop(dropindex,inplace = True)
     parcel_geo_summary.sort_values(by = 'juris', inplace = True)
     parcel_geo_summary['RUNID'] = run_num
     
@@ -373,6 +375,9 @@ def TWO_GEO_SUMMARY_LOADER(run_num, geo1, geo2, parcel_baseyear, parcel_endyear)
     parcel_geo2_no_group['geo_category'] = 'no_%s'%(geo1+geo2)
     
     parcel_geo2_summary = pd.concat([parcel_geo2_group, parcel_geo2_no_group], ignore_index = True)
+    dropindex = parcel_geo2_summary[parcel_geo2_summary['juris'] == 0].index
+    parcel_geo2_summary.drop(dropindex,inplace = True)
+    parcel_geo2_summary.sort_values(by = 'juris', inplace = True)
     parcel_geo2_summary['RUNID'] = run_num
     
     return parcel_geo2_summary
