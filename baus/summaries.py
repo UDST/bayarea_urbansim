@@ -961,8 +961,8 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
         'buildings',
         [parcels, buildings],
         columns=['pda_pba40', 'pda_pba50', 'superdistrict', 'juris',
-                 'building_type', 'zone_id', 'residential_units',
-                 'building_sqft', 'non_residential_sqft',
+                 'building_type', 'zone_id', 'residential_units', 
+                 'preserved_units', 'building_sqft', 'non_residential_sqft',
                  'juris_trich', 'juris_tra', 'juris_sesit', 'juris_ppa'])
 
     parcel_output = summary.parcel_output
@@ -1088,6 +1088,9 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
                 summary_table['subsidy_per_unit'] = \
                     summary_table.total_subsidy / \
                     summary_table.subsidized_units
+
+            summary_table['preserved_units'] = buildings_df.\
+            	groupby(geography).preserved_units.sum()
 
             summary_table = summary_table.sort_index()
 
@@ -1257,11 +1260,14 @@ def parcel_summary(parcels, buildings, households, jobs,
     building_df = orca.merge_tables(
         'buildings',
         [parcels, buildings],
-        columns=['parcel_id', 'residential_units', 'deed_restricted_units'])
+        columns=['parcel_id', 'residential_units', 'deed_restricted_units', 
+                 'preserved_units'])
     df['residential_units'] = \
         building_df.groupby('parcel_id')['residential_units'].sum()
     df['deed_restricted_units'] = \
         building_df.groupby('parcel_id')['deed_restricted_units'].sum()
+    df['preserved_units'] = \
+        building_df.groupby('parcel_id')['preserved_units'].sum()
 
     jobs_df = orca.merge_tables(
         'jobs',
