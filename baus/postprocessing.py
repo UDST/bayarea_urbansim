@@ -310,7 +310,7 @@ def nontaz_calculator(run_num, DF1, DF2):
 
 #This is to define a separate fileloader for parcel difference data. With the zoningmod category, we should be able to
 #summarize growth by different geography types that is more nuanced.
-def GEO_SUMMARY_LOADER(run_num, path, geo, parcel_baseyear, parcel_endyear):
+def GEO_SUMMARY_LOADER(run_num, geo, parcel_baseyear, parcel_endyear):
 
     parcel_baseyear = parcel_baseyear[['parcel_id','tothh','totemp', 'hhq1','hhq2','hhq3','hhq4']]
     parcel_endyear = parcel_endyear[['parcel_id','tothh','totemp', 'hhq1','hhq2','hhq3','hhq4','juris','fbpchcat']]
@@ -341,7 +341,7 @@ def GEO_SUMMARY_LOADER(run_num, path, geo, parcel_baseyear, parcel_endyear):
 
 
 ##Similar to above, this is to define a separate fileloader to produce summaries for overlapping geographies. W
-def TWO_GEO_SUMMARY_LOADER(run_num, path, geo1, geo2, parcel_baseyear, parcel_endyear):
+def TWO_GEO_SUMMARY_LOADER(run_num, geo1, geo2, parcel_baseyear, parcel_endyear):
 
     parcel_baseyear = parcel_baseyear[['parcel_id','tothh','totemp', 'hhq1','hhq2','hhq3','hhq4']]
     parcel_endyear = parcel_endyear[['parcel_id','tothh','totemp', 'hhq1','hhq2','hhq3','hhq4','juris','fbpchcat']]
