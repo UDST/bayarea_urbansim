@@ -1305,6 +1305,45 @@ def parcel_summary(parcels, buildings, households, jobs,
                          run_number)
         )
 
+    if year == final_year:
+        baseyear = 2010
+        df_base = pd.read_csv(os.path.join("runs",
+                                            "run%d_parcel_data_%d.csv"
+                                            % (run_number, geography, baseyear)))
+        df_final = pd.read_csv(os.path.join("runs",
+                                            "run%d_parcel_data_%d.csv"
+                                            % (run_number, geography, final_year)))
+
+        geographies = ['GG','tra','HRA', 'DIS']
+        for geography in geographies:
+            df_growth = postprocessing.GEO_SUMMARY_LOADER(run_number, geography
+                                                    df_base, df_final)
+            df_growth['county'] = df_growth['juris'].map(juris_to_county)
+            df_growth.sort_values(by = ['county','juris','geo_category'],
+                                ascending=[True, True, False], inplace=True)
+            df_growth.set_index(['county','juris','geo_category'], inplace=True)
+            df_growth.to_csv(os.path.join("runs", "run%d_%d_growth_summaries.csv" %
+                         run_number, geography))
+
+        geo_1, geo_2, geo_3 = 'tra','DIS','HRA'
+        df_growth_1 = postprocessing.TWO_GEO_SUMMARY_LOADER(run_number, geo_1, geo_2,
+                                                            df_base, df_final)
+        df_growth_1['county'] = df_growth_1['juris'].map(juris_to_county)
+        df_growth_1.sort_values(by = ['county','juris','geo_category'],
+                                ascending=[True, True, False], inplace=True)
+        df_growth_1.set_index(['county','juris','geo_category'], inplace=True)
+        df_growth_1.to_csv(os.path.join("runs", "run%d_%d_growth_summaries.csv" %
+                         run_number, geo_1 + geo_2))
+
+        df_growth_2 = postprocessing.TWO_GEO_SUMMARY_LOADER(run_number, geo_1, geo_3,
+                                                            df_base, df_final)
+        df_growth_2['county'] = df_growth_2['juris'].map(juris_to_county)
+        df_growth_2.sort_values(by = ['county','juris','geo_category'],
+                                ascending=[True, True, False], inplace=True)
+        df_growth_2.set_index(['county','juris','geo_category'], inplace=True)
+        df_growth_2.to_csv(os.path.join("runs", "run%d_%d_growth_summaries.csv" %
+                         run_number, geo_1 + geo_2))
+        
 @orca.step()
 def travel_model_output(parcels, households, jobs, buildings,
                         zones, maz, year, summary, coffer,
