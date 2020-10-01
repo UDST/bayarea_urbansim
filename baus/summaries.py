@@ -14,6 +14,8 @@ import urbansim_defaults
 import orca
 import orca_test
 import pandana
+import postprocessing
+from postpostprocessing import juris_to_county, cn_to_county
 
 
 @orca.step()
@@ -1224,7 +1226,7 @@ def parcel_summary(parcels, buildings, households, jobs,
     df = df.join(df2)
 
     # bringing in zoning modifications growth geography tag
-    join_col = "pba50chcat"
+    join_col = "fbpchcat"
     if join_col in parcels_geography.to_frame().columns:
         parcel_gg = parcels_geography.to_frame([
             "parcel_id",
