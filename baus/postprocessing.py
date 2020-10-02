@@ -272,7 +272,8 @@ def nontaz_calculator(run_num, DF1, DF2):
                   'non_residential_sqft growth',
                   'deed_restricted_units growth',
                   'inclusionary_units growth',
-                  'subsidized_units growth']
+                  'subsidized_units growth',
+                  'preserved_units growth']
     
     if ('juris' in DF1.columns) & ('juris' in DF2.columns):
         DF_merge = DF1.merge(DF2, on = 'juris').fillna(0)
@@ -302,6 +303,7 @@ def nontaz_calculator(run_num, DF1, DF2):
     DF_merge['deed_restricted_units growth'] = DF_merge['deed_restricted_units_y']-DF_merge['deed_restricted_units_x']
     DF_merge['inclusionary_units growth'] = DF_merge['inclusionary_units_y']-DF_merge['inclusionary_units_x']
     DF_merge['subsidized_units growth'] = DF_merge['subsidized_units_y']-DF_merge['subsidized_units_x']
+    DF_merge['preserved_units growth'] = DF_merge['preserved_units_y']-DF_merge['preserved_units_x']
         
     DF_GROWTH = DF_merge[DF_COLUMNS].copy()
     DF_GROWTH['RUNID'] = run_num
