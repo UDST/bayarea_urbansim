@@ -267,7 +267,7 @@ def nontaz_calculator(run_num, DF1, DF2):
                   'hhincq4 growth',
                   'tothh growth',
                   'mfdu growth',
-                  'sfdu growth'
+                  'sfdu growth',
                   #'occupancy_rate growth',
                   'non_residential_sqft growth',
                   'deed_restricted_units growth',
