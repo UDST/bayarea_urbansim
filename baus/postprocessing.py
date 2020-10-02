@@ -116,16 +116,6 @@ juris_to_county = {'alameda' : 'Alameda',
 'unincorporated_solano' : "Solano",
 'unincorporated_sonoma' : "Sonoma"}
 
-cn_to_county = {1 : 'San Francisco',
-                2 : 'San Mateo',
-                3 : 'Santa Clara',
-                4 : 'Alameda',
-                5 : 'Contra Costa',
-                6 : 'Solano',
-                7 : 'Napa',
-                8 : 'Sonoma',
-                9 : 'Marin'}
-
 
 #calculate growth at the regional level for main variables using taz summaries
 def county_calculator(run_num, DF1, DF2):
@@ -148,9 +138,8 @@ def county_calculator(run_num, DF1, DF2):
         DF_merge['HHINCQ2 GROWTH'] = DF_merge['HHINCQ2_y']-DF_merge['HHINCQ2_x']
         DF_merge['HHINCQ3 GROWTH'] = DF_merge['HHINCQ3_y']-DF_merge['HHINCQ3_x']
         DF_merge['HHINCQ4 GROWTH'] = DF_merge['HHINCQ4_y']-DF_merge['HHINCQ4_x']
-        DF_merge['county'] = DF_merge['COUNTY_x'].map(cn_to_county)
                    
-        DF_COLUMNS = ['county',
+        DF_COLUMNS = ['COUNTY_NAME_x',
                       'TOTPOP GROWTH',
                       'TOTEMP GROWTH',
                       'AGREMPN GROWTH',
@@ -166,7 +155,7 @@ def county_calculator(run_num, DF1, DF2):
                       'HHINCQ4 GROWTH']
         
         DF_TAZ_GROWTH = DF_merge[DF_COLUMNS].copy()
-        DF_COUNTY_GROWTH = DF_TAZ_GROWTH.groupby(['county']).sum().reset_index()
+        DF_COUNTY_GROWTH = DF_TAZ_GROWTH.groupby(['COUNTY_NAME_x']).sum().reset_index()
         DF_COUNTY_GROWTH['RUNID'] = run_num
         #add county mapping
         return DF_COUNTY_GROWTH
