@@ -965,8 +965,9 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
         'buildings',
         [parcels, buildings],
         columns=['pda_pba40', 'pda_pba50', 'superdistrict', 'juris',
-                 'building_type', 'zone_id', 'residential_units', 
-                 'preserved_units', 'building_sqft', 'non_residential_sqft',
+                 'building_type', 'zone_id', 'residential_units',
+                 'preserved_units', 'inclusionary_units',
+                 'building_sqft', 'non_residential_sqft',
                  'juris_trich', 'juris_tra', 'juris_sesit', 'juris_ppa'])
 
     parcel_output = summary.parcel_output
@@ -1096,6 +1097,12 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
             summary_table['preserved_units'] = buildings_df.\
             	groupby(geography).preserved_units.sum()
 
+            summary_table['deed_restricted_units_blg'] = buildings_df.\
+                groupby(geography).deed_restricted_units.sum()
+
+            summary_table['inclusionary_units_blg'] = buildings_df.\
+                groupby(geography).inclusionary_units.sum()           
+
             summary_table = summary_table.sort_index()
 
             if base is False:
@@ -1205,9 +1212,10 @@ def building_summary(parcels, run_number, year,
         'buildings',
         [parcels, buildings],
         columns=['performance_zone', 'year_built', 'building_type',
-                 'residential_units', 'unit_price', 'zone_id', 
-                 'non_residential_sqft', 'vacant_res_units', 
-                 'deed_restricted_units', 'preserved_units', 'job_spaces', 
+                 'residential_units', 'unit_price', 'zone_id',
+                 'non_residential_sqft', 'vacant_res_units',
+                 'deed_restricted_units', 'inclusionary_units',
+                 'preserved_units', 'job_spaces', 
                  'x', 'y', 'geom_id', 'source'])
 
     df.to_csv(
@@ -1246,7 +1254,7 @@ def parcel_summary(parcels, buildings, households, jobs,
         join_col = "pba50chcat"
     elif scenario in policy["geographies_fb_enable"]:
         join_col = "fbpchcat"
-    elif scenario in policy["geographies_pba40_enable"]s:
+    elif scenario in policy["geographies_pba40_enable"]:
         join_col = 'zoningmodcat'
     else:
         join_col = 'zoninghzcat'
