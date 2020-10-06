@@ -509,12 +509,6 @@ def add_extra_columns_func(df):
               df.deed_restricted_units.sum())
     df["preserved_units"] = 0.0
 
-    if "inclusionary_units" not in df.columns:
-        df["inclusionary_units"] = 0
-    else:
-        print("Number of inclusionary units built = %d" %
-              df.inclusionary_units.sum())
-
     df["redfin_sale_year"] = 2012
     df["redfin_sale_price"] = np.nan
 
@@ -629,8 +623,7 @@ def residential_developer(feasibility, households, buildings, parcels, year,
         # again because the buildings df gets modified by the run_developer
         # method below
         buildings = orca.get_table('buildings')
-        print('Stats of buildings before run_developer(): \n{}'.format(
-             buildings.to_frame()[['deed_restricted_units','preserved_units','inclusionary_units']].sum()))
+
         new_buildings = utils.run_developer(
             "residential",
             households,
@@ -646,8 +639,6 @@ def residential_developer(feasibility, households, buildings, parcels, year,
             num_units_to_build=int(target),
             profit_to_prob_func=subsidies.profit_to_prob_func,
             **kwargs)
-        print('Stats of buildings before run_developer(): \n{}'.format(
-             buildings.to_frame()[['deed_restricted_units','preserved_units','inclusionary_units']].sum()))
 
         buildings = orca.get_table('buildings')
 
@@ -673,7 +664,7 @@ def residential_developer(feasibility, households, buildings, parcels, year,
 
                 # we also need to fix the other columns so they make sense
                 for col in ["residential_sqft", "building_sqft",
-                            "deed_restricted_units", "inclusionary_units"]:
+                            "deed_restricted_units"]:
                     val = buildings.local.loc[index, col]
                     # reduce by pct but round to int
                     buildings.local.loc[index, col] = int(val * overshoot_pct)
