@@ -1220,7 +1220,8 @@ def building_summary(parcels, run_number, year,
 def parcel_summary(parcels, buildings, households, jobs,
                    run_number, year,
                    parcels_zoning_calculations,
-                   initial_year, final_year, parcels_geography):
+                   initial_year, final_year, parcels_geography,
+                   scenario, policy):
 
     if year not in [2010, 2015, 2035, 2050]:
         return
@@ -1241,7 +1242,15 @@ def parcel_summary(parcels, buildings, households, jobs,
     df = df.join(df2)
 
     # bringing in zoning modifications growth geography tag
-    join_col = "pba50chcat"
+    if scenario in policy["geographies_db_enable"]:
+        join_col = "pba50chcat"
+    elif scenario in policy["geographies_fb_enable"]:
+        join_col = "fbpchcat"
+    elif scenario in policy["geographies_pba40_enable"]s:
+        join_col = 'zoningmodcat'
+    else:
+        join_col = 'zoninghzcat'
+
     if join_col in parcels_geography.to_frame().columns:
         parcel_gg = parcels_geography.to_frame([
             "parcel_id",
