@@ -494,15 +494,68 @@ def initialize_new_units(buildings, residential_units):
     '''
 
     old_units = residential_units.to_frame(residential_units.local_columns)
-    bldgs = buildings.to_frame(['residential_units', 'deed_restricted_units'])
+    bldgs = buildings.to_frame(['residential_units',
+                                'deed_restricted_units'])
 
     # Filter for residential buildings not currently represented in
-    # the units table
+    # the units table, and create new units
     new_bldgs = bldgs[~bldgs.index.isin(old_units.building_id)]
     new_bldgs = new_bldgs[new_bldgs.residential_units > 0]
-
-    # Create new units, merge them, and update the table
     new_units = _create_empty_units(new_bldgs)
+
+    # Filter for residential buildings where ADUs were added and
+    # create new units
+    old_units_by_bldg = old_units.groupby(['building_id']).agg(
+            {'unit_num': max,
+             'num_units': 'count'}).reset_index()
+    old_units_by_bldg.rename(columns={'num_units': 'num_units_old',
+                                      'unit_num': 'max_num_old'},
+                             inplace=True)
+    old_bldgs = bldgs[bldgs.index.isin(old_units.building_id)]
+    old_bldgs = old_bldgs[old_bldgs.residential_units > 0]
+
+    adu_bldgs = pd.merge(old_bldgs, old_units_by_bldg,
+                         left_index=True, right_on='building_id')
+    adu_bldgs['adu_count'] = \
+        adu_bldgs.residential_units - adu_bldgs.num_units_old
+    adu_bldgs = adu_bldgs[adu_bldgs.adu_count > 0]
+
+    if len(adu_bldgs) > 0:
+        new_adus = pd.DataFrame({
+            'unit_residential_price': 0.0,
+            'unit_residential_rent': 0.0,
+            'num_units': 1,
+            'building_id': np.repeat(
+                adu_bldgs.building_id,
+                adu_bldgs.adu_count.values.astype(int)
+            ),
+            # counter of the AUDs in a building
+            'unit_num_adu': np.concatenate([
+                np.arange(num_adus)
+                for num_adus in adu_bldgs.adu_count.values.astype(int)
+            ]),
+            # ADUs are not deed restricted
+            'deed_restricted': 0.0,
+            'adu_count_start': np.repeat(
+                adu_bldgs.max_num_old+1,
+                adu_bldgs.adu_count.values.astype(int))
+        }).sort_values(by=['building_id',
+                           'unit_num_adu']).reset_index(drop=True)
+
+        # update unit_num of ADUs to continue with the previous
+        # unit_num of non-ADUs in the same buildings
+        new_adus.unit_num = \
+            new_adus.unit_num_adu + new_adus.adu_count_start
+        new_adus.drop(columns=['adu_count_start',
+                               'unit_num_adu'], inplace=True)
+        new_adus.index.name = 'unit_id'
+
+        new_units = dev.merge(new_units, new_adus)
+    else:
+        print('No ADUs were built.')
+
+    # Merge new units with old units and update the table
+
     all_units = dev.merge(old_units, new_units)
     all_units.index.name = 'unit_id'
 
@@ -838,9 +891,14 @@ def hlcm_owner_lowincome_simulate(households, residential_units,
                                   aggregations, settings,
                                   hlcm_owner_lowincome_config):
 
-    return hlcm_simulate(households, residential_units, aggregations,
-                         settings, hlcm_owner_lowincome_config,
-                         'price_equilibration')
+    # Pre-filter the alternatives to avoid over-pruning (PR 103)
+    correct_alternative_filters_sample(residential_units, households, 'own')
+
+    hlcm_simulate(orca.get_table('own_hh'), orca.get_table('own_units'),
+                  aggregations, settings, hlcm_owner_lowincome_config,
+                  'price_equilibration')
+
+    update_unit_ids(households, 'own')
 
 
 @orca.step()
@@ -852,6 +910,20 @@ def hlcm_renter_simulate(households, residential_units, aggregations,
 
     hlcm_simulate(orca.get_table('rent_hh'), orca.get_table('rent_units'),
                   aggregations, settings, hlcm_renter_config,
+                  'rent_equilibration')
+
+    update_unit_ids(households, 'rent')
+
+
+@orca.step()
+def hlcm_renter_lowincome_simulate(households, residential_units, aggregations,
+                                   settings, hlcm_renter_lowincome_config):
+
+    # Pre-filter the alternatives to avoid over-pruning (PR 103)
+    correct_alternative_filters_sample(residential_units, households, 'rent')
+
+    hlcm_simulate(orca.get_table('rent_hh'), orca.get_table('rent_units'),
+                  aggregations, settings, hlcm_renter_lowincome_config,
                   'rent_equilibration')
 
     update_unit_ids(households, 'rent')
@@ -916,26 +988,23 @@ def update_unit_ids(households, tenure):
     households.update_col_from_series('unit_id', unit_ids.unit_id, cast=True)
 
 
-@orca.step()
-def hlcm_renter_lowincome_simulate(households, residential_units, aggregations,
-                                   settings, hlcm_renter_lowincome_config):
-    return hlcm_simulate(households, residential_units, aggregations,
-                         settings, hlcm_renter_lowincome_config,
-                         'rent_equilibration')
-
-
 # this opens the yaml file, deletes the predict filters and writes it to the
 # out name - since the alts don't have a filter, all hhlds should be placed
-def drop_predict_filters_from_yaml(in_yaml_name, out_yaml_name):
+def drop_tenure_predict_filters_from_yaml(in_yaml_name, out_yaml_name):
     fname = misc.config(in_yaml_name)
     cfg = yaml.load(open(fname))
     cfg["alts_predict_filters"] = None
+    if 'lowincome' not in in_yaml_name:
+        cfg["alts_predict_filters"] = 'deed_restricted == False'
     open(misc.config(out_yaml_name), "w").write(yaml.dump(cfg))
 
 
 # see comment above - these hlcms ignore tenure in the alternatives and so
 # place households as long as there are empty units - this should only run
 # in the final year
+# 09 08 2020 ET: we'll run these every year for now, because
+# allowing only Q1 into deed-restricted units exacerbates the tenure
+# units-households alignment issue
 @orca.step()
 def hlcm_owner_simulate_no_unplaced(households, residential_units,
                                     year, final_year,
@@ -944,15 +1013,35 @@ def hlcm_owner_simulate_no_unplaced(households, residential_units,
                                     hlcm_owner_no_unplaced_config):
 
     # only run in the last year, but make sure to run before summaries
-    if year != final_year:
-        return
+    # if year != final_year:
+    #     return
 
-    drop_predict_filters_from_yaml(
+    drop_tenure_predict_filters_from_yaml(
         hlcm_owner_config,
         hlcm_owner_no_unplaced_config)
 
     return hlcm_simulate(households, residential_units, aggregations,
                          settings, hlcm_owner_no_unplaced_config,
+                         "price_equilibration")
+
+
+@orca.step()
+def hlcm_owner_lowincome_simulate_no_unplaced(households, residential_units,
+                                              year, final_year,
+                                              aggregations, settings,
+                                              hlcm_owner_lowincome_config,
+                                              hlcm_owner_lowincome_no_unplaced_config):
+
+    # only run in the last year, but make sure to run before summaries
+    # if year != final_year:
+    #     return
+
+    drop_tenure_predict_filters_from_yaml(
+        hlcm_owner_lowincome_config,
+        hlcm_owner_lowincome_no_unplaced_config)
+
+    return hlcm_simulate(households, residential_units, aggregations,
+                         settings, hlcm_owner_lowincome_no_unplaced_config,
                          "price_equilibration")
 
 
@@ -964,15 +1053,35 @@ def hlcm_renter_simulate_no_unplaced(households, residential_units,
                                      hlcm_renter_no_unplaced_config):
 
     # only run in the last year, but make sure to run before summaries
-    if year != final_year:
-        return
+    # if year != final_year:
+    #     return
 
-    drop_predict_filters_from_yaml(
+    drop_tenure_predict_filters_from_yaml(
         hlcm_renter_config,
         hlcm_renter_no_unplaced_config)
 
     return hlcm_simulate(households, residential_units, aggregations,
                          settings, hlcm_renter_no_unplaced_config,
+                         "rent_equilibration")
+
+
+@orca.step()
+def hlcm_renter_lowincome_simulate_no_unplaced(households, residential_units,
+                                               year, final_year,
+                                               aggregations, settings,
+                                               hlcm_renter_lowincome_config,
+                                               hlcm_renter_lowincome_no_unplaced_config):
+
+    # only run in the last year, but make sure to run before summaries
+    # if year != final_year:
+    #     return
+
+    drop_tenure_predict_filters_from_yaml(
+        hlcm_renter_lowincome_config,
+        hlcm_renter_lowincome_no_unplaced_config)
+
+    return hlcm_simulate(households, residential_units, aggregations,
+                         settings, hlcm_renter_lowincome_no_unplaced_config,
                          "rent_equilibration")
 
 

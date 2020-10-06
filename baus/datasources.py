@@ -183,6 +183,11 @@ def hlcm_owner_lowincome_config():
 
 
 @orca.injectable(cache=True)
+def hlcm_owner_lowincome_no_unplaced_config():
+    return get_config_file('hlcm_owner_lowincome_no_unplaced')
+
+
+@orca.injectable(cache=True)
 def hlcm_renter_config():
     return get_config_file('hlcm_renter')
 
@@ -195,6 +200,11 @@ def hlcm_renter_no_unplaced_config():
 @orca.injectable(cache=True)
 def hlcm_renter_lowincome_config():
     return get_config_file('hlcm_renter_lowincome')
+
+
+@orca.injectable(cache=True)
+def hlcm_renter_lowincome_no_unplaced_config():
+    return get_config_file('hlcm_renter_lowincome_no_unplaced')
 
 
 @orca.injectable(cache=True)
@@ -445,7 +455,9 @@ def zoning_scenario(parcels_geography, scenario, policy, mapping):
     add_drop_helper("add_bldg", 1)
     add_drop_helper("drop_bldg", 0)
 
-    if 'pba50zoningmodcat' in scenario_zoning.columns:
+    if scenario in policy['geographies_fb_enable']:
+        join_col = 'fbpzoningm'
+    elif scenario in policy['geographies_db_enable']:
         join_col = 'pba50zoningmodcat'
     elif 'zoninghzcat' in scenario_zoning.columns:
         join_col = 'zoninghzcat'
@@ -490,9 +502,9 @@ def parcel_rejections():
 
 
 @orca.table(cache=True)
-def parcels_geography(parcels, scenario, settings):
+def parcels_geography(parcels, scenario, settings, policy):
     df = pd.read_csv(
-        os.path.join(misc.data_dir(), "2020_07_10_parcels_geography.csv"),
+        os.path.join(misc.data_dir(), "2020_09_21_parcels_geography.csv"),
         index_col="geom_id")
     df = geom_id_to_parcel_id(df, parcels)
 
@@ -517,13 +529,25 @@ def parcels_geography(parcels, scenario, settings):
     df["pda_id_pba40"] = df.pda_id_pba40.replace("dan1", np.nan)
 
     # Add Draft Blueprint geographies: PDA, TRA, PPA, sesit
-    df["pda_id_pba50"] = df.pda_id_pba50.str.lower()
-    df["tra_id"] = df.tra_id.str.lower()
-    df['juris_tra'] = df.juris + '-' + df.tra_id
-    df["ppa_id"] = df.ppa_id.str.lower()
-    df['juris_ppa'] = df.juris + '-' + df.ppa_id
-    df["sesit_id"] = df.sesit_id.str.lower()
-    df['juris_sesit'] = df.juris + '-' + df.sesit_id
+    if scenario in policy['geographies_db_enable']:
+        df["pda_id_pba50"] = df.pda_id_pba50.str.lower()
+        df["tra_id"] = df.tra_id.str.lower()
+        df['juris_tra'] = df.juris + '-' + df.tra_id
+        df["ppa_id"] = df.ppa_id.str.lower()
+        df['juris_ppa'] = df.juris + '-' + df.ppa_id
+        df["sesit_id"] = df.sesit_id.str.lower()
+        df['juris_sesit'] = df.juris + '-' + df.sesit_id
+        df['gg_id'] = df.gg_id.str.lower()
+    # Use Final Blueprint geographies: PDA, TRA, PPA, sesit
+    elif scenario in policy['geographies_fb_enable']:
+        df["pda_id_pba50"] = df.pda_id_pba50_fb.str.lower()
+        df["tra_id"] = df.fbp_tra_id.str.lower()
+        df['juris_tra'] = df.juris + '-' + df.tra_id
+        df["ppa_id"] = df.fbp_ppa_id.str.lower()
+        df['juris_ppa'] = df.juris + '-' + df.ppa_id
+        df["sesit_id"] = df.fbp_sesit_id.str.lower()
+        df['juris_sesit'] = df.juris + '-' + df.sesit_id
+        df['gg_id'] = df.fbp_gg_id.str.lower()
 
     return df
 
@@ -656,7 +680,7 @@ def get_dev_projects_table(scenario, parcels):
     # requires the user has MTC's urban_data_internal
     # repository alongside bayarea_urbansim
     urban_data_repo = ("../urban_data_internal/development_projects/")
-    current_dev_proj = ("2020_0731_1607_development_projects.csv")
+    current_dev_proj = ("2020_0914_1529_development_projects.csv")
     orca.add_injectable("dev_proj_file", current_dev_proj)
     df = pd.read_csv(os.path.join(urban_data_repo, current_dev_proj))
     df = reprocess_dev_projects(df)
@@ -707,6 +731,7 @@ def development_projects(parcels, mapping, scenario):
     df["building_sqft"] = df.building_sqft.fillna(0)
     df["non_residential_sqft"] = df.non_residential_sqft.fillna(0)
     df["residential_units"] = df.residential_units.fillna(0).astype("int")
+    df["preserved_units"] = 0.0
 
     df["building_type"] = df.building_type.replace("HP", "OF")
     df["building_type"] = df.building_type.replace("GV", "OF")
