@@ -411,6 +411,7 @@ def policy_modifications_of_profit(feasibility, parcels):
 
                 print("Modifying profit for %s:\n" % policy["name"],
                       pct_modifications.describe())
+                print("Formula: \n{}".format(formula))
 
                 feasibility[("residential", "max_profit")] *= pct_modifications
 
