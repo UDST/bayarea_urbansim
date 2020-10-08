@@ -160,6 +160,10 @@ def lump_sum_accounts(policy, year, buildings, coffer,
                 scenario in acct["alternate_geography_scenarios"]:
             acct["receiving_buildings_filter"] = \
                 acct["alternate_buildings_filter"]
+        elif "geography_scenarios_fb" in acct and \
+                scenario in acct["geography_scenarios_fb"]:
+            acct["receiving_buildings_filter"] = \
+                acct["receiving_buildings_filter_fb"]
 
         if "default_amount_scenarios_db" in acct and \
                 scenario in acct["default_amount_scenarios_db"]:
@@ -168,6 +172,10 @@ def lump_sum_accounts(policy, year, buildings, coffer,
         elif "alternate_amount_scenarios_db" in acct and \
                 scenario in acct["alternate_amount_scenarios_db"]:
             amt = float(acct["alternate_total_amount_db"])
+
+        elif "default_amount_scenarios_fb" in acct and \
+                scenario in acct["default_amount_scenarios_fb"]:
+            amt = float(acct["total_amount_fb"])
 
         else:
             amt = float(acct["total_amount"])
@@ -787,6 +795,13 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
             acct_settings["alternate_geography_scenarios"]:
         feasibility = feasibility.\
             query(acct_settings["alternate_buildings_filter"])
+    elif "receiving_buildings_filter_fb" in acct_settings and \
+            orca.get_injectable("scenario") in \
+            acct_settings["geography_scenarios_fb"]:
+        print("receiving_buildings_filter: {}".format(
+                acct_settings["receiving_buildings_filter_fb"]))
+        feasibility = feasibility.\
+            query(acct_settings["receiving_buildings_filter_fb"])
     elif "receiving_buildings_filter" in acct_settings:
         feasibility = feasibility.\
             query(acct_settings["receiving_buildings_filter"])
@@ -863,10 +878,9 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
                 "description": "Developing subsidized building",
                 "year": year,
                 "residential_units": new_building.residential_units,
+                "inclusionary_units": new_building.inclusionary_units,
                 "building_id": index
             }
-            account.add_transaction(amt, subaccount=subacct,
-                                    metadata=metadata)
 
             if create_deed_restricted:
 
@@ -893,6 +907,14 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
                 # also correct the debug output
                 new_buildings.loc[index, "deed_restricted_units"] =\
                     int(round(subsidized_units))
+
+            metadata['deed_restricted_units'] = \
+                new_buildings.loc[index, 'deed_restricted_units']
+            metadata['subsidized_units'] = \
+                new_buildings.loc[index, 'deed_restricted_units'] - \
+                new_building.inclusionary_units
+            account.add_transaction(amt, subaccount=subacct,
+                                    metadata=metadata)
 
         # turn off this assertion for the Draft Blueprint
         # affordable housing policy since the number of deed restricted units
