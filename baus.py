@@ -191,19 +191,17 @@ def get_simulation_models(SCENARIO):
         # (based on higher of predicted price or rent)
         "assign_tenure_to_new_units",
 
+        # we first put Q1 households only into deed-restricted units, 
+        # then any additional unplaced Q1 households, Q2, Q3, and Q4 
+        # households are placed in either deed-restricted units or 
+        # market-rate units
+        "hlcm_owner_lowincome_simulate",
+        "hlcm_renter_lowincome_simulate",
+
         # allocate owners to vacant owner-occupied units
         "hlcm_owner_simulate",
         # allocate renters to vacant rental units
         "hlcm_renter_simulate",
-
-        # we first put Q1/Q2/Q3 in market-rate units only, then allow Q1 into
-        # either deed-restricted or market-rate units
-        # this leaves deed-restricted units and the remaining market-rate
-        # units for Q1, whereas placing Q1 first could leave deed-restricted
-        # units vacant-- since deed-restricted units are not explicitly
-        # tied to price, there is not a greater probability Q1 will choose them
-        "hlcm_owner_lowincome_simulate",
-        "hlcm_renter_lowincome_simulate",
 
         # we have to run the hlcm above before this one - we first want to
         # try and put unplaced households into their appropraite tenured
@@ -325,20 +323,17 @@ def run_models(MODE, SCENARIO):
                 "reconcile_unplaced_households",
                 "jobs_transition",
 
+                # we first put Q1 households only into deed-restricted units, 
+                # then any additional unplaced Q1 households, Q2, Q3, and Q4 
+                # households are placed in either deed-restricted units or 
+                # market-rate units
+                "hlcm_owner_lowincome_simulate",
+                "hlcm_renter_lowincome_simulate",
+
                 # allocate owners to vacant owner-occupied units
                 "hlcm_owner_simulate",
                 # allocate renters to vacant rental units
                 "hlcm_renter_simulate",
-
-                # we first put Q1/Q2/Q3 in market-rate units only, then
-                # allow Q1 into either deed-restricted or market-rate units
-                # this leaves deed-restricted units and the remaining
-                # market-rate units for Q1, whereas placing Q1 first could
-                # leave deed-restricted units vacant-- since deed-restricted
-                # units are not explicitly tied to price, there is not a
-                # greater probability Q1 will choose them
-                "hlcm_owner_lowincome_simulate",
-                "hlcm_renter_lowincome_simulate",
 
                 # we have to run the hlcm above before this one - we first want
                 # to try and put unplaced households into their appropraite
