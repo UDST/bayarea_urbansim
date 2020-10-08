@@ -163,6 +163,8 @@ def get_simulation_models(SCENARIO):
         "price_vars",
         "scheduled_development_events",
 
+        # preserve some units
+        "preserve_affordable",
         # run the subsidized acct system
         "lump_sum_accounts",
         "subsidized_residential_developer_lump_sum_accts",
