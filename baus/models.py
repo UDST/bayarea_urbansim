@@ -509,6 +509,12 @@ def add_extra_columns_func(df):
               df.deed_restricted_units.sum())
     df["preserved_units"] = 0.0
 
+    if "subsidized_units" not in df.columns:
+        df["subsidized_units"] = 0
+    else:
+        print("Number of subsidized units built = %d" %
+              df.subsidized_units.sum())
+
     df["redfin_sale_year"] = 2012
     df["redfin_sale_price"] = np.nan
 
