@@ -356,6 +356,8 @@ def config(policy, inputs, run_number, scenario, parcels,
             amount = float(policy_loc["total_amount_db"])
         elif scenario in policy_loc["alternate_amount_scenarios_db"]:
             amount = float(policy_loc["alternate_total_amount_db"])
+        elif scenario in policy_loc["default_amount_scenarios_fb"]:
+            amount = float(policy_loc["total_amount_fb"])
         elif scenario in (policy["acct_settings"]["lump_sum_accounts"]
                           [county+"_bond_settings"]["enable_in_scenarios"]):
             amount = float(policy_loc["total_amount"])
@@ -1087,6 +1089,11 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
                     parcel_output.deed_restricted_units - \
                     parcel_output.inclusionary_units
 
+                # columns re: affordable housing
+                summary_table['inclusionary_units'] = \
+                    parcel_output.groupby(geography).inclusionary_units.sum()
+                summary_table['subsidized_units'] = \
+                    parcel_output.groupby(geography).subsidized_units.sum()
                 summary_table['inclusionary_revenue_reduction'] = \
                     parcel_output.groupby(geography).\
                     policy_based_revenue_reduction.sum()
@@ -1095,7 +1102,7 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
                     summary_table.inclusionary_units
                 summary_table['total_subsidy'] = \
                     parcel_output[parcel_output.subsidized_units > 0].\
-                    groupby(geography).max_profit.sum() * -1
+                    groupby(geography).max_profit.sum() * -1    
                 summary_table['subsidy_per_unit'] = \
                     summary_table.total_subsidy / \
                     summary_table.subsidized_units      

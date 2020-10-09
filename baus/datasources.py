@@ -543,6 +543,7 @@ def parcels_geography(parcels, scenario, settings, policy):
     # Add Draft Blueprint geographies: PDA, TRA, PPA, sesit
     if scenario in policy['geographies_db_enable']:
         df["pda_id_pba50"] = df.pda_id_pba50.str.lower()
+        df["gg_id"] = df.gg_id.str.lower()
         df["tra_id"] = df.tra_id.str.lower()
         df['juris_tra'] = df.juris + '-' + df.tra_id
         df["ppa_id"] = df.ppa_id.str.lower()
@@ -553,6 +554,7 @@ def parcels_geography(parcels, scenario, settings, policy):
     # Use Final Blueprint geographies: PDA, TRA, PPA, sesit
     elif scenario in policy['geographies_fb_enable']:
         df["pda_id_pba50"] = df.pda_id_pba50_fb.str.lower()
+        df["gg_id"] = df.fbp_gg_id.str.lower()
         df["tra_id"] = df.fbp_tra_id.str.lower()
         df['juris_tra'] = df.juris + '-' + df.tra_id
         df["ppa_id"] = df.fbp_ppa_id.str.lower()
@@ -692,7 +694,7 @@ def get_dev_projects_table(scenario, parcels):
     # requires the user has MTC's urban_data_internal
     # repository alongside bayarea_urbansim
     urban_data_repo = ("../urban_data_internal/development_projects/")
-    current_dev_proj = ("2020_0914_1529_development_projects.csv")
+    current_dev_proj = ("2020_1001_0932_development_projects.csv")
     orca.add_injectable("dev_proj_file", current_dev_proj)
     df = pd.read_csv(os.path.join(urban_data_repo, current_dev_proj))
     df = reprocess_dev_projects(df)
