@@ -966,7 +966,8 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
         [parcels, buildings],
         columns=['pda_pba40', 'pda_pba50', 'superdistrict', 'juris',
                  'building_type', 'zone_id', 'residential_units',
-                 'preserved_units', 'inclusionary_units',
+                 'deed_restricted_units', 'preserved_units',
+                 'inclusionary_units',
                  'building_sqft', 'non_residential_sqft',
                  'juris_trich', 'juris_tra', 'juris_sesit', 'juris_ppa'])
 
@@ -1068,19 +1069,24 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
             summary_table['sq_ft_per_employee'] = \
                 summary_table['non_residential_sqft'] / summary_table['totemp']
 
+            # columns re: affordable housing
+            summary_table['deed_restricted_units'] = buildings_df.\
+                groupby(geography).deed_restricted_units.sum()
+            summary_table['preserved_units'] = buildings_df.\
+                groupby(geography).preserved_units.sum()
+            summary_table['inclusionary_units'] = buildings_df.\
+                groupby(geography).inclusionary_units.sum()
+            summary_table['subsidized_units'] = \
+                summary_table['deed_restricted_units'] - \
+                summary_table['preserved_units'] - \
+                summary_table['inclusionary_units']
+
+            # additional columns from parcel_output
             if parcel_output is not None:
                 parcel_output['subsidized_units'] = \
                     parcel_output.deed_restricted_units - \
                     parcel_output.inclusionary_units
 
-                # columns re: affordable housing
-                summary_table['deed_restricted_units'] = \
-                    parcel_output.groupby(geography).\
-                    deed_restricted_units.sum()
-                summary_table['inclusionary_units'] = \
-                    parcel_output.groupby(geography).inclusionary_units.sum()
-                summary_table['subsidized_units'] = \
-                    parcel_output.groupby(geography).subsidized_units.sum()
                 summary_table['inclusionary_revenue_reduction'] = \
                     parcel_output.groupby(geography).\
                     policy_based_revenue_reduction.sum()
@@ -1092,16 +1098,7 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
                     groupby(geography).max_profit.sum() * -1
                 summary_table['subsidy_per_unit'] = \
                     summary_table.total_subsidy / \
-                    summary_table.subsidized_units
-
-            summary_table['preserved_units'] = buildings_df.\
-            	groupby(geography).preserved_units.sum()
-
-            summary_table['deed_restricted_units_blg'] = buildings_df.\
-                groupby(geography).deed_restricted_units.sum()
-
-            summary_table['inclusionary_units_blg'] = buildings_df.\
-                groupby(geography).inclusionary_units.sum()           
+                    summary_table.subsidized_units      
 
             summary_table = summary_table.sort_index()
 
