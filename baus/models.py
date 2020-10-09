@@ -71,6 +71,11 @@ def household_relocation_rates(scenario, policy):
                          "household_relocation_rates_db_var.csv"))
         orca.add_injectable("hh_reloc", 'activated')
         print("File used is: household_relocation_rates_db_var.csv")
+    elif scenario in policy['reloc_fb_enable']:
+        df = pd.read_csv(os.path.join("data",
+                         "household_relocation_rates_fb.csv"))
+        orca.add_injectable("hh_reloc", 'activated')
+        print("File used is: household_relocation_rates_fb.csv")
     else:
         df = pd.read_csv(os.path.join("data",
                          "household_relocation_rates_db_base.csv"))
