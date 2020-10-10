@@ -352,6 +352,8 @@ def config(policy, inputs, run_number, scenario, parcels,
             amount = float(policy_loc["total_amount_db"])
         elif scenario in policy_loc["alternate_amount_scenarios_db"]:
             amount = float(policy_loc["alternate_total_amount_db"])
+        elif scenario in policy_loc["default_amount_scenarios_fb"]:
+            amount = float(policy_loc["total_amount_fb"])
         elif scenario in (policy["acct_settings"]["lump_sum_accounts"]
                           [county+"_bond_settings"]["enable_in_scenarios"]):
             amount = float(policy_loc["total_amount"])
@@ -962,8 +964,9 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
         [parcels, buildings],
         columns=['pda_pba40', 'pda_pba50', 'superdistrict', 'juris',
                  'building_type', 'zone_id', 'residential_units', 
-                 'preserved_units', 'building_sqft', 'non_residential_sqft',
-                 'juris_trich', 'juris_tra', 'juris_sesit', 'juris_ppa'])
+                 'deed_restricted_units', 'preserved_units', 'building_sqft', 
+                 'non_residential_sqft', 'juris_trich', 'juris_tra', 
+                 'juris_sesit', 'juris_ppa'])
 
     parcel_output = summary.parcel_output
 
@@ -1069,9 +1072,6 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
                     parcel_output.inclusionary_units
 
                 # columns re: affordable housing
-                summary_table['deed_restricted_units'] = \
-                    parcel_output.groupby(geography).\
-                    deed_restricted_units.sum()
                 summary_table['inclusionary_units'] = \
                     parcel_output.groupby(geography).inclusionary_units.sum()
                 summary_table['subsidized_units'] = \
@@ -1088,6 +1088,9 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
                 summary_table['subsidy_per_unit'] = \
                     summary_table.total_subsidy / \
                     summary_table.subsidized_units
+
+            summary_table['deed_restricted_units'] = buildings_df.\
+                groupby(geography).deed_restricted_units.sum()
 
             summary_table['preserved_units'] = buildings_df.\
             	groupby(geography).preserved_units.sum()
