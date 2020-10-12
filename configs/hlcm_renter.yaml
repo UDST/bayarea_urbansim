@@ -7,13 +7,13 @@ segmentation_col: base_income_octile
 choosers_fit_filters: (tenure == 'rent' & income > 0)
 
 # filters follow the format from urbansim\urbansim\models\util.py line 21
-choosers_predict_filters: (tenure == "rent" and (base_income_quartile == 2 or base_income_quartile == 3 or base_income_quartile == 4))
+choosers_predict_filters: (tenure == "rent" and (base_income_quartile == 1 or base_income_quartile == 2 or base_income_quartile == 3 or base_income_quartile == 4))
 
 alts_fit_filters: null
 
 # filters follow the format from urbansim\urbansim\models\util.py line 21
 # do not allow non-low-income into deed-restricted units
-alts_predict_filters: (tenure == "rent" and deed_restricted == False)
+alts_predict_filters: (tenure == "rent")
 
 interaction_predict_filters: null
 
