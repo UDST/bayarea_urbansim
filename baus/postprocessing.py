@@ -235,6 +235,7 @@ def taz_calculator(run_num, DF1, DF2):
                          ]
         
         DF_TAZ_GROWTH = DF_merge[TAZ_DF_COLUMNS].copy()
+        DF_TAZ_GROWTH = DF_TAZ_GROWTH.rename(columns={'SD_x': 'SD', 'ZONE_x': 'ZONE', 'COUNTY_x': 'COUNTY'})
         DF_TAZ_GROWTH['RUNID'] = run_num
         return DF_TAZ_GROWTH
     else:
@@ -303,8 +304,17 @@ def nontaz_calculator(run_num, DF1, DF2):
 #summarize growth by different geography types that is more nuanced.
 def GEO_SUMMARY_LOADER(run_num, geo, parcel_baseyear, parcel_endyear):
 
+    if 'fbpchcat' in parcel_endyear.columns:
+      zoningtag = 'fbpchcat'
+    elif 'pba50chcat' in parcel_endyear.columns:
+      zoningtag = 'pab50chcat'
+    elif 'zoningmodcat' in parcel_endyear.columns:
+      zoningtag = 'zoningmodcat'
+    else: 
+      zoningtag = 'zoninghzcat'
+
     parcel_baseyear = parcel_baseyear[['parcel_id','tothh','totemp', 'hhq1','hhq2','hhq3','hhq4']]
-    parcel_endyear = parcel_endyear[['parcel_id','tothh','totemp', 'hhq1','hhq2','hhq3','hhq4','juris','fbpchcat']]
+    parcel_endyear = parcel_endyear[['parcel_id','tothh','totemp', 'hhq1','hhq2','hhq3','hhq4','juris',zoningtag]]
     parcel_data = parcel_baseyear.merge(parcel_endyear, on = 'parcel_id', how = 'left').fillna(0)
     
     parcel_data['totemp diff'] = parcel_data['totemp_y']-parcel_data['totemp_x']
@@ -314,13 +324,13 @@ def GEO_SUMMARY_LOADER(run_num, geo, parcel_baseyear, parcel_endyear):
     parcel_data['hhq3 diff'] = parcel_data['hhq3_y']-parcel_data['hhq3_x']
     parcel_data['hhq4 diff'] = parcel_data['hhq4_y']-parcel_data['hhq4_x']
 
-    parcel_data = parcel_data[['parcel_id','tothh diff','totemp diff','hhq1 diff','hhq2 diff','hhq3 diff','hhq4 diff','juris','fbpchcat']].copy()
+    parcel_data = parcel_data[['parcel_id','tothh diff','totemp diff','hhq1 diff','hhq2 diff','hhq3 diff','hhq4 diff','juris',zoningtag]].copy()
         
     #geography summaries
-    parcel_geo = parcel_data.loc[parcel_data['fbpchcat'].str.contains(geo, na=False)]
+    parcel_geo = parcel_data.loc[parcel_data[zoningtag].str.contains(geo, na=False)]
     parcel_geo = parcel_geo.groupby(['juris']).agg({'tothh diff':'sum','totemp diff':'sum','hhq1 diff':'sum', 'hhq2 diff':'sum','hhq3 diff':'sum', 'hhq4 diff':'sum', }).reset_index()
     parcel_geo['geo_category'] = 'yes_%s'%(geo)
-    parcel_geo_no = parcel_data.loc[~parcel_data['fbpchcat'].str.contains(geo, na=False)]
+    parcel_geo_no = parcel_data.loc[~parcel_data[zoningtag].str.contains(geo, na=False)]
     parcel_geo_no = parcel_geo_no.groupby(['juris']).agg({'tothh diff':'sum','totemp diff':'sum','hhq1 diff':'sum', 'hhq2 diff':'sum','hhq3 diff':'sum', 'hhq4 diff':'sum', }).reset_index()
     parcel_geo_no['geo_category'] = 'no_%s'%(geo)
     
@@ -336,8 +346,17 @@ def GEO_SUMMARY_LOADER(run_num, geo, parcel_baseyear, parcel_endyear):
 ##Similar to above, this is to define a separate fileloader to produce summaries for overlapping geographies. W
 def TWO_GEO_SUMMARY_LOADER(run_num, geo1, geo2, parcel_baseyear, parcel_endyear):
 
+    if 'fbpchcat' in parcel_endyear.columns:
+      zoningtag = 'fbpchcat'
+    elif 'pba50chcat' in parcel_endyear.columns:
+      zoningtag = 'pab50chcat'
+    elif 'zoningmodcat' in parcel_endyear.columns:
+      zoningtag = 'zoningmodcat'
+    else: 
+      zoningtag = 'zoninghzcat'
+
     parcel_baseyear = parcel_baseyear[['parcel_id','tothh','totemp', 'hhq1','hhq2','hhq3','hhq4']]
-    parcel_endyear = parcel_endyear[['parcel_id','tothh','totemp', 'hhq1','hhq2','hhq3','hhq4','juris','fbpchcat']]
+    parcel_endyear = parcel_endyear[['parcel_id','tothh','totemp', 'hhq1','hhq2','hhq3','hhq4','juris',zoningtag]]
     parcel_data = parcel_baseyear.merge(parcel_endyear, on = 'parcel_id', how = 'left').fillna(0)
     
     parcel_data['totemp diff'] = parcel_data['totemp_y']-parcel_data['totemp_x']
@@ -347,19 +366,19 @@ def TWO_GEO_SUMMARY_LOADER(run_num, geo1, geo2, parcel_baseyear, parcel_endyear)
     parcel_data['hhq3 diff'] = parcel_data['hhq3_y']-parcel_data['hhq3_x']
     parcel_data['hhq4 diff'] = parcel_data['hhq4_y']-parcel_data['hhq4_x']
 
-    parcel_data = parcel_data[['parcel_id','tothh diff','totemp diff','hhq1 diff','hhq2 diff','hhq3 diff','hhq4 diff','juris','fbpchcat']].copy()
+    parcel_data = parcel_data[['parcel_id','tothh diff','totemp diff','hhq1 diff','hhq2 diff','hhq3 diff','hhq4 diff','juris',zoningtag]].copy()
     
     #two geographies
-    parcel_geo2 = parcel_data.loc[parcel_data['fbpchcat'].str.contains(geo1, na=False)]
-    parcel_geo2 = parcel_geo2.loc[parcel_geo2['fbpchcat'].str.contains(geo2, na=False)]
+    parcel_geo2 = parcel_data.loc[parcel_data[zoningtag].str.contains(geo1, na=False)]
+    parcel_geo2 = parcel_geo2.loc[parcel_geo2[zoningtag].str.contains(geo2, na=False)]
     parcel_geo2_group = parcel_geo2.groupby(['juris']).agg({'tothh diff':'sum','totemp diff':'sum','hhq1 diff':'sum', 'hhq2 diff':'sum','hhq3 diff':'sum', 'hhq4 diff':'sum', }).reset_index()
     parcel_geo2_group['geo_category'] = 'yes_%s'%(geo1+geo2)
     
-    parcel_geo2_no_1 = parcel_data.loc[parcel_data['fbpchcat'].str.contains(geo1, na=False)]
-    parcel_geo2_no_1 = parcel_geo2_no_1.loc[~parcel_geo2_no_1['fbpchcat'].str.contains(geo2, na=False)]
-    parcel_geo2_no_2 = parcel_data.loc[parcel_data['fbpchcat'].str.contains(geo2, na=False)]
-    parcel_geo2_no_2 = parcel_geo2_no_2.loc[~parcel_geo2_no_2['fbpchcat'].str.contains(geo1, na=False)]
-    parcel_geo2_no_3 = parcel_data.loc[~parcel_data['fbpchcat'].str.contains(geo1 + "|" + geo2, na=False)]
+    parcel_geo2_no_1 = parcel_data.loc[parcel_data[zoningtag].str.contains(geo1, na=False)]
+    parcel_geo2_no_1 = parcel_geo2_no_1.loc[~parcel_geo2_no_1[zoningtag].str.contains(geo2, na=False)]
+    parcel_geo2_no_2 = parcel_data.loc[parcel_data[zoningtag].str.contains(geo2, na=False)]
+    parcel_geo2_no_2 = parcel_geo2_no_2.loc[~parcel_geo2_no_2[zoningtag].str.contains(geo1, na=False)]
+    parcel_geo2_no_3 = parcel_data.loc[~parcel_data[zoningtag].str.contains(geo1 + "|" + geo2, na=False)]
     
     parcel_geo2_no = pd.concat([parcel_geo2_no_1, parcel_geo2_no_2, parcel_geo2_no_3], ignore_index = True)
     parcel_geo2_no_group = parcel_geo2_no.groupby(['juris']).agg({'tothh diff':'sum','totemp diff':'sum','hhq1 diff':'sum', 'hhq2 diff':'sum','hhq3 diff':'sum', 'hhq4 diff':'sum', }).reset_index()
