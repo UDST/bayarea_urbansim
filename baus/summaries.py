@@ -207,7 +207,7 @@ def config(policy, inputs, run_number, scenario, parcels,
         write("Scenario is not in development projects list")
     # public lands
     dev_proj = development_projects.to_frame()
-    pub_proj_on = dev_proj.loc[dev_proj['building_name'] == 'pub', scen].sum()
+    pub_proj_on = dev_proj.loc[dev_proj['source'] == 'pub', scen].sum()
     if pub_proj_on > 0:
         write("Public lands are in development projects")
     else:
