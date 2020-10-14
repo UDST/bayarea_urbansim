@@ -71,6 +71,11 @@ def household_relocation_rates(scenario, policy):
                          "household_relocation_rates_db_var.csv"))
         orca.add_injectable("hh_reloc", 'activated')
         print("File used is: household_relocation_rates_db_var.csv")
+    elif scenario in policy['reloc_fb_enable']:
+        df = pd.read_csv(os.path.join("data",
+                         "household_relocation_rates_fb.csv"))
+        orca.add_injectable("hh_reloc", 'activated')
+        print("File used is: household_relocation_rates_fb.csv")
     else:
         df = pd.read_csv(os.path.join("data",
                          "household_relocation_rates_db_base.csv"))
@@ -635,7 +640,8 @@ def residential_developer(feasibility, households, buildings, parcels, year,
         # again because the buildings df gets modified by the run_developer
         # method below
         buildings = orca.get_table('buildings')
-
+        print('Stats of buildings before run_developer(): \n{}'.format(
+             buildings.to_frame()[['deed_restricted_units','preserved_units','inclusionary_units']].sum()))
         new_buildings = utils.run_developer(
             "residential",
             households,
@@ -651,6 +657,8 @@ def residential_developer(feasibility, households, buildings, parcels, year,
             num_units_to_build=int(target),
             profit_to_prob_func=subsidies.profit_to_prob_func,
             **kwargs)
+        print('Stats of buildings before run_developer(): \n{}'.format(
+             buildings.to_frame()[['deed_restricted_units','preserved_units','inclusionary_units']].sum()))
 
         buildings = orca.get_table('buildings')
 
@@ -681,6 +689,16 @@ def residential_developer(feasibility, households, buildings, parcels, year,
                     val = buildings.local.loc[index, col]
                     # reduce by pct but round to int
                     buildings.local.loc[index, col] = int(val * overshoot_pct)
+                # also fix the corresponding columns in new_buildings
+                for col in ["residential_sqft","building_sqft",
+                            "residential_units", "deed_restricted_units",
+                            "inclusionary_units"]:
+                    val = new_buildings.loc[index, col]
+                    new_buildings.loc[index, col] = int(val * overshoot_pct)
+                for col in ["policy_based_revenue_reduction",
+                            "max_profit"]:
+                    val = new_buildings.loc[index, col]
+                    new_buildings.loc[index, col] = val * overshoot_pct
 
                 # also fix the corresponding columns in new_buildings
                 for col in ["residential_sqft","building_sqft",

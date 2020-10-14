@@ -14,7 +14,7 @@ alts_fit_filters: null
 
 # filters follow the format from urbansim\urbansim\models\util.py line 21
 # allow low-income into deed-restricted or non-deed-restricted units
-alts_predict_filters: (tenure == "rent")
+alts_predict_filters: (tenure == "rent" and deed_restricted == True)
 
 interaction_predict_filters: null
 
