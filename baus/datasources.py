@@ -133,8 +133,8 @@ def inclusionary_housing_settings(policy, scenario):
     d = {}
     if (scenario in policy["inclusionary_d_b_enable"]):
         for item in s:
-            # this is a list of Blueprint strategy geographies - represented
-            # by pba50chcat - with an inclusionary rate that is the same
+            # this is a list of draft blueprint strategy geographies (represented
+            # by pba50chcat) with an inclusionary rate that is the same
             # for all the pba50chcats in the list
             print("Setting inclusionary rates for geographies %d pba50chcat \
                   to %.2f" % (len(item["values"]), item["amount"]))
@@ -143,6 +143,18 @@ def inclusionary_housing_settings(policy, scenario):
             # of pba50chcat names to rates
             for pba50chcat in item["values"]:
                 d[pba50chcat] = item["amount"]
+    elif (scenario in policy["inclusionary_fb_enable"]):
+        for item in s:
+            # this is a list of final blueprint strategy geographies (represented
+            # by fbpchcat) with an inclusionary rate that is the same
+            # for all the fbpchcat in the list
+            print("Setting inclusionary rates for geographies %d fbpchcat \
+                  to %.2f" % (len(item["values"]), item["amount"]))
+            # this is a list of inclusionary rates and the fbpchcat
+            # geographies they apply to - need to turn it in a map
+            # of fbpchcat names to rates
+            for fbpchcat in item["values"]:
+                d[fbpchcat] = item["amount"]
     else:
         for item in s:
             # this is a list of cities with an inclusionary rate that is the
@@ -734,6 +746,7 @@ def development_projects(parcels, mapping, scenario):
     df["non_residential_sqft"] = df.non_residential_sqft.fillna(0)
     df["residential_units"] = df.residential_units.fillna(0).astype("int")
     df["preserved_units"] = 0.0
+    df["inclusionary_units"] = 0.0
 
     df["building_type"] = df.building_type.replace("HP", "OF")
     df["building_type"] = df.building_type.replace("GV", "OF")
