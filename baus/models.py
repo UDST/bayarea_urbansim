@@ -520,6 +520,12 @@ def add_extra_columns_func(df):
         print("Number of inclusionary units built = %d" %
               df.inclusionary_units.sum())
 
+    if "subsidized_units" not in df.columns:
+        df["subsidized_units"] = 0
+    else:
+        print("Number of subsidized units built = %d" %
+              df.subsidized_units.sum())
+
     df["redfin_sale_year"] = 2012
     df["redfin_sale_price"] = np.nan
 
@@ -678,14 +684,15 @@ def residential_developer(feasibility, households, buildings, parcels, year,
 
                 # we also need to fix the other columns so they make sense
                 for col in ["residential_sqft", "building_sqft",
-                            "deed_restricted_units", "inclusionary_units"]:
+                            "deed_restricted_units", "inclusionary_units",
+                            "subsidized_units"]:
                     val = buildings.local.loc[index, col]
                     # reduce by pct but round to int
                     buildings.local.loc[index, col] = int(val * overshoot_pct)
                 # also fix the corresponding columns in new_buildings
                 for col in ["residential_sqft","building_sqft",
                             "residential_units", "deed_restricted_units",
-                            "inclusionary_units"]:
+                            "inclusionary_units", "subsidized_units"]:
                     val = new_buildings.loc[index, col]
                     new_buildings.loc[index, col] = int(val * overshoot_pct)
                 for col in ["policy_based_revenue_reduction",
@@ -936,6 +943,7 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
     new_buildings["residential_sqft"] = 0
     new_buildings["deed_restricted_units"] = 0
     new_buildings["inclusionary_units"] = 0
+    new_buildings["subsidized_units"] = 0
     new_buildings["building_sqft"] = new_buildings.non_residential_sqft
     new_buildings["stories"] = 1
     new_buildings["building_type"] = "RB"

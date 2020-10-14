@@ -747,6 +747,7 @@ def development_projects(parcels, mapping, scenario):
     df["residential_units"] = df.residential_units.fillna(0).astype("int")
     df["preserved_units"] = 0.0
     df["inclusionary_units"] = 0.0
+    df["subsidized_units"] = 0.0
 
     df["building_type"] = df.building_type.replace("HP", "OF")
     df["building_type"] = df.building_type.replace("GV", "OF")

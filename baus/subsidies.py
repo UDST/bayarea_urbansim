@@ -933,15 +933,21 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
                 buildings.local.loc[index, "deed_restricted_units"] =\
                     int(round(subsidized_units))
 
+                buildings.local.loc[index, "subsidized_units"] = \
+                    buildings.local.loc[index, "deed_restricted_units"] - \
+                    buildings.local.loc[index, "inclusionary_units"]
+
                 # also correct the debug output
-                new_buildings.loc[index, "deed_restricted_units"] =\
+                new_buildings.loc[index, "deed_restricted_units"] = \
                     int(round(subsidized_units))
+                new_buildings.loc[index, "subsidized_units"] = \
+                    new_buildings.loc[index, "deed_restricted_units"] - \
+                    new_buildings.loc[index, "inclusionary_units"]
 
             metadata['deed_restricted_units'] = \
                 new_buildings.loc[index, 'deed_restricted_units']
             metadata['subsidized_units'] = \
-                new_buildings.loc[index, 'deed_restricted_units'] - \
-                new_building.inclusionary_units
+                new_buildings.loc[index, 'subsidized_units']
             account.add_transaction(amt, subaccount=subacct,
                                     metadata=metadata)
 
