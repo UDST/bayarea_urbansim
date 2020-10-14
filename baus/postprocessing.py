@@ -156,6 +156,7 @@ def county_calculator(run_num, DF1, DF2):
         
         DF_TAZ_GROWTH = DF_merge[DF_COLUMNS].copy()
         DF_COUNTY_GROWTH = DF_TAZ_GROWTH.groupby(['COUNTY_NAME_x']).sum().reset_index()
+        DF_COUNTY_GROWTH = DF_COUNTY_GROWTH.rename(columns={'COUNTY_NAME_x': 'COUNTY'})
         DF_COUNTY_GROWTH['RUNID'] = run_num
         #add county mapping
         return DF_COUNTY_GROWTH
@@ -325,6 +326,9 @@ def GEO_SUMMARY_LOADER(run_num, geo, parcel_baseyear, parcel_endyear):
     parcel_data['hhq4 diff'] = parcel_data['hhq4_y']-parcel_data['hhq4_x']
 
     parcel_data = parcel_data[['parcel_id','tothh diff','totemp diff','hhq1 diff','hhq2 diff','hhq3 diff','hhq4 diff','juris',zoningtag]].copy()
+    if 0 in parcel_data.juris.values:
+        dropindex = parcel_data[parcel_data['juris'] == 0].index
+        parcel_data.drop(dropindex,inplace = True)
         
     #geography summaries
     parcel_geo = parcel_data.loc[parcel_data[zoningtag].str.contains(geo, na=False)]
@@ -334,9 +338,7 @@ def GEO_SUMMARY_LOADER(run_num, geo, parcel_baseyear, parcel_endyear):
     parcel_geo_no = parcel_geo_no.groupby(['juris']).agg({'tothh diff':'sum','totemp diff':'sum','hhq1 diff':'sum', 'hhq2 diff':'sum','hhq3 diff':'sum', 'hhq4 diff':'sum', }).reset_index()
     parcel_geo_no['geo_category'] = 'no_%s'%(geo)
     
-    parcel_geo_summary = pd.concat([parcel_geo, parcel_geo_no], ignore_index = True)
-    dropindex = parcel_geo_summary[parcel_geo_summary['juris'] == 0].index
-    parcel_geo_summary.drop(dropindex,inplace = True)
+    parcel_geo_summary = pd.concat([parcel_geo, parcel_geo_no])
     parcel_geo_summary.sort_values(by = 'juris', inplace = True)
     parcel_geo_summary['RUNID'] = run_num
     
@@ -367,7 +369,9 @@ def TWO_GEO_SUMMARY_LOADER(run_num, geo1, geo2, parcel_baseyear, parcel_endyear)
     parcel_data['hhq4 diff'] = parcel_data['hhq4_y']-parcel_data['hhq4_x']
 
     parcel_data = parcel_data[['parcel_id','tothh diff','totemp diff','hhq1 diff','hhq2 diff','hhq3 diff','hhq4 diff','juris',zoningtag]].copy()
-    
+    if 0 in parcel_data.juris.values:
+        dropindex = parcel_data[parcel_data['juris'] == 0].index
+        parcel_data.drop(dropindex,inplace = True)    
     #two geographies
     parcel_geo2 = parcel_data.loc[parcel_data[zoningtag].str.contains(geo1, na=False)]
     parcel_geo2 = parcel_geo2.loc[parcel_geo2[zoningtag].str.contains(geo2, na=False)]
@@ -385,8 +389,6 @@ def TWO_GEO_SUMMARY_LOADER(run_num, geo1, geo2, parcel_baseyear, parcel_endyear)
     parcel_geo2_no_group['geo_category'] = 'no_%s'%(geo1+geo2)
     
     parcel_geo2_summary = pd.concat([parcel_geo2_group, parcel_geo2_no_group], ignore_index = True)
-    dropindex = parcel_geo2_summary[parcel_geo2_summary['juris'] == 0].index
-    parcel_geo2_summary.drop(dropindex,inplace = True)
     parcel_geo2_summary.sort_values(by = 'juris', inplace = True)
     parcel_geo2_summary['RUNID'] = run_num
     
