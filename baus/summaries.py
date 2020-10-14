@@ -1264,14 +1264,7 @@ def parcel_summary(parcels, buildings, households, jobs,
     df = df.join(df2)
 
     # bringing in zoning modifications growth geography tag
-    if scenario in policy["geographies_db_enable"]:
-        join_col = "pba50chcat"
-    elif scenario in policy["geographies_fb_enable"]:
-        join_col = "fbpchcat"
-    elif scenario in policy["geographies_pba40_enable"]:
-        join_col = 'zoningmodcat'
-    else:
-        join_col = 'zoninghzcat'
+    join_col = "fbpchcat"
     if join_col in parcels_geography.to_frame().columns:
         parcel_gg = parcels_geography.to_frame([
             "parcel_id",
