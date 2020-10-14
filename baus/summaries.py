@@ -1325,7 +1325,7 @@ def parcel_summary(parcels, buildings, households, jobs,
         )
 
     if year == final_year:
-        baseyear = 2010
+        baseyear = 2015
         df_base = pd.read_csv(os.path.join("runs",
                                         "run%d_parcel_data_%d.csv"
                                         % (run_number, baseyear)))
