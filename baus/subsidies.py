@@ -46,6 +46,10 @@ def coffer(policy, scenario):
             policy["acct_settings"]["lump_sum_accounts"].items():
         d[acct["name"]] = accounts.Account(acct["name"])
 
+    for key, acct in \
+            policy["acct_settings"]["office_lump_sum_accounts"].items():
+        d[acct["name"]] = accounts.Account(acct["name"])    
+
     if scenario in (policy["acct_settings"]["jobs_housing_fee_settings"]
                     ["jobs_housing_com_for_res_scenarios"]):
         for key, acct in \
@@ -191,6 +195,28 @@ def lump_sum_accounts(policy, year, buildings, coffer,
         coffer[acct["name"]].add_transaction(amt, subaccount=1,
                                              metadata=metadata)
 
+@orca.step()
+def office_lump_sum_accounts(policy, year, buildings, coffer,
+                             summary, years_per_iter, scenario):
+
+    s = policy["acct_settings"]["office_lump_sum_accounts"]
+
+    for key, acct in s.items():
+        if scenario not in acct["enable_in_scenarios"]:
+            continue
+
+        amt = float(acct["total_amount"])
+
+        amt *= years_per_iter
+
+        metadata = {
+            "description": "%s subsidies" % acct["name"],
+            "year": year
+        }
+        # the subaccount is meaningless here (it's a regional account) -
+        # but the subaccount number is referred to below
+        coffer[acct["name"]].add_transaction(amt, subaccount="regional",
+                                             metadata=metadata)
 
 # this will compute the reduction in revenue from a project due to
 # inclustionary housing - the calculation will be described in thorough
