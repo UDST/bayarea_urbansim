@@ -1285,13 +1285,17 @@ def parcel_summary(parcels, buildings, households, jobs,
         'buildings',
         [parcels, buildings],
         columns=['parcel_id', 'residential_units', 'deed_restricted_units', 
-                 'preserved_units'])
+                 'preserved_units', 'inclusionary_units', 'subsidized_units'])
     df['residential_units'] = \
         building_df.groupby('parcel_id')['residential_units'].sum()
     df['deed_restricted_units'] = \
         building_df.groupby('parcel_id')['deed_restricted_units'].sum()
     df['preserved_units'] = \
         building_df.groupby('parcel_id')['preserved_units'].sum()
+    df['inclusionary_units'] = \
+        building_df.groupby('parcel_id')['inclusionary_units'].sum()
+    df['subsidized_units'] = \
+        building_df.groupby('parcel_id')['subsidized_units'].sum()
 
     jobs_df = orca.merge_tables(
         'jobs',
