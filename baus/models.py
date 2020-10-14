@@ -692,17 +692,6 @@ def residential_developer(feasibility, households, buildings, parcels, year,
                 # also fix the corresponding columns in new_buildings
                 for col in ["residential_sqft","building_sqft",
                             "residential_units", "deed_restricted_units",
-                            "inclusionary_units"]:
-                    val = new_buildings.loc[index, col]
-                    new_buildings.loc[index, col] = int(val * overshoot_pct)
-                for col in ["policy_based_revenue_reduction",
-                            "max_profit"]:
-                    val = new_buildings.loc[index, col]
-                    new_buildings.loc[index, col] = val * overshoot_pct
-
-                # also fix the corresponding columns in new_buildings
-                for col in ["residential_sqft","building_sqft",
-                            "residential_units", "deed_restricted_units",
                             "inclusionary_units", "subsidized_units"]:
                     val = new_buildings.loc[index, col]
                     new_buildings.loc[index, col] = int(val * overshoot_pct)
