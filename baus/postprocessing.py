@@ -138,7 +138,21 @@ def county_calculator(run_num, DF1, DF2):
         DF_merge['HHINCQ2 GROWTH'] = DF_merge['HHINCQ2_y']-DF_merge['HHINCQ2_x']
         DF_merge['HHINCQ3 GROWTH'] = DF_merge['HHINCQ3_y']-DF_merge['HHINCQ3_x']
         DF_merge['HHINCQ4 GROWTH'] = DF_merge['HHINCQ4_y']-DF_merge['HHINCQ4_x']
-                   
+
+        DF_merge['TOTPOP PCT GROWTH'] = round(DF_merge['TOTPOP_y']/DF_merge['TOTPOP_x']-1, 2)
+        DF_merge['TOTEMP PCT GROWTH'] = round(DF_merge['TOTEMP_y']/DF_merge['TOTEMP_x']-1, 2)
+        DF_merge['AGREMPN PCT GROWTH'] = round(DF_merge['AGREMPN_y']/DF_merge['AGREMPN_x']-1, 2)
+        DF_merge['FPSEMPN PCT GROWTH'] = round(DF_merge['FPSEMPN_y']/DF_merge['FPSEMPN_x']-1, 2)
+        DF_merge['HEREMPN PCT GROWTH'] = round(DF_merge['HEREMPN_y']/DF_merge['HEREMPN_x']-1, 2)
+        DF_merge['MWTEMPN PCT GROWTH'] = round(DF_merge['MWTEMPN_y']/DF_merge['MWTEMPN_x']-1, 2)
+        DF_merge['OTHEMPN PCT GROWTH'] = round(DF_merge['OTHEMPN_y']/DF_merge['OTHEMPN_x']-1, 2)
+        DF_merge['RETEMPN PCT GROWTH'] = round(DF_merge['RETEMPN_y']/DF_merge['RETEMPN_x']-1, 2)
+        DF_merge['TOTHH PCT GROWTH'] = round(DF_merge['TOTHH_y']/DF_merge['TOTHH_x']-1, 2)
+        DF_merge['HHINCQ1 PCT GROWTH'] = round(DF_merge['HHINCQ1_y']/DF_merge['HHINCQ1_x']-1, 2)
+        DF_merge['HHINCQ2 PCT GROWTH'] = round(DF_merge['HHINCQ2_y']/DF_merge['HHINCQ2_x']-1, 2)
+        DF_merge['HHINCQ3 PCT GROWTH'] = round(DF_merge['HHINCQ3_y']/DF_merge['HHINCQ3_x']-1, 2)
+        DF_merge['HHINCQ4 PCT GROWTH'] = round(DF_merge['HHINCQ4_y']/DF_merge['HHINCQ4_x']-1, 2)
+
         DF_COLUMNS = ['COUNTY_NAME_x',
                       'TOTPOP GROWTH',
                       'TOTEMP GROWTH',
@@ -152,7 +166,20 @@ def county_calculator(run_num, DF1, DF2):
                       'HHINCQ1 GROWTH',
                       'HHINCQ2 GROWTH',
                       'HHINCQ3 GROWTH',
-                      'HHINCQ4 GROWTH']
+                      'HHINCQ4 GROWTH',
+                      'TOTPOP PCT GROWTH',
+                      'TOTEMP PCT GROWTH',
+                      'AGREMPN PCT GROWTH',
+                      'FPSEMPN PCT GROWTH',
+                      'HEREMPN PCT GROWTH',
+                      'MWTEMPN PCT GROWTH',
+                      'OTHEMPN PCT GROWTH',
+                      'RETEMPN PCT GROWTH',
+                      'TOTHH PCT GROWTH',
+                      'HHINCQ1 PCT GROWTH',
+                      'HHINCQ2 PCT GROWTH',
+                      'HHINCQ3 PCT GROWTH',
+                      'HHINCQ4 PCT GROWTH']
         
         DF_TAZ_GROWTH = DF_merge[DF_COLUMNS].copy()
         DF_COUNTY_GROWTH = DF_TAZ_GROWTH.groupby(['COUNTY_NAME_x']).sum().reset_index()
@@ -202,7 +229,24 @@ def taz_calculator(run_num, DF1, DF2):
         #DF_merge['AGE2044 GROWTH'] = DF_merge['AGE2044_y']-DF_merge['AGE2044_x']
         #DF_merge['AGE4564 GROWTH'] = DF_merge['AGE4564_y']-DF_merge['AGE4564_x']
         #DF_merge['AGE65P GROWTH'] = DF_merge['AGE65P_y']-DF_merge['AGE65P_x']
-            
+        
+        DF_merge['TOTPOP PCT GROWTH'] = round(DF_merge['TOTPOP_y']/DF_merge['TOTPOP_x']-1, 2)
+        DF_merge['TOTEMP PCT GROWTH'] = round(DF_merge['TOTEMP_y']/DF_merge['TOTEMP_x']-1, 2)
+        DF_merge['AGREMPN PCT GROWTH'] = round(DF_merge['AGREMPN_y']/DF_merge['AGREMPN_x']-1, 2)
+        DF_merge['FPSEMPN PCT GROWTH'] = round(DF_merge['FPSEMPN_y']/DF_merge['FPSEMPN_x']-1, 2)
+        DF_merge['HEREMPN PCT GROWTH'] = round(DF_merge['HEREMPN_y']/DF_merge['HEREMPN_x']-1, 2)
+        DF_merge['MWTEMPN PCT GROWTH'] = round(DF_merge['MWTEMPN_y']/DF_merge['MWTEMPN_x']-1, 2)
+        DF_merge['OTHEMPN PCT GROWTH'] = round(DF_merge['OTHEMPN_y']/DF_merge['OTHEMPN_x']-1, 2)
+        DF_merge['RETEMPN PCT GROWTH'] = round(DF_merge['RETEMPN_y']/DF_merge['RETEMPN_x']-1, 2)
+        DF_merge['TOTHH PCT GROWTH'] = round(DF_merge['TOTHH_y']/DF_merge['TOTHH_x']-1, 2)
+        DF_merge['HHINCQ1 PCT GROWTH'] = round(DF_merge['HHINCQ1_y']/DF_merge['HHINCQ1_x']-1, 2)
+        DF_merge['HHINCQ2 PCT GROWTH'] = round(DF_merge['HHINCQ2_y']/DF_merge['HHINCQ2_x']-1, 2)
+        DF_merge['HHINCQ3 PCT GROWTH'] = round(DF_merge['HHINCQ3_y']/DF_merge['HHINCQ3_x']-1, 2)
+        DF_merge['HHINCQ4 PCT GROWTH'] = round(DF_merge['HHINCQ4_y']/DF_merge['HHINCQ4_x'] -1, 2) 
+        DF_merge['RES_UNITS PCT GROWTH'] = round(DF_merge['RES_UNITS_y']/DF_merge['RES_UNITS_x']-1, 2)
+        DF_merge['MFDU PCT GROWTH'] = round(DF_merge['MFDU_y']/DF_merge['MFDU_x']-1, 2)
+        DF_merge['SFDU PCT GROWTH'] = round(DF_merge['SFDU_y']/DF_merge['SFDU_x']-1, 2)
+
         TAZ_DF_COLUMNS = ['TAZ',
                          'SD_x',
                          'ZONE_x',
@@ -225,7 +269,7 @@ def taz_calculator(run_num, DF1, DF2):
                          'TOTPOP GROWTH',
                          'RES_UNITS GROWTH',
                          'MFDU GROWTH',
-                         'SFDU GROWTH'
+                         'SFDU GROWTH',
                          #'RESACRE GROWTH',
                          #'EMPRES GROWTH',
                          #'AGE0004 GROWTH',
@@ -233,7 +277,22 @@ def taz_calculator(run_num, DF1, DF2):
                          #'AGE2044 GROWTH',
                          #'AGE4564 GROWTH',
                          #'AGE65P GROWTH'
-                         ]
+                        'TOTPOP PCT GROWTH',
+                      	'TOTEMP PCT GROWTH',
+                      	'AGREMPN PCT GROWTH',
+                      	'FPSEMPN PCT GROWTH',
+                      	'HEREMPN PCT GROWTH',
+                      	'MWTEMPN PCT GROWTH',
+                      	'OTHEMPN PCT GROWTH',
+                      	'RETEMPN PCT GROWTH',
+                      	'TOTHH PCT GROWTH',
+                      	'HHINCQ1 PCT GROWTH',
+                      	'HHINCQ2 PCT GROWTH',
+                      	'HHINCQ3 PCT GROWTH',
+                      	'HHINCQ4 PCT GROWTH',
+                        'RES_UNITS PCT GROWTH',
+                        'MFDU PCT GROWTH',
+                        'SFDU PCT GROWTH']
         
         DF_TAZ_GROWTH = DF_merge[TAZ_DF_COLUMNS].copy()
         DF_TAZ_GROWTH = DF_TAZ_GROWTH.rename(columns={'SD_x': 'SD', 'ZONE_x': 'ZONE', 'COUNTY_x': 'COUNTY'})
@@ -264,7 +323,27 @@ def nontaz_calculator(run_num, DF1, DF2):
                   'deed_restricted_units growth',
                   'inclusionary_units growth',
                   'subsidized_units growth',
-                  'preserved_units growth']
+                  'preserved_units growth',
+                  'agrempn pct growth',
+                  'fpsempn pct growth',
+                  'herempn pct growth',
+                  'mwtempn pct growth',
+                  'othempn pct growth',
+                  'retempn pct growth',
+                  'totemp pct growth',
+                  'hhincq1 pct growth',
+                  'hhincq2 pct growth',
+                  'hhincq3 pct growth',
+                  'hhincq4 pct growth',
+                  'tothh pct growth',
+                  'mfdu pct growth',
+                  'sfdu pct growth',
+                  #'occupancy_rate growth',
+                  'non_residential_sqft pct growth',
+                  'deed_restricted_units pct growth',
+                  'inclusionary_units pct growth',
+                  'subsidized_units pct growth',
+                  'preserved_units pct growth']
     
     if ('juris' in DF1.columns) & ('juris' in DF2.columns):
         DF_merge = DF1.merge(DF2, on = 'juris').fillna(0)
@@ -295,11 +374,51 @@ def nontaz_calculator(run_num, DF1, DF2):
     DF_merge['inclusionary_units growth'] = DF_merge['inclusionary_units_y']-DF_merge['inclusionary_units_x']
     DF_merge['subsidized_units growth'] = DF_merge['subsidized_units_y']-DF_merge['subsidized_units_x']
     DF_merge['preserved_units growth'] = DF_merge['preserved_units_y']-DF_merge['preserved_units_x']
-        
+
+    DF_merge['agrempn pct growth'] = round(DF_merge['agrempn_y']/DF_merge['agrempn_x']-1, 2)
+    DF_merge['fpsempn pct growth'] = round(DF_merge['fpsempn_y']/DF_merge['fpsempn_x']-1, 2)
+    DF_merge['herempn pct growth'] = round(DF_merge['herempn_y']/DF_merge['herempn_x']-1, 2)
+    DF_merge['mwtempn pct growth'] = round(DF_merge['mwtempn_y']/DF_merge['mwtempn_x']-1, 2)
+    DF_merge['othempn pct growth'] = round(DF_merge['othempn_y']/DF_merge['othempn_x']-1, 2)
+    DF_merge['retempn pct growth'] = round(DF_merge['retempn_y']/DF_merge['retempn_x']-1, 2)
+    DF_merge['totemp pct growth'] = round(DF_merge['totemp_y']/DF_merge['totemp_x']-1, 2)
+    DF_merge['hhincq1 pct growth'] = round(DF_merge['hhincq1_y']/DF_merge['hhincq1_x']-1, 2)
+    DF_merge['hhincq2 pct growth'] = round(DF_merge['hhincq2_y']/DF_merge['hhincq2_x']-1, 2)
+    DF_merge['hhincq3 pct growth'] = round(DF_merge['hhincq3_y']/DF_merge['hhincq3_x']-1, 2)
+    DF_merge['hhincq4 pct growth'] = round(DF_merge['hhincq4_y']/DF_merge['hhincq4_x']-1, 2)
+    DF_merge['tothh pct growth'] = round(DF_merge['tothh_y']/DF_merge['tothh_x']-1, 2)
+    DF_merge['mfdu pct growth'] = round(DF_merge['mfdu_y']/DF_merge['mfdu_x']-1, 2)
+    DF_merge['sfdu pct growth'] = round(DF_merge['sfdu_y']/DF_merge['sfdu_x']-1, 2)
+    #DF_merge['occupancy_rate growth'] = DF_merge['occupancy_rate_y']/DF_merge['occupancy_rate_x']-1
+    DF_merge['non_residential_sqft pct growth'] = round(DF_merge['non_residential_sqft_y']/DF_merge['non_residential_sqft_x']-1, 2)
+    DF_merge['deed_restricted_units pct growth'] = round(DF_merge['deed_restricted_units_y']/DF_merge['deed_restricted_units_x']-1, 2)
+    DF_merge['inclusionary_units pct growth'] = round(DF_merge['inclusionary_units_y']/DF_merge['inclusionary_units_x']-1, 2)
+    DF_merge['subsidized_units pct growth'] = round(DF_merge['subsidized_units_y']/DF_merge['subsidized_units_x']-1, 2)
+    DF_merge['preserved_units pct growth'] = round(DF_merge['preserved_units_y']/DF_merge['preserved_units_x']-1, 2)
+
     DF_GROWTH = DF_merge[DF_COLUMNS].copy()
     DF_GROWTH['RUNID'] = run_num
     return DF_GROWTH
 
+def GEO_SUMMARY_CALCULATOR(parcel_geo_data):
+    parcel_geo_data = parcel_geo_data.groupby(['juris']).agg({'tothh_y':'sum','totemp_y':'sum','hhq1_y':'sum', 'hhq2_y':'sum','hhq3_y':'sum', 'hhq4_y':'sum', 
+                                                    'tothh_x':'sum','totemp_x':'sum','hhq1_x':'sum', 'hhq2_x':'sum','hhq3_x':'sum', 'hhq4_x':'sum', }).reset_index()
+    parcel_geo_data['totemp growth'] = parcel_geo_data['totemp_y']-parcel_geo_data['totemp_x']
+    parcel_geo_data['tothh growth'] = parcel_geo_data['tothh_y']-parcel_geo_data['tothh_x']
+    parcel_geo_data['hhq1 growth'] = parcel_geo_data['hhq1_y']-parcel_geo_data['hhq1_x']
+    parcel_geo_data['hhq2 growth'] = parcel_geo_data['hhq2_y']-parcel_geo_data['hhq2_x']
+    parcel_geo_data['hhq3 growth'] = parcel_geo_data['hhq3_y']-parcel_geo_data['hhq3_x']
+    parcel_geo_data['hhq4 growth'] = parcel_geo_data['hhq4_y']-parcel_geo_data['hhq4_x']
+    parcel_geo_data['totemp pct growth'] = round(parcel_geo_data['totemp_y']/parcel_geo_data['totemp_x']-1, 2)
+    parcel_geo_data['tothh pct growth'] = round(parcel_geo_data['tothh_y']/parcel_geo_data['tothh_x']-1, 2)
+    parcel_geo_data['hhq1 pct growth'] = round(parcel_geo_data['hhq1_y']/parcel_geo_data['hhq1_x']-1, 2)
+    parcel_geo_data['hhq2 pct growth'] = round(parcel_geo_data['hhq2_y']/parcel_geo_data['hhq2_x']-1, 2)
+    parcel_geo_data['hhq3 pct growth'] = round(parcel_geo_data['hhq3_y']/parcel_geo_data['hhq3_x']-1, 2)
+    parcel_geo_data['hhq4 pct growth'] = round(parcel_geo_data['hhq4_y']/parcel_geo_data['hhq4_x']-1, 2)    
+    parcel_geo_data = parcel_geo_data[['tothh growth','totemp growth','hhq1 growth','hhq2 growth','hhq3 growth','hhq4 growth',
+                            'tothh pct growth','totemp pct growth','hhq1 pct growth','hhq2 pct growth','hhq3 pct growth','hhq4 pct growth',
+                            'juris']].copy()
+    return parcel_geo_data	
 
 #This is to define a separate fileloader for parcel difference data. With the zoningmod category, we should be able to
 #summarize growth by different geography types that is more nuanced.
@@ -317,25 +436,16 @@ def GEO_SUMMARY_LOADER(run_num, geo, parcel_baseyear, parcel_endyear):
     parcel_baseyear = parcel_baseyear[['parcel_id','tothh','totemp', 'hhq1','hhq2','hhq3','hhq4']]
     parcel_endyear = parcel_endyear[['parcel_id','tothh','totemp', 'hhq1','hhq2','hhq3','hhq4','juris',zoningtag]]
     parcel_data = parcel_baseyear.merge(parcel_endyear, on = 'parcel_id', how = 'left').fillna(0)
-    
-    parcel_data['totemp diff'] = parcel_data['totemp_y']-parcel_data['totemp_x']
-    parcel_data['tothh diff'] = parcel_data['tothh_y']-parcel_data['tothh_x']
-    parcel_data['hhq1 diff'] = parcel_data['hhq1_y']-parcel_data['hhq1_x']
-    parcel_data['hhq2 diff'] = parcel_data['hhq2_y']-parcel_data['hhq2_x']
-    parcel_data['hhq3 diff'] = parcel_data['hhq3_y']-parcel_data['hhq3_x']
-    parcel_data['hhq4 diff'] = parcel_data['hhq4_y']-parcel_data['hhq4_x']
-
-    parcel_data = parcel_data[['parcel_id','tothh diff','totemp diff','hhq1 diff','hhq2 diff','hhq3 diff','hhq4 diff','juris',zoningtag]].copy()
     if 0 in parcel_data.juris.values:
         dropindex = parcel_data[parcel_data['juris'] == 0].index
         parcel_data.drop(dropindex,inplace = True)
         
     #geography summaries
     parcel_geo = parcel_data.loc[parcel_data[zoningtag].str.contains(geo, na=False)]
-    parcel_geo = parcel_geo.groupby(['juris']).agg({'tothh diff':'sum','totemp diff':'sum','hhq1 diff':'sum', 'hhq2 diff':'sum','hhq3 diff':'sum', 'hhq4 diff':'sum', }).reset_index()
+    parcel_geo = GEO_SUMMARY_CALCULATOR(parcel_geo)
     parcel_geo['geo_category'] = 'yes_%s'%(geo)
     parcel_geo_no = parcel_data.loc[~parcel_data[zoningtag].str.contains(geo, na=False)]
-    parcel_geo_no = parcel_geo_no.groupby(['juris']).agg({'tothh diff':'sum','totemp diff':'sum','hhq1 diff':'sum', 'hhq2 diff':'sum','hhq3 diff':'sum', 'hhq4 diff':'sum', }).reset_index()
+    parcel_geo_no = GEO_SUMMARY_CALCULATOR(parcel_geo_no)
     parcel_geo_no['geo_category'] = 'no_%s'%(geo)
     
     parcel_geo_summary = pd.concat([parcel_geo, parcel_geo_no])
@@ -360,22 +470,13 @@ def TWO_GEO_SUMMARY_LOADER(run_num, geo1, geo2, parcel_baseyear, parcel_endyear)
     parcel_baseyear = parcel_baseyear[['parcel_id','tothh','totemp', 'hhq1','hhq2','hhq3','hhq4']]
     parcel_endyear = parcel_endyear[['parcel_id','tothh','totemp', 'hhq1','hhq2','hhq3','hhq4','juris',zoningtag]]
     parcel_data = parcel_baseyear.merge(parcel_endyear, on = 'parcel_id', how = 'left').fillna(0)
-    
-    parcel_data['totemp diff'] = parcel_data['totemp_y']-parcel_data['totemp_x']
-    parcel_data['tothh diff'] = parcel_data['tothh_y']-parcel_data['tothh_x']
-    parcel_data['hhq1 diff'] = parcel_data['hhq1_y']-parcel_data['hhq1_x']
-    parcel_data['hhq2 diff'] = parcel_data['hhq2_y']-parcel_data['hhq2_x']
-    parcel_data['hhq3 diff'] = parcel_data['hhq3_y']-parcel_data['hhq3_x']
-    parcel_data['hhq4 diff'] = parcel_data['hhq4_y']-parcel_data['hhq4_x']
-
-    parcel_data = parcel_data[['parcel_id','tothh diff','totemp diff','hhq1 diff','hhq2 diff','hhq3 diff','hhq4 diff','juris',zoningtag]].copy()
     if 0 in parcel_data.juris.values:
         dropindex = parcel_data[parcel_data['juris'] == 0].index
         parcel_data.drop(dropindex,inplace = True)    
     #two geographies
     parcel_geo2 = parcel_data.loc[parcel_data[zoningtag].str.contains(geo1, na=False)]
     parcel_geo2 = parcel_geo2.loc[parcel_geo2[zoningtag].str.contains(geo2, na=False)]
-    parcel_geo2_group = parcel_geo2.groupby(['juris']).agg({'tothh diff':'sum','totemp diff':'sum','hhq1 diff':'sum', 'hhq2 diff':'sum','hhq3 diff':'sum', 'hhq4 diff':'sum', }).reset_index()
+    parcel_geo2_group = GEO_SUMMARY_CALCULATOR(parcel_geo2)
     parcel_geo2_group['geo_category'] = 'yes_%s'%(geo1+geo2)
     
     parcel_geo2_no_1 = parcel_data.loc[parcel_data[zoningtag].str.contains(geo1, na=False)]
@@ -385,7 +486,7 @@ def TWO_GEO_SUMMARY_LOADER(run_num, geo1, geo2, parcel_baseyear, parcel_endyear)
     parcel_geo2_no_3 = parcel_data.loc[~parcel_data[zoningtag].str.contains(geo1 + "|" + geo2, na=False)]
     
     parcel_geo2_no = pd.concat([parcel_geo2_no_1, parcel_geo2_no_2, parcel_geo2_no_3], ignore_index = True)
-    parcel_geo2_no_group = parcel_geo2_no.groupby(['juris']).agg({'tothh diff':'sum','totemp diff':'sum','hhq1 diff':'sum', 'hhq2 diff':'sum','hhq3 diff':'sum', 'hhq4 diff':'sum', }).reset_index()
+    parcel_geo2_no_group = GEO_SUMMARY_CALCULATOR(parcel_geo2_no)
     parcel_geo2_no_group['geo_category'] = 'no_%s'%(geo1+geo2)
     
     parcel_geo2_summary = pd.concat([parcel_geo2_group, parcel_geo2_no_group], ignore_index = True)

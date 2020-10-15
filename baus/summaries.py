@@ -1343,7 +1343,6 @@ def parcel_summary(parcels, buildings, households, jobs,
             df_growth.set_index(['RUNID','county','juris','geo_category'], inplace=True)
             df_growth.to_csv(os.path.join("runs", "run{}_{}_growth_summaries.csv".\
                                             format(run_number, geography)))
-
         geo_1, geo_2, geo_3 = 'tra','DIS','HRA'
         df_growth_1 = TWO_GEO_SUMMARY_LOADER(run_number, geo_1, geo_2,
                                             df_base, df_final)
