@@ -139,19 +139,35 @@ def county_calculator(run_num, DF1, DF2):
         DF_merge['HHINCQ3 GROWTH'] = DF_merge['HHINCQ3_y']-DF_merge['HHINCQ3_x']
         DF_merge['HHINCQ4 GROWTH'] = DF_merge['HHINCQ4_y']-DF_merge['HHINCQ4_x']
 
-        DF_merge['TOTPOP PCT GROWTH'] = round(DF_merge['TOTPOP_y']/DF_merge['TOTPOP_x']-1, 2)
-        DF_merge['TOTEMP PCT GROWTH'] = round(DF_merge['TOTEMP_y']/DF_merge['TOTEMP_x']-1, 2)
-        DF_merge['AGREMPN PCT GROWTH'] = round(DF_merge['AGREMPN_y']/DF_merge['AGREMPN_x']-1, 2)
-        DF_merge['FPSEMPN PCT GROWTH'] = round(DF_merge['FPSEMPN_y']/DF_merge['FPSEMPN_x']-1, 2)
-        DF_merge['HEREMPN PCT GROWTH'] = round(DF_merge['HEREMPN_y']/DF_merge['HEREMPN_x']-1, 2)
-        DF_merge['MWTEMPN PCT GROWTH'] = round(DF_merge['MWTEMPN_y']/DF_merge['MWTEMPN_x']-1, 2)
-        DF_merge['OTHEMPN PCT GROWTH'] = round(DF_merge['OTHEMPN_y']/DF_merge['OTHEMPN_x']-1, 2)
-        DF_merge['RETEMPN PCT GROWTH'] = round(DF_merge['RETEMPN_y']/DF_merge['RETEMPN_x']-1, 2)
-        DF_merge['TOTHH PCT GROWTH'] = round(DF_merge['TOTHH_y']/DF_merge['TOTHH_x']-1, 2)
-        DF_merge['HHINCQ1 PCT GROWTH'] = round(DF_merge['HHINCQ1_y']/DF_merge['HHINCQ1_x']-1, 2)
-        DF_merge['HHINCQ2 PCT GROWTH'] = round(DF_merge['HHINCQ2_y']/DF_merge['HHINCQ2_x']-1, 2)
-        DF_merge['HHINCQ3 PCT GROWTH'] = round(DF_merge['HHINCQ3_y']/DF_merge['HHINCQ3_x']-1, 2)
-        DF_merge['HHINCQ4 PCT GROWTH'] = round(DF_merge['HHINCQ4_y']/DF_merge['HHINCQ4_x']-1, 2)
+        DF_COUNTY_GROWTH = DF_merge.groupby(['COUNTY_NAME_x']).sum().reset_index()
+
+        DF_COUNTY_GRWOTH['TOTPOP PCT GROWTH'] = round(DF_COUNTY_GRWOTH['TOTPOP_y']/DF_COUNTY_GRWOTH['TOTPOP_x']-1, 2)
+        DF_COUNTY_GRWOTH['TOTEMP PCT GROWTH'] = round(DF_COUNTY_GRWOTH['TOTEMP_y']/DF_COUNTY_GRWOTH['TOTEMP_x']-1, 2)
+        DF_COUNTY_GRWOTH['AGREMPN PCT GROWTH'] = round(DF_COUNTY_GRWOTH['AGREMPN_y']/DF_COUNTY_GRWOTH['AGREMPN_x']-1, 2)
+        DF_COUNTY_GRWOTH['FPSEMPN PCT GROWTH'] = round(DF_COUNTY_GRWOTH['FPSEMPN_y']/DF_COUNTY_GRWOTH['FPSEMPN_x']-1, 2)
+        DF_COUNTY_GRWOTH['HEREMPN PCT GROWTH'] = round(DF_COUNTY_GRWOTH['HEREMPN_y']/DF_COUNTY_GRWOTH['HEREMPN_x']-1, 2)
+        DF_COUNTY_GRWOTH['MWTEMPN PCT GROWTH'] = round(DF_COUNTY_GRWOTH['MWTEMPN_y']/DF_COUNTY_GRWOTH['MWTEMPN_x']-1, 2)
+        DF_COUNTY_GRWOTH['OTHEMPN PCT GROWTH'] = round(DF_COUNTY_GRWOTH['OTHEMPN_y']/DF_COUNTY_GRWOTH['OTHEMPN_x']-1, 2)
+        DF_COUNTY_GRWOTH['RETEMPN PCT GROWTH'] = round(DF_COUNTY_GRWOTH['RETEMPN_y']/DF_COUNTY_GRWOTH['RETEMPN_x']-1, 2)
+        DF_COUNTY_GRWOTH['TOTHH PCT GROWTH'] = round(DF_COUNTY_GRWOTH['TOTHH_y']/DF_COUNTY_GRWOTH['TOTHH_x']-1, 2)
+        DF_COUNTY_GRWOTH['HHINCQ1 PCT GROWTH'] = round(DF_COUNTY_GRWOTH['HHINCQ1_y']/DF_COUNTY_GRWOTH['HHINCQ1_x']-1, 2)
+        DF_COUNTY_GRWOTH['HHINCQ2 PCT GROWTH'] = round(DF_COUNTY_GRWOTH['HHINCQ2_y']/DF_COUNTY_GRWOTH['HHINCQ2_x']-1, 2)
+        DF_COUNTY_GRWOTH['HHINCQ3 PCT GROWTH'] = round(DF_COUNTY_GRWOTH['HHINCQ3_y']/DF_COUNTY_GRWOTH['HHINCQ3_x']-1, 2)
+        DF_COUNTY_GRWOTH['HHINCQ4 PCT GROWTH'] = round(DF_COUNTY_GRWOTH['HHINCQ4_y']/DF_COUNTY_GRWOTH['HHINCQ4_x']-1, 2)
+
+        DF_COUNTY_GRWOTH['TOTPOP SHR CHNG'] = round(DF_COUNTY_GRWOTH['TOTPOP_y']/DF_COUNTY_GRWOTH['TOTPOP_y'].sum()-DF_COUNTY_GRWOTH['TOTPOP_x']/DF_COUNTY_GRWOTH['TOTPOP_x'].sum(), 2)
+        DF_COUNTY_GRWOTH['TOTEMP SHR CHNG'] = round(DF_COUNTY_GRWOTH['TOTEMP_y']/DF_COUNTY_GRWOTH['TOTEMP_y'].sum()-DF_COUNTY_GRWOTH['TOTEMP_x']/DF_COUNTY_GRWOTH['TOTEMP_x'].sum(), 2)
+        DF_COUNTY_GRWOTH['AGREMPN SHR CHNG'] = round(DF_COUNTY_GRWOTH['AGREMPN_y']/DF_COUNTY_GRWOTH['AGREMPN_y'].sum()-DF_COUNTY_GRWOTH['AGREMPN_x']/DF_COUNTY_GRWOTH['AGREMPN_x'].sum(), 2)
+        DF_COUNTY_GRWOTH['FPSEMPN SHR CHNG'] = round(DF_COUNTY_GRWOTH['FPSEMPN_y']/DF_COUNTY_GRWOTH['FPSEMPN_y'].sum()-DF_COUNTY_GRWOTH['FPSEMPN_x']/DF_COUNTY_GRWOTH['FPSEMPN_x'].sum(), 2)
+        DF_COUNTY_GRWOTH['HEREMPN SHR CHNG'] = round(DF_COUNTY_GRWOTH['HEREMPN_y']/DF_COUNTY_GRWOTH['HEREMPN_y'].sum()-DF_COUNTY_GRWOTH['HEREMPN_x']/DF_COUNTY_GRWOTH['HEREMPN_x'].sum(), 2)
+        DF_COUNTY_GRWOTH['MWTEMPN SHR CHNG'] = round(DF_COUNTY_GRWOTH['MWTEMPN_y']/DF_COUNTY_GRWOTH['MWTEMPN_y'].sum()-DF_COUNTY_GRWOTH['MWTEMPN_x']/DF_COUNTY_GRWOTH['MWTEMPN_x'].sum(), 2)
+        DF_COUNTY_GRWOTH['OTHEMPN SHR CHNG'] = round(DF_COUNTY_GRWOTH['OTHEMPN_y']/DF_COUNTY_GRWOTH['OTHEMPN_y'].sum()-DF_COUNTY_GRWOTH['OTHEMPN_x']/DF_COUNTY_GRWOTH['OTHEMPN_x'].sum(), 2)
+        DF_COUNTY_GRWOTH['RETEMPN SHR CHNG'] = round(DF_COUNTY_GRWOTH['RETEMPN_y']/DF_COUNTY_GRWOTH['RETEMPN_y'].sum()-DF_COUNTY_GRWOTH['RETEMPN_x']/DF_COUNTY_GRWOTH['RETEMPN_x'].sum(), 2)
+        DF_COUNTY_GRWOTH['TOTHH SHR CHNG'] = round(DF_COUNTY_GRWOTH['TOTHH_y']/DF_COUNTY_GRWOTH['TOTHH_y'].sum()-DF_COUNTY_GRWOTH['TOTHH_x']DF_COUNTY_GRWOTH['TOTHH_x'].sum(), 2)
+        DF_COUNTY_GRWOTH['HHINCQ1 SHR CHNG'] = round(DF_COUNTY_GRWOTH['HHINCQ1_y']/DF_COUNTY_GRWOTH['HHINCQ1_y'].sum()-DF_COUNTY_GRWOTH['HHINCQ1_x']/DF_COUNTY_GRWOTH['HHINCQ1_x'].sum(), 2)
+        DF_COUNTY_GRWOTH['HHINCQ2 SHR CHNG'] = round(DF_COUNTY_GRWOTH['HHINCQ2_y']/DF_COUNTY_GRWOTH['HHINCQ2_y'].sum()-DF_COUNTY_GRWOTH['HHINCQ2_x']/DF_COUNTY_GRWOTH['HHINCQ2_x'].sum(), 2)
+        DF_COUNTY_GRWOTH['HHINCQ3 SHR CHNG'] = round(DF_COUNTY_GRWOTH['HHINCQ3_y']/DF_COUNTY_GRWOTH['HHINCQ3_y'].sum()-DF_COUNTY_GRWOTH['HHINCQ3_x']/DF_COUNTY_GRWOTH['HHINCQ3_x'].sum(), 2)
+        DF_COUNTY_GRWOTH['HHINCQ4 SHR CHNG'] = round(DF_COUNTY_GRWOTH['HHINCQ4_y']/DF_COUNTY_GRWOTH['HHINCQ4_y'].sum()-DF_COUNTY_GRWOTH['HHINCQ4_x']/DF_COUNTY_GRWOTH['HHINCQ4_x'].sum(), 2)
 
         DF_COLUMNS = ['COUNTY_NAME_x',
                       'TOTPOP GROWTH',
@@ -179,10 +195,22 @@ def county_calculator(run_num, DF1, DF2):
                       'HHINCQ1 PCT GROWTH',
                       'HHINCQ2 PCT GROWTH',
                       'HHINCQ3 PCT GROWTH',
-                      'HHINCQ4 PCT GROWTH']
-        
-        DF_TAZ_GROWTH = DF_merge[DF_COLUMNS].copy()
-        DF_COUNTY_GROWTH = DF_TAZ_GROWTH.groupby(['COUNTY_NAME_x']).sum().reset_index()
+                      'HHINCQ4 PCT GROWTH',
+                      'TOTPOP SHR CHNG',
+                      'TOTEMP SHR CHNG',
+                      'AGREMPN SHR CHNG',
+                      'FPSEMPN SHR CHNG',
+                      'HEREMPN SHR CHNG',
+                      'MWTEMPN SHR CHNG',
+                      'OTHEMPN SHR CHNG',
+                      'RETEMPN SHR CHNG',
+                      'TOTHH SHR CHNG',
+                      'HHINCQ1 SHR CHNG',
+                      'HHINCQ2 SHR CHNG',
+                      'HHINCQ3 SHR CHNG',
+                      'HHINCQ4 SHR CHNG']
+                           
+        DF_COUNTY_GROWTH = DF_COUNTY_GROWTH[DF_COLUMNS].copy()
         DF_COUNTY_GROWTH = DF_COUNTY_GROWTH.rename(columns={'COUNTY_NAME_x': 'COUNTY'})
         DF_COUNTY_GROWTH['RUNID'] = run_num
         #add county mapping
@@ -494,3 +522,4 @@ def TWO_GEO_SUMMARY_LOADER(run_num, geo1, geo2, parcel_baseyear, parcel_endyear)
     parcel_geo2_summary['RUNID'] = run_num
     
     return parcel_geo2_summary
+
