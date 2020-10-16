@@ -251,8 +251,23 @@ def taz_calculator(run_num, DF1, DF2):
         DF_merge['TOTPOP PCT GROWTH'] = round(DF_merge['TOTPOP_y']/DF_merge['TOTPOP_x']-1, 2)
         DF_merge['TOTEMP PCT GROWTH'] = round(DF_merge['TOTEMP_y']/DF_merge['TOTEMP_x']-1, 2)
         DF_merge['TOTHH PCT GROWTH'] = round(DF_merge['TOTHH_y']/DF_merge['TOTHH_x']-1, 2)
-        
 
+        DF_merge['TOTPOP SHR CHNG'] = round(DF_merge['TOTPOP_y']/DF_merge['TOTPOP_y'].sum()-DF_merge['TOTPOP_x']/DF_merge['TOTPOP_x'].sum(), 2)
+        DF_merge['TOTEMP SHR CHNG'] = round(DF_merge['TOTEMP_y']/DF_merge['TOTEMP_y'].sum()-DF_merge['TOTEMP_x']/DF_merge['TOTEMP_x'].sum(), 2)
+        DF_merge['AGREMPN SHR CHNG'] = round(DF_merge['AGREMPN_y']/DF_merge['AGREMPN_y'].sum()-DF_merge['AGREMPN_x']/DF_merge['AGREMPN_x'].sum(), 2)
+        DF_merge['FPSEMPN SHR CHNG'] = round(DF_merge['FPSEMPN_y']/DF_merge['FPSEMPN_y'].sum()-DF_merge['FPSEMPN_x']/DF_merge['FPSEMPN_x'].sum(), 2)
+        DF_merge['HEREMPN SHR CHNG'] = round(DF_merge['HEREMPN_y']/DF_merge['HEREMPN_y'].sum()-DF_merge['HEREMPN_x']/DF_merge['HEREMPN_x'].sum(), 2)
+        DF_merge['MWTEMPN SHR CHNG'] = round(DF_merge['MWTEMPN_y']/DF_merge['MWTEMPN_y'].sum()-DF_merge['MWTEMPN_x']/DF_merge['MWTEMPN_x'].sum(), 2)
+        DF_merge['OTHEMPN SHR CHNG'] = round(DF_merge['OTHEMPN_y']/DF_merge['OTHEMPN_y'].sum()-DF_merge['OTHEMPN_x']/DF_merge['OTHEMPN_x'].sum(), 2)
+        DF_merge['RETEMPN SHR CHNG'] = round(DF_merge['RETEMPN_y']/DF_merge['RETEMPN_y'].sum()-DF_merge['RETEMPN_x']/DF_merge['RETEMPN_x'].sum(), 2)
+        DF_merge['TOTHH SHR CHNG'] = round(DF_merge['TOTHH_y']/DF_merge['TOTHH_y'].sum()-DF_merge['TOTHH_x']DF_merge['TOTHH_x'].sum(), 2)
+        DF_merge['HHINCQ1 SHR CHNG'] = round(DF_merge['HHINCQ1_y']/DF_merge['HHINCQ1_y'].sum()-DF_merge['HHINCQ1_x']/DF_merge['HHINCQ1_x'].sum(), 2)
+        DF_merge['HHINCQ2 SHR CHNG'] = round(DF_merge['HHINCQ2_y']/DF_merge['HHINCQ2_y'].sum()-DF_merge['HHINCQ2_x']/DF_merge['HHINCQ2_x'].sum(), 2)
+        DF_merge['HHINCQ3 SHR CHNG'] = round(DF_merge['HHINCQ3_y']/DF_merge['HHINCQ3_y'].sum()-DF_merge['HHINCQ3_x']/DF_merge['HHINCQ3_x'].sum(), 2)
+        DF_merge['HHINCQ4 SHR CHNG'] = round(DF_merge['HHINCQ4_y']/DF_merge['HHINCQ4_y'].sum()-DF_merge['HHINCQ4_x']/DF_merge['HHINCQ4_x'].sum(), 2)
+        DF_merge['RES_UNITS SHR CHNG'] = round(DF_merge['RES_UNITS_y']/DF_merge['RES_UNITS_y'].sum()-DF_merge['RES_UNITS_x']/DF_merge['RES_UNITS_x'].sum(), 2)
+        DF_merge['MFDU SHR CHNG'] = round(DF_merge['MFDU_y']/DF_merge['MFDU_y'].sum()-DF_merge['MFDU_x']/DF_merge['MFDU_x'].sum(), 2)
+        DF_merge['SFDU SHR CHNG'] = round(DF_merge['SFDU_y']/DF_merge['SFDU_y'].sum()-DF_merge['SFDU_x']/DF_merge['SFDU_x'].sum(), 2)
 
         TAZ_DF_COLUMNS = ['TAZ',
                          'SD_x',
@@ -269,37 +284,29 @@ def taz_calculator(run_num, DF1, DF2):
                          'HHINCQ2 GROWTH',
                          'HHINCQ3 GROWTH',
                          'HHINCQ4 GROWTH',
-                         #'HHPOP GROWTH',
                          'TOTHH GROWTH',
-                         #'SHPOP62P GROWTH',
-                         #'GQPOP GROWTH',
                          'TOTPOP GROWTH',
                          'RES_UNITS GROWTH',
                          'MFDU GROWTH',
                          'SFDU GROWTH',
-                         #'RESACRE GROWTH',
-                         #'EMPRES GROWTH',
-                         #'AGE0004 GROWTH',
-                         #'AGE0519 GROWTH',
-                         #'AGE2044 GROWTH',
-                         #'AGE4564 GROWTH',
-                         #'AGE65P GROWTH'
                         'TOTPOP PCT GROWTH',
                       	'TOTEMP PCT GROWTH',
-                      	'AGREMPN PCT GROWTH',
-                      	'FPSEMPN PCT GROWTH',
-                      	'HEREMPN PCT GROWTH',
-                      	'MWTEMPN PCT GROWTH',
-                      	'OTHEMPN PCT GROWTH',
-                      	'RETEMPN PCT GROWTH',
-                      	'TOTHH PCT GROWTH',
-                      	'HHINCQ1 PCT GROWTH',
-                      	'HHINCQ2 PCT GROWTH',
-                      	'HHINCQ3 PCT GROWTH',
-                      	'HHINCQ4 PCT GROWTH',
-                        'RES_UNITS PCT GROWTH',
-                        'MFDU PCT GROWTH',
-                        'SFDU PCT GROWTH']
+                         'AGREMPN SHR CHNG',
+                         'FPSEMPN SHR CHNG',
+                         'HEREMPN SHR CHNG',
+                         'MWTEMPN SHR CHNG',
+                         'OTHEMPN SHR CHNG',
+                         'RETEMPN SHR CHNG',
+                         'TOTEMP SHR CHNG',
+                         'HHINCQ1 SHR CHNG',
+                         'HHINCQ2 SHR CHNG',
+                         'HHINCQ3 SHR CHNG',
+                         'HHINCQ4 SHR CHNG',
+                         'TOTHH SHR CHNG',
+                         'TOTPOP SHR CHNG',
+                         'RES_UNITS SHR CHNG',
+                         'MFDU SHR CHNG',
+                         'SFDU SHR CHNG']
         
         DF_TAZ_GROWTH = DF_merge[TAZ_DF_COLUMNS].copy()
         DF_TAZ_GROWTH = DF_TAZ_GROWTH.rename(columns={'SD_x': 'SD', 'ZONE_x': 'ZONE', 'COUNTY_x': 'COUNTY'})
@@ -325,32 +332,15 @@ def nontaz_calculator(run_num, DF1, DF2):
                   'tothh growth',
                   'mfdu growth',
                   'sfdu growth',
-                  #'occupancy_rate growth',
                   'non_residential_sqft growth',
                   'deed_restricted_units growth',
                   'inclusionary_units growth',
                   'subsidized_units growth',
                   'preserved_units growth',
-                  'agrempn pct growth',
-                  'fpsempn pct growth',
-                  'herempn pct growth',
-                  'mwtempn pct growth',
-                  'othempn pct growth',
-                  'retempn pct growth',
                   'totemp pct growth',
-                  'hhincq1 pct growth',
-                  'hhincq2 pct growth',
-                  'hhincq3 pct growth',
-                  'hhincq4 pct growth',
                   'tothh pct growth',
-                  'mfdu pct growth',
-                  'sfdu pct growth',
-                  #'occupancy_rate growth',
-                  'non_residential_sqft pct growth',
-                  'deed_restricted_units pct growth',
-                  'inclusionary_units pct growth',
-                  'subsidized_units pct growth',
-                  'preserved_units pct growth']
+                  'totemp shr chng',
+                  'tothh shr chng']
     
     if ('juris' in DF1.columns) & ('juris' in DF2.columns):
         DF_merge = DF1.merge(DF2, on = 'juris').fillna(0)
@@ -382,27 +372,10 @@ def nontaz_calculator(run_num, DF1, DF2):
     DF_merge['subsidized_units growth'] = DF_merge['subsidized_units_y']-DF_merge['subsidized_units_x']
     DF_merge['preserved_units growth'] = DF_merge['preserved_units_y']-DF_merge['preserved_units_x']
 
-    DF_merge['agrempn pct growth'] = round(DF_merge['agrempn_y']/DF_merge['agrempn_x']-1, 2)
-    DF_merge['fpsempn pct growth'] = round(DF_merge['fpsempn_y']/DF_merge['fpsempn_x']-1, 2)
-    DF_merge['herempn pct growth'] = round(DF_merge['herempn_y']/DF_merge['herempn_x']-1, 2)
-    DF_merge['mwtempn pct growth'] = round(DF_merge['mwtempn_y']/DF_merge['mwtempn_x']-1, 2)
-    DF_merge['othempn pct growth'] = round(DF_merge['othempn_y']/DF_merge['othempn_x']-1, 2)
-    DF_merge['retempn pct growth'] = round(DF_merge['retempn_y']/DF_merge['retempn_x']-1, 2)
     DF_merge['totemp pct growth'] = round(DF_merge['totemp_y']/DF_merge['totemp_x']-1, 2)
-    DF_merge['hhincq1 pct growth'] = round(DF_merge['hhincq1_y']/DF_merge['hhincq1_x']-1, 2)
-    DF_merge['hhincq2 pct growth'] = round(DF_merge['hhincq2_y']/DF_merge['hhincq2_x']-1, 2)
-    DF_merge['hhincq3 pct growth'] = round(DF_merge['hhincq3_y']/DF_merge['hhincq3_x']-1, 2)
-    DF_merge['hhincq4 pct growth'] = round(DF_merge['hhincq4_y']/DF_merge['hhincq4_x']-1, 2)
     DF_merge['tothh pct growth'] = round(DF_merge['tothh_y']/DF_merge['tothh_x']-1, 2)
-    DF_merge['mfdu pct growth'] = round(DF_merge['mfdu_y']/DF_merge['mfdu_x']-1, 2)
-    DF_merge['sfdu pct growth'] = round(DF_merge['sfdu_y']/DF_merge['sfdu_x']-1, 2)
-    #DF_merge['occupancy_rate growth'] = DF_merge['occupancy_rate_y']/DF_merge['occupancy_rate_x']-1
-    DF_merge['non_residential_sqft pct growth'] = round(DF_merge['non_residential_sqft_y']/DF_merge['non_residential_sqft_x']-1, 2)
-    DF_merge['deed_restricted_units pct growth'] = round(DF_merge['deed_restricted_units_y']/DF_merge['deed_restricted_units_x']-1, 2)
-    DF_merge['inclusionary_units pct growth'] = round(DF_merge['inclusionary_units_y']/DF_merge['inclusionary_units_x']-1, 2)
-    DF_merge['subsidized_units pct growth'] = round(DF_merge['subsidized_units_y']/DF_merge['subsidized_units_x']-1, 2)
-    DF_merge['preserved_units pct growth'] = round(DF_merge['preserved_units_y']/DF_merge['preserved_units_x']-1, 2)
-
+    DF_merge['totemp shr chng'] = round(DF_merge['totemp_y']/DF_merge['totemp_y'].sum()-DF_merge['totemp_x']DF_merge['totemp_x'].sum(), 2)
+    DF_merge['tothh shr chng'] = round(DF_merge['tothh_y']/DF_merge['tothh_y'].sum()-DF_merge['tothh_x']DF_merge['tothh_x'].sum(), 2)
     DF_GROWTH = DF_merge[DF_COLUMNS].copy()
     DF_GROWTH['RUNID'] = run_num
     return DF_GROWTH
@@ -415,16 +388,8 @@ def GEO_SUMMARY_CALCULATOR(parcel_geo_data):
     parcel_geo_data['hhq1 growth'] = parcel_geo_data['hhq1_y']-parcel_geo_data['hhq1_x']
     parcel_geo_data['hhq2 growth'] = parcel_geo_data['hhq2_y']-parcel_geo_data['hhq2_x']
     parcel_geo_data['hhq3 growth'] = parcel_geo_data['hhq3_y']-parcel_geo_data['hhq3_x']
-    parcel_geo_data['hhq4 growth'] = parcel_geo_data['hhq4_y']-parcel_geo_data['hhq4_x']
-    parcel_geo_data['totemp pct growth'] = round(parcel_geo_data['totemp_y']/parcel_geo_data['totemp_x']-1, 2)
-    parcel_geo_data['tothh pct growth'] = round(parcel_geo_data['tothh_y']/parcel_geo_data['tothh_x']-1, 2)
-    parcel_geo_data['hhq1 pct growth'] = round(parcel_geo_data['hhq1_y']/parcel_geo_data['hhq1_x']-1, 2)
-    parcel_geo_data['hhq2 pct growth'] = round(parcel_geo_data['hhq2_y']/parcel_geo_data['hhq2_x']-1, 2)
-    parcel_geo_data['hhq3 pct growth'] = round(parcel_geo_data['hhq3_y']/parcel_geo_data['hhq3_x']-1, 2)
-    parcel_geo_data['hhq4 pct growth'] = round(parcel_geo_data['hhq4_y']/parcel_geo_data['hhq4_x']-1, 2)    
-    parcel_geo_data = parcel_geo_data[['tothh growth','totemp growth','hhq1 growth','hhq2 growth','hhq3 growth','hhq4 growth',
-                            'tothh pct growth','totemp pct growth','hhq1 pct growth','hhq2 pct growth','hhq3 pct growth','hhq4 pct growth',
-                            'juris']].copy()
+    parcel_geo_data['hhq4 growth'] = parcel_geo_data['hhq4_y']-parcel_geo_data['hhq4_x'] 
+    parcel_geo_data = parcel_geo_data[['tothh growth','totemp growth','hhq1 growth','hhq2 growth','hhq3 growth','hhq4 growth','juris']].copy()
     return parcel_geo_data	
 
 #This is to define a separate fileloader for parcel difference data. With the zoningmod category, we should be able to
