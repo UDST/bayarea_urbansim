@@ -340,7 +340,26 @@ def nontaz_calculator(run_num, DF1, DF2):
                   'totemp pct growth',
                   'tothh pct growth',
                   'totemp shr chng',
-                  'tothh shr chng']
+                  'tothh shr chng',
+                  'agrempn shr chng',
+                  'fpsempn shr chng',
+                  'herempn shr chng',
+                  'mwtempn shr chng',
+                  'othempn shr chng',
+                  'retempn shr chng',
+                  'totemp shr chng',
+                  'hhincq1 shr chng',
+                  'hhincq2 shr chng',
+                  'hhincq3 shr chng',
+                  'hhincq4 shr chng',
+                  'tothh shr chng',
+                  'mfdu shr chng',
+                  'sfdu shr chng',
+                  'nonres_sqft shr chng',
+                  'dr_units shr chng',
+                  'incl_units shr chng',
+                  'subsd_units shr chng',
+                  'presrv_units shr chng']
     
     if ('juris' in DF1.columns) & ('juris' in DF2.columns):
         DF_merge = DF1.merge(DF2, on = 'juris').fillna(0)
@@ -365,31 +384,58 @@ def nontaz_calculator(run_num, DF1, DF2):
     DF_merge['tothh growth'] = DF_merge['tothh_y']-DF_merge['tothh_x']
     DF_merge['mfdu growth'] = DF_merge['mfdu_y']-DF_merge['mfdu_x']
     DF_merge['sfdu growth'] = DF_merge['sfdu_y']-DF_merge['sfdu_x']
-    #DF_merge['occupancy_rate growth'] = DF_merge['occupancy_rate_y']-DF_merge['occupancy_rate_x']
-    DF_merge['non_residential_sqft growth'] = DF_merge['non_residential_sqft_y']-DF_merge['non_residential_sqft_x']
-    DF_merge['deed_restricted_units growth'] = DF_merge['deed_restricted_units_y']-DF_merge['deed_restricted_units_x']
-    DF_merge['inclusionary_units growth'] = DF_merge['inclusionary_units_y']-DF_merge['inclusionary_units_x']
-    DF_merge['subsidized_units growth'] = DF_merge['subsidized_units_y']-DF_merge['subsidized_units_x']
-    DF_merge['preserved_units growth'] = DF_merge['preserved_units_y']-DF_merge['preserved_units_x']
+    DF_merge['nonres_sqft growth'] = DF_merge['non_residential_sqft_y']-DF_merge['non_residential_sqft_x']
+    DF_merge['res_units growth'] = DF_merge['res_units_y']-DF_merge['res_units_x']
+    DF_merge['dr_units growth'] = DF_merge['deed_restricted_units_y']-DF_merge['deed_restricted_units_x']
+    DF_merge['incl_units growth'] = DF_merge['inclusionary_units_y']-DF_merge['inclusionary_units_x']
+    DF_merge['subsd_units growth'] = DF_merge['subsidized_units_y']-DF_merge['subsidized_units_x']
+    DF_merge['presrv_units growth'] = DF_merge['preserved_units_y']-DF_merge['preserved_units_x']
 
     DF_merge['totemp pct growth'] = round(DF_merge['totemp_y']/DF_merge['totemp_x']-1, 2)
     DF_merge['tothh pct growth'] = round(DF_merge['tothh_y']/DF_merge['tothh_x']-1, 2)
     DF_merge['totemp shr chng'] = round(DF_merge['totemp_y']/DF_merge['totemp_y'].sum()-DF_merge['totemp_x']DF_merge['totemp_x'].sum(), 2)
     DF_merge['tothh shr chng'] = round(DF_merge['tothh_y']/DF_merge['tothh_y'].sum()-DF_merge['tothh_x']DF_merge['tothh_x'].sum(), 2)
+    DF_merge['agrempn shr chng'] = round(DF_merge['agrempn_y']/DF_merge['agrempn_y'].sum()-DF_merge['agrempn_x']/DF_merge['agrempn_x'].sum(), 2)
+    DF_merge['fpsempn shr chng'] = round(DF_merge['fpsempn_y']/DF_merge['fpsempn_y'].sum()-DF_merge['fpsempn_x']/DF_merge['fpsempn_x'].sum(), 2)
+    DF_merge['herempn shr chng'] = round(DF_merge['herempn_y']/DF_merge['herempn_y'].sum()-DF_merge['herempn_x']/DF_merge['herempn_x'].sum(), 2)
+    DF_merge['mwtempn shr chng'] = round(DF_merge['mwtempn_y']/DF_merge['mwtempn_y'].sum()-DF_merge['mwtempn_x']/DF_merge['mwtempn_x'].sum(), 2)
+    DF_merge['othempn shr chng'] = round(DF_merge['othempn_y']/DF_merge['othempn_y'].sum()-DF_merge['othempn_x']/DF_merge['othempn_x'].sum(), 2)
+    DF_merge['retempn shr chng'] = round(DF_merge['retempn_y']/DF_merge['retempn_y'].sum()-DF_merge['retempn_x']/DF_merge['retempn_x'].sum(), 2)
+    DF_merge['hhincq1 shr chng'] = round(DF_merge['hhincq1_y']/DF_merge['hhincq1_y'].sum()-DF_merge['hhincq1_x']/DF_merge['hhincq1_x'].sum(), 2)
+    DF_merge['hhincq2 shr chng'] = round(DF_merge['hhincq2_y']/DF_merge['hhincq2_y'].sum()-DF_merge['hhincq2_x']/DF_merge['hhincq2_x'].sum(), 2)
+    DF_merge['hhincq3 shr chng'] = round(DF_merge['hhincq3_y']/DF_merge['hhincq3_y'].sum()-DF_merge['hhincq3_x']/DF_merge['hhincq3_x'].sum(), 2)
+    DF_merge['hhincq4 shr chng'] = round(DF_merge['hhincq4_y']/DF_merge['hhincq4_y'].sum()-DF_merge['hhincq4_x']/DF_merge['hhincq4_x'].sum(), 2)
+    DF_merge['res_units shr chng'] = round(DF_merge['res_units_y']/DF_merge['res_units_y'].sum()-DF_merge['res_units_x']/DF_merge['res_units_x'].sum(), 2)
+    DF_merge['mfdu shr chng'] = round(DF_merge['mfdu_y']/DF_merge['mfdu_y'].sum()-DF_merge['mfdu_x']/DF_merge['mfdu_x'].sum(), 2)
+    DF_merge['sfdu shr chng'] = round(DF_merge['sfdu_y']/DF_merge['sfdu_y'].sum()-DF_merge['sfdu_x']/DF_merge['sfdu_x'].sum(), 2)
+    DF_merge['nonres_sqft shr chng'] = round(DF_merge['non_residential_sqft_y']/DF_merge['non_residential_sqft_y'].sum()-DF_merge['non_residential_sqft_x']/DF_merge['non_residential_sqft_x'].sum(), 2)
+    DF_merge['dr_units shr chng'] = round(DF_merge['deed_restricted_units_y']/DF_merge['deed_restricted_units_y'].sum()-DF_merge['deed_restricted_units_x']/DF_merge['deed_restricted_units_x'].sum(), 2)
+    DF_merge['incl_units shr chng'] = round(DF_merge['inclusionary_units_y']/DF_merge['inclusionary_units_y'].sum()-DF_merge['inclusionary_units_x']/DF_merge['inclusionary_units_x'].sum(), 2)
+    DF_merge['subsd_units shr chng'] = round(DF_merge['subsidized_units_y']/DF_merge['subsidized_units_y'].sum()-DF_merge['subsidized_units_x']/DF_merge['subsidized_units_x'].sum(), 2)
+    DF_merge['presrv_units shr chng'] = round(DF_merge['preserved_units_y']/DF_merge['preserved_units_y'].sum()-DF_merge['preserved_units_x']/DF_merge['preserved_units_x'].sum(), 2)
+
     DF_GROWTH = DF_merge[DF_COLUMNS].copy()
     DF_GROWTH['RUNID'] = run_num
     return DF_GROWTH
 
 def GEO_SUMMARY_CALCULATOR(parcel_geo_data):
     parcel_geo_data = parcel_geo_data.groupby(['juris']).agg({'tothh_y':'sum','totemp_y':'sum','hhq1_y':'sum', 'hhq2_y':'sum','hhq3_y':'sum', 'hhq4_y':'sum', 
-                                                    'tothh_x':'sum','totemp_x':'sum','hhq1_x':'sum', 'hhq2_x':'sum','hhq3_x':'sum', 'hhq4_x':'sum', }).reset_index()
+                                                    'tothh_x':'sum','totemp_x':'sum','hhq1_x':'sum', 'hhq2_x':'sum','hhq3_x':'sum', 'hhq4_x':'sum', 
+                                                    'residential_units_y':'sum','deed_restricted_units_y':'sum','inclusionary_units_y':'sum', 'subsidized_units_y':'sum','preserved_units_y':'sum', 
+                                                    'residential_units_x':'sum','deed_restricted_units_x':'sum','inclusionary_units_x':'sum', 'subsidized_units_x':'sum','preserved_units_x':'sum',}).reset_index()
     parcel_geo_data['totemp growth'] = parcel_geo_data['totemp_y']-parcel_geo_data['totemp_x']
     parcel_geo_data['tothh growth'] = parcel_geo_data['tothh_y']-parcel_geo_data['tothh_x']
     parcel_geo_data['hhq1 growth'] = parcel_geo_data['hhq1_y']-parcel_geo_data['hhq1_x']
     parcel_geo_data['hhq2 growth'] = parcel_geo_data['hhq2_y']-parcel_geo_data['hhq2_x']
     parcel_geo_data['hhq3 growth'] = parcel_geo_data['hhq3_y']-parcel_geo_data['hhq3_x']
-    parcel_geo_data['hhq4 growth'] = parcel_geo_data['hhq4_y']-parcel_geo_data['hhq4_x'] 
-    parcel_geo_data = parcel_geo_data[['tothh growth','totemp growth','hhq1 growth','hhq2 growth','hhq3 growth','hhq4 growth','juris']].copy()
+    parcel_geo_data['hhq4 growth'] = parcel_geo_data['hhq4_y']-parcel_geo_data['hhq4_x']
+    parcel_geo_data['res_units growth'] = parcel_geo_data['residential_units_y']-parcel_geo_data['residential_units_x']
+    parcel_geo_data['dr_units growth'] = parcel_geo_data['deed_restricted_units_y']-parcel_geo_data['deed_restricted_units_x']
+    parcel_geo_data['incl_units growth'] = parcel_geo_data['inclusionary_units_y']-parcel_geo_data['inclusionary_units_x']
+    parcel_geo_data['subsd_units growth'] = parcel_geo_data['subsidized_units_y']-parcel_geo_data['subsidized_units_x']
+    parcel_geo_data['presrv_units growth'] = parcel_geo_data['preserved_units_y']-parcel_geo_data['preserved_units_x']
+    parcel_geo_data = parcel_geo_data[['tothh growth','totemp growth','hhq1 growth','hhq2 growth','hhq3 growth','hhq4 growth',
+                                      'res_units growth','dr_units growth','incl_units growth','subsd_units growth','presrv_units growth','juris']].copy()
     return parcel_geo_data	
 
 #This is to define a separate fileloader for parcel difference data. With the zoningmod category, we should be able to
@@ -405,8 +451,8 @@ def GEO_SUMMARY_LOADER(run_num, geo, parcel_baseyear, parcel_endyear):
     else: 
       zoningtag = 'zoninghzcat'
 
-    parcel_baseyear = parcel_baseyear[['parcel_id','tothh','totemp', 'hhq1','hhq2','hhq3','hhq4']]
-    parcel_endyear = parcel_endyear[['parcel_id','tothh','totemp', 'hhq1','hhq2','hhq3','hhq4','juris',zoningtag]]
+    parcel_baseyear = parcel_baseyear[['parcel_id','tothh','totemp', 'hhq1','hhq2','hhq3','hhq4','residential_units','deed_restricted_units','inclusionary_units', 'subsidized_units','preserved_units']]
+    parcel_endyear = parcel_endyear[['parcel_id','tothh','totemp', 'hhq1','hhq2','hhq3','hhq4','residential_units','deed_restricted_units','inclusionary_units', 'subsidized_units','preserved_units','juris',zoningtag]]
     parcel_data = parcel_baseyear.merge(parcel_endyear, on = 'parcel_id', how = 'left').fillna(0)
     if 0 in parcel_data.juris.values:
         dropindex = parcel_data[parcel_data['juris'] == 0].index
@@ -439,8 +485,8 @@ def TWO_GEO_SUMMARY_LOADER(run_num, geo1, geo2, parcel_baseyear, parcel_endyear)
     else: 
       zoningtag = 'zoninghzcat'
 
-    parcel_baseyear = parcel_baseyear[['parcel_id','tothh','totemp', 'hhq1','hhq2','hhq3','hhq4']]
-    parcel_endyear = parcel_endyear[['parcel_id','tothh','totemp', 'hhq1','hhq2','hhq3','hhq4','juris',zoningtag]]
+    parcel_baseyear = parcel_baseyear[['parcel_id','tothh','totemp', 'hhq1','hhq2','hhq3','hhq4','residential_units','deed_restricted_units','inclusionary_units', 'subsidized_units','preserved_units']]
+    parcel_endyear = parcel_endyear[['parcel_id','tothh','totemp', 'hhq1','hhq2','hhq3','hhq4','residential_units','deed_restricted_units','inclusionary_units', 'subsidized_units','preserved_units','juris',zoningtag]]
     parcel_data = parcel_baseyear.merge(parcel_endyear, on = 'parcel_id', how = 'left').fillna(0)
     if 0 in parcel_data.juris.values:
         dropindex = parcel_data[parcel_data['juris'] == 0].index
