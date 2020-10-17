@@ -654,14 +654,10 @@ def subsidized_office_developer(feasibility, coffer, formula, year,
 
     # get the office feasibility frame and sort by profit per sqft
     
-    print('size of feasibility 1: {}'.format(feasibility.shape))
-    print('size of feasibility 2: {}'.format(feasibility.shape))
     feasibility = feasibility.loc[:, "office"]
-    print('head of feasibility: {}'.format(feasibility.head()))
-    print('columns of feasibility: \n{}'.format(list(feasibility)))
 
     feasibility = feasibility.dropna(subset=["max_profit"])
-    print('size of feasibility 3: {}'.format(feasibility.shape))
+
     # add necessary columns for filters
     policy = orca.get_injectable("policy")
     scenario = orca.get_injectable("scenario")
@@ -673,9 +669,7 @@ def subsidized_office_developer(feasibility, coffer, formula, year,
         feasibility["pda_id"] = feasibility.pda_pba50
 
     # filter to receiving zone
-    print('size of feasibility 4: {}'.format(feasibility.shape))
     feasibility = feasibility.query(formula)
-    print('size of feasibility 5: {}'.format(feasibility.shape))
 
     feasibility["non_residential_sqft"] = \
         feasibility.non_residential_sqft.astype("int")
@@ -721,6 +715,9 @@ def subsidized_office_developer(feasibility, coffer, formula, year,
             "description": "Developing subsidized office building",
             "year": year,
             "non_residential_sqft": d["non_residential_sqft"],
+            "juris": d["juris"],
+            "tra_id": d["tra_id"],
+            "parcel_id": d["parcel_id"],
             "index": dev_id
         }
 
@@ -1187,6 +1184,8 @@ def subsidized_office_developer_vmt(
         else:
             formula = vmt_acct_settings["receiving_buildings_filter"]
 
+        print('office receiving_buildings_filter: {}'.format(formula))
+
         subsidized_office_developer(feasibility,
                                     coffer,
                                     formula,
@@ -1218,10 +1217,9 @@ def subsidized_office_developer_lump_sum_accts(
 
         orca.eval_step("alt_feasibility")
         feasibility = orca.get_table("feasibility").to_frame()
-        print('head of feasibility: {}'.format(feasibility.head()))
-        print('columns of feasibility: \n{}'.format(list(feasibility)))
 
         formula = acct["receiving_buildings_filter"]
+        print('office receiving_buildings_filter: {}'.format(formula))
 
         subsidized_office_developer(feasibility,
                                     coffer,
