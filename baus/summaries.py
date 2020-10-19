@@ -143,6 +143,13 @@ def config(policy, inputs, run_number, scenario, parcels,
                 "alternate_buildings_filter" in policy_loc else \
                 policy_loc["alternate_adjustment_formula"]
             write(policy_nm+" is activated with formula: {}".format(geog))
+        if scenario in policy_loc["enable_in_scenarios"] \
+                and "geography_scenarios_fb" in policy_loc \
+                and scenario in policy_loc["geography_scenarios_fb"]:
+            geog = policy_loc["receiving_buildings_filter_fb"] if \
+                "receiving_buildings_filter_fb" in policy_loc else \
+                policy_loc["profitability_adjustment_formula_fb"]
+            write(policy_nm+" is activated with formula: {}".format(geog))
         elif scenario in policy_loc["enable_in_scenarios"]:
             geog = policy_loc["receiving_buildings_filter"] if \
                 "receiving_buildings_filter" in policy_loc else \
@@ -180,20 +187,20 @@ def config(policy, inputs, run_number, scenario, parcels,
     # Reduce housing development cost
     policy_loc = (policy["acct_settings"]
                   ["profitability_adjustment_policies"]
-                  ["reduce_housing_costs_tier_1_market_rate_developer"])
-    policy_nm = "Reduce Housing Cost Tier 1 for Market-rate Developers"
+                  ["reduce_housing_costs_tier_1"])
+    policy_nm = "Reduce Housing Cost Tier 1: -2.5%"
     policy_activated(policy_loc, policy_nm, scenario)
 
     policy_loc = (policy["acct_settings"]
                   ["profitability_adjustment_policies"]
-                  ["reduce_housing_costs_tier_2_market_rate_developer"])
-    policy_nm = "Reduce Housing Cost Tier 2 for Market-rate Developers"
+                  ["reduce_housing_costs_tier_2"])
+    policy_nm = "Reduce Housing Cost Tier 2: -1.9%"
     policy_activated(policy_loc, policy_nm, scenario)
 
     policy_loc = (policy["acct_settings"]
                   ["profitability_adjustment_policies"]
-                  ["reduce_housing_costs_tier_3_market_rate_developer"])
-    policy_nm = "Reduce Housing Cost Tier 3 for Market-rate Developers"
+                  ["reduce_housing_costs_tier_3"])
+    policy_nm = "Reduce Housing Cost Tier 3: -1.3%"
     policy_activated(policy_loc, policy_nm, scenario)
     write("")
 
