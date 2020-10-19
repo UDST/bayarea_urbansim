@@ -294,6 +294,8 @@ def preproc_buildings(store, parcels, manual_edits):
         axis=1).max(axis=1)
 
     df["preserved_units"] = 0.0
+    df["inclusionary_units"] = 0.0
+    df["subsidized_units"] = 0.0
 
     # XXX need to make sure jobs don't exceed capacity
 
