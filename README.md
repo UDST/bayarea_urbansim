@@ -11,7 +11,7 @@ Bay Area UrbanSim is written in Python and runs in a command line environment. I
 
 1. Install the [Anaconda Python](https://www.anaconda.com/products/individual#Downloads) distribution (not strictly required, but makes things easier and more reliable)
 2. Clone this repository
-3. Download base data from this [Box folder](https://app.box.com/folder/52679598048) and move the files to `bayarea_urbansim/data/` (ask an MTC contact for access)
+3. Download base data from this [Box folder](https://mtcdrive.app.box.com/folder/103451630229?s=di77ya24xmmsg3rkrotaewegzsd61hu6) and move the files to `bayarea_urbansim/data/` (ask an MTC contact for access)
 4. Clone the MTC [urban_data_internal repository](https://github.com/BayAreaMetro/urban_data_internal) to the same location as this repository (ask an MTC contact for access)
 5. Create a Python environment with the current dependencies: `conda env create -f baus-env-2020.yml`
 6. Activate the environment: `conda activate baus-env-2020`
