@@ -486,7 +486,7 @@ def GEO_SUMMARY_LOADER(run_num, geo, parcel_baseyear, parcel_endyear):
     if 'fbpchcat' in parcel_endyear.columns:
       zoningtag = 'fbpchcat'
     elif 'pba50chcat' in parcel_endyear.columns:
-      zoningtag = 'pab50chcat'
+      zoningtag = 'pba50chcat'
     elif 'zoningmodcat' in parcel_endyear.columns:
       zoningtag = 'zoningmodcat'
     else: 
