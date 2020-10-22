@@ -141,19 +141,19 @@ def county_calculator(run_num, DF1, DF2):
 
         DF_CO_GRWTH = DF_merge.groupby(['COUNTY_NAME_x']).sum().reset_index()
 
-        DF_CO_GRWTH['TOTPOP GROWTH SHR'] = round(DF_CO_GRWTH['TOTPOP GROWTH']/(DF_CO_GRWTH['TOTPOP_y'].sum()-DF_CO_GRWTH['TOTPOP_x'].sum())-1, 2)
-        DF_CO_GRWTH['TOTEMP GROWTH SHR'] = round(DF_CO_GRWTH['TOTEMP GROWTH']/(DF_CO_GRWTH['TOTEMP_y'].sum()-DF_CO_GRWTH['TOTEMP_x'].sum())-1, 2)
-        DF_CO_GRWTH['AGREMPN GROWTH SHR'] = round(DF_CO_GRWTH['AGREMPN GROWTH']/(DF_CO_GRWTH['AGREMPN_y'].sum()-DF_CO_GRWTH['AGREMPN_x'].sum())-1, 2)
-        DF_CO_GRWTH['FPSEMPN GROWTH SHR'] = round(DF_CO_GRWTH['FPSEMPN GROWTH']/(DF_CO_GRWTH['FPSEMPN_y'].sum()-DF_CO_GRWTH['FPSEMPN_x'].sum())-1, 2)
-        DF_CO_GRWTH['HEREMPN GROWTH SHR'] = round(DF_CO_GRWTH['HEREMPN GROWTH']/(DF_CO_GRWTH['HEREMPN_y'].sum()-DF_CO_GRWTH['HEREMPN_x'].sum())-1, 2)
-        DF_CO_GRWTH['MWTEMPN GROWTH SHR'] = round(DF_CO_GRWTH['MWTEMPN GROWTH']/(DF_CO_GRWTH['MWTEMPN_y'].sum()-DF_CO_GRWTH['MWTEMPN_x'].sum())-1, 2)
-        DF_CO_GRWTH['OTHEMPN GROWTH SHR'] = round(DF_CO_GRWTH['OTHEMPN GROWTH']/(DF_CO_GRWTH['OTHEMPN_y'].sum()-DF_CO_GRWTH['OTHEMPN_x'].sum())-1, 2)
-        DF_CO_GRWTH['RETEMPN GROWTH SHR'] = round(DF_CO_GRWTH['RETEMPN GROWTH']/(DF_CO_GRWTH['RETEMPN_y'].sum()-DF_CO_GRWTH['RETEMPN_x'].sum())-1, 2)
-        DF_CO_GRWTH['TOTHH GROWTH SHR'] = round(DF_CO_GRWTH['TOTHH GROWTH']/(DF_CO_GRWTH['TOTHH_y'].sum()-DF_CO_GRWTH['TOTHH_x'].sum())-1, 2)
-        DF_CO_GRWTH['HHINCQ1 GROWTH SHR'] = round(DF_CO_GRWTH['HHINCQ1 GROWTH']/(DF_CO_GRWTH['HHINCQ1_y'].sum()-DF_CO_GRWTH['HHINCQ1_x'].sum())-1, 2)
-        DF_CO_GRWTH['HHINCQ2 GROWTH SHR'] = round(DF_CO_GRWTH['HHINCQ2 GROWTH']/(DF_CO_GRWTH['HHINCQ2_y'].sum()-DF_CO_GRWTH['HHINCQ2_x'].sum())-1, 2)
-        DF_CO_GRWTH['HHINCQ3 GROWTH SHR'] = round(DF_CO_GRWTH['HHINCQ3 GROWTH']/(DF_CO_GRWTH['HHINCQ3_y'].sum()-DF_CO_GRWTH['HHINCQ3_x'].sum())-1, 2)
-        DF_CO_GRWTH['HHINCQ4 GROWTH SHR'] = round(DF_CO_GRWTH['HHINCQ4 GROWTH']/(DF_CO_GRWTH['HHINCQ4_y'].sum()-DF_CO_GRWTH['HHINCQ4_x'].sum())-1, 2)
+        DF_CO_GRWTH['TOTPOP GROWTH SHR'] = round(DF_CO_GRWTH['TOTPOP GROWTH']/(DF_CO_GRWTH['TOTPOP_y'].sum()-DF_CO_GRWTH['TOTPOP_x'].sum()), 2)
+        DF_CO_GRWTH['TOTEMP GROWTH SHR'] = round(DF_CO_GRWTH['TOTEMP GROWTH']/(DF_CO_GRWTH['TOTEMP_y'].sum()-DF_CO_GRWTH['TOTEMP_x'].sum()), 2)
+        DF_CO_GRWTH['AGREMPN GROWTH SHR'] = round(DF_CO_GRWTH['AGREMPN GROWTH']/(DF_CO_GRWTH['AGREMPN_y'].sum()-DF_CO_GRWTH['AGREMPN_x'].sum()), 2)
+        DF_CO_GRWTH['FPSEMPN GROWTH SHR'] = round(DF_CO_GRWTH['FPSEMPN GROWTH']/(DF_CO_GRWTH['FPSEMPN_y'].sum()-DF_CO_GRWTH['FPSEMPN_x'].sum()), 2)
+        DF_CO_GRWTH['HEREMPN GROWTH SHR'] = round(DF_CO_GRWTH['HEREMPN GROWTH']/(DF_CO_GRWTH['HEREMPN_y'].sum()-DF_CO_GRWTH['HEREMPN_x'].sum()), 2)
+        DF_CO_GRWTH['MWTEMPN GROWTH SHR'] = round(DF_CO_GRWTH['MWTEMPN GROWTH']/(DF_CO_GRWTH['MWTEMPN_y'].sum()-DF_CO_GRWTH['MWTEMPN_x'].sum()), 2)
+        DF_CO_GRWTH['OTHEMPN GROWTH SHR'] = round(DF_CO_GRWTH['OTHEMPN GROWTH']/(DF_CO_GRWTH['OTHEMPN_y'].sum()-DF_CO_GRWTH['OTHEMPN_x'].sum()), 2)
+        DF_CO_GRWTH['RETEMPN GROWTH SHR'] = round(DF_CO_GRWTH['RETEMPN GROWTH']/(DF_CO_GRWTH['RETEMPN_y'].sum()-DF_CO_GRWTH['RETEMPN_x'].sum()), 2)
+        DF_CO_GRWTH['TOTHH GROWTH SHR'] = round(DF_CO_GRWTH['TOTHH GROWTH']/(DF_CO_GRWTH['TOTHH_y'].sum()-DF_CO_GRWTH['TOTHH_x'].sum()), 2)
+        DF_CO_GRWTH['HHINCQ1 GROWTH SHR'] = round(DF_CO_GRWTH['HHINCQ1 GROWTH']/(DF_CO_GRWTH['HHINCQ1_y'].sum()-DF_CO_GRWTH['HHINCQ1_x'].sum()), 2)
+        DF_CO_GRWTH['HHINCQ2 GROWTH SHR'] = round(DF_CO_GRWTH['HHINCQ2 GROWTH']/(DF_CO_GRWTH['HHINCQ2_y'].sum()-DF_CO_GRWTH['HHINCQ2_x'].sum()), 2)
+        DF_CO_GRWTH['HHINCQ3 GROWTH SHR'] = round(DF_CO_GRWTH['HHINCQ3 GROWTH']/(DF_CO_GRWTH['HHINCQ3_y'].sum()-DF_CO_GRWTH['HHINCQ3_x'].sum()), 2)
+        DF_CO_GRWTH['HHINCQ4 GROWTH SHR'] = round(DF_CO_GRWTH['HHINCQ4 GROWTH']/(DF_CO_GRWTH['HHINCQ4_y'].sum()-DF_CO_GRWTH['HHINCQ4_x'].sum()), 2)
 
         DF_CO_GRWTH['TOTPOP PCT GROWTH'] = round(DF_CO_GRWTH['TOTPOP_y']/DF_CO_GRWTH['TOTPOP_x']-1, 2)
         DF_CO_GRWTH['TOTEMP PCT GROWTH'] = round(DF_CO_GRWTH['TOTEMP_y']/DF_CO_GRWTH['TOTEMP_x']-1, 2)
@@ -275,9 +275,9 @@ def taz_calculator(run_num, DF1, DF2):
         DF_merge['MFDU GROWTH'] = DF_merge['MFDU_y']-DF_merge['MFDU_x']
         DF_merge['SFDU GROWTH'] = DF_merge['SFDU_y']-DF_merge['SFDU_x']
 
-        DF_merge['TOTPOP GROWTH SHR'] = round(DF_merge['TOTPOP GROWTH']/(DF_merge['TOTPOP_y'].sum()-DF_merge['TOTPOP_x'].sum())-1, 2)
-        DF_merge['TOTEMP GROWTH SHR'] = round(DF_merge['TOTEMP GROWTH']/(DF_merge['TOTEMP_y'].sum()/DF_merge['TOTEMP_x'].sum())-1, 2)
-        DF_merge['TOTHH GROWTH SHR'] = round(DF_merge['TOTHH GROWTH']/(DF_merge['TOTHH_y'].sum()/DF_merge['TOTHH_x'].sum())-1, 2)
+        DF_merge['TOTPOP GROWTH SHR'] = round(DF_merge['TOTPOP GROWTH']/(DF_merge['TOTPOP_y'].sum()-DF_merge['TOTPOP_x'].sum()), 2)
+        DF_merge['TOTEMP GROWTH SHR'] = round(DF_merge['TOTEMP GROWTH']/(DF_merge['TOTEMP_y'].sum()/DF_merge['TOTEMP_x'].sum()), 2)
+        DF_merge['TOTHH GROWTH SHR'] = round(DF_merge['TOTHH GROWTH']/(DF_merge['TOTHH_y'].sum()/DF_merge['TOTHH_x'].sum()), 2)
 
         DF_merge['TOTPOP PCT GROWTH'] = round(DF_merge['TOTPOP_y']/DF_merge['TOTPOP_x']-1, 2)
         DF_merge['TOTEMP PCT GROWTH'] = round(DF_merge['TOTEMP_y']/DF_merge['TOTEMP_x']-1, 2)
@@ -429,8 +429,8 @@ def nontaz_calculator(run_num, DF1, DF2):
     DF_merge['subsd_units growth'] = DF_merge['subsidized_units_y']-DF_merge['subsidized_units_x']
     DF_merge['presrv_units growth'] = DF_merge['preserved_units_y']-DF_merge['preserved_units_x']
 
-    DF_merge['totemp growth shr'] = round(DF_merge['totemp growth']/(DF_merge['totemp_y'].sum()-DF_merge['totemp_x'].sum())-1, 2)
-    DF_merge['tothh growth shr'] = round(DF_merge['tothh growth']/(DF_merge['tothh_y'].sum()-DF_merge['tothh_x'].sum())-1, 2)
+    DF_merge['totemp growth shr'] = round(DF_merge['totemp growth']/(DF_merge['totemp_y'].sum()-DF_merge['totemp_x'].sum()), 2)
+    DF_merge['tothh growth shr'] = round(DF_merge['tothh growth']/(DF_merge['tothh_y'].sum()-DF_merge['tothh_x'].sum()), 2)
 
     DF_merge['totemp pct growth'] = round(DF_merge['totemp_y']/DF_merge['totemp_x']-1, 2)
     DF_merge['tothh pct growth'] = round(DF_merge['tothh_y']/DF_merge['tothh_x']-1, 2)
