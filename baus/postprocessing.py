@@ -373,7 +373,7 @@ def nontaz_calculator(run_num, DF1, DF2):
                   'subsd_units growth',
                   'presrv_units growth',
                   'totemp growth shr',
-                  'tothh growth shr'
+                  'tothh growth shr',
                   'totemp pct growth',
                   'tothh pct growth',
                   'totemp shr chng',
