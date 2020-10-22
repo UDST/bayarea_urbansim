@@ -1170,7 +1170,7 @@ def subsidized_office_developer_vmt(
 
     vmt_acct_settings = policy["acct_settings"]["vmt_settings"]
 
-    if scenario in policy_setting["com_for_com_scenarios"]:
+    if scenario in vmt_acct_settings["com_for_com_scenarios"]:
 
         print("Running subsidized office developer for acct: VMT com_for_com")
 
