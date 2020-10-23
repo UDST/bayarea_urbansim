@@ -46,6 +46,10 @@ def coffer(policy, scenario):
             policy["acct_settings"]["lump_sum_accounts"].items():
         d[acct["name"]] = accounts.Account(acct["name"])
 
+    for key, acct in \
+            policy["acct_settings"]["office_lump_sum_accounts"].items():
+        d[acct["name"]] = accounts.Account(acct["name"])    
+
     if scenario in (policy["acct_settings"]["jobs_housing_fee_settings"]
                     ["jobs_housing_com_for_res_scenarios"]):
         for key, acct in \
@@ -191,6 +195,28 @@ def lump_sum_accounts(policy, year, buildings, coffer,
         coffer[acct["name"]].add_transaction(amt, subaccount=1,
                                              metadata=metadata)
 
+@orca.step()
+def office_lump_sum_accounts(policy, year, buildings, coffer,
+                             summary, years_per_iter, scenario):
+
+    s = policy["acct_settings"]["office_lump_sum_accounts"]
+
+    for key, acct in s.items():
+        if scenario not in acct["enable_in_scenarios"]:
+            continue
+
+        amt = float(acct["total_amount"])
+
+        amt *= years_per_iter
+
+        metadata = {
+            "description": "%s subsidies" % acct["name"],
+            "year": year
+        }
+        # the subaccount is meaningless here (it's a regional account) -
+        # but the subaccount number is referred to below
+        coffer[acct["name"]].add_transaction(amt, subaccount="regional",
+                                             metadata=metadata)
 
 # this will compute the reduction in revenue from a project due to
 # inclustionary housing - the calculation will be described in thorough
@@ -622,30 +648,33 @@ def calculate_jobs_housing_fees(policy, year, buildings,
                                                      metadata=metadata)
 
 
-@orca.step()
-def subsidized_office_developer(feasibility, coffer, acct_settings, year,
-                                add_extra_columns_func, buildings, summary):
+#@orca.step()
+def subsidized_office_developer(feasibility, coffer, formula, year,
+                                add_extra_columns_func, buildings,
+                                summary, coffer_acct_name):
 
     # get the total subsidy for subsidizing office
-    total_subsidy = coffer["vmt_com_acct"].\
+    total_subsidy = coffer[coffer_acct_name].\
         total_transactions_by_subacct("regional")
 
     # get the office feasibility frame and sort by profit per sqft
-    feasibility = feasibility.to_frame().loc[:, "office"]
+    
+    feasibility = feasibility.loc[:, "office"]
+
     feasibility = feasibility.dropna(subset=["max_profit"])
 
-    feasibility["pda_id"] = feasibility.pda
+    # add necessary columns for filters
+    policy = orca.get_injectable("policy")
+    scenario = orca.get_injectable("scenario")
 
-    if "alternate_geography_scenarios" in acct_settings["vmt_settings"] \
-            and orca.get_injectable("scenario") in \
-            acct_settings["vmt_settings"]["alternate_geography_scenarios"]:
-        formula = acct_settings["vmt_settings"]["alternate_buildings_filter"]
-    else:
-        formula = acct_settings["vmt_settings"]["receiving_buildings_filter"]
+    if scenario in policy["geographies_pba40_enable"]:
+        feasibility["pda_id"] = feasibility.pda_pba40
+    elif scenario in policy["geographies_db_enable"] or \
+        scenario in policy["geographies_fb_enable"]:
+        feasibility["pda_id"] = feasibility.pda_pba50
 
     # filter to receiving zone
-    feasibility = feasibility.\
-        query(formula)
+    feasibility = feasibility.query(formula)
 
     feasibility["non_residential_sqft"] = \
         feasibility.non_residential_sqft.astype("int")
@@ -691,11 +720,14 @@ def subsidized_office_developer(feasibility, coffer, acct_settings, year,
             "description": "Developing subsidized office building",
             "year": year,
             "non_residential_sqft": d["non_residential_sqft"],
+            "juris": d["juris"],
+            "tra_id": d["tra_id"],
+            "parcel_id": d["parcel_id"],
             "index": dev_id
         }
 
-        coffer["vmt_com_acct"].add_transaction(-1*amt, subaccount="regional",
-                                               metadata=metadata)
+        coffer[coffer_acct_name].add_transaction(-1*amt, subaccount="regional",
+                                                 metadata=metadata)
 
         total_subsidy -= amt
 
@@ -710,6 +742,7 @@ def subsidized_office_developer(feasibility, coffer, acct_settings, year,
 
     print("Building {:,} subsidized office sqft in {:,} projects".format(
         devs.non_residential_sqft.sum(), len(devs)))
+    print("%.0f subsidy left" %total_subsidy)
 
     devs["form"] = "office"
     devs = add_extra_columns_func(devs)
@@ -1128,6 +1161,79 @@ def subsidized_residential_developer_lump_sum_accts(
                                  create_deed_restricted=acct[
                                     "subsidize_affordable"],
                                  policy_name=acct["name"])
+
+        buildings = orca.get_table("buildings")
+
+        # set to an empty dataframe to save memory
+        orca.add_table("feasibility", pd.DataFrame())
+
+
+@orca.step()
+def subsidized_office_developer_vmt(
+    parcels, settings, scenario, coffer, buildings, year, policy,
+    add_extra_columns_func, summary):
+
+    vmt_acct_settings = policy["acct_settings"]["vmt_settings"]
+
+    if scenario in vmt_acct_settings["com_for_com_scenarios"]:
+
+        print("Running subsidized office developer for acct: VMT com_for_com")
+
+        orca.eval_step("alt_feasibility")
+        feasibility = orca.get_table("feasibility").to_frame()
+
+        if "alternate_geography_scenarios" in vmt_acct_settings \
+            and orca.get_injectable("scenario") in \
+            vmt_acct_settings["alternate_geography_scenarios"]:
+            formula = vmt_acct_settings["alternate_buildings_filter"]
+        else:
+            formula = vmt_acct_settings["receiving_buildings_filter"]
+
+        print('office receiving_buildings_filter: {}'.format(formula))
+
+        subsidized_office_developer(feasibility,
+                                    coffer,
+                                    formula,
+                                    year,
+                                    add_extra_columns_func,
+                                    buildings,
+                                    summary, 
+                                    coffer_acct_name="vmt_com_acct")
+
+        buildings = orca.get_table("buildings")
+
+        # set to an empty dataframe to save memory
+        # this is ok because baus.py will run alt_reasibility in the next step
+        orca.add_table("feasibility", pd.DataFrame())
+
+
+@orca.step()
+def subsidized_office_developer_lump_sum_accts(
+    parcels, settings, scenario, coffer, buildings, year, policy,
+    add_extra_columns_func, summary):
+
+    for key, acct in policy["acct_settings"]["office_lump_sum_accounts"].items():
+
+        # quick return in order to save performance time
+        if scenario not in acct["enable_in_scenarios"]:
+            continue
+
+        print("Running the subsidized office developer for acct: %s" % acct["name"])
+
+        orca.eval_step("alt_feasibility")
+        feasibility = orca.get_table("feasibility").to_frame()
+
+        formula = acct["receiving_buildings_filter"]
+        print('office receiving_buildings_filter: {}'.format(formula))
+
+        subsidized_office_developer(feasibility,
+                                    coffer,
+                                    formula,
+                                    year,
+                                    add_extra_columns_func,
+                                    buildings,
+                                    summary, 
+                                    coffer_acct_name=acct["name"])
 
         buildings = orca.get_table("buildings")
 

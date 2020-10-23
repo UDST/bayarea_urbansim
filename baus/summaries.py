@@ -385,6 +385,21 @@ def config(policy, inputs, run_number, scenario, parcels,
                 regional_units += units*8
     write("Total unit target for preserving units is %d" % regional_units)
 
+    # office subsidy bonds
+    counter = 0
+    acct_list = []
+    regional_funding = 0
+    policy_loc = policy["acct_settings"]["office_lump_sum_accounts"].items()
+    for key, acct in policy_loc:
+        if scenario in acct["enable_in_scenarios"]:
+            counter += 1
+            acct_list.append(acct["name"].split(' Office')[0])
+            amount = float(acct["total_amount"])
+            regional_funding += amount*5*7
+    write("Office subsidy bonds are activated for %d jurisdictions:" % counter)
+    write(str(acct_list))
+    write("Total funding is $%d" % regional_funding)
+
     f.close()
 
 

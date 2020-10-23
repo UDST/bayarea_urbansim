@@ -165,9 +165,13 @@ def get_simulation_models(SCENARIO):
 
         # preserve some units
         "preserve_affordable",
-        # run the subsidized acct system
+        # run the subsidized residential acct system
         "lump_sum_accounts",
         "subsidized_residential_developer_lump_sum_accts",
+
+        # run the subsidized office acct system
+        "office_lump_sum_accounts",
+        "subsidized_office_developer_lump_sum_accts",
 
         "alt_feasibility",
 
@@ -249,7 +253,7 @@ def get_simulation_models(SCENARIO):
     if SCENARIO in vmt_settings["com_for_com_scenarios"] and \
             SCENARIO not in vmt_settings["db_geography_scenarios"]:
         models.insert(models.index("office_developer"),
-                      "subsidized_office_developer")
+                      "subsidized_office_developer_vmt")
 
     if SCENARIO in vmt_settings["com_for_res_scenarios"] or \
             SCENARIO in vmt_settings["res_for_res_scenarios"]:

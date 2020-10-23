@@ -1641,6 +1641,7 @@ inclusionary_housing_settings:
 acct_settings:
   disable: False
 
+  # residential lump_sum_accounts
   lump_sum_accounts:
 
     # obag, where to spend the funds, how much to add, and which scenarios to
@@ -1822,6 +1823,163 @@ acct_settings:
       receiving_buildings_filter: pda_id > ''
       subsidize_affordable: True
       enable_in_scenarios: []
+
+  # office lump_sum_accounts
+  office_lump_sum_accounts:
+    dublin_office_bond_settings:
+      name: "Dublin Office Subsidy Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 24675325
+      receiving_buildings_filter: juris == 'Dublin' and (
+                                    tra_id == 'tra1' or
+                                    tra_id == 'tra2a' or
+                                    tra_id == 'tra2b' or
+                                    tra_id == 'tra2c')
+      enable_in_scenarios: ["24"]
+    fremont_office_bond_settings:
+      name: "Fremont Office Subsidy Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 24675325
+      receiving_buildings_filter: juris == 'Fremont' and (
+                                    tra_id == 'tra1' or
+                                    tra_id == 'tra2a' or
+                                    tra_id == 'tra2b' or
+                                    tra_id == 'tra2c')
+      enable_in_scenarios: ["24"]
+    oakland_office_bond_settings:
+      name: "Oakland Office Subsidy Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 24675325
+      receiving_buildings_filter: juris == 'Oakland' and (
+                                    tra_id == 'tra1' or
+                                    tra_id == 'tra2a' or
+                                    tra_id == 'tra2b' or
+                                    tra_id == 'tra2c')
+      enable_in_scenarios: ["24"]
+    san_leandro_office_bond_settings:
+      name: "San Leandro Office Subsidy Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 24675325
+      receiving_buildings_filter: juris == 'San Leandro' and (
+                                    tra_id == 'tra1' or
+                                    tra_id == 'tra2a' or
+                                    tra_id == 'tra2b' or
+                                    tra_id == 'tra2c')
+      enable_in_scenarios: ["24"]
+    union_city_office_bond_settings:
+      name: "Union City Office Subsidy Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 24675325
+      receiving_buildings_filter: juris == 'Union City' and (
+                                    tra_id == 'tra1' or
+                                    tra_id == 'tra2a' or 
+                                    tra_id == 'tra2b' or
+                                    tra_id == 'tra2c')
+      enable_in_scenarios: ["24"]
+    antioch_office_bond_settings:
+      name: "Antioch Office Subsidy Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 24675325
+      receiving_buildings_filter: juris == 'Antioch' and (
+                                    tra_id == 'tra1' or 
+                                    tra_id == 'tra2a' or 
+                                    tra_id == 'tra2b' or
+                                    tra_id == 'tra2c')
+      enable_in_scenarios: ["24"]
+    concord_office_bond_settings:
+      name: "Concord Office Subsidy Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 24675325
+      receiving_buildings_filter: juris == 'Concord' and (
+                                    tra_id == 'tra1' or 
+                                    tra_id == 'tra2a' or 
+                                    tra_id == 'tra2b' or
+                                    tra_id == 'tra2c')
+      enable_in_scenarios: ["24"]
+    el_cerrito_office_bond_settings:
+      name: "El Cerrito Office Subsidy Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 24675325
+      receiving_buildings_filter: juris == 'El Cerrito' and (
+                                    tra_id == 'tra1' or
+                                    tra_id == 'tra2a' or
+                                    tra_id == 'tra2b' or
+                                    tra_id == 'tra2c')
+      enable_in_scenarios: ["24"]
+    lafayette_office_bond_settings:
+      name: "Lafayette Office Subsidy Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 24675325
+      receiving_buildings_filter: juris == 'Lafayette' and (
+                                    tra_id == 'tra1' or
+                                    tra_id == 'tra2a' or
+                                    tra_id == 'tra2b' or
+                                    tra_id == 'tra2c')
+      enable_in_scenarios: ["24"]
+    pittsburg_office_bond_settings:
+      name: "Pittsburg Office Subsidy Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 24675325
+      receiving_buildings_filter: juris == 'Pittsburg' and (
+                                    tra_id == 'tra1' or
+                                    tra_id == 'tra2a' or
+                                    tra_id == 'tra2b' or
+                                    tra_id == 'tra2c')
+      enable_in_scenarios: ["24"]
+    richmond_office_bond_settings:
+      name: "Richmond Office Subsidy Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 24675325
+      receiving_buildings_filter: juris == 'Richmond' and (
+                                    tra_id == 'tra1' or
+                                    tra_id == 'tra2a' or
+                                    tra_id == 'tra2b' or
+                                    tra_id == 'tra2c')
+      enable_in_scenarios: ["24"]
+    san_rafael_office_bond_settings:
+      name: "San Rafael Office Subsidy Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 3571429
+      receiving_buildings_filter: juris == 'San Rafael' and (
+                                    tra_id == 'tra1' or
+                                    tra_id == 'tra2a' or 
+                                    tra_id == 'tra2b' or
+                                    tra_id == 'tra2c' or
+                                    tra_id == 'tra3')
+      enable_in_scenarios: ["24"]
+    fairfield_office_bond_settings:
+      name: "Fairfield Office Subsidy Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 3571429
+      receiving_buildings_filter: juris == 'Fairfield' and (
+                                    tra_id == 'tra1' or
+                                    tra_id == 'tra2a' or 
+                                    tra_id == 'tra2b' or
+                                    tra_id == 'tra2c' or
+                                    tra_id == 'tra3')
+      enable_in_scenarios: ["24"]
+    vacaville_office_bond_settings:
+      name: "Vacaville Office Subsidy Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 3571429
+      receiving_buildings_filter: juris == 'Vacaville' and (
+                                    tra_id == 'tra1' or
+                                    tra_id == 'tra2a' or 
+                                    tra_id == 'tra2b' or
+                                    tra_id == 'tra2c' or
+                                    tra_id == 'tra3')
+      enable_in_scenarios: ["24"]
+    santa_rosa_office_bond_settings:
+      name: "Santa Rosa Office Subsidy Bond"
+      sending_buildings_subaccount_def: regional
+      total_amount: 3571429
+      receiving_buildings_filter: juris == 'Santa Rosa' and (
+                                    tra_id == 'tra1' or
+                                    tra_id == 'tra2a' or 
+                                    tra_id == 'tra2b' or
+                                    tra_id == 'tra2c' or
+                                    tra_id == 'tra3')
+      enable_in_scenarios: ["24"]   
 
   profitability_adjustment_policies:
 
