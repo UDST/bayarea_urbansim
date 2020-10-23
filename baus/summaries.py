@@ -1648,9 +1648,11 @@ def travel_model_output(parcels, households, jobs, buildings,
                                         % (run_number, final_year)))
         df_growth = taz_calculator(run_number,
                                 df_base, df_final)
+        df_growth = df_growth.set_index(['RUNID', 'TAZ','SD',
+                                        'SD_NAME','COUNTY','CNTY_NAME'])
         df_growth.to_csv(os.path.join("runs", 
                                     "run%d_taz_growth_summaries.csv" %
-                                    run_number),index = False)
+                                    run_number))
         df_growth_c = county_calculator(run_number,
                                         df_base, df_final)
         df_growth_c.to_csv(os.path.join("runs", 
