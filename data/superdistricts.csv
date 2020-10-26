@@ -1,35 +1,35 @@
 number,name,subregion,sqft_per_job_factor
-1,SF NE,1,0.72
-2,SF NW,1,0.937
-3,SF S SE,1,0.61
-4,SF SW,1,1
-5,Daly City Millbrae,2,1
-6,San Mateo,2,0.937
-7,Redwood City,2,1
-8,Palo Alto,2,0.937
-9,Golden Triangle,1,0.91
-10,West San Jose,1,0.937
-11,San Jose CBD,1,0.88
-12,East San Jose,1,0.94
-13,South San Jose,1,1
-14,SE Snta Clara Cnty,4,1.063
-15,Tri Valley,3,1.031
-16,Fremont,2,0.968
-17,S Leandro Hayward,2,1
-18,Oakland Alameda,1,0.86
-19,Berkeley Eville,2,0.968
-20,Richmond Pinole,2,1
-21,Martinez Concord,3,1
-22,Lamorinda WC,3,1
-23,S Ramon Danville,3,1
-24,East Contra Costa,4,1.063
-25,Vallejo Benicia,3,1.031
-26,Solano Remainder,4,1.063
-27,Napa City and S,3,1
-28,Napa Remainder,4,1.25
-29,Southern Sonoma,4,1
-30,Santa Rosa Area,3,1
-31,Northern Sonoma,4,1
-32,Northern Marin,4,1.063
-33,Central Marin,3,1
-34,Southern Marin,3,1
+1,SF NE,1,0.70571
+2,SF NW,1,0.83794
+3,SF S SE,1,0.71365
+4,SF SW,1,0.90045
+5,Daly City Millbrae,2,0.88714
+6,San Mateo,2,0.83201
+7,Redwood City,2,0.87945
+8,Palo Alto,2,0.83389
+9,Golden Triangle,1,0.79241
+10,West San Jose,1,0.83742
+11,San Jose CBD,1,0.71414
+12,East San Jose,1,0.84190
+13,South San Jose,1,0.89833
+14,SE Snta Clara Cnty,4,1.11052
+15,Tri Valley,3,1.05268
+16,Fremont,2,0.88448
+17,S Leandro Hayward,2,0.89491
+18,Oakland Alameda,1,0.71400
+19,Berkeley Eville,2,0.88212
+20,Richmond Pinole,2,0.89851
+21,Martinez Concord,3,0.89631
+22,Lamorinda WC,3,0.89020
+23,S Ramon Danville,3,0.88802
+24,East Contra Costa,4,1.11158
+25,Vallejo Benicia,3,1.05318
+26,Solano Remainder,4,1.11067
+27,Napa City and S,3,0.90411
+28,Napa Remainder,4,1.47988
+29,Southern Sonoma,4,0.89947
+30,Santa Rosa Area,3,0.90079
+31,Northern Sonoma,4,0.90583
+32,Northern Marin,4,1.10634
+33,Central Marin,3,0.89110
+34,Southern Marin,3,0.89443
