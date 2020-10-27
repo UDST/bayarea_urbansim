@@ -184,6 +184,13 @@ def config(policy, inputs, run_number, scenario, parcels,
     write("FUTURES ROUND 2 / DRAFT BLUEPRINT POLICIES")
     write("")
 
+    # ADUs - these don't run in the base year so can't use their code
+    if scenario in policy['adus_bp_enable']:
+        write("ADUs are from Blueprint")
+    else:
+        write("ADUs are from base file")
+    write("")
+
     # Reduce housing development cost
     policy_loc = (policy["acct_settings"]
                   ["profitability_adjustment_policies"]
