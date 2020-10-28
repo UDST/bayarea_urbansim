@@ -116,6 +116,51 @@ juris_to_county = {'alameda' : 'Alameda',
 'unincorporated_solano' : "Solano",
 'unincorporated_sonoma' : "Sonoma"}
 
+sd_mapping = {1 : 'SF NE',
+              2 : 'SF NW',
+              3 : 'SF S SE',
+              4 : 'SF SW',
+              5 : 'Daly City Millbrae',
+              6 : 'San Mateo',
+              7 : 'Redwood City',
+              8 : 'Palo Alto',
+              9 : 'Golden Triangle',
+              10 : 'West San Jose',
+              11 : 'San Jose CBD',
+              12 : 'East San Jose',
+              13 : 'South San Jose',
+              14 : 'SE Snta Clara Cnty',
+              15 : 'Tri Valley',
+              16 : 'Fremont',
+              17 : 'S Leandro Hayward',
+              18 : 'Oakland Alameda',
+              9 : 'Berkeley Eville',
+              20 : 'Richmond Pinole',
+              21 : 'Martinez Concord',
+              22 : 'Lamorinda WC',
+              23 : 'S Ramon Danville',
+              24 : 'East Contra Costa',
+              25 : 'Vallejo Benicia',
+              26 : 'Solano Remainder',
+              27 : 'Napa City and S',
+              28 : 'Napa Remainder',
+              29 : 'Southern Sonoma',
+              30 : 'Santa Rosa Area',
+              31 : 'Northern Sonoma',
+              32 : 'Northern Marin',
+              3 : 'Central Marin',
+              34 : 'Southern Marin'}
+
+
+county_mapping = {1: 'San Francisco',
+                  2: 'San Mateo',
+                  3: 'Santa Clara',
+                  4: 'Alameda',
+                  5: 'Contra Costa',
+                  6: 'Solano',
+                  7: 'Napa',
+                  8: 'Sonoma',
+                  9: 'Marin'}
 
 #calculate growth at the regional level for main variables using taz summaries
 def county_calculator(run_num, DF1, DF2):
@@ -302,7 +347,6 @@ def taz_calculator(run_num, DF1, DF2):
 
         TAZ_DF_COLUMNS = ['TAZ',
                          'SD_x',
-                         'ZONE_x',
                          'COUNTY_x',
                          'AGREMPN GROWTH',
                          'FPSEMPN GROWTH',
@@ -343,7 +387,9 @@ def taz_calculator(run_num, DF1, DF2):
                          'SFDU SHR CHNG']
         
         DF_TAZ_GROWTH = DF_merge[TAZ_DF_COLUMNS].copy()
-        DF_TAZ_GROWTH = DF_TAZ_GROWTH.rename(columns={'SD_x': 'SD', 'ZONE_x': 'ZONE', 'COUNTY_x': 'COUNTY'})
+        DF_TAZ_GROWTH = DF_TAZ_GROWTH.rename(columns={'SD_x': 'SD', 'COUNTY_x': 'COUNTY'})
+        DF_TAZ_GROWTH['SD_NAME'] = DF_TAZ_GROWTH['SD'].map(sd_mapping)
+        DF_TAZ_GROWTH['CNTY_NAME'] = DF_TAZ_GROWTH['COUNTY'].map(county_mapping)
         DF_TAZ_GROWTH['RUNID'] = run_num
         return DF_TAZ_GROWTH
     else:
@@ -404,7 +450,8 @@ def nontaz_calculator(run_num, DF1, DF2):
         DF_COLUMNS = ['juris'] + DF_COLUMNS
     elif ('superdistrict' in DF1.columns) & ('superdistrict' in DF2.columns):
         DF_merge = DF1.merge(DF2, on = 'superdistrict').fillna(0)
-        DF_COLUMNS = ['superdistrict'] + DF_COLUMNS
+        DF_merge['sd_name'] = DF_merge['superdistrict'].map(sd_mapping)
+        DF_COLUMNS = ['superdistrict','sd_name'] + DF_COLUMNS
     else:
         print ('Merge cannot be performed')
         
