@@ -468,7 +468,7 @@ def zoning_scenario(parcels_geography, scenario, policy, mapping):
     add_drop_helper("drop_bldg", 0)
 
     if scenario in policy['geographies_fb_enable']:
-        join_col = 'fbpzoningm'
+        join_col = 'fbpzoningmodcat'
     elif scenario in policy['geographies_db_enable']:
         join_col = 'pba50zoningmodcat'
     elif 'zoninghzcat' in scenario_zoning.columns:
@@ -516,7 +516,7 @@ def parcel_rejections():
 @orca.table(cache=True)
 def parcels_geography(parcels, scenario, settings, policy):
     df = pd.read_csv(
-        os.path.join(misc.data_dir(), "2020_09_21_parcels_geography.csv"),
+        os.path.join(misc.data_dir(), "2020_10_27_parcels_geography.csv"),
         index_col="geom_id")
     df = geom_id_to_parcel_id(df, parcels)
 
@@ -694,7 +694,7 @@ def get_dev_projects_table(scenario, parcels):
     # requires the user has MTC's urban_data_internal
     # repository alongside bayarea_urbansim
     urban_data_repo = ("../urban_data_internal/development_projects/")
-    current_dev_proj = ("2020_1001_0932_development_projects.csv")
+    current_dev_proj = ("2020_1020_1527_development_projects.csv")
     orca.add_injectable("dev_proj_file", current_dev_proj)
     df = pd.read_csv(os.path.join(urban_data_repo, current_dev_proj))
     df = reprocess_dev_projects(df)

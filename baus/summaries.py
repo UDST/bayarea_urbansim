@@ -143,6 +143,13 @@ def config(policy, inputs, run_number, scenario, parcels,
                 "alternate_buildings_filter" in policy_loc else \
                 policy_loc["alternate_adjustment_formula"]
             write(policy_nm+" is activated with formula: {}".format(geog))
+        if scenario in policy_loc["enable_in_scenarios"] \
+                and "geography_scenarios_fb" in policy_loc \
+                and scenario in policy_loc["geography_scenarios_fb"]:
+            geog = policy_loc["receiving_buildings_filter_fb"] if \
+                "receiving_buildings_filter_fb" in policy_loc else \
+                policy_loc["profitability_adjustment_formula_fb"]
+            write(policy_nm+" is activated with formula: {}".format(geog))
         elif scenario in policy_loc["enable_in_scenarios"]:
             geog = policy_loc["receiving_buildings_filter"] if \
                 "receiving_buildings_filter" in policy_loc else \
@@ -177,23 +184,30 @@ def config(policy, inputs, run_number, scenario, parcels,
     write("FUTURES ROUND 2 / DRAFT BLUEPRINT POLICIES")
     write("")
 
+    # ADUs - these don't run in the base year so can't use their code
+    if scenario in policy['adus_bp_enable']:
+        write("ADUs are from Blueprint")
+    else:
+        write("ADUs are from base file")
+    write("")
+
     # Reduce housing development cost
     policy_loc = (policy["acct_settings"]
                   ["profitability_adjustment_policies"]
-                  ["reduce_housing_costs_tier_1_market_rate_developer"])
-    policy_nm = "Reduce Housing Cost Tier 1 for Market-rate Developers"
+                  ["reduce_housing_costs_tier_1"])
+    policy_nm = "Reduce Housing Cost Tier 1: -2.5%"
     policy_activated(policy_loc, policy_nm, scenario)
 
     policy_loc = (policy["acct_settings"]
                   ["profitability_adjustment_policies"]
-                  ["reduce_housing_costs_tier_2_market_rate_developer"])
-    policy_nm = "Reduce Housing Cost Tier 2 for Market-rate Developers"
+                  ["reduce_housing_costs_tier_2"])
+    policy_nm = "Reduce Housing Cost Tier 2: -1.9%"
     policy_activated(policy_loc, policy_nm, scenario)
 
     policy_loc = (policy["acct_settings"]
                   ["profitability_adjustment_policies"]
-                  ["reduce_housing_costs_tier_3_market_rate_developer"])
-    policy_nm = "Reduce Housing Cost Tier 3 for Market-rate Developers"
+                  ["reduce_housing_costs_tier_3"])
+    policy_nm = "Reduce Housing Cost Tier 3: -1.3%"
     policy_activated(policy_loc, policy_nm, scenario)
     write("")
 
@@ -377,6 +391,21 @@ def config(policy, inputs, run_number, scenario, parcels,
             if units is not None:
                 regional_units += units*8
     write("Total unit target for preserving units is %d" % regional_units)
+
+    # office subsidy bonds
+    counter = 0
+    acct_list = []
+    regional_funding = 0
+    policy_loc = policy["acct_settings"]["office_lump_sum_accounts"].items()
+    for key, acct in policy_loc:
+        if scenario in acct["enable_in_scenarios"]:
+            counter += 1
+            acct_list.append(acct["name"].split(' Office')[0])
+            amount = float(acct["total_amount"])
+            regional_funding += amount*5*7
+    write("Office subsidy bonds are activated for %d jurisdictions:" % counter)
+    write(str(acct_list))
+    write("Total funding is $%d" % regional_funding)
 
     f.close()
 
