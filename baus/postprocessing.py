@@ -146,7 +146,7 @@ sd_mapping = {1 : 'Greater Downtown San Francisco',
               28 : 'St Helena',
               29 : 'Petaluma and Rohnert Park',
               30 : 'Santa Rosa and Sebastopol',
-              31 : 'Healdsburg and Cloverdale	So',
+              31 : 'Healdsburg and cloverdale',
               32 : 'Novato',
               33 : 'San Rafael',
               34 : 'Mill Valley and Sausalito'}
