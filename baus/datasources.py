@@ -315,16 +315,20 @@ def costar(store, parcels):
 
 @orca.table(cache=True)
 def zoning_lookup():
-    return pd.read_csv(os.path.join(misc.data_dir(),
-                       "2020_06_22_zoning_lookup_hybrid_pba50.csv"),
+    file = os.path.join(misc.data_dir(),
+                       "2020_11_05_zoning_lookup_hybrid_pba50.csv")
+    print('Version of zoning_lookup: {}'.format(file))
+    return pd.read_csv(file,
                        index_col='id')
 
 
 # zoning for use in the "baseline" scenario
 @orca.table(cache=True)
 def zoning_baseline(parcels, zoning_lookup, settings):
-    df = pd.read_csv(os.path.join(misc.data_dir(),
-                     "2020_06_22_zoning_parcels_hybrid_pba50.csv"),
+    file = os.path.join(misc.data_dir(),
+                        "2020_11_05_zoning_parcels_hybrid_pba50.csv")
+    print('Version of zoning_parcels: {}'.format(file))
+    df = pd.read_csv(file,
                      index_col="geom_id")
     df = pd.merge(df, zoning_lookup.to_frame(),
                   left_on="zoning_id", right_index=True)
@@ -515,9 +519,10 @@ def parcel_rejections():
 
 @orca.table(cache=True)
 def parcels_geography(parcels, scenario, settings, policy):
-    df = pd.read_csv(
-        os.path.join(misc.data_dir(), "2020_10_27_parcels_geography.csv"),
-        index_col="geom_id")
+    file = os.path.join(misc.data_dir(), "2020_10_27_parcels_geography.csv")
+    print('Version of parcels_geography: {}'.format(file))
+    df = pd.read_csv(file,
+                     index_col="geom_id")
     df = geom_id_to_parcel_id(df, parcels)
 
     # this will be used to map juris id to name
@@ -694,7 +699,9 @@ def get_dev_projects_table(scenario, parcels):
     # requires the user has MTC's urban_data_internal
     # repository alongside bayarea_urbansim
     urban_data_repo = ("../urban_data_internal/development_projects/")
-    current_dev_proj = ("2020_1030_1216_development_projects.csv")
+    file = "2020_1030_1216_development_projects.csv"
+    print('Version of development_projects: {}'.format(file))
+    current_dev_proj = (file)
     orca.add_injectable("dev_proj_file", current_dev_proj)
     df = pd.read_csv(os.path.join(urban_data_repo, current_dev_proj))
     df = reprocess_dev_projects(df)
