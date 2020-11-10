@@ -216,7 +216,7 @@ pda_price_shifters:
 
 # cost shifters per county - cost is multiplied by this amount
 cost_shifters:
-  "Santa Clara": 1.3
+  "Santa Clara": 1.0
   "San Francisco": 0.8
   "San Mateo": 0.8
   "Sonoma": 1.0
