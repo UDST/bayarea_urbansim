@@ -1438,13 +1438,17 @@ inclusionary_housing_settings:
       - GGtra1HRANAin
       - GGtra2aHRADISNAin
       - GGtra2aHRADISNAinun
+      - GGtra2aHRADISNAout
       - GGtra2aHRANAin
       - GGtra2aHRANAinun
+      - GGtra2aHRANAout
       - GGtra2bHRADISNAin
       - GGtra2bHRADISNAinun
       - GGtra2bHRANAin
       - GGtra2cHRADISNAin
+      - GGtra2cHRADISNAinun
       - GGtra2cHRANAin
+      - GGtra2cHRANAinun
       - GGtra3HRADISNAexp0
       - GGtra3HRADISNAin
       - GGtra3HRADISNAinun
@@ -1483,7 +1487,12 @@ inclusionary_housing_settings:
       - GGtra2bNANAin
       - GGtra2bNAppain
       - GGtra2cDISNAin
+      - GGtra2cDISNAinun
+      - GGtra2cDISNAout
+      - GGtra2cDISppain
       - GGtra2cNANAin
+      - GGtra2cNANAinun
+      - GGtra2cNAppain
     - type: fbpchcat
       description: low setting
       amount: .1
@@ -1587,6 +1596,7 @@ inclusionary_housing_settings:
       - NAtra2aHRADISNAin
       - NAtra2aHRANAin
       - NAtra2aHRANAinun
+      - NAtra2aHRANAout
       - NAtra2aNANAin
       - NAtra2aNANAinun
       - NAtra2aNANAout
@@ -1600,8 +1610,11 @@ inclusionary_housing_settings:
       - NAtra2cDISNAin
       - NAtra2cDISppain
       - NAtra2cHRADISNAin
+      - NAtra2cHRADISNAout
       - NAtra2cHRANAin
+      - NAtra2cHRANAout
       - NAtra2cNANAin
+      - NAtra2cNANAinun
       - NAtra2cNANAout
       - NAtra2cNAppain
       - NAtra3DISNAexp0
@@ -1636,6 +1649,7 @@ inclusionary_housing_settings:
       - NAtra3NANAout
       - NAtra3NAppain
       - NAtra3NAppainun
+      - NAtra3NAppaout
 
 # these are the settings for various policies that are in play
 acct_settings:
