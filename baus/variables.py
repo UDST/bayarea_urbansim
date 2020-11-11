@@ -148,7 +148,7 @@ def vacant_res_units(buildings, households):
 
 @orca.column('buildings', cache=True)
 def sqft_per_job(buildings, building_sqft_per_job, superdistricts,
-                 taz_geography):
+                 taz_geography, year):
     sqft_per_job = buildings.\
         building_type.fillna("O").map(building_sqft_per_job)
 
@@ -159,7 +159,7 @@ def sqft_per_job(buildings, building_sqft_per_job, superdistricts,
     superdistrict = misc.reindex(
         taz_geography.superdistrict, buildings.zone_id)
     sqft_per_job = sqft_per_job * \
-        superdistrict.map(superdistricts.sqft_per_job_factor)
+        superdistrict.map(superdistricts['sqft_per_job_factor_{}'.format(year)])
 
     return sqft_per_job
 
