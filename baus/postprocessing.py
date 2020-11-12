@@ -499,7 +499,7 @@ def nontaz_calculator(run_num, DF1, DF2):
     DF_merge['nonres_sqft shr chng'] = round(DF_merge['non_residential_sqft_y']/DF_merge['non_residential_sqft_y'].sum()-DF_merge['non_residential_sqft_x']/DF_merge['non_residential_sqft_x'].sum(), 2)
     DF_merge['dr_units shr chng'] = round(DF_merge['deed_restricted_units_y']/DF_merge['deed_restricted_units_y'].sum()-DF_merge['deed_restricted_units_x']/DF_merge['deed_restricted_units_x'].sum(), 2)
     DF_merge['incl_units shr chng'] = round(DF_merge['inclusionary_units_y']/DF_merge['inclusionary_units_y'].sum()-DF_merge['inclusionary_units_x']/DF_merge['inclusionary_units_x'].sum(), 2)
-    DF_merge['subsd_units shr chng'] = round(DF_merge['subsidized_units_y']/DF_merge['subsidized_units_y'].sum()-DF_merge['subsidized_units_x']/DF_merge['subsidized_units_x'].sum(), 2)
+    DF_merge['subsd_units shr chng'] = round(DF_merge['subsidized_units_y']/DF_merge['subsidized_units_y'].sum(), 2)
     DF_merge['presrv_units shr chng'] = round(DF_merge['preserved_units_y']/DF_merge['preserved_units_y'].sum()-DF_merge['preserved_units_x']/DF_merge['preserved_units_x'].sum(), 2)
 
     DF_GROWTH = DF_merge[DF_COLUMNS].copy()
