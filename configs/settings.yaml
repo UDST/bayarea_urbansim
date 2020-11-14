@@ -219,7 +219,7 @@ cost_shifters:
   "Santa Clara": 1.0
   "San Francisco": 0.8
   "San Mateo": 0.8
-  "Sonoma": 1.0
+  "Sonoma": 0.9
   "Solano": 0.75
   "Alameda": 0.7
   "Napa": 0.9
