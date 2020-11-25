@@ -1486,13 +1486,6 @@ def travel_model_output(parcels, households, jobs, buildings,
     taz_df["totacre"] = zone_forecast_inputs.totacre_abag
     # total population = group quarters plus households population
     taz_df["totpop"] = (taz_df.hhpop + taz_df.gqpop).fillna(0)
-    taz_df["density"] = \
-        (taz_df.totpop + (2.5 * taz_df.totemp)) / taz_df.totacre
-    taz_df["areatype"] = pd.cut(
-        taz_df.density,
-        bins=[0, 6, 30, 55, 100, 300, np.inf],
-        labels=[5, 4, 3, 2, 1, 0]
-    )
 
     buildings_df = buildings.to_frame(['zone_id',
                                        'building_type',
@@ -1531,6 +1524,24 @@ def travel_model_output(parcels, households, jobs, buildings,
     taz_df = add_population(taz_df, year, rc)
     taz_df.totpop = taz_df.hhpop + taz_df.gqpop
     taz_df = add_employment(taz_df, year, rc)
+    taz_df_pop_na = taz_df.loc[taz_df.totpop.isnull()]
+    print(taz_df_pop_na)
+    taz_df_emp_na = taz_df.loc[taz_df.totemp.isnull()]
+    print(taz_df_emp_na)
+    taz_df_acre_na = taz_df.loc[taz_df.totacre.isnull()]
+    print(taz_df_acre_na)
+    taz_df_zero_emp = taz_df.loc[taz_df.totemp == 0]
+    print(taz_df_zero_emp)
+    taz_df["density_pop"] = taz_df.totpop / taz_df.totacre
+    taz_df["density_pop"] = taz_df["density_pop"].fillna(0)
+    taz_df["density_emp"] = (2.5 * taz_df.totemp) / taz_df.totacre
+    taz_df["density_emp"] = taz_df["density_emp"].fillna(0)
+    taz_df["density"] = taz_df["density_pop"] + taz_df["density_emp"]
+    taz_df["areatype"] = pd.cut(
+        taz_df.density,
+        bins=[0, 6, 30, 55, 100, 300, np.inf],
+        labels=[5, 4, 3, 2, 1, 0]
+    )
     taz_df = add_age_categories(taz_df, year, rc)
     orca.add_table('taz_summary_1', taz_df)
 
