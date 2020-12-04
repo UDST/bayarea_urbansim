@@ -25,7 +25,12 @@
 * 17: Forecast test, less constrained
 
 
-* 20: Baseline (lower HH count)
-* 21: Blueprint Basic
-* 22: Blueprint Plus
-* 23: Blueprint Plus Crossing
+* 20: Baseline (lower HH count) (Plan Bay Area 2050 EIR)
+* 21: Blueprint Basic (not fully developed) (Plan Bay Area 2050)
+* 22: Blueprint Plus (not fully developed) (Plan Bay Area 2050)
+* 23: Draft Blueprint (has Plus and Crossing) (Plan Bay Area 2050)
+* 24: Final Blueprint (Plan Bay Area 2050 and EIR)
+* 25: Baseline (higher HH count) (Plan Bay Area 2050 EIR)
+* 26: Alt1 Minimize (Plan Bay Area 2050 EIR)
+* 27: Alt2 Avoid (Plan Bay Area 2050 EIR)
+* 28: Alt3 TBA (Plan Bay Area 2050 EIR)
