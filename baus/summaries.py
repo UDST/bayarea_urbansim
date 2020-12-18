@@ -14,7 +14,9 @@ import urbansim_defaults
 import orca
 import orca_test
 import pandana
-
+from baus.postprocessing import GEO_SUMMARY_LOADER, \
+TWO_GEO_SUMMARY_LOADER, nontaz_calculator, taz_calculator,\
+county_calculator, juris_to_county
 
 @orca.step()
 def config(policy, inputs, run_number, scenario, parcels,
@@ -141,6 +143,13 @@ def config(policy, inputs, run_number, scenario, parcels,
                 "alternate_buildings_filter" in policy_loc else \
                 policy_loc["alternate_adjustment_formula"]
             write(policy_nm+" is activated with formula: {}".format(geog))
+        if scenario in policy_loc["enable_in_scenarios"] \
+                and "geography_scenarios_fb" in policy_loc \
+                and scenario in policy_loc["geography_scenarios_fb"]:
+            geog = policy_loc["receiving_buildings_filter_fb"] if \
+                "receiving_buildings_filter_fb" in policy_loc else \
+                policy_loc["profitability_adjustment_formula_fb"]
+            write(policy_nm+" is activated with formula: {}".format(geog))
         elif scenario in policy_loc["enable_in_scenarios"]:
             geog = policy_loc["receiving_buildings_filter"] if \
                 "receiving_buildings_filter" in policy_loc else \
@@ -175,23 +184,30 @@ def config(policy, inputs, run_number, scenario, parcels,
     write("FUTURES ROUND 2 / DRAFT BLUEPRINT POLICIES")
     write("")
 
+    # ADUs - these don't run in the base year so can't use their code
+    if scenario in policy['adus_bp_enable']:
+        write("ADUs are from Blueprint")
+    else:
+        write("ADUs are from base file")
+    write("")
+
     # Reduce housing development cost
     policy_loc = (policy["acct_settings"]
                   ["profitability_adjustment_policies"]
-                  ["reduce_housing_costs_tier_1_market_rate_developer"])
-    policy_nm = "Reduce Housing Cost Tier 1 for Market-rate Developers"
+                  ["reduce_housing_costs_tier_1"])
+    policy_nm = "Reduce Housing Cost Tier 1: -2.5%"
     policy_activated(policy_loc, policy_nm, scenario)
 
     policy_loc = (policy["acct_settings"]
                   ["profitability_adjustment_policies"]
-                  ["reduce_housing_costs_tier_2_market_rate_developer"])
-    policy_nm = "Reduce Housing Cost Tier 2 for Market-rate Developers"
+                  ["reduce_housing_costs_tier_2"])
+    policy_nm = "Reduce Housing Cost Tier 2: -1.9%"
     policy_activated(policy_loc, policy_nm, scenario)
 
     policy_loc = (policy["acct_settings"]
                   ["profitability_adjustment_policies"]
-                  ["reduce_housing_costs_tier_3_market_rate_developer"])
-    policy_nm = "Reduce Housing Cost Tier 3 for Market-rate Developers"
+                  ["reduce_housing_costs_tier_3"])
+    policy_nm = "Reduce Housing Cost Tier 3: -1.3%"
     policy_activated(policy_loc, policy_nm, scenario)
     write("")
 
@@ -205,7 +221,7 @@ def config(policy, inputs, run_number, scenario, parcels,
         write("Scenario is not in development projects list")
     # public lands
     dev_proj = development_projects.to_frame()
-    pub_proj_on = dev_proj.loc[dev_proj['building_name'] == 'pub', scen].sum()
+    pub_proj_on = dev_proj.loc[dev_proj['source'] == 'pub', scen].sum()
     if pub_proj_on > 0:
         write("Public lands are in development projects")
     else:
@@ -237,6 +253,10 @@ def config(policy, inputs, run_number, scenario, parcels,
     elif scenario in policy["inclusionary_d_b_enable"]:
         for item in s[scenario]:
             write("Inclusionary rates for %d pba50chcat are set to %.2f" %
+                  (len(item["values"]), item["amount"]))
+    elif scenario in policy["inclusionary_fb_enable"]:
+        for item in s[scenario]:
+            write("Inclusionary rates for %d fbpchcat are set to %.2f" %
                   (len(item["values"]), item["amount"]))
     elif scenario in s.keys():
         for item in s[scenario]:
@@ -352,6 +372,8 @@ def config(policy, inputs, run_number, scenario, parcels,
             amount = float(policy_loc["total_amount_db"])
         elif scenario in policy_loc["alternate_amount_scenarios_db"]:
             amount = float(policy_loc["alternate_total_amount_db"])
+        elif scenario in policy_loc["default_amount_scenarios_fb"]:
+            amount = float(policy_loc["total_amount_fb"])
         elif scenario in (policy["acct_settings"]["lump_sum_accounts"]
                           [county+"_bond_settings"]["enable_in_scenarios"]):
             amount = float(policy_loc["total_amount"])
@@ -369,6 +391,21 @@ def config(policy, inputs, run_number, scenario, parcels,
             if units is not None:
                 regional_units += units*8
     write("Total unit target for preserving units is %d" % regional_units)
+
+    # office subsidy bonds
+    counter = 0
+    acct_list = []
+    regional_funding = 0
+    policy_loc = policy["acct_settings"]["office_lump_sum_accounts"].items()
+    for key, acct in policy_loc:
+        if scenario in acct["enable_in_scenarios"]:
+            counter += 1
+            acct_list.append(acct["name"].split(' Office')[0])
+            amount = float(acct["total_amount"])
+            regional_funding += amount*5*7
+    write("Office subsidy bonds are activated for %d jurisdictions:" % counter)
+    write(str(acct_list))
+    write("Total funding is $%d" % regional_funding)
 
     f.close()
 
@@ -961,8 +998,10 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
         'buildings',
         [parcels, buildings],
         columns=['pda_pba40', 'pda_pba50', 'superdistrict', 'juris',
-                 'building_type', 'zone_id', 'residential_units', 
-                 'preserved_units', 'building_sqft', 'non_residential_sqft',
+                 'building_type', 'zone_id', 'residential_units',
+                 'deed_restricted_units', 'preserved_units',
+                 'inclusionary_units', 'subsidized_units',
+                 'building_sqft', 'non_residential_sqft',
                  'juris_trich', 'juris_tra', 'juris_sesit', 'juris_ppa'])
 
     parcel_output = summary.parcel_output
@@ -1063,19 +1102,20 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
             summary_table['sq_ft_per_employee'] = \
                 summary_table['non_residential_sqft'] / summary_table['totemp']
 
+            # columns re: affordable housing
+            summary_table['deed_restricted_units'] = buildings_df.\
+                groupby(geography).deed_restricted_units.sum()
+            summary_table['preserved_units'] = buildings_df.\
+                groupby(geography).preserved_units.sum()
+            summary_table['inclusionary_units'] = buildings_df.\
+                groupby(geography).inclusionary_units.sum()
+            summary_table['subsidized_units'] = buildings_df.\
+                groupby(geography).subsidized_units.sum()       
+
+            # additional columns from parcel_output
             if parcel_output is not None:
-                parcel_output['subsidized_units'] = \
-                    parcel_output.deed_restricted_units - \
-                    parcel_output.inclusionary_units
 
                 # columns re: affordable housing
-                summary_table['deed_restricted_units'] = \
-                    parcel_output.groupby(geography).\
-                    deed_restricted_units.sum()
-                summary_table['inclusionary_units'] = \
-                    parcel_output.groupby(geography).inclusionary_units.sum()
-                summary_table['subsidized_units'] = \
-                    parcel_output.groupby(geography).subsidized_units.sum()
                 summary_table['inclusionary_revenue_reduction'] = \
                     parcel_output.groupby(geography).\
                     policy_based_revenue_reduction.sum()
@@ -1084,13 +1124,10 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
                     summary_table.inclusionary_units
                 summary_table['total_subsidy'] = \
                     parcel_output[parcel_output.subsidized_units > 0].\
-                    groupby(geography).max_profit.sum() * -1
+                    groupby(geography).max_profit.sum() * -1    
                 summary_table['subsidy_per_unit'] = \
                     summary_table.total_subsidy / \
                     summary_table.subsidized_units
-
-            summary_table['preserved_units'] = buildings_df.\
-            	groupby(geography).preserved_units.sum()
 
             summary_table = summary_table.sort_index()
 
@@ -1110,6 +1147,21 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
             fname = "runs/run{}_acctlog_{}_{}.csv".\
                 format(run_number, acct_name, year)
             acct.to_frame().to_csv(fname)
+
+    if year == final_year:
+        baseyear = 2015
+        for geography in geographies:
+            df_base = pd.read_csv(os.path.join("runs",
+                                            "run{}_{}_summaries_{}.csv".\
+                                            format(run_number, geography, baseyear)))
+            df_final = pd.read_csv(os.path.join("runs",
+                                            "run{}_{}_summaries_{}.csv".\
+                                            format(run_number, geography, final_year)))
+            df_growth = nontaz_calculator(run_number,
+                                        df_base, df_final)
+            df_growth.to_csv(os.path.join("runs",
+                                        "run{}_{}_growth_summaries.csv".\
+                                        format(run_number, geography)), index = False)
 
     # Write Urban Footprint Summary
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
@@ -1188,7 +1240,6 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
                                "run%d_parcel_logsums_%d.csv"
                                % (run_number, year)))
 
-
 @orca.step()
 def building_summary(parcels, run_number, year,
                      buildings,
@@ -1203,7 +1254,8 @@ def building_summary(parcels, run_number, year,
         columns=['performance_zone', 'year_built', 'building_type',
                  'residential_units', 'unit_price', 'zone_id', 
                  'non_residential_sqft', 'vacant_res_units', 
-                 'deed_restricted_units', 'preserved_units', 'job_spaces', 
+                 'deed_restricted_units', 'inclusionary_units',
+                 'preserved_units', 'subsidized_units', 'job_spaces',
                  'x', 'y', 'geom_id', 'source'])
 
     df.to_csv(
@@ -1216,7 +1268,8 @@ def building_summary(parcels, run_number, year,
 def parcel_summary(parcels, buildings, households, jobs,
                    run_number, year,
                    parcels_zoning_calculations,
-                   initial_year, final_year, parcels_geography):
+                   initial_year, final_year, parcels_geography,
+                   scenario, policy):
 
     if year not in [2010, 2015, 2035, 2050]:
         return
@@ -1237,7 +1290,7 @@ def parcel_summary(parcels, buildings, households, jobs,
     df = df.join(df2)
 
     # bringing in zoning modifications growth geography tag
-    join_col = "pba50chcat"
+    join_col = "fbpchcat"
     if join_col in parcels_geography.to_frame().columns:
         parcel_gg = parcels_geography.to_frame([
             "parcel_id",
@@ -1261,13 +1314,17 @@ def parcel_summary(parcels, buildings, households, jobs,
         'buildings',
         [parcels, buildings],
         columns=['parcel_id', 'residential_units', 'deed_restricted_units', 
-                 'preserved_units'])
+                 'preserved_units', 'inclusionary_units', 'subsidized_units'])
     df['residential_units'] = \
         building_df.groupby('parcel_id')['residential_units'].sum()
     df['deed_restricted_units'] = \
         building_df.groupby('parcel_id')['deed_restricted_units'].sum()
     df['preserved_units'] = \
         building_df.groupby('parcel_id')['preserved_units'].sum()
+    df['inclusionary_units'] = \
+        building_df.groupby('parcel_id')['inclusionary_units'].sum()
+    df['subsidized_units'] = \
+        building_df.groupby('parcel_id')['subsidized_units'].sum()
 
     jobs_df = orca.merge_tables(
         'jobs',
@@ -1305,10 +1362,47 @@ def parcel_summary(parcels, buildings, households, jobs,
                          run_number)
         )
 
+    if year == final_year:
+        baseyear = 2015
+        df_base = pd.read_csv(os.path.join("runs",
+                                        "run%d_parcel_data_%d.csv"
+                                        % (run_number, baseyear)))
+        df_final = pd.read_csv(os.path.join("runs",
+                                        "run%d_parcel_data_%d.csv"
+                                        % (run_number, final_year)))
+
+        geographies = ['GG','tra','HRA', 'DIS']
+        for geography in geographies:
+            df_growth = GEO_SUMMARY_LOADER(run_number, geography,
+                                            df_base, df_final)
+            df_growth['county'] = df_growth['juris'].map(juris_to_county)
+            df_growth.sort_values(by = ['county','juris','geo_category'],
+                                    ascending=[True, True, False], inplace=True)
+            df_growth.set_index(['RUNID','county','juris','geo_category'], inplace=True)
+            df_growth.to_csv(os.path.join("runs", "run{}_{}_growth_summaries.csv".\
+                                            format(run_number, geography)))
+        geo_1, geo_2, geo_3 = 'tra','DIS','HRA'
+        df_growth_1 = TWO_GEO_SUMMARY_LOADER(run_number, geo_1, geo_2,
+                                            df_base, df_final)
+        df_growth_1['county'] = df_growth_1['juris'].map(juris_to_county)
+        df_growth_1.sort_values(by = ['county','juris','geo_category'],
+                                ascending=[True, True, False], inplace=True)
+        df_growth_1.set_index(['RUNID','county','juris','geo_category'], inplace=True)
+        df_growth_1.to_csv(os.path.join("runs", "run{}_{}_growth_summaries.csv".\
+                                        format(run_number, geo_1 + geo_2)))
+
+        df_growth_2 = TWO_GEO_SUMMARY_LOADER(run_number, geo_1, geo_3,
+                                            df_base, df_final)
+        df_growth_2['county'] = df_growth_2['juris'].map(juris_to_county)
+        df_growth_2.sort_values(by = ['county','juris','geo_category'],
+                                ascending=[True, True, False], inplace=True)
+        df_growth_2.set_index(['RUNID','county','juris','geo_category'], inplace=True)
+        df_growth_2.to_csv(os.path.join("runs", "run{}_{}_growth_summaries.csv".\
+                                        format(run_number, geo_1 + geo_2)))
 
 @orca.step()
 def travel_model_output(parcels, households, jobs, buildings,
-                        zones, maz, year, summary, coffer,
+                        zones, maz, year, summary, coffer, final_year,
                         zone_forecast_inputs, run_number,
                         taz, base_year_summary_taz,
                         taz_geography, taz_forecast_inputs,
@@ -1392,13 +1486,6 @@ def travel_model_output(parcels, households, jobs, buildings,
     taz_df["totacre"] = zone_forecast_inputs.totacre_abag
     # total population = group quarters plus households population
     taz_df["totpop"] = (taz_df.hhpop + taz_df.gqpop).fillna(0)
-    taz_df["density"] = \
-        (taz_df.totpop + (2.5 * taz_df.totemp)) / taz_df.totacre
-    taz_df["areatype"] = pd.cut(
-        taz_df.density,
-        bins=[0, 6, 30, 55, 100, 300, np.inf],
-        labels=[5, 4, 3, 2, 1, 0]
-    )
 
     buildings_df = buildings.to_frame(['zone_id',
                                        'building_type',
@@ -1437,6 +1524,16 @@ def travel_model_output(parcels, households, jobs, buildings,
     taz_df = add_population(taz_df, year, rc)
     taz_df.totpop = taz_df.hhpop + taz_df.gqpop
     taz_df = add_employment(taz_df, year, rc)
+    taz_df["density_pop"] = taz_df.totpop / taz_df.totacre
+    taz_df["density_pop"] = taz_df["density_pop"].fillna(0)
+    taz_df["density_emp"] = (2.5 * taz_df.totemp) / taz_df.totacre
+    taz_df["density_emp"] = taz_df["density_emp"].fillna(0)
+    taz_df["density"] = taz_df["density_pop"] + taz_df["density_emp"]
+    taz_df["areatype"] = pd.cut(
+        taz_df.density,
+        bins=[0, 6, 30, 55, 100, 300, np.inf],
+        labels=[5, 4, 3, 2, 1, 0]
+    )
     taz_df = add_age_categories(taz_df, year, rc)
     orca.add_table('taz_summary_1', taz_df)
 
@@ -1573,6 +1670,26 @@ def travel_model_output(parcels, households, jobs, buildings,
     county_df.fillna(0).to_csv(
         "runs/run{}_county_summaries_{}.csv".format(run_number, year))
 
+    if year == final_year: 
+        baseyear = 2015
+        df_base = pd.read_csv(os.path.join("runs",
+                                        "run%d_taz_summaries_%d.csv"
+                                        % (run_number, baseyear)))
+        df_final = pd.read_csv(os.path.join("runs",
+                                        "run%d_taz_summaries_%d.csv"
+                                        % (run_number, final_year)))
+        df_growth = taz_calculator(run_number,
+                                df_base, df_final)
+        df_growth = df_growth.set_index(['RUNID', 'TAZ','SD',
+                                        'SD_NAME','COUNTY','CNTY_NAME'])
+        df_growth.to_csv(os.path.join("runs", 
+                                    "run%d_taz_growth_summaries.csv" %
+                                    run_number))
+        df_growth_c = county_calculator(run_number,
+                                        df_base, df_final)
+        df_growth_c.to_csv(os.path.join("runs", 
+                                    "run%d_county_growth_summaries.csv" %
+                                    run_number),index = False)
     # add region marginals
     pd.DataFrame(data={'REGION': [1],
                        'gq_num_hh_region': [tot_gqpop]}).to_csv(

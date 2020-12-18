@@ -133,8 +133,8 @@ def inclusionary_housing_settings(policy, scenario):
     d = {}
     if (scenario in policy["inclusionary_d_b_enable"]):
         for item in s:
-            # this is a list of Blueprint strategy geographies - represented
-            # by pba50chcat - with an inclusionary rate that is the same
+            # this is a list of draft blueprint strategy geographies (represented
+            # by pba50chcat) with an inclusionary rate that is the same
             # for all the pba50chcats in the list
             print("Setting inclusionary rates for geographies %d pba50chcat \
                   to %.2f" % (len(item["values"]), item["amount"]))
@@ -143,6 +143,18 @@ def inclusionary_housing_settings(policy, scenario):
             # of pba50chcat names to rates
             for pba50chcat in item["values"]:
                 d[pba50chcat] = item["amount"]
+    elif (scenario in policy["inclusionary_fb_enable"]):
+        for item in s:
+            # this is a list of final blueprint strategy geographies (represented
+            # by fbpchcat) with an inclusionary rate that is the same
+            # for all the fbpchcat in the list
+            print("Setting inclusionary rates for geographies %d fbpchcat \
+                  to %.2f" % (len(item["values"]), item["amount"]))
+            # this is a list of inclusionary rates and the fbpchcat
+            # geographies they apply to - need to turn it in a map
+            # of fbpchcat names to rates
+            for fbpchcat in item["values"]:
+                d[fbpchcat] = item["amount"]
     else:
         for item in s:
             # this is a list of cities with an inclusionary rate that is the
@@ -303,16 +315,20 @@ def costar(store, parcels):
 
 @orca.table(cache=True)
 def zoning_lookup():
-    return pd.read_csv(os.path.join(misc.data_dir(),
-                       "2020_06_22_zoning_lookup_hybrid_pba50.csv"),
+    file = os.path.join(misc.data_dir(),
+                       "2020_11_05_zoning_lookup_hybrid_pba50.csv")
+    print('Version of zoning_lookup: {}'.format(file))
+    return pd.read_csv(file,
                        index_col='id')
 
 
 # zoning for use in the "baseline" scenario
 @orca.table(cache=True)
 def zoning_baseline(parcels, zoning_lookup, settings):
-    df = pd.read_csv(os.path.join(misc.data_dir(),
-                     "2020_06_22_zoning_parcels_hybrid_pba50.csv"),
+    file = os.path.join(misc.data_dir(),
+                        "2020_11_05_zoning_parcels_hybrid_pba50.csv")
+    print('Version of zoning_parcels: {}'.format(file))
+    df = pd.read_csv(file,
                      index_col="geom_id")
     df = pd.merge(df, zoning_lookup.to_frame(),
                   left_on="zoning_id", right_index=True)
@@ -456,7 +472,7 @@ def zoning_scenario(parcels_geography, scenario, policy, mapping):
     add_drop_helper("drop_bldg", 0)
 
     if scenario in policy['geographies_fb_enable']:
-        join_col = 'fbpzoningm'
+        join_col = 'fbpzoningmodcat'
     elif scenario in policy['geographies_db_enable']:
         join_col = 'pba50zoningmodcat'
     elif 'zoninghzcat' in scenario_zoning.columns:
@@ -503,9 +519,10 @@ def parcel_rejections():
 
 @orca.table(cache=True)
 def parcels_geography(parcels, scenario, settings, policy):
-    df = pd.read_csv(
-        os.path.join(misc.data_dir(), "2020_09_21_parcels_geography.csv"),
-        index_col="geom_id")
+    file = os.path.join(misc.data_dir(), "2020_11_10_parcels_geography.csv")
+    print('Version of parcels_geography: {}'.format(file))
+    df = pd.read_csv(file,
+                     index_col="geom_id")
     df = geom_id_to_parcel_id(df, parcels)
 
     # this will be used to map juris id to name
@@ -531,6 +548,7 @@ def parcels_geography(parcels, scenario, settings, policy):
     # Add Draft Blueprint geographies: PDA, TRA, PPA, sesit
     if scenario in policy['geographies_db_enable']:
         df["pda_id_pba50"] = df.pda_id_pba50.str.lower()
+        df["gg_id"] = df.gg_id.str.lower()
         df["tra_id"] = df.tra_id.str.lower()
         df['juris_tra'] = df.juris + '-' + df.tra_id
         df["ppa_id"] = df.ppa_id.str.lower()
@@ -541,6 +559,7 @@ def parcels_geography(parcels, scenario, settings, policy):
     # Use Final Blueprint geographies: PDA, TRA, PPA, sesit
     elif scenario in policy['geographies_fb_enable']:
         df["pda_id_pba50"] = df.pda_id_pba50_fb.str.lower()
+        df["gg_id"] = df.fbp_gg_id.str.lower()
         df["tra_id"] = df.fbp_tra_id.str.lower()
         df['juris_tra'] = df.juris + '-' + df.tra_id
         df["ppa_id"] = df.fbp_ppa_id.str.lower()
@@ -680,7 +699,9 @@ def get_dev_projects_table(scenario, parcels):
     # requires the user has MTC's urban_data_internal
     # repository alongside bayarea_urbansim
     urban_data_repo = ("../urban_data_internal/development_projects/")
-    current_dev_proj = ("2020_0914_1529_development_projects.csv")
+    file = "2020_1204_1537_development_projects.csv"
+    print('Version of development_projects: {}'.format(file))
+    current_dev_proj = (file)
     orca.add_injectable("dev_proj_file", current_dev_proj)
     df = pd.read_csv(os.path.join(urban_data_repo, current_dev_proj))
     df = reprocess_dev_projects(df)
@@ -732,6 +753,8 @@ def development_projects(parcels, mapping, scenario):
     df["non_residential_sqft"] = df.non_residential_sqft.fillna(0)
     df["residential_units"] = df.residential_units.fillna(0).astype("int")
     df["preserved_units"] = 0.0
+    df["inclusionary_units"] = 0.0
+    df["subsidized_units"] = 0.0
 
     df["building_type"] = df.building_type.replace("HP", "OF")
     df["building_type"] = df.building_type.replace("GV", "OF")

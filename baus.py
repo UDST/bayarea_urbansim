@@ -165,9 +165,13 @@ def get_simulation_models(SCENARIO):
 
         # preserve some units
         "preserve_affordable",
-        # run the subsidized acct system
+        # run the subsidized residential acct system
         "lump_sum_accounts",
         "subsidized_residential_developer_lump_sum_accts",
+
+        # run the subsidized office acct system
+        "office_lump_sum_accounts",
+        "subsidized_office_developer_lump_sum_accts",
 
         "alt_feasibility",
 
@@ -191,19 +195,17 @@ def get_simulation_models(SCENARIO):
         # (based on higher of predicted price or rent)
         "assign_tenure_to_new_units",
 
+        # we first put Q1 households only into deed-restricted units, 
+        # then any additional unplaced Q1 households, Q2, Q3, and Q4 
+        # households are placed in either deed-restricted units or 
+        # market-rate units
+        "hlcm_owner_lowincome_simulate",
+        "hlcm_renter_lowincome_simulate",
+
         # allocate owners to vacant owner-occupied units
         "hlcm_owner_simulate",
         # allocate renters to vacant rental units
         "hlcm_renter_simulate",
-
-        # we first put Q1/Q2/Q3 in market-rate units only, then allow Q1 into
-        # either deed-restricted or market-rate units
-        # this leaves deed-restricted units and the remaining market-rate
-        # units for Q1, whereas placing Q1 first could leave deed-restricted
-        # units vacant-- since deed-restricted units are not explicitly
-        # tied to price, there is not a greater probability Q1 will choose them
-        "hlcm_owner_lowincome_simulate",
-        "hlcm_renter_lowincome_simulate",
 
         # we have to run the hlcm above before this one - we first want to
         # try and put unplaced households into their appropraite tenured
@@ -251,7 +253,7 @@ def get_simulation_models(SCENARIO):
     if SCENARIO in vmt_settings["com_for_com_scenarios"] and \
             SCENARIO not in vmt_settings["db_geography_scenarios"]:
         models.insert(models.index("office_developer"),
-                      "subsidized_office_developer")
+                      "subsidized_office_developer_vmt")
 
     if SCENARIO in vmt_settings["com_for_res_scenarios"] or \
             SCENARIO in vmt_settings["res_for_res_scenarios"]:
@@ -265,7 +267,8 @@ def get_simulation_models(SCENARIO):
 
     # calculate jobs-housing fees
     jobs_housing_settings = \
-        orca.get_injectable("policy")["acct_settings"]["jobs_housing_fee_settings"]
+        orca.get_injectable("policy")[
+            "acct_settings"]["jobs_housing_fee_settings"]
     if SCENARIO in jobs_housing_settings["jobs_housing_com_for_res_scenarios"]:
         models.insert(models.index("diagnostic_output"),
                       "calculate_jobs_housing_fees")
@@ -324,20 +327,17 @@ def run_models(MODE, SCENARIO):
                 "reconcile_unplaced_households",
                 "jobs_transition",
 
+                # we first put Q1 households only into deed-restricted units, 
+                # then any additional unplaced Q1 households, Q2, Q3, and Q4 
+                # households are placed in either deed-restricted units or 
+                # market-rate units
+                "hlcm_owner_lowincome_simulate",
+                "hlcm_renter_lowincome_simulate",
+
                 # allocate owners to vacant owner-occupied units
                 "hlcm_owner_simulate",
                 # allocate renters to vacant rental units
                 "hlcm_renter_simulate",
-
-                # we first put Q1/Q2/Q3 in market-rate units only, then
-                # allow Q1 into either deed-restricted or market-rate units
-                # this leaves deed-restricted units and the remaining
-                # market-rate units for Q1, whereas placing Q1 first could
-                # leave deed-restricted units vacant-- since deed-restricted
-                # units are not explicitly tied to price, there is not a
-                # greater probability Q1 will choose them
-                "hlcm_owner_lowincome_simulate",
-                "hlcm_renter_lowincome_simulate",
 
                 # we have to run the hlcm above before this one - we first want
                 # to try and put unplaced households into their appropraite
@@ -438,7 +438,6 @@ def run_models(MODE, SCENARIO):
     else:
 
         raise "Invalid mode"
-
 
 
 print("Started", time.ctime())
