@@ -976,6 +976,8 @@ def slr_parcel_inundation_mp():
         index_col='parcel_id')
 
 
+# SLR inundation levels for parcels for Blueprint, where slr_parcel_inundation_d_b
+# is the new base case (no mitigation)
 @orca.table(cache=True)
 def slr_parcel_inundation_d_b():
     return pd.read_csv(
@@ -994,6 +996,12 @@ def slr_parcel_inundation_d_bb():
 def slr_parcel_inundation_d_bp():
     return pd.read_csv(
         os.path.join(misc.data_dir(), "slr_parcel_inundation_d_bp.csv"),
+        index_col='parcel_id')
+
+@orca.table(cache=True)
+def slr_parcel_inundation_f_b_np():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "slr_parcel_inundation_f_b_np.csv"),
         index_col='parcel_id')
 
 
@@ -1016,7 +1024,7 @@ def slr_progression_R():
         os.path.join(misc.data_dir(), "slr_progression_R.csv"))
 
 
-# SLR progression for drafte blueprint
+# SLR progression for draft blueprint
 @orca.table(cache=True)
 def slr_progression_d_b():
     return pd.read_csv(
