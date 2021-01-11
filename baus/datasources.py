@@ -907,10 +907,14 @@ def vmt_fee_categories():
 
 
 @orca.table(cache=True)
-def superdistricts():
-    return pd.read_csv(
-        os.path.join(misc.data_dir(), "superdistricts.csv"),
-        index_col="number")
+def superdistricts(scenario):
+	try: 
+		superdistricts = pd.read_csv(os.path.join(misc.data_dir(), 
+			("superdistricts_s{}.csv").format(scenario)), index_col="number")
+	except:
+		superdistricts = pd.read_csv(os.path.join(misc.data_dir(), 
+			"superdistricts.csv"), index_col="number")
+	return superdistricts
 
 
 @orca.table(cache=True)
