@@ -911,9 +911,11 @@ def superdistricts(scenario):
 	try: 
 		superdistricts = pd.read_csv(os.path.join(misc.data_dir(), 
 			("superdistricts_s{}.csv").format(scenario)), index_col="number")
+		orca.add_injectable("sqft_per_job_settings", "for this scenario")
 	except:
 		superdistricts = pd.read_csv(os.path.join(misc.data_dir(), 
 			"superdistricts.csv"), index_col="number")
+		orca.add_injectable("sqft_per_job_settings", "default")
 	return superdistricts
 
 

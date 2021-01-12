@@ -102,6 +102,11 @@ def config(policy, inputs, run_number, scenario, parcels,
     write("PPAs %s in the system" % ppa)
     write("")
 
+    # add which superdistricts settings file is being used
+    sqft_per_job_settings = orca.get_injectable("sqft_per_job_settings")
+    write("sqft per jobs settings are %s" % sqft_per_job_settings)
+    write("")
+
     write("HAZARDS")
     write("")
 
