@@ -907,10 +907,19 @@ def vmt_fee_categories():
 
 
 @orca.table(cache=True)
-def superdistricts():
-    return pd.read_csv(
-        os.path.join(misc.data_dir(), "superdistricts.csv"),
-        index_col="number")
+def superdistricts(scenario): 
+	sd_scenario_file = os.path.join(misc.data_dir(), 
+		("superdistricts_s{}.csv").format(scenario))
+	# scenarios could contain policies (eg telework) and/or other modifications
+	if os.path.isfile(sd_scenario_file): 
+		superdistricts = pd.read_csv(sd_scenario_file, index_col="number")
+		orca.add_injectable("sqft_per_job_settings", "for this scenario")
+	# the default includes a telework assumption and SD adjustments
+	else:
+		superdistricts = pd.read_csv(os.path.join(misc.data_dir(),
+			"superdistricts.csv"), index_col="number")
+		orca.add_injectable("sqft_per_job_settings", "default")
+	return superdistricts
 
 
 @orca.table(cache=True)
