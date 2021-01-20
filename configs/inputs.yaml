@@ -18,6 +18,10 @@ control_tables:
     s24_household_controls_input_file: household_controls_s24.csv
     s25_household_controls_input_file: household_controls_s25.csv
     s20_household_controls_input_file: household_controls_s20.csv
+    s26_household_controls_input_file: household_controls_s26.csv
+    s27_household_controls_input_file: household_controls_s27.csv
+    s28_household_controls_input_file: household_controls_s28.csv
+    s29_household_controls_input_file: household_controls_s29.csv
   employment:
     employment_controls_input_file: employment_controls.csv
     s1_employment_controls_input_file: employment_controls_s1.csv
@@ -35,6 +39,10 @@ control_tables:
     s24_employment_controls_input_file: employment_controls_s24.csv
     s25_employment_controls_input_file: employment_controls_s25.csv
     s20_employment_controls_input_file: employment_controls_s20.csv
+    s26_employment_controls_input_file: employment_controls_s26.csv
+    s27_employment_controls_input_file: employment_controls_s27.csv
+    s28_employment_controls_input_file: employment_controls_s28.csv
+    s29_employment_controls_input_file: employment_controls_s29.csv
   regional:
     regional_controls_input_file: regional_controls.csv
     s1_regional_controls_input_file: regional_controls_s1.csv
@@ -54,6 +62,10 @@ control_tables:
     s24_regional_controls_input_file: regional_controls_s24.csv
     s25_regional_controls_input_file: regional_controls_s25.csv
     s20_regional_controls_input_file: regional_controls_s20.csv
+    s26_regional_controls_input_file: regional_controls_s26.csv
+    s27_regional_controls_input_file: regional_controls_s27.csv
+    s28_regional_controls_input_file: regional_controls_s28.csv
+    s29_regional_controls_input_file: regional_controls_s29.csv
   demographic_forecast:
     demographic_forecast_controls_input_file: regional_demographic_forecast.csv
     s1_demographic_forecast_controls_input_file: regional_demographic_forecast_s1.csv
@@ -71,6 +83,10 @@ control_tables:
     s24_demographic_forecast_controls_input_file: regional_demographic_forecast_s24.csv
     s25_demographic_forecast_controls_input_file: regional_demographic_forecast_s25.csv
     s20_demographic_forecast_controls_input_file: regional_demographic_forecast_s20.csv
+    s26_demographic_forecast_controls_input_file: regional_demographic_forecast_s26.csv
+    s27_demographic_forecast_controls_input_file: regional_demographic_forecast_s27.csv
+    s28_demographic_forecast_controls_input_file: regional_demographic_forecast_s28.csv
+    s29_demographic_forecast_controls_input_file: regional_demographic_forecast_s29.csv
 
 
 logsums:
