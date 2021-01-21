@@ -3341,7 +3341,7 @@ acct_settings:
 
 
 unit_preservation:
-    enable_in_scenarios: ["24"]
+    enable_in_scenarios: ["24", "26", "27", "28", "29"]
     geography: county_name
     settings: # change geography as needed
       'Alameda':
