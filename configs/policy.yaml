@@ -2570,11 +2570,11 @@ acct_settings:
       receiving_buildings_filter: county == 'Alameda'
       receiving_buildings_filter_fb: county == 'Alameda' & gg_id > ''
       subsidize_affordable: True
-      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24"]
+      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24", "26", "27", "28", "29"]
       default_amount_scenarios_db: ["21"]
       alternate_amount_scenarios_db: ["22", "23"]
-      default_amount_scenarios_fb: ["24"]
-      geography_scenarios_fb: ["24"]
+      default_amount_scenarios_fb: ["24", "26", "27", "28", "29"]
+      geography_scenarios_fb: ["24", "26", "27", "28", "29"]
 
     contra_costa_bond_settings:
       name: "Contra Costa Affordable Housing Bond"
@@ -2586,11 +2586,11 @@ acct_settings:
       receiving_buildings_filter: county == 'Contra Costa'
       receiving_buildings_filter_fb: county == 'Contra Costa' & gg_id > ''
       subsidize_affordable: True
-      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24"]
+      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24", "26", "27", "28", "29"]
       default_amount_scenarios_db: ["21"]
       alternate_amount_scenarios_db: ["22", "23"]
-      default_amount_scenarios_fb: ["24"]
-      geography_scenarios_fb: ["24"]
+      default_amount_scenarios_fb: ["24", "26", "27", "28", "29"]
+      geography_scenarios_fb: ["24", "26", "27", "28", "29"]
 
     marin_bond_settings:
       name: "Marin Affordable Housing Bond"
@@ -2602,11 +2602,11 @@ acct_settings:
       receiving_buildings_filter: county == 'Marin'
       receiving_buildings_filter_fb: county == 'Marin' & gg_id > ''
       subsidize_affordable: True
-      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24"]
+      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24", "26", "27", "28", "29"]
       default_amount_scenarios_db: ["21"]
       alternate_amount_scenarios_db: ["22", "23"]
-      default_amount_scenarios_fb: ["24"]
-      geography_scenarios_fb: ["24"]
+      default_amount_scenarios_fb: ["24", "26", "27", "28", "29"]
+      geography_scenarios_fb: ["24", "26", "27", "28", "29"]
 
     napa_bond_settings:
       name: "Napa Affordable Housing Bond"
@@ -2618,11 +2618,11 @@ acct_settings:
       receiving_buildings_filter: county == 'Napa'
       receiving_buildings_filter_fb: county == 'Napa' & gg_id > ''
       subsidize_affordable: True
-      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24"]
+      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24", "26", "27", "28", "29"]
       default_amount_scenarios_db: ["21"]
       alternate_amount_scenarios_db: ["22", "23"]
-      default_amount_scenarios_fb: ["24"]
-      geography_scenarios_fb: ["24"]
+      default_amount_scenarios_fb: ["24", "26", "27", "28", "29"]
+      geography_scenarios_fb: ["24", "26", "27", "28", "29"]
 
     san_francisco_bond_settings:
       name: "San Francisco Affordable Housing Bond"
@@ -2634,11 +2634,11 @@ acct_settings:
       receiving_buildings_filter: county == 'San Francisco'
       receiving_buildings_filter_fb: county == 'San Francisco' & gg_id > ''
       subsidize_affordable: True
-      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24"]
+      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24", "26", "27", "28", "29"]
       default_amount_scenarios_db: ["21"]
       alternate_amount_scenarios_db: ["22", "23"]
-      default_amount_scenarios_fb: ["24"]
-      geography_scenarios_fb: ["24"]
+      default_amount_scenarios_fb: ["24", "26", "27", "28", "29"]
+      geography_scenarios_fb: ["24", "26", "27", "28", "29"]
 
     san_mateo_bond_settings:
       name: "San Mateo Affordable Housing Bond"
@@ -2650,11 +2650,11 @@ acct_settings:
       receiving_buildings_filter: county == 'San Mateo'
       receiving_buildings_filter_fb: county == 'San Mateo' & gg_id > ''
       subsidize_affordable: True
-      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24"]
+      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24", "26", "27", "28", "29"]
       default_amount_scenarios_db: ["21"]
       alternate_amount_scenarios_db: ["22", "23"]
-      default_amount_scenarios_fb: ["24"]
-      geography_scenarios_fb: ["24"]
+      default_amount_scenarios_fb: ["24", "26", "27", "28", "29"]
+      geography_scenarios_fb: ["24", "26", "27", "28", "29"]
 
     santa_clara_bond_settings:
       name: "Santa Clara Affordable Housing Bond"
@@ -2666,11 +2666,11 @@ acct_settings:
       receiving_buildings_filter: county == 'Santa Clara'
       receiving_buildings_filter_fb: county == 'Santa Clara' & gg_id > ''
       subsidize_affordable: True
-      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24"]
+      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24", "26", "27", "28", "29"]
       default_amount_scenarios_db: ["21"]
       alternate_amount_scenarios_db: ["22", "23"]
-      default_amount_scenarios_fb: ["24"]
-      geography_scenarios_fb: ["24"]
+      default_amount_scenarios_fb: ["24", "26", "27", "28", "29"]
+      geography_scenarios_fb: ["24", "26", "27", "28", "29"]
 
     solano_bond_settings:
       name: "Solano Affordable Housing Bond"
@@ -2682,11 +2682,11 @@ acct_settings:
       receiving_buildings_filter: county == 'Solano'
       receiving_buildings_filter_fb: county == 'Solano' & gg_id > ''
       subsidize_affordable: True
-      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24"]
+      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24", "26", "27", "28", "29"]
       default_amount_scenarios_db: ["21"]
       alternate_amount_scenarios_db: ["22", "23"]
-      default_amount_scenarios_fb: ["24"]
-      geography_scenarios_fb: ["24"]
+      default_amount_scenarios_fb: ["24", "26", "27", "28", "29"]
+      geography_scenarios_fb: ["24", "26", "27", "28", "29"]
 
     sonoma_bond_settings:
       name: "Sonoma Affordable Housing Bond"
@@ -2698,11 +2698,11 @@ acct_settings:
       receiving_buildings_filter: county == 'Sonoma'
       receiving_buildings_filter_fb: county == 'Sonoma' & gg_id > ''
       subsidize_affordable: True
-      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24"]
+      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24", "26", "27", "28", "29"]
       default_amount_scenarios_db: ["21"]
       alternate_amount_scenarios_db: ["22", "23"]
-      default_amount_scenarios_fb: ["24"]
-      geography_scenarios_fb: ["24"]
+      default_amount_scenarios_fb: ["24", "26", "27", "28", "29"]
+      geography_scenarios_fb: ["24", "26", "27", "28", "29"]
 
     # parcel tax settings
     parcel_tax_settings:
