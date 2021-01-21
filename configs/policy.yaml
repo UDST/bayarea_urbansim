@@ -40,10 +40,9 @@ reloc_fr2_enable: ["11", "12", "15"]
 # rent control is included in all variants
 # these slow household relocation
 reloc_db_enable: ["21", "22", "23"]
-
 #final blueprint scenario
 #currently using draft blueprint relocation rates
-reloc_fb_enable: ['24']
+reloc_fb_enable: ['24', '26', '27', '28', '29']
 
 # scenarios for draft blueprint ADUs
 adus_bp_enable: ["21", "22", "23", "24", "26", "27", "28", "29"]
