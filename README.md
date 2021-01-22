@@ -16,7 +16,7 @@ Bay Area UrbanSim is written in Python and runs in a command line environment. I
 5. Create a Python environment with the current dependencies: `conda env create -f baus-env-2020.yml`
 6. Activate the environment: `conda activate baus-env-2020`
 7. Pre-process the base data: `python baus.py --mode preprocessing` (only needed once)
-8. Run the model: `python baus.py`
+8. Run the model: `python baus.py` (typical AWS linux run uses nohup python baus.py -s 25 --disable-slack --random-seed & which add no hanging up / specifies scenario 25 / disables slack output / turns OFF random seed / puts in background)
 
 More info about the command line arguments: `python baus.py --help`
 
