@@ -699,7 +699,7 @@ def get_dev_projects_table(scenario, parcels):
     # requires the user has MTC's urban_data_internal
     # repository alongside bayarea_urbansim
     urban_data_repo = ("../urban_data_internal/development_projects/")
-    file = "2020_1204_1537_development_projects.csv"
+    file = "2021_0121_1602_development_projects.csv"
     print('Version of development_projects: {}'.format(file))
     current_dev_proj = (file)
     orca.add_injectable("dev_proj_file", current_dev_proj)
