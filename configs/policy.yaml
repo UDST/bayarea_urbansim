@@ -17,7 +17,7 @@ geographies_db_enable: ["20", "21", "22", "23"]
 
 # enables the use of Final Blueprint geographies - PDA, TRA, SESIT (HRA, DIS)
 # this now also enables Final Blueprint upzoning 
-geographies_fb_enable: ["24", "20", "25"]
+geographies_fb_enable: ["24", "20", "25", "26", "27", "28", "29"]
 
 # scenarios for futures round 2 office caps
 office_caps_fr2_enable: ["11", "12", "15"]
@@ -27,7 +27,7 @@ inclusionary_fr2_enable: ["11", "12", "15"]
 # scenarios for draft blueprint inclusionary rates
 inclusionary_d_b_enable: ["20", "21", "22", "23"]
 # scenarios for final blueprint inclusionary rates
-inclusionary_fb_enable: ["24"]
+inclusionary_fb_enable: ["24", "26", "27", "28", "29"]
 
 # this is added for housing relocation rate function in models.py
 # this is to differentiate futures baseline rates
@@ -40,13 +40,12 @@ reloc_fr2_enable: ["11", "12", "15"]
 # rent control is included in all variants
 # these slow household relocation
 reloc_db_enable: ["21", "22", "23"]
-
 #final blueprint scenario
 #currently using draft blueprint relocation rates
-reloc_fb_enable: ['24']
+reloc_fb_enable: ['24', '26', '27', '28', '29']
 
 # scenarios for draft blueprint ADUs
-adus_bp_enable: ["21", "22", "23", "24"]
+adus_bp_enable: ["21", "22", "23", "24", "26", "27", "28", "29"]
 
 
 # limits!  these are very important as they give per scenario limits in terms of
@@ -1650,6 +1649,891 @@ inclusionary_housing_settings:
       - NAtra3NAppain
       - NAtra3NAppainun
       - NAtra3NAppaout
+  "26":
+    - type: fbpchcat
+      description: high setting
+      amount: .2
+      values:
+      - GGtra1HRADISNAin
+      - GGtra1HRANAin
+      - GGtra2aHRADISNAin
+      - GGtra2aHRADISNAinun
+      - GGtra2aHRADISNAout
+      - GGtra2aHRANAin
+      - GGtra2aHRANAinun
+      - GGtra2aHRANAout
+      - GGtra2bHRADISNAin
+      - GGtra2bHRADISNAinun
+      - GGtra2bHRANAin
+      - GGtra2cHRADISNAin
+      - GGtra2cHRADISNAinun
+      - GGtra2cHRANAin
+      - GGtra2cHRANAinun
+      - GGtra3HRADISNAexp0
+      - GGtra3HRADISNAin
+      - GGtra3HRADISNAinun
+      - GGtra3HRADISNAout
+      - GGtra3HRANAin
+      - GGtra3HRANAinun
+      - GGtra3HRANAout
+    - type: fbpchcat
+      description: medium setting
+      amount: .15
+      values:
+      - GGNAHRADISNAexp0
+      - GGNAHRADISNAin
+      - GGNAHRADISNAinun
+      - GGNAHRADISNAout
+      - GGNAHRANAexp0
+      - GGNAHRANAexp1
+      - GGNAHRANAexp1_np
+      - GGNAHRANAin
+      - GGNAHRANAinun
+      - GGNAHRANAout
+      - GGtra1DISNAin
+      - GGtra1DISNAinun
+      - GGtra1DISNAout
+      - GGtra1NANAin
+      - GGtra1NANAinun
+      - GGtra1NANAout
+      - GGtra2aDISNAin
+      - GGtra2aDISNAinun
+      - GGtra2aDISppain
+      - GGtra2aNANAin
+      - GGtra2aNANAinun
+      - GGtra2aNANAout
+      - GGtra2bDISNAin
+      - GGtra2bDISppain
+      - GGtra2bNANAin
+      - GGtra2bNAppain
+      - GGtra2cDISNAin
+      - GGtra2cDISNAinun
+      - GGtra2cDISNAout
+      - GGtra2cDISppain
+      - GGtra2cNANAin
+      - GGtra2cNANAinun
+      - GGtra2cNAppain
+    - type: fbpchcat
+      description: low setting
+      amount: .1
+      values:
+      - GGNADISNAexp0
+      - GGNADISNAexp2_np
+      - GGNADISNAin
+      - GGNADISNAinun
+      - GGNADISNAout
+      - GGNADISppain
+      - GGNANANAexp0
+      - GGNANANAexp1
+      - GGNANANAexpmax_np
+      - GGNANANAin
+      - GGNANANAinun
+      - GGNANANAout
+      - GGNANAppain
+      - GGtra3DISNAexp0
+      - GGtra3DISNAexp1
+      - GGtra3DISNAin
+      - GGtra3DISNAinun
+      - GGtra3DISNAout
+      - GGtra3DISppain
+      - GGtra3NANAexp1
+      - GGtra3NANAexp3_au
+      - GGtra3NANAin
+      - GGtra3NANAinun
+      - GGtra3NANAout
+      - GGtra3NAppain
+      - NANADISNAexp0
+      - NANADISNAexp0_np
+      - NANADISNAexp1
+      - NANADISNAexp1_np
+      - NANADISNAexp2_np
+      - NANADISNAexp3_au
+      - NANADISNAexpmax
+      - NANADISNAexpmax_np
+      - NANADISNAin
+      - NANADISNAinun
+      - NANADISNAout
+      - NANADISNAubz
+      - NANADISNAubz_np
+      - NANADISppaexp0
+      - NANADISppaexp1
+      - NANADISppaexp1_np
+      - NANADISppaexp2_np
+      - NANADISppaexp3_au
+      - NANADISppain
+      - NANADISppainun
+      - NANADISppaout
+      - NANAHRADISNAexp0
+      - NANAHRADISNAexp0_np
+      - NANAHRADISNAexp1
+      - NANAHRADISNAexp1_np
+      - NANAHRADISNAexp2_np
+      - NANAHRADISNAexp3_au
+      - NANAHRADISNAexpmax
+      - NANAHRADISNAexpmax_np
+      - NANAHRADISNAin
+      - NANAHRADISNAinun
+      - NANAHRADISNAout
+      - NANAHRADISNAubz
+      - NANAHRADISNAubz_np
+      - NANAHRADISppain
+      - NANAHRANAexp0
+      - NANAHRANAexp0_np
+      - NANAHRANAexp1
+      - NANAHRANAexp1_np
+      - NANAHRANAexp2_np
+      - NANAHRANAexp3_au
+      - NANAHRANAexpmax_np
+      - NANAHRANAin
+      - NANAHRANAinun
+      - NANAHRANAout
+      - NANAHRANAubz
+      - NANANANAexp0
+      - NANANANAexp0_np
+      - NANANANAexp1
+      - NANANANAexp1_np
+      - NANANANAexp2_np
+      - NANANANAexp3_au
+      - NANANANAexpmax
+      - NANANANAexpmax_np
+      - NANANANAin
+      - NANANANAinun
+      - NANANANAout
+      - NANANANAubz
+      - NANANAppaexp0
+      - NANANAppaexp1
+      - NANANAppaexp1_np
+      - NANANAppain
+      - NANANAppainun
+      - NANANAppaout
+      - NAtra1DISNAin
+      - NAtra1HRADISNAin
+      - NAtra1HRANAin
+      - NAtra1NANAin
+      - NAtra2aDISNAin
+      - NAtra2aDISNAinun
+      - NAtra2aDISNAout
+      - NAtra2aHRADISNAin
+      - NAtra2aHRANAin
+      - NAtra2aHRANAinun
+      - NAtra2aHRANAout
+      - NAtra2aNANAin
+      - NAtra2aNANAinun
+      - NAtra2aNANAout
+      - NAtra2bDISNAin
+      - NAtra2bDISNAout
+      - NAtra2bHRADISNAin
+      - NAtra2bHRANAin
+      - NAtra2bNANAin
+      - NAtra2bNANAinun
+      - NAtra2bNANAout
+      - NAtra2cDISNAin
+      - NAtra2cDISppain
+      - NAtra2cHRADISNAin
+      - NAtra2cHRADISNAout
+      - NAtra2cHRANAin
+      - NAtra2cHRANAout
+      - NAtra2cNANAin
+      - NAtra2cNANAinun
+      - NAtra2cNANAout
+      - NAtra2cNAppain
+      - NAtra3DISNAexp0
+      - NAtra3DISNAexp1
+      - NAtra3DISNAexp1_np
+      - NAtra3DISNAexp3_au
+      - NAtra3DISNAin
+      - NAtra3DISNAinun
+      - NAtra3DISNAout
+      - NAtra3DISppaexp1
+      - NAtra3DISppain
+      - NAtra3DISppainun
+      - NAtra3DISppaout
+      - NAtra3HRADISNAexp0
+      - NAtra3HRADISNAexp1
+      - NAtra3HRADISNAexp1_np
+      - NAtra3HRADISNAin
+      - NAtra3HRADISNAinun
+      - NAtra3HRADISNAout
+      - NAtra3HRANAexp0
+      - NAtra3HRANAexp1_np
+      - NAtra3HRANAin
+      - NAtra3HRANAinun
+      - NAtra3HRANAout
+      - NAtra3HRANAubz
+      - NAtra3NANAexp0
+      - NAtra3NANAexp1
+      - NAtra3NANAexp1_np
+      - NAtra3NANAexp3_au
+      - NAtra3NANAin
+      - NAtra3NANAinun
+      - NAtra3NANAout
+      - NAtra3NAppain
+      - NAtra3NAppainun
+      - NAtra3NAppaout
+  "27":
+    - type: fbpchcat
+      description: high setting
+      amount: .2
+      values:
+      - GGtra1HRADISNAin
+      - GGtra1HRANAin
+      - GGtra2aHRADISNAin
+      - GGtra2aHRADISNAinun
+      - GGtra2aHRADISNAout
+      - GGtra2aHRANAin
+      - GGtra2aHRANAinun
+      - GGtra2aHRANAout
+      - GGtra2bHRADISNAin
+      - GGtra2bHRADISNAinun
+      - GGtra2bHRANAin
+      - GGtra2cHRADISNAin
+      - GGtra2cHRADISNAinun
+      - GGtra2cHRANAin
+      - GGtra2cHRANAinun
+      - GGtra3HRADISNAexp0
+      - GGtra3HRADISNAin
+      - GGtra3HRADISNAinun
+      - GGtra3HRADISNAout
+      - GGtra3HRANAin
+      - GGtra3HRANAinun
+      - GGtra3HRANAout
+    - type: fbpchcat
+      description: medium setting
+      amount: .15
+      values:
+      - GGNAHRADISNAexp0
+      - GGNAHRADISNAin
+      - GGNAHRADISNAinun
+      - GGNAHRADISNAout
+      - GGNAHRANAexp0
+      - GGNAHRANAexp1
+      - GGNAHRANAexp1_np
+      - GGNAHRANAin
+      - GGNAHRANAinun
+      - GGNAHRANAout
+      - GGtra1DISNAin
+      - GGtra1DISNAinun
+      - GGtra1DISNAout
+      - GGtra1NANAin
+      - GGtra1NANAinun
+      - GGtra1NANAout
+      - GGtra2aDISNAin
+      - GGtra2aDISNAinun
+      - GGtra2aDISppain
+      - GGtra2aNANAin
+      - GGtra2aNANAinun
+      - GGtra2aNANAout
+      - GGtra2bDISNAin
+      - GGtra2bDISppain
+      - GGtra2bNANAin
+      - GGtra2bNAppain
+      - GGtra2cDISNAin
+      - GGtra2cDISNAinun
+      - GGtra2cDISNAout
+      - GGtra2cDISppain
+      - GGtra2cNANAin
+      - GGtra2cNANAinun
+      - GGtra2cNAppain
+    - type: fbpchcat
+      description: low setting
+      amount: .1
+      values:
+      - GGNADISNAexp0
+      - GGNADISNAexp2_np
+      - GGNADISNAin
+      - GGNADISNAinun
+      - GGNADISNAout
+      - GGNADISppain
+      - GGNANANAexp0
+      - GGNANANAexp1
+      - GGNANANAexpmax_np
+      - GGNANANAin
+      - GGNANANAinun
+      - GGNANANAout
+      - GGNANAppain
+      - GGtra3DISNAexp0
+      - GGtra3DISNAexp1
+      - GGtra3DISNAin
+      - GGtra3DISNAinun
+      - GGtra3DISNAout
+      - GGtra3DISppain
+      - GGtra3NANAexp1
+      - GGtra3NANAexp3_au
+      - GGtra3NANAin
+      - GGtra3NANAinun
+      - GGtra3NANAout
+      - GGtra3NAppain
+      - NANADISNAexp0
+      - NANADISNAexp0_np
+      - NANADISNAexp1
+      - NANADISNAexp1_np
+      - NANADISNAexp2_np
+      - NANADISNAexp3_au
+      - NANADISNAexpmax
+      - NANADISNAexpmax_np
+      - NANADISNAin
+      - NANADISNAinun
+      - NANADISNAout
+      - NANADISNAubz
+      - NANADISNAubz_np
+      - NANADISppaexp0
+      - NANADISppaexp1
+      - NANADISppaexp1_np
+      - NANADISppaexp2_np
+      - NANADISppaexp3_au
+      - NANADISppain
+      - NANADISppainun
+      - NANADISppaout
+      - NANAHRADISNAexp0
+      - NANAHRADISNAexp0_np
+      - NANAHRADISNAexp1
+      - NANAHRADISNAexp1_np
+      - NANAHRADISNAexp2_np
+      - NANAHRADISNAexp3_au
+      - NANAHRADISNAexpmax
+      - NANAHRADISNAexpmax_np
+      - NANAHRADISNAin
+      - NANAHRADISNAinun
+      - NANAHRADISNAout
+      - NANAHRADISNAubz
+      - NANAHRADISNAubz_np
+      - NANAHRADISppain
+      - NANAHRANAexp0
+      - NANAHRANAexp0_np
+      - NANAHRANAexp1
+      - NANAHRANAexp1_np
+      - NANAHRANAexp2_np
+      - NANAHRANAexp3_au
+      - NANAHRANAexpmax_np
+      - NANAHRANAin
+      - NANAHRANAinun
+      - NANAHRANAout
+      - NANAHRANAubz
+      - NANANANAexp0
+      - NANANANAexp0_np
+      - NANANANAexp1
+      - NANANANAexp1_np
+      - NANANANAexp2_np
+      - NANANANAexp3_au
+      - NANANANAexpmax
+      - NANANANAexpmax_np
+      - NANANANAin
+      - NANANANAinun
+      - NANANANAout
+      - NANANANAubz
+      - NANANAppaexp0
+      - NANANAppaexp1
+      - NANANAppaexp1_np
+      - NANANAppain
+      - NANANAppainun
+      - NANANAppaout
+      - NAtra1DISNAin
+      - NAtra1HRADISNAin
+      - NAtra1HRANAin
+      - NAtra1NANAin
+      - NAtra2aDISNAin
+      - NAtra2aDISNAinun
+      - NAtra2aDISNAout
+      - NAtra2aHRADISNAin
+      - NAtra2aHRANAin
+      - NAtra2aHRANAinun
+      - NAtra2aHRANAout
+      - NAtra2aNANAin
+      - NAtra2aNANAinun
+      - NAtra2aNANAout
+      - NAtra2bDISNAin
+      - NAtra2bDISNAout
+      - NAtra2bHRADISNAin
+      - NAtra2bHRANAin
+      - NAtra2bNANAin
+      - NAtra2bNANAinun
+      - NAtra2bNANAout
+      - NAtra2cDISNAin
+      - NAtra2cDISppain
+      - NAtra2cHRADISNAin
+      - NAtra2cHRADISNAout
+      - NAtra2cHRANAin
+      - NAtra2cHRANAout
+      - NAtra2cNANAin
+      - NAtra2cNANAinun
+      - NAtra2cNANAout
+      - NAtra2cNAppain
+      - NAtra3DISNAexp0
+      - NAtra3DISNAexp1
+      - NAtra3DISNAexp1_np
+      - NAtra3DISNAexp3_au
+      - NAtra3DISNAin
+      - NAtra3DISNAinun
+      - NAtra3DISNAout
+      - NAtra3DISppaexp1
+      - NAtra3DISppain
+      - NAtra3DISppainun
+      - NAtra3DISppaout
+      - NAtra3HRADISNAexp0
+      - NAtra3HRADISNAexp1
+      - NAtra3HRADISNAexp1_np
+      - NAtra3HRADISNAin
+      - NAtra3HRADISNAinun
+      - NAtra3HRADISNAout
+      - NAtra3HRANAexp0
+      - NAtra3HRANAexp1_np
+      - NAtra3HRANAin
+      - NAtra3HRANAinun
+      - NAtra3HRANAout
+      - NAtra3HRANAubz
+      - NAtra3NANAexp0
+      - NAtra3NANAexp1
+      - NAtra3NANAexp1_np
+      - NAtra3NANAexp3_au
+      - NAtra3NANAin
+      - NAtra3NANAinun
+      - NAtra3NANAout
+      - NAtra3NAppain
+      - NAtra3NAppainun
+      - NAtra3NAppaout
+  "28":
+    - type: fbpchcat
+      description: high setting
+      amount: .2
+      values:
+      - GGtra1HRADISNAin
+      - GGtra1HRANAin
+      - GGtra2aHRADISNAin
+      - GGtra2aHRADISNAinun
+      - GGtra2aHRADISNAout
+      - GGtra2aHRANAin
+      - GGtra2aHRANAinun
+      - GGtra2aHRANAout
+      - GGtra2bHRADISNAin
+      - GGtra2bHRADISNAinun
+      - GGtra2bHRANAin
+      - GGtra2cHRADISNAin
+      - GGtra2cHRADISNAinun
+      - GGtra2cHRANAin
+      - GGtra2cHRANAinun
+      - GGtra3HRADISNAexp0
+      - GGtra3HRADISNAin
+      - GGtra3HRADISNAinun
+      - GGtra3HRADISNAout
+      - GGtra3HRANAin
+      - GGtra3HRANAinun
+      - GGtra3HRANAout
+    - type: fbpchcat
+      description: medium setting
+      amount: .15
+      values:
+      - GGNAHRADISNAexp0
+      - GGNAHRADISNAin
+      - GGNAHRADISNAinun
+      - GGNAHRADISNAout
+      - GGNAHRANAexp0
+      - GGNAHRANAexp1
+      - GGNAHRANAexp1_np
+      - GGNAHRANAin
+      - GGNAHRANAinun
+      - GGNAHRANAout
+      - GGtra1DISNAin
+      - GGtra1DISNAinun
+      - GGtra1DISNAout
+      - GGtra1NANAin
+      - GGtra1NANAinun
+      - GGtra1NANAout
+      - GGtra2aDISNAin
+      - GGtra2aDISNAinun
+      - GGtra2aDISppain
+      - GGtra2aNANAin
+      - GGtra2aNANAinun
+      - GGtra2aNANAout
+      - GGtra2bDISNAin
+      - GGtra2bDISppain
+      - GGtra2bNANAin
+      - GGtra2bNAppain
+      - GGtra2cDISNAin
+      - GGtra2cDISNAinun
+      - GGtra2cDISNAout
+      - GGtra2cDISppain
+      - GGtra2cNANAin
+      - GGtra2cNANAinun
+      - GGtra2cNAppain
+    - type: fbpchcat
+      description: low setting
+      amount: .1
+      values:
+      - GGNADISNAexp0
+      - GGNADISNAexp2_np
+      - GGNADISNAin
+      - GGNADISNAinun
+      - GGNADISNAout
+      - GGNADISppain
+      - GGNANANAexp0
+      - GGNANANAexp1
+      - GGNANANAexpmax_np
+      - GGNANANAin
+      - GGNANANAinun
+      - GGNANANAout
+      - GGNANAppain
+      - GGtra3DISNAexp0
+      - GGtra3DISNAexp1
+      - GGtra3DISNAin
+      - GGtra3DISNAinun
+      - GGtra3DISNAout
+      - GGtra3DISppain
+      - GGtra3NANAexp1
+      - GGtra3NANAexp3_au
+      - GGtra3NANAin
+      - GGtra3NANAinun
+      - GGtra3NANAout
+      - GGtra3NAppain
+      - NANADISNAexp0
+      - NANADISNAexp0_np
+      - NANADISNAexp1
+      - NANADISNAexp1_np
+      - NANADISNAexp2_np
+      - NANADISNAexp3_au
+      - NANADISNAexpmax
+      - NANADISNAexpmax_np
+      - NANADISNAin
+      - NANADISNAinun
+      - NANADISNAout
+      - NANADISNAubz
+      - NANADISNAubz_np
+      - NANADISppaexp0
+      - NANADISppaexp1
+      - NANADISppaexp1_np
+      - NANADISppaexp2_np
+      - NANADISppaexp3_au
+      - NANADISppain
+      - NANADISppainun
+      - NANADISppaout
+      - NANAHRADISNAexp0
+      - NANAHRADISNAexp0_np
+      - NANAHRADISNAexp1
+      - NANAHRADISNAexp1_np
+      - NANAHRADISNAexp2_np
+      - NANAHRADISNAexp3_au
+      - NANAHRADISNAexpmax
+      - NANAHRADISNAexpmax_np
+      - NANAHRADISNAin
+      - NANAHRADISNAinun
+      - NANAHRADISNAout
+      - NANAHRADISNAubz
+      - NANAHRADISNAubz_np
+      - NANAHRADISppain
+      - NANAHRANAexp0
+      - NANAHRANAexp0_np
+      - NANAHRANAexp1
+      - NANAHRANAexp1_np
+      - NANAHRANAexp2_np
+      - NANAHRANAexp3_au
+      - NANAHRANAexpmax_np
+      - NANAHRANAin
+      - NANAHRANAinun
+      - NANAHRANAout
+      - NANAHRANAubz
+      - NANANANAexp0
+      - NANANANAexp0_np
+      - NANANANAexp1
+      - NANANANAexp1_np
+      - NANANANAexp2_np
+      - NANANANAexp3_au
+      - NANANANAexpmax
+      - NANANANAexpmax_np
+      - NANANANAin
+      - NANANANAinun
+      - NANANANAout
+      - NANANANAubz
+      - NANANAppaexp0
+      - NANANAppaexp1
+      - NANANAppaexp1_np
+      - NANANAppain
+      - NANANAppainun
+      - NANANAppaout
+      - NAtra1DISNAin
+      - NAtra1HRADISNAin
+      - NAtra1HRANAin
+      - NAtra1NANAin
+      - NAtra2aDISNAin
+      - NAtra2aDISNAinun
+      - NAtra2aDISNAout
+      - NAtra2aHRADISNAin
+      - NAtra2aHRANAin
+      - NAtra2aHRANAinun
+      - NAtra2aHRANAout
+      - NAtra2aNANAin
+      - NAtra2aNANAinun
+      - NAtra2aNANAout
+      - NAtra2bDISNAin
+      - NAtra2bDISNAout
+      - NAtra2bHRADISNAin
+      - NAtra2bHRANAin
+      - NAtra2bNANAin
+      - NAtra2bNANAinun
+      - NAtra2bNANAout
+      - NAtra2cDISNAin
+      - NAtra2cDISppain
+      - NAtra2cHRADISNAin
+      - NAtra2cHRADISNAout
+      - NAtra2cHRANAin
+      - NAtra2cHRANAout
+      - NAtra2cNANAin
+      - NAtra2cNANAinun
+      - NAtra2cNANAout
+      - NAtra2cNAppain
+      - NAtra3DISNAexp0
+      - NAtra3DISNAexp1
+      - NAtra3DISNAexp1_np
+      - NAtra3DISNAexp3_au
+      - NAtra3DISNAin
+      - NAtra3DISNAinun
+      - NAtra3DISNAout
+      - NAtra3DISppaexp1
+      - NAtra3DISppain
+      - NAtra3DISppainun
+      - NAtra3DISppaout
+      - NAtra3HRADISNAexp0
+      - NAtra3HRADISNAexp1
+      - NAtra3HRADISNAexp1_np
+      - NAtra3HRADISNAin
+      - NAtra3HRADISNAinun
+      - NAtra3HRADISNAout
+      - NAtra3HRANAexp0
+      - NAtra3HRANAexp1_np
+      - NAtra3HRANAin
+      - NAtra3HRANAinun
+      - NAtra3HRANAout
+      - NAtra3HRANAubz
+      - NAtra3NANAexp0
+      - NAtra3NANAexp1
+      - NAtra3NANAexp1_np
+      - NAtra3NANAexp3_au
+      - NAtra3NANAin
+      - NAtra3NANAinun
+      - NAtra3NANAout
+      - NAtra3NAppain
+      - NAtra3NAppainun
+      - NAtra3NAppaout
+  "29":
+    - type: fbpchcat
+      description: high setting
+      amount: .2
+      values:
+      - GGtra1HRADISNAin
+      - GGtra1HRANAin
+      - GGtra2aHRADISNAin
+      - GGtra2aHRADISNAinun
+      - GGtra2aHRADISNAout
+      - GGtra2aHRANAin
+      - GGtra2aHRANAinun
+      - GGtra2aHRANAout
+      - GGtra2bHRADISNAin
+      - GGtra2bHRADISNAinun
+      - GGtra2bHRANAin
+      - GGtra2cHRADISNAin
+      - GGtra2cHRADISNAinun
+      - GGtra2cHRANAin
+      - GGtra2cHRANAinun
+      - GGtra3HRADISNAexp0
+      - GGtra3HRADISNAin
+      - GGtra3HRADISNAinun
+      - GGtra3HRADISNAout
+      - GGtra3HRANAin
+      - GGtra3HRANAinun
+      - GGtra3HRANAout
+    - type: fbpchcat
+      description: medium setting
+      amount: .15
+      values:
+      - GGNAHRADISNAexp0
+      - GGNAHRADISNAin
+      - GGNAHRADISNAinun
+      - GGNAHRADISNAout
+      - GGNAHRANAexp0
+      - GGNAHRANAexp1
+      - GGNAHRANAexp1_np
+      - GGNAHRANAin
+      - GGNAHRANAinun
+      - GGNAHRANAout
+      - GGtra1DISNAin
+      - GGtra1DISNAinun
+      - GGtra1DISNAout
+      - GGtra1NANAin
+      - GGtra1NANAinun
+      - GGtra1NANAout
+      - GGtra2aDISNAin
+      - GGtra2aDISNAinun
+      - GGtra2aDISppain
+      - GGtra2aNANAin
+      - GGtra2aNANAinun
+      - GGtra2aNANAout
+      - GGtra2bDISNAin
+      - GGtra2bDISppain
+      - GGtra2bNANAin
+      - GGtra2bNAppain
+      - GGtra2cDISNAin
+      - GGtra2cDISNAinun
+      - GGtra2cDISNAout
+      - GGtra2cDISppain
+      - GGtra2cNANAin
+      - GGtra2cNANAinun
+      - GGtra2cNAppain
+    - type: fbpchcat
+      description: low setting
+      amount: .1
+      values:
+      - GGNADISNAexp0
+      - GGNADISNAexp2_np
+      - GGNADISNAin
+      - GGNADISNAinun
+      - GGNADISNAout
+      - GGNADISppain
+      - GGNANANAexp0
+      - GGNANANAexp1
+      - GGNANANAexpmax_np
+      - GGNANANAin
+      - GGNANANAinun
+      - GGNANANAout
+      - GGNANAppain
+      - GGtra3DISNAexp0
+      - GGtra3DISNAexp1
+      - GGtra3DISNAin
+      - GGtra3DISNAinun
+      - GGtra3DISNAout
+      - GGtra3DISppain
+      - GGtra3NANAexp1
+      - GGtra3NANAexp3_au
+      - GGtra3NANAin
+      - GGtra3NANAinun
+      - GGtra3NANAout
+      - GGtra3NAppain
+      - NANADISNAexp0
+      - NANADISNAexp0_np
+      - NANADISNAexp1
+      - NANADISNAexp1_np
+      - NANADISNAexp2_np
+      - NANADISNAexp3_au
+      - NANADISNAexpmax
+      - NANADISNAexpmax_np
+      - NANADISNAin
+      - NANADISNAinun
+      - NANADISNAout
+      - NANADISNAubz
+      - NANADISNAubz_np
+      - NANADISppaexp0
+      - NANADISppaexp1
+      - NANADISppaexp1_np
+      - NANADISppaexp2_np
+      - NANADISppaexp3_au
+      - NANADISppain
+      - NANADISppainun
+      - NANADISppaout
+      - NANAHRADISNAexp0
+      - NANAHRADISNAexp0_np
+      - NANAHRADISNAexp1
+      - NANAHRADISNAexp1_np
+      - NANAHRADISNAexp2_np
+      - NANAHRADISNAexp3_au
+      - NANAHRADISNAexpmax
+      - NANAHRADISNAexpmax_np
+      - NANAHRADISNAin
+      - NANAHRADISNAinun
+      - NANAHRADISNAout
+      - NANAHRADISNAubz
+      - NANAHRADISNAubz_np
+      - NANAHRADISppain
+      - NANAHRANAexp0
+      - NANAHRANAexp0_np
+      - NANAHRANAexp1
+      - NANAHRANAexp1_np
+      - NANAHRANAexp2_np
+      - NANAHRANAexp3_au
+      - NANAHRANAexpmax_np
+      - NANAHRANAin
+      - NANAHRANAinun
+      - NANAHRANAout
+      - NANAHRANAubz
+      - NANANANAexp0
+      - NANANANAexp0_np
+      - NANANANAexp1
+      - NANANANAexp1_np
+      - NANANANAexp2_np
+      - NANANANAexp3_au
+      - NANANANAexpmax
+      - NANANANAexpmax_np
+      - NANANANAin
+      - NANANANAinun
+      - NANANANAout
+      - NANANANAubz
+      - NANANAppaexp0
+      - NANANAppaexp1
+      - NANANAppaexp1_np
+      - NANANAppain
+      - NANANAppainun
+      - NANANAppaout
+      - NAtra1DISNAin
+      - NAtra1HRADISNAin
+      - NAtra1HRANAin
+      - NAtra1NANAin
+      - NAtra2aDISNAin
+      - NAtra2aDISNAinun
+      - NAtra2aDISNAout
+      - NAtra2aHRADISNAin
+      - NAtra2aHRANAin
+      - NAtra2aHRANAinun
+      - NAtra2aHRANAout
+      - NAtra2aNANAin
+      - NAtra2aNANAinun
+      - NAtra2aNANAout
+      - NAtra2bDISNAin
+      - NAtra2bDISNAout
+      - NAtra2bHRADISNAin
+      - NAtra2bHRANAin
+      - NAtra2bNANAin
+      - NAtra2bNANAinun
+      - NAtra2bNANAout
+      - NAtra2cDISNAin
+      - NAtra2cDISppain
+      - NAtra2cHRADISNAin
+      - NAtra2cHRADISNAout
+      - NAtra2cHRANAin
+      - NAtra2cHRANAout
+      - NAtra2cNANAin
+      - NAtra2cNANAinun
+      - NAtra2cNANAout
+      - NAtra2cNAppain
+      - NAtra3DISNAexp0
+      - NAtra3DISNAexp1
+      - NAtra3DISNAexp1_np
+      - NAtra3DISNAexp3_au
+      - NAtra3DISNAin
+      - NAtra3DISNAinun
+      - NAtra3DISNAout
+      - NAtra3DISppaexp1
+      - NAtra3DISppain
+      - NAtra3DISppainun
+      - NAtra3DISppaout
+      - NAtra3HRADISNAexp0
+      - NAtra3HRADISNAexp1
+      - NAtra3HRADISNAexp1_np
+      - NAtra3HRADISNAin
+      - NAtra3HRADISNAinun
+      - NAtra3HRADISNAout
+      - NAtra3HRANAexp0
+      - NAtra3HRANAexp1_np
+      - NAtra3HRANAin
+      - NAtra3HRANAinun
+      - NAtra3HRANAout
+      - NAtra3HRANAubz
+      - NAtra3NANAexp0
+      - NAtra3NANAexp1
+      - NAtra3NANAexp1_np
+      - NAtra3NANAexp3_au
+      - NAtra3NANAin
+      - NAtra3NANAinun
+      - NAtra3NANAout
+      - NAtra3NAppain
+      - NAtra3NAppainun
+      - NAtra3NAppaout
+
 
 # these are the settings for various policies that are in play
 acct_settings:
@@ -1685,11 +2569,11 @@ acct_settings:
       receiving_buildings_filter: county == 'Alameda'
       receiving_buildings_filter_fb: county == 'Alameda' & gg_id > ''
       subsidize_affordable: True
-      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24"]
+      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24", "26", "27", "28", "29"]
       default_amount_scenarios_db: ["21"]
       alternate_amount_scenarios_db: ["22", "23"]
-      default_amount_scenarios_fb: ["24"]
-      geography_scenarios_fb: ["24"]
+      default_amount_scenarios_fb: ["24", "26", "27", "28", "29"]
+      geography_scenarios_fb: ["24", "26", "27", "28", "29"]
 
     contra_costa_bond_settings:
       name: "Contra Costa Affordable Housing Bond"
@@ -1701,11 +2585,11 @@ acct_settings:
       receiving_buildings_filter: county == 'Contra Costa'
       receiving_buildings_filter_fb: county == 'Contra Costa' & gg_id > ''
       subsidize_affordable: True
-      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24"]
+      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24", "26", "27", "28", "29"]
       default_amount_scenarios_db: ["21"]
       alternate_amount_scenarios_db: ["22", "23"]
-      default_amount_scenarios_fb: ["24"]
-      geography_scenarios_fb: ["24"]
+      default_amount_scenarios_fb: ["24", "26", "27", "28", "29"]
+      geography_scenarios_fb: ["24", "26", "27", "28", "29"]
 
     marin_bond_settings:
       name: "Marin Affordable Housing Bond"
@@ -1717,11 +2601,11 @@ acct_settings:
       receiving_buildings_filter: county == 'Marin'
       receiving_buildings_filter_fb: county == 'Marin' & gg_id > ''
       subsidize_affordable: True
-      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24"]
+      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24", "26", "27", "28", "29"]
       default_amount_scenarios_db: ["21"]
       alternate_amount_scenarios_db: ["22", "23"]
-      default_amount_scenarios_fb: ["24"]
-      geography_scenarios_fb: ["24"]
+      default_amount_scenarios_fb: ["24", "26", "27", "28", "29"]
+      geography_scenarios_fb: ["24", "26", "27", "28", "29"]
 
     napa_bond_settings:
       name: "Napa Affordable Housing Bond"
@@ -1733,11 +2617,11 @@ acct_settings:
       receiving_buildings_filter: county == 'Napa'
       receiving_buildings_filter_fb: county == 'Napa' & gg_id > ''
       subsidize_affordable: True
-      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24"]
+      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24", "26", "27", "28", "29"]
       default_amount_scenarios_db: ["21"]
       alternate_amount_scenarios_db: ["22", "23"]
-      default_amount_scenarios_fb: ["24"]
-      geography_scenarios_fb: ["24"]
+      default_amount_scenarios_fb: ["24", "26", "27", "28", "29"]
+      geography_scenarios_fb: ["24", "26", "27", "28", "29"]
 
     san_francisco_bond_settings:
       name: "San Francisco Affordable Housing Bond"
@@ -1749,11 +2633,11 @@ acct_settings:
       receiving_buildings_filter: county == 'San Francisco'
       receiving_buildings_filter_fb: county == 'San Francisco' & gg_id > ''
       subsidize_affordable: True
-      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24"]
+      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24", "26", "27", "28", "29"]
       default_amount_scenarios_db: ["21"]
       alternate_amount_scenarios_db: ["22", "23"]
-      default_amount_scenarios_fb: ["24"]
-      geography_scenarios_fb: ["24"]
+      default_amount_scenarios_fb: ["24", "26", "27", "28", "29"]
+      geography_scenarios_fb: ["24", "26", "27", "28", "29"]
 
     san_mateo_bond_settings:
       name: "San Mateo Affordable Housing Bond"
@@ -1765,11 +2649,11 @@ acct_settings:
       receiving_buildings_filter: county == 'San Mateo'
       receiving_buildings_filter_fb: county == 'San Mateo' & gg_id > ''
       subsidize_affordable: True
-      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24"]
+      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24", "26", "27", "28", "29"]
       default_amount_scenarios_db: ["21"]
       alternate_amount_scenarios_db: ["22", "23"]
-      default_amount_scenarios_fb: ["24"]
-      geography_scenarios_fb: ["24"]
+      default_amount_scenarios_fb: ["24", "26", "27", "28", "29"]
+      geography_scenarios_fb: ["24", "26", "27", "28", "29"]
 
     santa_clara_bond_settings:
       name: "Santa Clara Affordable Housing Bond"
@@ -1781,11 +2665,11 @@ acct_settings:
       receiving_buildings_filter: county == 'Santa Clara'
       receiving_buildings_filter_fb: county == 'Santa Clara' & gg_id > ''
       subsidize_affordable: True
-      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24"]
+      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24", "26", "27", "28", "29"]
       default_amount_scenarios_db: ["21"]
       alternate_amount_scenarios_db: ["22", "23"]
-      default_amount_scenarios_fb: ["24"]
-      geography_scenarios_fb: ["24"]
+      default_amount_scenarios_fb: ["24", "26", "27", "28", "29"]
+      geography_scenarios_fb: ["24", "26", "27", "28", "29"]
 
     solano_bond_settings:
       name: "Solano Affordable Housing Bond"
@@ -1797,11 +2681,11 @@ acct_settings:
       receiving_buildings_filter: county == 'Solano'
       receiving_buildings_filter_fb: county == 'Solano' & gg_id > ''
       subsidize_affordable: True
-      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24"]
+      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24", "26", "27", "28", "29"]
       default_amount_scenarios_db: ["21"]
       alternate_amount_scenarios_db: ["22", "23"]
-      default_amount_scenarios_fb: ["24"]
-      geography_scenarios_fb: ["24"]
+      default_amount_scenarios_fb: ["24", "26", "27", "28", "29"]
+      geography_scenarios_fb: ["24", "26", "27", "28", "29"]
 
     sonoma_bond_settings:
       name: "Sonoma Affordable Housing Bond"
@@ -1813,11 +2697,11 @@ acct_settings:
       receiving_buildings_filter: county == 'Sonoma'
       receiving_buildings_filter_fb: county == 'Sonoma' & gg_id > ''
       subsidize_affordable: True
-      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24"]
+      enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24", "26", "27", "28", "29"]
       default_amount_scenarios_db: ["21"]
       alternate_amount_scenarios_db: ["22", "23"]
-      default_amount_scenarios_fb: ["24"]
-      geography_scenarios_fb: ["24"]
+      default_amount_scenarios_fb: ["24", "26", "27", "28", "29"]
+      geography_scenarios_fb: ["24", "26", "27", "28", "29"]
 
     # parcel tax settings
     parcel_tax_settings:
@@ -1849,7 +2733,7 @@ acct_settings:
                                     tra_id == 'tra2a' or
                                     tra_id == 'tra2b' or
                                     tra_id == 'tra2c')
-      enable_in_scenarios: ["24"]
+      enable_in_scenarios: ["24", "26", "27", "28", "29"]
     fremont_office_bond_settings:
       name: "Fremont Office Subsidy Bond"
       sending_buildings_subaccount_def: regional
@@ -1859,7 +2743,7 @@ acct_settings:
                                     tra_id == 'tra2a' or
                                     tra_id == 'tra2b' or
                                     tra_id == 'tra2c')
-      enable_in_scenarios: ["24"]
+      enable_in_scenarios: ["24", "26", "27", "28", "29"]
     oakland_office_bond_settings:
       name: "Oakland Office Subsidy Bond"
       sending_buildings_subaccount_def: regional
@@ -1869,7 +2753,7 @@ acct_settings:
                                     tra_id == 'tra2a' or
                                     tra_id == 'tra2b' or
                                     tra_id == 'tra2c')
-      enable_in_scenarios: ["24"]
+      enable_in_scenarios: ["24", "26", "27", "28", "29"]
     san_leandro_office_bond_settings:
       name: "San Leandro Office Subsidy Bond"
       sending_buildings_subaccount_def: regional
@@ -1879,7 +2763,7 @@ acct_settings:
                                     tra_id == 'tra2a' or
                                     tra_id == 'tra2b' or
                                     tra_id == 'tra2c')
-      enable_in_scenarios: ["24"]
+      enable_in_scenarios: ["24", "26", "27", "28", "29"]
     union_city_office_bond_settings:
       name: "Union City Office Subsidy Bond"
       sending_buildings_subaccount_def: regional
@@ -1889,7 +2773,7 @@ acct_settings:
                                     tra_id == 'tra2a' or 
                                     tra_id == 'tra2b' or
                                     tra_id == 'tra2c')
-      enable_in_scenarios: ["24"]
+      enable_in_scenarios: ["24", "26", "27", "28", "29"]
     antioch_office_bond_settings:
       name: "Antioch Office Subsidy Bond"
       sending_buildings_subaccount_def: regional
@@ -1899,7 +2783,7 @@ acct_settings:
                                     tra_id == 'tra2a' or 
                                     tra_id == 'tra2b' or
                                     tra_id == 'tra2c')
-      enable_in_scenarios: ["24"]
+      enable_in_scenarios: ["24", "26", "27", "28", "29"]
     concord_office_bond_settings:
       name: "Concord Office Subsidy Bond"
       sending_buildings_subaccount_def: regional
@@ -1909,7 +2793,7 @@ acct_settings:
                                     tra_id == 'tra2a' or 
                                     tra_id == 'tra2b' or
                                     tra_id == 'tra2c')
-      enable_in_scenarios: ["24"]
+      enable_in_scenarios: ["24", "26", "27", "28", "29"]
     el_cerrito_office_bond_settings:
       name: "El Cerrito Office Subsidy Bond"
       sending_buildings_subaccount_def: regional
@@ -1919,7 +2803,7 @@ acct_settings:
                                     tra_id == 'tra2a' or
                                     tra_id == 'tra2b' or
                                     tra_id == 'tra2c')
-      enable_in_scenarios: ["24"]
+      enable_in_scenarios: ["24", "26", "27", "28", "29"]
     lafayette_office_bond_settings:
       name: "Lafayette Office Subsidy Bond"
       sending_buildings_subaccount_def: regional
@@ -1929,7 +2813,7 @@ acct_settings:
                                     tra_id == 'tra2a' or
                                     tra_id == 'tra2b' or
                                     tra_id == 'tra2c')
-      enable_in_scenarios: ["24"]
+      enable_in_scenarios: ["24", "26", "27", "28", "29"]
     pittsburg_office_bond_settings:
       name: "Pittsburg Office Subsidy Bond"
       sending_buildings_subaccount_def: regional
@@ -1939,7 +2823,7 @@ acct_settings:
                                     tra_id == 'tra2a' or
                                     tra_id == 'tra2b' or
                                     tra_id == 'tra2c')
-      enable_in_scenarios: ["24"]
+      enable_in_scenarios: ["24", "26", "27", "28", "29"]
     richmond_office_bond_settings:
       name: "Richmond Office Subsidy Bond"
       sending_buildings_subaccount_def: regional
@@ -1949,7 +2833,7 @@ acct_settings:
                                     tra_id == 'tra2a' or
                                     tra_id == 'tra2b' or
                                     tra_id == 'tra2c')
-      enable_in_scenarios: ["24"]
+      enable_in_scenarios: ["24", "26", "27", "28", "29"]
     san_rafael_office_bond_settings:
       name: "San Rafael Office Subsidy Bond"
       sending_buildings_subaccount_def: regional
@@ -1960,7 +2844,7 @@ acct_settings:
                                     tra_id == 'tra2b' or
                                     tra_id == 'tra2c' or
                                     tra_id == 'tra3')
-      enable_in_scenarios: ["24"]
+      enable_in_scenarios: ["24", "26", "27", "28", "29"]
     fairfield_office_bond_settings:
       name: "Fairfield Office Subsidy Bond"
       sending_buildings_subaccount_def: regional
@@ -1971,7 +2855,7 @@ acct_settings:
                                     tra_id == 'tra2b' or
                                     tra_id == 'tra2c' or
                                     tra_id == 'tra3')
-      enable_in_scenarios: ["24"]
+      enable_in_scenarios: ["24", "26", "27", "28", "29"]
     vacaville_office_bond_settings:
       name: "Vacaville Office Subsidy Bond"
       sending_buildings_subaccount_def: regional
@@ -1982,7 +2866,7 @@ acct_settings:
                                     tra_id == 'tra2b' or
                                     tra_id == 'tra2c' or
                                     tra_id == 'tra3')
-      enable_in_scenarios: ["24"]
+      enable_in_scenarios: ["24", "26", "27", "28", "29"]
     santa_rosa_office_bond_settings:
       name: "Santa Rosa Office Subsidy Bond"
       sending_buildings_subaccount_def: regional
@@ -1993,7 +2877,7 @@ acct_settings:
                                     tra_id == 'tra2b' or
                                     tra_id == 'tra2c' or
                                     tra_id == 'tra3')
-      enable_in_scenarios: ["24"]   
+      enable_in_scenarios: ["24", "26", "27", "28", "29"]   
 
   profitability_adjustment_policies:
 
@@ -2042,7 +2926,7 @@ acct_settings:
 
     reduce_housing_costs_tier_1:
       name: "Reduce Cost Tier 1: -2.5%"
-      enable_in_scenarios: ["20", "21", "22", "23", "24"]
+      enable_in_scenarios: ["20", "21", "22", "23", "24", "26", "27", "28", "29"]
       # GG + TRA1 + HRA or GG + TRA2 + HRA
       profitability_adjustment_formula: "(gg_id > '' &
                                          (tra_id == 'tra1' |
@@ -2059,7 +2943,7 @@ acct_settings:
                                       tra_id == 'tra3c2') &
                                      sesit_id == 'hra' &
                                      ppa_id == '') * .025"
-      geography_scenarios_fb: ["24"]
+      geography_scenarios_fb: ["24", "26", "27", "28", "29"]
       profitability_adjustment_formula_fb: "(gg_id > ''
                                             and
                                             (
@@ -2075,7 +2959,7 @@ acct_settings:
                                             )) * .025"
     reduce_housing_costs_tier_2:
       name: "Reduce Cost Tier 2: -1.9%"
-      enable_in_scenarios: ["20", "21", "22", "23", "24"]
+      enable_in_scenarios: ["20", "21", "22", "23", "24", "26", "27", "28", "29"]
       # GG + TRA1 or GG + TRA3 + HRA
       profitability_adjustment_formula: "((gg_id > '' &
                                            tra_id == 'tra1' &
@@ -2098,7 +2982,7 @@ acct_settings:
                                       tra_id == 'tra3' &
                                       sesit_id == 'hra' &
                                       ppa_id == '')) * .019"
-      geography_scenarios_fb: ["24"]
+      geography_scenarios_fb: ["24", "26", "27", "28", "29"]
       profitability_adjustment_formula_fb: "((gg_id > ''
                                             and tra_id == 'tra1'
                                             and 
@@ -2118,7 +3002,7 @@ acct_settings:
 
     reduce_housing_costs_tier_3:
       name: "Reduce Cost Tier 3: -1.3%"
-      enable_in_scenarios: ["20", "21", "22", "23", "24"]
+      enable_in_scenarios: ["20", "21", "22", "23", "24", "26", "27", "28", "29"]
       # GG + TRA3 or GG + HRA
       profitability_adjustment_formula: "((gg_id > '' &
                                           (tra_id == 'tra3'|
@@ -2139,7 +3023,7 @@ acct_settings:
                                       tra_id == '' &
                                       sesit_id == 'hra' &
                                       ppa_id == '')) * .013"
-      geography_scenarios_fb: ["24"]
+      geography_scenarios_fb: ["24", "26", "27", "28", "29"]
       profitability_adjustment_formula_fb: "((gg_id > ''
                                             and tra_id == 'tra3'
                                             and
@@ -2456,7 +3340,7 @@ acct_settings:
 
 
 unit_preservation:
-    enable_in_scenarios: ["24"]
+    enable_in_scenarios: ["24", "26", "27", "28", "29"]
     geography: county_name
     settings: # change geography as needed
       'Alameda':
