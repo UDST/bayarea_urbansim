@@ -519,7 +519,7 @@ def parcel_rejections():
 
 @orca.table(cache=True)
 def parcels_geography(parcels, scenario, settings, policy):
-    file = os.path.join(misc.data_dir(), "2020_11_10_parcels_geography.csv")
+    file = os.path.join(misc.data_dir(), "2021_01_12_parcels_geography.csv")
     print('Version of parcels_geography: {}'.format(file))
     df = pd.read_csv(file,
                      index_col="geom_id")
@@ -699,7 +699,7 @@ def get_dev_projects_table(scenario, parcels):
     # requires the user has MTC's urban_data_internal
     # repository alongside bayarea_urbansim
     urban_data_repo = ("../urban_data_internal/development_projects/")
-    file = "2020_1204_1537_development_projects.csv"
+    file = "2021_0121_1602_development_projects.csv"
     print('Version of development_projects: {}'.format(file))
     current_dev_proj = (file)
     orca.add_injectable("dev_proj_file", current_dev_proj)
@@ -907,10 +907,19 @@ def vmt_fee_categories():
 
 
 @orca.table(cache=True)
-def superdistricts():
-    return pd.read_csv(
-        os.path.join(misc.data_dir(), "superdistricts.csv"),
-        index_col="number")
+def superdistricts(scenario): 
+	sd_scenario_file = os.path.join(misc.data_dir(), 
+		("superdistricts_s{}.csv").format(scenario))
+	# scenarios could contain policies (eg telework) and/or other modifications
+	if os.path.isfile(sd_scenario_file): 
+		superdistricts = pd.read_csv(sd_scenario_file, index_col="number")
+		orca.add_injectable("sqft_per_job_settings", "for this scenario")
+	# the default includes a telework assumption and SD adjustments
+	else:
+		superdistricts = pd.read_csv(os.path.join(misc.data_dir(),
+			"superdistricts.csv"), index_col="number")
+		orca.add_injectable("sqft_per_job_settings", "default")
+	return superdistricts
 
 
 @orca.table(cache=True)
@@ -976,6 +985,8 @@ def slr_parcel_inundation_mp():
         index_col='parcel_id')
 
 
+# SLR inundation levels for parcels for Blueprint, where slr_parcel_inundation_d_b
+# is the new base case (no mitigation)
 @orca.table(cache=True)
 def slr_parcel_inundation_d_b():
     return pd.read_csv(
@@ -994,6 +1005,12 @@ def slr_parcel_inundation_d_bb():
 def slr_parcel_inundation_d_bp():
     return pd.read_csv(
         os.path.join(misc.data_dir(), "slr_parcel_inundation_d_bp.csv"),
+        index_col='parcel_id')
+
+@orca.table(cache=True)
+def slr_parcel_inundation_f_b_np():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "slr_parcel_inundation_f_b_np.csv"),
         index_col='parcel_id')
 
 
@@ -1016,7 +1033,7 @@ def slr_progression_R():
         os.path.join(misc.data_dir(), "slr_progression_R.csv"))
 
 
-# SLR progression for drafte blueprint
+# SLR progression for draft blueprint
 @orca.table(cache=True)
 def slr_progression_d_b():
     return pd.read_csv(
