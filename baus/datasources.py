@@ -454,9 +454,28 @@ def zoning_scenario(parcels_geography, scenario, policy, mapping):
         os.path.join(misc.data_dir(), 'zoning_mods_%s.csv' % scenario))
 
     if "ppa_id" in scenario_zoning.columns:
-        orca.add_injectable("ppa", "are included")
+        ppa_up = scenario_zoning.loc[(scenario_zoning.ppa_id == 'ppa') & 
+            (scenario_zoning.add_bldg == 'IW')].far_up.sum()
+        if ppa_up > 0:
+            orca.add_injectable("ppa_upzoning", "enabled")
+        else:
+            orca.add_injectable("ppa_upzoning", "not enabled")
     else:
-        orca.add_injectable("ppa", "are not included")
+        orca.add_injectable("ppa_upzoning", "not enabled")
+
+    if "ppa_id" in scenario_zoning.columns:
+        comm_up = scenario_zoning.loc[(scenario_zoning.ppa_id != 'ppa')].\
+            far_up.sum()
+        if comm_up > 0:
+            orca.add_injectable("comm_upzoning", "enabled")
+        else:
+           orca.add_injectable("comm_upzoning", "not enabled") 
+    else:
+        comm_up = scenario_zoning.far_up.sum()
+        if comm_up > 0:
+            orca.add_injectable("comm_upzoning", "enabled")
+        else:
+           orca.add_injectable("comm_upzoning", "not enabled") 
 
     for k in mapping["building_type_map"].keys():
         scenario_zoning[k] = np.nan
