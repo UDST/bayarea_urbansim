@@ -98,8 +98,11 @@ def config(policy, inputs, run_number, scenario, parcels,
     else:
         write("Zoning modifications for this scenario do not exist")
     # add whether PPAs are included, which aren't tracked in the summaries
-    ppa = orca.get_injectable("ppa")
-    write("PPAs %s in the system" % ppa)
+    ppa_upzoning = orca.get_injectable("ppa_upzoning")
+    write("PPA upzoning is %s" % ppa_upzoning)
+    # add presence of commercial upzoning
+    comm_upzoning = orca.get_injectable("comm_upzoning")
+    write("Commerical upzoning is %s" % comm_upzoning)
     write("")
 
     # add which superdistricts settings file is being used
@@ -186,7 +189,7 @@ def config(policy, inputs, run_number, scenario, parcels,
     policy_activated(policy_loc, policy_nm, scenario)
     write("")
 
-    write("FUTURES ROUND 2 / DRAFT BLUEPRINT POLICIES")
+    write("FUTURES ROUND 2 / DRAFT & FINAL BLUEPRINT POLICIES")
     write("")
 
     # ADUs - these don't run in the base year so can't use their code
@@ -233,13 +236,25 @@ def config(policy, inputs, run_number, scenario, parcels,
         write("Public lands are not in development projects")
     # incubators
     inc_proj_on = dev_proj.\
-        loc[dev_proj['building_name'] == 'incubator', scen].sum()
+        loc[dev_proj['source'] == 'incubator', scen].sum()
     if inc_proj_on > 0:
         write("Incubators are in development projects")
     else:
         write("Incubators are not in development projects")
-    # mall and office park conversion projects are only identifiable
-    # through the more general "oppsites" tag
+    # malls and office parks
+    mall_proj_on = dev_proj.\
+        loc[dev_proj['source'] == 'mall_office', scen].sum()
+    if mall_proj_on > 0:
+        write("Malls/office parks are in development projects")
+    else:
+        write("Malls/office parks are not in development projects")
+    # PPAs
+    ppa_proj_on = dev_proj.\
+        loc[dev_proj['source'] == 'ppa', scen].sum()
+    if ppa_proj_on > 0:
+        write("PPAs are in development projects")
+    else:
+        write("PPAs are not in development projects")
     write("")
 
     # household relocation
@@ -386,16 +401,22 @@ def config(policy, inputs, run_number, scenario, parcels,
         if 'amount' in locals():
             regional_funding += amount*5*7
     write("Total funding is $%d" % regional_funding)
+    write("")
 
     # preservation units
-    regional_units = 0
-    for geog, value in policy["unit_preservation"]["settings"].items(): 
-        l = ['first', 'second', 'third', 'fourth']
-        for item in l:
-            units = value[item+"_unit_target"]
-            if units is not None:
-                regional_units += units*8
-    write("Total unit target for preserving units is %d" % regional_units)
+    if scenario in policy["unit_preservation"]["enable_in_scenarios"]:    
+        regional_units = 0
+        for geog, value in policy["unit_preservation"]["settings"].items(): 
+            l = ['first', 'second', 'third', 'fourth']
+            for item in l:
+                units = value[item+"_unit_target"]
+                if units is not None:
+                    regional_units += units*8
+        write("Unit preservation is activated")        
+        write("Total unit target for preserving units is %d" % regional_units)
+    else:
+        write("Unit preservation is not activated")        
+    write("")
 
     # office subsidy bonds
     counter = 0
