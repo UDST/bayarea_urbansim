@@ -88,7 +88,7 @@ def limits_settings(policy, scenario):
     # set up so that fr2 limits can be turned off as needed
     # instead of looking for fr2 limits, the fr1 scenario is used
     if (scenario in ["11", "12", "15"]) and\
-       (scenario not in policy["office_caps_fr2_enable"]):
+       (scenario not in policy["office_caps_enable"]):
         scenario = str(int(scenario) - 10)
 
     d = policy['development_limits']

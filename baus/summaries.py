@@ -287,10 +287,10 @@ def config(policy, inputs, run_number, scenario, parcels,
     write("")
 
     # office caps
-    if scenario in policy['office_caps_fr2_enable']:
+    if scenario in policy['office_caps_enable']:
         d = policy['development_limits'][scenario]['Office']
-        write("Using development limits for FR2 with %d office caps"
-              % (len(d)))
+        write("Using development limits for scenario %d with %d office caps"
+              % (int(scenario), len(d)))
     elif "default" in policy['development_limits'].keys():
         d = policy['development_limits']["default"]['Office']
         write("Using default development limits")

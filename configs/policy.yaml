@@ -19,8 +19,8 @@ geographies_db_enable: ["20", "21", "22", "23"]
 # this now also enables Final Blueprint upzoning 
 geographies_fb_enable: ["24", "20", "25", "26", "27", "28", "29"]
 
-# scenarios for futures round 2 office caps
-office_caps_fr2_enable: ["11", "12", "15"]
+# scenarios for futures round 2 and PBA50 EIR Alt2 office caps
+office_caps_enable: ["11", "12", "15", "28"]
 
 # scenarios for futures rounds 2 inclusionary rates
 inclusionary_fr2_enable: ["11", "12", "15"]
@@ -169,7 +169,21 @@ development_limits:
       'Colma': 0
       'Cupertino': 0
       'San Francisco': 3500
-
+  "28":
+    Office:
+      # consistent with fr2:
+      'Emeryville': 0
+      'Brisbane': 0
+      'Menlo Park': 0
+      'Santa Clara': 0
+      'Mountainview': 0
+      'South San Francisco': 0
+      'Milpitas': 0
+      'Burlingame': 0
+      'Palo Alto': 0
+      'Colma': 0
+      'Cupertino': 0
+      'San Francisco': 3500
 
 # this is the percent of units (0 to 1.0) that must be set to inclusionary
 # in the developer model (revenue will be foregone based on the area AMI)
