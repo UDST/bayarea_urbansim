@@ -168,6 +168,10 @@ def lump_sum_accounts(policy, year, buildings, coffer,
                 scenario in acct["geography_scenarios_fb"]:
             acct["receiving_buildings_filter"] = \
                 acct["receiving_buildings_filter_fb"]
+        elif "geography_scenarios_fb_alt1" in acct and \
+                scenario in acct["geography_scenarios_fb_alt1"]:
+            acct["receiving_buildings_filter"] = \
+                acct["receiving_buildings_filter_fb_alt1"]
 
         if "default_amount_scenarios_db" in acct and \
                 scenario in acct["default_amount_scenarios_db"]:
@@ -869,6 +873,13 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
                 acct_settings["receiving_buildings_filter_fb"]))
         feasibility = feasibility.\
             query(acct_settings["receiving_buildings_filter_fb"])
+    elif "receiving_buildings_filter_fb_alt1" in acct_settings and \
+            orca.get_injectable("scenario") in \
+            acct_settings["geography_scenarios_fb_alt1"]:
+        print("receiving_buildings_filter: {}".format(
+                acct_settings["receiving_buildings_filter_fb_alt1"]))
+        feasibility = feasibility.\
+            query(acct_settings["receiving_buildings_filter_fb_alt1"])
     elif "receiving_buildings_filter" in acct_settings:
         feasibility = feasibility.\
             query(acct_settings["receiving_buildings_filter"])
