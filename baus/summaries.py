@@ -291,9 +291,9 @@ def config(policy, inputs, run_number, scenario, parcels,
         d = policy['development_limits'][scenario]['Office']
         write("Using development limits for FR2 with %d office caps"
               % (len(d)))
-    elif scenario in policy['office_caps_eir_alt2_enable']:
+    elif scenario in policy['office_caps_eir_enable']:
         d = policy['development_limits'][scenario]['Office']
-        write("Using development limits for EIR Alt2 with %d office caps"
+        write("Using development limits for EIR with %d office caps"
               % (len(d)))        
     elif "default" in policy['development_limits'].keys():
         d = policy['development_limits']["default"]['Office']

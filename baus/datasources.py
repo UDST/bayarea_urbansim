@@ -91,6 +91,13 @@ def limits_settings(policy, scenario):
        (scenario not in policy["office_caps_fr2_enable"]):
         scenario = str(int(scenario) - 10)
 
+    # set up so that eir alts limits can be turned off as needed
+    # current 2 eir alts s26, s28, only s28 uses office caps
+    # so for s26, use default instead
+    if (scenario in ["26","28"]) and\
+       (scenario not in policy["office_caps_eir_enable"]):
+        scenario = "default"
+
     d = policy['development_limits']
 
     if scenario in d.keys():

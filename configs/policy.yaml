@@ -21,8 +21,8 @@ geographies_fb_enable: ["24", "20", "25", "26", "27", "28", "29"]
 
 # scenarios for futures round 2 office caps
 office_caps_fr2_enable: ["11", "12", "15"]
-# scenarios for PBA50 EIR Alt2 office caps
-office_caps_eir_alt2_enable: ["28"]
+# scenarios for PBA50 EIR Alts office caps
+office_caps_eir_enable: ["28"]
 
 # scenarios for futures rounds 2 inclusionary rates
 inclusionary_fr2_enable: ["11", "12", "15"]
