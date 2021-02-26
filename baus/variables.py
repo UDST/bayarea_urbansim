@@ -464,6 +464,16 @@ def juris_ppa(parcels, parcels_geography):
 
 
 @orca.column('parcels', cache=True)
+def coc_id(parcels, parcels_geography):
+    return parcels_geography.coc_id.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def juris_coc(parcels, parcels_geography):
+    return parcels_geography.juris_coc.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
 def superdistrict(parcels, taz_geography):
     return misc.reindex(taz_geography.superdistrict, parcels.zone_id)
 

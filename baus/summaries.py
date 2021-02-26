@@ -487,9 +487,10 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
         # round to nearest 100s
         hhincome_by_intrich = (hhincome_by_intrich/100).round()*100
 
-    # Summaries for Draft/Final Blueprint geographies
+    # Summaries for Draft/Final Blueprint and EIR geographies
     if scenario in policy["geographies_db_enable"] or \
-            scenario in policy["geographies_fb_enable"]:
+            scenario in policy["geographies_fb_enable"] or \
+            scenario in policy["geographies_eir_enable"]:
         hh_by_inpda_pba50 = households_df.pda_id_pba50.notnull().value_counts()
 
         hhincome_by_inpda_pba50 = households_df.income.groupby(
@@ -531,7 +532,8 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
         jobs_by_intrich = jobs_df.trich_id.notnull().value_counts()
 
     if scenario in policy["geographies_db_enable"] or \
-            scenario in policy["geographies_fb_enable"]:
+            scenario in policy["geographies_fb_enable"] or \
+            scenario in policy["geographies_eir_enable"]:
         jobs_by_inpda_pba50 = jobs_df.pda_pba50.notnull().value_counts()
         jobs_by_intra = jobs_df.tra_id.notnull().value_counts()
 
@@ -561,7 +563,8 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
                 "capacity": capacity
             })
         if scenario in policy["geographies_db_enable"] or \
-                scenario in policy["geographies_fb_enable"]:
+                scenario in policy["geographies_fb_enable"] or \
+                scenario in policy["geographies_eir_enable"]:
             orca.add_injectable("base_year_measures", {
                 "hh_by_subregion": hh_by_subregion,
                 "jobs_by_subregion": jobs_by_subregion,
@@ -653,6 +656,16 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
         write("Base year mean income by whether household is in hra/dr:\n%s" %
               base_year_measures["hhincome_by_insesit"])
         write("Final Blueprint year mean income by whether household\
+              is in hra/dr:\n%s" % hhincome_by_insesit)
+
+    if scenario in policy["geographies_eir_enable"]:
+        write("Base year mean income by whether household is in tra:\n%s" %
+              base_year_measures["hhincome_by_intra"])
+        write("EIR year mean income by whether household\
+              is in tra:\n%s" % hhincome_by_intra)
+        write("Base year mean income by whether household is in hra/dr:\n%s" %
+              base_year_measures["hhincome_by_insesit"])
+        write("EIR year mean income by whether household\
               is in hra/dr:\n%s" % hhincome_by_insesit)
 
     jsp = buildings.job_spaces.sum()
@@ -1320,7 +1333,11 @@ def parcel_summary(parcels, buildings, households, jobs,
     df = df.join(df2)
 
     # bringing in zoning modifications growth geography tag
-    join_col = "fbpchcat"
+    if scenario in policy['geographies_fb_enable']:
+        join_col = "fbpchcat"
+    elif scenario in policy['geographies_eir_enable']:
+        join_col = 'eirzoningmodcat'
+
     if join_col in parcels_geography.to_frame().columns:
         parcel_gg = parcels_geography.to_frame([
             "parcel_id",

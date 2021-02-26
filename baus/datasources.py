@@ -501,10 +501,14 @@ def zoning_scenario(parcels_geography, scenario, policy, mapping):
         join_col = 'fbpzoningmodcat'
     elif scenario in policy['geographies_db_enable']:
         join_col = 'pba50zoningmodcat'
+    elif scenario in policy['geographies_eir_enable']:
+        join_col = 'eirzoningmodcat'
     elif 'zoninghzcat' in scenario_zoning.columns:
         join_col = 'zoninghzcat'
     else:
         join_col = 'zoningmodcat'
+
+    print('join_col of zoningmods is {}'.format(join_col))
 
     return pd.merge(parcels_geography.to_frame().reset_index(),
                     scenario_zoning,
@@ -545,7 +549,7 @@ def parcel_rejections():
 
 @orca.table(cache=True)
 def parcels_geography(parcels, scenario, settings, policy):
-    file = os.path.join(misc.data_dir(), "2021_01_12_parcels_geography.csv")
+    file = os.path.join(misc.data_dir(), "2021_02_25_parcels_geography.csv")
     print('Version of parcels_geography: {}'.format(file))
     df = pd.read_csv(file,
                      index_col="geom_id")
@@ -581,7 +585,6 @@ def parcels_geography(parcels, scenario, settings, policy):
         df['juris_ppa'] = df.juris + '-' + df.ppa_id
         df["sesit_id"] = df.sesit_id.str.lower()
         df['juris_sesit'] = df.juris + '-' + df.sesit_id
-        df['gg_id'] = df.gg_id.str.lower()
     # Use Final Blueprint geographies: PDA, TRA, PPA, sesit
     elif scenario in policy['geographies_fb_enable']:
         df["pda_id_pba50"] = df.pda_id_pba50_fb.str.lower()
@@ -592,7 +595,18 @@ def parcels_geography(parcels, scenario, settings, policy):
         df['juris_ppa'] = df.juris + '-' + df.ppa_id
         df["sesit_id"] = df.fbp_sesit_id.str.lower()
         df['juris_sesit'] = df.juris + '-' + df.sesit_id
-        df['gg_id'] = df.fbp_gg_id.str.lower()
+    # Use EIR geographies: TRA, PPA, sesit, CoC
+    elif scenario in policy['geographies_eir_enable']:
+        df["pda_id_pba50"] = df.pda_id_pba50_fb.str.lower()
+        df["gg_id"] = df.eir_gg_id.str.lower()
+        df["tra_id"] = df.eir_tra_id.str.lower()
+        df['juris_tra'] = df.juris + '-' + df.tra_id
+        df["ppa_id"] = df.eir_ppa_id.str.lower()
+        df['juris_ppa'] = df.juris + '-' + df.ppa_id
+        df["sesit_id"] = df.eir_sesit_id.str.lower()
+        df['juris_sesit'] = df.juris + '-' + df.sesit_id
+        df['coc_id'] = df.eir_coc_id.str.lower()
+        df['juris_coc'] = df.juris + '-' + df.coc_id
 
     return df
 
