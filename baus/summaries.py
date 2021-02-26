@@ -764,9 +764,10 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
         write("Jobs pct of regional growth in trichs:\n%s" %
               norm_and_round(diff))
 
-    # write Draft/Final Blueprint additional summaries: pda, tra, sesit(hra/dr)
+    # write Draft/Final Blueprint and EIR additional summaries: pda, tra, sesit(hra/dr)
     if scenario in policy["geographies_db_enable"] or \
-            scenario in policy["geographies_fb_enable"]:
+            scenario in policy["geographies_fb_enable"] or \
+            scenario in policy["geographies_eir_enable"]:
         tmp = base_year_measures["hh_by_inpda_pba50"]
         write("Households base year share in pdas:\n%s" %
               norm_and_round(tmp))
@@ -1064,7 +1065,8 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
 # disable final blueprint summaries being handled in post processing summaries
 #    # append Draft/Final Blueprint strategy geographis
 #    if scenario in policy["geographies_db_enable"] or \
-#            scenario in policy["geographies_fb_enable"]:
+#            scenario in policy["geographies_fb_enable"] or \
+#            scenario in policy["geographies_eir_enable"]:
 #        geographies.extend(['pda_pba50', 'juris_tra',
 #                            'juris_sesit', 'juris_ppa'])
 
