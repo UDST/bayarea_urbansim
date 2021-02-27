@@ -674,7 +674,8 @@ def subsidized_office_developer(feasibility, coffer, formula, year,
     if scenario in policy["geographies_pba40_enable"]:
         feasibility["pda_id"] = feasibility.pda_pba40
     elif scenario in policy["geographies_db_enable"] or \
-        scenario in policy["geographies_fb_enable"]:
+        scenario in policy["geographies_fb_enable"] or \
+        scenario in policy["geographies_eir_enable"]:
         feasibility["pda_id"] = feasibility.pda_pba50
 
     # filter to receiving zone
