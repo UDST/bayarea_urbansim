@@ -98,6 +98,7 @@ feasibility:
     - tra_id
     - ppa_id
     - sesit_id
+    - coc_id
     - juris
     - county
     - superdistrict
