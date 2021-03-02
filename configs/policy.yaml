@@ -173,7 +173,8 @@ development_limits:
       'San Francisco': 3500
   "28":
     Office:
-      # consistent with fr2:
+      # consistent with fr2
+      # sf use default:
       'Emeryville': 0
       'Brisbane': 0
       'Menlo Park': 0
@@ -185,7 +186,6 @@ development_limits:
       'Palo Alto': 0
       'Colma': 0
       'Cupertino': 0
-      'San Francisco': 3500
 
 # this is the percent of units (0 to 1.0) that must be set to inclusionary
 # in the developer model (revenue will be foregone based on the area AMI)
