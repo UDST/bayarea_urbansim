@@ -2586,16 +2586,20 @@ acct_settings:
       total_amount_db: 2470820000
       alternate_total_amount_db: 3725535000
       total_amount_fb: 4000000000
+      total_amount_alt2: 2000000000
       receiving_buildings_filter: county == 'Alameda'
       receiving_buildings_filter_fb: county == 'Alameda' & gg_id > ''
       receiving_buildings_filter_fb_alt1: county == 'Alameda' & gg_id > '' & tra_id > ''
+      receiving_buildings_filter_fb_alt2: county == 'Alameda' & gg_id > '' & (sesit_id == 'hra' | sesit_id == 'hradis')
       subsidize_affordable: True
       enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24", "26", "27", "28", "29"]
       default_amount_scenarios_db: ["21"]
       alternate_amount_scenarios_db: ["22", "23"]
-      default_amount_scenarios_fb: ["24", "26", "27", "28", "29"]
-      geography_scenarios_fb: ["24", "27", "28", "29"]
+      default_amount_scenarios_fb: ["24", "26", "27", "29"]
+      alt2_amount_scenarios_fb: ['28']
+      geography_scenarios_fb: ["24", "27", "29"]
       geography_scenarios_fb_alt1: ["26"]
+      geography_scenarios_fb_alt2: ["28"]
 
     contra_costa_bond_settings:
       name: "Contra Costa Affordable Housing Bond"
@@ -2604,16 +2608,20 @@ acct_settings:
       total_amount_db: 1647700000
       alternate_total_amount_db: 2484420000
       total_amount_fb: 2500000000
+      total_amount_alt2: 1250000000      
       receiving_buildings_filter: county == 'Contra Costa'
       receiving_buildings_filter_fb: county == 'Contra Costa' & gg_id > ''
       receiving_buildings_filter_fb_alt1: county == 'Contra Costa' & gg_id > '' & tra_id > ''
+      receiving_buildings_filter_fb_alt2: county == 'Contra Costa' & gg_id > '' & (sesit_id == 'hra' | sesit_id == 'hradis')
       subsidize_affordable: True
       enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24", "26", "27", "28", "29"]
       default_amount_scenarios_db: ["21"]
       alternate_amount_scenarios_db: ["22", "23"]
-      default_amount_scenarios_fb: ["24", "26", "27", "28", "29"]
-      geography_scenarios_fb: ["24", "27", "28", "29"]
+      default_amount_scenarios_fb: ["24", "26", "27", "29"]
+      alt2_amount_scenarios_fb: ['28']
+      geography_scenarios_fb: ["24", "27", "29"]
       geography_scenarios_fb_alt1: ["26"]
+      geography_scenarios_fb_alt2: ["28"]
 
     marin_bond_settings:
       name: "Marin Affordable Housing Bond"
@@ -2622,16 +2630,20 @@ acct_settings:
       total_amount_db: 341650000
       alternate_total_amount_db: 515145000
       total_amount_fb: 520000000
+      total_amount_alt2: 260000000
       receiving_buildings_filter: county == 'Marin'
       receiving_buildings_filter_fb: county == 'Marin' & gg_id > ''
       receiving_buildings_filter_fb_alt1: county == 'Marin' & gg_id > '' & tra_id > ''
+      receiving_buildings_filter_fb_alt2: county == 'Marin' & gg_id > '' & (sesit_id == 'hra' | sesit_id == 'hradis')
       subsidize_affordable: True
       enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24", "26", "27", "28", "29"]
       default_amount_scenarios_db: ["21"]
       alternate_amount_scenarios_db: ["22", "23"]
-      default_amount_scenarios_fb: ["24", "26", "27", "28", "29"]
-      geography_scenarios_fb: ["24", "27", "28", "29"]
+      default_amount_scenarios_fb: ["24", "26", "27", "29"]
+      alt2_amount_scenarios_fb: ['28']
+      geography_scenarios_fb: ["24", "27", "29"]
       geography_scenarios_fb_alt1: ["26"]
+      geography_scenarios_fb_alt2: ["28"]
 
     napa_bond_settings:
       name: "Napa Affordable Housing Bond"
@@ -2640,16 +2652,20 @@ acct_settings:
       total_amount_db: 184960000
       alternate_total_amount_db: 278880000
       total_amount_fb: 300000000
+      total_amount_alt2: 150000000
       receiving_buildings_filter: county == 'Napa'
       receiving_buildings_filter_fb: county == 'Napa' & gg_id > ''
       receiving_buildings_filter_fb_alt1: county == 'Napa' & gg_id > '' & tra_id > ''
+      receiving_buildings_filter_fb_alt2: county == 'Napa' & gg_id > '' & (sesit_id == 'hra' | sesit_id == 'hradis')
       subsidize_affordable: True
       enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24", "26", "27", "28", "29"]
       default_amount_scenarios_db: ["21"]
       alternate_amount_scenarios_db: ["22", "23"]
-      default_amount_scenarios_fb: ["24", "26", "27", "28", "29"]
-      geography_scenarios_fb: ["24", "27", "28", "29"]
+      default_amount_scenarios_fb: ["24", "26", "27", "29"]
+      alt2_amount_scenarios_fb: ['28']
+      geography_scenarios_fb: ["24", "27", "29"]
       geography_scenarios_fb_alt1: ["26"]
+      geography_scenarios_fb_alt2: ["28"]
 
     san_francisco_bond_settings:
       name: "San Francisco Affordable Housing Bond"
@@ -2658,16 +2674,20 @@ acct_settings:
       total_amount_db: 1645215000
       alternate_total_amount_db: 2480675000
       total_amount_fb: 3000000000
+      total_amount_alt2: 1500000000
       receiving_buildings_filter: county == 'San Francisco'
       receiving_buildings_filter_fb: county == 'San Francisco' & gg_id > ''
       receiving_buildings_filter_fb_alt1: county == 'San Francisco' & gg_id > '' & tra_id > ''
+      receiving_buildings_filter_fb_alt2: county == 'San Francisco' & gg_id > '' & (sesit_id == 'hra' | sesit_id == 'hradis')
       subsidize_affordable: True
       enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24", "26", "27", "28", "29"]
       default_amount_scenarios_db: ["21"]
       alternate_amount_scenarios_db: ["22", "23"]
-      default_amount_scenarios_fb: ["24", "26", "27", "28", "29"]
-      geography_scenarios_fb: ["24", "27", "28", "29"]
+      default_amount_scenarios_fb: ["24", "26", "27", "29"]
+      alt2_amount_scenarios_fb: ['28']
+      geography_scenarios_fb: ["24", "27", "29"]
       geography_scenarios_fb_alt1: ["26"]
+      geography_scenarios_fb_alt2: ["28"]
 
     san_mateo_bond_settings:
       name: "San Mateo Affordable Housing Bond"
@@ -2676,16 +2696,20 @@ acct_settings:
       total_amount_db: 1477290000
       alternate_total_amount_db: 2227480000
       total_amount_fb: 2500000000
+      total_amount_alt2: 1250000000
       receiving_buildings_filter: county == 'San Mateo'
       receiving_buildings_filter_fb: county == 'San Mateo' & gg_id > ''
       receiving_buildings_filter_fb_alt1: county == 'San Mateo' & gg_id > '' & tra_id > ''
+      receiving_buildings_filter_fb_alt2: county == 'San Mateo' & gg_id > '' & (sesit_id == 'hra' | sesit_id == 'hradis')
       subsidize_affordable: True
       enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24", "26", "27", "28", "29"]
       default_amount_scenarios_db: ["21"]
       alternate_amount_scenarios_db: ["22", "23"]
-      default_amount_scenarios_fb: ["24", "26", "27", "28", "29"]
-      geography_scenarios_fb: ["24", "27", "28", "29"]
+      default_amount_scenarios_fb: ["24", "26", "27", "29"]
+      alt2_amount_scenarios_fb: ['28']
+      geography_scenarios_fb: ["24", "27", "29"]
       geography_scenarios_fb_alt1: ["26"]
+      geography_scenarios_fb_alt2: ["28"]
 
     santa_clara_bond_settings:
       name: "Santa Clara Affordable Housing Bond"
@@ -2694,16 +2718,20 @@ acct_settings:
       total_amount_db: 3082915000
       alternate_total_amount_db: 4648455000
       total_amount_fb: 5000000000
+      total_amount_alt2: 2500000000
       receiving_buildings_filter: county == 'Santa Clara'
       receiving_buildings_filter_fb: county == 'Santa Clara' & gg_id > ''
       receiving_buildings_filter_fb_alt1: county == 'Santa Clara' & gg_id > '' & tra_id > ''
+      receiving_buildings_filter_fb_alt2: county == 'Santa Clara' & gg_id > '' & (sesit_id == 'hra' | sesit_id == 'hradis')
       subsidize_affordable: True
       enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24", "26", "27", "28", "29"]
       default_amount_scenarios_db: ["21"]
       alternate_amount_scenarios_db: ["22", "23"]
-      default_amount_scenarios_fb: ["24", "26", "27", "28", "29"]
-      geography_scenarios_fb: ["24", "27", "28", "29"]
+      default_amount_scenarios_fb: ["24", "26", "27", "29"]
+      alt2_amount_scenarios_fb: ['28']
+      geography_scenarios_fb: ["24", "27", "29"]
       geography_scenarios_fb_alt1: ["26"]
+      geography_scenarios_fb_alt2: ["28"]
 
     solano_bond_settings:
       name: "Solano Affordable Housing Bond"
@@ -2712,16 +2740,20 @@ acct_settings:
       total_amount_db: 562040000
       alternate_total_amount_db: 847450000
       total_amount_fb: 850000000
+      total_amount_alt2: 425000000
       receiving_buildings_filter: county == 'Solano'
       receiving_buildings_filter_fb: county == 'Solano' & gg_id > ''
       receiving_buildings_filter_fb_alt1: county == 'Solano' & gg_id > '' & tra_id > ''
+      receiving_buildings_filter_fb_alt2: county == 'Solano' & gg_id > '' & (sesit_id == 'hra' | sesit_id == 'hradis')
       subsidize_affordable: True
       enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24", "26", "27", "28", "29"]
       default_amount_scenarios_db: ["21"]
       alternate_amount_scenarios_db: ["22", "23"]
-      default_amount_scenarios_fb: ["24", "26", "27", "28", "29"]
-      geography_scenarios_fb: ["24", "27", "28", "29"]
+      default_amount_scenarios_fb: ["24", "26", "27", "29"]
+      alt2_amount_scenarios_fb: ['28']
+      geography_scenarios_fb: ["24", "27", "29"]
       geography_scenarios_fb_alt1: ["26"]
+      geography_scenarios_fb_alt2: ["28"]
 
     sonoma_bond_settings:
       name: "Sonoma Affordable Housing Bond"
@@ -2730,16 +2762,128 @@ acct_settings:
       total_amount_db: 653865000
       alternate_total_amount_db: 985905000
       total_amount_fb: 1000000000
+      total_amount_alt2: 500000000
       receiving_buildings_filter: county == 'Sonoma'
       receiving_buildings_filter_fb: county == 'Sonoma' & gg_id > ''
       receiving_buildings_filter_fb_alt1: county == 'Sonoma' & gg_id > '' & tra_id > ''
+      receiving_buildings_filter_fb_alt2: county == 'Sonoma' & gg_id > '' & (sesit_id == 'hra' | sesit_id == 'hradis')
       subsidize_affordable: True
       enable_in_scenarios: ["11", "12", "15", "21", "22", "23", "24", "26", "27", "28", "29"]
       default_amount_scenarios_db: ["21"]
       alternate_amount_scenarios_db: ["22", "23"]
-      default_amount_scenarios_fb: ["24", "26", "27", "28", "29"]
-      geography_scenarios_fb: ["24", "27", "28", "29"]
+      default_amount_scenarios_fb: ["24", "26", "27", "29"]
+      alt2_amount_scenarios_fb: ['28']
+      geography_scenarios_fb: ["24", "27", "29"]
       geography_scenarios_fb_alt1: ["26"]
+      geography_scenarios_fb_alt2: ["28"]
+
+    alameda_bond_settings_alt2:
+      name: "Alameda Affordable Housing Bond 2nd Half for GGnonHRA"
+      sending_buildings_subaccount_def: regional
+      total_amount: 
+      total_amount_alt2: 2000000000
+      receiving_buildings_filter:
+      receiving_buildings_filter_fb_alt2: county == 'Alameda' & gg_id > '' & sesit_id != 'hra' & sesit_id != 'hradis'
+      subsidize_affordable: True
+      enable_in_scenarios: ["28"]
+      alt2_amount_scenarios_fb: ['28']
+      geography_scenarios_fb_alt2: ["28"]
+
+    contra_costa_bond_settings_alt2:
+      name: "Contra Costa Affordable Housing Bond 2nd Half for GGnonHRA"
+      sending_buildings_subaccount_def: regional
+      total_amount: 
+      total_amount_alt2: 1250000000      
+      receiving_buildings_filter:
+      receiving_buildings_filter_fb_alt2: county == 'Contra Costa' & gg_id > '' & sesit_id != 'hra' & sesit_id != 'hradis'
+      subsidize_affordable: True
+      enable_in_scenarios: ["28"]
+      alt2_amount_scenarios_fb: ['28']
+      geography_scenarios_fb_alt2: ["28"]
+
+    marin_bond_settings_alt2:
+      name: "Marin Affordable Housing Bond 2nd Half for GGnonHRA"
+      sending_buildings_subaccount_def: regional
+      total_amount: 
+      total_amount_alt2: 260000000
+      receiving_buildings_filter:
+      receiving_buildings_filter_fb_alt2: county == 'Marin' & gg_id > '' & sesit_id != 'hra' & sesit_id != 'hradis'
+      subsidize_affordable: True
+      enable_in_scenarios: ["28"]
+      alt2_amount_scenarios_fb: ['28']
+      geography_scenarios_fb_alt2: ["28"]
+
+    napa_bond_settings_alt2:
+      name: "Napa Affordable Housing Bond 2nd Half for GGnonHRA"
+      sending_buildings_subaccount_def: regional
+      total_amount: 
+      total_amount_alt2: 150000000
+      receiving_buildings_filter:
+      receiving_buildings_filter_fb_alt2: county == 'Napa' & gg_id > '' & sesit_id != 'hra' & sesit_id != 'hradis'
+      subsidize_affordable: True
+      enable_in_scenarios: ["28"]
+      alt2_amount_scenarios_fb: ['28']
+      geography_scenarios_fb_alt2: ["28"]
+
+    san_francisco_bond_settings_alt2:
+      name: "San Francisco Affordable Housing Bond 2nd Half for GGnonHRA"
+      sending_buildings_subaccount_def: regional
+      total_amount: 
+      total_amount_alt2: 1500000000
+      receiving_buildings_filter:
+      receiving_buildings_filter_fb_alt2: county == 'San Francisco' & gg_id > '' & sesit_id != 'hra' & sesit_id != 'hradis'
+      subsidize_affordable: True
+      enable_in_scenarios: ["28"]
+      alt2_amount_scenarios_fb: ['28']
+      geography_scenarios_fb_alt2: ["28"]
+
+    san_mateo_bond_settings_alt2:
+      name: "San Mateo Affordable Housing Bond 2nd Half for GGnonHRA"
+      sending_buildings_subaccount_def: regional
+      total_amount: 
+      total_amount_alt2: 1250000000
+      receiving_buildings_filter: 
+      receiving_buildings_filter_fb_alt2: county == 'San Mateo' & gg_id > '' & sesit_id != 'hra' & sesit_id != 'hradis'
+      subsidize_affordable: True
+      enable_in_scenarios: ["28"]
+      alt2_amount_scenarios_fb: ['28']
+      geography_scenarios_fb_alt2: ["28"]
+
+    santa_clara_bond_settings_alt2:
+      name: "Santa Clara Affordable Housing Bond 2nd Half for GGnonHRA"
+      sending_buildings_subaccount_def: regional
+      total_amount: 
+      total_amount_alt2: 2500000000
+      receiving_buildings_filter:
+      receiving_buildings_filter_fb_alt2: county == 'Santa Clara' & gg_id > '' & sesit_id != 'hra' & sesit_id != 'hradis'
+      subsidize_affordable: True
+      enable_in_scenarios: ["28"]
+      alt2_amount_scenarios_fb: ['28']
+      geography_scenarios_fb_alt2: ["28"]
+
+    solano_bond_settings_alt2:
+      name: "Solano Affordable Housing Bond 2nd Half for GGnonHRA"
+      sending_buildings_subaccount_def: regional
+      total_amount: 
+      total_amount_alt2: 425000000
+      receiving_buildings_filter: 
+      receiving_buildings_filter_fb_alt2: county == 'Solano' & gg_id > '' & sesit_id != 'hra' & sesit_id != 'hradis'
+      subsidize_affordable: True
+      enable_in_scenarios: ["28"]
+      alt2_amount_scenarios_fb: ['28']
+      geography_scenarios_fb_alt2: ["28"]
+
+    sonoma_bond_settings_alt2:
+      name: "Sonoma Affordable Housing Bond 2nd Half for GGnonHRA"
+      sending_buildings_subaccount_def: regional
+      total_amount: 
+      total_amount_alt2: 500000000
+      receiving_buildings_filter: 
+      receiving_buildings_filter_fb_alt2: county == 'Sonoma' & gg_id > '' & sesit_id != 'hra' & sesit_id != 'hradis'
+      subsidize_affordable: True
+      enable_in_scenarios: ["28"]
+      alt2_amount_scenarios_fb: ['28']
+      geography_scenarios_fb_alt2: ["28"]
 
     # parcel tax settings
     parcel_tax_settings:
