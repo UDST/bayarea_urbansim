@@ -416,7 +416,7 @@ def config(policy, inputs, run_number, scenario, parcels,
 
         total_amount = amount + amount_alt2
         # sum annual amount over the simulation period
-        regional_funding += total_amount*5*7
+        regional_funding += total_amount*5*8
         
     write("Total funding is $%d" % regional_funding)
     write("")
@@ -446,7 +446,7 @@ def config(policy, inputs, run_number, scenario, parcels,
             counter += 1
             acct_list.append(acct["name"].split(' Office')[0])
             amount = float(acct["total_amount"])
-            regional_funding += amount*5*7
+            regional_funding += amount*5*8
     write("Office subsidy bonds are activated for %d jurisdictions:" % counter)
     write(str(acct_list))
     write("Total funding is $%d" % regional_funding)
