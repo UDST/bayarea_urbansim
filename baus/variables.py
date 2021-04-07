@@ -490,7 +490,8 @@ def performance_zone(parcels, parcels_geography):
     return parcels_geography.perfarea.reindex(parcels.index)
 
 
-# urbanized is a dummy for urbanized area (Urbanized_Footprint shp)
+# urbanized is a dummy for urbanized area, sourced from shapefile at:
+# M:\urban_modeling\data\LandUse\landuse_raw\urban_footprint_2009
 @orca.column('parcels', cache=True)
 def urbanized(parcels, parcels_geography):
     return parcels_geography.urbanized.reindex(parcels.index)
