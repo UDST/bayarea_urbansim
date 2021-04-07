@@ -457,11 +457,15 @@ def scheduled_development_events(buildings, development_projects,
         new_buildings.parcel_id].values
     new_buildings["sesit_id"] = parcels_geography.sesit_id.loc[
         new_buildings.parcel_id].values
+    new_buildings["coc_id"] = parcels_geography.coc_id.loc[
+        new_buildings.parcel_id].values
     new_buildings["juris_tra"] = parcels_geography.juris_tra.loc[
         new_buildings.parcel_id].values
     new_buildings["juris_ppa"] = parcels_geography.juris_ppa.loc[
         new_buildings.parcel_id].values
     new_buildings["juris_sesit"] = parcels_geography.juris_sesit.loc[
+        new_buildings.parcel_id].values
+    new_buildings["juris_coc"] = parcels_geography.juris_coc.loc[
         new_buildings.parcel_id].values
 
     summary.add_parcel_output(new_buildings)

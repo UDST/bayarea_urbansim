@@ -91,6 +91,13 @@ def limits_settings(policy, scenario):
        (scenario not in policy["office_caps_fr2_enable"]):
         scenario = str(int(scenario) - 10)
 
+    # set up so that eir alts limits can be turned off as needed
+    # current 2 eir alts s26, s28, only s28 uses office caps
+    # so for s26, use default instead
+    if (scenario in ["26","28"]) and\
+       (scenario not in policy["office_caps_eir_enable"]):
+        scenario = "default"
+
     d = policy['development_limits']
 
     if scenario in d.keys():
@@ -454,9 +461,28 @@ def zoning_scenario(parcels_geography, scenario, policy, mapping):
         os.path.join(misc.data_dir(), 'zoning_mods_%s.csv' % scenario))
 
     if "ppa_id" in scenario_zoning.columns:
-        orca.add_injectable("ppa", "are included")
+        ppa_up = scenario_zoning.loc[(scenario_zoning.ppa_id == 'ppa') & 
+            (scenario_zoning.add_bldg == 'IW')].far_up.sum()
+        if ppa_up > 0:
+            orca.add_injectable("ppa_upzoning", "enabled")
+        else:
+            orca.add_injectable("ppa_upzoning", "not enabled")
     else:
-        orca.add_injectable("ppa", "are not included")
+        orca.add_injectable("ppa_upzoning", "not enabled")
+
+    if "ppa_id" in scenario_zoning.columns:
+        comm_up = scenario_zoning.loc[(scenario_zoning.ppa_id != 'ppa')].\
+            far_up.sum()
+        if comm_up > 0:
+            orca.add_injectable("comm_upzoning", "enabled")
+        else:
+           orca.add_injectable("comm_upzoning", "not enabled") 
+    else:
+        comm_up = scenario_zoning.far_up.sum()
+        if comm_up > 0:
+            orca.add_injectable("comm_upzoning", "enabled")
+        else:
+           orca.add_injectable("comm_upzoning", "not enabled") 
 
     for k in mapping["building_type_map"].keys():
         scenario_zoning[k] = np.nan
@@ -475,10 +501,14 @@ def zoning_scenario(parcels_geography, scenario, policy, mapping):
         join_col = 'fbpzoningmodcat'
     elif scenario in policy['geographies_db_enable']:
         join_col = 'pba50zoningmodcat'
+    elif scenario in policy['geographies_eir_enable']:
+        join_col = 'eirzoningmodcat'
     elif 'zoninghzcat' in scenario_zoning.columns:
         join_col = 'zoninghzcat'
     else:
         join_col = 'zoningmodcat'
+
+    print('join_col of zoningmods is {}'.format(join_col))
 
     return pd.merge(parcels_geography.to_frame().reset_index(),
                     scenario_zoning,
@@ -519,7 +549,7 @@ def parcel_rejections():
 
 @orca.table(cache=True)
 def parcels_geography(parcels, scenario, settings, policy):
-    file = os.path.join(misc.data_dir(), "2020_11_10_parcels_geography.csv")
+    file = os.path.join(misc.data_dir(), "2021_02_25_parcels_geography.csv")
     print('Version of parcels_geography: {}'.format(file))
     df = pd.read_csv(file,
                      index_col="geom_id")
@@ -555,7 +585,6 @@ def parcels_geography(parcels, scenario, settings, policy):
         df['juris_ppa'] = df.juris + '-' + df.ppa_id
         df["sesit_id"] = df.sesit_id.str.lower()
         df['juris_sesit'] = df.juris + '-' + df.sesit_id
-        df['gg_id'] = df.gg_id.str.lower()
     # Use Final Blueprint geographies: PDA, TRA, PPA, sesit
     elif scenario in policy['geographies_fb_enable']:
         df["pda_id_pba50"] = df.pda_id_pba50_fb.str.lower()
@@ -566,7 +595,18 @@ def parcels_geography(parcels, scenario, settings, policy):
         df['juris_ppa'] = df.juris + '-' + df.ppa_id
         df["sesit_id"] = df.fbp_sesit_id.str.lower()
         df['juris_sesit'] = df.juris + '-' + df.sesit_id
-        df['gg_id'] = df.fbp_gg_id.str.lower()
+    # Use EIR geographies: TRA, PPA, sesit, CoC
+    elif scenario in policy['geographies_eir_enable']:
+        df["pda_id_pba50"] = df.pda_id_pba50_fb.str.lower()
+        df["gg_id"] = df.eir_gg_id.str.lower()
+        df["tra_id"] = df.eir_tra_id.str.lower()
+        df['juris_tra'] = df.juris + '-' + df.tra_id
+        df["ppa_id"] = df.eir_ppa_id.str.lower()
+        df['juris_ppa'] = df.juris + '-' + df.ppa_id
+        df["sesit_id"] = df.eir_sesit_id.str.lower()
+        df['juris_sesit'] = df.juris + '-' + df.sesit_id
+        df['coc_id'] = df.eir_coc_id.str.lower()
+        df['juris_coc'] = df.juris + '-' + df.coc_id
 
     return df
 
@@ -699,7 +739,7 @@ def get_dev_projects_table(scenario, parcels):
     # requires the user has MTC's urban_data_internal
     # repository alongside bayarea_urbansim
     urban_data_repo = ("../urban_data_internal/development_projects/")
-    file = "2020_1204_1537_development_projects.csv"
+    file = "2021_0309_1939_development_projects.csv"
     print('Version of development_projects: {}'.format(file))
     current_dev_proj = (file)
     orca.add_injectable("dev_proj_file", current_dev_proj)
@@ -907,10 +947,19 @@ def vmt_fee_categories():
 
 
 @orca.table(cache=True)
-def superdistricts():
-    return pd.read_csv(
-        os.path.join(misc.data_dir(), "superdistricts.csv"),
-        index_col="number")
+def superdistricts(scenario): 
+	sd_scenario_file = os.path.join(misc.data_dir(), 
+		("superdistricts_s{}.csv").format(scenario))
+	# scenarios could contain policies (eg telework) and/or other modifications
+	if os.path.isfile(sd_scenario_file): 
+		superdistricts = pd.read_csv(sd_scenario_file, index_col="number")
+		orca.add_injectable("sqft_per_job_settings", "for this scenario")
+	# the default includes a telework assumption and SD adjustments
+	else:
+		superdistricts = pd.read_csv(os.path.join(misc.data_dir(),
+			"superdistricts.csv"), index_col="number")
+		orca.add_injectable("sqft_per_job_settings", "default")
+	return superdistricts
 
 
 @orca.table(cache=True)
@@ -976,6 +1025,8 @@ def slr_parcel_inundation_mp():
         index_col='parcel_id')
 
 
+# SLR inundation levels for parcels for Blueprint, where slr_parcel_inundation_d_b
+# is the new base case (no mitigation)
 @orca.table(cache=True)
 def slr_parcel_inundation_d_b():
     return pd.read_csv(
@@ -994,6 +1045,12 @@ def slr_parcel_inundation_d_bb():
 def slr_parcel_inundation_d_bp():
     return pd.read_csv(
         os.path.join(misc.data_dir(), "slr_parcel_inundation_d_bp.csv"),
+        index_col='parcel_id')
+
+@orca.table(cache=True)
+def slr_parcel_inundation_f_b_np():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "slr_parcel_inundation_f_b_np.csv"),
         index_col='parcel_id')
 
 
@@ -1016,7 +1073,7 @@ def slr_progression_R():
         os.path.join(misc.data_dir(), "slr_progression_R.csv"))
 
 
-# SLR progression for drafte blueprint
+# SLR progression for draft blueprint
 @orca.table(cache=True)
 def slr_progression_d_b():
     return pd.read_csv(

@@ -464,6 +464,16 @@ def juris_ppa(parcels, parcels_geography):
 
 
 @orca.column('parcels', cache=True)
+def coc_id(parcels, parcels_geography):
+    return parcels_geography.coc_id.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def juris_coc(parcels, parcels_geography):
+    return parcels_geography.juris_coc.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
 def superdistrict(parcels, taz_geography):
     return misc.reindex(taz_geography.superdistrict, parcels.zone_id)
 
@@ -480,7 +490,8 @@ def performance_zone(parcels, parcels_geography):
     return parcels_geography.perfarea.reindex(parcels.index)
 
 
-# urbanized is a dummy for urbanized area (Urbanized_Footprint shp)
+# urbanized is a dummy for urbanized area, sourced from shapefile at:
+# M:\urban_modeling\data\LandUse\landuse_raw\urban_footprint_2009
 @orca.column('parcels', cache=True)
 def urbanized(parcels, parcels_geography):
     return parcels_geography.urbanized.reindex(parcels.index)

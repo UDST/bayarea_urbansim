@@ -168,6 +168,14 @@ def lump_sum_accounts(policy, year, buildings, coffer,
                 scenario in acct["geography_scenarios_fb"]:
             acct["receiving_buildings_filter"] = \
                 acct["receiving_buildings_filter_fb"]
+        elif "geography_scenarios_fb_alt1" in acct and \
+                scenario in acct["geography_scenarios_fb_alt1"]:
+            acct["receiving_buildings_filter"] = \
+                acct["receiving_buildings_filter_fb_alt1"]
+        elif "geography_scenarios_fb_alt2" in acct and \
+                scenario in acct["geography_scenarios_fb_alt2"]:
+            acct["receiving_buildings_filter"] = \
+                acct["receiving_buildings_filter_fb_alt2"]
 
         if "default_amount_scenarios_db" in acct and \
                 scenario in acct["default_amount_scenarios_db"]:
@@ -180,6 +188,10 @@ def lump_sum_accounts(policy, year, buildings, coffer,
         elif "default_amount_scenarios_fb" in acct and \
                 scenario in acct["default_amount_scenarios_fb"]:
             amt = float(acct["total_amount_fb"])
+
+        elif "alt2_amount_scenarios_fb" in acct and \
+                scenario in acct["alt2_amount_scenarios_fb"]:
+            amt = float(acct["total_amount_alt2"])
 
         else:
             amt = float(acct["total_amount"])
@@ -670,7 +682,8 @@ def subsidized_office_developer(feasibility, coffer, formula, year,
     if scenario in policy["geographies_pba40_enable"]:
         feasibility["pda_id"] = feasibility.pda_pba40
     elif scenario in policy["geographies_db_enable"] or \
-        scenario in policy["geographies_fb_enable"]:
+        scenario in policy["geographies_fb_enable"] or \
+        scenario in policy["geographies_eir_enable"]:
         feasibility["pda_id"] = feasibility.pda_pba50
 
     # filter to receiving zone
@@ -869,6 +882,20 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
                 acct_settings["receiving_buildings_filter_fb"]))
         feasibility = feasibility.\
             query(acct_settings["receiving_buildings_filter_fb"])
+    elif "receiving_buildings_filter_fb_alt1" in acct_settings and \
+            orca.get_injectable("scenario") in \
+            acct_settings["geography_scenarios_fb_alt1"]:
+        print("receiving_buildings_filter: {}".format(
+                acct_settings["receiving_buildings_filter_fb_alt1"]))
+        feasibility = feasibility.\
+            query(acct_settings["receiving_buildings_filter_fb_alt1"])
+    elif "receiving_buildings_filter_fb_alt2" in acct_settings and \
+            orca.get_injectable("scenario") in \
+            acct_settings["geography_scenarios_fb_alt2"]:
+        print("receiving_buildings_filter: {}".format(
+                acct_settings["receiving_buildings_filter_fb_alt2"]))
+        feasibility = feasibility.\
+            query(acct_settings["receiving_buildings_filter_fb_alt2"])
     elif "receiving_buildings_filter" in acct_settings:
         feasibility = feasibility.\
             query(acct_settings["receiving_buildings_filter"])
