@@ -1418,6 +1418,10 @@ def parcel_summary(parcels, buildings, households, jobs,
             if col in ["x", "y", "first_building_type", "juris", join_col]:
                 continue
 
+            # fill na with 0 for parcels with no building in either base year or current year
+            df[col].fillna(0, inplace=True)
+            df2[col].fillna(0, inplace=True)
+            
             df[col] = df[col] - df2[col]
 
         df.to_csv(
