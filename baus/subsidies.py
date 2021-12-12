@@ -896,6 +896,13 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
                 acct_settings["receiving_buildings_filter_fb_alt2"]))
         feasibility = feasibility.\
             query(acct_settings["receiving_buildings_filter_fb_alt2"])
+    elif "db_receiving_buildings_filter" in acct_settings and \
+            orca.get_injectable("scenario") in \
+            acct_settings["db_geography_scenarios"]:
+        print("receiving_buildings_filter: {}".format(
+                acct_settings["db_receiving_buildings_filter"]))
+        feasibility = feasibility.\
+            query(acct_settings["db_receiving_buildings_filter"])
     elif "receiving_buildings_filter" in acct_settings:
         feasibility = feasibility.\
             query(acct_settings["receiving_buildings_filter"])
@@ -1213,6 +1220,11 @@ def subsidized_office_developer_vmt(
             and orca.get_injectable("scenario") in \
             vmt_acct_settings["alternate_geography_scenarios"]:
             formula = vmt_acct_settings["alternate_buildings_filter"]
+
+        elif "db_geography_scenarios" in vmt_acct_settings \
+            and orca.get_injectable("scenario") in \
+            vmt_acct_settings["db_geography_scenarios"]:
+            formula = vmt_acct_settings["db_receiving_buildings_filter"]
         else:
             formula = vmt_acct_settings["receiving_buildings_filter"]
 
