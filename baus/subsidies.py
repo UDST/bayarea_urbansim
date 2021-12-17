@@ -679,12 +679,12 @@ def subsidized_office_developer(feasibility, coffer, formula, year,
     policy = orca.get_injectable("policy")
     scenario = orca.get_injectable("scenario")
 
-    if scenario in policy["geographies_pba40_enable"]:
-        feasibility["pda_id"] = feasibility.pda_pba40
-    elif scenario in policy["geographies_db_enable"] or \
+    if scenario in policy["geographies_db_enable"] or \
         scenario in policy["geographies_fb_enable"] or \
         scenario in policy["geographies_eir_enable"]:
         feasibility["pda_id"] = feasibility.pda_pba50
+    else:
+        feasibility["pda_id"] = feasibility.pda_pba40
 
     # filter to receiving zone
     feasibility = feasibility.query(formula)
@@ -868,7 +868,18 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
     # profitable, even the administration costs are likely to cost at least
     # 10k / unit
     feasibility['subsidy_per_unit'] = feasibility.subsidy_per_unit.clip(10000)
+    
+    # add necessary columns for filters
+    policy = orca.get_injectable("policy")
+    scenario = orca.get_injectable("scenario")
 
+    if orca.get_injectable("scenario") in policy["geographies_db_enable"] or \
+        orca.get_injectable("scenario") in policy["geographies_fb_enable"] or \
+        orca.get_injectable("scenario") in policy["geographies_eir_enable"]:
+        feasibility["pda_id"] = feasibility.pda_pba50
+    else:
+        feasibility["pda_id"] = feasibility.pda_pba40
+   
     # step 5
     if "alternate_buildings_filter" in acct_settings and \
             orca.get_injectable("scenario") in \
@@ -1220,11 +1231,6 @@ def subsidized_office_developer_vmt(
             and orca.get_injectable("scenario") in \
             vmt_acct_settings["alternate_geography_scenarios"]:
             formula = vmt_acct_settings["alternate_buildings_filter"]
-
-        elif "db_geography_scenarios" in vmt_acct_settings \
-            and orca.get_injectable("scenario") in \
-            vmt_acct_settings["db_geography_scenarios"]:
-            formula = vmt_acct_settings["db_receiving_buildings_filter"]
         else:
             formula = vmt_acct_settings["receiving_buildings_filter"]
 

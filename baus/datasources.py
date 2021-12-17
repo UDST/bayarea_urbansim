@@ -497,15 +497,15 @@ def zoning_scenario(parcels_geography, scenario, policy, mapping):
     add_drop_helper("add_bldg", 1)
     add_drop_helper("drop_bldg", 0)
 
-    if scenario in policy['geographies_fb_enable']:
+    if scenario in policy['geographies_fb_enable']:     # PBA50 Final Blueprint
         join_col = 'fbpzoningmodcat'
-    elif scenario in policy['geographies_db_enable']:
+    elif scenario in policy['geographies_db_enable']:   # PBA50 Draft Blueprint
         join_col = 'pba50zoningmodcat'
-    elif scenario in policy['geographies_eir_enable']:
+    elif scenario in policy['geographies_eir_enable']:  # PBA50 EIR
         join_col = 'eirzoningmodcat'
-    elif 'zoninghzcat' in scenario_zoning.columns:
+    elif 'zoninghzcat' in scenario_zoning.columns:      # Horizon
         join_col = 'zoninghzcat'
-    else:
+    else:                                               # PBA40
         join_col = 'zoningmodcat'
 
     print('join_col of zoningmods is {}'.format(join_col))
@@ -577,7 +577,7 @@ def parcels_geography(parcels, scenario, settings, policy):
 
     # Add Draft Blueprint geographies: PDA, TRA, PPA, sesit
     if scenario in policy['geographies_db_enable']:
-        df["pda_id_pba50"] = df.pda_id_pba50.str.lower()
+        df["pda_id_pba50"] = df.pda_id_pba50_db.str.lower()
         df["gg_id"] = df.gg_id.str.lower()
         df["tra_id"] = df.tra_id.str.lower()
         df['juris_tra'] = df.juris + '-' + df.tra_id
@@ -585,17 +585,7 @@ def parcels_geography(parcels, scenario, settings, policy):
         df['juris_ppa'] = df.juris + '-' + df.ppa_id
         df["sesit_id"] = df.sesit_id.str.lower()
         df['juris_sesit'] = df.juris + '-' + df.sesit_id
-    # Use Final Blueprint geographies: PDA, TRA, PPA, sesit
-    elif scenario in policy['geographies_fb_enable']:
-        df["pda_id_pba50"] = df.pda_id_pba50_fb.str.lower()
-        df["gg_id"] = df.fbp_gg_id.str.lower()
-        df["tra_id"] = df.fbp_tra_id.str.lower()
-        df['juris_tra'] = df.juris + '-' + df.tra_id
-        df["ppa_id"] = df.fbp_ppa_id.str.lower()
-        df['juris_ppa'] = df.juris + '-' + df.ppa_id
-        df["sesit_id"] = df.fbp_sesit_id.str.lower()
-        df['juris_sesit'] = df.juris + '-' + df.sesit_id
-    # Use EIR geographies: TRA, PPA, sesit, CoC
+    # Use EIR version
     elif scenario in policy['geographies_eir_enable']:
         df["pda_id_pba50"] = df.pda_id_pba50_fb.str.lower()
         df["gg_id"] = df.eir_gg_id.str.lower()
@@ -605,8 +595,20 @@ def parcels_geography(parcels, scenario, settings, policy):
         df['juris_ppa'] = df.juris + '-' + df.ppa_id
         df["sesit_id"] = df.eir_sesit_id.str.lower()
         df['juris_sesit'] = df.juris + '-' + df.sesit_id
-        df['coc_id'] = df.eir_coc_id.str.lower()
-        df['juris_coc'] = df.juris + '-' + df.coc_id
+    # Otherwise, default to Final Blueprint geographies: PDA, TRA, PPA, sesit
+    else:
+        df["pda_id_pba50"] = df.pda_id_pba50_fb.str.lower()
+        df["gg_id"] = df.fbp_gg_id.str.lower()
+        df["tra_id"] = df.fbp_tra_id.str.lower()
+        df['juris_tra'] = df.juris + '-' + df.tra_id
+        df["ppa_id"] = df.fbp_ppa_id.str.lower()
+        df['juris_ppa'] = df.juris + '-' + df.ppa_id
+        df["sesit_id"] = df.fbp_sesit_id.str.lower()
+        df['juris_sesit'] = df.juris + '-' + df.sesit_id
+
+    # add coc
+    df['coc_id'] = df.eir_coc_id.str.lower()
+    df['juris_coc'] = df.juris + '-' + df.coc_id
 
     return df
 
