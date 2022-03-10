@@ -297,7 +297,7 @@ def costar(store, parcels):
 @orca.table(cache=True)
 def zoning_lookup():
     return pd.read_csv(os.path.join(misc.data_dir(),
-                       "2020_06_22_zoning_lookup_hybrid_pba50.csv"),
+                       "2020_11_05_zoning_lookup_hybrid_pba50.csv"),
                        dtype={'id': np.int64},
                        index_col='id')
 
@@ -306,7 +306,7 @@ def zoning_lookup():
 @orca.table(cache=True)
 def zoning_baseline(parcels, zoning_lookup, settings):
     df = pd.read_csv(os.path.join(misc.data_dir(),
-                     "2020_06_22_zoning_parcels_hybrid_pba50.csv"),
+                     "2020_11_05_zoning_parcels_hybrid_pba50.csv"),
                      dtype={'geom_id':   np.int64,
                             'PARCEL_ID': np.int64,
                             'zoning_id': np.int64},
@@ -507,7 +507,7 @@ def parcel_rejections():
 @orca.table(cache=True)
 def parcels_geography(parcels, scenario, settings):
     df = pd.read_csv(
-        os.path.join(misc.data_dir(), "2020_07_10_parcels_geography.csv"),
+        os.path.join(misc.data_dir(), "2021_02_25_parcels_geography.csv"),
         dtype={'PARCEL_ID':       np.int64,
                'geom_id':         np.int64,
                'jurisdiction_id': np.int64},
@@ -676,7 +676,7 @@ def get_dev_projects_table(scenario, parcels):
     # requires the user has MTC's urban_data_internal
     # repository alongside bayarea_urbansim
     urban_data_repo = ("../urban_data_internal/development_projects/")
-    current_dev_proj = ('2020_0902_1352_development_projects.csv')
+    current_dev_proj = ('2021_0309_1939_development_projects.csv')
     orca.add_injectable("dev_proj_file", current_dev_proj)
     df = pd.read_csv(os.path.join(urban_data_repo, current_dev_proj),
                      dtype={'PARCEL_ID': np.int64,
@@ -884,12 +884,19 @@ def vmt_fee_categories():
 
 
 @orca.table(cache=True)
-def superdistricts():
-    return pd.read_csv(
-        os.path.join(misc.data_dir(), "superdistricts.csv"),
-        dtype={'number':    np.int64,
-               'subregion': np.int64},
-        index_col="number")
+def superdistricts(scenario): 
+	sd_scenario_file = os.path.join(misc.data_dir(), 
+		("superdistricts_s{}.csv").format(scenario))
+	# scenarios could contain policies (eg telework) and/or other modifications
+	if os.path.isfile(sd_scenario_file): 
+		superdistricts = pd.read_csv(sd_scenario_file, index_col="number")
+		orca.add_injectable("sqft_per_job_settings", "for this scenario")
+	# the default includes a telework assumption and SD adjustments
+	else:
+		superdistricts = pd.read_csv(os.path.join(misc.data_dir(),
+			"superdistricts.csv"), index_col="number")
+		orca.add_injectable("sqft_per_job_settings", "default")
+	return superdistricts
 
 
 @orca.table(cache=True)
