@@ -148,7 +148,7 @@ def vacant_res_units(buildings, households):
 
 @orca.column('buildings', cache=True)
 def sqft_per_job(buildings, building_sqft_per_job, superdistricts,
-                 taz_geography):
+                 taz_geography, year):
     sqft_per_job = buildings.\
         building_type.fillna("O").map(building_sqft_per_job)
 
@@ -159,7 +159,7 @@ def sqft_per_job(buildings, building_sqft_per_job, superdistricts,
     superdistrict = misc.reindex(
         taz_geography.superdistrict, buildings.zone_id)
     sqft_per_job = sqft_per_job * \
-        superdistrict.map(superdistricts.sqft_per_job_factor)
+        superdistrict.map(superdistricts['sqft_per_job_factor_{}'.format(year)])
 
     return sqft_per_job
 
@@ -389,8 +389,7 @@ def fees_per_unit(parcels, policy, scenario):
     s = pd.Series(0, index=parcels.index)
 
     vmt_settings = policy["acct_settings"]["vmt_settings"]
-    if scenario in vmt_settings["com_for_res_scenarios"] or \
-            scenario in vmt_settings["res_for_res_scenarios"]:
+    if scenario in vmt_settings["res_for_res_scenarios"]:
         s += parcels.vmt_res_fees
 
     return s
@@ -402,7 +401,8 @@ def fees_per_sqft(parcels, policy, scenario):
     s = pd.Series(0, index=parcels.index)
 
     vmt_settings = policy["acct_settings"]["vmt_settings"]
-    if scenario in vmt_settings["com_for_com_scenarios"]:
+    if scenario in vmt_settings["com_for_com_scenarios"] or\
+            scenario in vmt_settings["com_for_res_scenarios"]:
         s += parcels.vmt_com_fees
 
     return s
@@ -464,6 +464,16 @@ def juris_ppa(parcels, parcels_geography):
 
 
 @orca.column('parcels', cache=True)
+def coc_id(parcels, parcels_geography):
+    return parcels_geography.coc_id.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
+def juris_coc(parcels, parcels_geography):
+    return parcels_geography.juris_coc.reindex(parcels.index)
+
+
+@orca.column('parcels', cache=True)
 def superdistrict(parcels, taz_geography):
     return misc.reindex(taz_geography.superdistrict, parcels.zone_id)
 
@@ -480,7 +490,8 @@ def performance_zone(parcels, parcels_geography):
     return parcels_geography.perfarea.reindex(parcels.index)
 
 
-# urbanized is a dummy for urbanized area (Urbanized_Footprint shp)
+# urbanized is a dummy for urbanized area, sourced from shapefile at:
+# M:\urban_modeling\data\LandUse\landuse_raw\urban_footprint_2009
 @orca.column('parcels', cache=True)
 def urbanized(parcels, parcels_geography):
     return parcels_geography.urbanized.reindex(parcels.index)

@@ -18,7 +18,7 @@ def slr_inundate(scenario, parcels, slr_progression_C, slr_progression_R,
                  slr_parcel_inundation_mf, slr_parcel_inundation_mp,
                  slr_progression_d_b, slr_parcel_inundation_d_b,
                  slr_parcel_inundation_d_bb, slr_parcel_inundation_d_bp,
-                 year, hazards):
+                 slr_parcel_inundation_f_b_np, year, hazards):
 
     if scenario not in hazards["slr_scenarios"]["enable_in"]:
         return
@@ -59,6 +59,10 @@ def slr_inundate(scenario, parcels, slr_progression_C, slr_progression_R,
             slr_parcel_inundation = slr_parcel_inundation_d_bp.to_frame()
             orca.add_injectable("slr_mitigation",
                                 'draft blueprint plus mitigation')
+        elif scenario in hazards["slr_scenarios"]["f_b_np_mitigation"]:
+            slr_parcel_inundation = slr_parcel_inundation_f_b_np.to_frame()
+            orca.add_injectable("slr_mitigation",
+                                'final blueprint no project mitigation')
         else:
             slr_parcel_inundation = slr_parcel_inundation_d_b.to_frame()
             orca.add_injectable("slr_mitigation", 'none')

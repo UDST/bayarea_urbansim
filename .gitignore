@@ -16,6 +16,8 @@ venv
 ual_baus_install.sh
 configs/hlcm_renter_no_unplaced.yaml
 configs/hlcm_owner_no_unplaced.yaml
+configs/hlcm_renter_lowincome_no_unplaced.yaml
+configs/hlcm_owner_lowincome_no_unplaced.yaml
 data/2015_06_01_zoning_parcels.csv
 data/2015_08_13_parcels_geography.csv
 data/2015_08_13_zoning_parcels.csv

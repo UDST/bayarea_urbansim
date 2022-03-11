@@ -11,12 +11,12 @@ Bay Area UrbanSim is written in Python and runs in a command line environment. I
 
 1. Install the [Anaconda Python](https://www.anaconda.com/products/individual#Downloads) distribution (not strictly required, but makes things easier and more reliable)
 2. Clone this repository
-3. Download base data from this [Box folder](https://app.box.com/folder/52679598048) and move the files to `bayarea_urbansim/data/` (ask an MTC contact for access)
+3. Download base data from this [Box folder](https://mtcdrive.app.box.com/folder/103451630229?s=di77ya24xmmsg3rkrotaewegzsd61hu6) and move the files to `bayarea_urbansim/data/` (ask an MTC contact for access)
 4. Clone the MTC [urban_data_internal repository](https://github.com/BayAreaMetro/urban_data_internal) to the same location as this repository (ask an MTC contact for access)
 5. Create a Python environment with the current dependencies: `conda env create -f baus-env-2020.yml`
 6. Activate the environment: `conda activate baus-env-2020`
 7. Pre-process the base data: `python baus.py --mode preprocessing` (only needed once)
-8. Run the model: `python baus.py`
+8. Run the model: `python baus.py` (typical AWS linux run uses `nohup python baus.py -s 25 --disable-slack --random-seed &` which add no hanging up / specifies scenario 25 / disables slack output / turns OFF random seed / puts in background)
 
 More info about the command line arguments: `python baus.py --help`
 
@@ -72,11 +72,12 @@ Many files are output to the `runs/` directory. They are described below.
 filename |description
 ----------------------------|-----------
 run[num]\_topsheet\_[year].csv | An overall summary of various housing and employment outcomes summarized by very coarse geographies.
-run[num]_parcel_output.csv 		| A csv of all new built space in the region.  This has a few thousand rows and dozens of columns which contain various inputs and outputs, as well as debugging information which helps explain why each development was picked by UrbanSim.
+run[num]_parcel_output.csv 		| A csv of all new built space in the region, not including ADUs added to existing buildings.  This has a few thousand rows and dozens of columns which contain various inputs and outputs, as well as debugging information which helps explain why each development was picked by UrbanSim.
 run[num]\_parcel_data\_[year].csv 			|A CSV with parcel level output for *all* parcels with lat, lng and includes change in total_residential_units and change in total_job_spaces, as well as zoned capacity measures.
 run[num]\_building_data\_[year].csv 			|The same as above but for buildings.
-run[num]\_taz\_summarie\s_[year].csv 			|A CSV for [input to the MTC travel model](http://analytics.mtc.ca.gov/foswiki/UrbanSimTwo/OutputToTravelModel)
+run[num]\_taz\_summaries\_[year].csv 			|A CSV for [input to the MTC travel model](http://analytics.mtc.ca.gov/foswiki/UrbanSimTwo/OutputToTravelModel)
 run[num]\_pda_summaries\_[year].csv, run[num]\_juris_summaries\_[year].csv, run[num]\_superdistrict_summaries\_[year].csv | Similar outputs to the taz summaries but for each of these geographies.  Used for understanding the UrbanSim forecast at an aggregate level.
+run[num]\_acctlog_[account name]\_[year].csv    |A series of CSVs of each account's funding amount and buildings developed under this acount (if the funding is used to subsidize development) in each iteration.
 run[runnum]_dropped_buildings.csv     | A summary of buildings which were redeveloped during the simulated forecast.
 run[runnum]_simulation_output.json | Used by the web output viewer.
 

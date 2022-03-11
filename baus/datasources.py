@@ -91,6 +91,13 @@ def limits_settings(policy, scenario):
        (scenario not in policy["office_caps_fr2_enable"]):
         scenario = str(int(scenario) - 10)
 
+    # set up so that eir alts limits can be turned off as needed
+    # current 2 eir alts s26, s28, only s28 uses office caps
+    # so for s26, use default instead
+    if (scenario in ["26","28"]) and\
+       (scenario not in policy["office_caps_eir_enable"]):
+        scenario = "default"
+
     d = policy['development_limits']
 
     if scenario in d.keys():
@@ -133,8 +140,8 @@ def inclusionary_housing_settings(policy, scenario):
     d = {}
     if (scenario in policy["inclusionary_d_b_enable"]):
         for item in s:
-            # this is a list of Blueprint strategy geographies - represented
-            # by pba50chcat - with an inclusionary rate that is the same
+            # this is a list of draft blueprint strategy geographies (represented
+            # by pba50chcat) with an inclusionary rate that is the same
             # for all the pba50chcats in the list
             print("Setting inclusionary rates for geographies %d pba50chcat \
                   to %.2f" % (len(item["values"]), item["amount"]))
@@ -143,6 +150,18 @@ def inclusionary_housing_settings(policy, scenario):
             # of pba50chcat names to rates
             for pba50chcat in item["values"]:
                 d[pba50chcat] = item["amount"]
+    elif (scenario in policy["inclusionary_fb_enable"]):
+        for item in s:
+            # this is a list of final blueprint strategy geographies (represented
+            # by fbpchcat) with an inclusionary rate that is the same
+            # for all the fbpchcat in the list
+            print("Setting inclusionary rates for geographies %d fbpchcat \
+                  to %.2f" % (len(item["values"]), item["amount"]))
+            # this is a list of inclusionary rates and the fbpchcat
+            # geographies they apply to - need to turn it in a map
+            # of fbpchcat names to rates
+            for fbpchcat in item["values"]:
+                d[fbpchcat] = item["amount"]
     else:
         for item in s:
             # this is a list of cities with an inclusionary rate that is the
@@ -183,6 +202,11 @@ def hlcm_owner_lowincome_config():
 
 
 @orca.injectable(cache=True)
+def hlcm_owner_lowincome_no_unplaced_config():
+    return get_config_file('hlcm_owner_lowincome_no_unplaced')
+
+
+@orca.injectable(cache=True)
 def hlcm_renter_config():
     return get_config_file('hlcm_renter')
 
@@ -195,6 +219,11 @@ def hlcm_renter_no_unplaced_config():
 @orca.injectable(cache=True)
 def hlcm_renter_lowincome_config():
     return get_config_file('hlcm_renter_lowincome')
+
+
+@orca.injectable(cache=True)
+def hlcm_renter_lowincome_no_unplaced_config():
+    return get_config_file('hlcm_renter_lowincome_no_unplaced')
 
 
 @orca.injectable(cache=True)
@@ -447,9 +476,28 @@ def zoning_scenario(parcels_geography, scenario, policy, mapping):
         os.path.join(misc.data_dir(), 'zoning_mods_%s.csv' % scenario))
 
     if "ppa_id" in scenario_zoning.columns:
-        orca.add_injectable("ppa", "are included")
+        ppa_up = scenario_zoning.loc[(scenario_zoning.ppa_id == 'ppa') & 
+            (scenario_zoning.add_bldg == 'IW')].far_up.sum()
+        if ppa_up > 0:
+            orca.add_injectable("ppa_upzoning", "enabled")
+        else:
+            orca.add_injectable("ppa_upzoning", "not enabled")
     else:
-        orca.add_injectable("ppa", "are not included")
+        orca.add_injectable("ppa_upzoning", "not enabled")
+
+    if "ppa_id" in scenario_zoning.columns:
+        comm_up = scenario_zoning.loc[(scenario_zoning.ppa_id != 'ppa')].\
+            far_up.sum()
+        if comm_up > 0:
+            orca.add_injectable("comm_upzoning", "enabled")
+        else:
+           orca.add_injectable("comm_upzoning", "not enabled") 
+    else:
+        comm_up = scenario_zoning.far_up.sum()
+        if comm_up > 0:
+            orca.add_injectable("comm_upzoning", "enabled")
+        else:
+           orca.add_injectable("comm_upzoning", "not enabled") 
 
     for k in mapping["building_type_map"].keys():
         scenario_zoning[k] = np.nan
@@ -464,12 +512,18 @@ def zoning_scenario(parcels_geography, scenario, policy, mapping):
     add_drop_helper("add_bldg", 1)
     add_drop_helper("drop_bldg", 0)
 
-    if 'pba50zoningmodcat' in scenario_zoning.columns:
+    if scenario in policy['geographies_fb_enable']:
+        join_col = 'fbpzoningmodcat'
+    elif scenario in policy['geographies_db_enable']:
         join_col = 'pba50zoningmodcat'
+    elif scenario in policy['geographies_eir_enable']:
+        join_col = 'eirzoningmodcat'
     elif 'zoninghzcat' in scenario_zoning.columns:
         join_col = 'zoninghzcat'
     else:
         join_col = 'zoningmodcat'
+
+    print('join_col of zoningmods is {}'.format(join_col))
 
     return pd.merge(parcels_geography.to_frame().reset_index(),
                     scenario_zoning,
@@ -541,13 +595,37 @@ def parcels_geography(parcels, scenario, settings):
     df["pda_id_pba40"] = df.pda_id_pba40.replace("dan1", np.nan)
 
     # Add Draft Blueprint geographies: PDA, TRA, PPA, sesit
-    df["pda_id_pba50"] = df.pda_id_pba50.str.lower()
-    df["tra_id"] = df.tra_id.str.lower()
-    df['juris_tra'] = df.juris + '-' + df.tra_id
-    df["ppa_id"] = df.ppa_id.str.lower()
-    df['juris_ppa'] = df.juris + '-' + df.ppa_id
-    df["sesit_id"] = df.sesit_id.str.lower()
-    df['juris_sesit'] = df.juris + '-' + df.sesit_id
+    if scenario in policy['geographies_db_enable']:
+        df["pda_id_pba50"] = df.pda_id_pba50.str.lower()
+        df["gg_id"] = df.gg_id.str.lower()
+        df["tra_id"] = df.tra_id.str.lower()
+        df['juris_tra'] = df.juris + '-' + df.tra_id
+        df["ppa_id"] = df.ppa_id.str.lower()
+        df['juris_ppa'] = df.juris + '-' + df.ppa_id
+        df["sesit_id"] = df.sesit_id.str.lower()
+        df['juris_sesit'] = df.juris + '-' + df.sesit_id
+    # Use Final Blueprint geographies: PDA, TRA, PPA, sesit
+    elif scenario in policy['geographies_fb_enable']:
+        df["pda_id_pba50"] = df.pda_id_pba50_fb.str.lower()
+        df["gg_id"] = df.fbp_gg_id.str.lower()
+        df["tra_id"] = df.fbp_tra_id.str.lower()
+        df['juris_tra'] = df.juris + '-' + df.tra_id
+        df["ppa_id"] = df.fbp_ppa_id.str.lower()
+        df['juris_ppa'] = df.juris + '-' + df.ppa_id
+        df["sesit_id"] = df.fbp_sesit_id.str.lower()
+        df['juris_sesit'] = df.juris + '-' + df.sesit_id
+    # Use EIR geographies: TRA, PPA, sesit, CoC
+    elif scenario in policy['geographies_eir_enable']:
+        df["pda_id_pba50"] = df.pda_id_pba50_fb.str.lower()
+        df["gg_id"] = df.eir_gg_id.str.lower()
+        df["tra_id"] = df.eir_tra_id.str.lower()
+        df['juris_tra'] = df.juris + '-' + df.tra_id
+        df["ppa_id"] = df.eir_ppa_id.str.lower()
+        df['juris_ppa'] = df.juris + '-' + df.ppa_id
+        df["sesit_id"] = df.eir_sesit_id.str.lower()
+        df['juris_sesit'] = df.juris + '-' + df.sesit_id
+        df['coc_id'] = df.eir_coc_id.str.lower()
+        df['juris_coc'] = df.juris + '-' + df.coc_id
 
     return df
 
@@ -736,6 +814,9 @@ def development_projects(parcels, mapping, scenario):
     df["building_sqft"] = df.building_sqft.fillna(0)
     df["non_residential_sqft"] = df.non_residential_sqft.fillna(0)
     df["residential_units"] = df.residential_units.fillna(0).astype("int")
+    df["preserved_units"] = 0.0
+    df["inclusionary_units"] = 0.0
+    df["subsidized_units"] = 0.0
 
     df["building_type"] = df.building_type.replace("HP", "OF")
     df["building_type"] = df.building_type.replace("GV", "OF")
@@ -976,6 +1057,8 @@ def slr_parcel_inundation_mp():
         index_col='parcel_id')
 
 
+# SLR inundation levels for parcels for Blueprint, where slr_parcel_inundation_d_b
+# is the new base case (no mitigation)
 @orca.table(cache=True)
 def slr_parcel_inundation_d_b():
     return pd.read_csv(
@@ -999,6 +1082,12 @@ def slr_parcel_inundation_d_bp():
         dtype={'parcel_id': np.int64},
         index_col='parcel_id')
 
+@orca.table(cache=True)
+def slr_parcel_inundation_f_b_np():
+    return pd.read_csv(
+        os.path.join(misc.data_dir(), "slr_parcel_inundation_f_b_np.csv"),
+        index_col='parcel_id')
+
 
 # SLR progression by year, for "futures" C, B, R
 @orca.table(cache=True)
@@ -1019,7 +1108,7 @@ def slr_progression_R():
         os.path.join(misc.data_dir(), "slr_progression_R.csv"))
 
 
-# SLR progression for drafte blueprint
+# SLR progression for draft blueprint
 @orca.table(cache=True)
 def slr_progression_d_b():
     return pd.read_csv(

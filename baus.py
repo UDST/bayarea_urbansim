@@ -24,7 +24,7 @@ pd.set_option('display.float_format', lambda x: '%.3f' % x)
 
 SLACK = MAPS = "URBANSIM_SLACK" in os.environ
 LOGS = True
-RANDOM_SEED = False
+RANDOM_SEED = True
 INTERACT = False
 SCENARIO = None
 MODE = "simulation"
@@ -129,7 +129,7 @@ if SLACK:
     host = socket.gethostname()
 
 if MAPS:
-    from baus.utils import ue_config, ue_files 
+    from baus.utils import ue_config, ue_files
 
 
 def get_simulation_models(SCENARIO):
@@ -163,9 +163,15 @@ def get_simulation_models(SCENARIO):
         "price_vars",
         "scheduled_development_events",
 
-        # run the subsidized acct system
+        # preserve some units
+        "preserve_affordable",
+        # run the subsidized residential acct system
         "lump_sum_accounts",
         "subsidized_residential_developer_lump_sum_accts",
+
+        # run the subsidized office acct system
+        "office_lump_sum_accounts",
+        "subsidized_office_developer_lump_sum_accts",
 
         "alt_feasibility",
 
@@ -189,6 +195,13 @@ def get_simulation_models(SCENARIO):
         # (based on higher of predicted price or rent)
         "assign_tenure_to_new_units",
 
+        # we first put Q1 households only into deed-restricted units, 
+        # then any additional unplaced Q1 households, Q2, Q3, and Q4 
+        # households are placed in either deed-restricted units or 
+        # market-rate units
+        "hlcm_owner_lowincome_simulate",
+        "hlcm_renter_lowincome_simulate",
+
         # allocate owners to vacant owner-occupied units
         "hlcm_owner_simulate",
         # allocate renters to vacant rental units
@@ -203,10 +216,14 @@ def get_simulation_models(SCENARIO):
 
         # force placement of any unplaced households, in terms of rent/own
         # is a noop except in the final simulation year
+        # 09 11 2020 ET: enabled for all simulation years
         "hlcm_owner_simulate_no_unplaced",
+        "hlcm_owner_lowincome_simulate_no_unplaced",
         # this one crashes right no because there are no unplaced, so
         # need to fix the crash in urbansim
+        # 09 11 2020 ET: appears to be working
         "hlcm_renter_simulate_no_unplaced",
+        "hlcm_renter_lowincome_simulate_no_unplaced",
 
         # update building/unit/hh correspondence
         "reconcile_placed_households",
@@ -225,7 +242,7 @@ def get_simulation_models(SCENARIO):
         "travel_model_output",
         # "travel_model_2_output",
         "hazards_slr_summary",
-        "hazards_eq_summary", 
+        "hazards_eq_summary",
         "slack_report"
 
     ]
@@ -236,7 +253,7 @@ def get_simulation_models(SCENARIO):
     if SCENARIO in vmt_settings["com_for_com_scenarios"] and \
             SCENARIO not in vmt_settings["db_geography_scenarios"]:
         models.insert(models.index("office_developer"),
-                      "subsidized_office_developer")
+                      "subsidized_office_developer_vmt")
 
     if SCENARIO in vmt_settings["com_for_res_scenarios"] or \
             SCENARIO in vmt_settings["res_for_res_scenarios"]:
@@ -250,7 +267,8 @@ def get_simulation_models(SCENARIO):
 
     # calculate jobs-housing fees
     jobs_housing_settings = \
-        orca.get_injectable("policy")["acct_settings"]["jobs_housing_fee_settings"]
+        orca.get_injectable("policy")[
+            "acct_settings"]["jobs_housing_fee_settings"]
     if SCENARIO in jobs_housing_settings["jobs_housing_com_for_res_scenarios"]:
         models.insert(models.index("diagnostic_output"),
                       "calculate_jobs_housing_fees")
@@ -309,17 +327,41 @@ def run_models(MODE, SCENARIO):
                 "reconcile_unplaced_households",
                 "jobs_transition",
 
+                # we first put Q1 households only into deed-restricted units, 
+                # then any additional unplaced Q1 households, Q2, Q3, and Q4 
+                # households are placed in either deed-restricted units or 
+                # market-rate units
+                "hlcm_owner_lowincome_simulate",
+                "hlcm_renter_lowincome_simulate",
+
                 # allocate owners to vacant owner-occupied units
                 "hlcm_owner_simulate",
                 # allocate renters to vacant rental units
                 "hlcm_renter_simulate",
+
+                # we have to run the hlcm above before this one - we first want
+                # to try and put unplaced households into their appropraite
+                # tenured units and then when that fails, force them to place
+                # using the code below.
+
+                # force placement of any unplaced households, in terms of
+                # rent/own, is a noop except in the final simulation year
+                # 09 11 2020 ET: enabled for all simulation years
+                "hlcm_owner_simulate_no_unplaced",
+                "hlcm_owner_lowincome_simulate_no_unplaced",
+                # this one crashes right no because there are no unplaced, so
+                # need to fix the crash in urbansim
+                # 09 11 2020 ET: appears to be working
+                "hlcm_renter_simulate_no_unplaced",
+                "hlcm_renter_lowincome_simulate_no_unplaced",
+
                 # update building/unit/hh correspondence
                 "reconcile_placed_households",
 
                 "elcm_simulate",
 
                 "price_vars",
-#                "scheduled_development_events",
+                # "scheduled_development_events",
 
                 "topsheet",
                 "simulation_validation",
@@ -396,7 +438,6 @@ def run_models(MODE, SCENARIO):
     else:
 
         raise "Invalid mode"
-
 
 
 print("Started", time.ctime())
@@ -490,7 +531,9 @@ if SLACK and MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
             as_user=True)
     else:
         slack.chat.post_message(
-            '#urbansim_sim_update', "No differences with reference run.", as_user=True)
+            '#urbansim_sim_update',
+            "No differences with reference run.",
+            as_user=True)
 
 if S3:
     os.system('ls runs/run%d_* ' % run_num +
