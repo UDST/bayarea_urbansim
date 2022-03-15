@@ -1378,8 +1378,8 @@ def parcel_summary(parcels, buildings, households, jobs,
                    initial_year, final_year, parcels_geography,
                    scenario, policy):
 
-    if year not in [2010, 2015, 2035, 2050]:
-        return
+    # if year not in [2010, 2015, 2035, 2050]:
+    #     return
 
     df = parcels.to_frame([
         "geom_id",
@@ -1460,8 +1460,10 @@ def parcel_summary(parcels, buildings, households, jobs,
                      (run_number, year))
     )
 
-    if year == final_year:
-
+    # if year == final_year:
+    print('year printed for debug: {}'.format(year))
+    if year not in [2010, 2015]:
+        print('calculate diff for year {}'.format(year))
         # do diff with initial year
 
         df2 = pd.read_csv(
@@ -1480,19 +1482,23 @@ def parcel_summary(parcels, buildings, households, jobs,
                          run_number)
         )
 
-    if year == final_year:
+    # if year == final_year:
+    print('year printed for debug: {}'.format(year))
+    if year not in [2010, 2015]:
+        print('calculate diff for year {}'.format(year)) 
         baseyear = 2015
         df_base = pd.read_csv(os.path.join("runs",
                                         "run%d_parcel_data_%d.csv"
                                         % (run_number, baseyear)))
         df_final = pd.read_csv(os.path.join("runs",
                                         "run%d_parcel_data_%d.csv"
-                                        % (run_number, final_year)))
+                                        # % (run_number, final_year)))
+                                        % (run_number, year)))
 
         geographies = ['GG','tra','HRA', 'DIS']
         for geography in geographies:
             df_growth = GEO_SUMMARY_LOADER(run_number, geography,
-                                            df_base, df_final)
+                                            df_base, df_final, scenario, policy)
             df_growth['county'] = df_growth['juris'].map(juris_to_county)
             df_growth.sort_values(by = ['county','juris','geo_category'],
                                     ascending=[True, True, False], inplace=True)
@@ -1501,7 +1507,7 @@ def parcel_summary(parcels, buildings, households, jobs,
                                             format(run_number, geography)))
         geo_1, geo_2, geo_3 = 'tra','DIS','HRA'
         df_growth_1 = TWO_GEO_SUMMARY_LOADER(run_number, geo_1, geo_2,
-                                            df_base, df_final)
+                                            df_base, df_final, scenario, policy)
         df_growth_1['county'] = df_growth_1['juris'].map(juris_to_county)
         df_growth_1.sort_values(by = ['county','juris','geo_category'],
                                 ascending=[True, True, False], inplace=True)
@@ -1510,7 +1516,7 @@ def parcel_summary(parcels, buildings, households, jobs,
                                         format(run_number, geo_1 + geo_2)))
 
         df_growth_2 = TWO_GEO_SUMMARY_LOADER(run_number, geo_1, geo_3,
-                                            df_base, df_final)
+                                            df_base, df_final, scenario, policy)
         df_growth_2['county'] = df_growth_2['juris'].map(juris_to_county)
         df_growth_2.sort_values(by = ['county','juris','geo_category'],
                                 ascending=[True, True, False], inplace=True)
