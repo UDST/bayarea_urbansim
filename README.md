@@ -6,10 +6,10 @@ DRAFT Bay Area UrbanSim (BAUS) Implementation
 This is the DRAFT UrbanSim implementation for the Bay Area. Policy documentation for the Bay Area model is available [here](http://data.mtc.ca.gov/bayarea_urbansim/) and documentation for the UrbanSim framework is available [here](https://udst.github.io/urbansim/).
 
 ### Branches
-* 'main' contains the most recent release
-* 'develop' is a staging branch used in high production phases
-* feature branches contain intuitive names
-* application branches contain intuitive names
+* `main` contains the most recent release
+* `develop` is a staging branch used in high production phases
+* feature branches contain descriptive names
+* application branches contain descriptive names
 
 ### Installation
 
