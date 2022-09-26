@@ -834,7 +834,7 @@ def price_shifters(parcels, settings, scenario, policy):
     if scenario not in policy["geographies_db_enable"]:
         return parcels.pda_pba40.map(
                     settings["pda_price_shifters"]).fillna(1.0)
-    elif scenario in policy["geographies_db_enable"]:
+    else:
         return pd.Series(1.0, parcels.index)
 
 

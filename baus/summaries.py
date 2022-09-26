@@ -463,15 +463,26 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
     hh_by_subregion = misc.reindex(taz_geography.subregion,
                                    households.zone_id).value_counts()
 
-    households_df = orca.merge_tables(
-        'households',
-        [parcels_geography, buildings, households],
-        columns=['pda_id_pba40', 'tpp_id', 'trich_id',
-                 'pda_id_pba50', 'tra_id', 'ppa_id', 'sesit_id',
-                 'income'])
+    # Cols for Draft/Final Blueprint and EIR geographies
+    if scenario in policy["geographies_db_enable"] or \
+            scenario in policy["geographies_fb_enable"] or \
+            scenario in policy["geographies_eir_enable"]:       
+        households_df = orca.merge_tables(
+            'households',
+            [parcels_geography, buildings, households],
+            columns=['pda_id_pba50', 'tra_id', 'ppa_id', 'sesit_id',
+                     'income'])
+    # Cols for PBA40 and fr2 geographies
+    else:
+        households_df = orca.merge_tables(
+            'households',
+            [parcels_geography, buildings, households],
+            columns=['pda_id_pba40', 'tpp_id', 'trich_id',
+                     'income'])
 
     # use PBA40 new tpp_id
-    if settings["use_new_tpp_id_in_topsheet"]:
+    if "tpp_id" in households_df and \
+            settings["use_new_tpp_id_in_topsheet"]:
         del households_df["tpp_id"]
         households_df["tpp_id"] = misc.reindex(new_tpp_id.tpp_id,
                                                households_df.parcel_id)
@@ -529,10 +540,20 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
     jobs_by_subregion = misc.reindex(taz_geography.subregion,
                                      jobs.zone_id).value_counts()
 
-    jobs_df = orca.merge_tables(
-        'jobs',
-        [parcels, buildings, jobs],
-        columns=['pda_pba40', 'pda_pba50', 'trich_id', 'tra_id'])
+    # PBA50 Draft Blueprint, Final Blueprint, EIR
+    if scenario in policy["geographies_db_enable"] or \
+            scenario in policy["geographies_fb_enable"] or \
+            scenario in policy["geographies_eir_enable"]:
+        jobs_df = orca.merge_tables(
+            'jobs',
+            [parcels, buildings, jobs],
+            columns=['pda_pba50', 'tra_id'])
+    # PBA40 and Horizon
+    else:
+        jobs_df = orca.merge_tables(
+            'jobs',
+            [parcels, buildings, jobs],
+            columns=['pda_pba40', 'trich_id'])
 
     if settings["use_new_tpp_id_in_topsheet"]:
         jobs_df["tpp_id"] = misc.reindex(new_tpp_id.tpp_id,
@@ -888,12 +909,12 @@ def compare_to_targets(parcels, buildings, jobs, households, abag_targets,
     households_df = orca.merge_tables(
         'households',
         [parcels, buildings, households],
-        columns=['pda_pba40', 'pda_pba50', 'juris'])
+        columns=['pda_pba40', 'juris'])
 
     jobs_df = orca.merge_tables(
         'jobs',
         [parcels, buildings, jobs],
-        columns=['pda_pba40', 'pda_pba50', 'juris'])
+        columns=['pda_pba40', 'juris'])
 
     # only runs for pda_PBA40
     households_df["pda_fill_juris"] = \
@@ -1038,29 +1059,56 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
     else:
         base = False
 
-    households_df = orca.merge_tables(
-        'households',
-        [parcels, buildings, households],
-        columns=['pda_pba40', 'pda_pba50', 'zone_id', 'juris', 'superdistrict',
-                 'persons', 'income', 'base_income_quartile',
-                 'juris_trich', 'juris_tra', 'juris_sesit', 'juris_ppa'])
+    # Cols for Draft/Final Blueprint and EIR geographies
+    if scenario in policy["geographies_db_enable"] or \
+            scenario in policy["geographies_fb_enable"] or \
+            scenario in policy["geographies_eir_enable"]:   
 
-    jobs_df = orca.merge_tables(
-        'jobs',
-        [parcels, buildings, jobs],
-        columns=['pda_pba40', 'pda_pba50', 'superdistrict', 'juris', 'zone_id',
-                 'empsix', 'juris_trich', 'juris_tra',
-                 'juris_sesit', 'juris_ppa'])
+        households_df = orca.merge_tables(
+            'households',
+            [parcels, buildings, households],
+            columns=['pda_pba50', 'zone_id', 'juris', 'superdistrict',
+                     'persons', 'income', 'base_income_quartile',
+                     'juris_tra', 'juris_sesit', 'juris_ppa'])
 
-    buildings_df = orca.merge_tables(
-        'buildings',
-        [parcels, buildings],
-        columns=['pda_pba40', 'pda_pba50', 'superdistrict', 'juris',
-                 'building_type', 'zone_id', 'residential_units',
-                 'deed_restricted_units', 'preserved_units',
-                 'inclusionary_units', 'subsidized_units',
-                 'building_sqft', 'non_residential_sqft',
-                 'juris_trich', 'juris_tra', 'juris_sesit', 'juris_ppa'])
+        jobs_df = orca.merge_tables(
+            'jobs',
+            [parcels, buildings, jobs],
+            columns=['pda_pba50', 'superdistrict', 'juris', 'zone_id',
+                     'empsix', 'juris_tra', 'juris_sesit', 'juris_ppa'])
+
+        buildings_df = orca.merge_tables(
+            'buildings',
+            [parcels, buildings],
+            columns=['pda_pba50', 'superdistrict', 'juris',
+                     'building_type', 'zone_id', 'residential_units',
+                     'deed_restricted_units', 'preserved_units',
+                     'inclusionary_units', 'subsidized_units',
+                     'building_sqft', 'non_residential_sqft',
+                     'juris_tra', 'juris_sesit', 'juris_ppa'])
+
+    # Cols for PBA40 and Horizon   
+    else:
+        households_df = orca.merge_tables(
+            'households',
+            [parcels, buildings, households],
+            columns=['pda_pba40', 'zone_id', 'juris', 'superdistrict',
+                     'persons', 'income', 'base_income_quartile', 'juris_trich'])
+
+        jobs_df = orca.merge_tables(
+            'jobs',
+            [parcels, buildings, jobs],
+            columns=['pda_pba40', 'superdistrict', 'juris', 'zone_id',
+                     'empsix', 'juris_trich'])
+
+        buildings_df = orca.merge_tables(
+            'buildings',
+            [parcels, buildings],
+            columns=['pda_pba40', 'superdistrict', 'juris', 'juris_trich',
+                     'building_type', 'zone_id', 'residential_units',
+                     'deed_restricted_units', 'preserved_units',
+                     'inclusionary_units', 'subsidized_units',
+                     'building_sqft', 'non_residential_sqft',])
 
     parcel_output = summary.parcel_output
 
@@ -1330,8 +1378,8 @@ def parcel_summary(parcels, buildings, households, jobs,
                    initial_year, final_year, parcels_geography,
                    scenario, policy):
 
-    if year not in [2010, 2015, 2035, 2050]:
-        return
+    # if year not in [2010, 2015, 2035, 2050]:
+    #     return
 
     df = parcels.to_frame([
         "geom_id",
@@ -1349,10 +1397,17 @@ def parcel_summary(parcels, buildings, households, jobs,
     df = df.join(df2)
 
     # bringing in zoning modifications growth geography tag
-    if scenario in policy['geographies_fb_enable']:
-        join_col = "fbpchcat"
-    elif scenario in policy['geographies_eir_enable']:
+    if scenario in policy['geographies_fb_enable']:       # PBA50 Final Blueprint
+        join_col = 'fbpzoningmodcat'
+    elif scenario in policy['geographies_db_enable']:     # PBA50 Draft Blueprint
+        join_col = 'pba50zoningmodcat'
+    elif scenario in policy['geographies_eir_enable']:    # PBA50 EIR
         join_col = 'eirzoningmodcat'
+    elif scenario in policy['geographies_pba40_enable']:  # PBA40
+        join_col = 'zoningmodcat'
+    else:                                                 # Horizon
+        join_col = 'zoninghzcat'
+    
 
     if join_col in parcels_geography.to_frame().columns:
         parcel_gg = parcels_geography.to_frame([
@@ -1405,8 +1460,10 @@ def parcel_summary(parcels, buildings, households, jobs,
                      (run_number, year))
     )
 
-    if year == final_year:
-
+    # if year == final_year:
+    print('year printed for debug: {}'.format(year))
+    if year not in [2010, 2015]:
+        print('calculate diff for year {}'.format(year))
         # do diff with initial year
 
         df2 = pd.read_csv(
@@ -1425,19 +1482,23 @@ def parcel_summary(parcels, buildings, households, jobs,
                          run_number)
         )
 
-    if year == final_year:
+    # if year == final_year:
+    print('year printed for debug: {}'.format(year))
+    if year not in [2010, 2015]:
+        print('calculate diff for year {}'.format(year)) 
         baseyear = 2015
         df_base = pd.read_csv(os.path.join("runs",
                                         "run%d_parcel_data_%d.csv"
                                         % (run_number, baseyear)))
         df_final = pd.read_csv(os.path.join("runs",
                                         "run%d_parcel_data_%d.csv"
-                                        % (run_number, final_year)))
+                                        # % (run_number, final_year)))
+                                        % (run_number, year)))
 
         geographies = ['GG','tra','HRA', 'DIS']
         for geography in geographies:
             df_growth = GEO_SUMMARY_LOADER(run_number, geography,
-                                            df_base, df_final)
+                                            df_base, df_final, scenario, policy)
             df_growth['county'] = df_growth['juris'].map(juris_to_county)
             df_growth.sort_values(by = ['county','juris','geo_category'],
                                     ascending=[True, True, False], inplace=True)
@@ -1446,7 +1507,7 @@ def parcel_summary(parcels, buildings, households, jobs,
                                             format(run_number, geography)))
         geo_1, geo_2, geo_3 = 'tra','DIS','HRA'
         df_growth_1 = TWO_GEO_SUMMARY_LOADER(run_number, geo_1, geo_2,
-                                            df_base, df_final)
+                                            df_base, df_final, scenario, policy)
         df_growth_1['county'] = df_growth_1['juris'].map(juris_to_county)
         df_growth_1.sort_values(by = ['county','juris','geo_category'],
                                 ascending=[True, True, False], inplace=True)
@@ -1455,7 +1516,7 @@ def parcel_summary(parcels, buildings, households, jobs,
                                         format(run_number, geo_1 + geo_2)))
 
         df_growth_2 = TWO_GEO_SUMMARY_LOADER(run_number, geo_1, geo_3,
-                                            df_base, df_final)
+                                            df_base, df_final, scenario, policy)
         df_growth_2['county'] = df_growth_2['juris'].map(juris_to_county)
         df_growth_2.sort_values(by = ['county','juris','geo_category'],
                                 ascending=[True, True, False], inplace=True)

@@ -374,7 +374,7 @@ def scheduled_development_events(buildings, development_projects,
                                  demolish_events, summary, year, parcels,
                                  mapping, years_per_iter, parcels_geography,
                                  building_sqft_per_job, vmt_fee_categories,
-                                 static_parcels, base_year):
+                                 static_parcels, base_year, scenario):
     # first demolish
     # 6/3/20: current approach is to grab projects from the simulation year
     # and previous four years, however the base year is treated differently,
@@ -441,14 +441,17 @@ def scheduled_development_events(buildings, development_projects,
     del new_buildings["zone_id"]
 
     # add PBA40 geographies
+    # if scenario not in ["20", "21", "22", "23", "24", "25", "26", "27", "28", "29"]:
     new_buildings["pda_pba40"] = parcels_geography.pda_id_pba40.loc[
         new_buildings.parcel_id].values
 
     # add Horizon geographies
+    # if scenario not in ["20", "21", "22", "23", "24", "25", "26", "27", "28", "29"]:
     new_buildings["juris_trich"] = parcels_geography.juris_trich.loc[
         new_buildings.parcel_id].values
 
-    # add Draft Blueprint geographies
+    # add Draft Blueprint, Final Blueprint, EIR geographies
+    # if scenario in ["20", "21", "22", "23", "24", "25", "26", "27", "28", "29"]:
     new_buildings["pda_pba50"] = parcels_geography.pda_id_pba50.loc[
         new_buildings.parcel_id].values
     new_buildings["tra_id"] = parcels_geography.tra_id.loc[

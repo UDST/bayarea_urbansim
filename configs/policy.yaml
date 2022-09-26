@@ -3237,9 +3237,8 @@ acct_settings:
   # com for com or com for res.
   vmt_settings:
     sending_buildings_subaccount_def: regional
-    receiving_buildings_filter: pda_id_pba40 > ''
+    receiving_buildings_filter: pda_id > ''
     alternate_buildings_filter: trich_id > '' | cat_id > ''
-    db_receiving_buildings_filter: pda_id_pba50 > ''  # Draft Blueprint and EIR use 'pda_id_pba50'
     alternate_geography_scenarios: ["11", "12", "15"]
     db_geography_scenarios: ["21", "22", "23", "26"] # PBA50 EIR as well
     res_for_res_scenarios:
