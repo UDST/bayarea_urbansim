@@ -558,13 +558,10 @@ def calculate_vmt_fees(policy, year, buildings, vmt_fee_categories, coffer,
             county_lookup = orca.get_table("parcels_subzone").to_frame()
             county_lookup = county_lookup[["county"]].\
                 rename(columns={'county': 'county3'})
-            # parcels_subzone has parcel_ids in XXXXXX.99999 format
-            # by this step, temporarily fix them here
             county_lookup.reset_index(inplace=True)
             county_lookup = county_lookup.\
                 rename(columns={'PARCEL_ID': 'PARCELID'})
-            county_lookup["PARCELID"] = county_lookup["PARCELID"].\
-                round().astype(int)
+
             df = df.merge(county_lookup,
                           left_on='parcel_id',
                           right_on='PARCELID',
@@ -625,8 +622,7 @@ def calculate_jobs_housing_fees(policy, year, buildings,
             to_frame().reset_index()
         county_lookup = county_lookup[['PARCEL_ID', 'county']].\
             rename(columns={'PARCEL_ID': 'PARCELID', 'county': 'county3'})
-        county_lookup["PARCELID"] = county_lookup["PARCELID"].\
-            round().astype(int)
+
         df = df.merge(juris_lookup,
                       left_on='parcel_id',
                       right_on='PARCELID',
@@ -679,12 +675,12 @@ def subsidized_office_developer(feasibility, coffer, formula, year,
     policy = orca.get_injectable("policy")
     scenario = orca.get_injectable("scenario")
 
-    if scenario in policy["geographies_pba40_enable"]:
-        feasibility["pda_id"] = feasibility.pda_pba40
-    elif scenario in policy["geographies_db_enable"] or \
+    if scenario in policy["geographies_db_enable"] or \
         scenario in policy["geographies_fb_enable"] or \
         scenario in policy["geographies_eir_enable"]:
         feasibility["pda_id"] = feasibility.pda_pba50
+    else:
+        feasibility["pda_id"] = feasibility.pda_pba40
 
     # filter to receiving zone
     feasibility = feasibility.query(formula)
@@ -868,7 +864,18 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
     # profitable, even the administration costs are likely to cost at least
     # 10k / unit
     feasibility['subsidy_per_unit'] = feasibility.subsidy_per_unit.clip(10000)
+    
+    # add necessary columns for filters
+    policy = orca.get_injectable("policy")
+    scenario = orca.get_injectable("scenario")
 
+    if orca.get_injectable("scenario") in policy["geographies_db_enable"] or \
+        orca.get_injectable("scenario") in policy["geographies_fb_enable"] or \
+        orca.get_injectable("scenario") in policy["geographies_eir_enable"]:
+        feasibility["pda_id"] = feasibility.pda_pba50
+    else:
+        feasibility["pda_id"] = feasibility.pda_pba40
+   
     # step 5
     if "alternate_buildings_filter" in acct_settings and \
             orca.get_injectable("scenario") in \
@@ -896,6 +903,13 @@ def run_subsidized_developer(feasibility, parcels, buildings, households,
                 acct_settings["receiving_buildings_filter_fb_alt2"]))
         feasibility = feasibility.\
             query(acct_settings["receiving_buildings_filter_fb_alt2"])
+    elif "db_receiving_buildings_filter" in acct_settings and \
+            orca.get_injectable("scenario") in \
+            acct_settings["db_geography_scenarios"]:
+        print("receiving_buildings_filter: {}".format(
+                acct_settings["db_receiving_buildings_filter"]))
+        feasibility = feasibility.\
+            query(acct_settings["db_receiving_buildings_filter"])
     elif "receiving_buildings_filter" in acct_settings:
         feasibility = feasibility.\
             query(acct_settings["receiving_buildings_filter"])

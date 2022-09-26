@@ -528,18 +528,18 @@ def GEO_SUMMARY_CALCULATOR(parcel_geo_data):
 
 #This is to define a separate fileloader for parcel difference data. With the zoningmod category, we should be able to
 #summarize growth by different geography types that is more nuanced.
-def GEO_SUMMARY_LOADER(run_num, geo, parcel_baseyear, parcel_endyear):
+def GEO_SUMMARY_LOADER(run_num, geo, parcel_baseyear, parcel_endyear, scenario, policy):
 
-    if 'fbpchcat' in parcel_endyear.columns:
-      zoningtag = 'fbpchcat'
-    elif 'pba50chcat' in parcel_endyear.columns:
-      zoningtag = 'pba50chcat'
-    elif 'zoningmodcat' in parcel_endyear.columns:
-      zoningtag = 'zoningmodcat'
-    elif 'eirzoningmodcat' in parcel_endyear.columns:
-      zoningtag = 'eirzoningmodcat'
-    else: 
-      zoningtag = 'zoninghzcat'
+    if scenario in policy['geographies_fb_enable']:     # PBA50 Final Blueprint
+        zoningtag = 'fbpzoningmodcat'
+    elif scenario in policy['geographies_db_enable']:   # PBA50 Draft Blueprint
+        zoningtag = 'pba50zoningmodcat'
+    elif scenario in policy['geographies_eir_enable']:  # PBA50 EIR
+        zoningtag = 'eirzoningmodcat'
+    elif 'zoninghzcat' in parcel_endyear.columns:      # Horizon
+        zoningtag = 'zoninghzcat'
+    else:                                               # PBA40
+        zoningtag = 'zoningmodcat'
 
     parcel_baseyear = parcel_baseyear[['parcel_id','tothh','totemp', 'hhq1','hhq2','hhq3','hhq4',
                                        'residential_units','deed_restricted_units',
@@ -568,18 +568,18 @@ def GEO_SUMMARY_LOADER(run_num, geo, parcel_baseyear, parcel_endyear):
 
 
 ##Similar to above, this is to define a separate fileloader to produce summaries for overlapping geographies. W
-def TWO_GEO_SUMMARY_LOADER(run_num, geo1, geo2, parcel_baseyear, parcel_endyear):
+def TWO_GEO_SUMMARY_LOADER(run_num, geo1, geo2, parcel_baseyear, parcel_endyear, scenario, policy):
 
-    if 'fbpchcat' in parcel_endyear.columns:
-      zoningtag = 'fbpchcat'
-    elif 'pba50chcat' in parcel_endyear.columns:
-      zoningtag = 'pab50chcat'
-    elif 'zoningmodcat' in parcel_endyear.columns:
-      zoningtag = 'zoningmodcat'
-    elif 'eirzoningmodcat' in parcel_endyear.columns:
-      zoningtag = 'eirzoningmodcat'
-    else: 
-      zoningtag = 'zoninghzcat'
+    if scenario in policy['geographies_fb_enable']:     # PBA50 Final Blueprint
+        zoningtag = 'fbpzoningmodcat'
+    elif scenario in policy['geographies_db_enable']:   # PBA50 Draft Blueprint
+        zoningtag = 'pba50zoningmodcat'
+    elif scenario in policy['geographies_eir_enable']:  # PBA50 EIR
+        zoningtag = 'eirzoningmodcat'
+    elif 'zoninghzcat' in parcel_endyear.columns:      # Horizon
+        zoningtag = 'zoninghzcat'
+    else:                                               # PBA40
+        zoningtag = 'zoningmodcat'
 
     parcel_baseyear = parcel_baseyear[['parcel_id','tothh','totemp', 'hhq1','hhq2','hhq3','hhq4',
                                        'residential_units','deed_restricted_units',
