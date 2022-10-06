@@ -1,0 +1,29 @@
+site_name: Bay Area UrbanSim
+site_url: https://bayareametro_urbansim.com/
+repo_url: https://github.com/BayAreaMetro/bayarea_urbansim
+
+theme: 
+    # name: readthedocs
+    name: material
+    features:
+    - navigation.tabs
+    - content.code.annotate
+    - content.tabs.link
+    - navigation.indexes
+
+nav:
+    - Home: 'index.md'
+    - Model Overview: 'model_overview.md'
+    - User Guide: 'user_guide.md'
+    - Input: 'input.md'
+    - Output: 'output.md'
+    - PBA50: 'pba50.md'
+
+plugins:
+  - autorefs
+  - mike:
+
+extra:
+  version:
+    provider: mike
+    default: latest
