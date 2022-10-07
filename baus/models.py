@@ -22,6 +22,9 @@ from baus.utils import \
 
 @orca.step()
 def elcm_simulate(jobs, buildings, aggregations, elcm_config):
+    """
+    testing docstring documentation for automated documentation creation
+    """
     buildings.local["non_residential_rent"] = \
         buildings.local.non_residential_rent.fillna(0)
     return utils.lcm_simulate(elcm_config, jobs, buildings, aggregations,
