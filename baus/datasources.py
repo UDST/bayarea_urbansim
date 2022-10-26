@@ -278,7 +278,7 @@ def fetch_from_s3(settings):
 # key locations in the Bay Area for use as attractions in the models
 @orca.table(cache=True)
 def landmarks():
-    return pd.read_csv(os.path.join(misc.data_dir(), 'landmarks.csv'),
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 'landmarks.csv'),
                        index_col="name")
 
 
@@ -359,7 +359,7 @@ def new_tpp_id():
 
 @orca.table(cache=True)
 def maz():
-    maz = pd.read_csv(os.path.join(misc.data_dir(), "maz_geography.csv"),
+    maz = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "maz_geography.csv"),
                       dtype={'MAZ': np.int64,
                              'TAZ': np.int64})
     maz = maz.drop_duplicates('MAZ').set_index('MAZ')
@@ -575,7 +575,7 @@ def parcels_geography(parcels, scenario, settings, policy):
 
     # this will be used to map juris id to name
     juris_name = pd.read_csv(
-        os.path.join(misc.data_dir(), "census_id_to_name.csv"),
+        os.path.join(orca.get_injectable("inputs_dir"), "census_id_to_name.csv"),
         dtype={'census_id': np.int64},
         index_col="census_id").name10
 
@@ -968,7 +968,7 @@ def taz_forecast_inputs():
 @orca.table(cache=True)
 def vmt_fee_categories():
     return pd.read_csv(
-        os.path.join(misc.data_dir(), "vmt_fee_zonecats.csv"),
+        os.path.join(orca.get_injectable("inputs_dir"), "vmt_fee_zonecats.csv"),
         dtype={'taz': np.int64},
         index_col="taz")
 
@@ -991,7 +991,7 @@ def superdistricts(scenario):
 
 @orca.table(cache=True)
 def abag_targets():
-    return pd.read_csv(os.path.join(misc.data_dir(), "abag_targets.csv"))
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "abag_targets.csv"))
 
 
 @orca.table(cache=True)
