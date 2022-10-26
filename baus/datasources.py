@@ -284,7 +284,7 @@ def landmarks():
 
 @orca.table(cache=True)
 def baseyear_taz_controls():
-    return pd.read_csv(os.path.join("data",
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"),
                                     "baseyear_taz_controls.csv"),
                        dtype={'taz1454': np.int64},
                        index_col="taz1454")

@@ -171,11 +171,13 @@ def _proportional_jobs_model(
 @orca.step()
 def accessory_units(year, buildings, parcels, scenario, policy):
     if scenario in policy["adus_bp_enable"]:
-        add_units = pd.read_csv("data/accessory_units_bp.csv",
-                                index_col="juris")[str(year)]
+        add_units = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"),
+                                             "accessory_unit_bp.csv"), 
+                                             index_col="juris")[str(year)]
     else:
-        add_units = pd.read_csv("data/accessory_units.csv",
-                                index_col="juris")[str(year)]
+        add_units = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"),
+                                             "accessory_unit_bp.csv"),
+                                             index_col="juris")[str(year)]
     buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
     res_buildings = buildings_juris[buildings.general_type == "Residential"]
     add_buildings = groupby_random_choice(res_buildings, add_units)
@@ -1086,7 +1088,7 @@ def local_pois(settings):
 
     cols = {}
 
-    locations = pd.read_csv(os.path.join(misc.data_dir(), 'bart_stations.csv'))
+    locations = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 'bart_stations.csv'))
     n.set_pois("tmp", locations.lng, locations.lat)
     cols["bartdist"] = n.nearest_pois(3000, "tmp", num_pois=1)[1]
 
