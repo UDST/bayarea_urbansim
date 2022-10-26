@@ -382,20 +382,20 @@ def parcel_to_maz():
 
 @orca.table(cache=True)
 def county_forecast_inputs():
-    return pd.read_csv(os.path.join(misc.data_dir(),
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"),
                                     "county_forecast_inputs.csv"),
                        index_col="COUNTY")
 
 
 @orca.table(cache=True)
 def county_employment_forecast():
-    return pd.read_csv(os.path.join(misc.data_dir(),
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"),
                        "county_employment_forecast.csv"))
 
 
 @orca.table(cache=True)
 def taz2_forecast_inputs(regional_demographic_forecast):
-    t2fi = pd.read_csv(os.path.join(misc.data_dir(),
+    t2fi = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"),
                                     "taz2_forecast_inputs.csv"),
                        dtype={'TAZ': np.int64},
                        index_col='TAZ').replace('#DIV/0!', np.nan)
@@ -950,7 +950,7 @@ def employment_controls(employment_controls_unstacked):
 @orca.table(cache=True)
 def zone_forecast_inputs():
     return pd.read_csv(
-        os.path.join(misc.data_dir(), "zone_forecast_inputs.csv"),
+        os.path.join(orca.get_injectable("inputs_dir"), "zone_forecast_inputs.csv"),
         dtype={'zone_id': np.int64},
         index_col="zone_id")
 
@@ -958,7 +958,7 @@ def zone_forecast_inputs():
 @orca.table(cache=True)
 def taz_forecast_inputs():
     return pd.read_csv(
-        os.path.join(misc.data_dir(), "taz_forecast_inputs.csv"),
+        os.path.join(orca.get_injectable("inputs_dir"), "taz_forecast_inputs.csv"),
         dtype={'TAZ1454': np.int64},
         index_col="TAZ1454")
 
