@@ -75,7 +75,7 @@ def final_year():
 
 @orca.injectable(cache=True)
 def store(settings):
-    return pd.HDFStore(os.path.join(misc.data_dir(), settings["store"]))
+    return pd.HDFStore(os.path.join(orca.get_injectable("inputs_dir"), settings["store"]))
 
 
 @orca.injectable(cache=True)
