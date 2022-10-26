@@ -247,7 +247,7 @@ def proportional_elcm(jobs, households, buildings, parcels,
 
     # first read the file from disk - it's small so no table source
     taz_assumptions_df = pd.read_csv(os.path.join(
-        "data",
+        orca.get_injectable("inputs_dir"),
         "taz_growth_rates_gov_ed.csv"
     ), index_col="Taz")
 

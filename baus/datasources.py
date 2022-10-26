@@ -353,7 +353,7 @@ def zoning_baseline(parcels, zoning_lookup, settings):
 
 @orca.table(cache=True)
 def new_tpp_id():
-    return pd.read_csv(os.path.join(misc.data_dir(), "tpp_id_2016.csv"),
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "tpp_id_2016.csv"),
                        index_col="parcel_id")
 
 
@@ -363,7 +363,7 @@ def maz():
                       dtype={'MAZ': np.int64,
                              'TAZ': np.int64})
     maz = maz.drop_duplicates('MAZ').set_index('MAZ')
-    taz1454 = pd.read_csv(os.path.join(misc.data_dir(), "maz22_taz1454.csv"),
+    taz1454 = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "maz22_taz1454.csv"),
                           dtype={'maz':     np.int64,
                                  'TAZ1454': np.int64},
                           index_col='maz')
@@ -444,7 +444,7 @@ def empsh_to_empsix():
 @orca.table(cache=True)
 def maz_forecast_inputs(regional_demographic_forecast):
     rdf = regional_demographic_forecast.to_frame()
-    mfi = pd.read_csv(os.path.join(misc.data_dir(),
+    mfi = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"),
                                    "maz_forecast_inputs.csv"),
                       dtype={'MAZ': np.int64},
                       index_col='MAZ').replace('#DIV/0!', np.nan)
@@ -997,7 +997,7 @@ def abag_targets():
 @orca.table(cache=True)
 def taz_geography(superdistricts, mapping):
     tg = pd.read_csv(
-        os.path.join(misc.data_dir(), "taz_geography.csv"),
+        os.path.join(orca.get_injectable("inputs_dir"), "taz_geography.csv"),
         dtype={'zone':          np.int64,
                'superdistrcit': np.int64,
                'county':        np.int64},
