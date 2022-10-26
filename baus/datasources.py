@@ -1121,7 +1121,7 @@ def slr_progression_d_b():
 @orca.table(cache=True)
 def parcels_tract():
     return pd.read_csv(
-        os.path.join(misc.data_dir(), "parcel_tract_xwalk.csv"),
+        os.path.join(orca.get_injectable("inputs_dir"), "parcel_tract_xwalk.csv"),
         dtype={'parcel_id': np.int64,
                'zone_id':   np.int64},
         index_col='parcel_id')
@@ -1131,7 +1131,7 @@ def parcels_tract():
 @orca.table(cache=True)
 def tracts_earthquake():
     return pd.read_csv(
-        os.path.join(misc.data_dir(), "tract_damage_earthquake.csv"))
+        os.path.join(orca.get_injectable("inputs_dir"), "tract_damage_earthquake.csv"))
 
 
 # this specifies the relationships between tables
