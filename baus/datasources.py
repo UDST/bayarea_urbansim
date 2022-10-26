@@ -646,7 +646,7 @@ def mandatory_accessibility():
     fname = get_logsum_file('mandatory')
     orca.add_injectable("mand_acc_file_2010", fname)
     df = pd.read_csv(os.path.join(
-        misc.data_dir(), fname))
+        orca.get_injectable("inputs_dir"), fname))
     df.loc[df.subzone == 0, 'subzone'] = 'c'  # no walk
     df.loc[df.subzone == 1, 'subzone'] = 'a'  # short walk
     df.loc[df.subzone == 2, 'subzone'] = 'b'  # long walk
@@ -659,7 +659,7 @@ def non_mandatory_accessibility():
     fname = get_logsum_file('non_mandatory')
     orca.add_injectable("nonmand_acc_file_2010", fname)
     df = pd.read_csv(os.path.join(
-        misc.data_dir(), fname))
+        orca.get_injectable("inputs_dir"), fname))
     df.loc[df.subzone == 0, 'subzone'] = 'c'  # no walk
     df.loc[df.subzone == 1, 'subzone'] = 'a'  # short walk
     df.loc[df.subzone == 2, 'subzone'] = 'b'  # long walk
@@ -672,7 +672,7 @@ def accessibilities_segmentation():
     fname = get_logsum_file('segmentation')
     orca.add_injectable("acc_seg_file_2010", fname)
     df = pd.read_csv(os.path.join(
-        misc.data_dir(), fname))
+        orca.get_injectable("inputs_dir"), fname))
     df['AV'] = df['hasAV'].apply(lambda x: 'AV' if x == 1 else 'noAV')
     df['label'] = (df['incQ_label'] + '_' + df['autoSuff_label'] +
                    '_' + df['AV'])
