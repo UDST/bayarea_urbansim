@@ -304,7 +304,7 @@ def base_year_summary_taz(mapping):
 # non-residential rent data
 @orca.table(cache=True)
 def costar(store, parcels):
-    df = pd.read_csv(os.path.join(misc.data_dir(), '2015_08_29_costar.csv'))
+    df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), '2015_08_29_costar.csv'))
 
     df["PropertyType"] = df.PropertyType.replace("General Retail", "Retail")
     df = df[df.PropertyType.isin(["Office", "Retail", "Industrial"])]
