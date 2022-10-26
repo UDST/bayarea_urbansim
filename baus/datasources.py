@@ -325,7 +325,7 @@ def costar(store, parcels):
 
 @orca.table(cache=True)
 def zoning_lookup():
-    file = os.path.join(misc.data_dir(),
+    file = os.path.join(orca.get_injectable("inputs_dir"),
                        "2020_11_05_zoning_lookup_hybrid_pba50.csv")
     print('Version of zoning_lookup: {}'.format(file))
     return pd.read_csv(file,
@@ -336,7 +336,7 @@ def zoning_lookup():
 # zoning for use in the "baseline" scenario
 @orca.table(cache=True)
 def zoning_baseline(parcels, zoning_lookup, settings):
-    file = os.path.join(misc.data_dir(),
+    file = os.path.join(orca.get_injectable("inputs_dir"),
                         "2020_11_05_zoning_parcels_hybrid_pba50.csv")
     print('Version of zoning_parcels: {}'.format(file))                    
     df = pd.read_csv(file,
