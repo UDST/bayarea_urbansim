@@ -1038,7 +1038,7 @@ def static_parcel_proportional_job_allocation(static_parcels):
 
 
 def make_network(name, weight_col, max_distance):
-    st = pd.HDFStore(os.path.join(misc.data_dir(), name), "r")
+    st = pd.HDFStore(os.path.join(orca.get_injectable("inputs_dir"), name), "r")
     nodes, edges = st.nodes, st.edges
     net = pdna.Network(nodes["x"], nodes["y"], edges["from"], edges["to"],
                        edges[[weight_col]])
