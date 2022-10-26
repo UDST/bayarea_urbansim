@@ -1118,7 +1118,7 @@ def regional_vars(net):
     nodes = networks.from_yaml(net["drive"], "regional_vars.yaml")
     nodes = nodes.fillna(0)
 
-    nodes2 = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "regional_poi_distances.csv'"),
+    nodes2 = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "regional_poi_distances.csv"),
                          index_col="tmnode_id")
     nodes = pd.concat([nodes, nodes2], axis=1)
 
