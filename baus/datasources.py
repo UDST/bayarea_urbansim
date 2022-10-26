@@ -1038,7 +1038,7 @@ def zones(store):
 @orca.table(cache=True)
 def slr_parcel_inundation():
     return pd.read_csv(
-        os.path.join(misc.data_dir(), "slr_parcel_inundation.csv"),
+        os.path.join(orca.get_injectable("inputs_dir"), "slr_parcel_inundation.csv"),
         dtype={'parcel_id': np.int64},
         index_col='parcel_id')
 
@@ -1046,7 +1046,7 @@ def slr_parcel_inundation():
 @orca.table(cache=True)
 def slr_parcel_inundation_mf():
     return pd.read_csv(
-        os.path.join(misc.data_dir(), "slr_parcel_inundation_mf.csv"),
+        os.path.join(orca.get_injectable("inputs_dir"), "slr_parcel_inundation_mf.csv"),
         dtype={'parcel_id': np.int64},
         index_col='parcel_id')
 
@@ -1054,7 +1054,7 @@ def slr_parcel_inundation_mf():
 @orca.table(cache=True)
 def slr_parcel_inundation_mp():
     return pd.read_csv(
-        os.path.join(misc.data_dir(), "slr_parcel_inundation_mp.csv"),
+        os.path.join(orca.get_injectable("inputs_dir"), "slr_parcel_inundation_mp.csv"),
         dtype={'parcel_id': np.int64},
         index_col='parcel_id')
 
@@ -1064,7 +1064,7 @@ def slr_parcel_inundation_mp():
 @orca.table(cache=True)
 def slr_parcel_inundation_d_b():
     return pd.read_csv(
-        os.path.join(misc.data_dir(), "slr_parcel_inundation_d_b.csv"),
+        os.path.join(orca.get_injectable("inputs_dir"), "slr_parcel_inundation_d_b.csv"),
         dtype={'parcel_id': np.int64},
         index_col='parcel_id')
 
@@ -1072,7 +1072,7 @@ def slr_parcel_inundation_d_b():
 @orca.table(cache=True)
 def slr_parcel_inundation_d_bb():
     return pd.read_csv(
-        os.path.join(misc.data_dir(), "slr_parcel_inundation_d_bb.csv"),
+        os.path.join(orca.get_injectable("inputs_dir"), "slr_parcel_inundation_d_bb.csv"),
         dtype={'parcel_id': np.int64},
         index_col='parcel_id')
 
@@ -1080,14 +1080,14 @@ def slr_parcel_inundation_d_bb():
 @orca.table(cache=True)
 def slr_parcel_inundation_d_bp():
     return pd.read_csv(
-        os.path.join(misc.data_dir(), "slr_parcel_inundation_d_bp.csv"),
+        os.path.join(orca.get_injectable("inputs_dir"), "slr_parcel_inundation_d_bp.csv"),
         dtype={'parcel_id': np.int64},
         index_col='parcel_id')
 
 @orca.table(cache=True)
 def slr_parcel_inundation_f_b_np():
     return pd.read_csv(
-        os.path.join(misc.data_dir(), "slr_parcel_inundation_f_b_np.csv"),
+        os.path.join(orca.get_injectable("inputs_dir"), "slr_parcel_inundation_f_b_np.csv"),
         index_col='parcel_id')
 
 
@@ -1095,26 +1095,26 @@ def slr_parcel_inundation_f_b_np():
 @orca.table(cache=True)
 def slr_progression_C():
     return pd.read_csv(
-        os.path.join(misc.data_dir(), "slr_progression_C.csv"))
+        os.path.join(orca.get_injectable("inputs_dir"), "slr_progression_C.csv"))
 
 
 @orca.table(cache=True)
 def slr_progression_B():
     return pd.read_csv(
-        os.path.join(misc.data_dir(), "slr_progression_B.csv"))
+        os.path.join(orca.get_injectable("inputs_dir"), "slr_progression_B.csv"))
 
 
 @orca.table(cache=True)
 def slr_progression_R():
     return pd.read_csv(
-        os.path.join(misc.data_dir(), "slr_progression_R.csv"))
+        os.path.join(orca.get_injectable("inputs_dir"), "slr_progression_R.csv"))
 
 
 # SLR progression for draft blueprint
 @orca.table(cache=True)
 def slr_progression_d_b():
     return pd.read_csv(
-        os.path.join(misc.data_dir(), "slr_progression_d_b.csv"))
+        os.path.join(orca.get_injectable("inputs_dir"), "slr_progression_d_b.csv"))
 
 
 # census tracts for parcels, to assign earthquake probabilities
