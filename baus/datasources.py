@@ -473,7 +473,7 @@ def zoning_scenario(parcels_geography, scenario, policy, mapping):
         scenario = str(int(scenario) - 10)
 
     scenario_zoning = pd.read_csv(
-        os.path.join(misc.data_dir(), 'zoning_mods_%s.csv' % scenario))
+        os.path.join(orca.get_injectable("inputs_dir"), 'zoning_mods_%s.csv' % scenario))
 
     if "ppa_id" in scenario_zoning.columns:
         ppa_up = scenario_zoning.loc[(scenario_zoning.ppa_id == 'ppa') & 
