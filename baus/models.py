@@ -191,7 +191,7 @@ def proportional_elcm(jobs, households, buildings, parcels,
                       year, run_number):
 
     juris_assumptions_df = pd.read_csv(os.path.join(
-        "data",
+        orca.get_injectable("inputs_dir"),
         "juris_assumptions.csv"
     ), index_col="juris")
 

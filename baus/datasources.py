@@ -438,7 +438,7 @@ def taz2_forecast_inputs(regional_demographic_forecast):
 
 @orca.table(cache=True)
 def empsh_to_empsix():
-    return pd.read_csv(os.path.join(misc.data_dir(), "empsh_to_empsix.csv"))
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "empsh_to_empsix.csv"))
 
 
 @orca.table(cache=True)
@@ -738,7 +738,7 @@ def get_logsum_file(type='mandatory'):
 
 @orca.table(cache=True)
 def manual_edits():
-    return pd.read_csv(os.path.join(misc.data_dir(), "manual_edits.csv"))
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "manual_edits.csv"))
 
 
 def reprocess_dev_projects(df):
@@ -1021,7 +1021,7 @@ def taz_geography(superdistricts, mapping):
 
 @orca.table(cache=True)
 def taz2_price_shifters():
-    return pd.read_csv(os.path.join(misc.data_dir(),
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"),
                                     "taz2_price_shifters.csv"),
                        dtype={'TAZ': np.int64},
                        index_col="TAZ")
