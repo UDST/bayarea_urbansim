@@ -48,7 +48,7 @@ def households_transition(households, household_controls, year, settings):
 
 @orca.table(cache=True)
 def employment_relocation_rates():
-    df = pd.read_csv(os.path.join("data", "employment_relocation_rates.csv"))
+    df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "employment_relocation_rates.csv"))
     df = df.set_index("zone_id").stack().reset_index()
     df.columns = ["zone_id", "empsix", "rate"]
     return df
@@ -60,27 +60,27 @@ def employment_relocation_rates():
 def household_relocation_rates(scenario, policy):
     if scenario in policy['futures_scenarios']:
         if scenario in policy['reloc_fr2_enable']:
-            df = pd.read_csv(os.path.join("data",
+            df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"),
                              "household_relocation_rates_fr2.csv"))
             orca.add_injectable("hh_reloc", 'activated')
             print("File used is: household_relocation_rates_fr2.csv")
         else:
-            df = pd.read_csv(os.path.join("data",
+            df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"),
                              "household_relocation_rates_fr_base.csv"))
             orca.add_injectable("hh_reloc", 'not activated')
             print("File used is: household_relocation_rates_fr_base.csv")
     elif scenario in policy['reloc_db_enable']:
-        df = pd.read_csv(os.path.join("data",
+        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"),
                          "household_relocation_rates_db_var.csv"))
         orca.add_injectable("hh_reloc", 'activated')
         print("File used is: household_relocation_rates_db_var.csv")
     elif scenario in policy['reloc_fb_enable']:
-        df = pd.read_csv(os.path.join("data",
+        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"),
                          "household_relocation_rates_fb.csv"))
         orca.add_injectable("hh_reloc", 'activated')
         print("File used is: household_relocation_rates_fb.csv")
     else:
-        df = pd.read_csv(os.path.join("data",
+        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"),
                          "household_relocation_rates_db_base.csv"))
         orca.add_injectable("hh_reloc", 'not activated')
         print("File used is: household_relocation_rates_db_base.csv")
