@@ -373,7 +373,7 @@ def maz():
 
 @orca.table(cache=True)
 def parcel_to_maz():
-    return pd.read_csv(os.path.join(misc.data_dir(),
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"),
                                     "2020_08_17_parcel_to_maz22.csv"),
                        dtype={'PARCEL_ID': np.int64,
                               'maz':       np.int64},
@@ -634,7 +634,7 @@ def parcels_geography(parcels, scenario, settings, policy):
 
 @orca.table(cache=True)
 def parcels_subzone():
-    return pd.read_csv(os.path.join(misc.data_dir(),
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"),
                                     '2020_08_17_parcel_to_taz1454sub.csv'),
                        usecols=['taz_sub', 'PARCEL_ID', 'county'],
                        dtype={'PARCEL_ID': np.int64},
