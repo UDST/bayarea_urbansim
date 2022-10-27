@@ -1138,7 +1138,7 @@ def tracts_earthquake():
 @orca.table(cache=True)
 def logsums():
     return pd.read_csv(
-        os.path.join(orca.get_injectable("inputs_dir"), "logsums.csv"))
+        os.path.join(orca.get_injectable("inputs_dir"), "logsums.csv"), index_col="taz")
 
 
 # this specifies the relationships between tables
