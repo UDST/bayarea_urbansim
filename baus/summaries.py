@@ -2087,7 +2087,7 @@ def scaled_resacre(mtcr, us_outr):
 
 
 def zone_forecast_inputs():
-    return pd.read_csv(os.path.join('data', 'zone_forecast_inputs.csv'),
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 'zone_forecast_inputs.csv'),
                        index_col="zone_id")
 
 
