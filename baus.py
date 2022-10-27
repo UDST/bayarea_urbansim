@@ -47,9 +47,13 @@ LAST_KNOWN_GOOD_RUNS = {
     "5": 1059
 }
 
-# add inputs directory to orca
-INPUTS_PATH = 'C:/Users/etheocharides/Box/Modeling and Surveys/Urban Modeling/Bay Area UrbanSim/PBA50Plus_Development/Run Setup/pba50_fbp_run_setup/inputs/'
+# store model run file directories as injectables
+USER = 'etheocharides'
+RUN_FOLDER = 'PBA50Plus_Development/Run Setup/run_setup'
+INPUTS_PATH = 'C:/Users/{}/Box/Modeling and Surveys/Urban Modeling/Bay Area UrbanSim/{}/inputs'.format(USER, RUN_FOLDER)
+OUTPUTS_PATH = 'C:/Users/{}/Box/Modeling and Surveys/Urban Modeling/Bay Area UrbanSim/{}/outputs'.format(USER, RUN_FOLDER)
 orca.add_injectable("inputs_dir", INPUTS_PATH)
+orca.add_injectable("outputs_dir", OUTPUTS_PATH)
 
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 
