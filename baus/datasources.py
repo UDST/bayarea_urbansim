@@ -1134,6 +1134,13 @@ def tracts_earthquake():
         os.path.join(orca.get_injectable("inputs_dir"), "tract_damage_earthquake.csv"))
 
 
+# override urbansim_defaults which looks for this in data/
+@orca.table(cache=True)
+def logsums():
+    return pd.read_csv(
+        os.path.join(orca.get_injectable("inputs_dir"), "logsums.csv"))
+
+
 # this specifies the relationships between tables
 orca.broadcast('buildings', 'residential_units', cast_index=True,
                onto_on='building_id')
