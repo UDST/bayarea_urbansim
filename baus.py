@@ -124,9 +124,9 @@ if INTERACT:
 run_num = orca.get_injectable("run_number")
 
 if LOGS:
-    print('***The Standard stream is being written to /runs/run{0}.log***'
+    print('***The Standard stream is being written to run{0}.log***'
           .format(run_num))
-    sys.stdout = sys.stderr = open("runs/run%d.log" % run_num, 'w')
+    sys.stdout = sys.stderr = open(os.path.join(orca.get_injectable("outputs_dir"), "run%d.log") % run_num, 'w')
 
 if RANDOM_SEED:
     np.random.seed(12)
