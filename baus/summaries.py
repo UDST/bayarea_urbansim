@@ -58,37 +58,8 @@ def config(policy, inputs, run_number, scenario, parcels,
     write("")
 
     # logsums files
-    # mandatory
-    mand_acc_fname_2010 = orca.get_injectable("mand_acc_file_2010")
-    write("2010 mandatory accessibility file used: %s"
-          % mand_acc_fname_2010)
-    ma_fname_2030 = "logsum_2030_s"+scenario
-    if ma_fname_2030 in inputs["logsums"]["mandatory"]:
-        write("2030 mandatory accessibility file used: %s"
-              % inputs["logsums"]["mandatory"][ma_fname_2030])
-    else:
-        write("No 2030 mandatory accessibility file is set")
-    # non-mandatory
-    nonmand_acc_fname_2010 = orca.get_injectable("nonmand_acc_file_2010")
-    write("2010 non-mandatory accessibility file used: %s"
-          % nonmand_acc_fname_2010)
-    nma_fname_2030 = "logsum_2030_s"+scenario
-    if nma_fname_2030 in inputs["logsums"]["mandatory"]:
-        write("2030 non-mandatory accessibility file used: %s"
-              % inputs["logsums"]["non_mandatory"][nma_fname_2030])
-    else:
-        write("No 2030 non-mandatory accessibility file is set")
-    # segmentation
-    acc_seg_fname_2010 = orca.get_injectable("acc_seg_file_2010")
-    write("2010 accessibility segmentation file used: %s"
-          % acc_seg_fname_2010)
-    acc_seg_fname_2030 = "logsum_2030_s"+scenario
-    if acc_seg_fname_2030 in inputs["logsums"]["segmentation"]:
-        write("2030 accessibility segmentation file used: %s"
-              % inputs["logsums"]["segmentation"][acc_seg_fname_2030])
-    else:
-        write("No 2030 accessibility segmentation file is set")
-    write("")
+    write("accessibility files used are: %s" % (orca.get_injectable("logsum_y1"), orca.get_injectable("logsum_y2")))
+    write("accessibility periods applied are: %s" % (orca.get_injectable("logsum_p1"), orca.get_inectable("logsum_p2")))
 
     # zoning modifications
     zm_file_loc = os.path.isfile(os.path.join("data", "zoning_mods_%s.csv"

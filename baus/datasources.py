@@ -636,98 +636,52 @@ def parcels_subzone():
 
 
 @orca.table(cache=False)
-def mandatory_accessibility():
-    fname = get_logsum_file('mandatory')
-    orca.add_injectable("mand_acc_file_2010", fname)
-    df = pd.read_csv(os.path.join(
-        orca.get_injectable("inputs_dir"), fname))
+def mandatory_accessibility(year, logsum_p1, logsum_p2, logsum_y1, logsum_y2):
+
+    if year in logsum_p1:
+        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "mandatoryAccessibilities_{}.csv").format(logsum_y1))
+    elif year in logsum_p2:
+        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "mandatoryAccessibilities_{}.csv").format(logsum_y2))
+
     df.loc[df.subzone == 0, 'subzone'] = 'c'  # no walk
     df.loc[df.subzone == 1, 'subzone'] = 'a'  # short walk
     df.loc[df.subzone == 2, 'subzone'] = 'b'  # long walk
     df['taz_sub'] = df.taz.astype('str') + df.subzone
+
     return df.set_index('taz_sub')
 
 
 @orca.table(cache=False)
-def non_mandatory_accessibility():
-    fname = get_logsum_file('non_mandatory')
-    orca.add_injectable("nonmand_acc_file_2010", fname)
-    df = pd.read_csv(os.path.join(
-        orca.get_injectable("inputs_dir"), fname))
+def non_mandatory_accessibility(year, logsum_p1, logsum_p2, logsum_y1, logsum_y2):
+
+    if year in logsum_p1:
+        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "nonMandatoryAccessibilities_{}.csv").format(logsum_y1))
+    elif year in logsum_p2:
+        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "nonmandatoryAccessibilities_{}.csv").format(logsum_y2))
+
     df.loc[df.subzone == 0, 'subzone'] = 'c'  # no walk
     df.loc[df.subzone == 1, 'subzone'] = 'a'  # short walk
     df.loc[df.subzone == 2, 'subzone'] = 'b'  # long walk
     df['taz_sub'] = df.taz.astype('str') + df.subzone
+
     return df.set_index('taz_sub')
 
 
 @orca.table(cache=False)
-def accessibilities_segmentation():
-    fname = get_logsum_file('segmentation')
-    orca.add_injectable("acc_seg_file_2010", fname)
-    df = pd.read_csv(os.path.join(
-        orca.get_injectable("inputs_dir"), fname))
+def accessibilities_segmentation(year, logsum_p1, logsum_p2, logsum_y1, logsum_y2):
+
+    if year in logsum_p1:
+        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "AccessibilityMarkets_{}.csv").format(logsum_y1))
+    elif year in logsum_p2:
+        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "AccessibilityMarkets_{}.csv").format(logsum_y2))
+
     df['AV'] = df['hasAV'].apply(lambda x: 'AV' if x == 1 else 'noAV')
-    df['label'] = (df['incQ_label'] + '_' + df['autoSuff_label'] +
-                   '_' + df['AV'])
+    df['label'] = (df['incQ_label'] + '_' + df['autoSuff_label'] + '_' + df['AV'])
     df = df.groupby('label').sum()
     df['prop'] = df['num_persons'] / df['num_persons'].sum()
     df = df[['prop']].transpose().reset_index(drop=True)
+
     return df
-
-
-def get_logsum_file(type='mandatory'):
-    logsums = orca.get_injectable('inputs')['logsums'][type]
-    sc = orca.get_injectable('scenario')
-    yr = orca.get_injectable('year')
-    try:
-        prev_type = orca.get_injectable('previous_{}_logsum_type'.format(type))
-        if prev_type == 'generic':
-            return orca.get_injectable('previous_{}_logsum_file'.format(type))
-        elif prev_type == 'year':
-            if 'logsum_{}'.format(yr) in logsums:
-                ls = logsums['logsum_{}'.format(yr)]
-                orca.add_injectable('previous_{}_logsum_file'.format(type), ls)
-                return ls
-            else:
-                return orca.get_injectable('previous_{}_logsum_file'
-                                           .format(type))
-        elif prev_type == 'scenario':
-            if 'logsum_s{}'.format(sc) in logsums:
-                ls = logsums['logsum_s{}'.format(sc)]
-                orca.add_injectable('previous_{}_logsum_file'
-                                    .format(type), ls)
-                return ls
-            else:
-                return orca.get_injectable('previous_{}_logsum_file'
-                                           .format(type))
-        else:
-            if 'logsum_{}_s{}'.format(yr, sc) in logsums:
-                ls = logsums['logsum_{}_s{}'.format(yr, sc)]
-                orca.add_injectable('previous_{}_logsum_file'
-                                    .format(type), ls)
-                return ls
-            else:
-                return orca.get_injectable('previous_{}_logsum_file'
-                                           .format(type))
-    except Exception as e:
-        if 'logsum' in logsums:
-            ls = logsums['logsum']
-            ls_type = 'generic'
-        if 'logsum_{}'.format(yr) in logsums:
-            ls = logsums['logsum_{}'.format(yr)]
-            ls_type = 'year'
-        if 'logsum_s{}'.format(sc) in logsums:
-            ls = logsums['logsum_s{}'.format(sc)]
-            ls_type = 'scenario'
-        if 'logsum_{}_s{}'.format(yr, sc) in logsums:
-            ls = logsums['logsum_{}_s{}'.format(yr, sc)]
-            ls_type = 'year_scenario'
-        orca.add_injectable('previous_{}_logsum_type'.format(type),
-                            ls_type)
-        orca.add_injectable('previous_{}_logsum_file'.format(type),
-                            ls)
-        return ls
 
 
 @orca.table(cache=True)
