@@ -49,15 +49,24 @@ LAST_KNOWN_GOOD_RUNS = {
 
 # store model run file directories as injectables
 USER = 'etheocharides'
-RUN_FOLDER = 'PBA50Plus_Development/Run Setup/run_setup'
+RUN_FOLDER = 'PBA50Plus_Development/Run Setup/pba50_fbp_run_setup'
 INPUTS_PATH = 'C:/Users/{}/Box/Modeling and Surveys/Urban Modeling/Bay Area UrbanSim/{}/inputs'.format(USER, RUN_FOLDER)
 OUTPUTS_PATH = 'C:/Users/{}/Box/Modeling and Surveys/Urban Modeling/Bay Area UrbanSim/{}/outputs'.format(USER, RUN_FOLDER)
 orca.add_injectable("inputs_dir", INPUTS_PATH)
 orca.add_injectable("outputs_dir", OUTPUTS_PATH)
 
 # configure sea level rise- requires progression and inundation files
+# if SLR is activated, there is mitigation- committed project for FBP_NP and committed + policy projects for FBP
 SLR = True
 orca.add_injectable("slr", SLR)
+
+# configure earthquake
+EQ = False
+orca.add_injectable("eq", EQ)
+# configure earthquake mitigation
+EQ_MITIGATION = False
+orca.add_injectable("eq_mitigation", EQ_MITIGATION)
+
 
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 

@@ -21,12 +21,6 @@ import yaml
 # define new settings files- these have been subdivided from the
 # general settings file
 # this is similar to the code for settings in urbansim_defaults
-@orca.injectable('hazards', cache=True)
-def hazards():
-    with open(os.path.join(misc.configs_dir(), "hazards.yaml")) as f:
-        return yaml.load(f)
-
-
 @orca.injectable('policy', cache=True)
 def policy():
     with open(os.path.join(misc.configs_dir(), "policy.yaml")) as f:

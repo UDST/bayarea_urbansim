@@ -20,7 +20,7 @@ county_calculator, juris_to_county
 
 @orca.step()
 def config(policy, inputs, run_number, scenario, parcels,
-           development_projects, year, hazards, slr):
+           development_projects, year, slr, eq, eq_mitigation):
 
     f = open(os.path.join(orca.get_injectable("outputs_dir"), "run%d_configuration.log" %
              (run_number)), "w")
@@ -131,12 +131,12 @@ def config(policy, inputs, run_number, scenario, parcels,
 
     # earthquake
     # activation
-    if scenario in hazards["eq_scenarios"]["enable_in"]:
+    if eq:
         write("Earthquake is activated")
     else:
         write("Earthquake is not activated")
     # mitigation
-    if scenario in hazards["eq_scenarios"]["mitigation"]:
+    if eq_mitigation:
         write("Earthquake retrofit policies are applied")
     else:
         write("Earthquake retrofit policies are not applied")
@@ -2405,146 +2405,142 @@ def hazards_slr_summary(slr, run_number, year, households, jobs, parcels,
 
 
 @orca.step()
-def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings,
-                       scenario, hazards):
+def hazards_eq_summary(eq, eq_mitigation, run_number, year, households, jobs, parcels, buildings):
 
-    if scenario not in hazards["eq_scenarios"]["enable_in"]:
-        return
+    if eq:
+        if year == 2035:
 
-    if year == 2035:
+            f = open(os.path.join(orca.get_injectable("outputs_dir"), "run%d_hazards_eq_%d.log" %
+                     (run_number, year)), "w")
 
-        f = open(os.path.join(orca.get_injectable("outputs_dir"), "run%d_hazards_eq_%d.log" %
-                 (run_number, year)), "w")
+            def write(s):
+                # print s
+                f.write(s + "\n\n")
 
-        def write(s):
-            # print s
-            f.write(s + "\n\n")
+            write("Number of buildings with earthquake buildings codes")
+            code = orca.get_injectable("code")
+            code_counts = [[x, code.count(x)] for x in set(code)]
+            code_counts_df = pd.DataFrame(code_counts,
+                                          columns=['building_code', 'count'])
+            code_counts_df.to_string(f, index=False)
 
-        write("Number of buildings with earthquake buildings codes")
-        code = orca.get_injectable("code")
-        code_counts = [[x, code.count(x)] for x in set(code)]
-        code_counts_df = pd.DataFrame(code_counts,
-                                      columns=['building_code', 'count'])
-        code_counts_df.to_string(f, index=False)
+            write("")
 
-        write("")
+            write("Number of buildings with fragility codes")
+            fragilities = orca.get_injectable("fragilities")
+            fragility_counts = [[x, fragilities.count(x)]
+                                for x in set(fragilities)]
+            fragility_counts_df = pd.DataFrame(fragility_counts,
+                                               columns=['fragility_code', 'count'])
+            fragility_counts_df.to_string(f, index=False)
 
-        write("Number of buildings with fragility codes")
-        fragilities = orca.get_injectable("fragilities")
-        fragility_counts = [[x, fragilities.count(x)]
-                            for x in set(fragilities)]
-        fragility_counts_df = pd.DataFrame(fragility_counts,
-                                           columns=['fragility_code', 'count'])
-        fragility_counts_df.to_string(f, index=False)
+            write("")
 
-        write("")
+            # buildings counts
+            eq_buildings = orca.get_injectable("eq_buildings")
+            n = len(eq_buildings)
+            write("Total number of buildings destroyed = %d" % n)
+            existing_buildings = orca.get_injectable("existing_buildings")
+            n = len(existing_buildings)
+            write("Number of existing buildings destroyed = %d" % n)
+            new_buildings = orca.get_injectable("new_buildings")
+            n = len(new_buildings)
+            write("Number of new buildings destroyed = %d" % n)
+            fire_buildings = orca.get_injectable("fire_buildings")
+            n = len(fire_buildings)
+            write("Number of buildings destroyed by fire = %d" % n)
 
-        # buildings counts
-        eq_buildings = orca.get_injectable("eq_buildings")
-        n = len(eq_buildings)
-        write("Total number of buildings destroyed = %d" % n)
-        existing_buildings = orca.get_injectable("existing_buildings")
-        n = len(existing_buildings)
-        write("Number of existing buildings destroyed = %d" % n)
-        new_buildings = orca.get_injectable("new_buildings")
-        n = len(new_buildings)
-        write("Number of new buildings destroyed = %d" % n)
-        fire_buildings = orca.get_injectable("fire_buildings")
-        n = len(fire_buildings)
-        write("Number of buildings destroyed by fire = %d" % n)
+            eq_demolish = orca.get_table("eq_demolish")
+            n = eq_demolish['residential_units'].sum()
+            write("Number of impacted residential units = %d" % n)
+            n = eq_demolish['building_sqft'].sum()
+            write("Number of impacted building sqft = %d" % n)
 
-        eq_demolish = orca.get_table("eq_demolish")
-        n = eq_demolish['residential_units'].sum()
-        write("Number of impacted residential units = %d" % n)
-        n = eq_demolish['building_sqft'].sum()
-        write("Number of impacted building sqft = %d" % n)
+            # income quartile counts
+            write("Number of impacted households by type")
+            hh_unplaced_eq = orca.get_injectable("hh_unplaced_eq")
+            hh_summary = pd.DataFrame(index=[0])
+            hh_summary['hhincq1'] = \
+                (hh_unplaced_eq["base_income_quartile"] == 1).sum()
+            hh_summary['hhincq2'] = \
+                (hh_unplaced_eq["base_income_quartile"] == 2).sum()
+            hh_summary['hhincq3'] = \
+                (hh_unplaced_eq["base_income_quartile"] == 3).sum()
+            hh_summary['hhincq4'] = \
+                (hh_unplaced_eq["base_income_quartile"] == 4).sum()
+            hh_summary.to_string(f, index=False)
 
-        # income quartile counts
-        write("Number of impacted households by type")
-        hh_unplaced_eq = orca.get_injectable("hh_unplaced_eq")
-        hh_summary = pd.DataFrame(index=[0])
-        hh_summary['hhincq1'] = \
-            (hh_unplaced_eq["base_income_quartile"] == 1).sum()
-        hh_summary['hhincq2'] = \
-            (hh_unplaced_eq["base_income_quartile"] == 2).sum()
-        hh_summary['hhincq3'] = \
-            (hh_unplaced_eq["base_income_quartile"] == 3).sum()
-        hh_summary['hhincq4'] = \
-            (hh_unplaced_eq["base_income_quartile"] == 4).sum()
-        hh_summary.to_string(f, index=False)
+            write("")
 
-        write("")
+            # employees by sector
+            write("Number of impacted jobs by sector")
+            jobs_unplaced_eq = orca.get_injectable("jobs_unplaced_eq")
+            jobs_summary = pd.DataFrame(index=[0])
+            jobs_summary['agrempn'] = \
+                (jobs_unplaced_eq["empsix"] == 'AGREMPN').sum()
+            jobs_summary['mwtempn'] = \
+                (jobs_unplaced_eq["empsix"] == 'MWTEMPN').sum()
+            jobs_summary['retempn'] = \
+                (jobs_unplaced_eq["empsix"] == 'RETEMPN').sum()
+            jobs_summary['fpsempn'] = \
+                (jobs_unplaced_eq["empsix"] == 'FPSEMPN').sum()
+            jobs_summary['herempn'] = \
+                (jobs_unplaced_eq["empsix"] == 'HEREMPN').sum()
+            jobs_summary['othempn'] = \
+                (jobs_unplaced_eq["empsix"] == 'OTHEMPN').sum()
+            jobs_summary.to_string(f, index=False)
 
-        # employees by sector
-        write("Number of impacted jobs by sector")
-        jobs_unplaced_eq = orca.get_injectable("jobs_unplaced_eq")
-        jobs_summary = pd.DataFrame(index=[0])
-        jobs_summary['agrempn'] = \
-            (jobs_unplaced_eq["empsix"] == 'AGREMPN').sum()
-        jobs_summary['mwtempn'] = \
-            (jobs_unplaced_eq["empsix"] == 'MWTEMPN').sum()
-        jobs_summary['retempn'] = \
-            (jobs_unplaced_eq["empsix"] == 'RETEMPN').sum()
-        jobs_summary['fpsempn'] = \
-            (jobs_unplaced_eq["empsix"] == 'FPSEMPN').sum()
-        jobs_summary['herempn'] = \
-            (jobs_unplaced_eq["empsix"] == 'HEREMPN').sum()
-        jobs_summary['othempn'] = \
-            (jobs_unplaced_eq["empsix"] == 'OTHEMPN').sum()
-        jobs_summary.to_string(f, index=False)
+            f.close()
 
-        f.close()
+            # print out demolished buildings
+            eq_demolish = eq_demolish.to_frame()
+            eq_demolish_taz = misc.reindex(parcels.zone_id,
+                                           eq_demolish.parcel_id)
+            eq_demolish['taz'] = eq_demolish_taz
+            eq_demolish['count'] = 1
+            eq_demolish = eq_demolish.drop(['parcel_id', 'year_built',
+                                           'redfin_sale_year'], axis=1)
+            eq_demolish = eq_demolish.groupby(['taz']).sum()
+            eq_demolish.to_csv(os.path.join(orca.get_injectable("outputs_dir"),
+                               "run%d_hazards_eq_demolish_buildings_%d.csv"
+                                            % (run_number, year)))
 
-        # print out demolished buildings
-        eq_demolish = eq_demolish.to_frame()
-        eq_demolish_taz = misc.reindex(parcels.zone_id,
-                                       eq_demolish.parcel_id)
-        eq_demolish['taz'] = eq_demolish_taz
-        eq_demolish['count'] = 1
-        eq_demolish = eq_demolish.drop(['parcel_id', 'year_built',
-                                       'redfin_sale_year'], axis=1)
-        eq_demolish = eq_demolish.groupby(['taz']).sum()
-        eq_demolish.to_csv(os.path.join(orca.get_injectable("outputs_dir"),
-                           "run%d_hazards_eq_demolish_buildings_%d.csv"
-                                        % (run_number, year)))
+            # print out retrofit buildings that were saved
+            if eq_mitigation:
+                retrofit_bldgs_tot = orca.get_table("retrofit_bldgs_tot")
+                retrofit_bldgs_tot = retrofit_bldgs_tot.to_frame()
+                retrofit_bldgs_tot_taz = misc.reindex(parcels.zone_id,
+                                                      retrofit_bldgs_tot.parcel_id)
+                retrofit_bldgs_tot['taz'] = retrofit_bldgs_tot_taz
+                retrofit_bldgs_tot['count'] = 1
+                retrofit_bldgs_tot = retrofit_bldgs_tot[[
+                    'taz', 'residential_units', 'residential_sqft',
+                    'non_residential_sqft', 'building_sqft', 'stories',
+                    'redfin_sale_price', 'non_residential_rent',
+                    'deed_restricted_units', 'residential_price', 'count']]
+                retrofit_bldgs_tot = retrofit_bldgs_tot.groupby(['taz']).sum()
+                retrofit_bldgs_tot.\
+                    to_csv(os.path.join(
+                           orca.get_injectable("outputs_dir"), "run%d_hazards_eq_retrofit_buildings_%d.csv"
+                           % (run_number, year)))
 
-        # print out retrofit buildings that were saved
-        if scenario in hazards["eq_scenarios"]["mitigation"]:
-            retrofit_bldgs_tot = orca.get_table("retrofit_bldgs_tot")
-            retrofit_bldgs_tot = retrofit_bldgs_tot.to_frame()
-            retrofit_bldgs_tot_taz = misc.reindex(parcels.zone_id,
-                                                  retrofit_bldgs_tot.parcel_id)
-            retrofit_bldgs_tot['taz'] = retrofit_bldgs_tot_taz
-            retrofit_bldgs_tot['count'] = 1
-            retrofit_bldgs_tot = retrofit_bldgs_tot[[
-                'taz', 'residential_units', 'residential_sqft',
-                'non_residential_sqft', 'building_sqft', 'stories',
-                'redfin_sale_price', 'non_residential_rent',
-                'deed_restricted_units', 'residential_price', 'count']]
-            retrofit_bldgs_tot = retrofit_bldgs_tot.groupby(['taz']).sum()
-            retrofit_bldgs_tot.\
-                to_csv(os.path.join(
-                       orca.get_injectable("outputs_dir"), "run%d_hazards_eq_retrofit_buildings_%d.csv"
-                       % (run_number, year)))
-
-    # print out buildings in 2030, 2035, and 2050 so Horizon team can compare
-    # building inventory by TAZ
-    if year in [2030, 2035, 2050] and scenario in \
-       hazards["eq_scenarios"]["enable_in"]:
-        buildings = buildings.to_frame()
-        buildings_taz = misc.reindex(parcels.zone_id,
-                                     buildings.parcel_id)
-        buildings['taz'] = buildings_taz
-        buildings['count'] = 1
-        buildings = buildings[['taz', 'count', 'residential_units',
-                               'residential_sqft', 'non_residential_sqft',
-                               'building_sqft', 'stories', 'redfin_sale_price',
-                               'non_residential_rent', 'deed_restricted_units',
-                               'residential_price']]
-        buildings = buildings.groupby(['taz']).sum()
-        buildings.to_csv(os.path.join(orca.get_injectable("outputs_dir"),
-                         "run%d_hazards_eq_buildings_list_%d.csv"
-                                      % (run_number, year)))
+        # print out buildings in 2030, 2035, and 2050 so Horizon team can compare
+        # building inventory by TAZ
+        if year in [2030, 2035, 2050] and eq:
+            buildings = buildings.to_frame()
+            buildings_taz = misc.reindex(parcels.zone_id,
+                                         buildings.parcel_id)
+            buildings['taz'] = buildings_taz
+            buildings['count'] = 1
+            buildings = buildings[['taz', 'count', 'residential_units',
+                                   'residential_sqft', 'non_residential_sqft',
+                                   'building_sqft', 'stories', 'redfin_sale_price',
+                                   'non_residential_rent', 'deed_restricted_units',
+                                   'residential_price']]
+            buildings = buildings.groupby(['taz']).sum()
+            buildings.to_csv(os.path.join(orca.get_injectable("outputs_dir"),
+                             "run%d_hazards_eq_buildings_list_%d.csv"
+                                          % (run_number, year)))
 
 
 @orca.step()
