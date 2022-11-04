@@ -2322,8 +2322,7 @@ def adjust_hhkids(df, year, rdf, total_hh):
 
 
 @orca.step()
-def hazards_slr_summary(slr, run_number, year, households, jobs, parcels,
-                        hazards):
+def hazards_slr_summary(slr, run_number, year, households, jobs, parcels):
 
     if slr:
 

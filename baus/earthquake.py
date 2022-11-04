@@ -248,7 +248,7 @@ def eq_code_buildings(eq, buildings, year):
 
 
 @orca.step()
-def earthquake_demolish(eq, eq_mitigation, parcels, parcels_tract, tracts_earthquake, buildings,
+def earthquake_demolish(eq, eq_mitigation, parcels, buildings,
                         households, jobs, residential_units, year):
 
     if eq:
@@ -256,6 +256,7 @@ def earthquake_demolish(eq, eq_mitigation, parcels, parcels_tract, tracts_earthq
       if year == 2035:
           # assign each parcel to a census tract using the lookup table
           # created with scripts/parcel_tract_assignment.py
+          parcels_tract = orca.get_table("parcels_tract")
           census_tract = pd.Series(parcels_tract['census_tract'],
                                    parcels_tract.index)
           print("Number of parcels with census tracts is: %d" %
@@ -277,7 +278,7 @@ def earthquake_demolish(eq, eq_mitigation, parcels, parcels_tract, tracts_earthq
           print("Number of census tract groups is: %d" % len(tract_parcels_grp))
 
           # for the parcels in each tract, destroy X% of parcels in that tract
-          tracts_earthquake = tracts_earthquake.to_frame()
+          tracts_earthquake = orca.get_table("tracts_earthquake").to_frame()
           tracts_earthquake = tracts_earthquake.sort_values(by=['tract_ba'])
           tracts_earthquake = tracts_earthquake.reset_index(drop=True)
 
