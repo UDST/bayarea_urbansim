@@ -60,12 +60,23 @@ orca.add_injectable("outputs_dir", OUTPUTS_PATH)
 SLR = True
 orca.add_injectable("slr", SLR)
 
-# configure earthquake
+# configure earthquake and earthquake mitigation
 EQ = False
 orca.add_injectable("eq", EQ)
-# configure earthquake mitigation
 EQ_MITIGATION = False
 orca.add_injectable("eq_mitigation", EQ_MITIGATION)
+
+# configure logsums, where:
+# P[1,2] is the period, or model years, in which the logsums are applied
+# Y[1,2] are the travel model years of the logsums
+LOGSUM_P1 = [2010, 2015, 2020, 2025] 
+LOGSUM_Y1 = 2035
+orca.add_injectable("logsum_p1", LOGSUM_P1)
+orca.add_injectable("logsum_y1", LOGSUM_Y1)
+LOGSUM_P2 = [2030, 2035, 2040, 2045, 2050]
+LOGSUM_Y2 = 2050
+orca.add_injectable("logsum_p2", LOGSUM_P2)
+orca.add_injectable("logsum_y2", LOGSUM_Y2)
 
 
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
