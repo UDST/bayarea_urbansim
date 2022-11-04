@@ -55,6 +55,10 @@ OUTPUTS_PATH = 'C:/Users/{}/Box/Modeling and Surveys/Urban Modeling/Bay Area Urb
 orca.add_injectable("inputs_dir", INPUTS_PATH)
 orca.add_injectable("outputs_dir", OUTPUTS_PATH)
 
+# configure sea level rise- requires progression and inundation files
+SLR = True
+orca.add_injectable("slr", SLR)
+
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 
 orca.add_injectable("base_year", IN_YEAR)
