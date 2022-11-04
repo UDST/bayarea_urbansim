@@ -22,7 +22,7 @@ county_calculator, juris_to_county
 def config(policy, inputs, run_number, scenario, parcels,
            development_projects, year, hazards):
 
-    f = open(os.path.join("runs", "run%d_configuration.log" %
+    f = open(os.path.join(orca.get_injectable("outputs_dir"), "run%d_configuration.log" %
              (run_number)), "w")
 
     def write(s):
@@ -620,7 +620,7 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
         # we don't want to waste time doing so
         return
 
-    f = open(os.path.join("runs", "run%d_topsheet_%d.log" %
+    f = open(os.path.join(orca.get_injectable("outputs_dir"), "run%d_topsheet_%d.log" %
              (run_number, year)), "w")
 
     def write(s):
@@ -957,7 +957,7 @@ def compare_to_targets(parcels, buildings, jobs, households, abag_targets,
         run_number = orca.get_injectable("run_number")
         year = orca.get_injectable("year")
 
-        df.to_csv(os.path.join("runs", "run%d_targets_comparison_%d.csv" %
+        df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_targets_comparison_%d.csv" %
                   (run_number, year)))
 
     return li
@@ -1041,7 +1041,7 @@ def diagnostic_output(households, buildings, parcels, taz, jobs, settings,
         df = orca.get_table("dropped_buildings").to_frame()
         print("Dropped buildings", df.describe())
         df.to_csv(
-            "runs/run{}_dropped_buildings.csv".format(run_number)
+            os.path.join(orca.get_injectable("outputs_dir"), "run{}_dropped_buildings.csv").format(run_number)
         )
 
 
@@ -1239,10 +1239,10 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
             summary_table = summary_table.sort_index()
 
             if base is False:
-                summary_csv = "runs/run{}_{}_summaries_{}.csv".\
+                summary_csv = os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_summaries_{}.csv").\
                     format(run_number, geography, year)
             elif base is True:
-                summary_csv = "runs/run{}_{}_summaries_{}.csv".\
+                summary_csv = os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_summaries_{}.csv").\
                     format(run_number, geography, 2009)
 
             summary_table.to_csv(summary_csv)
@@ -1251,22 +1251,22 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
     if year == final_year:
 
         for acct_name, acct in orca.get_injectable("coffer").items():
-            fname = "runs/run{}_acctlog_{}_{}.csv".\
+            fname = os.path.join(orca.get_injectable("outputs_dir"), "run{}_acctlog_{}_{}.csv").\
                 format(run_number, acct_name, year)
             acct.to_frame().to_csv(fname)
 
     if year == final_year:
         baseyear = 2015
         for geography in geographies:
-            df_base = pd.read_csv(os.path.join("runs",
+            df_base = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"),
                                             "run{}_{}_summaries_{}.csv".\
                                             format(run_number, geography, baseyear)))
-            df_final = pd.read_csv(os.path.join("runs",
+            df_final = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"),
                                             "run{}_{}_summaries_{}.csv".\
                                             format(run_number, geography, final_year)))
             df_growth = nontaz_calculator(run_number,
                                         df_base, df_final)
-            df_growth.to_csv(os.path.join("runs",
+            df_growth.to_csv(os.path.join(orca.get_injectable("outputs_dir"),
                                         "run{}_{}_growth_summaries.csv".\
                                         format(run_number, geography)), index = False)
 
@@ -1330,20 +1330,20 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
 
         df.columns = ['urban_footprint_0', 'urban_footprint_1',
                       'denser_greenfield']
-        uf_summary_csv = "runs/run{}_urban_footprint_summary_{}.csv".\
-            format(run_number, year)
+        uf_summary_csv = os.path.join(orca.get_injectable("outputs_dir"), "run{}_urban_footprint_summary_{}.csv".\
+            format(run_number, year))
         df.to_csv(uf_summary_csv)
 
     # Summarize Logsums
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
         zones = orca.get_table('zones')
         df = zones.to_frame(['zone_cml', 'zone_cnml', 'zone_combo_logsum'])
-        df.to_csv(os.path.join("runs",
+        df.to_csv(os.path.join(orca.get_injectable("outputs_dir"),
                                "run%d_taz_logsums_%d.csv"
                                % (run_number, year)))
         parcels = orca.get_table('parcels')
         df = parcels.to_frame(['cml', 'cnml', 'combo_logsum'])
-        df.to_csv(os.path.join("runs",
+        df.to_csv(os.path.join(orca.get_injectable("outputs_dir"),
                                "run%d_parcel_logsums_%d.csv"
                                % (run_number, year)))
 
@@ -1366,7 +1366,7 @@ def building_summary(parcels, run_number, year,
                  'x', 'y', 'geom_id', 'source'])
 
     df.to_csv(
-        os.path.join("runs", "run%d_building_data_%d.csv" %
+        os.path.join(orca.get_injectable("outputs_dir"), "run%d_building_data_%d.csv" %
                      (run_number, year))
     )
 
@@ -1456,7 +1456,7 @@ def parcel_summary(parcels, buildings, households, jobs,
     df["totemp"] = jobs_df.groupby('parcel_id').size()
 
     df.to_csv(
-        os.path.join("runs", "run%d_parcel_data_%d.csv" %
+        os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_data_%d.csv" %
                      (run_number, year))
     )
 
@@ -1467,7 +1467,7 @@ def parcel_summary(parcels, buildings, households, jobs,
         # do diff with initial year
 
         df2 = pd.read_csv(
-            os.path.join("runs", "run%d_parcel_data_%d.csv" %
+            os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_data_%d.csv" %
                          (run_number, initial_year)), index_col="parcel_id")
 
         for col in df.columns:
@@ -1482,7 +1482,7 @@ def parcel_summary(parcels, buildings, households, jobs,
             df[col] = df[col] - df2[col]
 
         df.to_csv(
-            os.path.join("runs", "run%d_parcel_data_diff.csv" %
+            os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_data_diff.csv" %
                          run_number)
         )
 
@@ -1491,10 +1491,10 @@ def parcel_summary(parcels, buildings, households, jobs,
     if year not in [2010, 2015]:
         print('calculate diff for year {}'.format(year)) 
         baseyear = 2015
-        df_base = pd.read_csv(os.path.join("runs",
+        df_base = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"),
                                         "run%d_parcel_data_%d.csv"
                                         % (run_number, baseyear)))
-        df_final = pd.read_csv(os.path.join("runs",
+        df_final = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"),
                                         "run%d_parcel_data_%d.csv"
                                         # % (run_number, final_year)))
                                         % (run_number, year)))
@@ -1507,7 +1507,7 @@ def parcel_summary(parcels, buildings, households, jobs,
             df_growth.sort_values(by = ['county','juris','geo_category'],
                                     ascending=[True, True, False], inplace=True)
             df_growth.set_index(['RUNID','county','juris','geo_category'], inplace=True)
-            df_growth.to_csv(os.path.join("runs", "run{}_{}_growth_summaries.csv".\
+            df_growth.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_growth_summaries.csv".\
                                             format(run_number, geography)))
         geo_1, geo_2, geo_3 = 'tra','DIS','HRA'
         df_growth_1 = TWO_GEO_SUMMARY_LOADER(run_number, geo_1, geo_2,
@@ -1516,7 +1516,7 @@ def parcel_summary(parcels, buildings, households, jobs,
         df_growth_1.sort_values(by = ['county','juris','geo_category'],
                                 ascending=[True, True, False], inplace=True)
         df_growth_1.set_index(['RUNID','county','juris','geo_category'], inplace=True)
-        df_growth_1.to_csv(os.path.join("runs", "run{}_{}_growth_summaries.csv".\
+        df_growth_1.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_growth_summaries.csv".\
                                         format(run_number, geo_1 + geo_2)))
 
         df_growth_2 = TWO_GEO_SUMMARY_LOADER(run_number, geo_1, geo_3,
@@ -1525,7 +1525,7 @@ def parcel_summary(parcels, buildings, households, jobs,
         df_growth_2.sort_values(by = ['county','juris','geo_category'],
                                 ascending=[True, True, False], inplace=True)
         df_growth_2.set_index(['RUNID','county','juris','geo_category'], inplace=True)
-        df_growth_2.to_csv(os.path.join("runs", "run{}_{}_growth_summaries.csv".\
+        df_growth_2.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_growth_summaries.csv".\
                                         format(run_number, geo_1 + geo_2)))
 
 @orca.step()
@@ -1733,8 +1733,8 @@ def travel_model_output(parcels, households, jobs, buildings,
 
     taz_df.index.name = 'TAZ'
 
-    taz_df.fillna(0).to_csv(
-        "runs/run{}_taz_summaries_{}.csv".format(run_number, year))
+    taz_df.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
+                            "run{}_taz_summaries_{}.csv").format(run_number, year))
 
     # aggregate TAZ summaries to create county summaries
 
@@ -1795,35 +1795,29 @@ def travel_model_output(parcels, households, jobs, buildings,
                            "AGE65P"]]
     county_df = county_df.set_index('COUNTY_NAME')
 
-    county_df.fillna(0).to_csv(
-        "runs/run{}_county_summaries_{}.csv".format(run_number, year))
+    county_df.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
+                               "run{}_county_summaries_{}.csv").format(run_number, year))
 
     if year == final_year: 
         baseyear = 2015
-        df_base = pd.read_csv(os.path.join("runs",
-                                        "run%d_taz_summaries_%d.csv"
-                                        % (run_number, baseyear)))
-        df_final = pd.read_csv(os.path.join("runs",
-                                        "run%d_taz_summaries_%d.csv"
-                                        % (run_number, final_year)))
+        df_base = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"),
+                              "run%d_taz_summaries_%d.csv" % (run_number, baseyear)))
+        df_final = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"),
+                               "run%d_taz_summaries_%d.csv" % (run_number, final_year)))
         df_growth = taz_calculator(run_number,
                                 df_base, df_final)
         df_growth = df_growth.set_index(['RUNID', 'TAZ','SD',
                                         'SD_NAME','COUNTY','CNTY_NAME'])
-        df_growth.to_csv(os.path.join("runs", 
-                                    "run%d_taz_growth_summaries.csv" %
-                                    run_number))
+        df_growth.to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
+                         "run%d_taz_growth_summaries.csv" % run_number))
         df_growth_c = county_calculator(run_number,
                                         df_base, df_final)
-        df_growth_c.to_csv(os.path.join("runs", 
-                                    "run%d_county_growth_summaries.csv" %
-                                    run_number),index = False)
+        df_growth_c.to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
+                           "run%d_county_growth_summaries.csv" % run_number),index = False)
     # add region marginals
-    pd.DataFrame(data={'REGION': [1],
-                       'gq_num_hh_region': [tot_gqpop]}).to_csv(
-                 "runs/run{}_regional_marginals_{}.csv".format(run_number,
-                                                               year),
-                 index=False)
+    pd.DataFrame(data={'REGION': [1], 'gq_num_hh_region': [tot_gqpop]}).to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
+                                                                               "run{}_regional_marginals_{}.csv").format(run_number, year), 
+                                                                               index=False)
 
 
 @orca.step()
@@ -2045,12 +2039,12 @@ def travel_model_2_output(parcels, households, jobs, buildings,
          'ed_k12', 'ed_oth', 'health', 'serv_per',
          'serv_soc', 'constr', 'info', 'gov',
          'DUDen', 'EmpDen', 'PopDen', 'RetEmpDen']].fillna(0).to_csv(
-        "runs/run{}_maz_summaries_{}.csv".format(run_number, year))
+        os.path.join(orca.get_injectable("outputs_dir"), "run{}_maz_summaries_{}.csv".format(run_number, year)))
 
     maz[['num_hh', 'hh_size_1', 'hh_size_2',
          'hh_size_3', 'hh_size_4_plus', 'gq_tot_pop',
          'gq_type_univ', 'gq_type_mil', 'gq_type_othnon']].fillna(0).to_csv(
-        "runs/run{}_maz_marginals_{}.csv".format(run_number, year))
+        os.path.join(orca.get_injectable("outputs_dir"), "run{}_maz_marginals_{}.csv".format(run_number, year)))
 
     taz2[['hh_inc_30', 'hh_inc_30_60',
           'hh_inc_60_100', 'hh_inc_100_plus',
@@ -2059,13 +2053,13 @@ def travel_model_2_output(parcels, households, jobs, buildings,
           'pers_age_20_34', 'pers_age_35_64',
           'pers_age_65_plus', 'hh_kids_no',
           'hh_kids_yes']].fillna(0).to_csv(
-        "runs/run{}_taz2_marginals_{}.csv".format(run_number, year))
+        os.path.join(orca.get_injectable("outputs_dir"), "run{}_taz2_marginals_{}.csv".format(run_number, year)))
 
     county[['pers_occ_management', 'pers_occ_professional',
             'pers_occ_services', 'pers_occ_retail',
             'pers_occ_manual', 'pers_occ_military',
             'gq_tot_pop']].fillna(0).to_csv(
-        "runs/run{}_county_marginals_{}.csv".format(run_number, year))
+        os.path.join(orca.get_injectable("outputs_dir"), "run{}_county_marginals_{}.csv".format(run_number, year)))
 
 
 def scaled_ciacre(mtcc, us_outc):
@@ -2341,7 +2335,7 @@ def hazards_slr_summary(run_number, year, scenario, households, jobs, parcels,
             # print s
             f.write(s + "\n\n")
 
-        f = open(os.path.join("runs", "run%d_hazards_slr_%d.log" %
+        f = open(os.path.join(orca.get_injectable("outputs_dir"), "run%d_hazards_slr_%d.log" %
                  (run_number, year)), "w")
 
         n = len(destroy_parcels)
@@ -2406,7 +2400,7 @@ def hazards_slr_summary(run_number, year, scenario, households, jobs, parcels,
 
         f.close()
 
-        slr_demolish.to_csv(os.path.join("runs",
+        slr_demolish.to_csv(os.path.join(orca.get_injectable("outputs_dir"),
                                          "run%d_hazards_slr_buildings_%d.csv"
                                          % (run_number, year)))
 
@@ -2420,7 +2414,7 @@ def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings,
 
     if year == 2035:
 
-        f = open(os.path.join("runs", "run%d_hazards_eq_%d.log" %
+        f = open(os.path.join(orca.get_injectable("outputs_dir"), "run%d_hazards_eq_%d.log" %
                  (run_number, year)), "w")
 
         def write(s):
@@ -2511,7 +2505,7 @@ def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings,
         eq_demolish = eq_demolish.drop(['parcel_id', 'year_built',
                                        'redfin_sale_year'], axis=1)
         eq_demolish = eq_demolish.groupby(['taz']).sum()
-        eq_demolish.to_csv(os.path.join("runs",
+        eq_demolish.to_csv(os.path.join(orca.get_injectable("outputs_dir"),
                            "run%d_hazards_eq_demolish_buildings_%d.csv"
                                         % (run_number, year)))
 
@@ -2531,7 +2525,7 @@ def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings,
             retrofit_bldgs_tot = retrofit_bldgs_tot.groupby(['taz']).sum()
             retrofit_bldgs_tot.\
                 to_csv(os.path.join(
-                       "runs", "run%d_hazards_eq_retrofit_buildings_%d.csv"
+                       orca.get_injectable("outputs_dir"), "run%d_hazards_eq_retrofit_buildings_%d.csv"
                        % (run_number, year)))
 
     # print out buildings in 2030, 2035, and 2050 so Horizon team can compare
@@ -2549,7 +2543,7 @@ def hazards_eq_summary(run_number, year, households, jobs, parcels, buildings,
                                'non_residential_rent', 'deed_restricted_units',
                                'residential_price']]
         buildings = buildings.groupby(['taz']).sum()
-        buildings.to_csv(os.path.join("runs",
+        buildings.to_csv(os.path.join(orca.get_injectable("outputs_dir"),
                          "run%d_hazards_eq_buildings_list_%d.csv"
                                       % (run_number, year)))
 
