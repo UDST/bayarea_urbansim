@@ -462,12 +462,7 @@ def maz_forecast_inputs(regional_demographic_forecast):
 @orca.table(cache=True)
 def zoning_scenario(parcels_geography, scenario, policy, mapping):
 
-    if (scenario in ["11", "12", "15"]) and\
-       (scenario not in policy["geographies_fr2_enable"]):
-        scenario = str(int(scenario) - 10)
-
-    scenario_zoning = pd.read_csv(
-        os.path.join(orca.get_injectable("inputs_dir"), 'zoning_mods_%s.csv' % scenario))
+    scenario_zoning = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 'zoning_mods.csv'))
 
     if "ppa_id" in scenario_zoning.columns:
         ppa_up = scenario_zoning.loc[(scenario_zoning.ppa_id == 'ppa') & 
@@ -905,17 +900,8 @@ def vmt_fee_categories():
 
 @orca.table(cache=True)
 def superdistricts(scenario): 
-	sd_scenario_file = os.path.join(orca.get_injectable("inputs_dir"), 
-		("superdistricts_s{}.csv").format(scenario))
-	# scenarios could contain policies (eg telework) and/or other modifications
-	if os.path.isfile(sd_scenario_file): 
-		superdistricts = pd.read_csv(sd_scenario_file, index_col="number")
-		orca.add_injectable("sqft_per_job_settings", "for this scenario")
-	# the default includes a telework assumption and SD adjustments
-	else:
-		superdistricts = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"),
-			"superdistricts.csv"), index_col="number")
-		orca.add_injectable("sqft_per_job_settings", "default")
+	superdistricts = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "superdistricts.csv"), index_col="number")
+	orca.add_injectable("sqft_per_job_settings", "default")
 	return superdistricts
 
 
