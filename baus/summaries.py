@@ -142,9 +142,7 @@ def config(policy, inputs, run_number, scenario, parcels,
     write("")
 
     # residential sales hedonic config
-    rsh_fname = orca.get_injectable("rsh_file")
-    write("The config file used for the residential sales hedonic is: %s"
-          % rsh_fname)
+    write("The config file used for the residential sales hedonic is rsh.yaml")
     write("")
 
     # AV parking requirements

@@ -176,11 +176,6 @@ def building_sqft_per_job(settings):
 
 
 @orca.injectable(cache=True)
-def elcm_config():
-    return get_config_file('elcm')
-
-
-@orca.injectable(cache=True)
 def hlcm_owner_config():
     return get_config_file('hlcm_owner')
 
@@ -218,16 +213,6 @@ def hlcm_renter_lowincome_config():
 @orca.injectable(cache=True)
 def hlcm_renter_lowincome_no_unplaced_config():
     return get_config_file('hlcm_renter_lowincome_no_unplaced')
-
-
-@orca.injectable(cache=True)
-def rrh_config():
-    return get_config_file('rrh')
-
-
-@orca.injectable(cache=True)
-def nrh_config():
-    return get_config_file('nrh')
 
 
 def get_config_file(type):
