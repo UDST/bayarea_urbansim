@@ -58,12 +58,13 @@ def config(policy, inputs, run_number, scenario, parcels,
     write("")
 
     # logsums files
-    write("accessibility files used are: %s" % (orca.get_injectable("logsum_y1"), orca.get_injectable("logsum_y2")))
-    write("accessibility periods applied are: %s" % (orca.get_injectable("logsum_p1"), orca.get_inectable("logsum_p2")))
+    write("Accessibility is first applied in {}".format(orca.get_injectable("logsum_p1")))
+    write("Accessibility is first applied with travel model accessibility from {}".format(orca.get_injectable("logsum_y1")))
+    write("Accessibility is next applied in: {}".format(orca.get_injectable("logsum_p2")))
+    write("Accessibility is next applied with travel model accessibility from {}".format(orca.get_injectable("logsum_y2")))
 
     # zoning modifications
-    zm_file_loc = os.path.isfile(os.path.join("data", "zoning_mods_%s.csv"
-                                              % (scenario)))
+    zm_file_loc = os.path.isfile(os.path.join("data", "zoning_mods.csv")
     if zm_file_loc:
         write("Zoning modifications for this scenario exist")
     else:
