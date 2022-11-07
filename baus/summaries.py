@@ -64,7 +64,7 @@ def config(policy, inputs, run_number, scenario, parcels,
     write("Accessibility is next applied with travel model accessibility from {}".format(orca.get_injectable("logsum_y2")))
 
     # zoning modifications
-    zm_file_loc = os.path.isfile(os.path.join("data", "zoning_mods.csv")
+    zm_file_loc = os.path.isfile(os.path.join("data", "zoning_mods.csv"))
     if zm_file_loc:
         write("Zoning modifications for this scenario exist")
     else:

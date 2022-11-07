@@ -221,13 +221,6 @@ def hlcm_renter_lowincome_no_unplaced_config():
 
 
 @orca.injectable(cache=True)
-def rsh_config():
-    fname = get_config_file('rsh')
-    orca.add_injectable("rsh_file", fname)
-    return get_config_file('rsh')
-
-
-@orca.injectable(cache=True)
 def rrh_config():
     return get_config_file('rrh')
 

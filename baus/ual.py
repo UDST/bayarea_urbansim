@@ -751,7 +751,7 @@ def rsh_simulate(residential_units, aggregations, settings, rsh_config):
     -----------------
     - tk
     """
-    utils.hedonic_simulate(cfg=rsh_config,
+    utils.hedonic_simulate(cfg='rsh.yaml',
                            tbl=residential_units,
                            join_tbls=aggregations,
                            out_fname='unit_residential_price')
