@@ -27,13 +27,6 @@ def policy():
         return yaml.load(f)
 
 
-@orca.injectable('inputs', cache=True)
-def inputs():
-
-    with open(os.path.join(misc.configs_dir(), "inputs.yaml")) as f:
-        return yaml.load(f)
-
-
 @orca.injectable('mapping', cache=True)
 def mapping():
     with open(os.path.join(misc.configs_dir(), "mapping.yaml")) as f:
@@ -173,60 +166,6 @@ def inclusionary_housing_settings(policy, scenario):
 @orca.injectable(cache=True)
 def building_sqft_per_job(settings):
     return settings['building_sqft_per_job']
-
-
-@orca.injectable(cache=True)
-def hlcm_owner_config():
-    return get_config_file('hlcm_owner')
-
-
-@orca.injectable(cache=True)
-def hlcm_owner_no_unplaced_config():
-    return get_config_file('hlcm_owner_no_unplaced')
-
-
-@orca.injectable(cache=True)
-def hlcm_owner_lowincome_config():
-    return get_config_file('hlcm_owner_lowincome')
-
-
-@orca.injectable(cache=True)
-def hlcm_owner_lowincome_no_unplaced_config():
-    return get_config_file('hlcm_owner_lowincome_no_unplaced')
-
-
-@orca.injectable(cache=True)
-def hlcm_renter_config():
-    return get_config_file('hlcm_renter')
-
-
-@orca.injectable(cache=True)
-def hlcm_renter_no_unplaced_config():
-    return get_config_file('hlcm_renter_no_unplaced')
-
-
-@orca.injectable(cache=True)
-def hlcm_renter_lowincome_config():
-    return get_config_file('hlcm_renter_lowincome')
-
-
-@orca.injectable(cache=True)
-def hlcm_renter_lowincome_no_unplaced_config():
-    return get_config_file('hlcm_renter_lowincome_no_unplaced')
-
-
-def get_config_file(type):
-    configs = orca.get_injectable('inputs')['model_configs'][type.
-                                                             split('_')[0]]
-    sc = orca.get_injectable('scenario')
-    sc_cfg = 's{}_{}_config'.format(sc, type)
-    gen_cfg = '{}_config'.format(type)
-    if sc_cfg in configs:
-        return configs[sc_cfg]
-    elif gen_cfg in configs:
-        return configs[gen_cfg]
-    else:
-        return '{}.yaml'.format(type)
 
 
 @orca.step()

@@ -19,7 +19,7 @@ TWO_GEO_SUMMARY_LOADER, nontaz_calculator, taz_calculator,\
 county_calculator, juris_to_county
 
 @orca.step()
-def config(policy, inputs, run_number, scenario, parcels,
+def config(policy, run_number, scenario, parcels,
            development_projects, year, slr, eq, eq_mitigation):
 
     f = open(os.path.join(orca.get_injectable("outputs_dir"), "run%d_configuration.log" %
