@@ -66,34 +66,21 @@ def store(settings):
 
 
 @orca.injectable(cache=True)
-def limits_settings(policy, scenario):
+def limits_settings(policy):
     # for limits, we inherit from the default
     # limits set the max number of job spaces or res units that may be
     # built per juris for each scenario - usually these represent actual
     # policies in place in each city which limit development
 
-    # set up so that fr2 limits can be turned off as needed
-    # instead of looking for fr2 limits, the fr1 scenario is used
-    if (scenario in ["11", "12", "15"]) and\
-       (scenario not in policy["office_caps_fr2_enable"]):
-        scenario = str(int(scenario) - 10)
-
-    # set up so that eir alts limits can be turned off as needed
-    # current 2 eir alts s26, s28, only s28 uses office caps
-    # so for s26, use default instead
-    if (scenario in ["26","28"]) and\
-       (scenario not in policy["office_caps_eir_enable"]):
-        scenario = "default"
-
     d = policy['development_limits']
 
-    if scenario in d.keys():
-        print("Using limits for scenario: %s" % scenario)
+    if "job_caps" in d.keys():
+        print("Applying job caps")
         assert "default" in d
 
-        d_scen = d[scenario]
+        d_jc = d["job_caps"]
         d = d["default"]
-        for key, value in d_scen.items():
+        for key, value in d_jc.items():
             d.setdefault(key, {})
             d[key].update(value)
 

@@ -256,18 +256,11 @@ def config(policy, run_number, scenario, parcels,
         write("Inclusionary housing is using the default settings")
     write("")
 
-    # office caps
-    if scenario in policy['office_caps_fr2_enable']:
-        d = policy['development_limits'][scenario]['Office']
-        write("Using development limits for FR2 with %d office caps + defaults"
-              % (len(d)))
-    elif scenario in policy['office_caps_eir_enable']:
-        d = policy['development_limits'][scenario]['Office']
-        write("Using development limits for EIR with %d office caps + defaults"
-              % (len(d)))        
+    # office caps      
+    if "job_caps" in policy['development_limits'].keys():
+        write("Job caps applied")
     elif "default" in policy['development_limits'].keys():
-        d = policy['development_limits']["default"]['Office']
-        write("Using default development limits")
+        write("Default job caps applied")
     write("")
 
     # SB 743
