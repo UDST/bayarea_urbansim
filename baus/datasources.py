@@ -23,7 +23,7 @@ import yaml
 # this is similar to the code for settings in urbansim_defaults
 @orca.injectable('policy', cache=True)
 def policy():
-    with open(os.path.join(misc.configs_dir(), "policy.yaml")) as f:
+    with open(os.path.join(orca.get_injectable("inputs_dir"), "policy.yaml")) as f:
         return yaml.load(f)
 
 
