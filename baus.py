@@ -78,6 +78,15 @@ LOGSUM_Y2 = 2050
 orca.add_injectable("logsum_p2", LOGSUM_P2)
 orca.add_injectable("logsum_y2", LOGSUM_Y2)
 
+# configure job caps policy
+JOB_CAP_POLICY = True
+orca.add_injectable("job_caps_policy", JOB_CAP_POLICY)
+
+# configure inclusionary housing policy
+INCLUSIONARY_POLICY = True
+orca.add_injectable("inclusionary_policy", INCLUSIONARY_POLICY)
+
+
 
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 
