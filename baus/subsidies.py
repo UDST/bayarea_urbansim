@@ -233,7 +233,7 @@ def office_lump_sum_accounts(policy, year, buildings, coffer,
 # this will compute the reduction in revenue from a project due to
 # inclustionary housing - the calculation will be described in thorough
 # comments alongside the code
-def inclusionary_housing_revenue_reduction(feasibility, units):
+def inclusionary_housing_revenue_reduction(feasibility, units, policy):
 
     print("Computing adjustments due to inclusionary housing")
 
@@ -250,25 +250,12 @@ def inclusionary_housing_revenue_reduction(feasibility, units):
     parcels_geography = orca.get_table("parcels_geography")
     policy = orca.get_injectable("policy")
 
-    if orca.get_injectable("scenario") in policy["inclusionary_d_b_enable"]:
-        h = orca.merge_tables("households",
-                              [households, buildings, parcels_geography],
-                              columns=["juris_name",
-                                       "income",
-                                       "pba50chcat"])
-        AMI = h.groupby(h.pba50chcat).income.quantile(.5)
-    elif orca.get_injectable("scenario") in policy["inclusionary_fb_enable"]:
-        h = orca.merge_tables("households",
-                              [households, buildings, parcels_geography],
-                              columns=["juris_name",
-                                       "income",
-                                       "fbpchcat"])
-        AMI = h.groupby(h.fbpchcat).income.quantile(.5)
-    else:
-        h = orca.merge_tables("households",
-                              [households, buildings, parcels_geography],
-                              columns=["juris_name", "income"])
-        AMI = h.groupby(h.juris_name).income.quantile(.5)
+    if orca.get_injectable("inclusionary_policy"):
+        geog = s["inclusionary_policy"]["type"]
+    elif "default" in s.keys():
+        geog = s["default"]["type"]
+    h = orca.merge_tables("households", [households, buildings, parcels_geography], columns=["income", geog])
+    AMI = h.groupby(h[geog]).income.quantile(.5)
 
     # per Aksel Olsen (@akselx)
     # take 90% of AMI and multiple by 33% to get the max amount a
@@ -297,72 +284,24 @@ def inclusionary_housing_revenue_reduction(feasibility, units):
 
     pct_inclusionary = orca.get_injectable("inclusionary_housing_settings")
 
-    # for PBA50, calculate revenue reduction by strategy geographies
-    # draft blueprint strategy geography: pba50chcat
-    if orca.get_injectable("scenario") in policy["inclusionary_d_b_enable"]:
-        pba50chcat = parcels_geography.pba50chcat.loc[feasibility.index]
-        pct_affordable = pba50chcat.map(pct_inclusionary).fillna(0)
-        value_can_afford = pba50chcat.map(value_can_afford)
+    # calculate revenue reduction by strategy geographies
+    geography = parcels_geography[geog].loc[feasibility.index]
+    pct_affordable = geography.map(pct_inclusionary).fillna(0)
+    value_can_afford = geography.map(value_can_afford)
 
-        num_affordable_units = (units * pct_affordable).fillna(0).astype("int")
+    num_affordable_units = (units * pct_affordable).fillna(0).astype("int")
 
-        ave_price_per_unit = \
-            feasibility[('residential', 'building_revenue')] / units
+    ave_price_per_unit = feasibility[('residential', 'building_revenue')] / units
 
-        revenue_diff_per_unit = \
-            (ave_price_per_unit - value_can_afford).fillna(0)
-        print("Revenue difference per unit (not zero values)")
-        print(revenue_diff_per_unit[revenue_diff_per_unit > 0].describe())
+    revenue_diff_per_unit = (ave_price_per_unit - value_can_afford).fillna(0)
+    print("Revenue difference per unit (not zero values)")
+    print(revenue_diff_per_unit[revenue_diff_per_unit > 0].describe())
 
-        revenue_reduction = revenue_diff_per_unit * num_affordable_units
+    revenue_reduction = revenue_diff_per_unit * num_affordable_units
 
-        s = num_affordable_units.groupby(parcels_geography.pba50chcat).sum()
-        print("Feasibile affordable units by Draft Blueprint pba50chcat")
-        print(s[s > 0].sort_values())
-
-    # final blueprint strategy geogrphy: fbpchcat
-    elif orca.get_injectable("scenario") in policy["inclusionary_fb_enable"]:
-        fbpchcat = parcels_geography.fbpchcat.loc[feasibility.index]
-        pct_affordable = fbpchcat.map(pct_inclusionary).fillna(0)
-        value_can_afford = fbpchcat.map(value_can_afford)
-
-        num_affordable_units = (units * pct_affordable).fillna(0).astype("int")
-
-        ave_price_per_unit = \
-            feasibility[('residential', 'building_revenue')] / units
-
-        revenue_diff_per_unit = \
-            (ave_price_per_unit - value_can_afford).fillna(0)
-        print("Revenue difference per unit (not zero values)")
-        print(revenue_diff_per_unit[revenue_diff_per_unit > 0].describe())
-
-        revenue_reduction = revenue_diff_per_unit * num_affordable_units
-
-        s = num_affordable_units.groupby(parcels_geography.fbpchcat).sum()
-        print("Feasibile affordable units by Final Blueprint fbpchcat")
-        print(s[s > 0].sort_values())
-
-    # otherwise, calculate by jurisdiction
-    else:
-        juris_name = parcels_geography.juris_name.loc[feasibility.index]
-        pct_affordable = juris_name.map(pct_inclusionary).fillna(0)
-        value_can_afford = juris_name.map(value_can_afford)
-
-        num_affordable_units = (units * pct_affordable).fillna(0).astype("int")
-
-        ave_price_per_unit = \
-            feasibility[('residential', 'building_revenue')] / units
-
-        revenue_diff_per_unit = \
-            (ave_price_per_unit - value_can_afford).fillna(0)
-        print("Revenue difference per unit (not zero values)")
-        print(revenue_diff_per_unit[revenue_diff_per_unit > 0].describe())
-
-        revenue_reduction = revenue_diff_per_unit * num_affordable_units
-
-        s = num_affordable_units.groupby(parcels_geography.juris_name).sum()
-        print("Feasibile affordable units by jurisdiction")
-        print(s[s > 0].sort_values())
+    s = num_affordable_units.groupby(parcels_geography[geog]).sum()
+    print("Feasibile affordable units by geography")
+    print(s[s > 0].sort_values())
 
     return revenue_reduction, num_affordable_units
 

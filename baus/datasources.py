@@ -67,14 +67,12 @@ def store(settings):
 
 @orca.injectable(cache=True)
 def limits_settings(policy):
-    # for limits, we inherit from the default
-    # limits set the max number of job spaces or res units that may be
-    # built per juris for each scenario - usually these represent actual
-    # policies in place in each city which limit development
+    # for limits, we inherit from the default settings, and update these with the policy settings, if applicable
+    # limits set the annual maximum number of job spaces or residential units that may be built in a geography
 
     d = policy['development_limits']
 
-    if "job_caps" in d.keys():
+    if orca.get_injectable("job_cap_policy"):
         print("Applying job caps")
         assert "default" in d
 
@@ -91,61 +89,24 @@ def limits_settings(policy):
 
 
 @orca.injectable(cache=True)
-def inclusionary_housing_settings(policy, scenario):
-    # for inclustionary housing, each scenario is different
-    # there is no inheritance
+def inclusionary_housing_settings(policy):
+    # for inclusionary housing, there is no inheritance from the default inclusionary settings
+    # this means existing inclusionary levels in the base year don't apply in the policy application...
 
     s = policy['inclusionary_housing_settings']
 
-    if (scenario in ["11", "12", "15"]) and\
-       (scenario not in policy["inclusionary_fr2_enable"]):
-        print("Using Futures Round 1 (PBA40) inclusionary settings")
-        fr1 = str(int(scenario) - 10)
-        s = s[fr1]
-
-    elif scenario in s.keys():
-        print("Using inclusionary settings for scenario: %s" % scenario)
-        s = s[scenario]
-
+    if orca.get_injectable("inclusionary_policy"):
+        s = s["inclusionary_policy"]
     elif "default" in s.keys():
         print("Using default inclusionary settings")
         s = s["default"]
 
     d = {}
-    if (scenario in policy["inclusionary_d_b_enable"]):
-        for item in s:
-            # this is a list of draft blueprint strategy geographies (represented
-            # by pba50chcat) with an inclusionary rate that is the same
-            # for all the pba50chcats in the list
-            print("Setting inclusionary rates for geographies %d pba50chcat \
-                  to %.2f" % (len(item["values"]), item["amount"]))
-            # this is a list of inclusionary rates and the pba50chcat
-            # geographies they apply to - need to turn it in a map
-            # of pba50chcat names to rates
-            for pba50chcat in item["values"]:
-                d[pba50chcat] = item["amount"]
-    elif (scenario in policy["inclusionary_fb_enable"]):
-        for item in s:
-            # this is a list of final blueprint strategy geographies (represented
-            # by fbpchcat) with an inclusionary rate that is the same
-            # for all the fbpchcat in the list
-            print("Setting inclusionary rates for geographies %d fbpchcat \
-                  to %.2f" % (len(item["values"]), item["amount"]))
-            # this is a list of inclusionary rates and the fbpchcat
-            # geographies they apply to - need to turn it in a map
-            # of fbpchcat names to rates
-            for fbpchcat in item["values"]:
-                d[fbpchcat] = item["amount"]
-    else:
-        for item in s:
-            # this is a list of cities with an inclusionary rate that is the
-            # same for all the cities in the list
-            print("Setting inclusionary rates for %d cities to %.2f" %
-                  (len(item["values"]), item["amount"]))
-            # this is a list of inclusionary rates and the cities they apply
-            # to - need tro turn it in a map of city names to rates
-            for juris in item["values"]:
-                d[juris] = item["amount"]
+    for item in s:
+        # turn list of inclusionary rates and the geographies they apply to to a map of geography names to inclusionary rates
+        print("Setting inclusionary rates for %d %s to %.2f" % (item["type"], len(item["values"]), item["amount"]))
+        for geog in item["values"]:
+            d[geog] = item["amount"]
 
     return d
 

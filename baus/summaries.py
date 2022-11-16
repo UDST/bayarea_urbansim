@@ -234,25 +234,10 @@ def config(policy, run_number, scenario, parcels,
 
     # inclusionary rates
     s = policy["inclusionary_housing_settings"]
-    if (scenario in ["11", "12", "15"]) &\
-       (scenario not in policy["inclusionary_fr2_enable"]):
-        fr1 = str(int(scenario) - 10)
-        for item in s[fr1]:
-            write("Inclusionary rates are FR1: %d cities are set to %.2f" %
-                  (len(item["values"]), item["amount"]))
-    elif scenario in policy["inclusionary_d_b_enable"]:
-        for item in s[scenario]:
-            write("Inclusionary rates for %d pba50chcat are set to %.2f" %
-                  (len(item["values"]), item["amount"]))
-    elif scenario in policy["inclusionary_fb_enable"]:
-        for item in s[scenario]:
-            write("Inclusionary rates for %d fbpchcat are set to %.2f" %
-                  (len(item["values"]), item["amount"]))
-    elif scenario in s.keys():
-        for item in s[scenario]:
-            write("Inclusionary rates for %d cities are set to %.2f" %
-                  (len(item["values"]), item["amount"]))
-    else:
+    if orca.get_injectable("inclusionary_policy"):
+        for item in s["inclusionary_policy"]:
+            write("Inclusionary rates for %d geogs are set to %.2f" % (len(item["values"]), item["amount"]))
+    elif "default" in s.keys():
         write("Inclusionary housing is using the default settings")
     write("")
 
