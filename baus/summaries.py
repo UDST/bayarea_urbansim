@@ -256,11 +256,9 @@ def config(policy, run_number, scenario, parcels,
     write("")
 
     # OBAG
-    policy_loc = (policy["acct_settings"]["lump_sum_accounts"]
-                  ["obag_settings"])
-    policy_nm = "OBAG"
-    policy_activated(policy_loc, policy_nm, scenario)
-    write("")
+    policy_loc = policy["acct_settings"]["lump_sum_accounts"]["obag_settings"]
+    if orca.get_injectable(policy_loc["name"]):
+        write("OBAG is activated")
 
     # CEQA
     policy_loc = (policy["acct_settings"]
@@ -323,49 +321,27 @@ def config(policy, run_number, scenario, parcels,
     write("")
 
     # affordable housing bonds
+
     # activation
     counter = 0
-    counties = ["alameda", "contra_costa", "marin", "napa", "san_mateo",
-                "san_francisco", "santa_clara", "solano", "sonoma"]
+    counties = ["alameda", "contra_costa", "marin", "napa", "san_mateo", "san_francisco", "santa_clara", "solano", "sonoma"]
     for county in counties:
-        policy_loc = (policy["acct_settings"]["lump_sum_accounts"]
-                      [county+"_bond_settings"]["enable_in_scenarios"])
-        if scenario in policy_loc:
+        policy_loc = (policy["acct_settings"]["lump_sum_accounts"][county+"_bond_settings"])
+        if orca.get_injectable(policy_loc["name"]):
             counter += 1
     write("Affordable housing bonds are activated for %d counties" % counter)
+
     # funding applied
     regional_funding = 0
-    counties = ["alameda", "contra_costa", "marin", "napa", "san_mateo",
-                "san_francisco", "santa_clara", "solano", "sonoma"]
+    counties = ["alameda", "contra_costa", "marin", "napa", "san_mateo", "san_francisco", "santa_clara", "solano", "sonoma"]
     for county in counties:
-        policy_loc = (policy["acct_settings"]["lump_sum_accounts"]
-                      [county+"_bond_settings"])
-        if scenario in policy_loc["default_amount_scenarios_db"]:
-            amount = float(policy_loc["total_amount_db"])
-        elif scenario in policy_loc["alternate_amount_scenarios_db"]:
-            amount = float(policy_loc["alternate_total_amount_db"])
-        elif scenario in policy_loc["default_amount_scenarios_fb"]:
-            amount = float(policy_loc["total_amount_fb"])
-        elif scenario in policy_loc["alt2_amount_scenarios_fb"]:
-            amount = float(policy_loc["total_amount_alt2"])        
-        elif scenario in (policy_loc["enable_in_scenarios"]):
+        policy_loc = (policy["acct_settings"]["lump_sum_accounts"][county+"_bond_settings"])
+        if orca.get_injectable(policy_loc["name"]):
             amount = float(policy_loc["total_amount"])
         else:
             amount = 0
-            
-        policy_loc = (policy["acct_settings"]["lump_sum_accounts"]
-                      [county+"_bond_settings_alt2"])
-        if scenario in policy_loc["alt2_amount_scenarios_fb"]:
-            amount_alt2 = float(policy_loc["total_amount_alt2"])        
-        elif scenario in (policy_loc["enable_in_scenarios"]):
-            amount_alt2 = float(policy_loc["total_amount"])
-        else:
-            amount_alt2 = 0
-
-        total_amount = amount + amount_alt2
         # sum annual amount over the simulation period
-        regional_funding += total_amount*5*8
-        
+        regional_funding += amount*5*8        
     write("Total funding is $%d" % regional_funding)
     write("")
 
@@ -390,7 +366,7 @@ def config(policy, run_number, scenario, parcels,
     regional_funding = 0
     policy_loc = policy["acct_settings"]["office_lump_sum_accounts"].items()
     for key, acct in policy_loc:
-        if scenario in acct["enable_in_scenarios"]:
+        if orca.get_injectable(acct["name"]):
             counter += 1
             acct_list.append(acct["name"].split(' Office')[0])
             amount = float(acct["total_amount"])

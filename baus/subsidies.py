@@ -1019,7 +1019,6 @@ def subsidized_residential_developer_lump_sum_accts(households, buildings, add_e
 
     for key, acct in policy["acct_settings"]["lump_sum_accounts"].items():
 
-        # quick return in order to save performance time
         if orca.get_injectable(acct["name"]):
 
             print("Running the subsidized developer for acct: %s" % acct["name"])
@@ -1097,28 +1096,26 @@ def subsidized_office_developer_lump_sum_accts(
 
     for key, acct in policy["acct_settings"]["office_lump_sum_accounts"].items():
 
-        # quick return in order to save performance time
-        if scenario not in acct["enable_in_scenarios"]:
-            continue
+        if orca.get_injectable(acct["name"]):
 
-        print("Running the subsidized office developer for acct: %s" % acct["name"])
+            print("Running the subsidized office developer for acct: %s" % acct["name"])
 
-        orca.eval_step("alt_feasibility")
-        feasibility = orca.get_table("feasibility").to_frame()
+            orca.eval_step("alt_feasibility")
+            feasibility = orca.get_table("feasibility").to_frame()
 
-        formula = acct["receiving_buildings_filter"]
-        print('office receiving_buildings_filter: {}'.format(formula))
+            formula = acct["receiving_buildings_filter"]
+            print('office receiving_buildings_filter: {}'.format(formula))
 
-        subsidized_office_developer(feasibility,
-                                    coffer,
-                                    formula,
-                                    year,
-                                    add_extra_columns_func,
-                                    buildings,
-                                    summary, 
-                                    coffer_acct_name=acct["name"])
+            subsidized_office_developer(feasibility,
+                                        coffer,
+                                        formula,
+                                        year,
+                                        add_extra_columns_func,
+                                        buildings,
+                                        summary, 
+                                        coffer_acct_name=acct["name"])
 
-        buildings = orca.get_table("buildings")
+            buildings = orca.get_table("buildings")
 
-        # set to an empty dataframe to save memory
-        orca.add_table("feasibility", pd.DataFrame())
+            # set to an empty dataframe to save memory
+            orca.add_table("feasibility", pd.DataFrame())

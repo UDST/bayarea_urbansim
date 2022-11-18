@@ -47,45 +47,70 @@ LAST_KNOWN_GOOD_RUNS = {
     "5": 1059
 }
 
+
 # store model run file directories as injectables
-USER = 'etheocharides'
-RUN_FOLDER = 'PBA50Plus_Development/Run Setup/pba50_fbp_run_setup'
-INPUTS_PATH = 'C:/Users/{}/Box/Modeling and Surveys/Urban Modeling/Bay Area UrbanSim/{}/inputs'.format(USER, RUN_FOLDER)
-OUTPUTS_PATH = 'C:/Users/{}/Box/Modeling and Surveys/Urban Modeling/Bay Area UrbanSim/{}/outputs'.format(USER, RUN_FOLDER)
-orca.add_injectable("inputs_dir", INPUTS_PATH)
-orca.add_injectable("outputs_dir", OUTPUTS_PATH)
+orca.add_injectable("inputs_dir", '../inputs')
+orca.add_injectable("outputs_dir", '../outputs')
 
-# configure sea level rise- requires progression and inundation files
-# if SLR is activated, there is mitigation- committed project for FBP_NP and committed + policy projects for FBP
-SLR = True
-orca.add_injectable("slr", SLR)
 
-# configure earthquake and earthquake mitigation
-EQ = False
-orca.add_injectable("eq", EQ)
-EQ_MITIGATION = False
-orca.add_injectable("eq_mitigation", EQ_MITIGATION)
+RUN_SETUP = orca.get_injectable("run_setup")
 
-# configure logsums, where:
-# P[1,2] is the period, or model years, in which the logsums are applied
-# Y[1,2] are the travel model years of the logsums
-LOGSUM_P1 = [2010, 2015, 2020, 2025] 
-LOGSUM_Y1 = 2035
-orca.add_injectable("logsum_p1", LOGSUM_P1)
-orca.add_injectable("logsum_y1", LOGSUM_Y1)
-LOGSUM_P2 = [2030, 2035, 2040, 2045, 2050]
-LOGSUM_Y2 = 2050
-orca.add_injectable("logsum_p2", LOGSUM_P2)
-orca.add_injectable("logsum_y2", LOGSUM_Y2)
+# sea level rise and sea level rise mitigation
+# if sea level rise is activated, there is either no project or scenario-based mitigation
+orca.add_injectable("slr", RUN_SETUP['SLR'])
+
+# earthquake and earthquake mitigation
+orca.add_injectable("eq", RUN_SETUP['EQ'])
+orca.add_injectable("eq_mitigation", RUN_SETUP['EQ_MITIGATION'])
+
+# logsums
+orca.add_injectable("logsum_p1", RUN_SETUP['LOGSUM_P1'])
+orca.add_injectable("logsum_y1", RUN_SETUP['LOGSUM_Y1'])
+orca.add_injectable("logsum_p2", RUN_SETUP['LOGSUM_P2'])
+orca.add_injectable("logsum_y2", RUN_SETUP['LOGSUM_Y2'])
 
 # configure job caps policy
-JOB_CAP_POLICY = True
-orca.add_injectable("job_caps_policy", JOB_CAP_POLICY)
+orca.add_injectable("job_caps_policy", RUN_SETUP['JOB_CAP_POLICY'])
 
 # configure inclusionary housing policy
-INCLUSIONARY_POLICY = True
-orca.add_injectable("inclusionary_policy", INCLUSIONARY_POLICY)
+orca.add_injectable("inclusionary_policy", RUN_SETUP['INCLUSIONARY_POLICY'])
 
+# obag
+orca.add_injectable("OBAG", RUN_SETUP['OBAG'])
+
+# capital gains tax
+orca.add_injectable("capital_gains_tax", RUN_SETUP['CAPITAL_GAINS_TAX'])
+
+# parcel tax
+orca.add_injectable("parcel_tax", RUN_SETUP['PARCEL_TAX'])
+
+# housing bonds
+orca.add_injectable("alameda_housing_bond", RUN_SETUP['ALAMEDA_HOUSING_BOND'])
+orca.add_injectable("contra_costa_housing_bond", RUN_SETUP['CONTRA_COSTA_HOUSING_BOND'])
+orca.add_injectable("marin_housing_bond", RUN_SETUP['MARIN_HOUSING_BOND'])
+orca.add_injectable("napa_housing_bond", RUN_SETUP['NAPA_HOUSING_BOND'])
+orca.add_injectable("san_francisco_housing_bond", RUN_SETUP['SAN_FRANCISCO_HOUSING_BOND'])
+orca.add_injectable("san_mateo_housing_bond", RUN_SETUP['SAN_MATEO_HOUSING_BOND'])
+orca.add_injectable("santa_clara_housing_bond", RUN_SETUP['SANTA_CLARA_HOUSING_BOND'])
+orca.add_injectable("solano_housing_bond", RUN_SETUP['SOLANO_HOUSING_BOND'])
+orca.add_injectable("sonoma_housing_bond", RUN_SETUP['SONOMA_HOUSING_BOND'])
+
+# office bonds
+orca.add_injectable("dublin_office_bond", RUN_SETUP['DUBLIN_OFFICE_BOND'])
+orca.add_injectable("fremont_office_bond", RUN_SETUP['FREMONT_OFFICE_BOND'])
+orca.add_injectable("oakland_office_bond", RUN_SETUP['OAKLAND_OFFICE_BOND'])
+orca.add_injectable("san_leandro_office_bond", RUN_SETUP['SAN_LEANDRO_OFFICE_BOND'])
+orca.add_injectable("union_city_office_bond", RUN_SETUP['UNION_CITY_OFFICE_BOND'])
+orca.add_injectable("antioch_office_bond", RUN_SETUP['ANTIOCH_OFFICE_BOND'])
+orca.add_injectable("concord_office_bond", RUN_SETUP['CONCORD_OFFICE_BOND'])
+orca.add_injectable("el_cerrito_office_bond", RUN_SETUP['EL_CERRITO_OFFICE_BOND'])
+orca.add_injectable("lafayette_office_bond", RUN_SETUP['LAFAYETTE_OFFICE_BOND'])
+orca.add_injectable("pittsburg_office_bond", RUN_SETUP['PITTSBURG_OFFICE_BOND'])
+orca.add_injectable("richmond_office_bond", RUN_SETUP['RICHMOND_OFFICE_BOND'])
+orca.add_injectable("san_rafael_office_bond", RUN_SETUP['SAN_RAFAEL_OFFICE_BOND'])
+orca.add_injectable("fairfield_office_bond", RUN_SETUP['FAIRFIELD_OFFICE_BOND'])
+orca.add_injectable("vacaville_office_bond", RUN_SETUP['VACAVILLE_OFFICE_BOND'])
+orca.add_injectable("santa_rosa_office_bond", RUN_SETUP['SANTA_ROSA_OFFICE_BOND'])
 
 
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)

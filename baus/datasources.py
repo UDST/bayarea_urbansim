@@ -21,6 +21,12 @@ import yaml
 # define new settings files- these have been subdivided from the
 # general settings file
 # this is similar to the code for settings in urbansim_defaults
+@orca.injectable('run_setup', cache=True)
+def run_setup():
+    with open("../run_setup.yaml") as f:
+        return yaml.load(f)
+
+
 @orca.injectable('policy', cache=True)
 def policy():
     with open(os.path.join(orca.get_injectable("inputs_dir"), "policy.yaml")) as f:
@@ -104,7 +110,7 @@ def inclusionary_housing_settings(policy):
     d = {}
     for item in s:
         # turn list of inclusionary rates and the geographies they apply to to a map of geography names to inclusionary rates
-        print("Setting inclusionary rates for %d %s to %.2f" % (item["type"], len(item["values"]), item["amount"]))
+        print("Setting inclusionary rates for %d %s to %.2f" % (len(item["values"]), item["type"], item["amount"]))
         for geog in item["values"]:
             d[geog] = item["amount"]
 
