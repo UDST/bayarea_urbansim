@@ -82,7 +82,7 @@ def limits_settings(policy):
         print("Applying job caps")
         assert "default" in d
 
-        d_jc = d["job_caps"]
+        d_jc = d["job_cap_policy"]
         d = d["default"]
         for key, value in d_jc.items():
             d.setdefault(key, {})
@@ -502,28 +502,12 @@ def parcels_subzone():
 
 
 @orca.table(cache=False)
-def mandatory_accessibility(year, logsum_p1, logsum_p2, logsum_y1, logsum_y2):
+def mandatory_accessibility(year, logsum_period1, logsum_period2, logsum_year1, logsum_year2):
 
-    if year in logsum_p1:
-        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "mandatoryAccessibilities_{}.csv").format(logsum_y1))
-    elif year in logsum_p2:
-        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "mandatoryAccessibilities_{}.csv").format(logsum_y2))
-
-    df.loc[df.subzone == 0, 'subzone'] = 'c'  # no walk
-    df.loc[df.subzone == 1, 'subzone'] = 'a'  # short walk
-    df.loc[df.subzone == 2, 'subzone'] = 'b'  # long walk
-    df['taz_sub'] = df.taz.astype('str') + df.subzone
-
-    return df.set_index('taz_sub')
-
-
-@orca.table(cache=False)
-def non_mandatory_accessibility(year, logsum_p1, logsum_p2, logsum_y1, logsum_y2):
-
-    if year in logsum_p1:
-        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "nonMandatoryAccessibilities_{}.csv").format(logsum_y1))
-    elif year in logsum_p2:
-        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "nonmandatoryAccessibilities_{}.csv").format(logsum_y2))
+    if year in logsum_period1:
+        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "mandatoryAccessibilities_{}.csv").format(logsum_year1))
+    elif year in logsum_period2:
+        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "mandatoryAccessibilities_{}.csv").format(logsum_year2))
 
     df.loc[df.subzone == 0, 'subzone'] = 'c'  # no walk
     df.loc[df.subzone == 1, 'subzone'] = 'a'  # short walk
@@ -534,12 +518,28 @@ def non_mandatory_accessibility(year, logsum_p1, logsum_p2, logsum_y1, logsum_y2
 
 
 @orca.table(cache=False)
-def accessibilities_segmentation(year, logsum_p1, logsum_p2, logsum_y1, logsum_y2):
+def non_mandatory_accessibility(year, logsum_period1, logsum_period2, logsum_year1, logsum_year2):
 
-    if year in logsum_p1:
-        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "AccessibilityMarkets_{}.csv").format(logsum_y1))
-    elif year in logsum_p2:
-        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "AccessibilityMarkets_{}.csv").format(logsum_y2))
+    if year in logsum_period1:
+        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "nonMandatoryAccessibilities_{}.csv").format(logsum_year1))
+    elif year in logsum_period2:
+        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "nonmandatoryAccessibilities_{}.csv").format(logsum_year2))
+
+    df.loc[df.subzone == 0, 'subzone'] = 'c'  # no walk
+    df.loc[df.subzone == 1, 'subzone'] = 'a'  # short walk
+    df.loc[df.subzone == 2, 'subzone'] = 'b'  # long walk
+    df['taz_sub'] = df.taz.astype('str') + df.subzone
+
+    return df.set_index('taz_sub')
+
+
+@orca.table(cache=False)
+def accessibilities_segmentation(year, logsum_period1, logsum_period2, logsum_year1, logsum_year2):
+
+    if year in logsum_period1:
+        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "AccessibilityMarkets_{}.csv").format(logsum_year1))
+    elif year in logsum_period2:
+        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "AccessibilityMarkets_{}.csv").format(logsum_year2))
 
     df['AV'] = df['hasAV'].apply(lambda x: 'AV' if x == 1 else 'noAV')
     df['label'] = (df['incQ_label'] + '_' + df['autoSuff_label'] + '_' + df['AV'])

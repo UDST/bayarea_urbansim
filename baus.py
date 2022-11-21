@@ -64,13 +64,13 @@ orca.add_injectable("eq", RUN_SETUP['EQ'])
 orca.add_injectable("eq_mitigation", RUN_SETUP['EQ_MITIGATION'])
 
 # logsums
-orca.add_injectable("logsum_p1", RUN_SETUP['LOGSUM_P1'])
-orca.add_injectable("logsum_y1", RUN_SETUP['LOGSUM_Y1'])
-orca.add_injectable("logsum_p2", RUN_SETUP['LOGSUM_P2'])
-orca.add_injectable("logsum_y2", RUN_SETUP['LOGSUM_Y2'])
+orca.add_injectable("logsum_period1", RUN_SETUP['LOGSUM_PERIOD1'])
+orca.add_injectable("logsum_period2", RUN_SETUP['LOGSUM_PERIOD2'])
+orca.add_injectable("logsum_year1", RUN_SETUP['LOGSUM_YEAR1'])
+orca.add_injectable("logsum_year2", RUN_SETUP['LOGSUM_YEAR2'])
 
-# configure job caps policy
-orca.add_injectable("job_caps_policy", RUN_SETUP['JOB_CAP_POLICY'])
+# configure job cap policy
+orca.add_injectable("job_cap_policy", RUN_SETUP['JOB_CAP_POLICY'])
 
 # configure inclusionary housing policy
 orca.add_injectable("inclusionary_policy", RUN_SETUP['INCLUSIONARY_POLICY'])
@@ -111,6 +111,17 @@ orca.add_injectable("san_rafael_office_bond", RUN_SETUP['SAN_RAFAEL_OFFICE_BOND'
 orca.add_injectable("fairfield_office_bond", RUN_SETUP['FAIRFIELD_OFFICE_BOND'])
 orca.add_injectable("vacaville_office_bond", RUN_SETUP['VACAVILLE_OFFICE_BOND'])
 orca.add_injectable("santa_rosa_office_bond", RUN_SETUP['SANTA_ROSA_OFFICE_BOND'])
+
+# ceqa tiering
+orca.add_injectable("ceqa_streamlining", RUN_SETUP['CEQA_STREAMLINING'])
+
+# parking requirements
+orca.add_injectable("reduce_parking_requirements", RUN_SETUP['REDUCE_PARKING_REQUIREMENTS'])
+
+# reduce housing costs
+orca.add_injectable("reduce_housing_costs_tier1", RUN_SETUP['REDUCE_HOUSING_COSTS_TIER1'])
+orca.add_injectable("reduce_housing_costs_tier2", RUN_SETUP['REDUCE_HOUSING_COSTS_TIER2'])
+orca.add_injectable("reduce_housing_costs_tier3", RUN_SETUP['REDUCE_HOUSING_COSTS_TIER3'])
 
 
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)

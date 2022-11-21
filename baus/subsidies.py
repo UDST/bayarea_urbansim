@@ -353,32 +353,18 @@ def policy_modifications_of_profit(feasibility, parcels):
 
     if "profitability_adjustment_policies" in policy["acct_settings"]:
 
-        for key, policy in \
-                policy["acct_settings"][
-                    "profitability_adjustment_policies"].items():
+        for key, policy in policy["acct_settings"]["profitability_adjustment_policies"].items():
 
-            if orca.get_injectable("scenario") in \
-                    policy["enable_in_scenarios"]:
+            if orca.get_injectable(policy["name"]):
 
                 parcels_geography = orca.get_table("parcels_geography")
 
-                if "alternate_geography_scenarios" in policy and \
-                        orca.get_injectable("scenario") in \
-                        policy["alternate_geography_scenarios"]:
-                    formula = policy["alternate_adjustment_formula"]
-                elif "geography_scenarios_fb" in policy and \
-                        orca.get_injectable("scenario") in \
-                        policy["geography_scenarios_fb"]:
-                    formula = policy["profitability_adjustment_formula_fb"]
-                else:
-                    formula = policy["profitability_adjustment_formula"]
+                formula = policy["profitability_adjustment_formula"]
 
-                pct_modifications = \
-                    parcels_geography.local.eval(formula)
+                pct_modifications = parcels_geography.local.eval(formula)
                 pct_modifications += 1.0
 
-                print("Modifying profit for %s:\n" % policy["name"],
-                      pct_modifications.describe())
+                print("Modifying profit for %s:\n" % policy["name"], pct_modifications.describe())
                 print("Formula: \n{}".format(formula))
 
                 feasibility[("residential", "max_profit")] *= pct_modifications
