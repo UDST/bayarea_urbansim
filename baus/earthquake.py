@@ -16,9 +16,9 @@ import itertools
 # earthquake model removes further buildings temporarily
 
 @orca.step()
-def eq_code_buildings(eq, buildings, year):
+def eq_code_buildings(run_setup, buildings, year):
 
-    if eq:
+    if run_setup['eq']:
 
       if year == 2035:
           # tags buildings that exist in 2035 with a fragility coefficient
@@ -248,10 +248,10 @@ def eq_code_buildings(eq, buildings, year):
 
 
 @orca.step()
-def earthquake_demolish(eq, eq_mitigation, parcels, buildings,
+def earthquake_demolish(run_setup, parcels, buildings,
                         households, jobs, residential_units, year):
 
-    if eq:
+    if run_setup['eq']:
 
       if year == 2035:
           # assign each parcel to a census tract using the lookup table
@@ -302,7 +302,7 @@ def earthquake_demolish(eq, eq_mitigation, parcels, buildings,
                   len(build_frag) * existing_pct))]
               # in "strategies" scenarios, exclude some existing buildings
               # from destruction due to retrofit
-              if eq_mitigation:
+              if run_setup['eq_mitigation']:
                   retrofit_codes = ['DU01G1N', 'DU01G2N', 'MF01G1N', 'MF01G2N',
                                     'MF25G1N', 'MF25G2N', 'MF25G3N', 'MF25G4N',
                                     'SF01G1N', 'SF2PG1N']

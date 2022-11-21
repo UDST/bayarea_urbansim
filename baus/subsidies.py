@@ -148,13 +148,13 @@ def acct_settings(policy):
 
 
 @orca.step()
-def lump_sum_accounts(policy, year, buildings, coffer, summary, years_per_iter):
+def lump_sum_accounts(policy, year, buildings, coffer, summary, years_per_iter, run_setup):
 
     s = policy["acct_settings"]["lump_sum_accounts"]
 
     for key, acct in s.items():
 
-        if orca.get_injectable(acct["name"]):
+        if run_setup[acct["name"]]:
 
             amt = float(acct["total_amount"])
             amt *= years_per_iter
@@ -171,7 +171,7 @@ def office_lump_sum_accounts(policy, year, buildings, coffer, summary, years_per
 
     for key, acct in s.items():
 
-        if orca.get_injectable(acct["name"]):
+        if run_setup[acct["name"]]:
 
             amt = float(acct["total_amount"])
             amt *= years_per_iter
@@ -263,7 +263,7 @@ def inclusionary_housing_revenue_reduction(feasibility, units):
 # this adds fees to the max_profit column of the feasibility dataframe
 # fees are usually spatially specified and are per unit so that calculation
 # is done here as well
-def policy_modifications_of_profit(feasibility, parcels):
+def policy_modifications_of_profit(feasibility, parcels, run_setup):
 
     print("Making policy modifications to profitability")
 
@@ -355,7 +355,7 @@ def policy_modifications_of_profit(feasibility, parcels):
 
         for key, policy in policy["acct_settings"]["profitability_adjustment_policies"].items():
 
-            if orca.get_injectable(policy["name"]):
+            if run_setup[policy["name"]]:
 
                 parcels_geography = orca.get_table("parcels_geography")
 
@@ -1001,11 +1001,11 @@ def subsidized_residential_developer_jobs_housing(
 
 @orca.step()
 def subsidized_residential_developer_lump_sum_accts(households, buildings, add_extra_columns_func, parcels_geography, year, acct_settings, 
-                                                    parcels, policy, summary, coffer, form_to_btype_func, settings):
+                                                    parcels, policy, summary, coffer, form_to_btype_func, settings, run_setup):
 
     for key, acct in policy["acct_settings"]["lump_sum_accounts"].items():
 
-        if orca.get_injectable(acct["name"]):
+        if run_setup[acct["name"]]:
 
             print("Running the subsidized developer for acct: %s" % acct["name"])
 
@@ -1082,7 +1082,7 @@ def subsidized_office_developer_lump_sum_accts(
 
     for key, acct in policy["acct_settings"]["office_lump_sum_accounts"].items():
 
-        if orca.get_injectable(acct["name"]):
+        if run_setup[acct["name"]]:
 
             print("Running the subsidized office developer for acct: %s" % acct["name"])
 

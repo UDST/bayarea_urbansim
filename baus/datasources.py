@@ -72,13 +72,13 @@ def store(settings):
 
 
 @orca.injectable(cache=True)
-def limits_settings(policy):
+def limits_settings(policy, run_setup):
     # for limits, we inherit from the default settings, and update these with the policy settings, if applicable
     # limits set the annual maximum number of job spaces or residential units that may be built in a geography
 
     d = policy['development_limits']
 
-    if orca.get_injectable("job_cap_policy"):
+    if run_setup['job_cap_policy']:
         print("Applying job caps")
         assert "default" in d
 
@@ -95,13 +95,13 @@ def limits_settings(policy):
 
 
 @orca.injectable(cache=True)
-def inclusionary_housing_settings(policy):
+def inclusionary_housing_settings(policy, run_setup):
     # for inclusionary housing, there is no inheritance from the default inclusionary settings
     # this means existing inclusionary levels in the base year don't apply in the policy application...
 
     s = policy['inclusionary_housing_settings']
 
-    if orca.get_injectable("inclusionary_policy"):
+    if run_setup["inclusionary_policy"]:
         s = s["inclusionary_policy"]
     elif "default" in s.keys():
         print("Using default inclusionary settings")
@@ -502,28 +502,12 @@ def parcels_subzone():
 
 
 @orca.table(cache=False)
-def mandatory_accessibility(year, logsum_period1, logsum_period2, logsum_year1, logsum_year2):
+def mandatory_accessibility(year, run_setup):
 
-    if year in logsum_period1:
-        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "mandatoryAccessibilities_{}.csv").format(logsum_year1))
-    elif year in logsum_period2:
-        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "mandatoryAccessibilities_{}.csv").format(logsum_year2))
-
-    df.loc[df.subzone == 0, 'subzone'] = 'c'  # no walk
-    df.loc[df.subzone == 1, 'subzone'] = 'a'  # short walk
-    df.loc[df.subzone == 2, 'subzone'] = 'b'  # long walk
-    df['taz_sub'] = df.taz.astype('str') + df.subzone
-
-    return df.set_index('taz_sub')
-
-
-@orca.table(cache=False)
-def non_mandatory_accessibility(year, logsum_period1, logsum_period2, logsum_year1, logsum_year2):
-
-    if year in logsum_period1:
-        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "nonMandatoryAccessibilities_{}.csv").format(logsum_year1))
-    elif year in logsum_period2:
-        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "nonmandatoryAccessibilities_{}.csv").format(logsum_year2))
+    if year in run_setup['logsum_period1']:
+        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "mandatoryAccessibilities_{}.csv").format(run_setup['logsum_year1']))
+    elif year in logsum_run_setup['period2']:
+        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "mandatoryAccessibilities_{}.csv").format(run_setup['logsum_year2']))
 
     df.loc[df.subzone == 0, 'subzone'] = 'c'  # no walk
     df.loc[df.subzone == 1, 'subzone'] = 'a'  # short walk
@@ -534,12 +518,28 @@ def non_mandatory_accessibility(year, logsum_period1, logsum_period2, logsum_yea
 
 
 @orca.table(cache=False)
-def accessibilities_segmentation(year, logsum_period1, logsum_period2, logsum_year1, logsum_year2):
+def non_mandatory_accessibility(year, run_setup):
 
-    if year in logsum_period1:
-        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "AccessibilityMarkets_{}.csv").format(logsum_year1))
-    elif year in logsum_period2:
-        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "AccessibilityMarkets_{}.csv").format(logsum_year2))
+    if year in run_setup['logsum_period1']:
+        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "nonMandatoryAccessibilities_{}.csv").format(run_setup['logsum_year1']))
+    elif year in run_setup['logsum_period2']:
+        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "nonmandatoryAccessibilities_{}.csv").format(run_setup['logsum_year2']))
+
+    df.loc[df.subzone == 0, 'subzone'] = 'c'  # no walk
+    df.loc[df.subzone == 1, 'subzone'] = 'a'  # short walk
+    df.loc[df.subzone == 2, 'subzone'] = 'b'  # long walk
+    df['taz_sub'] = df.taz.astype('str') + df.subzone
+
+    return df.set_index('taz_sub')
+
+
+@orca.table(cache=False)
+def accessibilities_segmentation(year, run_setup):
+
+    if year in run_setup['logsum_period1']:
+        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "AccessibilityMarkets_{}.csv").format(run_setup['logsum_year1']))
+    elif year in run_setup['logsum_period2']:
+        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "AccessibilityMarkets_{}.csv").format(run_setup['logsum_year2']))
 
     df['AV'] = df['hasAV'].apply(lambda x: 'AV' if x == 1 else 'noAV')
     df['label'] = (df['incQ_label'] + '_' + df['autoSuff_label'] + '_' + df['AV'])

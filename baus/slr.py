@@ -11,9 +11,9 @@ from baus import summaries
 
 
 @orca.step()
-def slr_inundate(slr, slr_progression, slr_parcel_inundation, year, parcels):
+def slr_inundate(run_setup, slr_progression, slr_parcel_inundation, year, parcels):
 
-    if slr:
+    if run_setup['slr']:
         # inundated parcels are all parcels at or below the SLR progression level in that year
         slr_progression = slr_progression.to_frame()
         orca.add_table("slr_progression", slr_progression)
@@ -37,9 +37,9 @@ def slr_inundate(slr, slr_progression, slr_parcel_inundation, year, parcels):
 
 
 @orca.step()
-def slr_remove_dev(slr, buildings, year, parcels, households, jobs):
+def slr_remove_dev(run_setup, buildings, year, parcels, households, jobs):
 
-    if slr:
+    if run_setup['slr']:
 
         destroy_parcels = orca.get_table("destroy_parcels")
         slr_demolish = buildings.local[buildings.parcel_id.isin(destroy_parcels.index)]
