@@ -506,7 +506,7 @@ def mandatory_accessibility(year, run_setup):
 
     if year in run_setup['logsum_period1']:
         df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "mandatoryAccessibilities_{}.csv").format(run_setup['logsum_year1']))
-    elif year in logsum_run_setup['period2']:
+    elif year in run_setup['logsum_period2']:
         df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "mandatoryAccessibilities_{}.csv").format(run_setup['logsum_year2']))
 
     df.loc[df.subzone == 0, 'subzone'] = 'c'  # no walk

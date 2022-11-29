@@ -253,35 +253,22 @@ def get_simulation_models(SCENARIO):
 
     ]
 
-    # calculate VMT taxes
-    vmt_settings = \
-        orca.get_injectable("policy")["acct_settings"]["vmt_settings"]
-    if SCENARIO in vmt_settings["com_for_com_scenarios"] and \
-            SCENARIO not in vmt_settings["db_geography_scenarios"]:
-        models.insert(models.index("office_developer"),
-                      "subsidized_office_developer_vmt")
+    run_setup = orca.get_injectable("run_setup")
 
-    if SCENARIO in vmt_settings["com_for_res_scenarios"] or \
-            SCENARIO in vmt_settings["res_for_res_scenarios"]:
+    # VMT taxes
+    if run_setup["vmt_fee_com_for_com"]:
+        models.insert(models.index("office_developer"), "subsidized_office_developer_vmt")
 
-        models.insert(models.index("diagnostic_output"),
-                      "calculate_vmt_fees")
-        models.insert(models.index("alt_feasibility"),
-                      "subsidized_residential_feasibility")
-        models.insert(models.index("alt_feasibility"),
-                      "subsidized_residential_developer_vmt")
+    if run_setup["vmt_fee_com_for_res"] or run_setup["vmt_fee_res_for_res"]:
+        models.insert(models.index("diagnostic_output"), "calculate_vmt_fees")
+        models.insert(models.index("alt_feasibility"), "subsidized_residential_feasibility")
+        models.insert(models.index("alt_feasibility"), "subsidized_residential_developer_vmt")
 
-    # calculate jobs-housing fees
-    jobs_housing_settings = \
-        orca.get_injectable("policy")[
-            "acct_settings"]["jobs_housing_fee_settings"]
-    if SCENARIO in jobs_housing_settings["jobs_housing_com_for_res_scenarios"]:
-        models.insert(models.index("diagnostic_output"),
-                      "calculate_jobs_housing_fees")
-    #    models.insert(models.index("alt_feasibility"),
-    #                  "subsidized_residential_feasibility")
-    #    models.insert(models.index("alt_feasibility"),
-    #                  "subsidized_residential_developer_jobs_housing")
+    # jobs-housing fees- needs further testing
+    if run_setup["jobs_housing_fee_alameda"]:
+        models.insert(models.index("diagnostic_output"), "calculate_jobs_housing_fees")
+    #    models.insert(models.index("alt_feasibility"), "subsidized_residential_feasibility")
+    #    models.insert(models.index("alt_feasibility"), "subsidized_residential_developer_jobs_housing")
 
     return models
 

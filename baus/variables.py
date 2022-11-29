@@ -368,28 +368,32 @@ def vmt_nonres_cat(parcels, vmt_fee_categories):
 
 # residential fees
 @orca.column('parcels', cache=True)
-def vmt_res_fees(parcels, policy):
+def vmt_res_fees(parcels, policy, run_setup):
     vmt_settings = policy["acct_settings"]["vmt_settings"]
-    return parcels.vmt_res_cat.map(vmt_settings["res_for_res_fee_amounts"])
+    res_fees = parcels.vmt_res_cat.map(vmt_settings["res_for_res_fee_amounts"]) if run_setup["vmt_fee_res_for_res"] else 0
+
+    return res_fees
 
 
 # commercial fees
 @orca.column('parcels', cache=True)
-def vmt_com_fees(parcels, policy):
+def vmt_com_fees(parcels, policy, run_setup):
     vmt_settings = policy["acct_settings"]["vmt_settings"]
-    return parcels.vmt_nonres_cat.map(
-        vmt_settings["com_for_res_fee_amounts"]) + \
-        parcels.vmt_nonres_cat.map(vmt_settings["com_for_com_fee_amounts"])
+
+    com_for_res_fees = parcels.vmt_nonres_cat.map(vmt_settings["com_for_res_fee_amounts"]) if run_setup["vmt_fee_com_for_com"] else 0
+    com_for_com_fees = parcels.vmt_nonres_cat.map(vmt_settings["com_for_com_fee_amounts"]) if run_setup["vmt_fee_com_for_com"] else 0
+    com_fees = com_for_res_fees + com_for_com_fees
+
+    return com_fees
 
 
 # compute the fees per unit for each parcel
 # (since feees are specified spatially)
 @orca.column('parcels', cache=True)
-def fees_per_unit(parcels, policy, scenario):
+def fees_per_unit(parcels, policy, run_setup):
     s = pd.Series(0, index=parcels.index)
 
-    vmt_settings = policy["acct_settings"]["vmt_settings"]
-    if scenario in vmt_settings["res_for_res_scenarios"]:
+    if run_setup["vmt_fee_res_for_res"]:
         s += parcels.vmt_res_fees
 
     return s
@@ -397,12 +401,10 @@ def fees_per_unit(parcels, policy, scenario):
 
 # since this is by sqft this implies commercial
 @orca.column('parcels', cache=True)
-def fees_per_sqft(parcels, policy, scenario):
+def fees_per_sqft(parcels, policy, run_setup):
     s = pd.Series(0, index=parcels.index)
 
-    vmt_settings = policy["acct_settings"]["vmt_settings"]
-    if scenario in vmt_settings["com_for_com_scenarios"] or\
-            scenario in vmt_settings["com_for_res_scenarios"]:
+    if run_setup["vmt_fee_com_for_com"] or run_setup["vmt_fee_com_for_res"]:
         s += parcels.vmt_com_fees
 
     return s

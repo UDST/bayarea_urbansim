@@ -19,8 +19,7 @@ TWO_GEO_SUMMARY_LOADER, nontaz_calculator, taz_calculator,\
 county_calculator, juris_to_county
 
 @orca.step()
-def config(policy, run_number, scenario, parcels,
-           development_projects, year, slr, eq, eq_mitigation):
+def config(policy, run_number, scenario, parcels, development_projects, year):
 
     f = open(os.path.join(orca.get_injectable("outputs_dir"), "run%d_env_configuration.log" %
              (run_number)), "w")
@@ -1911,9 +1910,9 @@ def adjust_hhkids(df, year, rdf, total_hh):
 
 
 @orca.step()
-def hazards_slr_summary(slr, run_number, year, households, jobs, parcels):
+def hazards_slr_summary(run_setup, run_number, year, households, jobs, parcels):
 
-    if slr:
+    if run_setup['slr']:
 
         destroy_parcels = orca.get_table("destroy_parcels")
         if len(destroy_parcels) > 0:
@@ -1993,9 +1992,9 @@ def hazards_slr_summary(slr, run_number, year, households, jobs, parcels):
 
 
 @orca.step()
-def hazards_eq_summary(eq, eq_mitigation, run_number, year, households, jobs, parcels, buildings):
+def hazards_eq_summary(run_setup, run_number, year, households, jobs, parcels, buildings):
 
-    if eq:
+    if run_setup['eq']:
         if year == 2035:
 
             f = open(os.path.join(orca.get_injectable("outputs_dir"), "run%d_hazards_eq_%d.log" %
@@ -2094,7 +2093,7 @@ def hazards_eq_summary(eq, eq_mitigation, run_number, year, households, jobs, pa
                                             % (run_number, year)))
 
             # print out retrofit buildings that were saved
-            if eq_mitigation:
+            if run_setup['eq_mitigation']:
                 retrofit_bldgs_tot = orca.get_table("retrofit_bldgs_tot")
                 retrofit_bldgs_tot = retrofit_bldgs_tot.to_frame()
                 retrofit_bldgs_tot_taz = misc.reindex(parcels.zone_id,
