@@ -55,87 +55,86 @@ def coffer(policy, scenario):
 
 
 @orca.step()
-def preserve_affordable(year, base_year, scenario, policy, residential_units,
+def preserve_affordable(run_setup, year, base_year, scenario, policy, residential_units,
                         taz_geography, buildings, parcels_geography):
 
-    if scenario not in policy["unit_preservation"]["enable_in_scenarios"]:
-        return
+    if run_setup['unit_preservation']:
 
-    # join several geography columns to units table so that we can apply units
-    res_units = residential_units.to_frame()
-    bldgs = buildings.to_frame()
-    parcels_geog = parcels_geography.to_frame()
-    taz_geog = taz_geography.to_frame()
+        # join several geography columns to units table so that we can apply units
+        res_units = residential_units.to_frame()
+        bldgs = buildings.to_frame()
+        parcels_geog = parcels_geography.to_frame()
+        taz_geog = taz_geography.to_frame()
 
-    res_units = res_units.merge(bldgs[['parcel_id']], left_on='building_id', 
-                                right_index=True, how='left').\
-        merge(parcels_geog[['gg_id', 'sesit_id', 'tra_id',
-              'juris']], left_on='parcel_id', right_index=True, how='left').\
-        merge(taz_geog, left_on='zone_id', right_index=True, how='left')
+        res_units = res_units.merge(bldgs[['parcel_id']], left_on='building_id', 
+                                    right_index=True, how='left').\
+            merge(parcels_geog[['gg_id', 'sesit_id', 'tra_id',
+                  'juris']], left_on='parcel_id', right_index=True, how='left').\
+            merge(taz_geog, left_on='zone_id', right_index=True, how='left')
 
-    s = policy["unit_preservation"]["settings"]
+        s = policy["unit_preservation"]["settings"]
 
-    # only preserve units that are not already deed-restricted
-    res_units = res_units.loc[res_units.deed_restricted != 1]
+        # only preserve units that are not already deed-restricted
+        res_units = res_units.loc[res_units.deed_restricted != 1]
 
-    # initialize list of units to mark deed restricted
-    dr_units = []
-    
-    # apply deed-restriced units by geography (county here)
-    for geog, value in s.items(): 
+        # initialize list of units to mark deed restricted
+        dr_units = []
+        
+        # apply deed-restriced units by geography (county here)
+        for geog, value in s.items(): 
 
-        # apply deed-restriced units by filters within each geography 
-        l = ['first', 'second', 'third', 'fourth']
-        for item in l:
+            # apply deed-restriced units by filters within each geography 
+            l = ['first', 'second', 'third', 'fourth']
+            for item in l:
 
-            if value[item+"_unit_filter"] is None or \
-                value[item+"_unit_target"] is None:
-                    continue
-            
-            filter_nm = value[item+"_unit_filter"]
-            unit_target = value[item+"_unit_target"]
+                if value[item+"_unit_filter"] is None or \
+                    value[item+"_unit_target"] is None:
+                        continue
+                
+                filter_nm = value[item+"_unit_filter"]
+                unit_target = value[item+"_unit_target"]
 
-            # exclude units that have been preserved through this loop
-            res_units = res_units[~res_units.index.isin(dr_units)]
+                # exclude units that have been preserved through this loop
+                res_units = res_units[~res_units.index.isin(dr_units)]
 
-            # subset units to the geography
-            geography = policy["unit_preservation"]["geography"]
-            geog_units = res_units.loc[res_units[geography] == geog]
-            # subset units to the filters within the geography
-            filter_units = geog_units.query(filter_nm)
+                # subset units to the geography
+                geography = policy["unit_preservation"]["geography"]
+                geog_units = res_units.loc[res_units[geography] == geog]
+                # subset units to the filters within the geography
+                filter_units = geog_units.query(filter_nm)
 
-            # pull a random set of units based on the target except in cases
-            # where there aren't enough units in the filtered geography or
-            # they're already marked as deed restricted
-            if len(filter_units) == 0:
-                dr_units_set = []
-                print("%s %s: target is %d but no units are available" % 
-                      (geog, filter_nm, unit_target))
-            elif unit_target > len(filter_units):
-                 dr_units_set = filter_units.index
-                 print("%s %s: target is %d but only %d units are available" % 
-                      (geog, filter_nm, unit_target, len(filter_units)))
-            else:
-                dr_units_set = np.random.choice(filter_units.index, 
-                                                unit_target, replace=False)
+                # pull a random set of units based on the target except in cases
+                # where there aren't enough units in the filtered geography or
+                # they're already marked as deed restricted
+                if len(filter_units) == 0:
+                    dr_units_set = []
+                    print("%s %s: target is %d but no units are available" % 
+                          (geog, filter_nm, unit_target))
+                elif unit_target > len(filter_units):
+                     dr_units_set = filter_units.index
+                     print("%s %s: target is %d but only %d units are available" % 
+                          (geog, filter_nm, unit_target, len(filter_units)))
+                else:
+                    dr_units_set = np.random.choice(filter_units.index, 
+                                                    unit_target, replace=False)
 
-            dr_units.extend(dr_units_set)
+                dr_units.extend(dr_units_set)
 
-    # mark units as deed restriced in residential units table
-    residential_units = residential_units.to_frame()
-    residential_units.loc[residential_units.index.isin(dr_units), 
-                          'deed_restricted'] = 1
-    orca.add_table("residential_units", residential_units)
+        # mark units as deed restriced in residential units table
+        residential_units = residential_units.to_frame()
+        residential_units.loc[residential_units.index.isin(dr_units), 
+                              'deed_restricted'] = 1
+        orca.add_table("residential_units", residential_units)
 
-    # mark units as deed restricted in buildings table
-    buildings = buildings.to_frame(buildings.local_columns)
-    new_dr_res_units = residential_units.building_id.loc[residential_units.\
-        index.isin(dr_units)].value_counts()
-    buildings["preserved_units"] = (buildings["preserved_units"] + 
-        buildings.index.map(new_dr_res_units).fillna(0.0))     
-    buildings["deed_restricted_units"] = (buildings["deed_restricted_units"] + 
-        buildings.index.map(new_dr_res_units).fillna(0.0))
-    orca.add_table("buildings", buildings)
+        # mark units as deed restricted in buildings table
+        buildings = buildings.to_frame(buildings.local_columns)
+        new_dr_res_units = residential_units.building_id.loc[residential_units.\
+            index.isin(dr_units)].value_counts()
+        buildings["preserved_units"] = (buildings["preserved_units"] + 
+            buildings.index.map(new_dr_res_units).fillna(0.0))     
+        buildings["deed_restricted_units"] = (buildings["deed_restricted_units"] + 
+            buildings.index.map(new_dr_res_units).fillna(0.0))
+        orca.add_table("buildings", buildings)
 
 
 @orca.injectable(cache=True)
