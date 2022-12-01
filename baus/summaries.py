@@ -1912,7 +1912,7 @@ def adjust_hhkids(df, year, rdf, total_hh):
 @orca.step()
 def hazards_slr_summary(run_setup, run_number, year, households, jobs, parcels):
 
-    if run_setup['slr']:
+    if run_setup['run_slr']:
 
         destroy_parcels = orca.get_table("destroy_parcels")
         if len(destroy_parcels) > 0:
@@ -1994,7 +1994,7 @@ def hazards_slr_summary(run_setup, run_number, year, households, jobs, parcels):
 @orca.step()
 def hazards_eq_summary(run_setup, run_number, year, households, jobs, parcels, buildings):
 
-    if run_setup['eq']:
+    if run_setup['run_eq']:
         if year == 2035:
 
             f = open(os.path.join(orca.get_injectable("outputs_dir"), "run%d_hazards_eq_%d.log" %

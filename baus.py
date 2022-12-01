@@ -180,11 +180,18 @@ def get_simulation_models(SCENARIO):
         "subsidized_office_developer_lump_sum_accts",
 
         "alt_feasibility",
+        "subsidized_residential_feasibility",
+        "subsidized_residential_developer_vmt",
+#        "subsidized_residential_feasibility",
+#        "subsidized_residential_developer_jobs_housing",
 
         "residential_developer",
         "developer_reprocess",
         "retail_developer",
+
         "office_developer",
+        "subsidized_office_developer_vmt",
+
         "accessory_units",
         "calculate_vmt_fees",
 
@@ -244,6 +251,10 @@ def get_simulation_models(SCENARIO):
         "parcel_summary",
         "building_summary",
         "diagnostic_output",
+
+        "calculate_vmt_fees",
+        "calculate_jobs_housing_fees",
+
         "geographic_summary",
         "travel_model_output",
         # "travel_model_2_output",
@@ -255,22 +266,130 @@ def get_simulation_models(SCENARIO):
 
     run_setup = orca.get_injectable("run_setup")
 
+    # sea level rise and sea level rise mitigation
+    if not run_setup["run_slr"]:
+        models.remove("slr_inundate")
+        models.remove("slr_remove_dev")
+
+    # earthquake and earthquake mitigation
+    if not run_setup["run_eq"]:
+        models.remove("eq_code_buildings")
+        models.remove("earthquake_demolish")
+
+    # housing preservation
+    if not run_setup["run_housing_preservation_strategy"]:
+        models.remove("preserve_affordable")
+
+    # office bonds
+    if not run_setup["run_office_bond_strategy"]:
+        models.remove("office_lump_sum_accounts")
+        models.remove("subsidized_office_developer_lump_sum_accts")
+
     # VMT taxes
-    if run_setup["vmt_fee_com_for_com"]:
-        models.insert(models.index("office_developer"), "subsidized_office_developer_vmt")
+    if not run_setup["run_vmt_fee_com_for_com_strategy"]:
+        models.remove("subsidized_office_developer_vmt")
+    if not run_setup["run_vmt_fee_com_for_res_strategy"] or run_setup["run_vmt_fee_res_for_res_strategy"]:
+        models.remove("calculate_vmt_fees")
+        models.remove("subsidized_residential_feasibility")
+        models.remove("subsidized_residential_developer_vmt")
 
-    if run_setup["vmt_fee_com_for_res"] or run_setup["vmt_fee_res_for_res"]:
-        models.insert(models.index("diagnostic_output"), "calculate_vmt_fees")
-        models.insert(models.index("alt_feasibility"), "subsidized_residential_feasibility")
-        models.insert(models.index("alt_feasibility"), "subsidized_residential_developer_vmt")
-
-    # jobs-housing fees- needs further testing
-    if run_setup["jobs_housing_fee_alameda"]:
-        models.insert(models.index("diagnostic_output"), "calculate_jobs_housing_fees")
-    #    models.insert(models.index("alt_feasibility"), "subsidized_residential_feasibility")
-    #    models.insert(models.index("alt_feasibility"), "subsidized_residential_developer_jobs_housing")
+    # jobs-housing fees- subsidization needs further testing
+    if not run_setup["run_jobs_housing_fee_strategy"]:
+        models.remove("calculate_jobs_housing_fees")
+    #    models.remove["subsidized_residential_feasibility"]
+    #    models.remove["subsidized_residential_developer_jobs_housing"]
 
     return models
+
+def get_baseyear_models():
+
+    models = [
+        "slr_inundate",
+        "slr_remove_dev",
+        "eq_code_buildings",
+        "earthquake_demolish",
+
+        "neighborhood_vars",   # local accessibility vars
+        "regional_vars",       # regional accessibility vars
+
+        "rsh_simulate",    # residential sales hedonic for units
+        "rrh_simulate",    # residential rental hedonic for units
+        "nrh_simulate",
+
+        # (based on higher of predicted price or rent)
+        "assign_tenure_to_new_units",
+
+        # uses conditional probabilities
+        "household_relocation",
+        "households_transition",
+        # update building/unit/hh correspondence
+        "reconcile_unplaced_households",
+        "jobs_transition",
+
+        # we first put Q1 households only into deed-restricted units, 
+        # then any additional unplaced Q1 households, Q2, Q3, and Q4 
+        # households are placed in either deed-restricted units or 
+        # market-rate units
+        "hlcm_owner_lowincome_simulate",
+        "hlcm_renter_lowincome_simulate",
+
+        # allocate owners to vacant owner-occupied units
+        "hlcm_owner_simulate",
+        # allocate renters to vacant rental units
+        "hlcm_renter_simulate",
+
+        # we have to run the hlcm above before this one - we first want
+        # to try and put unplaced households into their appropraite
+        # tenured units and then when that fails, force them to place
+        # using the code below.
+
+        # force placement of any unplaced households, in terms of
+        # rent/own, is a noop except in the final simulation year
+        # 09 11 2020 ET: enabled for all simulation years
+        "hlcm_owner_simulate_no_unplaced",
+        "hlcm_owner_lowincome_simulate_no_unplaced",
+        # this one crashes right no because there are no unplaced, so
+        # need to fix the crash in urbansim
+        # 09 11 2020 ET: appears to be working
+        "hlcm_renter_simulate_no_unplaced",
+        "hlcm_renter_lowincome_simulate_no_unplaced",
+
+        # update building/unit/hh correspondence
+        "reconcile_placed_households",
+
+        "elcm_simulate",
+
+        "price_vars",
+        # "scheduled_development_events",
+
+        "topsheet",
+        "simulation_validation",
+        "parcel_summary",
+        "building_summary",
+        "geographic_summary",
+        "travel_model_output",
+        # "travel_model_2_output",
+        "hazards_slr_summary",
+        "hazards_eq_summary",
+        "diagnostic_output",
+        "config",
+        "slack_report"
+    ]
+
+    run_setup = orca.get_injectable("run_setup")
+
+    # sea level rise and sea level rise mitigation
+    if not run_setup["run_slr"]:
+        models.remove("slr_inundate")
+        models.remove("slr_remove_dev")
+
+    # earthquake and earthquake mitigation
+    if not run_setup["run_eq"]:
+        models.remove("eq_code_buildings")
+        models.remove("earthquake_demolish")
+
+    return models
+
 
 
 def run_models(MODE, SCENARIO):
@@ -296,80 +415,8 @@ def run_models(MODE, SCENARIO):
 
         # see above for docs on this
         if not SKIP_BASE_YEAR:
-            orca.run([
-
-                "slr_inundate",
-                "slr_remove_dev",
-                "eq_code_buildings",
-                "earthquake_demolish",
-
-                "neighborhood_vars",   # local accessibility vars
-                "regional_vars",       # regional accessibility vars
-
-                "rsh_simulate",    # residential sales hedonic for units
-                "rrh_simulate",    # residential rental hedonic for units
-                "nrh_simulate",
-
-                # (based on higher of predicted price or rent)
-                "assign_tenure_to_new_units",
-
-                # uses conditional probabilities
-                "household_relocation",
-                "households_transition",
-                # update building/unit/hh correspondence
-                "reconcile_unplaced_households",
-                "jobs_transition",
-
-                # we first put Q1 households only into deed-restricted units, 
-                # then any additional unplaced Q1 households, Q2, Q3, and Q4 
-                # households are placed in either deed-restricted units or 
-                # market-rate units
-                "hlcm_owner_lowincome_simulate",
-                "hlcm_renter_lowincome_simulate",
-
-                # allocate owners to vacant owner-occupied units
-                "hlcm_owner_simulate",
-                # allocate renters to vacant rental units
-                "hlcm_renter_simulate",
-
-                # we have to run the hlcm above before this one - we first want
-                # to try and put unplaced households into their appropraite
-                # tenured units and then when that fails, force them to place
-                # using the code below.
-
-                # force placement of any unplaced households, in terms of
-                # rent/own, is a noop except in the final simulation year
-                # 09 11 2020 ET: enabled for all simulation years
-                "hlcm_owner_simulate_no_unplaced",
-                "hlcm_owner_lowincome_simulate_no_unplaced",
-                # this one crashes right no because there are no unplaced, so
-                # need to fix the crash in urbansim
-                # 09 11 2020 ET: appears to be working
-                "hlcm_renter_simulate_no_unplaced",
-                "hlcm_renter_lowincome_simulate_no_unplaced",
-
-                # update building/unit/hh correspondence
-                "reconcile_placed_households",
-
-                "elcm_simulate",
-
-                "price_vars",
-                # "scheduled_development_events",
-
-                "topsheet",
-                "simulation_validation",
-                "parcel_summary",
-                "building_summary",
-                "geographic_summary",
-                "travel_model_output",
-                # "travel_model_2_output",
-                "hazards_slr_summary",
-                "hazards_eq_summary",
-                "diagnostic_output",
-                "config",
-                "slack_report"
-
-            ], iter_vars=[IN_YEAR])
+            baseyear_models = get_baseyear_models()
+            orca.run(baseyear_models, iter_vars=[IN_YEAR])
 
         # start the simulation in the next round - only the models above run
         # for the IN_YEAR

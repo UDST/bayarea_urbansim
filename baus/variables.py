@@ -370,7 +370,7 @@ def vmt_nonres_cat(parcels, vmt_fee_categories):
 @orca.column('parcels', cache=True)
 def vmt_res_fees(parcels, policy, run_setup):
     vmt_settings = policy["acct_settings"]["vmt_settings"]
-    res_fees = parcels.vmt_res_cat.map(vmt_settings["res_for_res_fee_amounts"]) if run_setup["vmt_fee_res_for_res"] else 0
+    res_fees = parcels.vmt_res_cat.map(vmt_settings["res_for_res_fee_amounts"]) if run_setup["run_vmt_fee_res_for_res_strategy"] else 0
 
     return res_fees
 
@@ -380,8 +380,10 @@ def vmt_res_fees(parcels, policy, run_setup):
 def vmt_com_fees(parcels, policy, run_setup):
     vmt_settings = policy["acct_settings"]["vmt_settings"]
 
-    com_for_res_fees = parcels.vmt_nonres_cat.map(vmt_settings["com_for_res_fee_amounts"]) if run_setup["vmt_fee_com_for_com"] else 0
-    com_for_com_fees = parcels.vmt_nonres_cat.map(vmt_settings["com_for_com_fee_amounts"]) if run_setup["vmt_fee_com_for_com"] else 0
+    com_for_res_fees = parcels.vmt_nonres_cat.map(vmt_settings["com_for_res_fee_amounts"]) if \
+        run_setup["run_vmt_fee_com_for_res_strategy"] else 0
+    com_for_com_fees = parcels.vmt_nonres_cat.map(vmt_settings["com_for_com_fee_amounts"]) if \
+        run_setup ["run_vmt_fee_com_for_com_strategy"] else 0
     com_fees = com_for_res_fees + com_for_com_fees
 
     return com_fees
@@ -393,7 +395,7 @@ def vmt_com_fees(parcels, policy, run_setup):
 def fees_per_unit(parcels, policy, run_setup):
     s = pd.Series(0, index=parcels.index)
 
-    if run_setup["vmt_fee_res_for_res"]:
+    if run_setup["run_vmt_fee_res_for_res_strategy"]:
         s += parcels.vmt_res_fees
 
     return s
@@ -404,7 +406,7 @@ def fees_per_unit(parcels, policy, run_setup):
 def fees_per_sqft(parcels, policy, run_setup):
     s = pd.Series(0, index=parcels.index)
 
-    if run_setup["vmt_fee_com_for_com"] or run_setup["vmt_fee_com_for_res"]:
+    if run_setup["run_vmt_fee_com_for_com_strategy"] or run_setup["run_vmt_fee_com_for_res_strategy"]:
         s += parcels.vmt_com_fees
 
     return s

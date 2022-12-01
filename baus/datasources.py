@@ -78,11 +78,11 @@ def limits_settings(policy, run_setup):
 
     d = policy['development_limits']
 
-    if run_setup['job_cap_policy']:
+    if run_setup['run_job_cap_strategy']:
         print("Applying job caps")
         assert "default" in d
 
-        d_jc = d["job_cap_policy"]
+        d_jc = d["job_cap_strategy"]
         d = d["default"]
         for key, value in d_jc.items():
             d.setdefault(key, {})
@@ -101,8 +101,8 @@ def inclusionary_housing_settings(policy, run_setup):
 
     s = policy['inclusionary_housing_settings']
 
-    if run_setup["inclusionary_policy"]:
-        s = s["inclusionary_policy"]
+    if run_setup["run_inclusionary_strategy"]:
+        s = s["inclusionary_strategy"]
     elif "default" in s.keys():
         print("Using default inclusionary settings")
         s = s["default"]
