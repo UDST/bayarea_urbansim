@@ -571,26 +571,11 @@ def reprocess_dev_projects(df):
 
 
 # shared between demolish and build tables below
-def get_dev_projects_table(scenario, parcels):
-    # requires the user has MTC's urban_data_internal
-    # repository alongside bayarea_urbansim
-    urban_data_repo = ("../urban_data_internal/development_projects/")
-    file = "2021_0309_1939_development_projects.csv"
-    print('Version of development_projects: {}'.format(file))
-    current_dev_proj = (file)
-    orca.add_injectable("dev_proj_file", current_dev_proj)
-    df = pd.read_csv(os.path.join(urban_data_repo, current_dev_proj),
-                     dtype={'PARCEL_ID': np.int64,
-                            'geom_id':   np.int64})
+def get_dev_projects_table(parcels):
+    df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "2021_0309_1939_development_projects.csv"), 
+                     dtype={'PARCEL_ID': np.int64, 'geom_id':   np.int64})
     df = reprocess_dev_projects(df)
     orca.add_injectable("devproj_len", len(df))
-
-    # this filters project by scenario
-    scen = 'scen' + str(scenario)
-    if scen in df:
-        # df[scenario] is 1s and 0s indicating whether to include it
-        df = df[df[scen].astype('bool')]
-    orca.add_injectable("devproj_len_scen", len(df))
 
     df = df.dropna(subset=['geom_id'])
 

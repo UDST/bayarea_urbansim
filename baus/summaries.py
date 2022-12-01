@@ -19,10 +19,9 @@ TWO_GEO_SUMMARY_LOADER, nontaz_calculator, taz_calculator,\
 county_calculator, juris_to_county
 
 @orca.step()
-def config(policy, run_number, scenario, parcels, development_projects, year):
+def config(run_number, scenario, parcels, year):
 
-    f = open(os.path.join(orca.get_injectable("outputs_dir"), "run%d_env_configuration.log" %
-             (run_number)), "w")
+    f = open(os.path.join(orca.get_injectable("outputs_dir"), "run%d_env_configuration.log" % (run_number)), "w")
 
     def write(s):
         # print s
@@ -2131,8 +2130,7 @@ def hazards_eq_summary(run_setup, run_number, year, households, jobs, parcels, b
 
 
 @orca.step()
-def slack_report(year, base_year, slack_enabled, run_number, devproj_len,
-                 devproj_len_scen, devproj_len_geomid, devproj_len_proc):
+def slack_report(year, base_year, slack_enabled, run_number, devproj_len, devproj_len_geomid, devproj_len_proc):
 
     if slack_enabled:
         from slacker import Slacker
@@ -2141,8 +2139,7 @@ def slack_report(year, base_year, slack_enabled, run_number, devproj_len,
         host = socket.gethostname()
 
         if year == base_year:
-            dropped_devproj_scen = devproj_len - devproj_len_scen
-            dropped_devproj_geomid = devproj_len_scen - devproj_len_geomid
+            dropped_devproj_geomid = devproj_len - devproj_len_geomid
             dropped_devproj_proc = devproj_len_geomid - devproj_len_proc
             slack.chat.post_message(
                 '#urbansim_sim_update',
@@ -2150,8 +2147,7 @@ def slack_report(year, base_year, slack_enabled, run_number, devproj_len,
                 '%d dropped by scenario filter, '
                 '%d dropped by geom_id check, '
                 '%d dropped by processing'
-                % (run_number, host, devproj_len, dropped_devproj_scen,
-                   dropped_devproj_geomid, dropped_devproj_proc), as_user=True)
+                % (run_number, host, devproj_len, dropped_devproj_geomid, dropped_devproj_proc), as_user=True)
 
         unplaced_hh = orca.get_injectable("unplaced_hh")
         if unplaced_hh > 0:
