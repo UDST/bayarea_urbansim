@@ -372,7 +372,7 @@ def get_baseyear_models():
         "hazards_slr_summary",
         "hazards_eq_summary",
         "diagnostic_output",
-        "config",
+        "environment_config",
         "slack_report"
     ]
 
