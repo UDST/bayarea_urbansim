@@ -19,7 +19,7 @@ TWO_GEO_SUMMARY_LOADER, nontaz_calculator, taz_calculator,\
 county_calculator, juris_to_county
 
 @orca.step()
-def config(run_number, scenario, parcels, year):
+def environment_config(run_number, scenario, parcels, year):
 
     f = open(os.path.join(orca.get_injectable("outputs_dir"), "run%d_env_configuration.log" % (run_number)), "w")
 
@@ -42,163 +42,53 @@ def config(run_number, scenario, parcels, year):
 
 
 @orca.step()
-def topsheet(households, jobs, buildings, parcels, zones, year,
-             run_number, taz_geography, parcels_zoning_calculations,
-             summary, settings, parcels_geography, abag_targets, new_tpp_id,
-             residential_units, mapping, scenario, policy):
+def topsheet(households, jobs, buildings, parcels, zones, year, run_number, taz_geography, parcels_zoning_calculations,
+             summary, settings, parcels_geography, abag_targets, new_tpp_id, residential_units, mapping, scenario, policy):
 
-    hh_by_subregion = misc.reindex(taz_geography.subregion,
-                                   households.zone_id).value_counts()
+    hh_by_subregion = misc.reindex(taz_geography.subregion, households.zone_id).value_counts()
 
-    # Cols for Draft/Final Blueprint and EIR geographies
-    if scenario in policy["geographies_db_enable"] or \
-            scenario in policy["geographies_fb_enable"] or \
-            scenario in policy["geographies_eir_enable"]:       
-        households_df = orca.merge_tables(
-            'households',
-            [parcels_geography, buildings, households],
-            columns=['pda_id_pba50', 'tra_id', 'ppa_id', 'sesit_id',
-                     'income'])
-    # Cols for PBA40 and fr2 geographies
-    else:
-        households_df = orca.merge_tables(
-            'households',
-            [parcels_geography, buildings, households],
-            columns=['pda_id_pba40', 'tpp_id', 'trich_id',
-                     'income'])
+    # Cols for Draft/Final Blueprint and EIR geographies       
+    households_df = orca.merge_tables('households', [parcels_geography, buildings, households],
+                                      columns=['pda_id', 'tra_id', 'ppa_id', 'sesit_id', 'income'])
 
-    # use PBA40 new tpp_id
-    if "tpp_id" in households_df and \
-            settings["use_new_tpp_id_in_topsheet"]:
-        del households_df["tpp_id"]
-        households_df["tpp_id"] = misc.reindex(new_tpp_id.tpp_id,
-                                               households_df.parcel_id)
+    hh_by_inpda = households_df.pda_id.notnull().value_counts()
+    hhincome_by_inpda = households_df.income.groupby(households_df.pda_id.notnull()).mean()
+    # round to nearest 100s
+    hhincome_by_inpda = (hhincome_by_inpda/100).round()*100
 
-    # Summaries for PBA40 geographies
-    if scenario in policy["geographies_pba40_enable"]:
-        hh_by_intpp = households_df.tpp_id.notnull().value_counts()
+    hh_by_intra = households_df.tra_id.notnull().value_counts()
+    hhincome_by_intra = households_df.income.groupby(households_df.tra_id.notnull()).mean()
+    # round to nearest 100s
+    hhincome_by_intra = (hhincome_by_intra/100).round()*100
 
-        hhincome_by_intpp = households_df.income.groupby(
-            households_df.tpp_id.notnull()).mean()
-        # round to nearest 100s
-        hhincome_by_intpp = (hhincome_by_intpp/100).round()*100
+    hh_by_insesit = households_df.sesit_id.notnull().value_counts()
+    hhincome_by_insesit = households_df.income.groupby(households_df.sesit_id.notnull()).mean()
+    # round to nearest 100s
+    hhincome_by_insesit = (hhincome_by_insesit/100).round()*100
 
-        hh_by_inpda_pba40 = households_df.pda_id_pba40.notnull().value_counts()
+    jobs_by_subregion = misc.reindex(taz_geography.subregion, jobs.zone_id).value_counts()
 
-        hhincome_by_inpda_pba40 = households_df.income.groupby(
-            households_df.pda_id_pba40.notnull()).mean()
-        # round to nearest 100s
-        hhincome_by_inpda_pba40 = (hhincome_by_inpda_pba40/100).round()*100
+    jobs_df = orca.merge_tables('jobs', [parcels, buildings, jobs], columns=['pda_id', 'tra_id'])
 
-    # Summaries for Horizon geographies
-    if scenario in policy["geographies_fr2_enable"]:
-        hh_by_intrich = households_df.trich_id.notnull().value_counts()
+    jobs_by_inpda = jobs_df.pda_id.notnull().value_counts()
+    jobs_by_intra = jobs_df.tra_id.notnull().value_counts()
 
-        hhincome_by_intrich = households_df.income.groupby(
-            households_df.trich_id.notnull()).mean()
-        # round to nearest 100s
-        hhincome_by_intrich = (hhincome_by_intrich/100).round()*100
-
-    # Summaries for Draft/Final Blueprint and EIR geographies
-    if scenario in policy["geographies_db_enable"] or \
-            scenario in policy["geographies_fb_enable"] or \
-            scenario in policy["geographies_eir_enable"]:
-        hh_by_inpda_pba50 = households_df.pda_id_pba50.notnull().value_counts()
-
-        hhincome_by_inpda_pba50 = households_df.income.groupby(
-            households_df.pda_id_pba50.notnull()).mean()
-        # round to nearest 100s
-        hhincome_by_inpda_pba50 = (hhincome_by_inpda_pba50/100).round()*100
-
-        hh_by_intra = households_df.tra_id.notnull().value_counts()
-
-        hhincome_by_intra = households_df.income.groupby(
-            households_df.tra_id.notnull()).mean()
-        # round to nearest 100s
-        hhincome_by_intra = (hhincome_by_intra/100).round()*100
-
-        hh_by_insesit = households_df.sesit_id.notnull().value_counts()
-
-        hhincome_by_insesit = households_df.income.groupby(
-            households_df.sesit_id.notnull()).mean()
-        # round to nearest 100s
-        hhincome_by_insesit = (hhincome_by_insesit/100).round()*100
-
-    jobs_by_subregion = misc.reindex(taz_geography.subregion,
-                                     jobs.zone_id).value_counts()
-
-    # PBA50 Draft Blueprint, Final Blueprint, EIR
-    if scenario in policy["geographies_db_enable"] or \
-            scenario in policy["geographies_fb_enable"] or \
-            scenario in policy["geographies_eir_enable"]:
-        jobs_df = orca.merge_tables(
-            'jobs',
-            [parcels, buildings, jobs],
-            columns=['pda_pba50', 'tra_id'])
-    # PBA40 and Horizon
-    else:
-        jobs_df = orca.merge_tables(
-            'jobs',
-            [parcels, buildings, jobs],
-            columns=['pda_pba40', 'trich_id'])
-
-    if settings["use_new_tpp_id_in_topsheet"]:
-        jobs_df["tpp_id"] = misc.reindex(new_tpp_id.tpp_id,
-                                         jobs_df.parcel_id)
-
-    if scenario in policy["geographies_pba40_enable"]:
-        jobs_by_inpda_pba40 = jobs_df.pda_pba40.notnull().value_counts()
-        jobs_by_intpp = jobs_df.tpp_id.notnull().value_counts()
-
-    if scenario in policy["geographies_fr2_enable"]:
-        jobs_by_intrich = jobs_df.trich_id.notnull().value_counts()
-
-    if scenario in policy["geographies_db_enable"] or \
-            scenario in policy["geographies_fb_enable"] or \
-            scenario in policy["geographies_eir_enable"]:
-        jobs_by_inpda_pba50 = jobs_df.pda_pba50.notnull().value_counts()
-        jobs_by_intra = jobs_df.tra_id.notnull().value_counts()
-
-    capacity = parcels_zoning_calculations.\
-        zoned_du_underbuild_nodev.groupby(parcels.subregion).sum()
+    capacity = parcels_zoning_calculations.zoned_du_underbuild_nodev.groupby(parcels.subregion).sum()
 
     if year == 2010:
         # save some info for computing growth measures
-        if scenario in policy["geographies_pba40_enable"]:
-            orca.add_injectable("base_year_measures", {
-                "hh_by_subregion": hh_by_subregion,
-                "jobs_by_subregion": jobs_by_subregion,
-                "hh_by_inpda_pba40": hh_by_inpda_pba40,
-                "jobs_by_inpda_pba40": jobs_by_inpda_pba40,
-                "hh_by_intpp": hh_by_intpp,
-                "jobs_by_intpp": jobs_by_intpp,
-                "hhincome_by_intpp": hhincome_by_intpp,
-                "capacity": capacity
-            })
-        if scenario in policy["geographies_fr2_enable"]:
-            orca.add_injectable("base_year_measures", {
-                "hh_by_subregion": hh_by_subregion,
-                "jobs_by_subregion": jobs_by_subregion,
-                "hh_by_intrich": hh_by_intrich,
-                "jobs_by_intrich": jobs_by_intrich,
-                "hhincome_by_intrich": hhincome_by_intrich,
-                "capacity": capacity
-            })
-        if scenario in policy["geographies_db_enable"] or \
-                scenario in policy["geographies_fb_enable"] or \
-                scenario in policy["geographies_eir_enable"]:
-            orca.add_injectable("base_year_measures", {
-                "hh_by_subregion": hh_by_subregion,
-                "jobs_by_subregion": jobs_by_subregion,
-                "hh_by_inpda_pba50": hh_by_inpda_pba50,
-                "hh_by_intra": hh_by_intra,
-                "hh_by_insesit": hh_by_insesit,
-                "jobs_by_inpda_pba50": jobs_by_inpda_pba50,
-                "jobs_by_intra": jobs_by_intra,
-                "hhincome_by_intra": hhincome_by_intra,
-                "hhincome_by_insesit": hhincome_by_insesit,
-                "capacity": capacity
-            })
+        orca.add_injectable("base_year_measures", {
+            "hh_by_subregion": hh_by_subregion,
+            "jobs_by_subregion": jobs_by_subregion,
+            "hh_by_inpda": hh_by_inpda,
+            "hh_by_intra": hh_by_intra,
+            "hh_by_insesit": hh_by_insesit,
+            "jobs_by_inpda": jobs_by_inpda,
+            "jobs_by_intra": jobs_by_intra,
+            "hhincome_by_intra": hhincome_by_intra,
+            "hhincome_by_insesit": hhincome_by_insesit,
+            "capacity": capacity
+        })
     try:
         base_year_measures = orca.get_injectable("base_year_measures")
     except Exception as e:
@@ -207,8 +97,7 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
         # we don't want to waste time doing so
         return
 
-    f = open(os.path.join(orca.get_injectable("outputs_dir"), "run%d_topsheet_%d.log" %
-             (run_number, year)), "w")
+    f = open(os.path.join(orca.get_injectable("outputs_dir"), "run%d_topsheet_%d.log" % (run_number, year)), "w")
 
     def write(s):
         # print s
@@ -254,199 +143,72 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
     du = buildings.deed_restricted_units.sum()
     write("Number of deed restricted units = %d" % du)
 
-    if scenario in policy["geographies_pba40_enable"]:
-        write("Base year mean income by whether household is in tpp:\n%s" %
-              base_year_measures["hhincome_by_intpp"])
-        write("Horizon year mean income by whether household is in tpp:\n%s" %
-              hhincome_by_intpp)
-
-    if scenario in policy["geographies_db_enable"]:
-        write("Base year mean income by whether household is in tra:\n%s" %
-              base_year_measures["hhincome_by_intra"])
-        write("Draft Blueprint year mean income by whether household\
-              is in tra:\n%s" % hhincome_by_intra)
-        write("Base year mean income by whether household is in hra/dr:\n%s" %
-              base_year_measures["hhincome_by_insesit"])
-        write("Draft Blueprint year mean income by whether household\
-              is in hra/dr:\n%s" % hhincome_by_insesit)
-
-    if scenario in policy["geographies_fb_enable"]:
-        write("Base year mean income by whether household is in tra:\n%s" %
-              base_year_measures["hhincome_by_intra"])
-        write("Final Blueprint year mean income by whether household\
-              is in tra:\n%s" % hhincome_by_intra)
-        write("Base year mean income by whether household is in hra/dr:\n%s" %
-              base_year_measures["hhincome_by_insesit"])
-        write("Final Blueprint year mean income by whether household\
-              is in hra/dr:\n%s" % hhincome_by_insesit)
-
-    if scenario in policy["geographies_eir_enable"]:
-        write("Base year mean income by whether household is in tra:\n%s" %
-              base_year_measures["hhincome_by_intra"])
-        write("EIR year mean income by whether household\
-              is in tra:\n%s" % hhincome_by_intra)
-        write("Base year mean income by whether household is in hra/dr:\n%s" %
-              base_year_measures["hhincome_by_insesit"])
-        write("EIR year mean income by whether household\
-              is in hra/dr:\n%s" % hhincome_by_insesit)
+    write("Base year mean income by whether household is in tra:\n%s" % base_year_measures["hhincome_by_intra"])
+    write("Forecast year mean income by whether household is in tra:\n%s" % hhincome_by_intra)
+    write("Base year mean income by whether household is in hra/dr:\n%s" % base_year_measures["hhincome_by_insesit"])
+    write("Forecast year mean income by whether household is in hra/dr:\n%s" % hhincome_by_insesit)
 
     jsp = buildings.job_spaces.sum()
     write("Number of job spaces = %d" % jsp)
     write("Non-residential vacancy rate = %.2f" % (1-0 - float(nj)/jsp))
 
     tmp = base_year_measures["hh_by_subregion"]
-    write("Households base year share by subregion:\n%s" %
-          norm_and_round(tmp))
+    write("Households base year share by subregion:\n%s" % norm_and_round(tmp))
 
-    write("Households share by subregion:\n%s" %
-          norm_and_round(hh_by_subregion))
+    write("Households share by subregion:\n%s" % norm_and_round(hh_by_subregion))
     diff = hh_by_subregion - base_year_measures["hh_by_subregion"]
 
-    write("Households pct of regional growth by subregion:\n%s" %
-          norm_and_round(diff))
+    write("Households pct of regional growth by subregion:\n%s" % norm_and_round(diff))
 
     tmp = base_year_measures["jobs_by_subregion"]
-    write("Jobs base year share by subregion:\n%s" %
-          norm_and_round(tmp))
+    write("Jobs base year share by subregion:\n%s" % norm_and_round(tmp))
 
-    write("Jobs share by subregion:\n%s" %
-          norm_and_round(jobs_by_subregion))
+    write("Jobs share by subregion:\n%s" % norm_and_round(jobs_by_subregion))
     diff = jobs_by_subregion - base_year_measures["jobs_by_subregion"]
 
-    write("Jobs pct of regional growth by subregion:\n%s" %
-          norm_and_round(diff))
+    write("Jobs pct of regional growth by subregion:\n%s" % norm_and_round(diff))
 
-    # write PBA40 additional summaries: pda, tpp
-    if scenario in policy["geographies_pba40_enable"]:
-        tmp = base_year_measures["hh_by_inpda_pba40"]
-        write("Households base year share in pdas:\n%s" %
-              norm_and_round(tmp))
+    tmp = base_year_measures["hh_by_inpda"]
+    write("Households base year share in pdas:\n%s" % norm_and_round(tmp))
 
-        write("Households share in pdas:\n%s" %
-              norm_and_round(hh_by_inpda_pba40))
+    write("Households share in pdas:\n%s" % norm_and_round(hh_by_inpda))
 
-        diff = hh_by_inpda_pba40 - base_year_measures["hh_by_inpda_pba40"]
-        write("Households pct of regional growth in pdas:\n%s" %
-              norm_and_round(diff))
+    diff = hh_by_inpda - base_year_measures["hh_by_inpda"]
+    write("Households pct of regional growth in pdas:\n%s" % norm_and_round(diff))
 
-        tmp = base_year_measures["jobs_by_inpda_pba40"]
-        write("Jobs base year share in pdas:\n%s" %
-              norm_and_round(tmp))
+    tmp = base_year_measures["jobs_by_inpda"]
+    write("Jobs base year share in pdas:\n%s" % norm_and_round(tmp))
 
-        write("Jobs share in pdas:\n%s" %
-              norm_and_round(jobs_by_inpda_pba40))
+    write("Jobs share in pdas:\n%s" % norm_and_round(jobs_by_inpda))
 
-        diff = jobs_by_inpda_pba40 - base_year_measures["jobs_by_inpda_pba40"]
-        write("Jobs pct of regional growth in pdas:\n%s" %
-              norm_and_round(diff))
+    diff = jobs_by_inpda - base_year_measures["jobs_by_inpda"]
+    write("Jobs pct of regional growth in pdas:\n%s" % norm_and_round(diff))
 
-        tmp = base_year_measures["hh_by_intpp"]
-        write("Households base year share in tpps:\n%s" %
-              norm_and_round(tmp))
+    tmp = base_year_measures["hh_by_intra"]
+    write("Households base year share in tras:\n%s" % norm_and_round(tmp))
 
-        write("Households share in tpps:\n%s" %
-              norm_and_round(hh_by_intpp))
+    write("Households share in tras:\n%s" % norm_and_round(hh_by_intra))
 
-        diff = hh_by_intpp - base_year_measures["hh_by_intpp"]
-        write("Households pct of regional growth in tpps:\n%s" %
-              norm_and_round(diff))
+    diff = hh_by_intra - base_year_measures["hh_by_intra"]
+    write("Households pct of regional growth in tras:\n%s" % norm_and_round(diff))
 
-        tmp = base_year_measures["jobs_by_intpp"]
-        write("Jobs base year share in tpps:\n%s" %
-              norm_and_round(tmp))
+    tmp = base_year_measures["jobs_by_intra"]
+    write("Jobs base year share in tras:\n%s" % norm_and_round(tmp))
 
-        write("Jobs share in tpps:\n%s" %
-              norm_and_round(jobs_by_intpp))
+    write("Jobs share in tras:\n%s" % norm_and_round(jobs_by_intra))
 
-        diff = jobs_by_intpp - base_year_measures["jobs_by_intpp"]
-        write("Jobs pct of regional growth in tpps:\n%s" %
-              norm_and_round(diff))
+    diff = jobs_by_intra - base_year_measures["jobs_by_intra"]
+    write("Jobs pct of regional growth in tras:\n%s" % norm_and_round(diff))
 
-    # write Horizon additional summaries: trich
-    if scenario in policy["geographies_fr2_enable"]:
-        tmp = base_year_measures["hh_by_intrich"]
-        write("Households base year share in trichs:\n%s" %
-              norm_and_round(tmp))
+    tmp = base_year_measures["hh_by_insesit"]
+    write("Households base year share in hra/drs:\n%s" % norm_and_round(tmp))
 
-        write("Households share in trichs:\n%s" %
-              norm_and_round(hh_by_intrich))
+    write("Households share in hra/drs:\n%s" % norm_and_round(hh_by_insesit))
 
-        diff = hh_by_intrich - base_year_measures["hh_by_intrich"]
-        write("Households pct of regional growth in trichs:\n%s" %
-              norm_and_round(diff))
+    diff = hh_by_insesit - base_year_measures["hh_by_insesit"]
+    write("Households pct of regional growth in hra/drs:\n%s" % norm_and_round(diff))
 
-        tmp = base_year_measures["jobs_by_intrich"]
-        write("Jobs base year share in trichs:\n%s" %
-              norm_and_round(tmp))
-
-        write("Jobs share in trichs:\n%s" %
-              norm_and_round(jobs_by_intrich))
-
-        diff = jobs_by_intrich - base_year_measures["jobs_by_intrich"]
-        write("Jobs pct of regional growth in trichs:\n%s" %
-              norm_and_round(diff))
-
-    # write Draft/Final Blueprint and EIR additional summaries: pda, tra, sesit(hra/dr)
-    if scenario in policy["geographies_db_enable"] or \
-            scenario in policy["geographies_fb_enable"] or \
-            scenario in policy["geographies_eir_enable"]:
-        tmp = base_year_measures["hh_by_inpda_pba50"]
-        write("Households base year share in pdas:\n%s" %
-              norm_and_round(tmp))
-
-        write("Households share in pdas:\n%s" %
-              norm_and_round(hh_by_inpda_pba50))
-
-        diff = hh_by_inpda_pba50 - base_year_measures["hh_by_inpda_pba50"]
-        write("Households pct of regional growth in pdas:\n%s" %
-              norm_and_round(diff))
-
-        tmp = base_year_measures["jobs_by_inpda_pba50"]
-        write("Jobs base year share in pdas:\n%s" %
-              norm_and_round(tmp))
-
-        write("Jobs share in pdas:\n%s" %
-              norm_and_round(jobs_by_inpda_pba50))
-
-        diff = jobs_by_inpda_pba50 - base_year_measures["jobs_by_inpda_pba50"]
-        write("Jobs pct of regional growth in pdas:\n%s" %
-              norm_and_round(diff))
-
-        tmp = base_year_measures["hh_by_intra"]
-        write("Households base year share in tras:\n%s" %
-              norm_and_round(tmp))
-
-        write("Households share in tras:\n%s" %
-              norm_and_round(hh_by_intra))
-
-        diff = hh_by_intra - base_year_measures["hh_by_intra"]
-        write("Households pct of regional growth in tras:\n%s" %
-              norm_and_round(diff))
-
-        tmp = base_year_measures["jobs_by_intra"]
-        write("Jobs base year share in tras:\n%s" %
-              norm_and_round(tmp))
-
-        write("Jobs share in tras:\n%s" %
-              norm_and_round(jobs_by_intra))
-
-        diff = jobs_by_intra - base_year_measures["jobs_by_intra"]
-        write("Jobs pct of regional growth in tras:\n%s" %
-              norm_and_round(diff))
-
-        tmp = base_year_measures["hh_by_insesit"]
-        write("Households base year share in hra/drs:\n%s" %
-              norm_and_round(tmp))
-
-        write("Households share in hra/drs:\n%s" %
-              norm_and_round(hh_by_insesit))
-
-        diff = hh_by_insesit - base_year_measures["hh_by_insesit"]
-        write("Households pct of regional growth in hra/drs:\n%s" %
-              norm_and_round(diff))
-
-    write("Base year dwelling unit raw capacity:\n%s" %
-          base_year_measures["capacity"])
+    write("Base year dwelling unit raw capacity:\n%s" % base_year_measures["capacity"])
 
     write("Dwelling unit raw capacity:\n%s" % capacity)
 
@@ -462,164 +224,60 @@ def topsheet(households, jobs, buildings, parcels, zones, year,
               norm_and_round(df.residential_units.groupby(greenfield).sum()))
 
     cmap = mapping["county_id_tm_map"]
-    jobs_by_county = jobs.zone_id.map(taz_geography.county)\
-        .map(cmap).value_counts()
-    households_by_county = households.zone_id.map(taz_geography.county)\
-        .map(cmap).value_counts()
+    jobs_by_county = jobs.zone_id.map(taz_geography.county).map(cmap).value_counts()
+    households_by_county = households.zone_id.map(taz_geography.county).map(cmap).value_counts()
     jobs_by_housing = jobs_by_county / households_by_county.replace(0, 1)
     write("Jobs/housing balance:\n" + str(jobs_by_housing))
-
-    # for PBA40, compare pda jobs and households with ABAG targets
-    if scenario in policy["geographies_pba40_enable"]:
-        for geo, typ, corr in compare_to_targets(parcels, buildings, jobs,
-                                                 households, abag_targets,
-                                                 settings,
-                                                 write_comparison_dfs=True):
-            write("{} in {} have correlation of {:,.4f} with targets".format(
-                typ, geo, corr
-            ))
 
     f.close()
 
 
-def compare_to_targets(parcels, buildings, jobs, households, abag_targets,
-                       settings, write_comparison_dfs=False):
-
-    # yes a similar join is used in the summarize step below - but it's
-    # better to keep it clean and separate
-
-    abag_targets = abag_targets.to_frame()
-    abag_targets["pda_fill_juris"] = abag_targets["joinkey"].\
-        replace("Non-PDA", np.nan).replace("Total", np.nan).\
-        str.upper().fillna(abag_targets.juris)
-
-    households_df = orca.merge_tables(
-        'households',
-        [parcels, buildings, households],
-        columns=['pda_pba40', 'juris'])
-
-    jobs_df = orca.merge_tables(
-        'jobs',
-        [parcels, buildings, jobs],
-        columns=['pda_pba40', 'juris'])
-
-    # only runs for pda_PBA40
-    households_df["pda_fill_juris"] = \
-        households_df.pda_pba40.str.upper().replace("Total", np.nan).\
-        str.upper().fillna(households_df.juris)
-
-    jobs_df["pda_fill_juris"] = \
-        jobs_df.pda_pba40.str.upper().fillna(jobs_df.juris)
-
-    # compute correlection for pda and juris, for households and for jobs
-
-    li = []
-
-    df = pd.DataFrame()
-
-    for geo in ['pda_fill_juris', 'juris']:
-
-        for typ in ['households', 'jobs']:
-
-            abag_distribution = abag_targets.groupby(geo)[typ].sum()
-
-            df["abag_"+geo+"_"+typ] = abag_distribution
-
-            agents = {
-                "households": households_df,
-                "jobs": jobs_df
-            }[typ]
-
-            baus_distribution = agents.groupby(geo).size().\
-                reindex(abag_distribution.index).fillna(0)
-
-            df["baus_"+geo+"_"+typ] = baus_distribution
-
-            assert len(abag_distribution) == len(baus_distribution)
-
-            li.append((geo, typ, abag_distribution.corr(baus_distribution)))
-
-    if write_comparison_dfs:
-
-        run_number = orca.get_injectable("run_number")
-        year = orca.get_injectable("year")
-
-        df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_targets_comparison_%d.csv" %
-                  (run_number, year)))
-
-    return li
-
-
 @orca.step()
-def diagnostic_output(households, buildings, parcels, taz, jobs, settings,
-                      zones, year, summary, run_number, residential_units):
+def diagnostic_output(households, buildings, parcels, taz, jobs, settings, zones, year, summary, run_number, residential_units):
+
     households = households.to_frame()
     buildings = buildings.to_frame()
     parcels = parcels.to_frame()
     zones = zones.to_frame()
 
     zones['zoned_du'] = parcels.groupby('zone_id').zoned_du.sum()
-    zones['zoned_du_underbuild'] = parcels.groupby('zone_id').\
-        zoned_du_underbuild.sum()
-    zones['zoned_du_underbuild_ratio'] = zones.zoned_du_underbuild /\
-        zones.zoned_du
+    zones['zoned_du_underbuild'] = parcels.groupby('zone_id').zoned_du_underbuild.sum()
+    zones['zoned_du_underbuild_ratio'] = zones.zoned_du_underbuild / zones.zoned_du
 
-    zones['residential_units'] = buildings.groupby('zone_id').\
-        residential_units.sum()
-    zones['job_spaces'] = buildings.groupby('zone_id').\
-        job_spaces.sum()
+    zones['residential_units'] = buildings.groupby('zone_id').residential_units.sum()
+    zones['job_spaces'] = buildings.groupby('zone_id').job_spaces.sum()
     tothh = households.zone_id.value_counts().reindex(zones.index).fillna(0)
-    zones['residential_vacancy'] = \
-        1.0 - tothh / zones.residential_units.replace(0, 1)
-    zones['non_residential_sqft'] = buildings.groupby('zone_id').\
-        non_residential_sqft.sum()
+    zones['residential_vacancy'] = 1.0 - tothh / zones.residential_units.replace(0, 1)
+    zones['non_residential_sqft'] = buildings.groupby('zone_id').non_residential_sqft.sum()
     totjobs = jobs.zone_id.value_counts().reindex(zones.index).fillna(0)
-    zones['non_residential_vacancy'] = \
-        1.0 - totjobs / zones.job_spaces.replace(0, 1)
+    zones['non_residential_vacancy'] = 1.0 - totjobs / zones.job_spaces.replace(0, 1)
 
-    zones['retail_sqft'] = buildings.query('general_type == "Retail"').\
-        groupby('zone_id').non_residential_sqft.sum()
-    zones['office_sqft'] = buildings.query('general_type == "Office"').\
-        groupby('zone_id').non_residential_sqft.sum()
-    zones['industrial_sqft'] = buildings.query(
-        'general_type == "Industrial"').\
-        groupby('zone_id').non_residential_sqft.sum()
+    zones['retail_sqft'] = buildings.query('general_type == "Retail"').groupby('zone_id').non_residential_sqft.sum()
+    zones['office_sqft'] = buildings.query('general_type == "Office"').groupby('zone_id').non_residential_sqft.sum()
+    zones['industrial_sqft'] = buildings.query('general_type == "Industrial"').groupby('zone_id').non_residential_sqft.sum()
 
     zones['average_income'] = households.groupby('zone_id').income.quantile()
     zones['household_size'] = households.groupby('zone_id').persons.quantile()
 
-    zones['building_count'] = buildings.\
-        query('general_type == "Residential"').groupby('zone_id').size()
+    zones['building_count'] = buildings.query('general_type == "Residential"').groupby('zone_id').size()
     # this price is the max of the original unit vector belows
-    zones['residential_price'] = buildings.\
-        query('general_type == "Residential"').groupby('zone_id').\
-        residential_price.quantile()
+    zones['residential_price'] = buildings.query('general_type == "Residential"').groupby('zone_id').residential_price.quantile()
     # these two are the original unit prices averaged up to the building id
     ru = residential_units
-    zones['unit_residential_price'] = \
-        ru.unit_residential_price.groupby(ru.zone_id).quantile()
-    zones['unit_residential_rent'] = \
-        ru.unit_residential_rent.groupby(ru.zone_id).quantile()
+    zones['unit_residential_price'] = ru.unit_residential_price.groupby(ru.zone_id).quantile()
+    zones['unit_residential_rent'] = ru.unit_residential_rent.groupby(ru.zone_id).quantile()
     cap_rate = settings.get('cap_rate')
     # this compares price to rent and shows us where price is greater
     # rents are monthly and a cap rate is applied in order to do the conversion
-    zones['unit_residential_price_>_rent'] = \
-        (zones.unit_residential_price >
-         (zones.unit_residential_rent * 12 / cap_rate)).astype('int')
+    zones['unit_residential_price_>_rent'] = (zones.unit_residential_price > (zones.unit_residential_rent * 12 / cap_rate)).astype('int')
 
-    zones['retail_rent'] = buildings[buildings.general_type == "Retail"].\
-        groupby('zone_id').non_residential_rent.quantile()
-    zones['office_rent'] = buildings[buildings.general_type == "Office"].\
-        groupby('zone_id').non_residential_rent.quantile()
-    zones['industrial_rent'] = \
-        buildings[buildings.general_type == "Industrial"].\
-        groupby('zone_id').non_residential_rent.quantile()
+    zones['retail_rent'] = buildings[buildings.general_type == "Retail"].groupby('zone_id').non_residential_rent.quantile()
+    zones['office_rent'] = buildings[buildings.general_type == "Office"].groupby('zone_id').non_residential_rent.quantile()
+    zones['industrial_rent'] = buildings[buildings.general_type == "Industrial"].groupby('zone_id').non_residential_rent.quantile()
 
-    zones['retail_sqft'] = buildings[buildings.general_type == "Retail"].\
-        groupby('zone_id').non_residential_sqft.sum()
+    zones['retail_sqft'] = buildings[buildings.general_type == "Retail"].groupby('zone_id').non_residential_sqft.sum()
 
-    zones['retail_to_res_units_ratio'] = \
-        zones.retail_sqft / zones.residential_units.replace(0, 1)
+    zones['retail_to_res_units_ratio'] = zones.retail_sqft / zones.residential_units.replace(0, 1)
 
     summary.add_zone_output(zones, "diagnostic_outputs", year)
 
@@ -627,14 +285,11 @@ def diagnostic_output(households, buildings, parcels, taz, jobs, settings,
     if "dropped_buildings" in orca.orca._TABLES:
         df = orca.get_table("dropped_buildings").to_frame()
         print("Dropped buildings", df.describe())
-        df.to_csv(
-            os.path.join(orca.get_injectable("outputs_dir"), "run{}_dropped_buildings.csv").format(run_number)
-        )
+        df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_dropped_buildings.csv").format(run_number))
 
 
 @orca.step()
-def geographic_summary(parcels, households, jobs, buildings, taz_geography,
-                       run_number, year, summary, final_year, scenario,
+def geographic_summary(parcels, households, jobs, buildings, taz_geography, run_number, year, summary, final_year, scenario,
                        policy, settings):
     # using the following conditional b/c `year` is used to pull a column
     # from a csv based on a string of the year in add_population()
@@ -644,58 +299,24 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
         year = 2010
         base = True
     else:
-        base = False
+        base = False   
 
-    # Cols for Draft/Final Blueprint and EIR geographies
-    if scenario in policy["geographies_db_enable"] or \
-            scenario in policy["geographies_fb_enable"] or \
-            scenario in policy["geographies_eir_enable"]:   
+    households_df = orca.merge_tables('households', [parcels, buildings, households],
+        columns=['pda_id', 'zone_id', 'juris', 'superdistrict',
+                 'persons', 'income', 'base_income_quartile',
+                 'juris_tra', 'juris_sesit', 'juris_ppa'])
 
-        households_df = orca.merge_tables(
-            'households',
-            [parcels, buildings, households],
-            columns=['pda_pba50', 'zone_id', 'juris', 'superdistrict',
-                     'persons', 'income', 'base_income_quartile',
-                     'juris_tra', 'juris_sesit', 'juris_ppa'])
+    jobs_df = orca.merge_tables('jobs', [parcels, buildings, jobs],
+        columns=['pda_id', 'superdistrict', 'juris', 'zone_id',
+                 'empsix', 'juris_tra', 'juris_sesit', 'juris_ppa'])
 
-        jobs_df = orca.merge_tables(
-            'jobs',
-            [parcels, buildings, jobs],
-            columns=['pda_pba50', 'superdistrict', 'juris', 'zone_id',
-                     'empsix', 'juris_tra', 'juris_sesit', 'juris_ppa'])
-
-        buildings_df = orca.merge_tables(
-            'buildings',
-            [parcels, buildings],
-            columns=['pda_pba50', 'superdistrict', 'juris',
-                     'building_type', 'zone_id', 'residential_units',
-                     'deed_restricted_units', 'preserved_units',
-                     'inclusionary_units', 'subsidized_units',
-                     'building_sqft', 'non_residential_sqft',
-                     'juris_tra', 'juris_sesit', 'juris_ppa'])
-
-    # Cols for PBA40 and Horizon   
-    else:
-        households_df = orca.merge_tables(
-            'households',
-            [parcels, buildings, households],
-            columns=['pda_pba40', 'zone_id', 'juris', 'superdistrict',
-                     'persons', 'income', 'base_income_quartile', 'juris_trich'])
-
-        jobs_df = orca.merge_tables(
-            'jobs',
-            [parcels, buildings, jobs],
-            columns=['pda_pba40', 'superdistrict', 'juris', 'zone_id',
-                     'empsix', 'juris_trich'])
-
-        buildings_df = orca.merge_tables(
-            'buildings',
-            [parcels, buildings],
-            columns=['pda_pba40', 'superdistrict', 'juris', 'juris_trich',
-                     'building_type', 'zone_id', 'residential_units',
-                     'deed_restricted_units', 'preserved_units',
-                     'inclusionary_units', 'subsidized_units',
-                     'building_sqft', 'non_residential_sqft',])
+    buildings_df = orca.merge_tables('buildings', [parcels, buildings],
+        columns=['pda_id', 'superdistrict', 'juris',
+                 'building_type', 'zone_id', 'residential_units',
+                 'deed_restricted_units', 'preserved_units',
+                 'inclusionary_units', 'subsidized_units',
+                 'building_sqft', 'non_residential_sqft',
+                 'juris_tra', 'juris_sesit', 'juris_ppa'])
 
     parcel_output = summary.parcel_output
 
@@ -704,20 +325,9 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
 
     geographies = ['superdistrict', 'juris']
 
-    if scenario in policy["geographies_pba40_enable"]:
-        geographies.append('pda_pba40')
-
-    if (scenario in ["11", "12", "15"]) and\
-       (scenario in policy["geographies_fr2_enable"]):
-        geographies.append('juris_trich')
-
 # disable final blueprint summaries being handled in post processing summaries
 #    # append Draft/Final Blueprint strategy geographis
-#    if scenario in policy["geographies_db_enable"] or \
-#            scenario in policy["geographies_fb_enable"] or \
-#            scenario in policy["geographies_eir_enable"]:
-#        geographies.extend(['pda_pba50', 'juris_tra',
-#                            'juris_sesit', 'juris_ppa'])
+#    geographies.extend(['pda_id', 'juris_tra', 'juris_sesit', 'juris_ppa'])
 
     if year in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
 
@@ -739,8 +349,7 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
                 all_summary_geographies = buildings_df[geography].unique()
             else:
                 all_summary_geographies = parcels[geography].unique()
-            summary_table = \
-                summary_table.reindex(all_summary_geographies).fillna(0)
+            summary_table = summary_table.reindex(all_summary_geographies).fillna(0)
 
             # turns out the lines above had to be moved up - if there are no
             # households in a geography the index is missing that geography
@@ -749,79 +358,48 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
             # pandas, so powerful but so darn confusing.
 
             # income quartile counts
-            summary_table['hhincq1'] = \
-                households_df.query("base_income_quartile == 1").\
-                groupby(geography).size()
-            summary_table['hhincq2'] = \
-                households_df.query("base_income_quartile == 2").\
-                groupby(geography).size()
-            summary_table['hhincq3'] = \
-                households_df.query("base_income_quartile == 3").\
-                groupby(geography).size()
-            summary_table['hhincq4'] = \
-                households_df.query("base_income_quartile == 4").\
-                groupby(geography).size()
+            summary_table['hhincq1'] = households_df.query("base_income_quartile == 1").groupby(geography).size()
+            summary_table['hhincq2'] = households_df.query("base_income_quartile == 2").groupby(geography).size()
+            summary_table['hhincq3'] = households_df.query("base_income_quartile == 3").groupby(geography).size()
+            summary_table['hhincq4'] = households_df.query("base_income_quartile == 4").groupby(geography).size()
 
             # residential buildings by type
-            summary_table['res_units'] = buildings_df.groupby(geography).\
-                residential_units.sum()
-            summary_table['sfdu'] = buildings_df.\
-                query("building_type == 'HS' or building_type == 'HT'").\
+            summary_table['res_units'] = buildings_df.groupby(geography).residential_units.sum()
+            summary_table['sfdu'] = buildings_df.query("building_type == 'HS' or building_type == 'HT'").\
                 groupby(geography).residential_units.sum()
-            summary_table['mfdu'] = buildings_df.\
-                query("building_type == 'HM' or building_type == 'MR'").\
+            summary_table['mfdu'] = buildings_df.query("building_type == 'HM' or building_type == 'MR'").\
                 groupby(geography).residential_units.sum()
 
             # employees by sector
-            summary_table['totemp'] = jobs_df.\
-                groupby(geography).size()
-            summary_table['agrempn'] = jobs_df.query("empsix == 'AGREMPN'").\
-                groupby(geography).size()
-            summary_table['mwtempn'] = jobs_df.query("empsix == 'MWTEMPN'").\
-                groupby(geography).size()
-            summary_table['retempn'] = jobs_df.query("empsix == 'RETEMPN'").\
-                groupby(geography).size()
-            summary_table['fpsempn'] = jobs_df.query("empsix == 'FPSEMPN'").\
-                groupby(geography).size()
-            summary_table['herempn'] = jobs_df.query("empsix == 'HEREMPN'").\
-                groupby(geography).size()
-            summary_table['othempn'] = jobs_df.query("empsix == 'OTHEMPN'").\
-                groupby(geography).size()
+            summary_table['totemp'] = jobs_df.groupby(geography).size()
+            summary_table['agrempn'] = jobs_df.query("empsix == 'AGREMPN'").groupby(geography).size()
+            summary_table['mwtempn'] = jobs_df.query("empsix == 'MWTEMPN'").groupby(geography).size()
+            summary_table['retempn'] = jobs_df.query("empsix == 'RETEMPN'").groupby(geography).size()
+            summary_table['fpsempn'] = jobs_df.query("empsix == 'FPSEMPN'").groupby(geography).size()
+            summary_table['herempn'] = jobs_df.query("empsix == 'HEREMPN'").groupby(geography).size()
+            summary_table['othempn'] = jobs_df.query("empsix == 'OTHEMPN'").groupby(geography).size()
 
             # summary columns
-            summary_table['occupancy_rate'] = summary_table['tothh'] / \
-                (summary_table['sfdu'] + summary_table['mfdu'])
-            summary_table['non_residential_sqft'] = buildings_df.\
-                groupby(geography)['non_residential_sqft'].sum()
-            summary_table['sq_ft_per_employee'] = \
-                summary_table['non_residential_sqft'] / summary_table['totemp']
+            summary_table['occupancy_rate'] = summary_table['tothh'] / (summary_table['sfdu'] + summary_table['mfdu'])
+            summary_table['non_residential_sqft'] = buildings_df.groupby(geography)['non_residential_sqft'].sum()
+            summary_table['sq_ft_per_employee'] = summary_table['non_residential_sqft'] / summary_table['totemp']
 
             # columns re: affordable housing
-            summary_table['deed_restricted_units'] = buildings_df.\
-                groupby(geography).deed_restricted_units.sum()
-            summary_table['preserved_units'] = buildings_df.\
-                groupby(geography).preserved_units.sum()
-            summary_table['inclusionary_units'] = buildings_df.\
-                groupby(geography).inclusionary_units.sum()
-            summary_table['subsidized_units'] = buildings_df.\
-                groupby(geography).subsidized_units.sum()       
+            summary_table['deed_restricted_units'] = buildings_df.groupby(geography).deed_restricted_units.sum()
+            summary_table['preserved_units'] = buildings_df.groupby(geography).preserved_units.sum()
+            summary_table['inclusionary_units'] = buildings_df.groupby(geography).inclusionary_units.sum()
+            summary_table['subsidized_units'] = buildings_df.groupby(geography).subsidized_units.sum()       
 
             # additional columns from parcel_output
             if parcel_output is not None:
 
                 # columns re: affordable housing
-                summary_table['inclusionary_revenue_reduction'] = \
-                    parcel_output.groupby(geography).\
-                    policy_based_revenue_reduction.sum()
-                summary_table['inclusionary_revenue_reduction_per_unit'] = \
-                    summary_table.inclusionary_revenue_reduction / \
+                summary_table['inclusionary_revenue_reduction'] = parcel_output.groupby(geography).policy_based_revenue_reduction.sum()
+                summary_table['inclusionary_revenue_reduction_per_unit'] = summary_table.inclusionary_revenue_reduction / \
                     summary_table.inclusionary_units
-                summary_table['total_subsidy'] = \
-                    parcel_output[parcel_output.subsidized_units > 0].\
+                summary_table['total_subsidy'] = parcel_output[parcel_output.subsidized_units > 0].\
                     groupby(geography).max_profit.sum() * -1    
-                summary_table['subsidy_per_unit'] = \
-                    summary_table.total_subsidy / \
-                    summary_table.subsidized_units
+                summary_table['subsidy_per_unit'] = summary_table.total_subsidy / summary_table.subsidized_units
 
             summary_table = summary_table.sort_index()
 
@@ -845,16 +423,12 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography,
     if year == final_year:
         baseyear = 2015
         for geography in geographies:
-            df_base = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"),
-                                            "run{}_{}_summaries_{}.csv".\
+            df_base = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_summaries_{}.csv".\
                                             format(run_number, geography, baseyear)))
-            df_final = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"),
-                                            "run{}_{}_summaries_{}.csv".\
+            df_final = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_summaries_{}.csv".\
                                             format(run_number, geography, final_year)))
-            df_growth = nontaz_calculator(run_number,
-                                        df_base, df_final)
-            df_growth.to_csv(os.path.join(orca.get_injectable("outputs_dir"),
-                                        "run{}_{}_growth_summaries.csv".\
+            df_growth = nontaz_calculator(run_number, df_base, df_final)
+            df_growth.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_growth_summaries.csv".\
                                         format(run_number, geography)), index = False)
 
     # Write Urban Footprint Summary
@@ -984,68 +558,36 @@ def parcel_summary(parcels, buildings, households, jobs,
     df = df.join(df2)
 
     # bringing in zoning modifications growth geography tag
-    if scenario in policy['geographies_fb_enable']:       # PBA50 Final Blueprint
-        join_col = 'fbpzoningmodcat'
-    elif scenario in policy['geographies_db_enable']:     # PBA50 Draft Blueprint
-        join_col = 'pba50zoningmodcat'
-    elif scenario in policy['geographies_eir_enable']:    # PBA50 EIR
-        join_col = 'eirzoningmodcat'
-    elif scenario in policy['geographies_pba40_enable']:  # PBA40
-        join_col = 'zoningmodcat'
-    else:                                                 # Horizon
-        join_col = 'zoninghzcat'
+    join_col = 'zoningmodcat'
     
-
     if join_col in parcels_geography.to_frame().columns:
-        parcel_gg = parcels_geography.to_frame([
-            "parcel_id",
-            join_col,
-            "juris"])
+        parcel_gg = parcels_geography.to_frame(["parcel_id", join_col, "juris"])
         df = df.merge(parcel_gg, on='parcel_id', how='left')
 
-    households_df = orca.merge_tables(
-        'households',
-        [buildings, households],
-        columns=['parcel_id', 'base_income_quartile'])
+    households_df = orca.merge_tables('households', [buildings, households], columns=['parcel_id', 'base_income_quartile'])
 
     # add households by quartile on each parcel
     for i in range(1, 5):
-        df['hhq%d' % i] = households_df[
-            households_df.base_income_quartile == i].\
-            parcel_id.value_counts()
+        df['hhq%d' % i] = households_df[households_df.base_income_quartile == i].parcel_id.value_counts()
     df["tothh"] = households_df.groupby('parcel_id').size()
 
-    building_df = orca.merge_tables(
-        'buildings',
-        [parcels, buildings],
-        columns=['parcel_id', 'residential_units', 'deed_restricted_units', 
-                 'preserved_units', 'inclusionary_units', 'subsidized_units'])
-    df['residential_units'] = \
-        building_df.groupby('parcel_id')['residential_units'].sum()
-    df['deed_restricted_units'] = \
-        building_df.groupby('parcel_id')['deed_restricted_units'].sum()
-    df['preserved_units'] = \
-        building_df.groupby('parcel_id')['preserved_units'].sum()
-    df['inclusionary_units'] = \
-        building_df.groupby('parcel_id')['inclusionary_units'].sum()
-    df['subsidized_units'] = \
-        building_df.groupby('parcel_id')['subsidized_units'].sum()
+    building_df = orca.merge_tables('buildings', [parcels, buildings],
+                                    columns=['parcel_id', 'residential_units', 'deed_restricted_units', 
+                                             'preserved_units', 'inclusionary_units', 'subsidized_units'])
+    df['residential_units'] = building_df.groupby('parcel_id')['residential_units'].sum()
+    df['deed_restricted_units'] = building_df.groupby('parcel_id')['deed_restricted_units'].sum()
+    df['preserved_units'] = building_df.groupby('parcel_id')['preserved_units'].sum()
+    df['inclusionary_units'] = building_df.groupby('parcel_id')['inclusionary_units'].sum()
+    df['subsidized_units'] = building_df.groupby('parcel_id')['subsidized_units'].sum()
 
-    jobs_df = orca.merge_tables(
-        'jobs',
-        [buildings, jobs],
-        columns=['parcel_id', 'empsix'])
+    jobs_df = orca.merge_tables('jobs', [buildings, jobs], columns=['parcel_id', 'empsix'])
 
     # add jobs by empsix category on each parcel
     for cat in jobs_df.empsix.unique():
-        df[cat] = jobs_df[jobs_df.empsix == cat].\
-            parcel_id.value_counts()
+        df[cat] = jobs_df[jobs_df.empsix == cat].parcel_id.value_counts()
     df["totemp"] = jobs_df.groupby('parcel_id').size()
 
-    df.to_csv(
-        os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_data_%d.csv" %
-                     (run_number, year))
-    )
+    df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_data_%d.csv" % (run_number, year)))
 
     # if year == final_year:
     print('year printed for debug: {}'.format(year))
@@ -1053,9 +595,8 @@ def parcel_summary(parcels, buildings, households, jobs,
         print('calculate diff for year {}'.format(year))
         # do diff with initial year
 
-        df2 = pd.read_csv(
-            os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_data_%d.csv" %
-                         (run_number, initial_year)), index_col="parcel_id")
+        df2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_data_%d.csv" %
+                          (run_number, initial_year)), index_col="parcel_id")
 
         for col in df.columns:
 
@@ -1068,49 +609,40 @@ def parcel_summary(parcels, buildings, households, jobs,
             
             df[col] = df[col] - df2[col]
 
-        df.to_csv(
-            os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_data_diff.csv" %
-                         run_number)
-        )
+        df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_data_diff.csv" % run_number))
 
     # if year == final_year:
     print('year printed for debug: {}'.format(year))
     if year not in [2010, 2015]:
+
         print('calculate diff for year {}'.format(year)) 
         baseyear = 2015
-        df_base = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"),
-                                        "run%d_parcel_data_%d.csv"
-                                        % (run_number, baseyear)))
-        df_final = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"),
-                                        "run%d_parcel_data_%d.csv"
-                                        # % (run_number, final_year)))
-                                        % (run_number, year)))
+        df_base = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_data_%d.csv" % (run_number, baseyear)))
+        df_final = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_data_%d.csv" # % (run_number, final_year)))
+                                                                                                           % (run_number, year)))
 
         geographies = ['GG','tra','HRA', 'DIS']
+
         for geography in geographies:
-            df_growth = GEO_SUMMARY_LOADER(run_number, geography,
-                                            df_base, df_final, scenario, policy)
+            df_growth = GEO_SUMMARY_LOADER(run_number, geography, df_base, df_final, scenario, policy)
             df_growth['county'] = df_growth['juris'].map(juris_to_county)
-            df_growth.sort_values(by = ['county','juris','geo_category'],
-                                    ascending=[True, True, False], inplace=True)
+            df_growth.sort_values(by = ['county','juris','geo_category'], ascending=[True, True, False], inplace=True)
             df_growth.set_index(['RUNID','county','juris','geo_category'], inplace=True)
             df_growth.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_growth_summaries.csv".\
-                                            format(run_number, geography)))
+                                          format(run_number, geography)))
+
         geo_1, geo_2, geo_3 = 'tra','DIS','HRA'
-        df_growth_1 = TWO_GEO_SUMMARY_LOADER(run_number, geo_1, geo_2,
-                                            df_base, df_final, scenario, policy)
+
+        df_growth_1 = TWO_GEO_SUMMARY_LOADER(run_number, geo_1, geo_2, df_base, df_final, scenario, policy)
         df_growth_1['county'] = df_growth_1['juris'].map(juris_to_county)
-        df_growth_1.sort_values(by = ['county','juris','geo_category'],
-                                ascending=[True, True, False], inplace=True)
+        df_growth_1.sort_values(by = ['county','juris','geo_category'], ascending=[True, True, False], inplace=True)
         df_growth_1.set_index(['RUNID','county','juris','geo_category'], inplace=True)
         df_growth_1.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_growth_summaries.csv".\
                                         format(run_number, geo_1 + geo_2)))
 
-        df_growth_2 = TWO_GEO_SUMMARY_LOADER(run_number, geo_1, geo_3,
-                                            df_base, df_final, scenario, policy)
+        df_growth_2 = TWO_GEO_SUMMARY_LOADER(run_number, geo_1, geo_3, df_base, df_final, scenario, policy)
         df_growth_2['county'] = df_growth_2['juris'].map(juris_to_county)
-        df_growth_2.sort_values(by = ['county','juris','geo_category'],
-                                ascending=[True, True, False], inplace=True)
+        df_growth_2.sort_values(by = ['county','juris','geo_category'], ascending=[True, True, False], inplace=True)
         df_growth_2.set_index(['RUNID','county','juris','geo_category'], inplace=True)
         df_growth_2.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_growth_summaries.csv".\
                                         format(run_number, geo_1 + geo_2)))

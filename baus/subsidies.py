@@ -464,13 +464,6 @@ def subsidized_office_developer(feasibility, coffer, formula, year, add_extra_co
     policy = orca.get_injectable("policy")
     scenario = orca.get_injectable("scenario")
 
-    if scenario in policy["geographies_db_enable"] or \
-        scenario in policy["geographies_fb_enable"] or \
-        scenario in policy["geographies_eir_enable"]:
-        feasibility["pda_id"] = feasibility.pda_pba50
-    else:
-        feasibility["pda_id"] = feasibility.pda_pba40
-
     # filter to receiving zone
     feasibility = feasibility.query(formula)
 
@@ -632,13 +625,6 @@ def run_subsidized_developer(feasibility, parcels, buildings, households, acct_s
     # add necessary columns for filters
     policy = orca.get_injectable("policy")
     scenario = orca.get_injectable("scenario")
-
-    if orca.get_injectable("scenario") in policy["geographies_db_enable"] or \
-        orca.get_injectable("scenario") in policy["geographies_fb_enable"] or \
-        orca.get_injectable("scenario") in policy["geographies_eir_enable"]:
-        feasibility["pda_id"] = feasibility.pda_pba50
-    else:
-        feasibility["pda_id"] = feasibility.pda_pba40
    
     # step 5
     if "receiving_buildings_filter" in acct_settings:

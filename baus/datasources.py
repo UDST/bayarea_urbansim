@@ -331,33 +331,9 @@ def maz_forecast_inputs(regional_demographic_forecast):
 
 
 @orca.table(cache=True)
-def zoning_scenario(parcels_geography, scenario, policy, mapping):
+def zoning_scenario(parcels_geography, policy, mapping):
 
     scenario_zoning = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 'zoning_mods.csv'))
-
-    if "ppa_id" in scenario_zoning.columns:
-        ppa_up = scenario_zoning.loc[(scenario_zoning.ppa_id == 'ppa') & 
-            (scenario_zoning.add_bldg == 'IW')].far_up.sum()
-        if ppa_up > 0:
-            orca.add_injectable("ppa_upzoning", "enabled")
-        else:
-            orca.add_injectable("ppa_upzoning", "not enabled")
-    else:
-        orca.add_injectable("ppa_upzoning", "not enabled")
-
-    if "ppa_id" in scenario_zoning.columns:
-        comm_up = scenario_zoning.loc[(scenario_zoning.ppa_id != 'ppa')].\
-            far_up.sum()
-        if comm_up > 0:
-            orca.add_injectable("comm_upzoning", "enabled")
-        else:
-           orca.add_injectable("comm_upzoning", "not enabled") 
-    else:
-        comm_up = scenario_zoning.far_up.sum()
-        if comm_up > 0:
-            orca.add_injectable("comm_upzoning", "enabled")
-        else:
-           orca.add_injectable("comm_upzoning", "not enabled") 
 
     for k in mapping["building_type_map"].keys():
         scenario_zoning[k] = np.nan
@@ -371,18 +347,8 @@ def zoning_scenario(parcels_geography, scenario, policy, mapping):
 
     add_drop_helper("add_bldg", 1)
     add_drop_helper("drop_bldg", 0)
-
-    if scenario in policy['geographies_fb_enable']:     # PBA50 Final Blueprint
-        join_col = 'fbpzoningmodcat'
-    elif scenario in policy['geographies_db_enable']:   # PBA50 Draft Blueprint
-        join_col = 'pba50zoningmodcat'
-    elif scenario in policy['geographies_eir_enable']:  # PBA50 EIR
-        join_col = 'eirzoningmodcat'
-    elif 'zoninghzcat' in scenario_zoning.columns:      # Horizon
-        join_col = 'zoninghzcat'
-    else:                                               # PBA40
-        join_col = 'zoningmodcat'
-
+                                       
+    join_col = 'zoningmodcat'
     print('join_col of zoningmods is {}'.format(join_col))
 
     return pd.merge(parcels_geography.to_frame().reset_index(),
@@ -423,21 +389,16 @@ def parcel_rejections():
 
 
 @orca.table(cache=True)
-def parcels_geography(parcels, scenario, settings, policy):
+def parcels_geography(parcels, settings, policy):
+
     file = os.path.join(orca.get_injectable("inputs_dir"), "2021_02_25_parcels_geography.csv")
-    print('Version of parcels_geography: {}'.format(file))
-    df = pd.read_csv(file,
-                     dtype={'PARCEL_ID':       np.int64,
-                            'geom_id':         np.int64,
-                            'jurisdiction_id': np.int64},
-                     index_col="geom_id")
+    print('Versin of parcels_geography: {}'.format(file))
+    df = pd.read_csv(file, dtype={'PARCEL_ID': np.int64, 'geom_id': np.int64, 'jurisdiction_id': np.int64},index_col="geom_id")
     df = geom_id_to_parcel_id(df, parcels)
 
     # this will be used to map juris id to name
-    juris_name = pd.read_csv(
-        os.path.join(orca.get_injectable("inputs_dir"), "census_id_to_name.csv"),
-        dtype={'census_id': np.int64},
-        index_col="census_id").name10
+    juris_name = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "census_id_to_name.csv"),
+                             dtype={'census_id': np.int64}, index_col="census_id").name10
 
     df["juris_name"] = df.jurisdiction_id.map(juris_name)
 
@@ -445,48 +406,20 @@ def parcels_geography(parcels, scenario, settings, policy):
     df.loc[2054505, "juris_name"] = "Santa Clara County"
     df.loc[2054506, "juris_name"] = "Marin County"
     df.loc[572927, "juris_name"] = "Contra Costa County"
+
     # assert no empty juris values
     assert True not in df.juris_name.isnull().value_counts()
 
-    df['juris_trich'] = df.juris + '-' + df.trich_id
+    df["pda_id"] = df.pda_id.str.lower()
+    df["gg_id"] = df.gg_id.str.lower()
+    df["tra_id"] = df.tra_id.str.lower()
+    df['juris_tra'] = df.juris + '-' + df.tra_id
+    df["ppa_id"] = df.ppa_id.str.lower()
+    df['juris_ppa'] = df.juris + '-' + df.ppa_id
+    df["sesit_id"] = df.sesit_id.str.lower()
+    df['juris_sesit'] = df.juris + '-' + df.sesit_id
 
-    df["pda_id_pba40"] = df.pda_id_pba40.str.lower()
-    # danville wasn't supposed to be a pda
-    df["pda_id_pba40"] = df.pda_id_pba40.replace("dan1", np.nan)
-
-    # Add Draft Blueprint geographies: PDA, TRA, PPA, sesit
-    if scenario in policy['geographies_db_enable']:
-        df["pda_id_pba50"] = df.pda_id_pba50_db.str.lower()
-        df["gg_id"] = df.gg_id.str.lower()
-        df["tra_id"] = df.tra_id.str.lower()
-        df['juris_tra'] = df.juris + '-' + df.tra_id
-        df["ppa_id"] = df.ppa_id.str.lower()
-        df['juris_ppa'] = df.juris + '-' + df.ppa_id
-        df["sesit_id"] = df.sesit_id.str.lower()
-        df['juris_sesit'] = df.juris + '-' + df.sesit_id
-    # Use EIR version
-    elif scenario in policy['geographies_eir_enable']:
-        df["pda_id_pba50"] = df.pda_id_pba50_fb.str.lower()
-        df["gg_id"] = df.eir_gg_id.str.lower()
-        df["tra_id"] = df.eir_tra_id.str.lower()
-        df['juris_tra'] = df.juris + '-' + df.tra_id
-        df["ppa_id"] = df.eir_ppa_id.str.lower()
-        df['juris_ppa'] = df.juris + '-' + df.ppa_id
-        df["sesit_id"] = df.eir_sesit_id.str.lower()
-        df['juris_sesit'] = df.juris + '-' + df.sesit_id
-    # Otherwise, default to Final Blueprint geographies: PDA, TRA, PPA, sesit
-    else:
-        df["pda_id_pba50"] = df.pda_id_pba50_fb.str.lower()
-        df["gg_id"] = df.fbp_gg_id.str.lower()
-        df["tra_id"] = df.fbp_tra_id.str.lower()
-        df['juris_tra'] = df.juris + '-' + df.tra_id
-        df["ppa_id"] = df.fbp_ppa_id.str.lower()
-        df['juris_ppa'] = df.juris + '-' + df.ppa_id
-        df["sesit_id"] = df.fbp_sesit_id.str.lower()
-        df['juris_sesit'] = df.juris + '-' + df.sesit_id
-
-    # add coc
-    df['coc_id'] = df.eir_coc_id.str.lower()
+    df['coc_id'] = df.coc_id.str.lower()
     df['juris_coc'] = df.juris + '-' + df.coc_id
 
     return df
@@ -595,16 +528,16 @@ def get_dev_projects_table(parcels):
 
 
 @orca.table(cache=True)
-def demolish_events(parcels, settings, scenario):
-    df = get_dev_projects_table(scenario, parcels)
+def demolish_events(parcels, settings):
+    df = get_dev_projects_table(parcels)
 
     # keep demolish and build records
     return df[df.action.isin(["demolish", "build"])]
 
 
 @orca.table(cache=True)
-def development_projects(parcels, mapping, scenario):
-    df = get_dev_projects_table(scenario, parcels)
+def development_projects(parcels, mapping):
+    df = get_dev_projects_table(parcels)
 
     for col in [
             'residential_sqft', 'residential_price', 'non_residential_rent']:
@@ -755,7 +688,7 @@ def vmt_fee_categories():
 
 
 @orca.table(cache=True)
-def superdistricts(scenario): 
+def superdistricts(): 
 	superdistricts = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "superdistricts.csv"), index_col="number")
 	orca.add_injectable("sqft_per_job_settings", "default")
 	return superdistricts

@@ -413,28 +413,13 @@ def fees_per_sqft(parcels, policy, run_setup):
 
 
 @orca.column('parcels', cache=True)
-def pda_pba40(parcels, parcels_geography):
-    return parcels_geography.pda_id_pba40.reindex(parcels.index)
-
-
-@orca.column('parcels', cache=True)
-def pda_pba50(parcels, parcels_geography):
-    return parcels_geography.pda_id_pba50.reindex(parcels.index)
-
-
-@orca.column('parcels', cache=True)
-def trich_id(parcels, parcels_geography):
-    return parcels_geography.trich_id.reindex(parcels.index)
+def pda_id(parcels, parcels_geography):
+    return parcels_geography.pda_id.reindex(parcels.index)
 
 
 @orca.column('parcels', cache=True)
 def cat_id(parcels, parcels_geography):
     return parcels_geography.cat_id.reindex(parcels.index)
-
-
-@orca.column('parcels', cache=True)
-def juris_trich(parcels, parcels_geography):
-    return parcels_geography.juris_trich.reindex(parcels.index)
 
 
 @orca.column('parcels', cache=True)
@@ -834,10 +819,9 @@ def cost_shifters(parcels, settings):
 
 
 @orca.column('parcels', cache=True)
-def price_shifters(parcels, settings, scenario, policy):
-    if scenario not in policy["geographies_db_enable"]:
-        return parcels.pda_pba40.map(
-                    settings["pda_price_shifters"]).fillna(1.0)
+def price_shifters(parcels, settings, policy):
+    if settings["pda_price_shifters"] is not None:
+        return parcels.pda_id.map(settings["pda_price_shifters"]).fillna(1.0)
     else:
         return pd.Series(1.0, parcels.index)
 

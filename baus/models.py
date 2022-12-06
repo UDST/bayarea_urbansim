@@ -347,11 +347,8 @@ def household_relocation(households, household_relocation_rates,
 # demolish in the csv file - this also allows building multiple buildings and
 # just adding capacity on an existing parcel, by adding one building at a time
 @orca.step()
-def scheduled_development_events(buildings, development_projects,
-                                 demolish_events, summary, year, parcels,
-                                 mapping, years_per_iter, parcels_geography,
-                                 building_sqft_per_job, vmt_fee_categories,
-                                 static_parcels, base_year, scenario):
+def scheduled_development_events(buildings, development_projects, demolish_events, summary, year, parcels, mapping, years_per_iter, 
+                                 parcels_geography, building_sqft_per_job, vmt_fee_categories, static_parcels, base_year, scenario):
     # first demolish
     # 6/3/20: current approach is to grab projects from the simulation year
     # and previous four years, however the base year is treated differently,
@@ -359,21 +356,15 @@ def scheduled_development_events(buildings, development_projects,
     # this should be improved in the future so that the base year
     # also runs SDEM, eg 2015 pulls 2015-2014, while 2010 pulls 2010 projects
     if year == (base_year + years_per_iter):
-        demolish = demolish_events.to_frame().\
-            query("%d <= year_built <= %d" % (year - years_per_iter, year))
+        demolish = demolish_events.to_frame().query("%d <= year_built <= %d" % (year - years_per_iter, year))
     else:
-        demolish = demolish_events.to_frame().\
-            query("%d < year_built <= %d" % (year - years_per_iter, year))
+        demolish = demolish_events.to_frame().query("%d < year_built <= %d" % (year - years_per_iter, year))
     print("Demolishing/building %d buildings" % len(demolish))
+
     l1 = len(buildings)
-    buildings = utils._remove_developed_buildings(
-        buildings.to_frame(buildings.local_columns),
-        demolish,
-        unplace_agents=["households", "jobs"])
-    orca.add_injectable('static_parcels',
-                        np.append(static_parcels,
-                                  demolish.loc[demolish.action == 'build',
-                                               'parcel_id']))
+    buildings = utils._remove_developed_buildings(buildings.to_frame(buildings.local_columns), demolish,
+                                                  unplace_agents=["households", "jobs"])
+    orca.add_injectable('static_parcels', np.append(static_parcels, demolish.loc[demolish.action == 'build', 'parcel_id']))
     orca.add_table("buildings", buildings)
     buildings = orca.get_table("buildings")
     print("Demolished %d buildings" % (l1 - len(buildings)))
@@ -386,67 +377,38 @@ def scheduled_development_events(buildings, development_projects,
     # this should be improved in the future so that the base year
     # also runs SDEM, eg 2015 pulls 2015-2014, while 2010 pulls 2010 projects
     if year == (base_year + years_per_iter):
-        dps = development_projects.to_frame().\
-            query("%d <= year_built <= %d" % (year - years_per_iter, year))
+        dps = development_projects.to_frame().query("%d <= year_built <= %d" % (year - years_per_iter, year))
     else:
-        dps = development_projects.to_frame().\
-            query("%d < year_built <= %d" % (year - years_per_iter, year))
+        dps = development_projects.to_frame().query("%d < year_built <= %d" % (year - years_per_iter, year))
 
     if len(dps) == 0:
         return
 
-    new_buildings = utils.scheduled_development_events(
-        buildings, dps,
-        remove_developed_buildings=False,
-        unplace_agents=['households', 'jobs'])
-    new_buildings["form"] = new_buildings.building_type.map(
-        mapping['building_type_map']).str.lower()
-    new_buildings["job_spaces"] = new_buildings.non_residential_sqft / \
-        new_buildings.building_type.fillna("OF").map(building_sqft_per_job)
-    new_buildings["job_spaces"] = new_buildings.job_spaces.\
-        fillna(0).astype('int')
+    new_buildings = utils.scheduled_development_events(buildings, dps, remove_developed_buildings=False,
+                                                       unplace_agents=['households', 'jobs'])
+    new_buildings["form"] = new_buildings.building_type.map(mapping['building_type_map']).str.lower()
+    new_buildings["job_spaces"] = new_buildings.non_residential_sqft / new_buildings.building_type.fillna("OF").map(building_sqft_per_job)
+    new_buildings["job_spaces"] = new_buildings.job_spaces.fillna(0).astype('int')
     new_buildings["geom_id"] = parcel_id_to_geom_id(new_buildings.parcel_id)
     new_buildings["SDEM"] = True
     new_buildings["subsidized"] = False
 
-    new_buildings["zone_id"] = misc.reindex(
-        parcels.zone_id, new_buildings.parcel_id)
-    new_buildings["vmt_res_cat"] = misc.reindex(
-        vmt_fee_categories.res_cat, new_buildings.zone_id)
-    new_buildings["vmt_nonres_cat"] = misc.reindex(
-        vmt_fee_categories.nonres_cat, new_buildings.zone_id)
+    new_buildings["zone_id"] = misc.reindex(parcels.zone_id, new_buildings.parcel_id)
+    new_buildings["vmt_res_cat"] = misc.reindex(vmt_fee_categories.res_cat, new_buildings.zone_id)
+    new_buildings["vmt_nonres_cat"] = misc.reindex(vmt_fee_categories.nonres_cat, new_buildings.zone_id)
     del new_buildings["zone_id"]
-
-    # add PBA40 geographies
-    # if scenario not in ["20", "21", "22", "23", "24", "25", "26", "27", "28", "29"]:
-    new_buildings["pda_pba40"] = parcels_geography.pda_id_pba40.loc[
-        new_buildings.parcel_id].values
-
-    # add Horizon geographies
-    # if scenario not in ["20", "21", "22", "23", "24", "25", "26", "27", "28", "29"]:
-    new_buildings["juris_trich"] = parcels_geography.juris_trich.loc[
-        new_buildings.parcel_id].values
 
     # add Draft Blueprint, Final Blueprint, EIR geographies
     # if scenario in ["20", "21", "22", "23", "24", "25", "26", "27", "28", "29"]:
-    new_buildings["pda_pba50"] = parcels_geography.pda_id_pba50.loc[
-        new_buildings.parcel_id].values
-    new_buildings["tra_id"] = parcels_geography.tra_id.loc[
-        new_buildings.parcel_id].values
-    new_buildings["ppa_id"] = parcels_geography.ppa_id.loc[
-        new_buildings.parcel_id].values
-    new_buildings["sesit_id"] = parcels_geography.sesit_id.loc[
-        new_buildings.parcel_id].values
-    new_buildings["coc_id"] = parcels_geography.coc_id.loc[
-        new_buildings.parcel_id].values
-    new_buildings["juris_tra"] = parcels_geography.juris_tra.loc[
-        new_buildings.parcel_id].values
-    new_buildings["juris_ppa"] = parcels_geography.juris_ppa.loc[
-        new_buildings.parcel_id].values
-    new_buildings["juris_sesit"] = parcels_geography.juris_sesit.loc[
-        new_buildings.parcel_id].values
-    new_buildings["juris_coc"] = parcels_geography.juris_coc.loc[
-        new_buildings.parcel_id].values
+    new_buildings["pda_id"] = parcels_geography.pda_id.loc[new_buildings.parcel_id].values
+    new_buildings["tra_id"] = parcels_geography.tra_id.loc[new_buildings.parcel_id].values
+    new_buildings["ppa_id"] = parcels_geography.ppa_id.loc[new_buildings.parcel_id].values
+    new_buildings["sesit_id"] = parcels_geography.sesit_id.loc[new_buildings.parcel_id].values
+    new_buildings["coc_id"] = parcels_geography.coc_id.loc[new_buildings.parcel_id].values
+    new_buildings["juris_tra"] = parcels_geography.juris_tra.loc[new_buildings.parcel_id].values
+    new_buildings["juris_ppa"] = parcels_geography.juris_ppa.loc[new_buildings.parcel_id].values
+    new_buildings["juris_sesit"] = parcels_geography.juris_sesit.loc[new_buildings.parcel_id].values
+    new_buildings["juris_coc"] = parcels_geography.juris_coc.loc[new_buildings.parcel_id].values
 
     summary.add_parcel_output(new_buildings)
 

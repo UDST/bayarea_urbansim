@@ -91,9 +91,7 @@ feasibility:
     - building_purchase_price
     - building_purchase_price_sqft
     - residential_sales_price_sqft
-    - pda_pba40
-    - pda_pba50
-    - trich_id
+    - pda_id
     - cat_id
     - tra_id
     - ppa_id
@@ -201,19 +199,8 @@ rent_equilibration:
 
 # SHIFTERS
 
-# for all scenarios besides Draft Blueprint (geographies_db_enable var)
-# using pba40 pdas
 # price shifters per pda - price is multiplied by this amount
-pda_price_shifters:
-  "ber1": 1
-  "ber2": 1
-  "ber3": 1
-  "ber4": 1
-  "ber5": 1
-  "ber6": 1
-  "sfo3": 1
-  "sfo5": 1
-  "sfo11": 1
+pda_price_shifters: 
 
 # cost shifters per county - cost is multiplied by this amount
 cost_shifters:
