@@ -137,7 +137,7 @@ def lump_sum_accounts(policy, year, buildings, coffer, summary, years_per_iter, 
     for key, acct in s.items():
 
         if not run_setup[acct["name"]]:
-            return
+            continue
 
         amt = float(acct["total_amount"])
         amt *= years_per_iter
@@ -862,7 +862,7 @@ def subsidized_residential_developer_lump_sum_accts(run_setup, households, build
     for key, acct in policy["acct_settings"]["lump_sum_accounts"].items():
 
         if not run_setup[acct["name"]]:
-            return
+            continue
 
         print("Running the subsidized developer for acct: %s" % acct["name"])
 
