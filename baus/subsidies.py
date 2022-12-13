@@ -188,7 +188,7 @@ def inclusionary_housing_revenue_reduction(feasibility, units):
     # since we tend to use the same geography type for applying all of the inclusionary rates
     if run_setup["run_inclusionary_strategy"]:
         geog = policy["inclusionary_housing_settings"]["inclusionary_strategy"][0]["type"]
-    elif "default" in s.keys():
+    elif "default" in policy["inclusionary_housing_settings"].keys():
         geog = policy["inclusionary_housing_settings"]["default"][0]["type"]
     h = orca.merge_tables("households", [households, buildings, parcels_geography], columns=["income", geog])
     AMI = h.groupby(h[geog]).income.quantile(.5)
