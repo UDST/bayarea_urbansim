@@ -296,7 +296,7 @@ def earthquake_demolish(run_setup, parcels, buildings,
             build_frag = buildings_i['eq_destroy'].sort_values(ascending=False)
             top_build_frag = build_frag[: int(round(
                 len(build_frag) * existing_pct))]
-            # in "strategies" scenarios, exclude some existing buildings
+            # in "strategies" runs, exclude some existing buildings
             # from destruction due to retrofit
             if run_setup['run_eq_mitigation']:
                 retrofit_codes = ['DU01G1N', 'DU01G2N', 'MF01G1N', 'MF01G2N',

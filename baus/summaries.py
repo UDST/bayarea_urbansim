@@ -19,7 +19,7 @@ TWO_GEO_SUMMARY_LOADER, nontaz_calculator, taz_calculator,\
 county_calculator, juris_to_county
 
 @orca.step()
-def environment_config(run_number, scenario, parcels, year):
+def environment_config(run_number, parcels, year):
 
     f = open(os.path.join(orca.get_injectable("outputs_dir"), "run%d_env_configuration.log" % (run_number)), "w")
 
@@ -43,7 +43,7 @@ def environment_config(run_number, scenario, parcels, year):
 
 @orca.step()
 def topsheet(households, jobs, buildings, parcels, zones, year, run_number, taz_geography, parcels_zoning_calculations,
-             summary, settings, parcels_geography, abag_targets, new_tpp_id, residential_units, mapping, scenario, policy):
+             summary, settings, parcels_geography, abag_targets, new_tpp_id, residential_units, mapping, policy):
 
     hh_by_subregion = misc.reindex(taz_geography.subregion, households.zone_id).value_counts()
 
@@ -289,7 +289,7 @@ def diagnostic_output(households, buildings, parcels, taz, jobs, settings, zones
 
 
 @orca.step()
-def geographic_summary(parcels, households, jobs, buildings, taz_geography, run_number, year, summary, final_year, scenario,
+def geographic_summary(parcels, households, jobs, buildings, taz_geography, run_number, year, summary, final_year,
                        policy, settings):
     # using the following conditional b/c `year` is used to pull a column
     # from a csv based on a string of the year in add_population()
@@ -533,11 +533,8 @@ def building_summary(parcels, run_number, year,
 
 
 @orca.step()
-def parcel_summary(parcels, buildings, households, jobs,
-                   run_number, year,
-                   parcels_zoning_calculations,
-                   initial_year, final_year, parcels_geography,
-                   scenario, policy):
+def parcel_summary(parcels, buildings, households, jobs, run_number, year, parcels_zoning_calculations,
+                   initial_year, final_year, parcels_geography, policy):
 
     # if year not in [2010, 2015, 2035, 2050]:
     #     return
@@ -624,7 +621,7 @@ def parcel_summary(parcels, buildings, households, jobs,
         geographies = ['GG','tra','HRA', 'DIS']
 
         for geography in geographies:
-            df_growth = GEO_SUMMARY_LOADER(run_number, geography, df_base, df_final, scenario, policy)
+            df_growth = GEO_SUMMARY_LOADER(run_number, geography, df_base, df_final, policy)
             df_growth['county'] = df_growth['juris'].map(juris_to_county)
             df_growth.sort_values(by = ['county','juris','geo_category'], ascending=[True, True, False], inplace=True)
             df_growth.set_index(['RUNID','county','juris','geo_category'], inplace=True)
@@ -633,14 +630,14 @@ def parcel_summary(parcels, buildings, households, jobs,
 
         geo_1, geo_2, geo_3 = 'tra','DIS','HRA'
 
-        df_growth_1 = TWO_GEO_SUMMARY_LOADER(run_number, geo_1, geo_2, df_base, df_final, scenario, policy)
+        df_growth_1 = TWO_GEO_SUMMARY_LOADER(run_number, geo_1, geo_2, df_base, df_final, policy)
         df_growth_1['county'] = df_growth_1['juris'].map(juris_to_county)
         df_growth_1.sort_values(by = ['county','juris','geo_category'], ascending=[True, True, False], inplace=True)
         df_growth_1.set_index(['RUNID','county','juris','geo_category'], inplace=True)
         df_growth_1.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_growth_summaries.csv".\
                                         format(run_number, geo_1 + geo_2)))
 
-        df_growth_2 = TWO_GEO_SUMMARY_LOADER(run_number, geo_1, geo_3, df_base, df_final, scenario, policy)
+        df_growth_2 = TWO_GEO_SUMMARY_LOADER(run_number, geo_1, geo_3, df_base, df_final, policy)
         df_growth_2['county'] = df_growth_2['juris'].map(juris_to_county)
         df_growth_2.sort_values(by = ['county','juris','geo_category'], ascending=[True, True, False], inplace=True)
         df_growth_2.set_index(['RUNID','county','juris','geo_category'], inplace=True)
@@ -1676,7 +1673,6 @@ def slack_report(year, base_year, slack_enabled, run_number, devproj_len, devpro
             slack.chat.post_message(
                 '#urbansim_sim_update',
                 'Development projects for run %d on %s: %d to start, '
-                '%d dropped by scenario filter, '
                 '%d dropped by geom_id check, '
                 '%d dropped by processing'
                 % (run_number, host, devproj_len, dropped_devproj_geomid, dropped_devproj_proc), as_user=True)

@@ -1,7 +1,3 @@
-# active scenario if not specified on the command line
-scenario: "4"
-
-
 # STORAGE
 
 # location of the hdf store

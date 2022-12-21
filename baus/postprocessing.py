@@ -528,7 +528,7 @@ def GEO_SUMMARY_CALCULATOR(parcel_geo_data):
 
 #This is to define a separate fileloader for parcel difference data. With the zoningmod category, we should be able to
 #summarize growth by different geography types that is more nuanced.
-def GEO_SUMMARY_LOADER(run_num, geo, parcel_baseyear, parcel_endyear, scenario, policy):
+def GEO_SUMMARY_LOADER(run_num, geo, parcel_baseyear, parcel_endyear, policy):
 
     zoningtag = 'zoningmodcat'
 
@@ -559,7 +559,7 @@ def GEO_SUMMARY_LOADER(run_num, geo, parcel_baseyear, parcel_endyear, scenario, 
 
 
 ##Similar to above, this is to define a separate fileloader to produce summaries for overlapping geographies. W
-def TWO_GEO_SUMMARY_LOADER(run_num, geo1, geo2, parcel_baseyear, parcel_endyear, scenario, policy):
+def TWO_GEO_SUMMARY_LOADER(run_num, geo1, geo2, parcel_baseyear, parcel_endyear, policy):
 
     zoningtag = 'zoningmodcat'
 

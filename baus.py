@@ -26,7 +26,6 @@ SLACK = MAPS = "URBANSIM_SLACK" in os.environ
 LOGS = True
 RANDOM_SEED = True
 INTERACT = False
-SCENARIO = None
 MODE = "simulation"
 S3 = False
 EVERY_NTH_YEAR = 5
@@ -38,14 +37,7 @@ NO_PROJECT = 611
 IN_YEAR, OUT_YEAR = 2010, 2050
 COMPARE_AGAINST_LAST_KNOWN_GOOD = False
 
-LAST_KNOWN_GOOD_RUNS = {
-    "0": 1057,
-    "1": 1058,
-    "2": 1059,
-    "3": 1060,
-    "4": 1059,
-    "5": 1059
-}
+LAST_KNOWN_GOOD_RUN = 182 
 
 
 # store model run file directories as injectables
@@ -67,9 +59,6 @@ parser.add_argument(
 
 parser.add_argument('-i', action='store_true', dest='interactive',
                     help='enter interactive mode after imports')
-
-parser.add_argument('-s', action='store', dest='scenario',
-                    help='specify which scenario to run')
 
 parser.add_argument('-k', action='store_true', dest='skip_base_year',
                     help='skip base year - used for debugging')
@@ -98,9 +87,6 @@ if options.interactive:
 if options.out_year:
     OUT_YEAR = options.out_year
 
-if options.scenario:
-    orca.add_injectable("scenario", options.scenario)
-
 SKIP_BASE_YEAR = options.skip_base_year
 
 if options.mode:
@@ -111,8 +97,6 @@ if options.random_seed:
 
 if options.noslack:
     SLACK = False
-
-SCENARIO = orca.get_injectable("scenario")
 
 if INTERACT:
     import code
@@ -138,7 +122,7 @@ if MAPS:
     from baus.utils import ue_config, ue_files
 
 
-def get_simulation_models(SCENARIO):
+def get_simulation_models():
 
     # ual has a slightly different set of models - might be able to get rid
     # of the old version soon
@@ -392,7 +376,7 @@ def get_baseyear_models():
 
 
 
-def run_models(MODE, SCENARIO):
+def run_models(MODE):
 
     if MODE == "preprocessing":
 
@@ -422,7 +406,7 @@ def run_models(MODE, SCENARIO):
         # for the IN_YEAR
         years_to_run = range(IN_YEAR+EVERY_NTH_YEAR, OUT_YEAR+1,
                              EVERY_NTH_YEAR)
-        models = get_simulation_models(SCENARIO)
+        models = get_simulation_models()
         orca.run(models, iter_vars=years_to_run)
 
     elif MODE == "estimation":
@@ -483,19 +467,18 @@ def run_models(MODE, SCENARIO):
 print("Started", time.ctime())
 print("Current Branch : ", BRANCH.rstrip())
 print("Current Commit : ", CURRENT_COMMIT.rstrip())
-print("Current Scenario : ", orca.get_injectable('scenario').rstrip())
 print("Random Seed : ", RANDOM_SEED)
 
 
 if SLACK and MODE == "simulation":
     slack.chat.post_message(
         '#urbansim_sim_update',
-        'Starting simulation %d on host %s (scenario: %s)' %
-        (run_num, host, SCENARIO), as_user=True)
+        'Starting simulation %d on host ' %
+        (run_num, host), as_user=True)
 
 try:
 
-    run_models(MODE, SCENARIO)
+    run_models(MODE)
 
 except Exception as e:
     print(traceback.print_exc())
@@ -511,7 +494,7 @@ except Exception as e:
 print("Finished", time.ctime())
 
 if MAPS and MODE == "simulation" and 'travel_model_output' \
-   in get_simulation_models(SCENARIO):
+   in get_simulation_models():
     files_msg1, files_msg2 = ue_files(run_num)
     config_resp = ue_config(run_num, host)
 
@@ -541,21 +524,19 @@ if SLACK and MODE == "simulation":
 summary = ""
 if MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
     # compute and write the difference report at the superdistrict level
-    prev_run = LAST_KNOWN_GOOD_RUNS[SCENARIO]
+    prev_run = LAST_KNOWN_GOOD_RUN
     # fetch the previous run off of the internet for comparison - the "last
     # known good run" should always be available on EC2
-    df1 = pd.read_csv(("http://urbanforecast.com/runs/run%d_superdistrict" +
-                       "_summaries_2050.csv") % prev_run)
+    df1 = pd.read_csv(("http://urbanforecast.com/runs/run%d_superdistrict" + "_summaries_2050.csv") % prev_run)
     df1 = df1.set_index(df1.columns[0]).sort_index()
 
-    df2 = pd.read_csv("runs/run%d_superdistrict_summaries_2050.csv" % run_num)
+    df2 = pd.read_csv((orca.get_injectable("outputs_dir")+"/run%d_superdistrict_summaries_2050.csv") % run_num)
     df2 = df2.set_index(df2.columns[0]).sort_index()
 
-    supnames = \
-        pd.read_csv("data/superdistricts.csv", index_col="number").name
+    supnames = pd.read_csv((orca.get_injectable("inputs_dir") + "/superdistricts.csv"), index_col="number").name
 
     summary = compare_summary(df1, df2, supnames)
-    with open("runs/run%d_difference_report.log" % run_num, "w") as f:
+    with open((orca.get_injectable("inputs_dir") + "/run%d_difference_report.log") % run_num, "w") as f:
         f.write(summary)
 
 
@@ -563,19 +544,11 @@ if SLACK and MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
 
     if len(summary.strip()) != 0:
         sum_lines = len(summary.strip().split("\n"))
-        slack.chat.post_message(
-            '#urbansim_sim_update',
-            ('Difference report is available at ' +
-             'http://urbanforecast.com/runs/run%d_difference_report.log ' +
-             '- %d line(s)') % (run_num, sum_lines),
-            as_user=True)
+        slack.chat.post_message('#urbansim_sim_update', ('Difference report is available at ' +
+                                'http://urbanforecast.com/run/run%d_difference_report.log ' +  '- %d line(s)') 
+                                % (run_num, sum_lines), as_user=True)
     else:
-        slack.chat.post_message(
-            '#urbansim_sim_update',
-            "No differences with reference run.",
-            as_user=True)
+        slack.chat.post_message('#urbansim_sim_update', "No differences with reference run.", as_user=True)
 
 if S3:
-    os.system('ls runs/run%d_* ' % run_num +
-              '| xargs -I file aws s3 cp file ' +
-              's3://bayarea-urbansim-results')
+    os.system('ls runs/run%d_* ' % run_num + '| xargs -I file aws s3 cp file ' + 's3://bayarea-urbansim-results')

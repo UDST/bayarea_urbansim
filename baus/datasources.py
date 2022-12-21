@@ -190,27 +190,22 @@ def costar(store, parcels):
 
 @orca.table(cache=True)
 def zoning_lookup():
-    file = os.path.join(orca.get_injectable("inputs_dir"),
-                       "2020_11_05_zoning_lookup_hybrid_pba50.csv")
+    
+    file = os.path.join(orca.get_injectable("inputs_dir"), "2020_11_05_zoning_lookup_hybrid_pba50.csv")
     print('Version of zoning_lookup: {}'.format(file))
-    return pd.read_csv(file,
-                       dtype={'id': np.int64},
-                       index_col='id')
+    
+    return pd.read_csv(file, dtype={'id': np.int64}, index_col='id')
 
 
-# zoning for use in the "baseline" scenario
 @orca.table(cache=True)
-def zoning_baseline(parcels, zoning_lookup, settings):
-    file = os.path.join(orca.get_injectable("inputs_dir"),
-                        "2020_11_05_zoning_parcels_hybrid_pba50.csv")
-    print('Version of zoning_parcels: {}'.format(file))                    
-    df = pd.read_csv(file,
-                     dtype={'geom_id':   np.int64,
-                            'PARCEL_ID': np.int64,
-                            'zoning_id': np.int64},
-                     index_col="geom_id")
-    df = pd.merge(df, zoning_lookup.to_frame(),
-                  left_on="zoning_id", right_index=True)
+def zoning_existing(parcels, zoning_lookup, settings):
+
+    file = os.path.join(orca.get_injectable("inputs_dir"), "2020_11_05_zoning_parcels_hybrid_pba50.csv")
+    print('Version of zoning_parcels: {}'.format(file))
+
+    df = pd.read_csv(file, dtype={'geom_id':   np.int64, 'PARCEL_ID': np.int64, 'zoning_id': np.int64}, index_col="geom_id")
+    df = pd.merge(df, zoning_lookup.to_frame(), left_on="zoning_id", right_index=True)
+
     df = geom_id_to_parcel_id(df, parcels)
 
     return df
@@ -331,19 +326,19 @@ def maz_forecast_inputs(regional_demographic_forecast):
 
 
 @orca.table(cache=True)
-def zoning_scenario(parcels_geography, policy, mapping):
+def zoning_strategy(parcels_geography, mapping):
 
-    scenario_zoning = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 'zoning_mods.csv'))
+    strategy_zoning = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 'zoning_mods.csv'))
 
     for k in mapping["building_type_map"].keys():
-        scenario_zoning[k] = np.nan
+        strategy_zoning[k] = np.nan
 
     def add_drop_helper(col, val):
-        for ind, item in scenario_zoning[col].items():
+        for ind, item in strategy_zoning[col].items():
             if not isinstance(item, str):
                 continue
             for btype in item.split():
-                scenario_zoning.loc[ind, btype] = val
+                strategy_zoning.loc[ind, btype] = val
 
     add_drop_helper("add_bldg", 1)
     add_drop_helper("drop_bldg", 0)
@@ -352,7 +347,7 @@ def zoning_scenario(parcels_geography, policy, mapping):
     print('join_col of zoningmods is {}'.format(join_col))
 
     return pd.merge(parcels_geography.to_frame().reset_index(),
-                    scenario_zoning,
+                    strategy_zoning,
                     on=join_col,
                     how='left').set_index('parcel_id')
 

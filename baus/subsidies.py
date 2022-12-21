@@ -36,7 +36,7 @@ def profit_to_prob_func(df):
 
 
 @orca.injectable(cache=True)
-def coffer(policy, scenario):
+def coffer(policy):
     d = {
         "vmt_res_acct":  accounts.Account("vmt_res_acct"),
         "vmt_com_acct":  accounts.Account("vmt_com_acct")
@@ -340,8 +340,7 @@ def policy_modifications_of_profit(feasibility, parcels):
 
 
 @orca.step()
-def calculate_vmt_fees(run_setup, policy, year, buildings, vmt_fee_categories, coffer,
-                       summary, years_per_iter, scenario):
+def calculate_vmt_fees(run_setup, policy, year, buildings, vmt_fee_categories, coffer, summary, years_per_iter):
 
     vmt_settings = policy["acct_settings"]["vmt_settings"]
 
@@ -406,7 +405,7 @@ def calculate_vmt_fees(run_setup, policy, year, buildings, vmt_fee_categories, c
 
 
 @orca.step()
-def calculate_jobs_housing_fees(run_setup, policy, year, buildings, coffer, summary, years_per_iter, scenario):
+def calculate_jobs_housing_fees(run_setup, policy, year, buildings, coffer, summary, years_per_iter):
 
     jobs_housing_settings = policy["acct_settings"]["jobs_housing_fee_settings"]
 
@@ -462,7 +461,6 @@ def subsidized_office_developer(feasibility, coffer, formula, year, add_extra_co
 
     # add necessary columns for filters
     policy = orca.get_injectable("policy")
-    scenario = orca.get_injectable("scenario")
 
     # filter to receiving zone
     feasibility = feasibility.query(formula)
@@ -624,7 +622,6 @@ def run_subsidized_developer(feasibility, parcels, buildings, households, acct_s
     
     # add necessary columns for filters
     policy = orca.get_injectable("policy")
-    scenario = orca.get_injectable("scenario")
    
     # step 5
     if "receiving_buildings_filter" in acct_settings:

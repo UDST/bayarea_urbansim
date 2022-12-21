@@ -54,13 +54,9 @@ def employment_relocation_rates():
     return df
 
 
-# this for future round2
-# also includes draft blueprint
 @orca.table(cache=True)
-def household_relocation_rates(scenario, policy):
+def household_relocation_rates():
     df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "household_relocation_rates.csv"))
-    orca.add_injectable("hh_reloc", 'activated')
-    print("File used is: household_relocation_rates_fb.csv")
     return df
 
 
@@ -146,7 +142,7 @@ def _proportional_jobs_model(
 
 
 @orca.step()
-def accessory_units(run_setup, year, buildings, parcels, scenario, policy):
+def accessory_units(run_setup, year, buildings, parcels, policy):
     if run_setup["run_adu_strategy"]:
         add_units = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "accessory_units_policy.csv"), index_col="juris")[str(year)]
     else:
@@ -348,7 +344,7 @@ def household_relocation(households, household_relocation_rates,
 # just adding capacity on an existing parcel, by adding one building at a time
 @orca.step()
 def scheduled_development_events(buildings, development_projects, demolish_events, summary, year, parcels, mapping, years_per_iter, 
-                                 parcels_geography, building_sqft_per_job, vmt_fee_categories, static_parcels, base_year, scenario):
+                                 parcels_geography, building_sqft_per_job, vmt_fee_categories, static_parcels, base_year):
     # first demolish
     # 6/3/20: current approach is to grab projects from the simulation year
     # and previous four years, however the base year is treated differently,
@@ -398,8 +394,6 @@ def scheduled_development_events(buildings, development_projects, demolish_event
     new_buildings["vmt_nonres_cat"] = misc.reindex(vmt_fee_categories.nonres_cat, new_buildings.zone_id)
     del new_buildings["zone_id"]
 
-    # add Draft Blueprint, Final Blueprint, EIR geographies
-    # if scenario in ["20", "21", "22", "23", "24", "25", "26", "27", "28", "29"]:
     new_buildings["pda_id"] = parcels_geography.pda_id.loc[new_buildings.parcel_id].values
     new_buildings["tra_id"] = parcels_geography.tra_id.loc[new_buildings.parcel_id].values
     new_buildings["ppa_id"] = parcels_geography.ppa_id.loc[new_buildings.parcel_id].values
@@ -729,7 +723,7 @@ def retail_developer(jobs, buildings, parcels, nodes, feasibility,
 
 @orca.step()
 def office_developer(feasibility, jobs, buildings, parcels, year,
-                     settings, summary, form_to_btype_func, scenario,
+                     settings, summary, form_to_btype_func,
                      add_extra_columns_func, parcels_geography,
                      limits_settings):
 
