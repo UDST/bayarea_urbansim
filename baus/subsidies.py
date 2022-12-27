@@ -619,10 +619,7 @@ def run_subsidized_developer(feasibility, parcels, buildings, households, acct_s
     # profitable, even the administration costs are likely to cost at least
     # 10k / unit
     feasibility['subsidy_per_unit'] = feasibility.subsidy_per_unit.clip(10000)
-    
-    # add necessary columns for filters
-    policy = orca.get_injectable("policy")
-   
+       
     # step 5
     if "receiving_buildings_filter" in acct_settings:
         feasibility = feasibility.query(acct_settings["receiving_buildings_filter"])

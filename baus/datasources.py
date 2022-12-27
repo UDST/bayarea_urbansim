@@ -27,6 +27,16 @@ def run_setup():
         return yaml.load(f)
 
 
+@orca.injectable('inputs_dir', cache=True)
+def inputs_dir(run_setup):
+    return run_setup['inputs_dir']
+
+
+@orca.injectable('outputs_dir', cache=True)
+def outputs_dir(run_setup):
+    return run_setup['outputs_dir']
+
+
 @orca.injectable('policy', cache=True)
 def policy():
     with open(os.path.join(orca.get_injectable("inputs_dir"), "policy.yaml")) as f:

@@ -40,11 +40,6 @@ COMPARE_AGAINST_LAST_KNOWN_GOOD = False
 LAST_KNOWN_GOOD_RUN = 182 
 
 
-# store model run file directories as injectables
-orca.add_injectable("inputs_dir", '../inputs')
-orca.add_injectable("outputs_dir", '../outputs')
-
-
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 
 orca.add_injectable("base_year", IN_YEAR)
@@ -551,4 +546,5 @@ if SLACK and MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
         slack.chat.post_message('#urbansim_sim_update', "No differences with reference run.", as_user=True)
 
 if S3:
-    os.system('ls runs/run%d_* ' % run_num + '| xargs -I file aws s3 cp file ' + 's3://bayarea-urbansim-results')
+    os.system('ls ' + orca.get_injectable("outputs_dir") + '/run%d_* ' % run_num + '| xargs -I file aws s3 cp file ' + 
+              's3://bayarea-urbansim-results')
