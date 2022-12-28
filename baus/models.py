@@ -157,7 +157,7 @@ def accessory_units(run_setup, year, buildings, parcels, policy):
 @orca.step()
 def proportional_elcm(jobs, households, buildings, parcels, year, run_number):
 
-    juris_assumptions_df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "adjusters/juris_assumptions.csv"), 
+    juris_assumptions_df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "zone_forecasts/juris_assumptions.csv"), 
                                        index_col="juris")
 
     # not a big fan of this - jobs with building_ids of -1 get dropped
@@ -194,7 +194,8 @@ def proportional_elcm(jobs, households, buildings, parcels, year, run_number):
     jobs.update_col_from_series("building_id", s, cast=True)
 
     # first read the file from disk - it's small so no table source
-    taz_assumptions_df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "taz_growth_rates_gov_ed.csv"), index_col="Taz")
+    taz_assumptions_df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "zone_forecasts/taz_growth_rates_gov_ed.csv"), 
+                                     index_col="Taz")
 
     # we're going to multiply various aggregations of populations by factors
     # e.g. high school jobs are multiplied by county pop and so forth - this

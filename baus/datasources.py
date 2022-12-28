@@ -159,10 +159,8 @@ def landmarks():
 
 @orca.table(cache=True)
 def baseyear_taz_controls():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"),
-                                    "baseyear_taz_controls.csv"),
-                       dtype={'taz1454': np.int64},
-                       index_col="taz1454")
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/parcels_buildings_agents/baseyear_taz_controls.csv"),
+                       dtype={'taz1454': np.int64}, index_col="taz1454")
 
 
 @orca.table(cache=True)
@@ -254,44 +252,30 @@ def county_employment_forecast():
 
 @orca.table(cache=True)
 def taz2_forecast_inputs(regional_demographic_forecast):
-    t2fi = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"),
-                                    "taz2_forecast_inputs.csv"),
-                       dtype={'TAZ': np.int64},
-                       index_col='TAZ').replace('#DIV/0!', np.nan)
+    t2fi = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "zone_forecasts/taz2_forecast_inputs.csv"), 
+                       dtype={'TAZ': np.int64}, index_col='TAZ').replace('#DIV/0!', np.nan)
 
     rdf = regional_demographic_forecast.to_frame()
     # apply regional share of hh by size to MAZs with no households in 2010
-    t2fi.loc[t2fi.shrw0_2010.isnull(),
-             'shrw0_2010'] = rdf.loc[rdf.year == 2010, 'shrw0'].values[0]
-    t2fi.loc[t2fi.shrw1_2010.isnull(),
-             'shrw1_2010'] = rdf.loc[rdf.year == 2010, 'shrw1'].values[0]
-    t2fi.loc[t2fi.shrw2_2010.isnull(),
-             'shrw2_2010'] = rdf.loc[rdf.year == 2010, 'shrw2'].values[0]
-    t2fi.loc[t2fi.shrw3_2010.isnull(),
-             'shrw3_2010'] = rdf.loc[rdf.year == 2010, 'shrw3'].values[0]
+    t2fi.loc[t2fi.shrw0_2010.isnull(), 'shrw0_2010'] = rdf.loc[rdf.year == 2010, 'shrw0'].values[0]
+    t2fi.loc[t2fi.shrw1_2010.isnull(), 'shrw1_2010'] = rdf.loc[rdf.year == 2010, 'shrw1'].values[0]
+    t2fi.loc[t2fi.shrw2_2010.isnull(), 'shrw2_2010'] = rdf.loc[rdf.year == 2010, 'shrw2'].values[0]
+    t2fi.loc[t2fi.shrw3_2010.isnull(), 'shrw3_2010'] = rdf.loc[rdf.year == 2010, 'shrw3'].values[0]
 
     # apply regional share of persons by age category
-    t2fi.loc[t2fi.shra1_2010.isnull(),
-             'shra1_2010'] = rdf.loc[rdf.year == 2010, 'shra1'].values[0]
-    t2fi.loc[t2fi.shra2_2010.isnull(),
-             'shra2_2010'] = rdf.loc[rdf.year == 2010, 'shra2'].values[0]
-    t2fi.loc[t2fi.shra3_2010.isnull(),
-             'shra3_2010'] = rdf.loc[rdf.year == 2010, 'shra3'].values[0]
-    t2fi.loc[t2fi.shra4_2010.isnull(),
-             'shra4_2010'] = rdf.loc[rdf.year == 2010, 'shra4'].values[0]
+    t2fi.loc[t2fi.shra1_2010.isnull(), 'shra1_2010'] = rdf.loc[rdf.year == 2010, 'shra1'].values[0]
+    t2fi.loc[t2fi.shra2_2010.isnull(), 'shra2_2010'] = rdf.loc[rdf.year == 2010, 'shra2'].values[0]
+    t2fi.loc[t2fi.shra3_2010.isnull(), 'shra3_2010'] = rdf.loc[rdf.year == 2010, 'shra3'].values[0]
+    t2fi.loc[t2fi.shra4_2010.isnull(), 'shra4_2010'] = rdf.loc[rdf.year == 2010, 'shra4'].values[0]
 
     # apply regional share of hh by presence of children
-    t2fi.loc[t2fi.shrn_2010.isnull(),
-             'shrn_2010'] = rdf.loc[rdf.year == 2010, 'shrn'].values[0]
-    t2fi.loc[t2fi.shry_2010.isnull(),
-             'shry_2010'] = rdf.loc[rdf.year == 2010, 'shry'].values[0]
+    t2fi.loc[t2fi.shrn_2010.isnull(), 'shrn_2010'] = rdf.loc[rdf.year == 2010, 'shrn'].values[0]
+    t2fi.loc[t2fi.shry_2010.isnull(), 'shry_2010'] = rdf.loc[rdf.year == 2010, 'shry'].values[0]
 
-    t2fi[['shrw0_2010', 'shrw1_2010', 'shrw2_2010', 'shrw3_2010',
-          'shra1_2010', 'shra2_2010', 'shra3_2010', 'shra4_2010', 'shrn_2010',
-          'shry_2010']] = t2fi[['shrw0_2010', 'shrw1_2010', 'shrw2_2010',
-                                'shrw3_2010', 'shra1_2010', 'shra2_2010',
-                                'shra3_2010', 'shra4_2010', 'shrn_2010',
-                                'shry_2010']].astype('float')
+    t2fi[['shrw0_2010', 'shrw1_2010', 'shrw2_2010', 'shrw3_2010', 'shra1_2010', 'shra2_2010', 'shra3_2010', 'shra4_2010', 'shrn_2010',
+          'shry_2010']] = t2fi[['shrw0_2010', 'shrw1_2010', 'shrw2_2010', 'shrw3_2010', 'shra1_2010', 'shra2_2010', 'shra3_2010', 
+                                'shra4_2010', 'shrn_2010', 'shry_2010']].astype('float')
+                                
     return t2fi
 
 
@@ -303,10 +287,8 @@ def empsh_to_empsix():
 @orca.table(cache=True)
 def maz_forecast_inputs(regional_demographic_forecast):
     rdf = regional_demographic_forecast.to_frame()
-    mfi = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"),
-                                   "maz_forecast_inputs.csv"),
-                      dtype={'MAZ': np.int64},
-                      index_col='MAZ').replace('#DIV/0!', np.nan)
+    mfi = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "zone_forecasts/maz_forecast_inputs.csv"),
+                      dtype={'MAZ': np.int64}, index_col='MAZ').replace('#DIV/0!', np.nan)
 
     # apply regional share of hh by size to MAZs with no households in 2010
     mfi.loc[mfi.shrs1_2010.isnull(),
@@ -653,27 +635,22 @@ def employment_controls(employment_controls_unstacked):
 
 @orca.table(cache=True)
 def zone_forecast_inputs():
-    return pd.read_csv(
-        os.path.join(orca.get_injectable("inputs_dir"), "zone_forecast_inputs.csv"),
-        dtype={'zone_id': np.int64},
-        index_col="zone_id")
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "zone_forecasts/zone_forecast_inputs.csv"), 
+                       dtype={'zone_id': np.int64}, index_col="zone_id")
 
 
 @orca.table(cache=True)
 def taz_forecast_inputs():
-    return pd.read_csv(
-        os.path.join(orca.get_injectable("inputs_dir"), "taz_forecast_inputs.csv"),
-        dtype={'TAZ1454': np.int64},
-        index_col="TAZ1454")
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "zone_forecasts/taz_forecast_inputs.csv"), 
+                       dtype={'TAZ1454': np.int64}, index_col="TAZ1454")
 
 
 # this is the set of categories by zone of sending and receiving zones
 # in terms of vmt fees
 @orca.table(cache=True)
 def vmt_fee_categories():
-    return pd.read_csv(
-        os.path.join(orca.get_injectable("inputs_dir"), "plan_strategies/vmt_fee_zonecats.csv"), dtype={'taz': np.int64},
-                     index_col="taz")
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "plan_strategies/vmt_fee_zonecats.csv"), dtype={'taz': np.int64},
+                       index_col="taz")
 
 
 @orca.table(cache=True)
@@ -690,9 +667,8 @@ def abag_targets():
 
 @orca.table(cache=True)
 def taz_geography(superdistricts, mapping):
-    tg = pd.read_csv(
-        os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/crosswalks/taz_geography.csv"),
-        dtype={'zone': np.int64, 'superdistrcit': np.int64, 'county': np.int64}, index_col="zone")
+    tg = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/crosswalks/taz_geography.csv"),
+                     dtype={'zone': np.int64, 'superdistrcit': np.int64, 'county': np.int64}, index_col="zone")
     cmap = mapping["county_id_tm_map"]
     tg['county_name'] = tg.county.map(cmap)
 
