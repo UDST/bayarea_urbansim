@@ -1,7 +1,7 @@
 # STORAGE
 
 # location of the hdf store
-store: 2015_09_01_bayarea_v3.h5
+store: basis_inputs/parcels_buildings_agents/2015_09_01_bayarea_v3.h5
 
 # large baus files are stored in s3 - this key gives the settings for fetching them
 s3_settings:

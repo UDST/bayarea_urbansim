@@ -150,7 +150,7 @@ def assign_deed_restricted_units(df, parcels):
     # sample deed restricted units to match current deed restricted unit
     # zone totals
     for taz, row in pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 
-                                             "deed_restricted_zone_totals.csv"), 
+                                             "basis_inputs/parcels_buildings_agents/deed_restricted_zone_totals.csv"), 
                                              index_col='taz_key').iterrows():
 
         cnt = row["units"]

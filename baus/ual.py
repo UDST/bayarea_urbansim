@@ -228,7 +228,7 @@ def load_rental_listings():
     """
     @orca.table('craigslist', cache=True)
     def craigslist():
-        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "sfbay_craigslist.csv"))
+        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/parcels_buildings_agents/sfbay_craigslist.csv"))
         net = orca.get_injectable('net')
         df['node_id'] = net['walk'].get_node_ids(df['lon'], df['lat'])
         df['tmnode_id'] = net['drive'].get_node_ids(df['lon'], df['lat'])
