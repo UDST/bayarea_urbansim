@@ -6,7 +6,6 @@ import yaml
 
 import numpy as np
 import pandas as pd
-
 import orca
 import pandana.network as pdna
 from urbansim.developer import sqftproforma
@@ -48,7 +47,7 @@ def households_transition(households, household_controls, year, settings):
 
 @orca.table(cache=True)
 def employment_relocation_rates():
-    df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "employment_relocation_rates.csv"))
+    df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "adjusters/employment_relocation_rates.csv"))
     df = df.set_index("zone_id").stack().reset_index()
     df.columns = ["zone_id", "empsix", "rate"]
     return df
@@ -56,7 +55,7 @@ def employment_relocation_rates():
 
 @orca.table(cache=True)
 def household_relocation_rates():
-    df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "household_relocation_rates.csv"))
+    df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "adjusters/household_relocation_rates.csv"))
     return df
 
 
@@ -155,79 +154,52 @@ def accessory_units(run_setup, year, buildings, parcels, policy):
 
 
 @orca.step()
-def proportional_elcm(jobs, households, buildings, parcels,
-                      year, run_number):
+def proportional_elcm(jobs, households, buildings, parcels, year, run_number):
 
-    juris_assumptions_df = pd.read_csv(os.path.join(
-        orca.get_injectable("inputs_dir"),
-        "juris_assumptions.csv"
-    ), index_col="juris")
+    juris_assumptions_df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "adjusters/juris_assumptions.csv"), 
+                                       index_col="juris")
 
     # not a big fan of this - jobs with building_ids of -1 get dropped
     # by the merge so you have to grab the columns first and fill in
     # juris iff the building_id is != -1
     jobs_df = jobs.to_frame(["building_id", "empsix"])
-    df = orca.merge_tables(
-        target='jobs',
-        tables=[jobs, buildings, parcels],
-        columns=['juris', 'zone_id'])
+    df = orca.merge_tables(target='jobs', tables=[jobs, buildings, parcels], columns=['juris', 'zone_id'])
     jobs_df["juris"] = df["juris"]
     jobs_df["zone_id"] = df["zone_id"]
 
-    hh_df = orca.merge_tables(
-        target='households',
-        tables=[households, buildings, parcels],
-        columns=['juris', 'zone_id', 'county'])
+    hh_df = orca.merge_tables(target='households', tables=[households, buildings, parcels], columns=['juris', 'zone_id', 'county'])
 
     # the idea here is to make sure we don't lose local retail and gov't
     # jobs - there has to be some amount of basic services to support an
     # increase in population
 
-    buildings_df = orca.merge_tables(
-        target='buildings',
-        tables=[buildings, parcels],
-        columns=['juris', 'zone_id', 'general_type', 'vacant_job_spaces'])
+    buildings_df = orca.merge_tables(target='buildings', tables=[buildings, parcels], 
+                                     columns=['juris', 'zone_id', 'general_type', 'vacant_job_spaces'])
 
-    buildings_df = buildings_df.rename(columns={
-      'zone_id_x': 'zone_id', 'general_type_x': 'general_type'})
+    buildings_df = buildings_df.rename(columns={'zone_id_x': 'zone_id', 'general_type_x': 'general_type'})
 
     # location options are vacant job spaces in retail buildings - this will
     # overfill certain location because we don't have enough space
     building_subset = buildings_df[buildings_df.general_type == "Retail"]
-    location_options = building_subset.juris.repeat(
-        building_subset.vacant_job_spaces.clip(0))
+    location_options = building_subset.juris.repeat(building_subset.vacant_job_spaces.clip(0))
 
     print("Running proportional jobs model for retail")
 
-    s = _proportional_jobs_model(
-        # we now take the ratio of retail jobs to households as an input
-        # that is manipulable by the modeler - this is stored in a csv
-        # per jurisdiction
-        juris_assumptions_df.minimum_forecast_retail_jobs_per_household,
-        "RETEMPN",
-        "juris",
-        hh_df,
-        jobs_df,
-        location_options
-    )
+    # we now take the ratio of retail jobs to households as an input
+    # that is manipulable by the modeler - this is stored in a csv per jurisdiction
+    s = _proportional_jobs_model(juris_assumptions_df.minimum_forecast_retail_jobs_per_household,
+                                 "RETEMPN", "juris", hh_df, jobs_df, location_options)
 
     jobs.update_col_from_series("building_id", s, cast=True)
 
     # first read the file from disk - it's small so no table source
-    taz_assumptions_df = pd.read_csv(os.path.join(
-        orca.get_injectable("inputs_dir"),
-        "taz_growth_rates_gov_ed.csv"
-    ), index_col="Taz")
+    taz_assumptions_df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "taz_growth_rates_gov_ed.csv"), index_col="Taz")
 
     # we're going to multiply various aggregations of populations by factors
     # e.g. high school jobs are multiplied by county pop and so forth - this
     # is the dict of the aggregations of household counts
-    mapping_d = {
-        "TAZ Pop": hh_df["zone_id"].dropna().astype('int').value_counts(),
-        "County Pop": taz_assumptions_df.County.map(
-            hh_df["county"].value_counts()),
-        "Reg Pop": len(hh_df)
-    }
+    mapping_d = {"TAZ Pop": hh_df["zone_id"].dropna().astype('int').value_counts(), 
+                 "County Pop": taz_assumptions_df.County.map(hh_df["county"].value_counts()), "Reg Pop": len(hh_df)}
     # the factors are set up in relation to pop, not hh count
     pop_to_hh = .43
 
@@ -248,8 +220,7 @@ def proportional_elcm(jobs, households, buildings, parcels,
     # now go through and multiply each factor by the aggregation it applied to
     target_jobs = pd.Series(0, taz_assumptions_df.index)
     for col, mult in zip(taz_assumptions_df.columns, multipliers):
-        target_jobs += (taz_assumptions_df[col].astype('float') *
-                        mapping_d[mult] * pop_to_hh).fillna(0)
+        target_jobs += (taz_assumptions_df[col].astype('float') * mapping_d[mult] * pop_to_hh).fillna(0)
 
     target_jobs = target_jobs.astype('int')
 
@@ -257,37 +228,23 @@ def proportional_elcm(jobs, households, buildings, parcels,
 
     # location options are vacant job spaces in retail buildings - this will
     # overfill certain location because we don't have enough space
-    building_subset = buildings_df[
-        buildings.general_type.isin(["Office", "School"])]
-    location_options = building_subset.zone_id.repeat(
-        building_subset.vacant_job_spaces.clip(0))
+    building_subset = buildings_df[buildings.general_type.isin(["Office", "School"])]
+    location_options = building_subset.zone_id.repeat(building_subset.vacant_job_spaces.clip(0))
 
     # now do the same thing for gov't jobs
-    s = _proportional_jobs_model(
-        None,  # computing jobs directly
-        "OTHEMPN",
-        "zone_id",
-        hh_df,
-        jobs_df,
-        location_options,
-        target_jobs=target_jobs
-    )
+    # computing jobs directly
+    s = _proportional_jobs_model(None, "OTHEMPN", "zone_id", hh_df, jobs_df, location_options, target_jobs=target_jobs)
 
     jobs.update_col_from_series("building_id", s, cast=True)
 
 
 @orca.step()
-def jobs_relocation(jobs, employment_relocation_rates, years_per_iter,
-                    settings, static_parcels, buildings):
+def jobs_relocation(jobs, employment_relocation_rates, years_per_iter, settings, static_parcels, buildings):
 
     # get buildings that are on those parcels
-    static_buildings = buildings.index[
-        buildings.parcel_id.isin(static_parcels)]
+    static_buildings = buildings.index[buildings.parcel_id.isin(static_parcels)]
 
-    df = pd.merge(jobs.to_frame(["zone_id", "empsix"]),
-                  employment_relocation_rates.local,
-                  on=["zone_id", "empsix"],
-                  how="left")
+    df = pd.merge(jobs.to_frame(["zone_id", "empsix"]), employment_relocation_rates.local, on=["zone_id", "empsix"], how="left")
 
     df.index = jobs.index
 
@@ -303,23 +260,17 @@ def jobs_relocation(jobs, employment_relocation_rates, years_per_iter,
     index = jobs.index[move]
 
     # set jobs that are moving to a building_id of -1 (means unplaced)
-    jobs.update_col_from_series("building_id",
-                                pd.Series(-1, index=index))
+    jobs.update_col_from_series("building_id", pd.Series(-1, index=index))
 
 
 @orca.step()
-def household_relocation(households, household_relocation_rates,
-                         settings, static_parcels, buildings):
+def household_relocation(households, household_relocation_rates, settings, static_parcels, buildings):
 
     # get buildings that are on those parcels
-    static_buildings = buildings.index[
-        buildings.parcel_id.isin(static_parcels)]
+    static_buildings = buildings.index[buildings.parcel_id.isin(static_parcels)]
 
-    df = pd.merge(households.to_frame(["zone_id", "base_income_quartile",
-                                       "tenure"]),
-                  household_relocation_rates.local,
-                  on=["zone_id", "base_income_quartile", "tenure"],
-                  how="left")
+    df = pd.merge(households.to_frame(["zone_id", "base_income_quartile", "tenure"]), household_relocation_rates.local,
+                  on=["zone_id", "base_income_quartile", "tenure"], how="left")
 
     df.index = households.index
 
@@ -334,8 +285,7 @@ def household_relocation(households, household_relocation_rates,
     print("{} households are relocating".format(len(index)))
 
     # set households that are moving to a building_id of -1 (means unplaced)
-    households.update_col_from_series("building_id",
-                                      pd.Series(-1, index=index), cast=True)
+    households.update_col_from_series("building_id", pd.Series(-1, index=index), cast=True)
 
 
 # this deviates from the step in urbansim_defaults only in how it deals with

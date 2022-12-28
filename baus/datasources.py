@@ -490,7 +490,7 @@ def accessibilities_segmentation(year, run_setup):
 
 @orca.table(cache=True)
 def manual_edits():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "manual_edits.csv"))
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "adjusters/manual_edits.csv"))
 
 
 def reprocess_dev_projects(df):
@@ -694,14 +694,14 @@ def vmt_fee_categories():
 
 @orca.table(cache=True)
 def superdistricts(): 
-	superdistricts = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "superdistricts.csv"), index_col="number")
+	superdistricts = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "adjusters/superdistricts.csv"), index_col="number")
 	orca.add_injectable("sqft_per_job_settings", "default")
 	return superdistricts
 
 
 @orca.table(cache=True)
 def abag_targets():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "abag_targets.csv"))
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "adjusters/abag_targets.csv"))
 
 
 @orca.table(cache=True)
@@ -731,9 +731,7 @@ def taz_geography(superdistricts, mapping):
 
 @orca.table(cache=True)
 def taz2_price_shifters():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"),
-                                    "taz2_price_shifters.csv"),
-                       dtype={'TAZ': np.int64},
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "adjusters/taz2_price_shifters.csv"), dtype={'TAZ': np.int64}, 
                        index_col="TAZ")
 
 
