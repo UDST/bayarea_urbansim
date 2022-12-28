@@ -725,7 +725,7 @@ def zones(store):
 # SLR progression by year
 @orca.table(cache=True)
 def slr_progression():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "slr_progression.csv"))
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/hazards/slr_progression.csv"))
 
 
 # SLR inundation levels for parcels
@@ -733,7 +733,7 @@ def slr_progression():
 # or a committed projects + policy projects mitigation applied
 @orca.table(cache=True)
 def slr_parcel_inundation():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "slr_parcel_inundation.csv"),
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/hazards/slr_parcel_inundation.csv"),
                        dtype={'parcel_id': np.int64}, index_col='parcel_id')
 
 
