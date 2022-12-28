@@ -229,38 +229,29 @@ def new_tpp_id():
 
 @orca.table(cache=True)
 def maz():
-    maz = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "maz_geography.csv"),
-                      dtype={'MAZ': np.int64,
-                             'TAZ': np.int64})
+    maz = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/crosswalks/maz_geography.csv"),
+                      dtype={'MAZ': np.int64, 'TAZ': np.int64})
     maz = maz.drop_duplicates('MAZ').set_index('MAZ')
-    taz1454 = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "maz22_taz1454.csv"),
-                          dtype={'maz':     np.int64,
-                                 'TAZ1454': np.int64},
-                          index_col='maz')
+    taz1454 = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/crosswalks/maz22_taz1454.csv"),
+                          dtype={'maz': np.int64, 'TAZ1454': np.int64}, index_col='maz')
     maz['taz1454'] = taz1454.TAZ1454
     return maz
 
 
 @orca.table(cache=True)
 def parcel_to_maz():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"),
-                                    "2020_08_17_parcel_to_maz22.csv"),
-                       dtype={'PARCEL_ID': np.int64,
-                              'maz':       np.int64},
-                       index_col="PARCEL_ID")
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/crosswalks/2020_08_17_parcel_to_maz22.csv"),
+                       dtype={'PARCEL_ID': np.int64, 'maz': np.int64}, index_col="PARCEL_ID")
 
 
 @orca.table(cache=True)
 def county_forecast_inputs():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"),
-                                    "county_forecast_inputs.csv"),
-                       index_col="COUNTY")
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "county_forecast_inputs.csv"), index_col="COUNTY")
 
 
 @orca.table(cache=True)
 def county_employment_forecast():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"),
-                       "county_employment_forecast.csv"))
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "county_employment_forecast.csv"))
 
 
 @orca.table(cache=True)
@@ -308,7 +299,7 @@ def taz2_forecast_inputs(regional_demographic_forecast):
 
 @orca.table(cache=True)
 def empsh_to_empsix():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "empsh_to_empsix.csv"))
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/crosswalks/empsh_to_empsix.csv"))
 
 
 @orca.table(cache=True)
@@ -396,13 +387,13 @@ def parcel_rejections():
 @orca.table(cache=True)
 def parcels_geography(parcels, settings, policy):
 
-    file = os.path.join(orca.get_injectable("inputs_dir"), "2021_02_25_parcels_geography.csv")
+    file = os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/crosswalks/2021_02_25_parcels_geography.csv")
     print('Versin of parcels_geography: {}'.format(file))
     df = pd.read_csv(file, dtype={'PARCEL_ID': np.int64, 'geom_id': np.int64, 'jurisdiction_id': np.int64},index_col="geom_id")
     df = geom_id_to_parcel_id(df, parcels)
 
     # this will be used to map juris id to name
-    juris_name = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "census_id_to_name.csv"),
+    juris_name = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/crosswalks/census_id_to_name.csv"),
                              dtype={'census_id': np.int64}, index_col="census_id").name10
 
     df["juris_name"] = df.jurisdiction_id.map(juris_name)
@@ -432,11 +423,8 @@ def parcels_geography(parcels, settings, policy):
 
 @orca.table(cache=True)
 def parcels_subzone():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"),
-                                    '2020_08_17_parcel_to_taz1454sub.csv'),
-                       usecols=['taz_sub', 'PARCEL_ID', 'county'],
-                       dtype={'PARCEL_ID': np.int64},
-                       index_col='PARCEL_ID')
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 'basis_inputs/crosswalks/2020_08_17_parcel_to_taz1454sub.csv'),
+                       usecols=['taz_sub', 'PARCEL_ID', 'county'], dtype={'PARCEL_ID': np.int64}, index_col='PARCEL_ID')
 
 
 @orca.table(cache=False)
@@ -707,25 +695,17 @@ def abag_targets():
 @orca.table(cache=True)
 def taz_geography(superdistricts, mapping):
     tg = pd.read_csv(
-        os.path.join(orca.get_injectable("inputs_dir"), "taz_geography.csv"),
-        dtype={'zone':          np.int64,
-               'superdistrcit': np.int64,
-               'county':        np.int64},
-        index_col="zone")
+        os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/crosswalks/taz_geography.csv"),
+        dtype={'zone': np.int64, 'superdistrcit': np.int64, 'county': np.int64}, index_col="zone")
     cmap = mapping["county_id_tm_map"]
     tg['county_name'] = tg.county.map(cmap)
 
     # we want "subregion" geography on the taz_geography table
     # we have to go get it from the superdistricts table and join
     # using the superdistrcit id
-    tg["subregion_id"] = \
-        superdistricts.subregion.loc[tg.superdistrict].values
-    tg["subregion"] = tg.subregion_id.map({
-        1: "Core",
-        2: "Urban",
-        3: "Suburban",
-        4: "Rural"
-    })
+    tg["subregion_id"] = superdistricts.subregion.loc[tg.superdistrict].values
+    tg["subregion"] = tg.subregion_id.map({1: "Core", 2: "Urban", 3: "Suburban", 4: "Rural"})
+
     return tg
 
 
