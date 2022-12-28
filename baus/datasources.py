@@ -243,12 +243,13 @@ def parcel_to_maz():
 
 @orca.table(cache=True)
 def county_forecast_inputs():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "county_forecast_inputs.csv"), index_col="COUNTY")
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "regional_controls/county_forecast_inputs.csv"), 
+                       index_col="COUNTY")
 
 
 @orca.table(cache=True)
 def county_employment_forecast():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "county_employment_forecast.csv"))
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "regional_controls/county_employment_forecast.csv"))
 
 
 @orca.table(cache=True)
@@ -598,15 +599,12 @@ def residential_units(store):
 
 @orca.table(cache=True)
 def household_controls_unstacked():
-    orca.add_injectable("household_control_file", "household_controls.csv")
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "household_controls.csv"),
-                       index_col='year')
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "regional_controls/household_controls.csv"), index_col='year')
 
 
 @orca.table(cache=True)
 def regional_demographic_forecast():
-    orca.add_injectable("reg_dem_control_file", "regional_demographic_forecast.csv")
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "regional_demographic_forecast.csv"))
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "regional_controls/regional_demographic_forecast.csv"))
 
 
 # the following overrides household_controls
@@ -625,14 +623,12 @@ def household_controls(household_controls_unstacked):
 
 @orca.table(cache=True)
 def employment_controls_unstacked():
-    orca.add_injectable("employment_control_file", "employment_controls.csv")
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "employment_controls.csv"), index_col='year')
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "regional_controls/employment_controls.csv"), index_col='year')
 
 
 @orca.table(cache=True)
 def regional_controls():
-    orca.add_injectable("reg_control_file", "regional_controls.csv")
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "regional_controls.csv"), index_col="year")
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "regional_controls/regional_controls.csv"), index_col="year")
 
 
 # the following overrides employment_controls
