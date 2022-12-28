@@ -39,7 +39,7 @@ def outputs_dir(run_setup):
 
 @orca.injectable('policy', cache=True)
 def policy():
-    with open(os.path.join(orca.get_injectable("inputs_dir"), "policy.yaml")) as f:
+    with open(os.path.join(orca.get_injectable("inputs_dir"), "plan_strategies/policy.yaml")) as f:
         return yaml.load(f)
 
 
@@ -326,7 +326,7 @@ def maz_forecast_inputs(regional_demographic_forecast):
 @orca.table(cache=True)
 def zoning_strategy(parcels_geography, mapping):
 
-    strategy_zoning = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 'zoning_mods.csv'))
+    strategy_zoning = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 'plan_strategies/zoning_mods.csv'))
 
     for k in mapping["building_type_map"].keys():
         strategy_zoning[k] = np.nan
@@ -344,10 +344,7 @@ def zoning_strategy(parcels_geography, mapping):
     join_col = 'zoningmodcat'
     print('join_col of zoningmods is {}'.format(join_col))
 
-    return pd.merge(parcels_geography.to_frame().reset_index(),
-                    strategy_zoning,
-                    on=join_col,
-                    how='left').set_index('parcel_id')
+    return pd.merge(parcels_geography.to_frame().reset_index(), strategy_zoning, on=join_col, how='left').set_index('parcel_id')
 
 
 @orca.table(cache=True)
@@ -673,9 +670,8 @@ def taz_forecast_inputs():
 @orca.table(cache=True)
 def vmt_fee_categories():
     return pd.read_csv(
-        os.path.join(orca.get_injectable("inputs_dir"), "vmt_fee_zonecats.csv"),
-        dtype={'taz': np.int64},
-        index_col="taz")
+        os.path.join(orca.get_injectable("inputs_dir"), "plan_strategies/vmt_fee_zonecats.csv"), dtype={'taz': np.int64},
+                     index_col="taz")
 
 
 @orca.table(cache=True)
