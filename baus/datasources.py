@@ -153,7 +153,7 @@ def fetch_from_s3(settings):
 # key locations in the Bay Area for use as attractions in the models
 @orca.table(cache=True)
 def landmarks():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 'landmarks.csv'),
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 'pandana_accessibility/landmarks.csv'),
                        index_col="name")
 
 
@@ -755,20 +755,14 @@ def tracts_earthquake():
 # override urbansim_defaults which looks for this in data/
 @orca.table(cache=True)
 def logsums():
-    return pd.read_csv(
-        os.path.join(orca.get_injectable("inputs_dir"), "logsums.csv"), index_col="taz")
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "pandana_accessibility/logsums.csv"), index_col="taz")
 
 
 # this specifies the relationships between tables
-orca.broadcast('buildings', 'residential_units', cast_index=True,
-               onto_on='building_id')
-orca.broadcast('residential_units', 'households', cast_index=True,
-               onto_on='unit_id')
-orca.broadcast('parcels_geography', 'buildings', cast_index=True,
-               onto_on='parcel_id')
-orca.broadcast('parcels', 'buildings', cast_index=True,
-               onto_on='parcel_id')
+orca.broadcast('buildings', 'residential_units', cast_index=True, onto_on='building_id')
+orca.broadcast('residential_units', 'households', cast_index=True, onto_on='unit_id')
+orca.broadcast('parcels_geography', 'buildings', cast_index=True, onto_on='parcel_id')
+orca.broadcast('parcels', 'buildings', cast_index=True, onto_on='parcel_id')
 # not defined in urbansim_Defaults
 orca.broadcast('tmnodes', 'buildings', cast_index=True, onto_on='tmnode_id')
-orca.broadcast('taz_geography', 'parcels', cast_index=True,
-               onto_on='zone_id')
+orca.broadcast('taz_geography', 'parcels', cast_index=True, onto_on='zone_id')
