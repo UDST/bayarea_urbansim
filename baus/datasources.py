@@ -205,7 +205,7 @@ def zoning_lookup():
 @orca.table(cache=True)
 def zoning_existing(parcels, zoning_lookup, settings):
 
-    file = os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/zoning2020_11_05_zoning_parcels_hybrid_pba50.csv")
+    file = os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/zoning/2020_11_05_zoning_parcels_hybrid_pba50.csv")
     print('Version of zoning_parcels: {}'.format(file))
 
     df = pd.read_csv(file, dtype={'geom_id':   np.int64, 'PARCEL_ID': np.int64, 'zoning_id': np.int64}, index_col="geom_id")
@@ -218,7 +218,7 @@ def zoning_existing(parcels, zoning_lookup, settings):
 
 @orca.table(cache=True)
 def new_tpp_id():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "tpp_id_2016.csv"),
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "adjusters/tpp_id_2016.csv"),
                        index_col="parcel_id")
 
 
@@ -275,7 +275,7 @@ def taz2_forecast_inputs(regional_demographic_forecast):
     t2fi[['shrw0_2010', 'shrw1_2010', 'shrw2_2010', 'shrw3_2010', 'shra1_2010', 'shra2_2010', 'shra3_2010', 'shra4_2010', 'shrn_2010',
           'shry_2010']] = t2fi[['shrw0_2010', 'shrw1_2010', 'shrw2_2010', 'shrw3_2010', 'shra1_2010', 'shra2_2010', 'shra3_2010', 
                                 'shra4_2010', 'shrn_2010', 'shry_2010']].astype('float')
-                                
+
     return t2fi
 
 
