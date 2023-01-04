@@ -528,7 +528,7 @@ if MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
     df2 = pd.read_csv((orca.get_injectable("outputs_dir")+"/run%d_superdistrict_summaries_2050.csv") % run_num)
     df2 = df2.set_index(df2.columns[0]).sort_index()
 
-    supnames = pd.read_csv((orca.get_injectable("inputs_dir") + "adjusters/superdistricts.csv"), index_col="number").name
+    supnames = pd.read_csv((orca.get_injectable("inputs_dir") + "/adjusters/superdistricts.csv"), index_col="number").name
 
     summary = compare_summary(df1, df2, supnames)
     with open((orca.get_injectable("outputs_dir") + "/run%d_difference_report.log") % run_num, "w") as f:
