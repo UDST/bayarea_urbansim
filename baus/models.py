@@ -47,7 +47,7 @@ def households_transition(households, household_controls, year, settings):
 
 @orca.table(cache=True)
 def employment_relocation_rates():
-    df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "adjusters/employment_relocation_rates.csv"))
+    df = pd.read_csv(os.path.join(misc.configs_dir(), "employment_relocation_rates.yaml"))
     df = df.set_index("zone_id").stack().reset_index()
     df.columns = ["zone_id", "empsix", "rate"]
     return df
