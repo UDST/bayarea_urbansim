@@ -661,11 +661,6 @@ def superdistricts():
 
 
 @orca.table(cache=True)
-def abag_targets():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "adjusters/abag_targets.csv"))
-
-
-@orca.table(cache=True)
 def taz_geography(superdistricts, mapping):
     tg = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/crosswalks/taz_geography.csv"),
                      dtype={'zone': np.int64, 'superdistrcit': np.int64, 'county': np.int64}, index_col="zone")
