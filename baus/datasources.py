@@ -726,6 +726,32 @@ def logsums():
     return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "pandana_accessibility/logsums.csv"), index_col="taz")
 
 
+@orca.table(cache=True)
+def employment_relocation_rates():
+    df = pd.read_csv(os.path.join(misc.configs_dir(), "employment_relocation_rates.csv"))
+    df = df.set_index("zone_id")
+    return df
+
+
+@orca.table(cache=True)
+def employment_relocation_rates_adjusters():
+    df = pd.read_csv(os.path.join(misc.configs_dir(), "employment_relocation_rates_adjusters.csv"))
+    df = df.set_index("zone_id")
+    return df
+
+
+@orca.table(cache=True)
+def household_relocation_rates():
+    df = pd.read_csv(os.path.join(misc.configs_dir(), "household_relocation_rates.csv"))
+    return df
+
+
+@orca.table(cache=True)
+def renter_protections_relocation_rates():
+    df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "plan_strategies/renter_protections_relocation_rates.csv"))
+    return df
+
+
 # this specifies the relationships between tables
 orca.broadcast('buildings', 'residential_units', cast_index=True, onto_on='building_id')
 orca.broadcast('residential_units', 'households', cast_index=True, onto_on='unit_id')

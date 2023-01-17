@@ -45,20 +45,6 @@ def households_transition(households, household_controls, year, settings):
     return ret
 
 
-@orca.table(cache=True)
-def employment_relocation_rates():
-    df = pd.read_csv(os.path.join(misc.configs_dir(), "employment_relocation_rates.yaml"))
-    df = df.set_index("zone_id").stack().reset_index()
-    df.columns = ["zone_id", "empsix", "rate"]
-    return df
-
-
-@orca.table(cache=True)
-def household_relocation_rates():
-    df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "adjusters/household_relocation_rates.csv"))
-    return df
-
-
 # this is a list of parcel_ids which are to be treated as static
 @orca.injectable()
 def static_parcels(settings, parcels):
@@ -241,44 +227,53 @@ def proportional_elcm(jobs, households, buildings, parcels, year, run_number):
 
 
 @orca.step()
-def jobs_relocation(jobs, employment_relocation_rates, years_per_iter, settings, static_parcels, buildings):
+def jobs_relocation(jobs, employment_relocation_rates, run_setup, employment_relocation_rates_adjusters, years_per_iter, settings, 
+	                static_parcels, buildings):
 
     # get buildings that are on those parcels
     static_buildings = buildings.index[buildings.parcel_id.isin(static_parcels)]
 
-    df = pd.merge(jobs.to_frame(["zone_id", "empsix"]), employment_relocation_rates.local, on=["zone_id", "empsix"], how="left")
+    rates = employment_relocation_rates.local    
+    # update the relocation rates with the adjusters if adjusters are being used
+    if run_setup["employment_relocation_rates_adjusters"]:
+        rates.update(employment_relocation_rates_adjusters.to_frame())
 
+    rates = rates.stack().reset_index()
+    rates.columns = ["zone_id", "empsix", "rate"]
+
+    df = pd.merge(jobs.to_frame(["zone_id", "empsix"]), rates, on=["zone_id", "empsix"], how="left")
     df.index = jobs.index
 
-    # get the move rate for each job
-    rate = (df.rate * years_per_iter).clip(0, 1.0)
     # get random floats and move jobs if they're less than the rate
-    move = np.random.random(len(rate)) < rate
-
+    move = np.random.random(len(df.rate)) < df.rate
     # also don't move jobs that are on static parcels
     move &= ~jobs.building_id.isin(static_buildings)
 
     # get the index of the moving jobs
     index = jobs.index[move]
+    print("{} jobs are relocating".format(len(index)))
 
     # set jobs that are moving to a building_id of -1 (means unplaced)
     jobs.update_col_from_series("building_id", pd.Series(-1, index=index))
 
 
 @orca.step()
-def household_relocation(households, household_relocation_rates, settings, static_parcels, buildings):
+def household_relocation(households, household_relocation_rates, run_setup, renter_protections_relocation_rates, settings, static_parcels, buildings):
 
     # get buildings that are on those parcels
     static_buildings = buildings.index[buildings.parcel_id.isin(static_parcels)]
 
-    df = pd.merge(households.to_frame(["zone_id", "base_income_quartile", "tenure"]), household_relocation_rates.local,
-                  on=["zone_id", "base_income_quartile", "tenure"], how="left")
-
+    rates = household_relocation_rates.local
+    # update the relocation rates with the renter protections strategy if applicable
+    if run_setup["run_renter_protections_strategy"]:
+        rates = pd.concat([rates, renter_protections_relocation_rates.to_frame()]).drop_duplicates(subset=["zone_id", "base_income_quartile", "tenure"], keep="last")
+        rates = rates.reset_index(drop=True)
+    
+    df = pd.merge(households.to_frame(["zone_id", "base_income_quartile", "tenure"]), rates, on=["zone_id", "base_income_quartile", "tenure"], how="left")
     df.index = households.index
 
     # get random floats and move households if they're less than the rate
     move = np.random.random(len(df.rate)) < df.rate
-
     # also don't move households that are on static parcels
     move &= ~households.building_id.isin(static_buildings)
 

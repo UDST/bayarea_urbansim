@@ -32,18 +32,6 @@ aggregation_tables:
   - buildings
 
 
-# RELOCATION
-
-# household relocation rates split by rent / own
-relocation_rates:
-  tenure:
-    - 1
-    - 2
-  probability_of_relocating:
-    - 0.15
-    - 0.25
-
-
 # TRANSITION
 
 # inputs to the transition model for households
