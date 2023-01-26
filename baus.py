@@ -26,7 +26,6 @@ SLACK = MAPS = "URBANSIM_SLACK" in os.environ
 LOGS = True
 RANDOM_SEED = True
 INTERACT = False
-SCENARIO = None
 MODE = "simulation"
 S3 = False
 EVERY_NTH_YEAR = 5
@@ -38,14 +37,8 @@ NO_PROJECT = 611
 IN_YEAR, OUT_YEAR = 2010, 2050
 COMPARE_AGAINST_LAST_KNOWN_GOOD = False
 
-LAST_KNOWN_GOOD_RUNS = {
-    "0": 1057,
-    "1": 1058,
-    "2": 1059,
-    "3": 1060,
-    "4": 1059,
-    "5": 1059
-}
+LAST_KNOWN_GOOD_RUN = 182 
+
 
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 
@@ -61,9 +54,6 @@ parser.add_argument(
 
 parser.add_argument('-i', action='store_true', dest='interactive',
                     help='enter interactive mode after imports')
-
-parser.add_argument('-s', action='store', dest='scenario',
-                    help='specify which scenario to run')
 
 parser.add_argument('-k', action='store_true', dest='skip_base_year',
                     help='skip base year - used for debugging')
@@ -92,9 +82,6 @@ if options.interactive:
 if options.out_year:
     OUT_YEAR = options.out_year
 
-if options.scenario:
-    orca.add_injectable("scenario", options.scenario)
-
 SKIP_BASE_YEAR = options.skip_base_year
 
 if options.mode:
@@ -106,8 +93,6 @@ if options.random_seed:
 if options.noslack:
     SLACK = False
 
-SCENARIO = orca.get_injectable("scenario")
-
 if INTERACT:
     import code
     code.interact(local=locals())
@@ -116,9 +101,9 @@ if INTERACT:
 run_num = orca.get_injectable("run_number")
 
 if LOGS:
-    print('***The Standard stream is being written to /runs/run{0}.log***'
+    print('***The Standard stream is being written to run{0}.log***'
           .format(run_num))
-    sys.stdout = sys.stderr = open("runs/run%d.log" % run_num, 'w')
+    sys.stdout = sys.stderr = open(os.path.join(orca.get_injectable("outputs_dir"), "run%d.log") % run_num, 'w')
 
 if RANDOM_SEED:
     np.random.seed(12)
@@ -132,7 +117,7 @@ if MAPS:
     from baus.utils import ue_config, ue_files
 
 
-def get_simulation_models(SCENARIO):
+def get_simulation_models():
 
     # ual has a slightly different set of models - might be able to get rid
     # of the old version soon
@@ -174,11 +159,18 @@ def get_simulation_models(SCENARIO):
         "subsidized_office_developer_lump_sum_accts",
 
         "alt_feasibility",
+        "subsidized_residential_feasibility",
+        "subsidized_residential_developer_vmt",
+#        "subsidized_residential_feasibility",
+#        "subsidized_residential_developer_jobs_housing",
 
         "residential_developer",
         "developer_reprocess",
         "retail_developer",
+
         "office_developer",
+        "subsidized_office_developer_vmt",
+
         "accessory_units",
         "calculate_vmt_fees",
 
@@ -238,6 +230,10 @@ def get_simulation_models(SCENARIO):
         "parcel_summary",
         "building_summary",
         "diagnostic_output",
+
+        "calculate_vmt_fees",
+        "calculate_jobs_housing_fees",
+
         "geographic_summary",
         "travel_model_output",
         # "travel_model_2_output",
@@ -247,40 +243,135 @@ def get_simulation_models(SCENARIO):
 
     ]
 
-    # calculate VMT taxes
-    vmt_settings = \
-        orca.get_injectable("policy")["acct_settings"]["vmt_settings"]
-    if SCENARIO in vmt_settings["com_for_com_scenarios"] and \
-            SCENARIO not in vmt_settings["db_geography_scenarios"]:
-        models.insert(models.index("office_developer"),
-                      "subsidized_office_developer_vmt")
+    run_setup = orca.get_injectable("run_setup")
 
-    if SCENARIO in vmt_settings["com_for_res_scenarios"] or \
-            SCENARIO in vmt_settings["res_for_res_scenarios"]:
+    # sea level rise and sea level rise mitigation
+    if not run_setup["run_slr"]:
+        models.remove("slr_inundate")
+        models.remove("slr_remove_dev")
 
-        models.insert(models.index("diagnostic_output"),
-                      "calculate_vmt_fees")
-        models.insert(models.index("alt_feasibility"),
-                      "subsidized_residential_feasibility")
-        models.insert(models.index("alt_feasibility"),
-                      "subsidized_residential_developer_vmt")
+    # earthquake and earthquake mitigation
+    if not run_setup["run_eq"]:
+        models.remove("eq_code_buildings")
+        models.remove("earthquake_demolish")
 
-    # calculate jobs-housing fees
-    jobs_housing_settings = \
-        orca.get_injectable("policy")[
-            "acct_settings"]["jobs_housing_fee_settings"]
-    if SCENARIO in jobs_housing_settings["jobs_housing_com_for_res_scenarios"]:
-        models.insert(models.index("diagnostic_output"),
-                      "calculate_jobs_housing_fees")
-    #    models.insert(models.index("alt_feasibility"),
-    #                  "subsidized_residential_feasibility")
-    #    models.insert(models.index("alt_feasibility"),
-    #                  "subsidized_residential_developer_jobs_housing")
+    # housing preservation
+    if not run_setup["run_housing_preservation_strategy"]:
+        models.remove("preserve_affordable")
+
+    # office bonds
+    if not run_setup["run_office_bond_strategy"]:
+        models.remove("office_lump_sum_accounts")
+        models.remove("subsidized_office_developer_lump_sum_accts")
+
+    # VMT taxes
+    if not run_setup["run_vmt_fee_com_for_com_strategy"]:
+        models.remove("subsidized_office_developer_vmt")
+    if not run_setup["run_vmt_fee_com_for_res_strategy"] or run_setup["run_vmt_fee_res_for_res_strategy"]:
+        models.remove("calculate_vmt_fees")
+        models.remove("subsidized_residential_feasibility")
+        models.remove("subsidized_residential_developer_vmt")
+
+    # jobs-housing fees- subsidization needs further testing
+    if not run_setup["run_jobs_housing_fee_strategy"]:
+        models.remove("calculate_jobs_housing_fees")
+    #    models.remove["subsidized_residential_feasibility"]
+    #    models.remove["subsidized_residential_developer_jobs_housing"]
+
+    return models
+
+def get_baseyear_models():
+
+    models = [
+        "slr_inundate",
+        "slr_remove_dev",
+        "eq_code_buildings",
+        "earthquake_demolish",
+
+        "neighborhood_vars",   # local accessibility vars
+        "regional_vars",       # regional accessibility vars
+
+        "rsh_simulate",    # residential sales hedonic for units
+        "rrh_simulate",    # residential rental hedonic for units
+        "nrh_simulate",
+
+        # (based on higher of predicted price or rent)
+        "assign_tenure_to_new_units",
+
+        # uses conditional probabilities
+        "household_relocation",
+        "households_transition",
+        # update building/unit/hh correspondence
+        "reconcile_unplaced_households",
+        "jobs_transition",
+
+        # we first put Q1 households only into deed-restricted units, 
+        # then any additional unplaced Q1 households, Q2, Q3, and Q4 
+        # households are placed in either deed-restricted units or 
+        # market-rate units
+        "hlcm_owner_lowincome_simulate",
+        "hlcm_renter_lowincome_simulate",
+
+        # allocate owners to vacant owner-occupied units
+        "hlcm_owner_simulate",
+        # allocate renters to vacant rental units
+        "hlcm_renter_simulate",
+
+        # we have to run the hlcm above before this one - we first want
+        # to try and put unplaced households into their appropraite
+        # tenured units and then when that fails, force them to place
+        # using the code below.
+
+        # force placement of any unplaced households, in terms of
+        # rent/own, is a noop except in the final simulation year
+        # 09 11 2020 ET: enabled for all simulation years
+        "hlcm_owner_simulate_no_unplaced",
+        "hlcm_owner_lowincome_simulate_no_unplaced",
+        # this one crashes right no because there are no unplaced, so
+        # need to fix the crash in urbansim
+        # 09 11 2020 ET: appears to be working
+        "hlcm_renter_simulate_no_unplaced",
+        "hlcm_renter_lowincome_simulate_no_unplaced",
+
+        # update building/unit/hh correspondence
+        "reconcile_placed_households",
+
+        "elcm_simulate",
+
+        "price_vars",
+        # "scheduled_development_events",
+
+        "topsheet",
+        "simulation_validation",
+        "parcel_summary",
+        "building_summary",
+        "geographic_summary",
+        "travel_model_output",
+        # "travel_model_2_output",
+        "hazards_slr_summary",
+        "hazards_eq_summary",
+        "diagnostic_output",
+        "environment_config",
+        "slack_report"
+    ]
+
+    run_setup = orca.get_injectable("run_setup")
+
+    # sea level rise and sea level rise mitigation
+    if not run_setup["run_slr"]:
+        models.remove("slr_inundate")
+        models.remove("slr_remove_dev")
+
+    # earthquake and earthquake mitigation
+    if not run_setup["run_eq"]:
+        models.remove("eq_code_buildings")
+        models.remove("earthquake_demolish")
 
     return models
 
 
-def run_models(MODE, SCENARIO):
+
+def run_models(MODE):
 
     if MODE == "preprocessing":
 
@@ -303,86 +394,14 @@ def run_models(MODE, SCENARIO):
 
         # see above for docs on this
         if not SKIP_BASE_YEAR:
-            orca.run([
-
-                "slr_inundate",
-                "slr_remove_dev",
-                "eq_code_buildings",
-                "earthquake_demolish",
-
-                "neighborhood_vars",   # local accessibility vars
-                "regional_vars",       # regional accessibility vars
-
-                "rsh_simulate",    # residential sales hedonic for units
-                "rrh_simulate",    # residential rental hedonic for units
-                "nrh_simulate",
-
-                # (based on higher of predicted price or rent)
-                "assign_tenure_to_new_units",
-
-                # uses conditional probabilities
-                "household_relocation",
-                "households_transition",
-                # update building/unit/hh correspondence
-                "reconcile_unplaced_households",
-                "jobs_transition",
-
-                # we first put Q1 households only into deed-restricted units, 
-                # then any additional unplaced Q1 households, Q2, Q3, and Q4 
-                # households are placed in either deed-restricted units or 
-                # market-rate units
-                "hlcm_owner_lowincome_simulate",
-                "hlcm_renter_lowincome_simulate",
-
-                # allocate owners to vacant owner-occupied units
-                "hlcm_owner_simulate",
-                # allocate renters to vacant rental units
-                "hlcm_renter_simulate",
-
-                # we have to run the hlcm above before this one - we first want
-                # to try and put unplaced households into their appropraite
-                # tenured units and then when that fails, force them to place
-                # using the code below.
-
-                # force placement of any unplaced households, in terms of
-                # rent/own, is a noop except in the final simulation year
-                # 09 11 2020 ET: enabled for all simulation years
-                "hlcm_owner_simulate_no_unplaced",
-                "hlcm_owner_lowincome_simulate_no_unplaced",
-                # this one crashes right no because there are no unplaced, so
-                # need to fix the crash in urbansim
-                # 09 11 2020 ET: appears to be working
-                "hlcm_renter_simulate_no_unplaced",
-                "hlcm_renter_lowincome_simulate_no_unplaced",
-
-                # update building/unit/hh correspondence
-                "reconcile_placed_households",
-
-                "elcm_simulate",
-
-                "price_vars",
-                # "scheduled_development_events",
-
-                "topsheet",
-                "simulation_validation",
-                "parcel_summary",
-                "building_summary",
-                "geographic_summary",
-                "travel_model_output",
-                # "travel_model_2_output",
-                "hazards_slr_summary",
-                "hazards_eq_summary",
-                "diagnostic_output",
-                "config",
-                "slack_report"
-
-            ], iter_vars=[IN_YEAR])
+            baseyear_models = get_baseyear_models()
+            orca.run(baseyear_models, iter_vars=[IN_YEAR])
 
         # start the simulation in the next round - only the models above run
         # for the IN_YEAR
         years_to_run = range(IN_YEAR+EVERY_NTH_YEAR, OUT_YEAR+1,
                              EVERY_NTH_YEAR)
-        models = get_simulation_models(SCENARIO)
+        models = get_simulation_models()
         orca.run(models, iter_vars=years_to_run)
 
     elif MODE == "estimation":
@@ -443,19 +462,18 @@ def run_models(MODE, SCENARIO):
 print("Started", time.ctime())
 print("Current Branch : ", BRANCH.rstrip())
 print("Current Commit : ", CURRENT_COMMIT.rstrip())
-print("Current Scenario : ", orca.get_injectable('scenario').rstrip())
 print("Random Seed : ", RANDOM_SEED)
 
 
 if SLACK and MODE == "simulation":
     slack.chat.post_message(
         '#urbansim_sim_update',
-        'Starting simulation %d on host %s (scenario: %s)' %
-        (run_num, host, SCENARIO), as_user=True)
+        'Starting simulation %d on host ' %
+        (run_num, host), as_user=True)
 
 try:
 
-    run_models(MODE, SCENARIO)
+    run_models(MODE)
 
 except Exception as e:
     print(traceback.print_exc())
@@ -471,7 +489,7 @@ except Exception as e:
 print("Finished", time.ctime())
 
 if MAPS and MODE == "simulation" and 'travel_model_output' \
-   in get_simulation_models(SCENARIO):
+   in get_simulation_models():
     files_msg1, files_msg2 = ue_files(run_num)
     config_resp = ue_config(run_num, host)
 
@@ -501,21 +519,19 @@ if SLACK and MODE == "simulation":
 summary = ""
 if MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
     # compute and write the difference report at the superdistrict level
-    prev_run = LAST_KNOWN_GOOD_RUNS[SCENARIO]
+    prev_run = LAST_KNOWN_GOOD_RUN
     # fetch the previous run off of the internet for comparison - the "last
     # known good run" should always be available on EC2
-    df1 = pd.read_csv(("http://urbanforecast.com/runs/run%d_superdistrict" +
-                       "_summaries_2050.csv") % prev_run)
+    df1 = pd.read_csv(("http://urbanforecast.com/runs/run%d_superdistrict" + "_summaries_2050.csv") % prev_run)
     df1 = df1.set_index(df1.columns[0]).sort_index()
 
-    df2 = pd.read_csv("runs/run%d_superdistrict_summaries_2050.csv" % run_num)
+    df2 = pd.read_csv((orca.get_injectable("outputs_dir")+"/run%d_superdistrict_summaries_2050.csv") % run_num)
     df2 = df2.set_index(df2.columns[0]).sort_index()
 
-    supnames = \
-        pd.read_csv("data/superdistricts.csv", index_col="number").name
+    supnames = pd.read_csv((orca.get_injectable("inputs_dir") + "/superdistricts.csv"), index_col="number").name
 
     summary = compare_summary(df1, df2, supnames)
-    with open("runs/run%d_difference_report.log" % run_num, "w") as f:
+    with open((orca.get_injectable("inputs_dir") + "/run%d_difference_report.log") % run_num, "w") as f:
         f.write(summary)
 
 
@@ -523,19 +539,12 @@ if SLACK and MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
 
     if len(summary.strip()) != 0:
         sum_lines = len(summary.strip().split("\n"))
-        slack.chat.post_message(
-            '#urbansim_sim_update',
-            ('Difference report is available at ' +
-             'http://urbanforecast.com/runs/run%d_difference_report.log ' +
-             '- %d line(s)') % (run_num, sum_lines),
-            as_user=True)
+        slack.chat.post_message('#urbansim_sim_update', ('Difference report is available at ' +
+                                'http://urbanforecast.com/run/run%d_difference_report.log ' +  '- %d line(s)') 
+                                % (run_num, sum_lines), as_user=True)
     else:
-        slack.chat.post_message(
-            '#urbansim_sim_update',
-            "No differences with reference run.",
-            as_user=True)
+        slack.chat.post_message('#urbansim_sim_update', "No differences with reference run.", as_user=True)
 
 if S3:
-    os.system('ls runs/run%d_* ' % run_num +
-              '| xargs -I file aws s3 cp file ' +
+    os.system('ls ' + orca.get_injectable("outputs_dir") + '/run%d_* ' % run_num + '| xargs -I file aws s3 cp file ' + 
               's3://bayarea-urbansim-results')

@@ -368,28 +368,34 @@ def vmt_nonres_cat(parcels, vmt_fee_categories):
 
 # residential fees
 @orca.column('parcels', cache=True)
-def vmt_res_fees(parcels, policy):
+def vmt_res_fees(parcels, policy, run_setup):
     vmt_settings = policy["acct_settings"]["vmt_settings"]
-    return parcels.vmt_res_cat.map(vmt_settings["res_for_res_fee_amounts"])
+    res_fees = parcels.vmt_res_cat.map(vmt_settings["res_for_res_fee_amounts"]) if run_setup["run_vmt_fee_res_for_res_strategy"] else 0
+
+    return res_fees
 
 
 # commercial fees
 @orca.column('parcels', cache=True)
-def vmt_com_fees(parcels, policy):
+def vmt_com_fees(parcels, policy, run_setup):
     vmt_settings = policy["acct_settings"]["vmt_settings"]
-    return parcels.vmt_nonres_cat.map(
-        vmt_settings["com_for_res_fee_amounts"]) + \
-        parcels.vmt_nonres_cat.map(vmt_settings["com_for_com_fee_amounts"])
+
+    com_for_res_fees = parcels.vmt_nonres_cat.map(vmt_settings["com_for_res_fee_amounts"]) if \
+        run_setup["run_vmt_fee_com_for_res_strategy"] else 0
+    com_for_com_fees = parcels.vmt_nonres_cat.map(vmt_settings["com_for_com_fee_amounts"]) if \
+        run_setup ["run_vmt_fee_com_for_com_strategy"] else 0
+    com_fees = com_for_res_fees + com_for_com_fees
+
+    return com_fees
 
 
 # compute the fees per unit for each parcel
 # (since feees are specified spatially)
 @orca.column('parcels', cache=True)
-def fees_per_unit(parcels, policy, scenario):
+def fees_per_unit(parcels, policy, run_setup):
     s = pd.Series(0, index=parcels.index)
 
-    vmt_settings = policy["acct_settings"]["vmt_settings"]
-    if scenario in vmt_settings["res_for_res_scenarios"]:
+    if run_setup["run_vmt_fee_res_for_res_strategy"]:
         s += parcels.vmt_res_fees
 
     return s
@@ -397,40 +403,23 @@ def fees_per_unit(parcels, policy, scenario):
 
 # since this is by sqft this implies commercial
 @orca.column('parcels', cache=True)
-def fees_per_sqft(parcels, policy, scenario):
+def fees_per_sqft(parcels, policy, run_setup):
     s = pd.Series(0, index=parcels.index)
 
-    vmt_settings = policy["acct_settings"]["vmt_settings"]
-    if scenario in vmt_settings["com_for_com_scenarios"] or\
-            scenario in vmt_settings["com_for_res_scenarios"]:
+    if run_setup["run_vmt_fee_com_for_com_strategy"] or run_setup["run_vmt_fee_com_for_res_strategy"]:
         s += parcels.vmt_com_fees
 
     return s
 
 
 @orca.column('parcels', cache=True)
-def pda_pba40(parcels, parcels_geography):
-    return parcels_geography.pda_id_pba40.reindex(parcels.index)
-
-
-@orca.column('parcels', cache=True)
-def pda_pba50(parcels, parcels_geography):
-    return parcels_geography.pda_id_pba50.reindex(parcels.index)
-
-
-@orca.column('parcels', cache=True)
-def trich_id(parcels, parcels_geography):
-    return parcels_geography.trich_id.reindex(parcels.index)
+def pda_id(parcels, parcels_geography):
+    return parcels_geography.pda_id.reindex(parcels.index)
 
 
 @orca.column('parcels', cache=True)
 def cat_id(parcels, parcels_geography):
     return parcels_geography.cat_id.reindex(parcels.index)
-
-
-@orca.column('parcels', cache=True)
-def juris_trich(parcels, parcels_geography):
-    return parcels_geography.juris_trich.reindex(parcels.index)
 
 
 @orca.column('parcels', cache=True)
@@ -572,8 +561,8 @@ def parcel_is_allowed(form):
 
     # we have zoning by building type but want
     # to know if specific forms are allowed
-    zoning_baseline = orca.get_table("zoning_baseline")
-    zoning_scenario = orca.get_table("zoning_scenario")
+    zoning_existing = orca.get_table("zoning_existing")
+    zoning_strategy = orca.get_table("zoning_strategy")
     parcels = orca.get_table("parcels")
 
     allowed = pd.Series(0, index=parcels.index)
@@ -581,12 +570,12 @@ def parcel_is_allowed(form):
     # first, it's allowed if any building type that matches
     # the form is allowed
     for typ in form_to_btype[form]:
-        allowed |= zoning_baseline[typ]
+        allowed |= zoning_existing[typ]
 
-    # then we override it with any values that are specified in the scenarios
+    # then we override it with any values that are specified in the strategies
     # i.e. they come from the add_bldg and drop_bldg columns
     for typ in form_to_btype[form]:
-        allowed = zoning_scenario[typ].combine_first(allowed)
+        allowed = zoning_strategy[typ].combine_first(allowed)
 
     # notice there is some dependence on ordering here.  basically values take
     # precedent that occur LAST in the form_to_btype mapping
@@ -680,9 +669,9 @@ def total_non_residential_sqft(parcels, buildings):
 
 
 @orca.column('parcels')
-def nodev(zoning_baseline, parcels, static_parcels):
+def nodev(zoning_existing, parcels, static_parcels):
     # nodev from zoning
-    s1 = zoning_baseline.nodev.reindex(parcels.index).\
+    s1 = zoning_existing.nodev.reindex(parcels.index).\
         fillna(0).astype('bool')
     # nodev from static parcels - this marks nodev those parcels which are
     # marked as "static" - any parcels which should not be considered by the
@@ -708,15 +697,14 @@ def built_far(parcels):
 
 # actual columns start here
 @orca.column('parcels')
-def max_far(parcels_zoning_calculations, parcels, scenario, settings):
+def max_far(parcels_zoning_calculations, parcels, settings):
     # first we combine the zoning columns
     s = parcels_zoning_calculations.effective_max_far * ~parcels.nodev
 
-    if scenario != "1":
-        # we had trouble with the zoning outside of the footprint
-        # make sure we have rural zoning outside of the footprint
-        s2 = parcels.urban_footprint.map({0: 0, 1: np.nan})
-        s = pd.concat([s, s2], axis=1).min(axis=1)
+    # we had trouble with the zoning outside of the footprint
+    # make sure we have rural zoning outside of the footprint
+    s2 = parcels.urban_footprint.map({0: 0, 1: np.nan})
+    s = pd.concat([s, s2], axis=1).min(axis=1)
 
     if settings["dont_build_most_dense_building"]:
         # in this case we shrink the zoning such that we don't built the
@@ -740,15 +728,14 @@ def built_dua(parcels):
 
 
 @orca.column('parcels')
-def max_dua(parcels_zoning_calculations, parcels, scenario, settings):
+def max_dua(parcels_zoning_calculations, parcels, settings):
     # first we combine the zoning columns
     s = parcels_zoning_calculations.effective_max_dua * ~parcels.nodev
 
-    if scenario != ["1"]:
-        # we had trouble with the zoning outside of the footprint
-        # make sure we have rural zoning outside of the footprint
-        s2 = parcels.urban_footprint.map({0: .01, 1: np.nan})
-        s = pd.concat([s, s2], axis=1).min(axis=1)
+    # we had trouble with the zoning outside of the footprint
+    # make sure we have rural zoning outside of the footprint
+    s2 = parcels.urban_footprint.map({0: .01, 1: np.nan})
+    s = pd.concat([s, s2], axis=1).min(axis=1)
 
     if settings["dont_build_most_dense_building"]:
         # in this case we shrink the zoning such that we don't built the
@@ -830,10 +817,9 @@ def cost_shifters(parcels, settings):
 
 
 @orca.column('parcels', cache=True)
-def price_shifters(parcels, settings, scenario, policy):
-    if scenario not in policy["geographies_db_enable"]:
-        return parcels.pda_pba40.map(
-                    settings["pda_price_shifters"]).fillna(1.0)
+def price_shifters(parcels, settings, policy):
+    if settings["pda_price_shifters"] is not None:
+        return parcels.pda_id.map(settings["pda_price_shifters"]).fillna(1.0)
     else:
         return pd.Series(1.0, parcels.index)
 
@@ -973,35 +959,6 @@ def zone_combo_logsum(zones):
     return combo
 
 
-# This is an all computed table which takes calculations from the below and
-# puts it in a computed dataframe.  The catch here is that UrbanSim only
-# needs one scenario's zoning at a time.  This dataframe gives you the
-# zoning for all 4 scenarios at the same time for comparison sake.  Therefore
-# it switches scenarios, clears the cache and recomputes the columns - this
-# is not really normal UrbanSim operation but it immensely useful for debugging
-@orca.table()
-def parcels_zoning_by_scenario(parcels, parcels_zoning_calculations,
-                               zoning_baseline):
-
-    df = pd.DataFrame(index=parcels.index)
-    df["baseline_dua"] = zoning_baseline.max_dua
-    df["baseline_far"] = zoning_baseline.max_far
-    df["baseline_height"] = zoning_baseline.max_height
-    df["zoning_name"] = zoning_baseline["name"]
-    df["zoning_source"] = zoning_baseline["tablename"]
-
-    for scenario in [str(i) for i in range(4)]:
-        orca.clear_cache()
-        orca.add_injectable("scenario", scenario)
-        z = orca.get_table("parcels_zoning_calculations")
-        df["max_dua_%s" % scenario] = z.effective_max_dua
-        df["max_far_%s" % scenario] = z.effective_max_far
-        df["du_underbuild_%s" % scenario] = z.zoned_du_underbuild
-        df["non_res_cat_%s" % scenario] = z.non_res_categories
-
-    return df
-
-
 @orca.column('zones')
 def ave_unit_sqft(buildings):
     return buildings.sqft_per_unit.groupby(buildings.zone_id).quantile(.6)
@@ -1028,42 +985,31 @@ def zoned_du_vacant(parcels, parcels_zoning_calculations):
 
 
 @orca.column('parcels_zoning_calculations', cache=True)
-def effective_max_dua(zoning_baseline, parcels, scenario):
+def effective_max_dua(zoning_existing, parcels):
 
-    max_dua_from_far = zoning_baseline.max_far * 43560 / GROSS_AVE_UNIT_SIZE
+    max_dua_from_far = zoning_existing.max_far * 43560 / GROSS_AVE_UNIT_SIZE
 
-    max_far_from_height = (zoning_baseline.max_height / HEIGHT_PER_STORY) * \
-        PARCEL_USE_EFFICIENCY
+    max_far_from_height = (zoning_existing.max_height / HEIGHT_PER_STORY) * PARCEL_USE_EFFICIENCY
 
     max_dua_from_height = max_far_from_height * 43560 / GROSS_AVE_UNIT_SIZE
 
-    s = pd.concat([
-        zoning_baseline.max_dua,
-        max_dua_from_far,
-        max_dua_from_height
-    ], axis=1).min(axis=1)
-
-    if scenario == "baseline":
-        return s
+    s = pd.concat([zoning_existing.max_dua, max_dua_from_far, max_dua_from_height], axis=1).min(axis=1)
 
     # take the max dua IFF the upzone value is greater than the current value
     # i.e. don't let the upzoning operation accidentally downzone
 
-    scenario_max_dua = orca.get_table("zoning_scenario").dua_up
+    strategy_max_dua = orca.get_table("zoning_strategy").dua_up
 
-    s = pd.concat([
-        s,
-        scenario_max_dua
-    ], axis=1).max(axis=1)
+    s = pd.concat([s, strategy_max_dua], axis=1).max(axis=1)
 
     # take the min dua IFF the upzone value is less than the current value
     # i.e. don't let the downzoning operation accidentally upzone
 
-    scenario_min_dua = orca.get_table("zoning_scenario").dua_down
+    strategy_min_dua = orca.get_table("zoning_strategy").dua_down
 
     s = pd.concat([
         s,
-        scenario_min_dua
+        strategy_min_dua
     ], axis=1).min(axis=1)
 
     s3 = parcel_is_allowed('residential')
@@ -1072,38 +1018,25 @@ def effective_max_dua(zoning_baseline, parcels, scenario):
 
 
 @orca.column('parcels_zoning_calculations', cache=True)
-def effective_max_far(zoning_baseline, parcels, scenario):
+def effective_max_far(zoning_existing, parcels):
 
-    max_far_from_height = (zoning_baseline.max_height / HEIGHT_PER_STORY) * \
-        PARCEL_USE_EFFICIENCY
+    max_far_from_height = (zoning_existing.max_height / HEIGHT_PER_STORY) * PARCEL_USE_EFFICIENCY
 
-    s = pd.concat([
-        zoning_baseline.max_far,
-        max_far_from_height
-    ], axis=1).min(axis=1)
-
-    if scenario == "baseline":
-        return s
+    s = pd.concat([zoning_existing.max_far, max_far_from_height], axis=1).min(axis=1)
 
     # take the max far IFF the upzone value is greater than the current value
     # i.e. don't let the upzoning operation accidentally downzone
 
-    scenario_max_far = orca.get_table("zoning_scenario").far_up
+    strategy_max_far = orca.get_table("zoning_strategy").far_up
 
-    s = pd.concat([
-        s,
-        scenario_max_far
-    ], axis=1).max(axis=1)
+    s = pd.concat([s, strategy_max_far], axis=1).max(axis=1)
 
     # take the max far IFF the downzone value is less than the current value
     # i.e. don't let the downzoning operation accidentally upzone
 
-    scenario_min_far = orca.get_table("zoning_scenario").far_down
+    strategy_min_far = orca.get_table("zoning_strategy").far_down
 
-    s = pd.concat([
-        s,
-        scenario_min_far
-    ], axis=1).min(axis=1)
+    s = pd.concat([s, strategy_min_far], axis=1).min(axis=1)
 
     return s.reindex(parcels.index).fillna(0).astype('float')
 

@@ -21,13 +21,13 @@ from baus.utils import \
 
 
 @orca.step()
-def elcm_simulate(jobs, buildings, aggregations, elcm_config):
+def elcm_simulate(jobs, buildings, aggregations):
     """
     testing docstring documentation for automated documentation creation
     """
     buildings.local["non_residential_rent"] = \
         buildings.local.non_residential_rent.fillna(0)
-    return utils.lcm_simulate(elcm_config, jobs, buildings, aggregations,
+    return utils.lcm_simulate("elcm.yaml", jobs, buildings, aggregations,
                               "building_id", "job_spaces",
                               "vacant_job_spaces", cast=True)
 
@@ -48,42 +48,15 @@ def households_transition(households, household_controls, year, settings):
 
 @orca.table(cache=True)
 def employment_relocation_rates():
-    df = pd.read_csv(os.path.join("data", "employment_relocation_rates.csv"))
+    df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "employment_relocation_rates.csv"))
     df = df.set_index("zone_id").stack().reset_index()
     df.columns = ["zone_id", "empsix", "rate"]
     return df
 
 
-# this for future round2
-# also includes draft blueprint
 @orca.table(cache=True)
-def household_relocation_rates(scenario, policy):
-    if scenario in policy['futures_scenarios']:
-        if scenario in policy['reloc_fr2_enable']:
-            df = pd.read_csv(os.path.join("data",
-                             "household_relocation_rates_fr2.csv"))
-            orca.add_injectable("hh_reloc", 'activated')
-            print("File used is: household_relocation_rates_fr2.csv")
-        else:
-            df = pd.read_csv(os.path.join("data",
-                             "household_relocation_rates_fr_base.csv"))
-            orca.add_injectable("hh_reloc", 'not activated')
-            print("File used is: household_relocation_rates_fr_base.csv")
-    elif scenario in policy['reloc_db_enable']:
-        df = pd.read_csv(os.path.join("data",
-                         "household_relocation_rates_db_var.csv"))
-        orca.add_injectable("hh_reloc", 'activated')
-        print("File used is: household_relocation_rates_db_var.csv")
-    elif scenario in policy['reloc_fb_enable']:
-        df = pd.read_csv(os.path.join("data",
-                         "household_relocation_rates_fb.csv"))
-        orca.add_injectable("hh_reloc", 'activated')
-        print("File used is: household_relocation_rates_fb.csv")
-    else:
-        df = pd.read_csv(os.path.join("data",
-                         "household_relocation_rates_db_base.csv"))
-        orca.add_injectable("hh_reloc", 'not activated')
-        print("File used is: household_relocation_rates_db_base.csv")
+def household_relocation_rates():
+    df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "household_relocation_rates.csv"))
     return df
 
 
@@ -169,19 +142,16 @@ def _proportional_jobs_model(
 
 
 @orca.step()
-def accessory_units(year, buildings, parcels, scenario, policy):
-    if scenario in policy["adus_bp_enable"]:
-        add_units = pd.read_csv("data/accessory_units_bp.csv",
-                                index_col="juris")[str(year)]
+def accessory_units(run_setup, year, buildings, parcels, policy):
+    if run_setup["run_adu_strategy"]:
+        add_units = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "accessory_units_policy.csv"), index_col="juris")[str(year)]
     else:
-        add_units = pd.read_csv("data/accessory_units.csv",
-                                index_col="juris")[str(year)]
+        add_units = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "accessory_units.csv"), index_col="juris")[str(year)]
     buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
     res_buildings = buildings_juris[buildings.general_type == "Residential"]
     add_buildings = groupby_random_choice(res_buildings, add_units)
     add_buildings = pd.Series(add_buildings.index).value_counts()
-    buildings.local.loc[add_buildings.index, "residential_units"] += \
-        add_buildings.values
+    buildings.local.loc[add_buildings.index, "residential_units"] += add_buildings.values
 
 
 @orca.step()
@@ -189,7 +159,7 @@ def proportional_elcm(jobs, households, buildings, parcels,
                       year, run_number):
 
     juris_assumptions_df = pd.read_csv(os.path.join(
-        "data",
+        orca.get_injectable("inputs_dir"),
         "juris_assumptions.csv"
     ), index_col="juris")
 
@@ -245,7 +215,7 @@ def proportional_elcm(jobs, households, buildings, parcels,
 
     # first read the file from disk - it's small so no table source
     taz_assumptions_df = pd.read_csv(os.path.join(
-        "data",
+        orca.get_injectable("inputs_dir"),
         "taz_growth_rates_gov_ed.csv"
     ), index_col="Taz")
 
@@ -373,11 +343,8 @@ def household_relocation(households, household_relocation_rates,
 # demolish in the csv file - this also allows building multiple buildings and
 # just adding capacity on an existing parcel, by adding one building at a time
 @orca.step()
-def scheduled_development_events(buildings, development_projects,
-                                 demolish_events, summary, year, parcels,
-                                 mapping, years_per_iter, parcels_geography,
-                                 building_sqft_per_job, vmt_fee_categories,
-                                 static_parcels, base_year, scenario):
+def scheduled_development_events(buildings, development_projects, demolish_events, summary, year, parcels, mapping, years_per_iter, 
+                                 parcels_geography, building_sqft_per_job, vmt_fee_categories, static_parcels, base_year):
     # first demolish
     # 6/3/20: current approach is to grab projects from the simulation year
     # and previous four years, however the base year is treated differently,
@@ -385,21 +352,15 @@ def scheduled_development_events(buildings, development_projects,
     # this should be improved in the future so that the base year
     # also runs SDEM, eg 2015 pulls 2015-2014, while 2010 pulls 2010 projects
     if year == (base_year + years_per_iter):
-        demolish = demolish_events.to_frame().\
-            query("%d <= year_built <= %d" % (year - years_per_iter, year))
+        demolish = demolish_events.to_frame().query("%d <= year_built <= %d" % (year - years_per_iter, year))
     else:
-        demolish = demolish_events.to_frame().\
-            query("%d < year_built <= %d" % (year - years_per_iter, year))
+        demolish = demolish_events.to_frame().query("%d < year_built <= %d" % (year - years_per_iter, year))
     print("Demolishing/building %d buildings" % len(demolish))
+
     l1 = len(buildings)
-    buildings = utils._remove_developed_buildings(
-        buildings.to_frame(buildings.local_columns),
-        demolish,
-        unplace_agents=["households", "jobs"])
-    orca.add_injectable('static_parcels',
-                        np.append(static_parcels,
-                                  demolish.loc[demolish.action == 'build',
-                                               'parcel_id']))
+    buildings = utils._remove_developed_buildings(buildings.to_frame(buildings.local_columns), demolish,
+                                                  unplace_agents=["households", "jobs"])
+    orca.add_injectable('static_parcels', np.append(static_parcels, demolish.loc[demolish.action == 'build', 'parcel_id']))
     orca.add_table("buildings", buildings)
     buildings = orca.get_table("buildings")
     print("Demolished %d buildings" % (l1 - len(buildings)))
@@ -412,67 +373,36 @@ def scheduled_development_events(buildings, development_projects,
     # this should be improved in the future so that the base year
     # also runs SDEM, eg 2015 pulls 2015-2014, while 2010 pulls 2010 projects
     if year == (base_year + years_per_iter):
-        dps = development_projects.to_frame().\
-            query("%d <= year_built <= %d" % (year - years_per_iter, year))
+        dps = development_projects.to_frame().query("%d <= year_built <= %d" % (year - years_per_iter, year))
     else:
-        dps = development_projects.to_frame().\
-            query("%d < year_built <= %d" % (year - years_per_iter, year))
+        dps = development_projects.to_frame().query("%d < year_built <= %d" % (year - years_per_iter, year))
 
     if len(dps) == 0:
         return
 
-    new_buildings = utils.scheduled_development_events(
-        buildings, dps,
-        remove_developed_buildings=False,
-        unplace_agents=['households', 'jobs'])
-    new_buildings["form"] = new_buildings.building_type.map(
-        mapping['building_type_map']).str.lower()
-    new_buildings["job_spaces"] = new_buildings.non_residential_sqft / \
-        new_buildings.building_type.fillna("OF").map(building_sqft_per_job)
-    new_buildings["job_spaces"] = new_buildings.job_spaces.\
-        fillna(0).astype('int')
+    new_buildings = utils.scheduled_development_events(buildings, dps, remove_developed_buildings=False,
+                                                       unplace_agents=['households', 'jobs'])
+    new_buildings["form"] = new_buildings.building_type.map(mapping['building_type_map']).str.lower()
+    new_buildings["job_spaces"] = new_buildings.non_residential_sqft / new_buildings.building_type.fillna("OF").map(building_sqft_per_job)
+    new_buildings["job_spaces"] = new_buildings.job_spaces.fillna(0).astype('int')
     new_buildings["geom_id"] = parcel_id_to_geom_id(new_buildings.parcel_id)
     new_buildings["SDEM"] = True
     new_buildings["subsidized"] = False
 
-    new_buildings["zone_id"] = misc.reindex(
-        parcels.zone_id, new_buildings.parcel_id)
-    new_buildings["vmt_res_cat"] = misc.reindex(
-        vmt_fee_categories.res_cat, new_buildings.zone_id)
-    new_buildings["vmt_nonres_cat"] = misc.reindex(
-        vmt_fee_categories.nonres_cat, new_buildings.zone_id)
+    new_buildings["zone_id"] = misc.reindex(parcels.zone_id, new_buildings.parcel_id)
+    new_buildings["vmt_res_cat"] = misc.reindex(vmt_fee_categories.res_cat, new_buildings.zone_id)
+    new_buildings["vmt_nonres_cat"] = misc.reindex(vmt_fee_categories.nonres_cat, new_buildings.zone_id)
     del new_buildings["zone_id"]
 
-    # add PBA40 geographies
-    # if scenario not in ["20", "21", "22", "23", "24", "25", "26", "27", "28", "29"]:
-    new_buildings["pda_pba40"] = parcels_geography.pda_id_pba40.loc[
-        new_buildings.parcel_id].values
-
-    # add Horizon geographies
-    # if scenario not in ["20", "21", "22", "23", "24", "25", "26", "27", "28", "29"]:
-    new_buildings["juris_trich"] = parcels_geography.juris_trich.loc[
-        new_buildings.parcel_id].values
-
-    # add Draft Blueprint, Final Blueprint, EIR geographies
-    # if scenario in ["20", "21", "22", "23", "24", "25", "26", "27", "28", "29"]:
-    new_buildings["pda_pba50"] = parcels_geography.pda_id_pba50.loc[
-        new_buildings.parcel_id].values
-    new_buildings["tra_id"] = parcels_geography.tra_id.loc[
-        new_buildings.parcel_id].values
-    new_buildings["ppa_id"] = parcels_geography.ppa_id.loc[
-        new_buildings.parcel_id].values
-    new_buildings["sesit_id"] = parcels_geography.sesit_id.loc[
-        new_buildings.parcel_id].values
-    new_buildings["coc_id"] = parcels_geography.coc_id.loc[
-        new_buildings.parcel_id].values
-    new_buildings["juris_tra"] = parcels_geography.juris_tra.loc[
-        new_buildings.parcel_id].values
-    new_buildings["juris_ppa"] = parcels_geography.juris_ppa.loc[
-        new_buildings.parcel_id].values
-    new_buildings["juris_sesit"] = parcels_geography.juris_sesit.loc[
-        new_buildings.parcel_id].values
-    new_buildings["juris_coc"] = parcels_geography.juris_coc.loc[
-        new_buildings.parcel_id].values
+    new_buildings["pda_id"] = parcels_geography.pda_id.loc[new_buildings.parcel_id].values
+    new_buildings["tra_id"] = parcels_geography.tra_id.loc[new_buildings.parcel_id].values
+    new_buildings["ppa_id"] = parcels_geography.ppa_id.loc[new_buildings.parcel_id].values
+    new_buildings["sesit_id"] = parcels_geography.sesit_id.loc[new_buildings.parcel_id].values
+    new_buildings["coc_id"] = parcels_geography.coc_id.loc[new_buildings.parcel_id].values
+    new_buildings["juris_tra"] = parcels_geography.juris_tra.loc[new_buildings.parcel_id].values
+    new_buildings["juris_ppa"] = parcels_geography.juris_ppa.loc[new_buildings.parcel_id].values
+    new_buildings["juris_sesit"] = parcels_geography.juris_sesit.loc[new_buildings.parcel_id].values
+    new_buildings["juris_coc"] = parcels_geography.juris_coc.loc[new_buildings.parcel_id].values
 
     summary.add_parcel_output(new_buildings)
 
@@ -793,7 +723,7 @@ def retail_developer(jobs, buildings, parcels, nodes, feasibility,
 
 @orca.step()
 def office_developer(feasibility, jobs, buildings, parcels, year,
-                     settings, summary, form_to_btype_func, scenario,
+                     settings, summary, form_to_btype_func,
                      add_extra_columns_func, parcels_geography,
                      limits_settings):
 
@@ -1038,7 +968,7 @@ def static_parcel_proportional_job_allocation(static_parcels):
 
 
 def make_network(name, weight_col, max_distance):
-    st = pd.HDFStore(os.path.join(misc.data_dir(), name), "r")
+    st = pd.HDFStore(os.path.join(orca.get_injectable("inputs_dir"), name), "r")
     nodes, edges = st.nodes, st.edges
     net = pdna.Network(nodes["x"], nodes["y"], edges["from"], edges["to"],
                        edges[[weight_col]])
@@ -1086,7 +1016,7 @@ def local_pois(settings):
 
     cols = {}
 
-    locations = pd.read_csv(os.path.join(misc.data_dir(), 'bart_stations.csv'))
+    locations = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 'bart_stations.csv'))
     n.set_pois("tmp", locations.lng, locations.lat)
     cols["bartdist"] = n.nearest_pois(3000, "tmp", num_pois=1)[1]
 
@@ -1116,7 +1046,7 @@ def regional_vars(net):
     nodes = networks.from_yaml(net["drive"], "regional_vars.yaml")
     nodes = nodes.fillna(0)
 
-    nodes2 = pd.read_csv('data/regional_poi_distances.csv',
+    nodes2 = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "regional_poi_distances.csv"),
                          index_col="tmnode_id")
     nodes = pd.concat([nodes, nodes2], axis=1)
 

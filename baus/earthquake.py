@@ -16,15 +16,12 @@ import itertools
 # earthquake model removes further buildings temporarily
 
 @orca.step()
-def eq_code_buildings(buildings, year, scenario, hazards):
-
-    if scenario not in hazards["eq_scenarios"]["enable_in"]:
-        return
+def eq_code_buildings(buildings, year):
 
     if year == 2035:
         # tags buildings that exist in 2035 with a fragility coefficient
         # keeping in-model adds run time, but is important given developer
-        # model stochastisitcy, that will change the building stock in 2035
+        # model stochastisitcy that will change the building stock in 2035
         # this also allows us to change the building codes when retrofitting
         # policies are applied, thus changing fragility coefficients
         buildings = buildings.to_frame()
@@ -249,16 +246,13 @@ def eq_code_buildings(buildings, year, scenario, hazards):
 
 
 @orca.step()
-def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
-                        households, jobs, residential_units, year, scenario,
-                        hazards):
-
-    if scenario not in hazards["eq_scenarios"]["enable_in"]:
-        return
+def earthquake_demolish(run_setup, parcels, buildings,
+                        households, jobs, residential_units, year):
 
     if year == 2035:
         # assign each parcel to a census tract using the lookup table
         # created with scripts/parcel_tract_assignment.py
+        parcels_tract = orca.get_table("parcels_tract")
         census_tract = pd.Series(parcels_tract['census_tract'],
                                  parcels_tract.index)
         print("Number of parcels with census tracts is: %d" %
@@ -280,7 +274,7 @@ def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
         print("Number of census tract groups is: %d" % len(tract_parcels_grp))
 
         # for the parcels in each tract, destroy X% of parcels in that tract
-        tracts_earthquake = tracts_earthquake.to_frame()
+        tracts_earthquake = orca.get_table("tracts_earthquake").to_frame()
         tracts_earthquake = tracts_earthquake.sort_values(by=['tract_ba'])
         tracts_earthquake = tracts_earthquake.reset_index(drop=True)
 
@@ -302,9 +296,9 @@ def earthquake_demolish(parcels, parcels_tract, tracts_earthquake, buildings,
             build_frag = buildings_i['eq_destroy'].sort_values(ascending=False)
             top_build_frag = build_frag[: int(round(
                 len(build_frag) * existing_pct))]
-            # in "strategies" scenarios, exclude some existing buildings
+            # in "strategies" runs, exclude some existing buildings
             # from destruction due to retrofit
-            if scenario in hazards["eq_scenarios"]["mitigation"]:
+            if run_setup['run_eq_mitigation']:
                 retrofit_codes = ['DU01G1N', 'DU01G2N', 'MF01G1N', 'MF01G2N',
                                   'MF25G1N', 'MF25G2N', 'MF25G3N', 'MF25G4N',
                                   'SF01G1N', 'SF2PG1N']
