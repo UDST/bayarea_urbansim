@@ -101,8 +101,7 @@ if INTERACT:
 run_num = orca.get_injectable("run_number")
 
 if LOGS:
-    print('***The Standard stream is being written to run{0}.log***'
-          .format(run_num))
+    print('***The Standard stream is being written to run{0}.log***'.format(run_num))
     sys.stdout = sys.stderr = open(os.path.join(orca.get_injectable("outputs_dir"), "run%d.log") % run_num, 'w')
 
 if RANDOM_SEED:
@@ -464,39 +463,27 @@ print("Current Branch : ", BRANCH.rstrip())
 print("Current Commit : ", CURRENT_COMMIT.rstrip())
 print("Random Seed : ", RANDOM_SEED)
 
-
 if SLACK and MODE == "simulation":
-    slack.chat.post_message(
-        '#urbansim_sim_update',
-        'Starting simulation %d on host ' %
-        (run_num, host), as_user=True)
+    slack.chat.post_message('#urbansim_sim_update', 'Starting simulation %d on host %s' % (run_num, host), as_user=True)
 
 try:
-
     run_models(MODE)
-
 except Exception as e:
     print(traceback.print_exc())
     if SLACK and MODE == "simulation":
-        slack.chat.post_message(
-            '#urbansim_sim_update',
-            'DANG!  Simulation failed for %d on host %s'
-            % (run_num, host), as_user=True)
+        slack.chat.post_message('#urbansim_sim_update', 'DANG!  Simulation failed for %d on host %s' % (run_num, host), as_user=True)
     else:
         raise e
     sys.exit(0)
 
 print("Finished", time.ctime())
 
-if MAPS and MODE == "simulation" and 'travel_model_output' \
-   in get_simulation_models():
+if MAPS and MODE == "simulation" and 'travel_model_output' in get_simulation_models():
     files_msg1, files_msg2 = ue_files(run_num)
     config_resp = ue_config(run_num, host)
 
 if SLACK and MODE == "simulation":
-    slack.chat.post_message(
-        '#urbansim_sim_update',
-        'Completed simulation %d on host %s' % (run_num, host), as_user=True)
+    slack.chat.post_message('#urbansim_sim_update', 'Completed simulation %d on host %s' % (run_num, host), as_user=True)
 
     """slack.chat.post_message(
         '#sim_updates',
@@ -528,7 +515,7 @@ if MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
     df2 = pd.read_csv((orca.get_injectable("outputs_dir")+"/run%d_superdistrict_summaries_2050.csv") % run_num)
     df2 = df2.set_index(df2.columns[0]).sort_index()
 
-    supnames = pd.read_csv((orca.get_injectable("inputs_dir") + "/plan_strategies/superdistricts.csv"), index_col="number").name
+    supnames = pd.read_csv((orca.get_injectable("inputs_dir") + "/basis_inputs/crosswalks/superdistricts_geography.csv"), index_col="number").name
 
     summary = compare_summary(df1, df2, supnames)
     with open((orca.get_injectable("outputs_dir") + "/run%d_difference_report.log") % run_num, "w") as f:
