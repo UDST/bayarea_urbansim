@@ -153,7 +153,7 @@ def fetch_from_s3(settings):
 # key locations in the Bay Area for use as attractions in the models
 @orca.table(cache=True)
 def landmarks():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 'pandana_accessibility/landmarks.csv'),
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 'accessibility/pandana/landmarks.csv'),
                        index_col="name")
 
 
@@ -409,10 +409,10 @@ def mandatory_accessibility(year, run_setup):
 
     if year in run_setup['logsum_period1']:
         df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 
-                         "travel_model_accessibility/mandatoryAccessibilities_{}.csv").format(run_setup['logsum_year1']))
+                         "accessibility/travel_model/mandatoryAccessibilities_{}.csv").format(run_setup['logsum_year1']))
     elif year in run_setup['logsum_period2']:
         df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 
-                         "travel_model_accessibility/mandatoryAccessibilities_{}.csv").format(run_setup['logsum_year2']))
+                         "accessibility/travel_model/mandatoryAccessibilities_{}.csv").format(run_setup['logsum_year2']))
 
     df.loc[df.subzone == 0, 'subzone'] = 'c'  # no walk
     df.loc[df.subzone == 1, 'subzone'] = 'a'  # short walk
@@ -427,10 +427,10 @@ def non_mandatory_accessibility(year, run_setup):
 
     if year in run_setup['logsum_period1']:
         df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 
-                         "travel_model_accessibility/nonMandatoryAccessibilities_{}.csv").format(run_setup['logsum_year1']))
+                         "accessibility/travel_model/nonMandatoryAccessibilities_{}.csv").format(run_setup['logsum_year1']))
     elif year in run_setup['logsum_period2']:
         df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 
-                         "travel_model_accessibility/nonmandatoryAccessibilities_{}.csv").format(run_setup['logsum_year2']))
+                         "accessibility/travel_model/nonmandatoryAccessibilities_{}.csv").format(run_setup['logsum_year2']))
 
     df.loc[df.subzone == 0, 'subzone'] = 'c'  # no walk
     df.loc[df.subzone == 1, 'subzone'] = 'a'  # short walk
@@ -445,10 +445,10 @@ def accessibilities_segmentation(year, run_setup):
 
     if year in run_setup['logsum_period1']:
         df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 
-                         "travel_model_accessibility/AccessibilityMarkets_{}.csv").format(run_setup['logsum_year1']))
+                         "accessibility/travel_model/AccessibilityMarkets_{}.csv").format(run_setup['logsum_year1']))
     elif year in run_setup['logsum_period2']:
         df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 
-                         "travel_model_accessibility/AccessibilityMarkets_{}.csv").format(run_setup['logsum_year2']))
+                         "accessibility/travel_model/AccessibilityMarkets_{}.csv").format(run_setup['logsum_year2']))
 
     df['AV'] = df['hasAV'].apply(lambda x: 'AV' if x == 1 else 'noAV')
     df['label'] = (df['incQ_label'] + '_' + df['autoSuff_label'] + '_' + df['AV'])
@@ -654,23 +654,31 @@ def vmt_fee_categories():
 
 
 @orca.table(cache=True)
-def superdistricts(): 
-	superdistricts = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "plan_strategies/superdistricts.csv"), index_col="number")
-	orca.add_injectable("sqft_per_job_settings", "default")
-	return superdistricts
+def superdistricts_geography(): 
+	return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/crosswalks/superdistricts_geography.csv"), index_col="number")
 
 
 @orca.table(cache=True)
-def taz_geography(superdistricts, mapping):
+def sqft_per_job_adjusters(): 
+    return pd.read_csv(os.path.join(misc.configs_dir(), "sqft_per_job_adjusters.csv"), index_col="number")
+
+
+@orca.table(cache=True)
+def telecommute_sqft_per_job_adjusters(): 
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "plan_strategies/telecommute_sqft_per_job_adjusters.csv"), index_col="number")
+
+
+@orca.table(cache=True)
+def taz_geography(superdistricts_geography, mapping):
     tg = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/crosswalks/taz_geography.csv"),
                      dtype={'zone': np.int64, 'superdistrcit': np.int64, 'county': np.int64}, index_col="zone")
     cmap = mapping["county_id_tm_map"]
     tg['county_name'] = tg.county.map(cmap)
 
     # we want "subregion" geography on the taz_geography table
-    # we have to go get it from the superdistricts table and join
+    # we have to go get it from the superdistricts_geography table and join
     # using the superdistrcit id
-    tg["subregion_id"] = superdistricts.subregion.loc[tg.superdistrict].values
+    tg["subregion_id"] = superdistricts_geography.subregion.loc[tg.superdistrict].values
     tg["subregion"] = tg.subregion_id.map({1: "Core", 2: "Urban", 3: "Suburban", 4: "Rural"})
 
     return tg
@@ -723,7 +731,7 @@ def tracts_earthquake():
 # override urbansim_defaults which looks for this in data/
 @orca.table(cache=True)
 def logsums():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "pandana_accessibility/logsums.csv"), index_col="taz")
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "accessibility/pandana/logsums.csv"), index_col="taz")
 
 
 @orca.table(cache=True)
@@ -735,7 +743,7 @@ def employment_relocation_rates():
 
 @orca.table(cache=True)
 def employment_relocation_rates_adjusters():
-    df = pd.read_csv(os.path.join(misc.configs_dir(), "employment_relocation_rates_adjusters.csv"))
+    df = pd.read_csv(os.path.join(misc.configs_dir(), "employment_relocation_rates_overwrites.csv"))
     df = df.set_index("zone_id")
     return df
 
@@ -748,7 +756,7 @@ def household_relocation_rates():
 
 @orca.table(cache=True)
 def renter_protections_relocation_rates():
-    df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "plan_strategies/renter_protections_relocation_rates.csv"))
+    df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "plan_strategies/renter_protections_relocation_rates_overwrites.csv"))
     return df
 
 
