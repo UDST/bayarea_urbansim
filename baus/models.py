@@ -963,7 +963,7 @@ def local_pois(settings):
 
     cols = {}
 
-    locations = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 'pandana_accessibility/bart_stations.csv'))
+    locations = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 'accessibility/pandana/bart_stations.csv'))
     n.set_pois("tmp", locations.lng, locations.lat)
     cols["bartdist"] = n.nearest_pois(3000, "tmp", num_pois=1)[1]
 
@@ -993,7 +993,7 @@ def regional_vars(net):
     nodes = networks.from_yaml(net["drive"], "regional_vars.yaml")
     nodes = nodes.fillna(0)
 
-    nodes2 = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "pandana_accessibility/regional_poi_distances.csv"),
+    nodes2 = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "accessibility/pandana/regional_poi_distances.csv"),
                          index_col="tmnode_id")
     nodes = pd.concat([nodes, nodes2], axis=1)
 

@@ -147,19 +147,21 @@ def vacant_res_units(buildings, households):
 
 
 @orca.column('buildings', cache=True)
-def sqft_per_job(buildings, building_sqft_per_job, superdistricts,
-                 taz_geography, year):
-    sqft_per_job = buildings.\
-        building_type.fillna("O").map(building_sqft_per_job)
+def sqft_per_job(buildings, building_sqft_per_job, sqft_per_job_adjusters, telecommute_sqft_per_job_adjusters, taz_geography, base_year, year, run_setup):
+    
+    sqft_per_job = buildings.building_type.fillna("O").map(building_sqft_per_job)
 
-    # this factor changes all sqft per job according to which superdistrict
-    # the building is in - this is so denser areas can have lower sqft
-    # per job - this is a simple multiply so a number 1.1 increases the
-    # sqft per job by 10% and .9 decreases it by 10%
-    superdistrict = misc.reindex(
-        taz_geography.superdistrict, buildings.zone_id)
-    sqft_per_job = sqft_per_job * \
-        superdistrict.map(superdistricts['sqft_per_job_factor_{}'.format(year)])
+    superdistrict = misc.reindex(taz_geography.superdistrict, buildings.zone_id)
+
+    # this factor changes all sqft per job according to which superdistrict the building is in - this is so denser areas can have lower sqft per job
+    # this is a simple multiply so a number 1.1 increases the sqft per job by 10% and .9 decreases it by 10%
+
+    # if adjusters are enabled, adjust sqft_per_job rates for all years
+    if run_setup["run_telecommute_strategy"] and year != base_year:
+        sqft_per_job = sqft_per_job * superdistrict.map(telecommute_sqft_per_job_adjusters['sqft_per_job_factor_{}'.format(year)])
+	# if the telecommute strategy is enabled, instead adjust future year sqft_per_job rates with the factor for that year
+    elif run_setup["sqft_per_job_adjusters"]:
+        sqft_per_job = sqft_per_job * superdistrict.map(sqft_per_job_adjusters['sqft_per_job_factor'])
 
     return sqft_per_job
 

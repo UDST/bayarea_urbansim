@@ -1,0 +1,35 @@
+number,name,sqft_per_job_factor
+1,SF NE,1.21208
+2,SF NW,1.03089
+3,SF S SE,1.4545
+4,SF SW,1.69458
+5,Daly City Millbrae,0.96933
+6,San Mateo,0.91995
+7,Redwood City,0.96933
+8,Palo Alto,0.92032
+9,Golden Triangle,0.89362
+10,West San Jose,0.92032
+11,San Jose CBD,0.8536
+12,East San Jose,0.9227
+13,South San Jose,0.969
+14,SE Snta Clara Cnty,1.063
+15,Tri Valley,1.031
+16,Fremont,0.95
+17,S Leandro Hayward,0.96867
+18,Oakland Alameda,0.90858
+19,Berkeley Eville,0.9818
+20,Richmond Pinole,0.96733
+21,Martinez Concord,0.96733
+22,Lamorinda WC,0.968
+23,S Ramon Danville,0.96867
+24,East Contra Costa,1.063
+25,Vallejo Benicia,1.031
+26,Solano Remainder,1.063
+27,Napa City and S,0.96367
+28,Napa Remainder,1
+29,Southern Sonoma,0.965
+30,Santa Rosa Area,0.96333
+31,Northern Sonoma,0.96133
+32,Northern Marin,1.063
+33,Central Marin,0.96767
+34,Southern Marin,0.96767
