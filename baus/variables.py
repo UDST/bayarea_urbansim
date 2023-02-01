@@ -819,21 +819,8 @@ def cost_shifters(parcels, settings):
 
 
 @orca.column('parcels', cache=True)
-def price_shifters(parcels, settings, policy):
-    if settings["pda_price_shifters"] is not None:
-        return parcels.pda_id.map(settings["pda_price_shifters"]).fillna(1.0)
-    else:
-        return pd.Series(1.0, parcels.index)
-
-
-@orca.column('parcels', cache=True)
 def taz2(parcels, maz):
     return misc.reindex(maz.TAZ, parcels.maz_id)
-
-
-@orca.column('parcels', cache=True)
-def taz2_price_shifters(parcels, taz2_price_shifters, year):
-    return parcels.taz2.map(taz2_price_shifters[str(year)]).fillna(1.0)
 
 
 @orca.column('parcels', cache=True)

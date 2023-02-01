@@ -684,11 +684,6 @@ def taz_geography(superdistricts_geography, mapping):
     return tg
 
 
-@orca.table(cache=True)
-def taz2_price_shifters():
-    return pd.read_csv(os.path.join(misc.configs_dir(), "taz2_price_shifters.csv"), dtype={'TAZ': np.int64}, index_col="TAZ")
-
-
 # these are shapes - "zones" in the bay area
 @orca.table(cache=True)
 def zones(store):

@@ -183,9 +183,6 @@ rent_equilibration:
 
 # SHIFTERS
 
-# price shifters per pda - price is multiplied by this amount
-pda_price_shifters: 
-
 # cost shifters per county - cost is multiplied by this amount
 cost_shifters:
   "Santa Clara": 1.0
