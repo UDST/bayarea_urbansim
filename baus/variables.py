@@ -528,12 +528,11 @@ def ave_sqft_per_unit(parcels, zones, settings):
 def parcel_average_price(use, quantile=.5):
     if use == "residential":
         # get node price average and put it on parcels
-        s = misc.reindex(orca.get_table('nodes')[use],
-                         orca.get_table('parcels').node_id)
+        s = misc.reindex(orca.get_table('nodes')[use], orca.get_table('parcels').node_id)
 
-        cost_shifters = orca.get_table("parcels").cost_shifters
-
-        s = s / cost_shifters
+        if run_setup["cost_shifters"]:
+            cost_shifters = orca.get_table("parcels").cost_shifters
+            s = s / cost_shifters
 
         # just to make sure we're in a reasonable range
         return s.fillna(0).clip(150, 1250)
@@ -542,8 +541,7 @@ def parcel_average_price(use, quantile=.5):
         # just to keep from erroring
         return pd.Series(0, orca.get_table('parcels').index)
 
-    return misc.reindex(orca.get_table('nodes')[use],
-                        orca.get_table('parcels').node_id)
+    return misc.reindex(orca.get_table('nodes')[use], orca.get_table('parcels').node_id)
 
 
 #############################
