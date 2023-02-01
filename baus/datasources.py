@@ -760,6 +760,12 @@ def renter_protections_relocation_rates():
     return df
 
 
+@orca.table(cache=True)
+def accessory_units():
+    df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "plan_strategies/accessory_units.csv"), index_col="juris")
+    return df
+
+
 # this specifies the relationships between tables
 orca.broadcast('buildings', 'residential_units', cast_index=True, onto_on='building_id')
 orca.broadcast('residential_units', 'households', cast_index=True, onto_on='unit_id')

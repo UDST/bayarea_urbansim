@@ -127,14 +127,13 @@ def _proportional_jobs_model(
 
 
 @orca.step()
-def accessory_units(run_setup, year, buildings, parcels, policy):
-    if run_setup["run_adu_strategy"]:
-        add_units = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "plan_strategies/accessory_units_policy.csv"), index_col="juris")[str(year)]
-    else:
-        add_units = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 
-                                "basis_inputs/parcels_buildings_agents/accessory_units.csv"), index_col="juris")[str(year)]
+def accessory_units_strategy(run_setup, year, buildings, parcels, policy, accessory_units):
+
+    add_units = accessory_units[str(year)]
+
     buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
     res_buildings = buildings_juris[buildings.general_type == "Residential"]
+
     add_buildings = groupby_random_choice(res_buildings, add_units)
     add_buildings = pd.Series(add_buildings.index).value_counts()
     buildings.local.loc[add_buildings.index, "residential_units"] += add_buildings.values

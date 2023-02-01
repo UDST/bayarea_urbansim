@@ -170,7 +170,7 @@ def get_simulation_models():
         "office_developer",
         "subsidized_office_developer_vmt",
 
-        "accessory_units",
+        "accessory_units_strategy",
         "calculate_vmt_fees",
 
         # (for buildings that were removed)
@@ -262,6 +262,9 @@ def get_simulation_models():
     if not run_setup["run_office_bond_strategy"]:
         models.remove("office_lump_sum_accounts")
         models.remove("subsidized_office_developer_lump_sum_accts")
+
+    if not run_setup["run_adu_strategy"]:
+        models.remove("accessory_units_strategy")
 
     # VMT taxes
     if not run_setup["run_vmt_fee_com_for_com_strategy"]:
