@@ -530,7 +530,7 @@ def parcel_average_price(use, quantile=.5):
         # get node price average and put it on parcels
         s = misc.reindex(orca.get_table('nodes')[use], orca.get_table('parcels').node_id)
 
-        if run_setup["cost_shifters"]:
+        if orca.get_injectable("run_setup")["cost_shifters"]:
             cost_shifters = orca.get_table("parcels").cost_shifters
             s = s / cost_shifters
 
