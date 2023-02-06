@@ -464,11 +464,11 @@ def residential_developer(feasibility, households, buildings, parcels, year,
                           settings, summary, form_to_btype_func,
                           add_extra_columns_func, parcels_geography,
                           limits_settings, final_year,
-                          regional_controls):
+                          residential_vacancy_rates):
 
     kwargs = settings['residential_developer']
-    rc = regional_controls.to_frame()
-    target_vacancy = rc.loc[year].st_res_vac
+    res_vacancy = residential_vacancy_rates.to_frame()
+    target_vacancy =  res_vacancy.loc[year].st_res_vac
 
     num_units = dev.compute_units_to_build(
         len(households),

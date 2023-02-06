@@ -619,6 +619,11 @@ def regional_controls():
     return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "regional_controls/regional_controls.csv"), index_col="year")
 
 
+@orca.table(cache=True)
+def residential_vacancy_rates():
+    return pd.read_csv(os.path.join(misc.configs_dir(), "residential_vacancy_rates.csv"), index_col="year")
+
+
 # the following overrides employment_controls
 # table defined in urbansim_defaults
 @orca.table(cache=True)
