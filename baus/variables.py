@@ -648,18 +648,6 @@ def is_sanfran(parcels_geography, buildings, parcels):
         reindex(parcels.index).fillna(False).astype('int')
 
 
-# returns a vector where parcels are ALLOWED to be built
-@orca.column('parcels')
-def parcel_rules(parcels):
-    # removes parcels with buildings < 1940,
-    # and single family homes on less then half an acre
-    s = (parcels.oldest_building < 1940) | \
-        ((parcels.total_residential_units == 1) &
-         (parcels.parcel_acres < .5)) | \
-        (parcels.parcel_size < 2000)
-    return (~s.reindex(parcels.index).fillna(False)).astype('int')
-
-
 @orca.column('parcels', cache=True)
 def total_non_residential_sqft(parcels, buildings):
     return buildings.non_residential_sqft.groupby(buildings.parcel_id).sum().\
@@ -1077,9 +1065,3 @@ def zoned_build_ratio(parcels_zoning_calculations):
     # build space
     return parcels_zoning_calculations.zoned_du_build_ratio + \
         parcels_zoning_calculations.zoned_far_build_ratio
-
-
-@orca.column('parcels_zoning_calculations')
-def zoned_du_underbuild_nodev(parcels, parcels_zoning_calculations):
-    return (parcels_zoning_calculations.zoned_du_underbuild *
-            parcels.parcel_rules).astype('int')

@@ -73,8 +73,6 @@ def topsheet(households, jobs, buildings, parcels, zones, year, run_number, taz_
     jobs_by_inpda = jobs_df.pda_id.notnull().value_counts()
     jobs_by_intra = jobs_df.tra_id.notnull().value_counts()
 
-    capacity = parcels_zoning_calculations.zoned_du_underbuild_nodev.groupby(parcels.subregion).sum()
-
     if year == 2010:
         # save some info for computing growth measures
         orca.add_injectable("base_year_measures", {
@@ -86,8 +84,7 @@ def topsheet(households, jobs, buildings, parcels, zones, year, run_number, taz_
             "jobs_by_inpda": jobs_by_inpda,
             "jobs_by_intra": jobs_by_intra,
             "hhincome_by_intra": hhincome_by_intra,
-            "hhincome_by_insesit": hhincome_by_insesit,
-            "capacity": capacity
+            "hhincome_by_insesit": hhincome_by_insesit
         })
     try:
         base_year_measures = orca.get_injectable("base_year_measures")
@@ -207,10 +204,6 @@ def topsheet(households, jobs, buildings, parcels, zones, year, run_number, taz_
 
     diff = hh_by_insesit - base_year_measures["hh_by_insesit"]
     write("Households pct of regional growth in hra/drs:\n%s" % norm_and_round(diff))
-
-    write("Base year dwelling unit raw capacity:\n%s" % base_year_measures["capacity"])
-
-    write("Dwelling unit raw capacity:\n%s" % capacity)
 
     if summary.parcel_output is not None:
         df = summary.parcel_output
@@ -548,8 +541,7 @@ def parcel_summary(parcels, buildings, households, jobs, run_number, year, parce
 
     df2 = parcels_zoning_calculations.to_frame([
         "zoned_du",
-        "zoned_du_underbuild",
-        "zoned_du_underbuild_nodev"
+        "zoned_du_underbuild"
     ])
 
     df = df.join(df2)
