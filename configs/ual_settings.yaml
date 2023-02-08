@@ -7,10 +7,7 @@ unit_aggregation_tables:
   - logsums
   - buildings
 
-
-cap_rate: 0.05
   
-
 price_equilibration:
   price_col: unit_residential_price
   submarket_col: submarket_id
@@ -37,5 +34,3 @@ rent_equilibration:
     clip_change_low: 1.0
     clip_change_high: 1.2
     iterations: 8
-
-
