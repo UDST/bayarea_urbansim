@@ -370,8 +370,8 @@ def vmt_nonres_cat(parcels, vmt_fee_categories):
 
 # residential fees
 @orca.column('parcels', cache=True)
-def vmt_res_fees(parcels, policy, run_setup):
-    vmt_settings = policy["acct_settings"]["vmt_settings"]
+def vmt_res_fees(parcels, account_strategies, run_setup):
+    vmt_settings = account_strategies["acct_settings"]["vmt_settings"]
     res_fees = parcels.vmt_res_cat.map(vmt_settings["res_for_res_fee_amounts"]) if run_setup["run_vmt_fee_res_for_res_strategy"] else 0
 
     return res_fees
@@ -379,8 +379,8 @@ def vmt_res_fees(parcels, policy, run_setup):
 
 # commercial fees
 @orca.column('parcels', cache=True)
-def vmt_com_fees(parcels, policy, run_setup):
-    vmt_settings = policy["acct_settings"]["vmt_settings"]
+def vmt_com_fees(parcels, account_strategiess, run_setup):
+    vmt_settings = account_strategies["acct_settings"]["vmt_settings"]
 
     com_for_res_fees = parcels.vmt_nonres_cat.map(vmt_settings["com_for_res_fee_amounts"]) if \
         run_setup["run_vmt_fee_com_for_res_strategy"] else 0
@@ -394,7 +394,7 @@ def vmt_com_fees(parcels, policy, run_setup):
 # compute the fees per unit for each parcel
 # (since feees are specified spatially)
 @orca.column('parcels', cache=True)
-def fees_per_unit(parcels, policy, run_setup):
+def fees_per_unit(parcels, run_setup):
     s = pd.Series(0, index=parcels.index)
 
     if run_setup["run_vmt_fee_res_for_res_strategy"]:
@@ -405,7 +405,7 @@ def fees_per_unit(parcels, policy, run_setup):
 
 # since this is by sqft this implies commercial
 @orca.column('parcels', cache=True)
-def fees_per_sqft(parcels, policy, run_setup):
+def fees_per_sqft(parcels, run_setup):
     s = pd.Series(0, index=parcels.index)
 
     if run_setup["run_vmt_fee_com_for_com_strategy"] or run_setup["run_vmt_fee_com_for_res_strategy"]:

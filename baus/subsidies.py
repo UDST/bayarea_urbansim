@@ -36,26 +36,26 @@ def profit_to_prob_func(df):
 
 
 @orca.injectable(cache=True)
-def coffer(policy):
+def coffer(account_strategies):
     d = {
         "vmt_res_acct":  accounts.Account("vmt_res_acct"),
         "vmt_com_acct":  accounts.Account("vmt_com_acct")
     }
 
-    for key, acct in policy["acct_settings"]["lump_sum_accounts"].items():
+    for key, acct in account_strategies["acct_settings"]["lump_sum_accounts"].items():
         d[acct["name"]] = accounts.Account(acct["name"])
 
-    for key, acct in policy["acct_settings"]["office_lump_sum_accounts"].items():
+    for key, acct in account_strategies["acct_settings"]["office_lump_sum_accounts"].items():
         d[acct["name"]] = accounts.Account(acct["name"])    
 
-    for key, acct in policy["acct_settings"]["jobs_housing_fee_settings"].items():
+    for key, acct in account_strategies["acct_settings"]["jobs_housing_fee_settings"].items():
         d[acct["name"]] = accounts.Account(acct["name"])
 
     return d
 
 
 @orca.step()
-def preserve_affordable(year, base_year, policy, residential_units, taz_geography, buildings, parcels_geography):
+def preserve_affordable(year, base_year, preservation, residential_units, taz_geography, buildings, parcels_geography):
 
     # join several geography columns to units table so that we can apply units
     res_units = residential_units.to_frame()
@@ -67,7 +67,7 @@ def preserve_affordable(year, base_year, policy, residential_units, taz_geograph
         merge(parcels_geog[['gg_id', 'sesit_id', 'tra_id', 'juris']], left_on='parcel_id', right_index=True, how='left').\
         merge(taz_geog, left_on='zone_id', right_index=True, how='left')
 
-    s = policy["housing_preservation"]["settings"]
+    s = preservation["housing_preservation"]["settings"]
 
     # only preserve units that are not already deed-restricted
     res_units = res_units.loc[res_units.deed_restricted != 1]
@@ -92,7 +92,7 @@ def preserve_affordable(year, base_year, policy, residential_units, taz_geograph
             res_units = res_units[~res_units.index.isin(dr_units)]
 
             # subset units to the geography
-            geography = policy["housing_preservation"]["geography"]
+            geography = preservation["housing_preservation"]["geography"]
             geog_units = res_units.loc[res_units[geography] == geog]
             # subset units to the filters within the geography
             filter_units = geog_units.query(filter_nm)
@@ -125,14 +125,14 @@ def preserve_affordable(year, base_year, policy, residential_units, taz_geograph
 
 
 @orca.injectable(cache=True)
-def acct_settings(policy):
-    return policy["acct_settings"]
+def acct_settings(account_strategies):
+    return account_strategies["acct_settings"]
 
 
 @orca.step()
-def lump_sum_accounts(policy, year, buildings, coffer, summary, years_per_iter, run_setup):
+def lump_sum_accounts(account_strategies, year, buildings, coffer, summary, years_per_iter, run_setup):
 
-    s = policy["acct_settings"]["lump_sum_accounts"]
+    s = account_strategies["acct_settings"]["lump_sum_accounts"]
 
     for key, acct in s.items():
 
@@ -148,9 +148,9 @@ def lump_sum_accounts(policy, year, buildings, coffer, summary, years_per_iter, 
         coffer[acct["name"]].add_transaction(amt, subaccount=1, metadata=metadata)
 
 @orca.step()
-def office_lump_sum_accounts(policy, year, buildings, coffer, summary, years_per_iter):
+def office_lump_sum_accounts(account_strategies, year, buildings, coffer, summary, years_per_iter):
 
-    s = policy["acct_settings"]["office_lump_sum_accounts"]
+    s = account_strategies["acct_settings"]["office_lump_sum_accounts"]
 
     for key, acct in s.items():
 
@@ -183,13 +183,13 @@ def inclusionary_housing_revenue_reduction(feasibility, units):
     parcels_geography = orca.get_table("parcels_geography")
 
     run_setup = orca.get_injectable("run_setup")
-    policy = orca.get_injectable("policy")
+    inclusionary = orca.get_injectable("inclusionary")
     # determine the geography type to use by reading the "type" that the first inclusionary rate is applied to, 
     # since we tend to use the same geography type for applying all of the inclusionary rates
     if run_setup["run_inclusionary_strategy"]:
-        geog = policy["inclusionary_housing_settings"]["inclusionary_strategy"][0]["type"]
-    elif "default" in policy["inclusionary_housing_settings"].keys():
-        geog = policy["inclusionary_housing_settings"]["default"][0]["type"]
+        geog = inclusionary["inclusionary_housing_settings"]["inclusionary_strategy"][0]["type"]
+    elif "default" in inclusionary["inclusionary_housing_settings"].keys():
+        geog = inclusionary["inclusionary_housing_settings"]["default"][0]["type"]
     h = orca.merge_tables("households", [households, buildings, parcels_geography], columns=["income", geog])
     AMI = h.groupby(h[geog]).income.quantile(.5)
 
@@ -285,11 +285,11 @@ def policy_modifications_of_profit(feasibility, parcels):
     feasibility[("residential", "inclusionary_units")] = num_affordable_units
 
     run_setup = orca.get_injectable("run_setup")
-    policy = orca.get_injectable("policy")
+    profit_adjustment_strategies = orca.get_injectable("profit_adjustment_strategies")
 
     if run_setup["run_sb_743_strategy"]:
 
-        sb743_settings = policy["acct_settings"]["sb743_settings"]
+        sb743_settings = profit_adjustment_strategies["acct_settings"]["sb743_settings"]
 
         pct_modifications = feasibility[("residential", "vmt_res_cat")].map(sb743_settings["sb743_pcts"]) + 1
         
@@ -298,7 +298,7 @@ def policy_modifications_of_profit(feasibility, parcels):
 
     if run_setup["run_land_value_tax_strategy"]:
 
-        s = policy["acct_settings"]["land_value_tax_settings"]
+        s = profit_adjustment_strategies["acct_settings"]["land_value_tax_settings"]
 
         bins = s["bins"]
         pcts = bins["pcts"]
@@ -316,20 +316,20 @@ def policy_modifications_of_profit(feasibility, parcels):
 
         feasibility[("residential", "max_profit")] *= pct_modifications
 
-    if "profitability_adjustment_policies" in policy["acct_settings"]:
+    if "profitability_adjustment_policies" in profit_adjustment_strategies["acct_settings"]:
 
-        for key, policy in policy["acct_settings"]["profitability_adjustment_policies"].items():
+        for key, policy in profit_adjustment_strategies["acct_settings"]["profitability_adjustment_policies"].items():
 
             if run_setup[policy["name"]]:
 
                 parcels_geography = orca.get_table("parcels_geography")
 
-                formula = policy["profitability_adjustment_formula"]
+                formula = profit_adjustment_strategies["profitability_adjustment_formula"]
 
                 pct_modifications = parcels_geography.local.eval(formula)
                 pct_modifications += 1.0
 
-                print("Modifying profit for %s:\n" % policy["name"], pct_modifications.describe())
+                print("Modifying profit for %s:\n" % profit_adjustment_strategies["name"], pct_modifications.describe())
                 print("Formula: \n{}".format(formula))
 
                 feasibility[("residential", "max_profit")] *= pct_modifications
@@ -340,9 +340,9 @@ def policy_modifications_of_profit(feasibility, parcels):
 
 
 @orca.step()
-def calculate_vmt_fees(run_setup, policy, year, buildings, vmt_fee_categories, coffer, summary, years_per_iter):
+def calculate_vmt_fees(run_setup, account_strategies, year, buildings, vmt_fee_categories, coffer, summary, years_per_iter):
 
-    vmt_settings = policy["acct_settings"]["vmt_settings"]
+    vmt_settings = account_strategies["acct_settings"]["vmt_settings"]
 
     # this is the frame that knows which devs are subsidized
     df = summary.parcel_output
@@ -405,9 +405,9 @@ def calculate_vmt_fees(run_setup, policy, year, buildings, vmt_fee_categories, c
 
 
 @orca.step()
-def calculate_jobs_housing_fees(run_setup, policy, year, buildings, coffer, summary, years_per_iter):
+def calculate_jobs_housing_fees(run_setup, account_strategies, year, buildings, coffer, summary, years_per_iter):
 
-    jobs_housing_settings = policy["acct_settings"]["jobs_housing_fee_settings"]
+    jobs_housing_settings = account_strategies["acct_settings"]["jobs_housing_fee_settings"]
 
     # this is the frame that knows which devs are subsidized
     df = summary.parcel_output
@@ -458,9 +458,6 @@ def subsidized_office_developer(feasibility, coffer, formula, year, add_extra_co
     feasibility = feasibility.loc[:, "office"]
 
     feasibility = feasibility.dropna(subset=["max_profit"])
-
-    # add necessary columns for filters
-    policy = orca.get_injectable("policy")
 
     # filter to receiving zone
     feasibility = feasibility.query(formula)
@@ -817,10 +814,10 @@ def subsidized_residential_developer_vmt(households, buildings, add_extra_column
 
 
 @orca.step()
-def subsidized_residential_developer_jobs_housing(households, buildings, add_extra_columns_func, parcels_geography, year, acct_settings, parcels,
-                                                  policy, summary, coffer, form_to_btype_func, settings):
+def subsidized_residential_developer_jobs_housing(households, buildings, add_extra_columns_func, parcels_geography, year, parcels,
+                                                  summary, coffer, form_to_btype_func, settings, account_strategies):
 
-    for key, acct in (policy["acct_settings"]["jobs_housing_fee_settings"].items()):
+    for key, acct in (account_strategies["acct_settings"]["jobs_housing_fee_settings"].items()):
 
         print("Running the subsidized developer for jobs-housing acct: %s" % acct["name"])
 
@@ -851,9 +848,9 @@ def subsidized_residential_developer_jobs_housing(households, buildings, add_ext
 
 @orca.step()
 def subsidized_residential_developer_lump_sum_accts(run_setup, households, buildings, add_extra_columns_func, parcels_geography, year, 
-                                                    acct_settings, parcels, policy, summary, coffer, form_to_btype_func, settings):
+                                                    parcels, account_strategies, summary, coffer, form_to_btype_func, settings):
 
-    for key, acct in policy["acct_settings"]["lump_sum_accounts"].items():
+    for key, acct in account_strategies["acct_settings"]["lump_sum_accounts"].items():
 
         if not run_setup[acct["name"]]:
             continue
@@ -888,9 +885,9 @@ def subsidized_residential_developer_lump_sum_accts(run_setup, households, build
 
 
 @orca.step()
-def subsidized_office_developer_vmt(run_setup, parcels, settings, coffer, buildings, year, policy, add_extra_columns_func, summary):
+def subsidized_office_developer_vmt(run_setup, parcels, settings, coffer, buildings, year, account_strategies, add_extra_columns_func, summary):
 
-    vmt_acct_settings = policy["acct_settings"]["vmt_settings"]
+    vmt_acct_settings = account_strategies["acct_settings"]["vmt_settings"]
 
     if run_setup["vmt_fee_com_for_com"]:
 
@@ -920,9 +917,9 @@ def subsidized_office_developer_vmt(run_setup, parcels, settings, coffer, buildi
 
 
 @orca.step()
-def subsidized_office_developer_lump_sum_accts(parcels, settings, coffer, buildings, year, policy, add_extra_columns_func, summary):
+def subsidized_office_developer_lump_sum_accts(parcels, settings, coffer, buildings, year, account_strategies, add_extra_columns_func, summary):
 
-    for key, acct in policy["acct_settings"]["office_lump_sum_accounts"].items():
+    for key, acct in account_strategies["acct_settings"]["office_lump_sum_accounts"].items():
 
         print("Running the subsidized office developer for acct: %s" % acct["name"])
 

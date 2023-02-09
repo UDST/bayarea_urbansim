@@ -127,7 +127,7 @@ def _proportional_jobs_model(
 
 
 @orca.step()
-def accessory_units_strategy(run_setup, year, buildings, parcels, policy, accessory_units):
+def accessory_units_strategy(run_setup, year, buildings, parcels, accessory_units):
 
     add_units = accessory_units[str(year)]
 

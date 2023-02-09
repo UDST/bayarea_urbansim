@@ -37,9 +37,33 @@ def outputs_dir(run_setup):
     return run_setup['outputs_dir']
 
 
-@orca.injectable('policy', cache=True)
-def policy():
-    with open(os.path.join(orca.get_injectable("inputs_dir"), "plan_strategies/policy.yaml")) as f:
+@orca.injectable('profit_adjustment_strategies', cache=True)
+def profit_adjustment_strategies():
+    with open(os.path.join(orca.get_injectable("inputs_dir"), "plan_strategies/profit_adjustment_strategies.yaml")) as f:
+        return yaml.load(f)
+
+
+@orca.injectable('account_strategies', cache=True)
+def account_strategies():
+    with open(os.path.join(orca.get_injectable("inputs_dir"), "plan_strategies/account_strategies.yaml")) as f:
+        return yaml.load(f)
+
+
+@orca.injectable('development_caps', cache=True)
+def development_caps():
+    with open(os.path.join(orca.get_injectable("inputs_dir"), "plan_strategies/development_caps.yaml")) as f:
+        return yaml.load(f)
+
+
+@orca.injectable('inclusionary', cache=True)
+def inclusionary():
+    with open(os.path.join(orca.get_injectable("inputs_dir"), "plan_strategies/inclusionary.yaml")) as f:
+        return yaml.load(f)
+
+
+@orca.injectable('preservation', cache=True)
+def preservation():
+    with open(os.path.join(orca.get_injectable("inputs_dir"), "plan_strategies/preservation.yaml")) as f:
         return yaml.load(f)
 
 
@@ -82,11 +106,11 @@ def store(settings):
 
 
 @orca.injectable(cache=True)
-def limits_settings(policy, run_setup):
+def limits_settings(development_caps, run_setup):
     # for limits, we inherit from the default settings, and update these with the policy settings, if applicable
     # limits set the annual maximum number of job spaces or residential units that may be built in a geography
 
-    d = policy['development_limits']
+    d = development_caps['development_limits']
 
     if run_setup['run_job_cap_strategy']:
         print("Applying job caps")
@@ -105,11 +129,11 @@ def limits_settings(policy, run_setup):
 
 
 @orca.injectable(cache=True)
-def inclusionary_housing_settings(policy, run_setup):
+def inclusionary_housing_settings(inclusionary, run_setup):
     # for inclusionary housing, there is no inheritance from the default inclusionary settings
     # this means existing inclusionary levels in the base year don't apply in the policy application...
 
-    s = policy['inclusionary_housing_settings']
+    s = inclusionary['inclusionary_housing_settings']
 
     if run_setup["run_inclusionary_strategy"]:
         s = s["inclusionary_strategy"]
@@ -362,7 +386,7 @@ def parcel_rejections():
 
 
 @orca.table(cache=True)
-def parcels_geography(parcels, settings, policy):
+def parcels_geography(parcels, settings):
 
     file = os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/crosswalks/2021_02_25_parcels_geography.csv")
     print('Versin of parcels_geography: {}'.format(file))

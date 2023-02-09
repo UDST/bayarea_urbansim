@@ -43,7 +43,7 @@ def environment_config(run_number, parcels, year):
 
 @orca.step()
 def topsheet(households, jobs, buildings, parcels, zones, year, run_number, taz_geography, parcels_zoning_calculations,
-             summary, settings, parcels_geography, new_tpp_id, residential_units, mapping, policy):
+             summary, settings, parcels_geography, new_tpp_id, residential_units, mapping):
 
     hh_by_subregion = misc.reindex(taz_geography.subregion, households.zone_id).value_counts()
 
@@ -282,8 +282,7 @@ def diagnostic_output(households, buildings, parcels, taz, jobs, settings, zones
 
 
 @orca.step()
-def geographic_summary(parcels, households, jobs, buildings, taz_geography, run_number, year, summary, final_year,
-                       policy, settings):
+def geographic_summary(parcels, households, jobs, buildings, taz_geography, run_number, year, summary, final_year, settings):
     # using the following conditional b/c `year` is used to pull a column
     # from a csv based on a string of the year in add_population()
     # and in add_employment() and 2009 is the
@@ -527,7 +526,7 @@ def building_summary(parcels, run_number, year,
 
 @orca.step()
 def parcel_summary(parcels, buildings, households, jobs, run_number, year, parcels_zoning_calculations,
-                   initial_year, final_year, parcels_geography, policy):
+                   initial_year, final_year, parcels_geography):
 
     # if year not in [2010, 2015, 2035, 2050]:
     #     return
