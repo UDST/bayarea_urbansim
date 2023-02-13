@@ -69,7 +69,13 @@ def development_caps_strategy():
 
 @orca.injectable('inclusionary', cache=True)
 def inclusionary():
-    with open(os.path.join(orca.get_injectable("inputs_dir"), "plan_strategies/inclusionary.yaml")) as f:
+    with open(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/existing_policy/inclusionary_stratgy.yaml")) as f:
+        return yaml.load(f)
+
+
+@orca.injectable('inclusionary', cache=True)
+def inclusionary_strategy():
+    with open(os.path.join(orca.get_injectable("inputs_dir"), "plan_strategies/inclusionary)strategy.yaml")) as f:
         return yaml.load(f)
 
 
@@ -141,17 +147,15 @@ def limits_settings(development_caps_asserted,development_caps, development_caps
 
 
 @orca.injectable(cache=True)
-def inclusionary_housing_settings(inclusionary, run_setup):
+def inclusionary_housing_settings(inclusionary, inclusionary_strategy, run_setup):
     # for inclusionary housing, there is no inheritance from the default inclusionary settings
     # this means existing inclusionary levels in the base year don't apply in the policy application...
 
-    s = inclusionary['inclusionary_housing_settings']
-
     if run_setup["run_inclusionary_strategy"]:
-        s = s["inclusionary_strategy"]
+        s = inclusionary_strategy['inclusionary_housing_settings']["inclusionary_strategy"]
     elif "default" in s.keys():
         print("Using default inclusionary settings")
-        s = s["default"]
+        s = inclusionary['inclusionary_housing_settings']["default"]
 
     d = {}
     for item in s:
