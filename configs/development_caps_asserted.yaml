@@ -1,0 +1,19 @@
+development_limits:
+# 07 09 2019 ET: believe the default settings include office caps to represent
+# real-world caps (SF, Palo Alto, Cupertino) as well as caps to handle volatility
+# if this is true, these could be split out more (default/real-world/volatility)
+  default:
+    Residential:
+      'Cloverdale': 50
+      'Fairfax': 8
+      'Half Moon Bay': 44
+      'Petaluma': 75
+      'San Mateo': 400
+      'Sebastopol': 10
+      'St. Helena': 10
+      'Woodside': 5
+      'Yountville': 2
+      'Alameda County': 205
+      'Napa County': 25
+      'Solano County': 230
+      'Sonoma County': 50

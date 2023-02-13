@@ -379,7 +379,7 @@ def vmt_res_fees(parcels, account_strategies, run_setup):
 
 # commercial fees
 @orca.column('parcels', cache=True)
-def vmt_com_fees(parcels, account_strategiess, run_setup):
+def vmt_com_fees(parcels, account_strategies, run_setup):
     vmt_settings = account_strategies["acct_settings"]["vmt_settings"]
 
     com_for_res_fees = parcels.vmt_nonres_cat.map(vmt_settings["com_for_res_fee_amounts"]) if \

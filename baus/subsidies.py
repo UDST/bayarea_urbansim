@@ -324,12 +324,12 @@ def policy_modifications_of_profit(feasibility, parcels):
 
                 parcels_geography = orca.get_table("parcels_geography")
 
-                formula = profit_adjustment_strategies["profitability_adjustment_formula"]
+                formula = policy["profitability_adjustment_formula"]
 
                 pct_modifications = parcels_geography.local.eval(formula)
                 pct_modifications += 1.0
 
-                print("Modifying profit for %s:\n" % profit_adjustment_strategies["name"], pct_modifications.describe())
+                print("Modifying profit for %s:\n" % policy["name"], pct_modifications.describe())
                 print("Formula: \n{}".format(formula))
 
                 feasibility[("residential", "max_profit")] *= pct_modifications

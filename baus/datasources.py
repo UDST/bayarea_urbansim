@@ -51,7 +51,19 @@ def account_strategies():
 
 @orca.injectable('development_caps', cache=True)
 def development_caps():
-    with open(os.path.join(orca.get_injectable("inputs_dir"), "plan_strategies/development_caps.yaml")) as f:
+    with open(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/existing_policy/development_caps.yaml")) as f:
+        return yaml.load(f)
+
+
+@orca.injectable('development_caps_asserted', cache=True)
+def development_caps_asserted():
+    with open(os.path.join(misc.configs_dir(), "development_caps_asserted.yaml")) as f:
+        return yaml.load(f)
+
+
+@orca.injectable('development_caps_strategy', cache=True)
+def development_caps_strategy():
+    with open(os.path.join(orca.get_injectable("inputs_dir"), "plan_strategies/development_caps_strategy.yaml")) as f:
         return yaml.load(f)
 
 
@@ -106,18 +118,18 @@ def store(settings):
 
 
 @orca.injectable(cache=True)
-def limits_settings(development_caps, run_setup):
+def limits_settings(development_caps_asserted,development_caps, development_caps_strategy, run_setup):
     # for limits, we inherit from the default settings, and update these with the policy settings, if applicable
     # limits set the annual maximum number of job spaces or residential units that may be built in a geography
 
-    d = development_caps['development_limits']
+    d = development_caps['development_limits']["default"]
+    d2 = development_caps_asserted['development_limits']["default"]
+    d.update(d2)
 
     if run_setup['run_job_cap_strategy']:
         print("Applying job caps")
-        assert "default" in d
+        d_jc = development_caps_strategy['development_limits']["job_cap_strategy"]
 
-        d_jc = d["job_cap_strategy"]
-        d = d["default"]
         for key, value in d_jc.items():
             d.setdefault(key, {})
             d[key].update(value)
@@ -125,7 +137,7 @@ def limits_settings(development_caps, run_setup):
         return d
 
     print("Using default limits")
-    return d["default"]
+    return d
 
 
 @orca.injectable(cache=True)
