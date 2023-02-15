@@ -184,10 +184,11 @@ def inclusionary_housing_revenue_reduction(feasibility, units):
 
     run_setup = orca.get_injectable("run_setup")
     inclusionary = orca.get_injectable("inclusionary")
+    inclusionary_strategy = orca.get_injectable("inclusionary_strategy")
     # determine the geography type to use by reading the "type" that the first inclusionary rate is applied to, 
     # since we tend to use the same geography type for applying all of the inclusionary rates
     if run_setup["run_inclusionary_strategy"]:
-        geog = inclusionary["inclusionary_housing_settings"]["inclusionary_strategy"][0]["type"]
+        geog = inclusionary_strategy["inclusionary_housing_settings"]["inclusionary_strategy"][0]["type"]
     elif "default" in inclusionary["inclusionary_housing_settings"].keys():
         geog = inclusionary["inclusionary_housing_settings"]["default"][0]["type"]
     h = orca.merge_tables("households", [households, buildings, parcels_geography], columns=["income", geog])

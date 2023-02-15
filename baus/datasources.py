@@ -69,13 +69,13 @@ def development_caps_strategy():
 
 @orca.injectable('inclusionary', cache=True)
 def inclusionary():
-    with open(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/existing_policy/inclusionary_stratgy.yaml")) as f:
+    with open(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/existing_policy/inclusionary.yaml")) as f:
         return yaml.load(f)
 
 
-@orca.injectable('inclusionary', cache=True)
+@orca.injectable('inclusionary_strategy', cache=True)
 def inclusionary_strategy():
-    with open(os.path.join(orca.get_injectable("inputs_dir"), "plan_strategies/inclusionary)strategy.yaml")) as f:
+    with open(os.path.join(orca.get_injectable("inputs_dir"), "plan_strategies/inclusionary_strategy.yaml")) as f:
         return yaml.load(f)
 
 
@@ -153,8 +153,7 @@ def inclusionary_housing_settings(inclusionary, inclusionary_strategy, run_setup
 
     if run_setup["run_inclusionary_strategy"]:
         s = inclusionary_strategy['inclusionary_housing_settings']["inclusionary_strategy"]
-    elif "default" in s.keys():
-        print("Using default inclusionary settings")
+    else:
         s = inclusionary['inclusionary_housing_settings']["default"]
 
     d = {}
