@@ -757,6 +757,18 @@ def rsh_simulate(residential_units, aggregations, settings):
                            out_fname='unit_residential_price')
 
     _mtc_clip(residential_units, 'unit_residential_price', settings)
+
+    # write out pricing data 
+    print('export rsh_simulate result')
+    rsh_simulate_export = orca.get_table("residential_units").to_frame()
+    rsh_simulate_export_csv = \
+        os.path.join(
+            orca.get_injectable("outputs_dir"), "interim\run{}_residential_units_rshSim_{}.csv".format(
+                orca.get_injectable("run_number"),
+                orca.get_injectable("year")
+            ))
+    rsh_simulate_export.to_csv(rsh_simulate_export_csv)
+
     return
 
 
@@ -777,6 +789,18 @@ def rrh_simulate(residential_units, aggregations, settings):
 
     _mtc_clip(residential_units, 'unit_residential_rent',
               settings, price_scale=0.05/12)
+    
+    # write out pricing data 
+    print('export rrh_simulate result')
+    rrh_simulate_export = orca.get_table("residential_units").to_frame()
+    rrh_simulate_export_csv = \
+        os.path.join(
+            orca.get_injectable("outputs_dir"), "interim\run{}_residential_units_rrhSim_{}.csv".format(
+                orca.get_injectable("run_number"),
+                orca.get_injectable("year")
+            ))
+    rrh_simulate_export.to_csv(rrh_simulate_export_csv)
+    
     return
 
 
