@@ -1,0 +1,11 @@
+# inputs to the transition model for households
+households_transition:
+  add_columns:
+    - base_income_quartile
+  total_column: total_number_of_households
+
+# info to the transition model for jobs
+jobs_transition:
+  add_columns:
+    - empsix_id
+  total_column: number_of_jobs

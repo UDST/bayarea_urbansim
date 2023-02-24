@@ -43,7 +43,7 @@ def environment_config(run_number, parcels, year):
 
 @orca.step()
 def topsheet(households, jobs, buildings, parcels, zones, year, run_number, taz_geography, parcels_zoning_calculations,
-             summary, settings, parcels_geography, new_tpp_id, residential_units, mapping):
+             summary, parcels_geography, new_tpp_id, residential_units, mapping):
 
     hh_by_subregion = misc.reindex(taz_geography.subregion, households.zone_id).value_counts()
 
@@ -226,7 +226,7 @@ def topsheet(households, jobs, buildings, parcels, zones, year, run_number, taz_
 
 
 @orca.step()
-def diagnostic_output(households, buildings, parcels, taz, jobs, settings, zones, year, summary, run_number, residential_units):
+def diagnostic_output(households, buildings, parcels, taz, jobs, developer_settings, zones, year, summary, run_number, residential_units):
 
     households = households.to_frame()
     buildings = buildings.to_frame()
@@ -259,7 +259,7 @@ def diagnostic_output(households, buildings, parcels, taz, jobs, settings, zones
     ru = residential_units
     zones['unit_residential_price'] = ru.unit_residential_price.groupby(ru.zone_id).quantile()
     zones['unit_residential_rent'] = ru.unit_residential_rent.groupby(ru.zone_id).quantile()
-    cap_rate = settings.get('cap_rate')
+    cap_rate = developer_settings.get('cap_rate')
     # this compares price to rent and shows us where price is greater
     # rents are monthly and a cap rate is applied in order to do the conversion
     zones['unit_residential_price_>_rent'] = (zones.unit_residential_price > (zones.unit_residential_rent * 12 / cap_rate)).astype('int')
@@ -282,7 +282,7 @@ def diagnostic_output(households, buildings, parcels, taz, jobs, settings, zones
 
 
 @orca.step()
-def geographic_summary(parcels, households, jobs, buildings, taz_geography, run_number, year, summary, final_year, settings):
+def geographic_summary(parcels, households, jobs, buildings, taz_geography, run_number, year, summary, final_year):
     # using the following conditional b/c `year` is used to pull a column
     # from a csv based on a string of the year in add_population()
     # and in add_employment() and 2009 is the

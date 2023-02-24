@@ -37,6 +37,24 @@ def outputs_dir(run_setup):
     return run_setup['outputs_dir']
 
 
+@orca.injectable('paths', cache=True)
+def paths():
+    with open(os.path.join(misc.configs_dir(), "paths.yaml")) as f:
+        return yaml.load(f)
+
+
+@orca.injectable('accessibility_settings', cache=True)
+def accessibility_settings():
+    with open(os.path.join(misc.configs_dir(), "accessibility/accessibility_settings.yaml")) as f:
+        return yaml.load(f)
+
+
+@orca.injectable('transition_relocation_settings', cache=True)
+def transition_relocation_settings():
+    with open(os.path.join(misc.configs_dir(), "transition_relocation/transition_relocation_settings.yaml")) as f:
+        return yaml.load(f)
+
+
 @orca.injectable('profit_adjustment_strategies', cache=True)
 def profit_adjustment_strategies():
     with open(os.path.join(orca.get_injectable("inputs_dir"), "plan_strategies/profit_adjustment_strategies.yaml")) as f:
@@ -57,7 +75,13 @@ def development_caps():
 
 @orca.injectable('development_caps_asserted', cache=True)
 def development_caps_asserted():
-    with open(os.path.join(misc.configs_dir(), "development_caps_asserted.yaml")) as f:
+    with open(os.path.join(misc.configs_dir(), "adjusters/development_caps_asserted.yaml")) as f:
+        return yaml.load(f)
+
+
+@orca.injectable('zoning_adjusters', cache=True)
+def zoning_adjusters():
+    with open(os.path.join(misc.configs_dir(), "adjusters/zoning_adjusters.yaml")) as f:
         return yaml.load(f)
 
 
@@ -91,8 +115,42 @@ def mapping():
         return yaml.load(f)
 
 
+
+@orca.injectable('cost_shifters', cache=True)
+def cost_shifters():
+    with open(os.path.join(misc.configs_dir(), "adjusters/cost_shifters.yaml")) as f:
+        return yaml.load(f)
+
+
+@orca.injectable('developer_settings', cache=True)
+def developer_settings():
+    with open(os.path.join(misc.configs_dir(), "developer/developer_settings.yaml")) as f:
+        return yaml.load(f)
+
+
+@orca.injectable('price_settings', cache=True)
+def price_settings():
+    with open(os.path.join(misc.configs_dir(), "hedonics/price_settings.yaml")) as f:
+        return yaml.load(f)
+
+
+@orca.injectable('edits', cache=True)
+def edits():
+    with open(os.path.join(misc.configs_dir(), "edits.yaml")) as f:
+        return yaml.load(f)
+
+
 # now that there are new settings files, override the locations of certain
 # settings already defined in urbansim_defaults
+
+# this just adds some of the BAUS settings to a master "settings", since the urbansim code looks for them there
+@orca.injectable("settings")
+def settings(edits, transition_relocation_settings):
+    settings = edits.copy()
+    settings.update(transition_relocation_settings)    
+    return settings
+
+
 @orca.injectable("building_type_map")
 def building_type_map(mapping):
     return mapping["building_type_map"]
@@ -119,8 +177,8 @@ def final_year():
 
 
 @orca.injectable(cache=True)
-def store(settings):
-    return pd.HDFStore(os.path.join(orca.get_injectable("inputs_dir"), settings["store"]))
+def store(paths):
+    return pd.HDFStore(os.path.join(orca.get_injectable("inputs_dir"), paths["store"]))
 
 
 @orca.injectable(cache=True)
@@ -167,15 +225,15 @@ def inclusionary_housing_settings(inclusionary, inclusionary_strategy, run_setup
 
 
 @orca.injectable(cache=True)
-def building_sqft_per_job(settings):
-    return settings['building_sqft_per_job']
+def building_sqft_per_job(developer_settings):
+    return developer_settings['building_sqft_per_job']
 
 
 @orca.step()
-def fetch_from_s3(settings):
+def fetch_from_s3(paths):
     import boto
     # fetch files from s3 based on config in settings.yaml
-    s3_settings = settings["s3_settings"]
+    s3_settings = paths["s3_settings"]
 
     conn = boto.connect_s3()
     bucket = conn.get_bucket(s3_settings["bucket"], validate=False)
@@ -242,7 +300,7 @@ def zoning_lookup():
 
 
 @orca.table(cache=True)
-def zoning_existing(parcels, zoning_lookup, settings):
+def zoning_existing(parcels, zoning_lookup):
 
     file = os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/zoning/2020_11_05_zoning_parcels_hybrid_pba50.csv")
     print('Version of zoning_parcels: {}'.format(file))
@@ -401,7 +459,7 @@ def parcel_rejections():
 
 
 @orca.table(cache=True)
-def parcels_geography(parcels, settings):
+def parcels_geography(parcels):
 
     file = os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/crosswalks/2021_02_25_parcels_geography.csv")
     print('Versin of parcels_geography: {}'.format(file))
@@ -544,7 +602,7 @@ def get_dev_projects_table(parcels):
 
 
 @orca.table(cache=True)
-def demolish_events(parcels, settings):
+def demolish_events(parcels):
     df = get_dev_projects_table(parcels)
 
     # keep demolish and build records
@@ -660,7 +718,7 @@ def regional_controls():
 
 @orca.table(cache=True)
 def residential_vacancy_rates():
-    return pd.read_csv(os.path.join(misc.configs_dir(), "residential_vacancy_rates.csv"), index_col="year")
+    return pd.read_csv(os.path.join(misc.configs_dir(), "developer/residential_vacancy_rates.csv"), index_col="year")
 
 
 # the following overrides employment_controls
@@ -704,7 +762,7 @@ def superdistricts_geography():
 
 @orca.table(cache=True)
 def sqft_per_job_adjusters(): 
-    return pd.read_csv(os.path.join(misc.configs_dir(), "sqft_per_job_adjusters.csv"), index_col="number")
+    return pd.read_csv(os.path.join(misc.configs_dir(), "adjusters/sqft_per_job_adjusters.csv"), index_col="number")
 
 
 @orca.table(cache=True)
@@ -775,21 +833,21 @@ def logsums():
 
 @orca.table(cache=True)
 def employment_relocation_rates():
-    df = pd.read_csv(os.path.join(misc.configs_dir(), "employment_relocation_rates.csv"))
+    df = pd.read_csv(os.path.join(misc.configs_dir(), "transition_relocation/employment_relocation_rates.csv"))
     df = df.set_index("zone_id")
     return df
 
 
 @orca.table(cache=True)
 def employment_relocation_rates_adjusters():
-    df = pd.read_csv(os.path.join(misc.configs_dir(), "employment_relocation_rates_overwrites.csv"))
+    df = pd.read_csv(os.path.join(misc.configs_dir(), "adjusters/employment_relocation_rates_overwrites.csv"))
     df = df.set_index("zone_id")
     return df
 
 
 @orca.table(cache=True)
 def household_relocation_rates():
-    df = pd.read_csv(os.path.join(misc.configs_dir(), "household_relocation_rates.csv"))
+    df = pd.read_csv(os.path.join(misc.configs_dir(), "transition_relocation/household_relocation_rates.csv"))
     return df
 
 

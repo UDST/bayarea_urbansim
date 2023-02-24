@@ -1,13 +1,14 @@
-# New settings associated with the UAL model steps
+# HEDONIC
+
+# clip the prices that come out of the sales hedonic
+rsh_simulate:
+  low: 200
+  high: 2000
 
 
-unit_aggregation_tables:
-  - nodes
-  - tmnodes
-  - logsums
-  - buildings
+# EQUILIBRATION
 
-  
+# price and rent equilibration, treated separately
 price_equilibration:
   price_col: unit_residential_price
   submarket_col: submarket_id
@@ -20,7 +21,6 @@ price_equilibration:
     clip_change_low: 1.0
     clip_change_high: 1.2
     iterations: 8
-
 
 rent_equilibration:
   price_col: unit_residential_rent

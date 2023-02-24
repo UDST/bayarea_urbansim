@@ -26,19 +26,19 @@ def elcm_simulate(jobs, buildings, aggregations):
     """
     buildings.local["non_residential_rent"] = \
         buildings.local.non_residential_rent.fillna(0)
-    return utils.lcm_simulate("elcm.yaml", jobs, buildings, aggregations,
+    return utils.lcm_simulate("location_choice/elcm.yaml", jobs, buildings, aggregations,
                               "building_id", "job_spaces",
                               "vacant_job_spaces", cast=True)
 
 
 @orca.step()
-def households_transition(households, household_controls, year, settings):
+def households_transition(households, household_controls, year, transition_relocation_settings):
     s = orca.get_table('households').base_income_quartile.value_counts()
     print("Distribution by income before:\n", (s/s.sum()))
     ret = utils.full_transition(households,
                                 household_controls,
                                 year,
-                                settings['households_transition'],
+                                transition_relocation_settings['households_transition'],
                                 "building_id")
     s = orca.get_table('households').base_income_quartile.value_counts()
     print("Distribution by income after:\n", (s/s.sum()))
@@ -47,9 +47,9 @@ def households_transition(households, household_controls, year, settings):
 
 # this is a list of parcel_ids which are to be treated as static
 @orca.injectable()
-def static_parcels(settings, parcels):
+def static_parcels(developer_settings, parcels):
     # list of geom_ids to not relocate
-    static_parcels = settings["static_parcels"]
+    static_parcels = developer_settings["static_parcels"]
     # geom_ids -> parcel_ids
     return geom_id_to_parcel_id(
         pd.DataFrame(index=static_parcels), parcels).index.values
@@ -356,7 +356,7 @@ def scheduled_development_events(buildings, development_projects, demolish_event
 @orca.injectable(autocall=False)
 def supply_and_demand_multiplier_func(demand, supply):
     s = demand / supply
-    settings = orca.get_injectable('settings')
+    settings = orca.get_injectable('price_settings')
     print("Number of submarkets where demand exceeds supply:", len(s[s > 1.0]))
     # print "Raw relationship of supply and demand\n", s.describe()
     supply_correction = settings["price_equilibration"]
@@ -434,17 +434,17 @@ def add_extra_columns_func(df):
 
 
 @orca.step()
-def alt_feasibility(parcels, settings,
+def alt_feasibility(parcels, developer_settings,
                     parcel_sales_price_sqft_func,
                     parcel_is_allowed_func):
-    kwargs = settings['feasibility']
+    kwargs = developer_settings['feasibility']
     config = sqftproforma.SqFtProFormaConfig()
     config.parking_rates["office"] = 1.5
     config.parking_rates["retail"] = 1.5
     config.building_efficiency = .85
     config.parcel_coverage = .85
     # use the cap rate from settings.yaml
-    config.cap_rate = settings["cap_rate"]
+    config.cap_rate = developer_settings["cap_rate"]
 
     utils.run_feasibility(parcels,
                           parcel_sales_price_sqft_func,
@@ -461,12 +461,12 @@ def alt_feasibility(parcels, settings,
 
 @orca.step()
 def residential_developer(feasibility, households, buildings, parcels, year,
-                          settings, summary, form_to_btype_func,
+                          developer_settings, summary, form_to_btype_func,
                           add_extra_columns_func, parcels_geography,
                           limits_settings, final_year,
                           residential_vacancy_rates):
 
-    kwargs = settings['residential_developer']
+    kwargs = developer_settings['residential_developer']
     res_vacancy = residential_vacancy_rates.to_frame()
     target_vacancy =  res_vacancy.loc[year].st_res_vac
 
@@ -591,9 +591,9 @@ def residential_developer(feasibility, households, buildings, parcels, year,
 
 @orca.step()
 def retail_developer(jobs, buildings, parcels, nodes, feasibility,
-                     settings, summary, add_extra_columns_func, net):
+                     developer_settings, summary, add_extra_columns_func, net):
 
-    dev_settings = settings['non_residential_developer']
+    dev_settings = developer_settings['non_residential_developer']
     all_units = dev.compute_units_to_build(
         len(jobs),
         buildings.job_spaces.sum(),
@@ -601,7 +601,7 @@ def retail_developer(jobs, buildings, parcels, nodes, feasibility,
 
     target = all_units * float(dev_settings['type_splits']["Retail"])
     # target here is in sqft
-    target *= settings["building_sqft_per_job"]["HS"]
+    target *= developer_settings["building_sqft_per_job"]["HS"]
 
     feasibility = feasibility.to_frame().loc[:, "retail"]
     feasibility = feasibility.dropna(subset=["max_profit"])
@@ -669,11 +669,11 @@ def retail_developer(jobs, buildings, parcels, nodes, feasibility,
 
 @orca.step()
 def office_developer(feasibility, jobs, buildings, parcels, year,
-                     settings, summary, form_to_btype_func,
+                     developer_settings, summary, form_to_btype_func,
                      add_extra_columns_func, parcels_geography,
                      limits_settings):
 
-    dev_settings = settings['non_residential_developer']
+    dev_settings = developer_settings['non_residential_developer']
 
     # I'm going to try a new way of computing this because the math the other
     # way is simply too hard.  Basically we used to try and apportion sectors
@@ -931,28 +931,28 @@ def make_network_from_settings(settings):
 
 
 @orca.injectable(cache=True)
-def net(settings):
+def net(accessibility_settings):
     nets = {}
-    pdna.reserve_num_graphs(len(settings["build_networks"]))
+    pdna.reserve_num_graphs(len(accessibility_settings["build_networks"]))
 
     # yeah, starting to hardcode stuff, not great, but can only
     # do nearest queries on the first graph I initialize due to crummy
     # limitation in pandana
-    for key in settings["build_networks"].keys():
+    for key in accessibility_settings["build_networks"].keys():
         nets[key] = make_network_from_settings(
-            settings['build_networks'][key]
+            accessibility_settings['build_networks'][key]
         )
 
     return nets
 
 
 @orca.step()
-def local_pois(settings):
+def local_pois(accessibility_settings):
     # because of the aforementioned limit of one netowrk at a time for the
     # POIS, as well as the large amount of memory used, this is now a
     # preprocessing step
     n = make_network(
-        settings['build_networks']['walk']['name'],
+        accessibility_settings['build_networks']['walk']['name'],
         "weight", 3000)
 
     n.init_pois(
@@ -978,7 +978,7 @@ def local_pois(settings):
 
 @orca.step()
 def neighborhood_vars(net):
-    nodes = networks.from_yaml(net["walk"], "neighborhood_vars.yaml")
+    nodes = networks.from_yaml(net["walk"], "accessibility/neighborhood_vars.yaml")
     nodes = nodes.replace(-np.inf, np.nan)
     nodes = nodes.replace(np.inf, np.nan)
     nodes = nodes.fillna(0)
@@ -989,7 +989,7 @@ def neighborhood_vars(net):
 
 @orca.step()
 def regional_vars(net):
-    nodes = networks.from_yaml(net["drive"], "regional_vars.yaml")
+    nodes = networks.from_yaml(net["drive"], "accessibility/regional_vars.yaml")
     nodes = nodes.fillna(0)
 
     nodes2 = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "accessibility/pandana/regional_poi_distances.csv"),
@@ -1001,12 +1001,12 @@ def regional_vars(net):
 
 
 @orca.step()
-def regional_pois(settings, landmarks):
+def regional_pois(accessibility_settings, landmarks):
     # because of the aforementioned limit of one netowrk at a time for the
     # POIS, as well as the large amount of memory used, this is now a
     # preprocessing step
     n = make_network(
-        settings['build_networks']['drive']['name'],
+        accessibility_settings['build_networks']['drive']['name'],
         "CTIMEV", 75)
 
     n.init_pois(
@@ -1028,7 +1028,7 @@ def regional_pois(settings, landmarks):
 
 @orca.step()
 def price_vars(net):
-    nodes2 = networks.from_yaml(net["walk"], "price_vars.yaml")
+    nodes2 = networks.from_yaml(net["walk"], "accessibility/price_vars.yaml")
     nodes2 = nodes2.fillna(0)
     print(nodes2.describe())
     nodes = orca.get_table('nodes')

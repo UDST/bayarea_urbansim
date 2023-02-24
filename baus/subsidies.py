@@ -22,7 +22,7 @@ def profit_to_prob_func(df):
     # probability options
     max_profit = df.max_profit.clip(1)
 
-    factor = float(orca.get_injectable("settings")[
+    factor = float(orca.get_injectable("developer_settings")[
         "profit_vs_return_on_cost_combination_factor"])
 
     df['return_on_cost'] = max_profit / df.total_cost
@@ -534,7 +534,7 @@ def subsidized_office_developer(feasibility, coffer, formula, year, add_extra_co
     summary.add_parcel_output(devs)
 
 
-def run_subsidized_developer(feasibility, parcels, buildings, households, acct_settings, settings, account, year, form_to_btype_func, 
+def run_subsidized_developer(feasibility, parcels, buildings, households, acct_settings, developer_settings, account, year, form_to_btype_func, 
                              add_extra_columns_func, summary, create_deed_restricted=False, policy_name="Unnamed"):
     """
     The subsidized residential developer model.
@@ -659,7 +659,7 @@ def run_subsidized_developer(feasibility, parcels, buildings, households, acct_s
         # disable stdout since developer is a bit verbose for this use case
         sys.stdout, old_stdout = StringIO(), sys.stdout
 
-        kwargs = settings['residential_developer']
+        kwargs = developer_settings['residential_developer']
         # step 9
         new_buildings = utils.run_developer(
             "residential",
@@ -752,16 +752,16 @@ def run_subsidized_developer(feasibility, parcels, buildings, households, acct_s
 
 
 @orca.step()
-def subsidized_residential_feasibility(parcels, settings, add_extra_columns_func, parcel_sales_price_sqft_func, parcel_is_allowed_func, 
-                                       parcels_geography, run_setup):
+def subsidized_residential_feasibility(parcels, developer_settings, parcel_sales_price_sqft_func, parcel_is_allowed_func, 
+                                       parcels_geography):
 
-    kwargs = settings['feasibility'].copy()
+    kwargs = developer_settings['feasibility'].copy()
     kwargs["only_built"] = False
     kwargs["forms_to_test"] = ["residential"]
 
     config = sqftproforma.SqFtProFormaConfig()
     # use the cap rate from settings.yaml
-    config.cap_rate = settings["cap_rate"]
+    config.cap_rate = developer_settings["cap_rate"]
 
     # step 1
     utils.run_feasibility(parcels,
@@ -794,7 +794,7 @@ def subsidized_residential_feasibility(parcels, settings, add_extra_columns_func
 
 @orca.step()
 def subsidized_residential_developer_vmt(households, buildings, add_extra_columns_func, parcels_geography, year, acct_settings, parcels,
-                                         settings, summary, coffer, form_to_btype_func, feasibility):
+                                         developer_settings, summary, coffer, form_to_btype_func, feasibility):
 
     feasibility = feasibility.to_frame()
     feasibility = feasibility.stack(level=0).reset_index(level=1, drop=True)
@@ -804,7 +804,7 @@ def subsidized_residential_developer_vmt(households, buildings, add_extra_column
                              buildings,
                              households,
                              acct_settings["vmt_settings"],
-                             settings,
+                             developer_settings,
                              coffer["vmt_res_acct"],
                              year,
                              form_to_btype_func,
@@ -816,7 +816,7 @@ def subsidized_residential_developer_vmt(households, buildings, add_extra_column
 
 @orca.step()
 def subsidized_residential_developer_jobs_housing(households, buildings, add_extra_columns_func, parcels_geography, year, parcels,
-                                                  summary, coffer, form_to_btype_func, settings, account_strategies):
+                                                  summary, coffer, form_to_btype_func, developer_settings, account_strategies):
 
     for key, acct in (account_strategies["acct_settings"]["jobs_housing_fee_settings"].items()):
 
@@ -832,7 +832,7 @@ def subsidized_residential_developer_jobs_housing(households, buildings, add_ext
                                  buildings,
                                  households,
                                  acct,
-                                 settings,
+                                 developer_settings,
                                  coffer[acct["name"]],
                                  year,
                                  form_to_btype_func,
@@ -849,7 +849,7 @@ def subsidized_residential_developer_jobs_housing(households, buildings, add_ext
 
 @orca.step()
 def subsidized_residential_developer_lump_sum_accts(run_setup, households, buildings, add_extra_columns_func, parcels_geography, year, 
-                                                    parcels, account_strategies, summary, coffer, form_to_btype_func, settings):
+                                                    parcels, account_strategies, summary, coffer, form_to_btype_func, developer_settings):
 
     for key, acct in account_strategies["acct_settings"]["lump_sum_accounts"].items():
 
@@ -870,7 +870,7 @@ def subsidized_residential_developer_lump_sum_accts(run_setup, households, build
                                  buildings,
                                  households,
                                  acct,
-                                 settings,
+                                 developer_settings,
                                  coffer[acct["name"]],
                                  year,
                                  form_to_btype_func,
@@ -886,7 +886,7 @@ def subsidized_residential_developer_lump_sum_accts(run_setup, households, build
 
 
 @orca.step()
-def subsidized_office_developer_vmt(run_setup, parcels, settings, coffer, buildings, year, account_strategies, add_extra_columns_func, summary):
+def subsidized_office_developer_vmt(run_setup, parcels, coffer, buildings, year, account_strategies, add_extra_columns_func, summary):
 
     vmt_acct_settings = account_strategies["acct_settings"]["vmt_settings"]
 
@@ -918,7 +918,7 @@ def subsidized_office_developer_vmt(run_setup, parcels, settings, coffer, buildi
 
 
 @orca.step()
-def subsidized_office_developer_lump_sum_accts(parcels, settings, coffer, buildings, year, account_strategies, add_extra_columns_func, summary):
+def subsidized_office_developer_lump_sum_accts(parcels, coffer, buildings, year, account_strategies, add_extra_columns_func, summary):
 
     for key, acct in account_strategies["acct_settings"]["office_lump_sum_accounts"].items():
 

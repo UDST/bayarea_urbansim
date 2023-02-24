@@ -241,7 +241,7 @@ def vmt_nonres_cat(buildings, vmt_fee_categories):
 
 
 @orca.column('buildings', cache=True)
-def residential_price(buildings, residential_units, settings):
+def residential_price(buildings, residential_units, developer_settings):
     """
     This was originally an orca.step in the ual code.  This allows model steps
     like 'price_vars' and 'feasibility' to read directly from the buildings
@@ -286,7 +286,7 @@ def residential_price(buildings, residential_units, settings):
     means = residential_units.to_frame(cols).groupby(['building_id']).mean()
 
     # Convert monthly rent to equivalent sale price
-    cap_rate = settings.get('cap_rate')
+    cap_rate = developer_settings.get('cap_rate')
     means['unit_residential_rent'] = \
         means.unit_residential_rent * 12 / cap_rate
 
@@ -494,10 +494,10 @@ def juris(parcels, parcels_geography):
 
 
 @orca.column('parcels', cache=True)
-def ave_sqft_per_unit(parcels, zones, settings):
+def ave_sqft_per_unit(parcels, zones, edits):
     s = misc.reindex(zones.ave_unit_sqft, parcels.zone_id)
 
-    clip = settings.get("ave_sqft_per_unit_clip", None)
+    clip = edits.get("ave_sqft_per_unit_clip", None)
     if clip is not None:
         s = s.clip(lower=clip['lower'], upper=clip['upper'])
 
@@ -514,7 +514,7 @@ def ave_sqft_per_unit(parcels, zones, settings):
       - threshold: 150
         max: 800
     '''
-    cfg = settings.get("clip_sqft_per_unit_based_on_dua", None)
+    cfg = edits.get("clip_sqft_per_unit_based_on_dua", None)
     if cfg is not None:
         for clip in cfg:
             s[parcels.max_dua >= clip["threshold"]] = clip["max"]
@@ -553,7 +553,7 @@ def parcel_average_price(use, quantile=.5):
 
 @orca.injectable("parcel_is_allowed_func", autocall=False)
 def parcel_is_allowed(form):
-    settings = orca.get_injectable("settings")
+    zoning_adjusters = orca.get_injectable("zoning_adjusters")
     mapping = orca.get_injectable("mapping")
     form_to_btype = mapping["form_to_btype"]
 
@@ -580,9 +580,9 @@ def parcel_is_allowed(form):
 
     # this is a fun modification - when we get too much retail in jurisdictions
     # we can just eliminate all retail
-    if "eliminate_retail_zoning_from_juris" in settings and form == "retail":
+    if "eliminate_retail_zoning_from_juris" in zoning_adjusters and form == "retail":
         allowed *= ~orca.get_table("parcels").juris.isin(
-            settings["eliminate_retail_zoning_from_juris"])
+            zoning_adjusters["eliminate_retail_zoning_from_juris"])
 
     return allowed.astype("bool")
 
@@ -683,7 +683,7 @@ def built_far(parcels):
 
 # actual columns start here
 @orca.column('parcels')
-def max_far(parcels_zoning_calculations, parcels, settings):
+def max_far(parcels_zoning_calculations, parcels, edits):
     # first we combine the zoning columns
     s = parcels_zoning_calculations.effective_max_far * ~parcels.nodev
 
@@ -692,7 +692,7 @@ def max_far(parcels_zoning_calculations, parcels, settings):
     s2 = parcels.urban_footprint.map({0: 0, 1: np.nan})
     s = pd.concat([s, s2], axis=1).min(axis=1)
 
-    if settings["dont_build_most_dense_building"]:
+    if edits["dont_build_most_dense_building"]:
         # in this case we shrink the zoning such that we don't built the
         # tallest building in a given zone
         # if there no building in the zone currently, we make the max_far = .2
@@ -714,7 +714,7 @@ def built_dua(parcels):
 
 
 @orca.column('parcels')
-def max_dua(parcels_zoning_calculations, parcels, settings):
+def max_dua(parcels_zoning_calculations, parcels, edits):
     # first we combine the zoning columns
     s = parcels_zoning_calculations.effective_max_dua * ~parcels.nodev
 
@@ -723,7 +723,7 @@ def max_dua(parcels_zoning_calculations, parcels, settings):
     s2 = parcels.urban_footprint.map({0: .01, 1: np.nan})
     s = pd.concat([s, s2], axis=1).min(axis=1)
 
-    if settings["dont_build_most_dense_building"]:
+    if edits["dont_build_most_dense_building"]:
         # in this case we shrink the zoning such that we don't built the
         # tallest building in a given zone
         # if there no building in the zone currently, we make the max_dua = 4
@@ -742,10 +742,10 @@ def general_type(parcels, buildings):
 
 # for debugging reasons this is split out into its own function
 @orca.column('parcels')
-def building_purchase_price_sqft(parcels, settings):
+def building_purchase_price_sqft(parcels, developer_settings):
     price = pd.Series(0, parcels.index)
     gentype = parcels.general_type
-    cap_rate = settings["cap_rate"]
+    cap_rate = developer_settings["cap_rate"]
     # all of these factors are above one which does some discouraging of
     # redevelopment - this will need to be recalibrated when the new
     # developer model comes into play
@@ -798,8 +798,8 @@ def county(parcels, mapping):
 
 
 @orca.column('parcels', cache=True)
-def cost_shifters(parcels, settings):
-    return parcels.county.map(settings["cost_shifters"])
+def cost_shifters(parcels, cost_shifters):
+    return parcels.county.map(cost_shifters["cost_shifters"])
 
 
 @orca.column('parcels', cache=True)

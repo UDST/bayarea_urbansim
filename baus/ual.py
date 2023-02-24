@@ -574,7 +574,7 @@ def initialize_new_units(buildings, residential_units):
 
 
 @orca.step()
-def assign_tenure_to_new_units(residential_units, households, settings):
+def assign_tenure_to_new_units(residential_units, households, developer_settings):
     """
     This data maintenance step assigns tenure to new residential units.
     Tenure is determined by comparing the fitted sale price and fitted
@@ -616,7 +616,7 @@ def assign_tenure_to_new_units(residential_units, households, settings):
     units = units[~units.tenure.isin(['own', 'rent'])]
 
     # Convert monthly rent to equivalent sale price
-    cap_rate = settings.get('cap_rate')
+    cap_rate = developer_settings.get('cap_rate')
     units['unit_residential_rent'] = \
         units.unit_residential_rent * 12 / cap_rate
 
@@ -706,13 +706,13 @@ def save_intermediate_tables(households, buildings, parcels,
 # outcome variable non_residential_price
 @orca.step('nrh_simulate')
 def nrh_simulate(buildings, aggregations):
-    return utils.hedonic_simulate('nrh.yaml', buildings, aggregations,
+    return utils.hedonic_simulate('hedonics/nrh.yaml', buildings, aggregations,
                                   "non_residential_rent")
 
 
 @orca.step()
 def rsh_estimate(buildings, aggregations):
-    return utils.hedonic_estimate("rsh.yaml", buildings, aggregations)
+    return utils.hedonic_estimate("/hedonics/rsh.yaml", buildings, aggregations)
 
 
 @orca.step('rrh_estimate')
@@ -725,24 +725,24 @@ def rrh_estimate(craigslist, aggregations):
     -----------------
     - 'craigslist' table and others, as defined in the yaml config
     """
-    return utils.hedonic_estimate(cfg='rrh.yaml',
+    return utils.hedonic_estimate(cfg='hedonics/rrh.yaml',
                                   tbl=craigslist,
                                   join_tbls=aggregations)
 
 
-def _mtc_clip(table, col_name, settings, price_scale=1):
+def _mtc_clip(table, col_name, price_settings, price_scale=1):
     # This is included to match the MTC hedonic model steps, with 'price_scale'
     # adjusting the clip bounds from price to monthly rent if needed.
 
-    if "rsh_simulate" in settings:
-        low = float(settings["rsh_simulate"]["low"]) * price_scale
-        high = float(settings["rsh_simulate"]["high"]) * price_scale
+    if "rsh_simulate" in price_settings:
+        low = float(price_settings["rsh_simulate"]["low"]) * price_scale
+        high = float(price_settings["rsh_simulate"]["high"]) * price_scale
         table.update_col(col_name, table[col_name].clip(low, high))
         print("Clipping produces\n", table[col_name].describe())
 
 
 @orca.step()
-def rsh_simulate(residential_units, aggregations, settings):
+def rsh_simulate(residential_units, aggregations, price_settings):
     """
     This uses the MTC's model specification from rsh.yaml, but
     generates unit-level price predictions rather than building-level.
@@ -751,17 +751,17 @@ def rsh_simulate(residential_units, aggregations, settings):
     -----------------
     - tk
     """
-    utils.hedonic_simulate(cfg='rsh.yaml',
+    utils.hedonic_simulate(cfg='hedonics/rsh.yaml',
                            tbl=residential_units,
                            join_tbls=aggregations,
                            out_fname='unit_residential_price')
 
-    _mtc_clip(residential_units, 'unit_residential_price', settings)
+    _mtc_clip(residential_units, 'unit_residential_price', price_settings)
     return
 
 
 @orca.step()
-def rrh_simulate(residential_units, aggregations, settings):
+def rrh_simulate(residential_units, aggregations, price_settings):
     """
     This uses an altered hedonic specification to generate
     unit-level rent predictions.
@@ -770,13 +770,12 @@ def rrh_simulate(residential_units, aggregations, settings):
     -----------------
     - tk
     """
-    utils.hedonic_simulate(cfg='rrh.yaml',
+    utils.hedonic_simulate(cfg='hedonics/rrh.yaml',
                            tbl=residential_units,
                            join_tbls=aggregations,
                            out_fname='unit_residential_rent')
 
-    _mtc_clip(residential_units, 'unit_residential_rent',
-              settings, price_scale=0.05/12)
+    _mtc_clip(residential_units, 'unit_residential_rent', price_settings, price_scale=0.05/12)
     return
 
 
@@ -835,7 +834,7 @@ def households_relocation(households, settings):
 
 @orca.step()
 def hlcm_owner_estimate(households, residential_units, aggregations):
-    return utils.lcm_estimate(cfg="hlcm_owner.yaml",
+    return utils.lcm_estimate(cfg="location_choice/hlcm_owner.yaml",
                               choosers=households,
                               chosen_fname="unit_id",
                               buildings=residential_units,
@@ -844,7 +843,7 @@ def hlcm_owner_estimate(households, residential_units, aggregations):
 
 @orca.step()
 def hlcm_renter_estimate(households, residential_units, aggregations):
-    return utils.lcm_estimate(cfg="hlcm_renter.yaml",
+    return utils.lcm_estimate(cfg="location_choice/hlcm_renter.yaml",
                               choosers=households,
                               chosen_fname="unit_id",
                               buildings=residential_units,
@@ -853,23 +852,23 @@ def hlcm_renter_estimate(households, residential_units, aggregations):
 
 # use one core hlcm for the hlcms below, with different yaml files
 def hlcm_simulate(households, residential_units, aggregations,
-                  settings, yaml_name, equilibration_name):
+                  price_settings, yaml_name, equilibration_name):
 
-    return utils.lcm_simulate(cfg=yaml_name,
+    return utils.lcm_simulate(cfg="location_choice/"+yaml_name,
                               choosers=households,
                               buildings=residential_units,
                               join_tbls=aggregations,
                               out_fname='unit_id',
                               supply_fname='num_units',
                               vacant_fname='vacant_units',
-                              enable_supply_correction=settings.get(
+                              enable_supply_correction=price_settings.get(
                                 equilibration_name, None),
                               cast=True)
 
 
 @orca.step()
 def hlcm_owner_simulate(households, residential_units,
-                        aggregations, settings):
+                        aggregations, price_settings):
 
     # Note that the submarket id (zone_id) needs to be in the table of
     # alternatives, for supply/demand equilibration, and needs to NOT be in the
@@ -879,7 +878,7 @@ def hlcm_owner_simulate(households, residential_units,
     correct_alternative_filters_sample(residential_units, households, 'own')
 
     hlcm_simulate(orca.get_table('own_hh'), orca.get_table('own_units'),
-                  aggregations, settings, "hlcm_owner.yaml",
+                  aggregations, price_settings, "hlcm_owner.yaml",
                   'price_equilibration')
 
     update_unit_ids(households, 'own')
@@ -887,27 +886,26 @@ def hlcm_owner_simulate(households, residential_units,
 
 @orca.step()
 def hlcm_owner_lowincome_simulate(households, residential_units,
-                                  aggregations, settings):
+                                  aggregations, price_settings):
 
     # Pre-filter the alternatives to avoid over-pruning (PR 103)
     correct_alternative_filters_sample(residential_units, households, 'own')
 
     hlcm_simulate(orca.get_table('own_hh'), orca.get_table('own_units'),
-                  aggregations, settings, "hlcm_owner_lowincome.yaml",
+                  aggregations, price_settings, "hlcm_owner_lowincome.yaml",
                   'price_equilibration')
 
     update_unit_ids(households, 'own')
 
 
 @orca.step()
-def hlcm_renter_simulate(households, residential_units, aggregations,
-                         settings):
+def hlcm_renter_simulate(households, residential_units, aggregations, price_settings):
 
     # Pre-filter the alternatives to avoid over-pruning (PR 103)
     correct_alternative_filters_sample(residential_units, households, 'rent')
 
     hlcm_simulate(orca.get_table('rent_hh'), orca.get_table('rent_units'),
-                  aggregations, settings, "hlcm_renter.yaml",
+                  aggregations, price_settings, "hlcm_renter.yaml",
                   'rent_equilibration')
 
     update_unit_ids(households, 'rent')
@@ -915,13 +913,13 @@ def hlcm_renter_simulate(households, residential_units, aggregations,
 
 @orca.step()
 def hlcm_renter_lowincome_simulate(households, residential_units, aggregations,
-                                   settings):
+                                   price_settings):
 
     # Pre-filter the alternatives to avoid over-pruning (PR 103)
     correct_alternative_filters_sample(residential_units, households, 'rent')
 
     hlcm_simulate(orca.get_table('rent_hh'), orca.get_table('rent_units'),
-                  aggregations, settings, "hlcm_renter_lowincome.yaml",
+                  aggregations, price_settings, "hlcm_renter_lowincome.yaml",
                   'rent_equilibration')
 
     update_unit_ids(households, 'rent')
@@ -1006,78 +1004,78 @@ def drop_tenure_predict_filters_from_yaml(in_yaml_name, out_yaml_name):
 @orca.step()
 def hlcm_owner_simulate_no_unplaced(households, residential_units,
                                     year, final_year,
-                                    aggregations, settings):
+                                    aggregations, price_settings):
 
     # only run in the last year, but make sure to run before summaries
     # if year != final_year:
     #     return
 
     drop_tenure_predict_filters_from_yaml(
-        "hlcm_owner.yaml",
-        "hlcm_owner_no_unplaced.yaml")
+        "location_choice/hlcm_owner.yaml",
+        "location_choice/hlcm_owner_no_unplaced.yaml")
 
     return hlcm_simulate(households, residential_units, aggregations,
-                         settings, "hlcm_owner_no_unplaced.yaml",
+                         price_settings, "hlcm_owner_no_unplaced.yaml",
                          "price_equilibration")
 
 
 @orca.step()
 def hlcm_owner_lowincome_simulate_no_unplaced(households, residential_units,
                                               year, final_year,
-                                              aggregations, settings):
+                                              aggregations, price_settings):
 
     # only run in the last year, but make sure to run before summaries
     # if year != final_year:
     #     return
 
     drop_tenure_predict_filters_from_yaml(
-        "hlcm_owner_lowincome.yaml",
-        "hlcm_owner_lowincome_no_unplaced.yaml")
+        "location_choice/hlcm_owner_lowincome.yaml",
+        "location_choice/hlcm_owner_lowincome_no_unplaced.yaml")
 
     return hlcm_simulate(households, residential_units, aggregations,
-                         settings, "hlcm_owner_lowincome_no_unplaced.yaml",
+                         price_settings, "hlcm_owner_lowincome_no_unplaced.yaml",
                          "price_equilibration")
 
 
 @orca.step()
 def hlcm_renter_simulate_no_unplaced(households, residential_units,
                                      year, final_year,
-                                     aggregations, settings):
+                                     aggregations, price_settings):
 
     # only run in the last year, but make sure to run before summaries
     # if year != final_year:
     #     return
 
     drop_tenure_predict_filters_from_yaml(
-        "hlcm_renter.yaml",
-        "hlcm_renter_no_unplaced.yaml")
+        "location_choice/hlcm_renter.yaml",
+        "location_choice/hlcm_renter_no_unplaced.yaml")
 
     return hlcm_simulate(households, residential_units, aggregations,
-                         settings, "hlcm_renter_no_unplaced.yaml",
+                         price_settings, "hlcm_renter_no_unplaced.yaml",
                          "rent_equilibration")
 
 
 @orca.step()
 def hlcm_renter_lowincome_simulate_no_unplaced(households, residential_units,
                                                year, final_year,
-                                               aggregations, settings):
+                                               aggregations, price_settings):
 
     # only run in the last year, but make sure to run before summaries
     # if year != final_year:
     #     return
 
     drop_tenure_predict_filters_from_yaml(
-        "hlcm_renter_lowincome.yaml",
-        "hlcm_renter_lowincome_no_unplaced.yaml")
+        "location_choice/hlcm_renter_lowincome.yaml",
+        "location_choice/hlcm_renter_lowincome_no_unplaced.yaml")
 
     return hlcm_simulate(households, residential_units, aggregations,
-                         settings, "hlcm_renter_lowincome_no_unplaced.yaml",
+                         price_settings, "hlcm_renter_lowincome_no_unplaced.yaml",
                          "rent_equilibration")
 
 
 @orca.step()
-def balance_rental_and_ownership_hedonics(households, settings,
-                                          residential_units):
+def balance_rental_and_ownership_hedonics(households, developer_settings, residential_units):
+
     hh_rent_own = households.tenure.value_counts()
     unit_rent_own = residential_units.tenure.value_counts()
 
@@ -1093,8 +1091,8 @@ def balance_rental_and_ownership_hedonics(households, settings,
     print("Ratio of renter utilization to owner utilization = %.3f" %
           utilization_ratio)
 
-    if "original_cap_rate" not in settings:
-        settings["original_cap_rate"] = settings["cap_rate"]
+    if "original_cap_rate" not in developer_settings:
+        developer_settings["original_cap_rate"] = developer_settings["cap_rate"]
 
     factor = 1.4
     # move the ratio away from zero to have more of an impact
@@ -1108,7 +1106,7 @@ def balance_rental_and_ownership_hedonics(households, settings,
     # here means renter utilization is higher than owner utilization
     # meaning rent price should go up meaning cap rate should go down
     # FIXME these might need a parameter to spread or narrow the impact
-    settings["cap_rate"] = settings["original_cap_rate"] /\
+    developer_settings["cap_rate"] = developer_settings["original_cap_rate"] /\
         utilization_ratio
 
-    print("New cap rate = %.2f" % settings["cap_rate"])
+    print("New cap rate = %.2f" % developer_settings["cap_rate"])

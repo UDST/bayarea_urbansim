@@ -1,0 +1,101 @@
+# capitalization rate for developer feasibility
+cap_rate: 0.04
+
+# the weight to use to combine profit vs ROC to create a probability.  A 1.0 would mean
+# equal weights.  0.5 means profit is half as much as ROC
+profit_vs_return_on_cost_combination_factor: 0.5
+
+
+# settings for the feasibility model - parcel_filter is very important and is a rule of
+# which parcels to consider - we don't consider nodev properties, historic properties, and
+# optionally we don't look at small lot single family
+# pass_through are columns not used by the developer but which go in the debug output
+feasibility:
+  parcel_filter: (nodev != 1 and manual_nodev != 1 and sdem != 1 and oldest_building > 1906
+    and oldest_building_age > 20 and (total_residential_units != 1 or parcel_acres > 1.0)
+    and first_building_type != 'HO' and first_building_type != 'SC')
+  residential_to_yearly: True
+  simple_zoning: True
+  pass_through:
+    - oldest_building
+    - total_sqft
+    - total_residential_units
+    - max_far
+    - max_dua
+    - land_cost
+    - residential
+    - min_max_fars
+    - max_height
+    - building_purchase_price
+    - building_purchase_price_sqft
+    - residential_sales_price_sqft
+    - pda_id
+    - cat_id
+    - tra_id
+    - ppa_id
+    - sesit_id
+    - coc_id
+    - juris
+    - county
+    - superdistrict
+    - geom_id
+    - vmt_res_cat
+    - vmt_nonres_cat
+
+# a list of parcel geom ids which urbansim doesn't touch - this are viewed as exceptions
+# and are often dealt with using specific models (SDEM and possibly proportional jobs model)
+# which ignore this list
+static_parcels:
+  - 11280465768398 # city hall
+  - 2240580234395 # sf state
+  - 7299494955245 # sj state
+  - 13202883289710 # sj state
+  - 6193503633797 # sj state
+  - 8603860488630 # sj state
+  - 8173572322083 # ucb
+  - 14259504015679 # labs
+  - 3473860030354 # sfo
+  - 11976417381057 # sf general
+  - 5600199824880 # more sf gen
+  - 9143399820283
+  - 2161358104676
+  - 15636310238820
+  - 14512305680993 # sonoma state
+  - 15424804982410 # cal state east bay
+  - 7414256675266 # cal state east bay
+  - 8817315949318 # san quentin
+  - 12668875358422 # san quentin
+
+
+# settings that get passed to the residential developer as kwargs
+residential_developer:
+  min_unit_size: 1000
+  bldg_sqft_per_job: 400
+  max_parcel_size: 150000000
+
+# same as above for non-res
+non_residential_developer:
+  kwargs:
+    target_vacancy: .05
+    bldg_sqft_per_job: 400
+  type_splits:
+    Industrial: 0.0
+    Retail: 0.2
+    Office: 0.8
+
+# jobs sqft per building type (for existing buildings (everything below?)
+building_sqft_per_job:
+  HS: 400
+  HT: 400
+  HM: 400
+  OF: 355
+  HO: 1161
+  SC: 470
+  IL: 661
+  IW: 960
+  IH: 825
+  RS: 445
+  RB: 445
+  MR: 383
+  MT: 383
+  ME: 383

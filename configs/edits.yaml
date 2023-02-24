@@ -1,0 +1,34 @@
+# sqft per unit is often bad so we clip it to certain sizes - these are the
+# sizes the developer model will be testing
+ave_sqft_per_unit_clip:
+  lower: 800
+  upper: 2500
+
+
+# we don't have great sqft_per_unit info across the bay area (building data
+# is poor on this metric) so we use DUA to get a clue as to sqft per unit
+# we assume high DUA areas will yield slightly smaller units
+clip_sqft_per_unit_based_on_dua:
+  - threshold: 50
+    max: 1000
+  - threshold: 100
+    max: 900
+  - threshold: 150
+    max: 800
+
+
+# a settings to not build the most dense building in any zone, even if zoning allows
+# it - reduces zoning to match the most dense building
+dont_build_most_dense_building: True
+
+
+# convert square meters to square feet
+parcel_size_factor: 10.764
+
+
+# these are the tables the get auto-merged to buildings/parcels in the hedonic and lcms
+aggregation_tables:
+  - nodes
+  - tmnodes
+  - logsums
+  - buildings
