@@ -314,6 +314,18 @@ def zoning_existing(parcels, zoning_lookup):
 
 
 @orca.table(cache=True)
+def proportional_retail_jobs_forecast():
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "zone_forecasts/proportional_retail_jobs_forecast.csv"), 
+                       index_col="juris")
+
+
+@orca.table(cache=True)
+def proportational_gov_ed_jobs_forecast():
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "zone_forecasts/proportational_gov_ed_jobs_forecast.csv"), 
+                       index_col="Taz")
+
+
+@orca.table(cache=True)
 def new_tpp_id():
     return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/edits/tpp_id_2016.csv"),
                        index_col="parcel_id")
@@ -337,22 +349,16 @@ def parcel_to_maz():
 
 
 @orca.table(cache=True)
-def county_forecast_inputs():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "regional_controls/county_forecast_inputs.csv"), 
-                       index_col="COUNTY")
+def tm2_emp26_employment_forecast():
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "zone_forecasts/tm2_emp26_county_employment_forecast.csv"))
 
 
 @orca.table(cache=True)
-def county_employment_forecast():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "regional_controls/county_employment_forecast.csv"))
-
-
-@orca.table(cache=True)
-def taz2_forecast_inputs(regional_demographic_forecast):
-    t2fi = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "zone_forecasts/taz2_forecast_inputs.csv"), 
+def tm2_taz2_forecast_inputs(tm1_tm2_regional_demographic_forecast):
+    t2fi = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "zone_forecasts/tm2_taz2_forecast_inputs.csv"), 
                        dtype={'TAZ': np.int64}, index_col='TAZ').replace('#DIV/0!', np.nan)
 
-    rdf = regional_demographic_forecast.to_frame()
+    rdf = tm1_tm2_regional_demographic_forecast.to_frame()
     # apply regional share of hh by size to MAZs with no households in 2010
     t2fi.loc[t2fi.shrw0_2010.isnull(), 'shrw0_2010'] = rdf.loc[rdf.year == 2010, 'shrw0'].values[0]
     t2fi.loc[t2fi.shrw1_2010.isnull(), 'shrw1_2010'] = rdf.loc[rdf.year == 2010, 'shrw1'].values[0]
@@ -382,9 +388,9 @@ def empsh_to_empsix():
 
 
 @orca.table(cache=True)
-def maz_forecast_inputs(regional_demographic_forecast):
-    rdf = regional_demographic_forecast.to_frame()
-    mfi = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "zone_forecasts/maz_forecast_inputs.csv"),
+def tm1_tm2_maz_forecast_inputs(tm1_tm2_regional_demographic_forecast):
+    rdf = tm1_tm2_regional_demographic_forecast.to_frame()
+    mfi = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "zone_forecasts/tm1_tm2_maz_forecast_inputs.csv"),
                       dtype={'MAZ': np.int64}, index_col='MAZ').replace('#DIV/0!', np.nan)
 
     # apply regional share of hh by size to MAZs with no households in 2010
@@ -688,8 +694,8 @@ def household_controls_unstacked():
 
 
 @orca.table(cache=True)
-def regional_demographic_forecast():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "regional_controls/regional_demographic_forecast.csv"))
+def tm1_tm2_regional_demographic_forecast():
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "zone_forecasts/tm1_tm2_regional_demographic_forecast.csv"))
 
 
 # the following overrides household_controls
@@ -736,15 +742,9 @@ def employment_controls(employment_controls_unstacked):
 
 
 @orca.table(cache=True)
-def zone_forecast_inputs():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "zone_forecasts/zone_forecast_inputs.csv"), 
-                       dtype={'zone_id': np.int64}, index_col="zone_id")
-
-
-@orca.table(cache=True)
-def taz_forecast_inputs():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "zone_forecasts/taz_forecast_inputs.csv"), 
-                       dtype={'TAZ1454': np.int64}, index_col="TAZ1454")
+def tm1_taz1_forecast_inputs():
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "zone_forecasts/tm1_taz1_forecast_inputs.csv"), 
+                       dtype={'TAZ1454': np.int64, 'zone_id': np.int64})
 
 
 # this is the set of categories by zone of sending and receiving zones
