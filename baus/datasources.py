@@ -320,7 +320,7 @@ def proportional_retail_jobs_forecast():
 
 
 @orca.table(cache=True)
-def proportational_gov_ed_jobs_forecast():
+def proportional_gov_ed_jobs_forecast():
     return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "zone_forecasts/proportional_gov_ed_jobs_forecast.csv"), 
                        index_col="Taz")
 
