@@ -288,7 +288,7 @@ def household_relocation(households, household_relocation_rates, run_setup, rent
 # just adding capacity on an existing parcel, by adding one building at a time
 @orca.step()
 def scheduled_development_events(buildings, development_projects, demolish_events, summary, year, parcels, mapping, years_per_iter, 
-                                 parcels_geography, building_sqft_per_job, vmt_fee_categories, static_parcels, base_year):
+                                 parcels_geography, building_sqft_per_job, vmt_fee_categories, static_parcels, base_year, run_setup):
     # first demolish
     # 6/3/20: current approach is to grab projects from the simulation year
     # and previous four years, however the base year is treated differently,
@@ -334,8 +334,10 @@ def scheduled_development_events(buildings, development_projects, demolish_event
     new_buildings["subsidized"] = False
 
     new_buildings["zone_id"] = misc.reindex(parcels.zone_id, new_buildings.parcel_id)
-    new_buildings["vmt_res_cat"] = misc.reindex(vmt_fee_categories.res_cat, new_buildings.zone_id)
-    new_buildings["vmt_nonres_cat"] = misc.reindex(vmt_fee_categories.nonres_cat, new_buildings.zone_id)
+    if run_setup['run_vmt_fee_res_for_res_strategy']:
+        new_buildings["vmt_res_cat"] = misc.reindex(vmt_fee_categories.res_cat, new_buildings.zone_id)
+    if (run_setup['run_vmt_fee_com_for_com_strategy'] or run_setup['run_vmt_fee_com_for_res_strategy']):
+        new_buildings["vmt_nonres_cat"] = misc.reindex(vmt_fee_categories.nonres_cat, new_buildings.zone_id)
     del new_buildings["zone_id"]
 
     new_buildings["pda_id"] = parcels_geography.pda_id.loc[new_buildings.parcel_id].values

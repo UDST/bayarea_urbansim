@@ -232,12 +232,14 @@ def historic(buildings):
 
 @orca.column('buildings', cache=True)
 def vmt_res_cat(buildings, vmt_fee_categories):
-    return misc.reindex(vmt_fee_categories.res_cat, buildings.zone_id)
+    if run_setup['run_vmt_fee_res_for_res_strategy']:
+        return misc.reindex(vmt_fee_categories.res_cat, buildings.zone_id)
 
 
 @orca.column('buildings', cache=True)
 def vmt_nonres_cat(buildings, vmt_fee_categories):
-    return misc.reindex(vmt_fee_categories.nonres_cat, buildings.zone_id)
+    if (run_setup['run_vmt_fee_com_for_com_strategy'] or run_setup['run_vmt_fee_com_for_res_strategy']):
+        return misc.reindex(vmt_fee_categories.nonres_cat, buildings.zone_id)
 
 
 @orca.column('buildings', cache=True)
@@ -359,59 +361,56 @@ def height(parcels):
 
 
 @orca.column('parcels', cache=True)
-def vmt_res_cat(parcels, vmt_fee_categories):
-    return misc.reindex(vmt_fee_categories.res_cat, parcels.zone_id)
+def vmt_res_cat(parcels, run_setup, vmt_fee_categories):
+    if (run_setup['run_vmt_fee_com_for_com_strategy'] or run_setup['run_vmt_fee_com_for_res_strategy']):
+        return misc.reindex(vmt_fee_categories.res_cat, parcels.zone_id)
 
 
 @orca.column('parcels', cache=True)
 def vmt_nonres_cat(parcels, vmt_fee_categories):
-    return misc.reindex(vmt_fee_categories.nonres_cat, parcels.zone_id)
+    if run_setup['run_vmt_fee_res_for_res_strategy']:
+        return misc.reindex(vmt_fee_categories.nonres_cat, parcels.zone_id)
 
 
 # residential fees
 @orca.column('parcels', cache=True)
 def vmt_res_fees(parcels, account_strategies, run_setup):
-    vmt_settings = account_strategies["acct_settings"]["vmt_settings"]
-    res_fees = parcels.vmt_res_cat.map(vmt_settings["res_for_res_fee_amounts"]) if run_setup["run_vmt_fee_res_for_res_strategy"] else 0
-
-    return res_fees
+    if run_setup['run_vmt_fee_res_for_res_strategy']:
+        vmt_settings = account_strategies["acct_settings"]["vmt_settings"]
+        res_fees = parcels.vmt_res_cat.map(vmt_settings["res_for_res_fee_amounts"]) if run_setup["run_vmt_fee_res_for_res_strategy"] else 0
+        return res_fees
 
 
 # commercial fees
 @orca.column('parcels', cache=True)
 def vmt_com_fees(parcels, account_strategies, run_setup):
-    vmt_settings = account_strategies["acct_settings"]["vmt_settings"]
-
-    com_for_res_fees = parcels.vmt_nonres_cat.map(vmt_settings["com_for_res_fee_amounts"]) if \
-        run_setup["run_vmt_fee_com_for_res_strategy"] else 0
-    com_for_com_fees = parcels.vmt_nonres_cat.map(vmt_settings["com_for_com_fee_amounts"]) if \
-        run_setup ["run_vmt_fee_com_for_com_strategy"] else 0
-    com_fees = com_for_res_fees + com_for_com_fees
-
-    return com_fees
+    if (run_setup['run_vmt_fee_com_for_com_strategy'] or run_setup['run_vmt_fee_com_for_res_strategy']):
+        vmt_settings = account_strategies["acct_settings"]["vmt_settings"]
+        com_for_res_fees = parcels.vmt_nonres_cat.map(vmt_settings["com_for_res_fee_amounts"]) if \
+            run_setup["run_vmt_fee_com_for_res_strategy"] else 0
+        com_for_com_fees = parcels.vmt_nonres_cat.map(vmt_settings["com_for_com_fee_amounts"]) if \
+            run_setup ["run_vmt_fee_com_for_com_strategy"] else 0
+        com_fees = com_for_res_fees + com_for_com_fees
+        return com_fees
 
 
 # compute the fees per unit for each parcel
 # (since feees are specified spatially)
 @orca.column('parcels', cache=True)
 def fees_per_unit(parcels, run_setup):
-    s = pd.Series(0, index=parcels.index)
-
     if run_setup["run_vmt_fee_res_for_res_strategy"]:
+        s = pd.Series(0, index=parcels.index)
         s += parcels.vmt_res_fees
-
-    return s
+        return s
 
 
 # since this is by sqft this implies commercial
 @orca.column('parcels', cache=True)
 def fees_per_sqft(parcels, run_setup):
-    s = pd.Series(0, index=parcels.index)
-
     if run_setup["run_vmt_fee_com_for_com_strategy"] or run_setup["run_vmt_fee_com_for_res_strategy"]:
+        s = pd.Series(0, index=parcels.index)
         s += parcels.vmt_com_fees
-
-    return s
+        return s
 
 
 @orca.column('parcels', cache=True)
@@ -830,7 +829,8 @@ def subregion(taz_geography, parcels):
 
 @orca.column('parcels', cache=True)
 def vmt_code(parcels, vmt_fee_categories):
-    return misc.reindex(vmt_fee_categories.res_cat, parcels.zone_id)
+    if run_setup['run_vmt_fee_res_for_res_strategy']:
+        return misc.reindex(vmt_fee_categories.res_cat, parcels.zone_id)
 
 
 @orca.column('parcels', cache=True)
