@@ -341,7 +341,7 @@ def policy_modifications_of_profit(feasibility, parcels):
 
 
 @orca.step()
-def calculate_vmt_fees(run_setup, account_strategies, year, buildings, vmt_fee_categories, coffer, summary, years_per_iter):
+def calculate_vmt_fees(run_setup, account_strategies, year, buildings, coffer, summary, years_per_iter):
 
     vmt_settings = account_strategies["acct_settings"]["vmt_settings"]
 

@@ -255,7 +255,7 @@ def jobs_relocation(jobs, employment_relocation_rates, run_setup, employment_rel
 
 
 @orca.step()
-def household_relocation(households, household_relocation_rates, run_setup, renter_protections_relocation_rates, settings, static_parcels, buildings):
+def household_relocation(households, household_relocation_rates, run_setup, static_parcels, buildings):
 
     # get buildings that are on those parcels
     static_buildings = buildings.index[buildings.parcel_id.isin(static_parcels)]
@@ -263,6 +263,7 @@ def household_relocation(households, household_relocation_rates, run_setup, rent
     rates = household_relocation_rates.local
     # update the relocation rates with the renter protections strategy if applicable
     if run_setup["run_renter_protections_strategy"]:
+        renter_protections_relocation_rates = orca.get_table("renter_protections_relocation_rates")
         rates = pd.concat([rates, renter_protections_relocation_rates.to_frame()]).drop_duplicates(subset=["zone_id", "base_income_quartile", "tenure"], keep="last")
         rates = rates.reset_index(drop=True)
     
@@ -288,7 +289,7 @@ def household_relocation(households, household_relocation_rates, run_setup, rent
 # just adding capacity on an existing parcel, by adding one building at a time
 @orca.step()
 def scheduled_development_events(buildings, development_projects, demolish_events, summary, year, parcels, mapping, years_per_iter, 
-                                 parcels_geography, building_sqft_per_job, vmt_fee_categories, static_parcels, base_year, run_setup):
+                                 parcels_geography, building_sqft_per_job, static_parcels, base_year, run_setup):
     # first demolish
     # 6/3/20: current approach is to grab projects from the simulation year
     # and previous four years, however the base year is treated differently,
