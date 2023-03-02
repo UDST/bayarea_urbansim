@@ -336,8 +336,10 @@ def scheduled_development_events(buildings, development_projects, demolish_event
 
     new_buildings["zone_id"] = misc.reindex(parcels.zone_id, new_buildings.parcel_id)
     if run_setup['run_vmt_fee_res_for_res_strategy']:
+        vmt_fee_categories = orca.get_table("vmt_fee_categories")
         new_buildings["vmt_res_cat"] = misc.reindex(vmt_fee_categories.res_cat, new_buildings.zone_id)
     if (run_setup['run_vmt_fee_com_for_com_strategy'] or run_setup['run_vmt_fee_com_for_res_strategy']):
+        vmt_fee_categories = orca.get_table("vmt_fee_categories")
         new_buildings["vmt_nonres_cat"] = misc.reindex(vmt_fee_categories.nonres_cat, new_buildings.zone_id)
     del new_buildings["zone_id"]
 

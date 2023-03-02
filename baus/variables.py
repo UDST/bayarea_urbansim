@@ -231,14 +231,16 @@ def historic(buildings):
 
 
 @orca.column('buildings', cache=True)
-def vmt_res_cat(buildings, vmt_fee_categories):
+def vmt_res_cat(buildings, run_setup):
     if run_setup['run_vmt_fee_res_for_res_strategy']:
+        vmt_fee_categories = orca.get_table("vmt_fee_categories")
         return misc.reindex(vmt_fee_categories.res_cat, buildings.zone_id)
 
 
 @orca.column('buildings', cache=True)
-def vmt_nonres_cat(buildings, vmt_fee_categories):
+def vmt_nonres_cat(buildings, run_setup):
     if (run_setup['run_vmt_fee_com_for_com_strategy'] or run_setup['run_vmt_fee_com_for_res_strategy']):
+        vmt_fee_categories = orca.get_table("vmt_fee_categories")
         return misc.reindex(vmt_fee_categories.nonres_cat, buildings.zone_id)
 
 
@@ -361,21 +363,24 @@ def height(parcels):
 
 
 @orca.column('parcels', cache=True)
-def vmt_res_cat(parcels, run_setup, vmt_fee_categories):
+def vmt_res_cat(parcels, run_setup):
     if (run_setup['run_vmt_fee_com_for_com_strategy'] or run_setup['run_vmt_fee_com_for_res_strategy']):
+        vmt_fee_categories = orca.get_table("vmt_fee_categories")
         return misc.reindex(vmt_fee_categories.res_cat, parcels.zone_id)
 
 
 @orca.column('parcels', cache=True)
-def vmt_nonres_cat(parcels, vmt_fee_categories):
+def vmt_nonres_cat(parcels, run_setup):
     if run_setup['run_vmt_fee_res_for_res_strategy']:
+        vmt_fee_categories = orca.get_table("vmt_fee_categories")
         return misc.reindex(vmt_fee_categories.nonres_cat, parcels.zone_id)
 
 
 # residential fees
 @orca.column('parcels', cache=True)
-def vmt_res_fees(parcels, account_strategies, run_setup):
+def vmt_res_fees(parcels, run_setup):
     if run_setup['run_vmt_fee_res_for_res_strategy']:
+        account_strategies = orca.get_table("account_strategies")
         vmt_settings = account_strategies["acct_settings"]["vmt_settings"]
         res_fees = parcels.vmt_res_cat.map(vmt_settings["res_for_res_fee_amounts"]) if run_setup["run_vmt_fee_res_for_res_strategy"] else 0
         return res_fees
@@ -383,8 +388,9 @@ def vmt_res_fees(parcels, account_strategies, run_setup):
 
 # commercial fees
 @orca.column('parcels', cache=True)
-def vmt_com_fees(parcels, account_strategies, run_setup):
+def vmt_com_fees(parcels, run_setup):
     if (run_setup['run_vmt_fee_com_for_com_strategy'] or run_setup['run_vmt_fee_com_for_res_strategy']):
+        account_strategies = orca.get_table("account_strategies")
         vmt_settings = account_strategies["acct_settings"]["vmt_settings"]
         com_for_res_fees = parcels.vmt_nonres_cat.map(vmt_settings["com_for_res_fee_amounts"]) if \
             run_setup["run_vmt_fee_com_for_res_strategy"] else 0
@@ -828,8 +834,9 @@ def subregion(taz_geography, parcels):
 
 
 @orca.column('parcels', cache=True)
-def vmt_code(parcels, vmt_fee_categories):
+def vmt_code(parcels, run_setup):
     if run_setup['run_vmt_fee_res_for_res_strategy']:
+        vmt_fee_categories = orca.get_table("vmt_fee_categories")
         return misc.reindex(vmt_fee_categories.res_cat, parcels.zone_id)
 
 
