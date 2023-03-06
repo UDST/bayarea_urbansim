@@ -182,16 +182,19 @@ def store(paths):
 
 
 @orca.injectable(cache=True)
-def limits_settings(development_caps_asserted,development_caps, development_caps_strategy, run_setup):
+def limits_settings(development_caps, run_setup):
     # for limits, we inherit from the default settings, and update these with the policy settings, if applicable
     # limits set the annual maximum number of job spaces or residential units that may be built in a geography
 
     d = development_caps['development_limits']["default"]
-    d2 = development_caps_asserted['development_limits']["default"]
-    d.update(d2)
+    if run_setup["asserted_development_caps"]:
+        development_caps_asserted = orca.get_injectable("development_caps_asserted")
+        d2 = development_caps_asserted['development_limits']["default"]
+        d.update(d2)
 
     if run_setup['run_job_cap_strategy']:
         print("Applying job caps")
+        development_caps_strategy = orca.get_table("development_caps_strategy")
         d_jc = development_caps_strategy['development_limits']["job_cap_strategy"]
 
         for key, value in d_jc.items():
@@ -205,11 +208,12 @@ def limits_settings(development_caps_asserted,development_caps, development_caps
 
 
 @orca.injectable(cache=True)
-def inclusionary_housing_settings(inclusionary, inclusionary_strategy, run_setup):
+def inclusionary_housing_settings(inclusionary, run_setup):
     # for inclusionary housing, there is no inheritance from the default inclusionary settings
     # this means existing inclusionary levels in the base year don't apply in the policy application...
 
     if run_setup["run_inclusionary_strategy"]:
+        inclusionary_strategy = orca.get_table("inclusionary_strategy")
         s = inclusionary_strategy['inclusionary_housing_settings']["inclusionary_strategy"]
     else:
         s = inclusionary['inclusionary_housing_settings']["default"]
