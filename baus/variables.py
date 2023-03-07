@@ -232,7 +232,7 @@ def historic(buildings):
 
 @orca.column('buildings', cache=True)
 def vmt_res_cat(buildings, run_setup):
-    if run_setup['run_vmt_fee_res_for_res_strategy']:
+    if run_setup['run_vmt_fee_res_for_res_strategy'] or run_setup["run_sb_743_strategy"]:
         vmt_fee_categories = orca.get_table("vmt_fee_categories")
         return misc.reindex(vmt_fee_categories.res_cat, buildings.zone_id)
 
@@ -364,7 +364,7 @@ def height(parcels):
 
 @orca.column('parcels', cache=True)
 def vmt_res_cat(parcels, run_setup):
-    if (run_setup['run_vmt_fee_com_for_com_strategy'] or run_setup['run_vmt_fee_com_for_res_strategy']):
+    if (run_setup['run_vmt_fee_com_for_com_strategy'] or run_setup['run_vmt_fee_com_for_res_strategy'] or run_setup["run_sb_743_strategy"]):
         vmt_fee_categories = orca.get_table("vmt_fee_categories")
         return misc.reindex(vmt_fee_categories.res_cat, parcels.zone_id)
 

@@ -268,6 +268,7 @@ def get_simulation_models():
 
     # VMT taxes
     if not run_setup["run_vmt_fee_com_for_com_strategy"]:
+        models.remove("calculate_vmt_fees")
         models.remove("subsidized_office_developer_vmt")
     if not run_setup["run_vmt_fee_com_for_res_strategy"] or run_setup["run_vmt_fee_res_for_res_strategy"]:
         models.remove("calculate_vmt_fees")
