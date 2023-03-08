@@ -282,7 +282,7 @@ def diagnostic_output(households, buildings, parcels, taz, jobs, developer_setti
 
 
 @orca.step()
-def geographic_summary(parcels, households, jobs, buildings, taz_geography, run_number, year, summary, final_year):
+def geographic_summary(parcels, households, jobs, buildings, run_setup, run_number, year, summary, final_year):
     # using the following conditional b/c `year` is used to pull a column
     # from a csv based on a string of the year in add_population()
     # and in add_employment() and 2009 is the
@@ -405,12 +405,12 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography, run_
             summary_table.to_csv(summary_csv)
 
     # Write Summary of Accounts
-#    if year == final_year:#\
-#
-#        for acct_name, acct in orca.get_injectable("coffer").items():
-#            fname = os.path.join(orca.get_injectable("outputs_dir"), "run{}_acctlog_{}_{}.csv").\
-#                format(run_number, acct_name, year)
-#            acct.to_frame().to_csv(fname)
+    if year == final_year and (run_setup["run_housing_bonds_strategy"] or run_setup["run_office_bond_strategy"]):
+
+        for acct_name, acct in orca.get_injectable("coffer").items():
+            fname = os.path.join(orca.get_injectable("outputs_dir"), "run{}_acctlog_{}_{}.csv").\
+                format(run_number, acct_name, year)
+            acct.to_frame().to_csv(fname)
 
     if year == final_year:
         baseyear = 2015

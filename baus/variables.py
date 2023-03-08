@@ -499,10 +499,10 @@ def juris(parcels, parcels_geography):
 
 
 @orca.column('parcels', cache=True)
-def ave_sqft_per_unit(parcels, zones, edits):
+def ave_sqft_per_unit(parcels, zones, data_edits):
     s = misc.reindex(zones.ave_unit_sqft, parcels.zone_id)
 
-    clip = edits.get("ave_sqft_per_unit_clip", None)
+    clip = data_edits.get("ave_sqft_per_unit_clip", None)
     if clip is not None:
         s = s.clip(lower=clip['lower'], upper=clip['upper'])
 
@@ -519,7 +519,7 @@ def ave_sqft_per_unit(parcels, zones, edits):
       - threshold: 150
         max: 800
     '''
-    cfg = edits.get("clip_sqft_per_unit_based_on_dua", None)
+    cfg = data_edits.get("clip_sqft_per_unit_based_on_dua", None)
     if cfg is not None:
         for clip in cfg:
             s[parcels.max_dua >= clip["threshold"]] = clip["max"]
@@ -688,7 +688,7 @@ def built_far(parcels):
 
 # actual columns start here
 @orca.column('parcels')
-def max_far(parcels_zoning_calculations, parcels, edits):
+def max_far(parcels_zoning_calculations, parcels, zoning_adjusters):
     # first we combine the zoning columns
     s = parcels_zoning_calculations.effective_max_far * ~parcels.nodev
 
@@ -697,7 +697,7 @@ def max_far(parcels_zoning_calculations, parcels, edits):
     s2 = parcels.urban_footprint.map({0: 0, 1: np.nan})
     s = pd.concat([s, s2], axis=1).min(axis=1)
 
-    if edits["dont_build_most_dense_building"]:
+    if zoning_adjusters["dont_build_most_dense_building"]:
         # in this case we shrink the zoning such that we don't built the
         # tallest building in a given zone
         # if there no building in the zone currently, we make the max_far = .2

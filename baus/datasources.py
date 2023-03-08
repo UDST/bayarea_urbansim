@@ -71,6 +71,12 @@ def account_strategies():
 def development_caps():
     with open(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/existing_policy/development_caps.yaml")) as f:
         return yaml.load(f)
+    
+    
+@orca.injectable('data_edits', cache=True)
+def data_edits():
+    with open(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/edits/data_edits.yaml")) as f:
+        return yaml.load(f)
 
 
 @orca.injectable('development_caps_asserted', cache=True)
@@ -134,19 +140,13 @@ def price_settings():
         return yaml.load(f)
 
 
-@orca.injectable('edits', cache=True)
-def edits():
-    with open(os.path.join(misc.configs_dir(), "edits.yaml")) as f:
-        return yaml.load(f)
-
-
 # now that there are new settings files, override the locations of certain
 # settings already defined in urbansim_defaults
 
 # this just adds some of the BAUS settings to a master "settings", since the urbansim code looks for them there
 @orca.injectable("settings")
-def settings(edits, transition_relocation_settings):
-    settings = edits.copy()
+def settings(mapping, transition_relocation_settings):
+    settings = mapping.copy()
     settings.update(transition_relocation_settings)    
     return settings
 
@@ -194,7 +194,7 @@ def limits_settings(development_caps, run_setup):
 
     if run_setup['run_job_cap_strategy']:
         print("Applying job caps")
-        development_caps_strategy = orca.get_table("development_caps_strategy")
+        development_caps_strategy = orca.get_injectable("development_caps_strategy")
         d_jc = development_caps_strategy['development_limits']["job_cap_strategy"]
 
         for key, value in d_jc.items():
@@ -213,7 +213,7 @@ def inclusionary_housing_settings(inclusionary, run_setup):
     # this means existing inclusionary levels in the base year don't apply in the policy application...
 
     if run_setup["run_inclusionary_strategy"]:
-        inclusionary_strategy = orca.get_table("inclusionary_strategy")
+        inclusionary_strategy = orca.get_injectable("inclusionary_strategy")
         s = inclusionary_strategy['inclusionary_housing_settings']["inclusionary_strategy"]
     else:
         s = inclusionary['inclusionary_housing_settings']["default"]

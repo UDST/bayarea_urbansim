@@ -135,7 +135,7 @@ def lump_sum_accounts(year, years_per_iter, run_setup):
     if not run_setup["run_housing_bond_strategy"]:
         return
     
-    account_strategies = orca.get_table("account_strategies")
+    account_strategies = orca.get_injectable("account_strategies")
     s = account_strategies["acct_settings"]["lump_sum_accounts"]
 
     coffer = orca.get_injectable("coffer")
@@ -159,7 +159,7 @@ def office_lump_sum_accounts(run_setup, year, years_per_iter):
     if not run_setup["run_office_bond_strategy"]:
         return
 
-    account_strategies = orca.get_table("account_strategies")
+    account_strategies = orca.get_injectable("account_strategies")
     s = account_strategies["acct_settings"]["office_lump_sum_accounts"]
 
     coffer = orca.get_injectable("coffer")
@@ -870,7 +870,7 @@ def subsidized_residential_developer_lump_sum_accts(run_setup, households, build
     if not run_setup["run_housing_bond_strategy"]:
         return
     
-    account_strategies = orca.get_table("account_strategies")
+    account_strategies = orca.get_injectable("account_strategies")
     coffer = orca.get_injectable("coffer")
 
     for key, acct in account_strategies["acct_settings"]["lump_sum_accounts"].items():
@@ -945,7 +945,7 @@ def subsidized_office_developer_lump_sum_accts(run_setup, buildings, year, add_e
     if not run_setup["run_office_bond_strategy"]:
         return
     
-    account_strategies = orca.get_table("account_strategies")
+    account_strategies = orca.get_injectable("account_strategies")
     coffer = orca.get_injectable("coffer")
     
     for key, acct in account_strategies["acct_settings"]["office_lump_sum_accounts"].items():
