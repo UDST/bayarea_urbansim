@@ -69,6 +69,7 @@ static_parcels:
 
 # settings that get passed to the residential developer as kwargs
 residential_developer:
+  target_vacancy: .03
   min_unit_size: 1000
   bldg_sqft_per_job: 400
   max_parcel_size: 150000000

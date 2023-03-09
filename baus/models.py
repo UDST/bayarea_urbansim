@@ -466,12 +466,15 @@ def alt_feasibility(parcels, developer_settings,
 def residential_developer(feasibility, households, buildings, parcels, year,
                           developer_settings, summary, form_to_btype_func,
                           add_extra_columns_func, parcels_geography,
-                          limits_settings, final_year,
-                          residential_vacancy_rates):
+                          limits_settings, final_year, run_setup):
 
     kwargs = developer_settings['residential_developer']
-    res_vacancy = residential_vacancy_rates.to_frame()
-    target_vacancy =  res_vacancy.loc[year].st_res_vac
+
+    if run_setup["residential_vacancy_rate_mods"]:
+        res_vacancy = orca.get_table("residential_vacancy_rate_mods").to_frame()
+        target_vacancy =  res_vacancy.loc[year].st_res_vac
+    else:
+        target_vacancy =  kwargs["target_vacancy"]
 
     num_units = dev.compute_units_to_build(
         len(households),

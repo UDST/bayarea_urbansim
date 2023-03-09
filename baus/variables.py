@@ -719,7 +719,7 @@ def built_dua(parcels):
 
 
 @orca.column('parcels')
-def max_dua(parcels_zoning_calculations, parcels, edits):
+def max_dua(parcels_zoning_calculations, parcels, zoning_adjusters):
     # first we combine the zoning columns
     s = parcels_zoning_calculations.effective_max_dua * ~parcels.nodev
 
@@ -728,7 +728,7 @@ def max_dua(parcels_zoning_calculations, parcels, edits):
     s2 = parcels.urban_footprint.map({0: .01, 1: np.nan})
     s = pd.concat([s, s2], axis=1).min(axis=1)
 
-    if edits["dont_build_most_dense_building"]:
+    if zoning_adjusters["dont_build_most_dense_building"]:
         # in this case we shrink the zoning such that we don't built the
         # tallest building in a given zone
         # if there no building in the zone currently, we make the max_dua = 4
