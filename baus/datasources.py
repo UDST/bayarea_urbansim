@@ -121,7 +121,6 @@ def mapping():
         return yaml.load(f)
 
 
-
 @orca.injectable('cost_shifters', cache=True)
 def cost_shifters():
     with open(os.path.join(misc.configs_dir(), "adjusters/cost_shifters.yaml")) as f:
@@ -353,8 +352,8 @@ def parcel_to_maz():
 
 
 @orca.table(cache=True)
-def tm2_emp26_employment_forecast():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "zone_forecasts/tm2_emp26_county_employment_forecast.csv"))
+def tm2_occupation_shares():
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "zone_forecasts/tm2_occupation_shares.csv"))
 
 
 @orca.table(cache=True)
@@ -387,8 +386,8 @@ def tm2_taz2_forecast_inputs(tm1_tm2_regional_demographic_forecast):
 
 
 @orca.table(cache=True)
-def empsh_to_empsix():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/crosswalks/empsh_to_empsix.csv"))
+def tm2_emp27_employment_shares():
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "zone_forecasts/tm2_emp27_employment_shares.csv"))
 
 
 @orca.table(cache=True)
@@ -722,13 +721,13 @@ def employment_controls_unstacked():
 
 
 @orca.table(cache=True)
-def regional_controls():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "regional_controls/regional_controls.csv"), index_col="year")
+def tm1_tm2_regional_controls():
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "zone_forecasts/tm1_tm2_regional_controls.csv"), index_col="year")
 
 
 @orca.table(cache=True)
-def residential_vacancy_rates():
-    return pd.read_csv(os.path.join(misc.configs_dir(), "developer/residential_vacancy_rates.csv"), index_col="year")
+def residential_vacancy_rate_mods():
+    return pd.read_csv(os.path.join(misc.configs_dir(), "adjusters/residential_vacancy_rate_mods.csv"), index_col="year")
 
 
 # the following overrides employment_controls

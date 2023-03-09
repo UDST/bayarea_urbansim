@@ -405,7 +405,8 @@ def geographic_summary(parcels, households, jobs, buildings, run_setup, run_numb
             summary_table.to_csv(summary_csv)
 
     # Write Summary of Accounts
-    if year == final_year and (run_setup["run_housing_bonds_strategy"] or run_setup["run_office_bond_strategy"]):
+    if year == final_year and (run_setup["run_housing_bond_strategy"] or run_setup["run_office_bond_strategy"]
+                               or run_setup['run_vmt_fee_strategy'] or run_setup['run_jobs_housing_fee_strategy']):
 
         for acct_name, acct in orca.get_injectable("coffer").items():
             fname = os.path.join(orca.get_injectable("outputs_dir"), "run{}_acctlog_{}_{}.csv").\
@@ -638,7 +639,7 @@ def parcel_summary(parcels, buildings, households, jobs, run_number, year, parce
 @orca.step()
 def travel_model_output(parcels, households, jobs, buildings, zones, maz, year, summary, final_year,
                         tm1_taz1_forecast_inputs, run_number, base_year_summary_taz, taz_geography,
-                        tm1_tm2_maz_forecast_inputs, tm1_tm2_regional_demographic_forecast, regional_controls):
+                        tm1_tm2_maz_forecast_inputs, tm1_tm2_regional_demographic_forecast, tm1_tm2_regional_controls):
 
     if year not in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
         # only summarize for years which are multiples of 5
@@ -754,7 +755,7 @@ def travel_model_output(parcels, households, jobs, buildings, zones, maz, year, 
         base_year_summary_taz.CIACRE_UNWEIGHTED, taz_df.ciacre_unweighted)
     taz_df["resacre"] = scaled_resacre(
         base_year_summary_taz.RESACRE_UNWEIGHTED, taz_df.resacre_unweighted)
-    rc = regional_controls.to_frame()
+    rc = tm1_tm2_regional_controls.to_frame()
     taz_df = add_population(taz_df, year, rc)
     taz_df.totpop = taz_df.hhpop + taz_df.gqpop
     taz_df = add_employment(taz_df, year, rc)
@@ -928,15 +929,15 @@ def travel_model_output(parcels, households, jobs, buildings, zones, maz, year, 
 
 
 @orca.step()
-def travel_model_2_output(parcels, households, jobs, buildings, maz, year, empsh_to_empsix, run_number,
-                          tm1_tm2_maz_forecast_inputs, tm2_taz2_forecast_inputs, tm2_emp26_employment_forecast, 
-                          tm1_tm2_regional_demographic_forecast, regional_controls):
+def travel_model_2_output(parcels, households, jobs, buildings, maz, year, tm2_emp27_employment_shares, run_number,
+                          tm1_tm2_maz_forecast_inputs, tm2_taz2_forecast_inputs, tm2_occupation_shares, 
+                          tm1_tm2_regional_demographic_forecast, tm1_tm2_regional_controls):
     if year not in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
         # only summarize for years which are multiples of 5
         return
 
     maz = maz.to_frame(['TAZ', 'COUNTY', 'county_name', 'taz1454'])
-    rc = regional_controls.to_frame()
+    rc = tm1_tm2_regional_controls.to_frame()
 
     pcl = parcels.to_frame(['maz_id', 'acres'])
     maz['ACRES'] = pcl.groupby('maz_id').acres.sum()
@@ -971,12 +972,12 @@ def travel_model_2_output(parcels, households, jobs, buildings, maz, year, empsh
                                 [buildings, parcels],
                                 columns=['maz_id', 'residential_units'])
 
-    empsh_to_empsix = empsh_to_empsix.to_frame()
+    tm2_emp27_employment_shares = tm2_emp27_employment_shares.to_frame()
 
     def getsectorcounts(empsix, empsh):
         emp = jobs_df.query("empsix == '%s'" % empsix).\
             groupby('maz_id').size()
-        return emp * empsh_to_empsix.loc[empsh_to_empsix.empsh == empsh,
+        return emp * tm2_emp27_employment_shares.loc[tm2_emp27_employment_shares.empsh == empsh,
                                          str(year)].values[0]
 
     maz["ag"] = getsectorcounts("AGREMPN", "ag")
@@ -1105,7 +1106,7 @@ def travel_model_2_output(parcels, households, jobs, buildings, maz, year, empsh
     county['workers'] = county.hh_wrks_1 + county.hh_wrks_2 * 2\
         + county.hh_wrks_3_plus * 3.474036
 
-    cef = tm2_emp26_employment_forecast.to_frame()
+    cef = tm2_occupation_shares.to_frame()
     cef = cef.loc[cef.year == year].set_index('county_name')
     county['pers_occ_management'] = county.workers * cef.shr_occ_management
     county['pers_occ_management'] = round_series_match_target(
@@ -1189,8 +1190,8 @@ def zone_forecast_inputs():
                        index_col="zone_id")
 
 
-def add_population(df, year, regional_controls):
-    rc = regional_controls
+def add_population(df, year, tm1_tm2_regional_controls):
+    rc = tm1_tm2_regional_controls
     target = rc.totpop.loc[year] - df.gqpop.sum()
     zfi = zone_forecast_inputs()
     s = df.tothh * zfi.meanhhsize
@@ -1202,8 +1203,8 @@ def add_population(df, year, regional_controls):
     return df
 
 
-def add_population_tm2(df, year, regional_controls):
-    rc = regional_controls
+def add_population_tm2(df, year, tm1_tm2_regional_controls):
+    rc = tm1_tm2_regional_controls
     target = rc.totpop.loc[year] - df.gqpop.sum()
     s = df.hhpop
     s = scale_by_target(s, target, .15)
@@ -1226,7 +1227,7 @@ def add_households(df, tothh):
 # estimated coefficients done by @mkreilly
 
 
-def add_employment(df, year, regional_controls):
+def add_employment(df, year, tm1_tm2_regional_controls):
 
     hhs_by_inc = df[["hhincq1", "hhincq2", "hhincq3", "hhincq4"]]
     hh_shares = hhs_by_inc.divide(hhs_by_inc.sum(axis=1), axis="index")
@@ -1246,7 +1247,7 @@ def add_employment(df, year, regional_controls):
 
     empres = empshare * df.totpop
 
-    rc = regional_controls
+    rc = tm1_tm2_regional_controls
     target = rc.empres.loc[year]
 
     empres = scale_by_target(empres, target)
@@ -1264,9 +1265,9 @@ def add_employment(df, year, regional_controls):
 
 
 # add age categories necessary for the TM
-def add_age_categories(df, year, regional_controls):
+def add_age_categories(df, year, tm1_tm2_regional_controls):
     zfi = zone_forecast_inputs()
-    rc = regional_controls
+    rc = tm1_tm2_regional_controls
 
     seed_matrix = zfi[["sh_age0004", "sh_age0519", "sh_age2044",
                        "sh_age4564", "sh_age65p"]].\
@@ -1361,8 +1362,8 @@ def adjust_hhwkrs(df, year, rdf, total_hh):
     return df
 
 
-def adjust_page(df, year, regional_controls):
-    rc = regional_controls
+def adjust_page(df, year, tm1_tm2_regional_controls):
+    rc = tm1_tm2_regional_controls
     rc['age0019'] = rc.age0004 + rc.age0519
     col_marginals = rc.loc[year,
                            ['age0019', 'age2044', 'age4564',
