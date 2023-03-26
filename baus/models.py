@@ -454,10 +454,32 @@ def alt_feasibility(parcels, developer_settings,
                           parcel_is_allowed_func,
                           config=config,
                           **kwargs)
+    
+    # write out feasibility results
+    print('export parcel feasibility before policy-based profit modification for year {}'.format(
+        orca.get_injectable("year")))
+    feasibility_before_policy = orca.get_table("feasibility").to_frame()
+    feasibility_before_policy_csv = \
+        os.path.join(
+            orca.get_injectable("outputs_dir"), "interim/run{}_feasibility_before_policy_{}.csv".format(
+                orca.get_injectable("run_number"),
+                orca.get_injectable("year")
+            ))
+    feasibility_before_policy.to_csv(feasibility_before_policy_csv)
 
     f = subsidies.policy_modifications_of_profit(
         orca.get_table('feasibility').to_frame(),
         parcels)
+
+    print('export parcel feasibility after policy-based profit modification for year {}'.format(
+        orca.get_injectable("year")))
+    feasibility_after_policy_csv = \
+        os.path.join(
+            orca.get_injectable("outputs_dir"), "interim/run{}_feasibility_after_policy_{}.csv".format(
+                orca.get_injectable("run_number"),
+                orca.get_injectable("year")
+            ))
+    f.to_csv(feasibility_after_policy_csv)
 
     orca.add_table("feasibility", f)
 
@@ -1040,3 +1062,14 @@ def price_vars(net):
     nodes = orca.get_table('nodes')
     nodes = nodes.to_frame().join(nodes2)
     orca.add_table("nodes", nodes)
+
+    # write out nodes with price info
+    print('export nodes with price_vars for year {}'.format(orca.get_injectable("year")))
+    nodes_export = orca.get_table('nodes').to_frame()
+    nodes_export_csv = \
+        os.path.join(
+            orca.get_injectable("outputs_dir"), "interim/run{}_nodes_priceVars_{}.csv".format(
+                orca.get_injectable("run_number"),
+                orca.get_injectable("year")
+            ))
+    nodes_export.to_csv(nodes_export_csv)
