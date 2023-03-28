@@ -274,6 +274,14 @@ def diagnostic_output(households, buildings, parcels, taz, jobs, developer_setti
 
     summary.add_zone_output(zones, "diagnostic_outputs", year)
 
+    # export zones
+    print('export zones for diagnostic info')
+    print('type of zones: {}'.format(type(zones)))
+    diagnostic_zones_csv = \
+        os.path.join(
+            orca.get_injectable("outputs_dir"), "interim/run{}_diagnostic_zones_{}.csv".format(run_number, year))
+    zones.to_csv(diagnostic_zones_csv)
+
     # save the dropped buildings to a csv
     if "dropped_buildings" in orca.orca._TABLES:
         df = orca.get_table("dropped_buildings").to_frame()
