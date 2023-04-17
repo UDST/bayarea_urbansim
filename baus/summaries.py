@@ -6,16 +6,14 @@ import orca
 import pandas as pd
 from pandas.util import testing as pdt
 import numpy as np
-from baus.utils import random_indexes, round_series_match_target,\
-    scale_by_target, simple_ipf, format_df
+from baus.utils import round_series_match_target, scale_by_target, simple_ipf, format_df
 from urbansim.utils import misc
 import urbansim
 import urbansim_defaults
 import orca
 import orca_test
 import pandana
-from baus.postprocessing import GEO_SUMMARY_LOADER, \
-TWO_GEO_SUMMARY_LOADER, nontaz_calculator, taz_calculator,\
+from baus.postprocessing import GEO_SUMMARY_LOADER, TWO_GEO_SUMMARY_LOADER, nontaz_calculator, taz_calculator,\
 county_calculator, juris_to_county
 
 @orca.step()
