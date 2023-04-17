@@ -16,6 +16,11 @@ import socket
 import argparse
 import warnings
 from baus.utils import compare_summary
+import urbansim
+import urbansim_defaults
+import orca
+import orca_test
+import pandana
 
 warnings.filterwarnings("ignore")
 
@@ -466,6 +471,15 @@ print("Started", time.ctime())
 print("Current Branch : ", BRANCH.rstrip())
 print("Current Commit : ", CURRENT_COMMIT.rstrip())
 print("Random Seed : ", RANDOM_SEED)
+print("python version: %s" % sys.version.split('|')[0])
+print("urbansim version: %s" % urbansim.__version__)
+print("urbansim_defaults version: %s" % urbansim_defaults.__version__)
+print("orca version: %s" % orca.__version__)
+print("orca_test version: %s" % orca_test.__version__)
+print("pandana version: %s" % pandana.__version__)
+print("numpy version: %s" % np.__version__)
+print("pandas version: %s" % pd.__version__)
+
 
 if SLACK and MODE == "simulation":
     slack.chat.post_message('#urbansim_sim_update', 'Starting simulation %d on host %s' % (run_num, host), as_user=True)

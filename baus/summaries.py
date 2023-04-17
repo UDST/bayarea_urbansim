@@ -1,6 +1,5 @@
 from __future__ import print_function
 
-import sys
 import os
 import orca
 import pandas as pd
@@ -8,35 +7,8 @@ from pandas.util import testing as pdt
 import numpy as np
 from baus.utils import round_series_match_target, scale_by_target, simple_ipf, format_df
 from urbansim.utils import misc
-import urbansim
-import urbansim_defaults
-import orca
-import orca_test
-import pandana
 from baus.postprocessing import GEO_SUMMARY_LOADER, TWO_GEO_SUMMARY_LOADER, nontaz_calculator, taz_calculator,\
 county_calculator, juris_to_county
-
-@orca.step()
-def environment_config(run_number, parcels, year):
-
-    f = open(os.path.join(orca.get_injectable("outputs_dir"), "run%d_env_configuration.log" % (run_number)), "w")
-
-    def write(s):
-        # print s
-        f.write(s + "\n")
-
-    # package versions
-    write("python version: %s" % sys.version.split('|')[0])
-    write("urbansim version: %s" % urbansim.__version__)
-#    write("urbansim_defaults version: %s" % urbansim_defaults.__version__)
-    write("orca version: %s" % orca.__version__)
-    write("orca_test version: %s" % orca_test.__version__)
-    write("pandana version: %s" % pandana.__version__)
-    write("numpy version: %s" % np.__version__)
-    write("pandas version: %s" % pd.__version__)
-    write("")
-
-    f.close()
 
 
 @orca.step()
