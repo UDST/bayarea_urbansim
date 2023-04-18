@@ -6,20 +6,13 @@ import pandas as pd
 
 
 @orca.step()
-def parcel_summary(parcels, buildings, households, jobs, run_number, year, initial_year, parcels_geography):
+def parcel_summary(parcels, buildings, households, jobs, run_number, year, initial_year):
 
     if year not in [2010, 2015, 2035, 2050]:
          return
     
     # (1) print parcel data for model run year
     df = parcels.to_frame(["geom_id", "x", "y", "total_job_spaces", "first_building_type"])
-
-    households_df = orca.merge_tables('households', [buildings, households], columns=['parcel_id', 'base_income_quartile'])
-
-    # add households by quartile on each parcel
-    for i in range(1, 5):
-        df['hhq%d' % i] = households_df[households_df.base_income_quartile == i].parcel_id.value_counts()
-    df["tothh"] = households_df.groupby('parcel_id').size()
 
     # add building data for parcels
     building_df = orca.merge_tables('buildings', [parcels, buildings],
@@ -30,19 +23,24 @@ def parcel_summary(parcels, buildings, households, jobs, run_number, year, initi
             return
         df[col] = building_df.groupby('parcel_id')[col].sum()
 
-    jobs_df = orca.merge_tables('jobs', [buildings, jobs], columns=['parcel_id', 'empsix'])
+    # add households by quartile on each parcel
+    households_df = orca.merge_tables('households', [buildings, households], columns=['parcel_id', 'base_income_quartile'])
+    for i in range(1, 5):
+        df['hhq%d' % i] = households_df[households_df.base_income_quartile == i].parcel_id.value_counts()
+    df["tothh"] = households_df.groupby('parcel_id').size()
 
     # add jobs by empsix category on each parcel
+    jobs_df = orca.merge_tables('jobs', [buildings, jobs], columns=['parcel_id', 'empsix'])
     for cat in jobs_df.empsix.unique():
         df[cat] = jobs_df[jobs_df.empsix == cat].parcel_id.value_counts()
     df["totemp"] = jobs_df.groupby('parcel_id').size()
 
+    # print parcel data by model year
     df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_data_%d.csv" % (run_number, year)))
 
     # (2) write parcel growth summaries for future years
     if year not in [2010, 2015]:
         print('calculate diff for year {}'.format(year))
-
         df2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_data_%d.csv" %
                           (run_number, initial_year)), index_col="parcel_id")
 
@@ -54,7 +52,8 @@ def parcel_summary(parcels, buildings, households, jobs, run_number, year, initi
             df[col].fillna(0, inplace=True)
             df2[col].fillna(0, inplace=True)
             df[col] = df[col] - df2[col]
-
+            
+        # print parcel data growth for future year
         df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_data_diff.csv" % run_number))
 
 

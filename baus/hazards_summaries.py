@@ -3,16 +3,11 @@ from __future__ import print_function
 import os
 import orca
 import pandas as pd
-from pandas.util import testing as pdt
-import numpy as np
-from baus.utils import round_series_match_target, scale_by_target, simple_ipf, format_df
 from urbansim.utils import misc
-from baus.postprocessing import GEO_SUMMARY_LOADER, TWO_GEO_SUMMARY_LOADER, nontaz_calculator, taz_calculator,\
-county_calculator, juris_to_county
 
 
 @orca.step()
-def hazards_slr_summary(run_setup, run_number, year, households, jobs, parcels):
+def hazards_slr_summary(run_setup, run_number, year):
 
     if run_setup['run_slr']:
 
@@ -54,18 +49,13 @@ def hazards_slr_summary(run_setup, run_number, year, households, jobs, parcels):
 
             write("Number of impacted households by type")
             hs = pd.DataFrame(index=[0])
-            hs['hhincq1'] = \
-                (hh_unplaced_slr_cum["base_income_quartile"] == 1).sum()
-            hs['hhincq2'] = \
-                (hh_unplaced_slr_cum["base_income_quartile"] == 2).sum()
-            hs['hhincq3'] = \
-                (hh_unplaced_slr_cum["base_income_quartile"] == 3).sum()
-            hs['hhincq4'] = \
-                (hh_unplaced_slr_cum["base_income_quartile"] == 4).sum()
+            hs['hhincq1'] = (hh_unplaced_slr_cum["base_income_quartile"] == 1).sum()
+            hs['hhincq2'] = (hh_unplaced_slr_cum["base_income_quartile"] == 2).sum()
+            hs['hhincq3'] = (hh_unplaced_slr_cum["base_income_quartile"] == 3).sum()
+            hs['hhincq4'] = (hh_unplaced_slr_cum["base_income_quartile"] == 4).sum()
             hs.to_string(f, index=False)
 
             write("")
-
             # employees by sector
             try:
                 jobs_unplaced_slr_cum = \
@@ -94,7 +84,7 @@ def hazards_slr_summary(run_setup, run_number, year, households, jobs, parcels):
 
 
 @orca.step()
-def hazards_eq_summary(run_setup, run_number, year, households, jobs, parcels, buildings):
+def hazards_eq_summary(run_setup, run_number, year, parcels, buildings):
 
     if run_setup['run_eq']:
         if year == 2035:
@@ -114,7 +104,6 @@ def hazards_eq_summary(run_setup, run_number, year, households, jobs, parcels, b
             code_counts_df.to_string(f, index=False)
 
             write("")
-
             write("Number of buildings with fragility codes")
             fragilities = orca.get_injectable("fragilities")
             fragility_counts = [[x, fragilities.count(x)]
@@ -124,7 +113,6 @@ def hazards_eq_summary(run_setup, run_number, year, households, jobs, parcels, b
             fragility_counts_df.to_string(f, index=False)
 
             write("")
-
             # buildings counts
             eq_buildings = orca.get_injectable("eq_buildings")
             n = len(eq_buildings)
@@ -149,14 +137,10 @@ def hazards_eq_summary(run_setup, run_number, year, households, jobs, parcels, b
             write("Number of impacted households by type")
             hh_unplaced_eq = orca.get_injectable("hh_unplaced_eq")
             hh_summary = pd.DataFrame(index=[0])
-            hh_summary['hhincq1'] = \
-                (hh_unplaced_eq["base_income_quartile"] == 1).sum()
-            hh_summary['hhincq2'] = \
-                (hh_unplaced_eq["base_income_quartile"] == 2).sum()
-            hh_summary['hhincq3'] = \
-                (hh_unplaced_eq["base_income_quartile"] == 3).sum()
-            hh_summary['hhincq4'] = \
-                (hh_unplaced_eq["base_income_quartile"] == 4).sum()
+            hh_summary['hhincq1'] = (hh_unplaced_eq["base_income_quartile"] == 1).sum()
+            hh_summary['hhincq2'] = (hh_unplaced_eq["base_income_quartile"] == 2).sum()
+            hh_summary['hhincq3'] = (hh_unplaced_eq["base_income_quartile"] == 3).sum()
+            hh_summary['hhincq4'] = (hh_unplaced_eq["base_income_quartile"] == 4).sum()
             hh_summary.to_string(f, index=False)
 
             write("")
@@ -165,18 +149,12 @@ def hazards_eq_summary(run_setup, run_number, year, households, jobs, parcels, b
             write("Number of impacted jobs by sector")
             jobs_unplaced_eq = orca.get_injectable("jobs_unplaced_eq")
             jobs_summary = pd.DataFrame(index=[0])
-            jobs_summary['agrempn'] = \
-                (jobs_unplaced_eq["empsix"] == 'AGREMPN').sum()
-            jobs_summary['mwtempn'] = \
-                (jobs_unplaced_eq["empsix"] == 'MWTEMPN').sum()
-            jobs_summary['retempn'] = \
-                (jobs_unplaced_eq["empsix"] == 'RETEMPN').sum()
-            jobs_summary['fpsempn'] = \
-                (jobs_unplaced_eq["empsix"] == 'FPSEMPN').sum()
-            jobs_summary['herempn'] = \
-                (jobs_unplaced_eq["empsix"] == 'HEREMPN').sum()
-            jobs_summary['othempn'] = \
-                (jobs_unplaced_eq["empsix"] == 'OTHEMPN').sum()
+            jobs_summary['agrempn'] = (jobs_unplaced_eq["empsix"] == 'AGREMPN').sum()
+            jobs_summary['mwtempn'] = (jobs_unplaced_eq["empsix"] == 'MWTEMPN').sum()
+            jobs_summary['retempn'] = (jobs_unplaced_eq["empsix"] == 'RETEMPN').sum()
+            jobs_summary['fpsempn'] = (jobs_unplaced_eq["empsix"] == 'FPSEMPN').sum()
+            jobs_summary['herempn'] = (jobs_unplaced_eq["empsix"] == 'HEREMPN').sum()
+            jobs_summary['othempn'] = (jobs_unplaced_eq["empsix"] == 'OTHEMPN').sum()
             jobs_summary.to_string(f, index=False)
 
             f.close()
@@ -208,8 +186,7 @@ def hazards_eq_summary(run_setup, run_number, year, households, jobs, parcels, b
                     'redfin_sale_price', 'non_residential_rent',
                     'deed_restricted_units', 'residential_price', 'count']]
                 retrofit_bldgs_tot = retrofit_bldgs_tot.groupby(['taz']).sum()
-                retrofit_bldgs_tot.\
-                    to_csv(os.path.join(
+                retrofit_bldgs_tot.to_csv(os.path.join(
                            orca.get_injectable("outputs_dir"), "run%d_hazards_eq_retrofit_buildings_%d.csv"
                            % (run_number, year)))
 
