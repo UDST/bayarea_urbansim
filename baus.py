@@ -9,8 +9,7 @@ from baus import slr
 from baus import earthquake
 from baus import ual
 from baus import validation
-from baus import geographic_summaries
-from baus import travel_model_summaries
+from baus import geographic_summaries, travel_model_summaries, hazards_summaries
 import numpy as np
 import pandas as pd
 import orca
@@ -381,7 +380,7 @@ def get_baseyear_models():
 
 @orca.step()
 def slack_report():
-    
+
     if SLACK and IN_YEAR:
         dropped_devproj_geomid = orca.get_injectable("devproj_len") - orca.get_injectable("devproj_len_geomid")
         dropped_devproj_proc =  orca.get_injectable("devproj_len_geomid") -  orca.get_injectable("devproj_len_proc")
