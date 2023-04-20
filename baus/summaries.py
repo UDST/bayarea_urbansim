@@ -43,7 +43,7 @@ def environment_config(run_number, parcels, year):
 
 @orca.step()
 def topsheet(households, jobs, buildings, parcels, zones, year, run_number, taz_geography, parcels_zoning_calculations,
-             summary, settings, parcels_geography, abag_targets, new_tpp_id, residential_units, mapping, policy):
+             summary, parcels_geography, new_tpp_id, residential_units, mapping):
 
     hh_by_subregion = misc.reindex(taz_geography.subregion, households.zone_id).value_counts()
 
@@ -73,8 +73,6 @@ def topsheet(households, jobs, buildings, parcels, zones, year, run_number, taz_
     jobs_by_inpda = jobs_df.pda_id.notnull().value_counts()
     jobs_by_intra = jobs_df.tra_id.notnull().value_counts()
 
-    capacity = parcels_zoning_calculations.zoned_du_underbuild_nodev.groupby(parcels.subregion).sum()
-
     if year == 2010:
         # save some info for computing growth measures
         orca.add_injectable("base_year_measures", {
@@ -86,8 +84,7 @@ def topsheet(households, jobs, buildings, parcels, zones, year, run_number, taz_
             "jobs_by_inpda": jobs_by_inpda,
             "jobs_by_intra": jobs_by_intra,
             "hhincome_by_intra": hhincome_by_intra,
-            "hhincome_by_insesit": hhincome_by_insesit,
-            "capacity": capacity
+            "hhincome_by_insesit": hhincome_by_insesit
         })
     try:
         base_year_measures = orca.get_injectable("base_year_measures")
@@ -208,10 +205,6 @@ def topsheet(households, jobs, buildings, parcels, zones, year, run_number, taz_
     diff = hh_by_insesit - base_year_measures["hh_by_insesit"]
     write("Households pct of regional growth in hra/drs:\n%s" % norm_and_round(diff))
 
-    write("Base year dwelling unit raw capacity:\n%s" % base_year_measures["capacity"])
-
-    write("Dwelling unit raw capacity:\n%s" % capacity)
-
     if summary.parcel_output is not None:
         df = summary.parcel_output
         # we mark greenfield as a parcel with less than 500 current sqft
@@ -233,7 +226,7 @@ def topsheet(households, jobs, buildings, parcels, zones, year, run_number, taz_
 
 
 @orca.step()
-def diagnostic_output(households, buildings, parcels, taz, jobs, settings, zones, year, summary, run_number, residential_units):
+def diagnostic_output(households, buildings, parcels, taz, jobs, developer_settings, zones, year, summary, run_number, residential_units):
 
     households = households.to_frame()
     buildings = buildings.to_frame()
@@ -266,7 +259,7 @@ def diagnostic_output(households, buildings, parcels, taz, jobs, settings, zones
     ru = residential_units
     zones['unit_residential_price'] = ru.unit_residential_price.groupby(ru.zone_id).quantile()
     zones['unit_residential_rent'] = ru.unit_residential_rent.groupby(ru.zone_id).quantile()
-    cap_rate = settings.get('cap_rate')
+    cap_rate = developer_settings.get('cap_rate')
     # this compares price to rent and shows us where price is greater
     # rents are monthly and a cap rate is applied in order to do the conversion
     zones['unit_residential_price_>_rent'] = (zones.unit_residential_price > (zones.unit_residential_rent * 12 / cap_rate)).astype('int')
@@ -289,8 +282,7 @@ def diagnostic_output(households, buildings, parcels, taz, jobs, settings, zones
 
 
 @orca.step()
-def geographic_summary(parcels, households, jobs, buildings, taz_geography, run_number, year, summary, final_year,
-                       policy, settings):
+def geographic_summary(parcels, households, jobs, buildings, run_setup, run_number, year, summary, final_year):
     # using the following conditional b/c `year` is used to pull a column
     # from a csv based on a string of the year in add_population()
     # and in add_employment() and 2009 is the
@@ -413,7 +405,8 @@ def geographic_summary(parcels, households, jobs, buildings, taz_geography, run_
             summary_table.to_csv(summary_csv)
 
     # Write Summary of Accounts
-    if year == final_year:
+    if year == final_year and (run_setup["run_housing_bond_strategy"] or run_setup["run_office_bond_strategy"]
+                               or run_setup['run_vmt_fee_strategy'] or run_setup['run_jobs_housing_fee_strategy']):
 
         for acct_name, acct in orca.get_injectable("coffer").items():
             fname = os.path.join(orca.get_injectable("outputs_dir"), "run{}_acctlog_{}_{}.csv").\
@@ -534,7 +527,7 @@ def building_summary(parcels, run_number, year,
 
 @orca.step()
 def parcel_summary(parcels, buildings, households, jobs, run_number, year, parcels_zoning_calculations,
-                   initial_year, final_year, parcels_geography, policy):
+                   initial_year, final_year, parcels_geography):
 
     # if year not in [2010, 2015, 2035, 2050]:
     #     return
@@ -548,8 +541,7 @@ def parcel_summary(parcels, buildings, households, jobs, run_number, year, parce
 
     df2 = parcels_zoning_calculations.to_frame([
         "zoned_du",
-        "zoned_du_underbuild",
-        "zoned_du_underbuild_nodev"
+        "zoned_du_underbuild"
     ])
 
     df = df.join(df2)
@@ -621,7 +613,7 @@ def parcel_summary(parcels, buildings, households, jobs, run_number, year, parce
         geographies = ['GG','tra','HRA', 'DIS']
 
         for geography in geographies:
-            df_growth = GEO_SUMMARY_LOADER(run_number, geography, df_base, df_final, policy)
+            df_growth = GEO_SUMMARY_LOADER(run_number, geography, df_base, df_final)
             df_growth['county'] = df_growth['juris'].map(juris_to_county)
             df_growth.sort_values(by = ['county','juris','geo_category'], ascending=[True, True, False], inplace=True)
             df_growth.set_index(['RUNID','county','juris','geo_category'], inplace=True)
@@ -630,14 +622,14 @@ def parcel_summary(parcels, buildings, households, jobs, run_number, year, parce
 
         geo_1, geo_2, geo_3 = 'tra','DIS','HRA'
 
-        df_growth_1 = TWO_GEO_SUMMARY_LOADER(run_number, geo_1, geo_2, df_base, df_final, policy)
+        df_growth_1 = TWO_GEO_SUMMARY_LOADER(run_number, geo_1, geo_2, df_base, df_final)
         df_growth_1['county'] = df_growth_1['juris'].map(juris_to_county)
         df_growth_1.sort_values(by = ['county','juris','geo_category'], ascending=[True, True, False], inplace=True)
         df_growth_1.set_index(['RUNID','county','juris','geo_category'], inplace=True)
         df_growth_1.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_growth_summaries.csv".\
                                         format(run_number, geo_1 + geo_2)))
 
-        df_growth_2 = TWO_GEO_SUMMARY_LOADER(run_number, geo_1, geo_3, df_base, df_final, policy)
+        df_growth_2 = TWO_GEO_SUMMARY_LOADER(run_number, geo_1, geo_3, df_base, df_final)
         df_growth_2['county'] = df_growth_2['juris'].map(juris_to_county)
         df_growth_2.sort_values(by = ['county','juris','geo_category'], ascending=[True, True, False], inplace=True)
         df_growth_2.set_index(['RUNID','county','juris','geo_category'], inplace=True)
@@ -645,13 +637,9 @@ def parcel_summary(parcels, buildings, households, jobs, run_number, year, parce
                                         format(run_number, geo_1 + geo_2)))
 
 @orca.step()
-def travel_model_output(parcels, households, jobs, buildings,
-                        zones, maz, year, summary, coffer, final_year,
-                        zone_forecast_inputs, run_number,
-                        taz, base_year_summary_taz,
-                        taz_geography, taz_forecast_inputs,
-                        maz_forecast_inputs, regional_demographic_forecast,
-                        regional_controls):
+def travel_model_output(parcels, households, jobs, buildings, zones, maz, year, summary, final_year,
+                        tm1_taz1_forecast_inputs, run_number, base_year_summary_taz, taz_geography,
+                        tm1_tm2_maz_forecast_inputs, tm1_tm2_regional_demographic_forecast, tm1_tm2_regional_controls):
 
     if year not in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
         # only summarize for years which are multiples of 5
@@ -724,6 +712,9 @@ def travel_model_output(parcels, households, jobs, buildings,
     taz_df["hhpop"] = households_df.groupby('zone_id').persons.sum()
     taz_df["tothh"] = households_df.groupby('zone_id').size()
 
+
+    zone_forecast_inputs = tm1_taz1_forecast_inputs.to_frame()
+    zone_forecast_inputs.index = zone_forecast_inputs.zone_id
     taz_df["shpop62p"] = zone_forecast_inputs.sh_62plus
     taz_df["gqpop"] = zone_forecast_inputs["gqpop" + str(year)[-2:]].fillna(0)
 
@@ -764,7 +755,7 @@ def travel_model_output(parcels, households, jobs, buildings,
         base_year_summary_taz.CIACRE_UNWEIGHTED, taz_df.ciacre_unweighted)
     taz_df["resacre"] = scaled_resacre(
         base_year_summary_taz.RESACRE_UNWEIGHTED, taz_df.resacre_unweighted)
-    rc = regional_controls.to_frame()
+    rc = tm1_tm2_regional_controls.to_frame()
     taz_df = add_population(taz_df, year, rc)
     taz_df.totpop = taz_df.hhpop + taz_df.gqpop
     taz_df = add_employment(taz_df, year, rc)
@@ -802,7 +793,7 @@ def travel_model_output(parcels, households, jobs, buildings,
         [x.upper() for x in taz_df.columns]
 
     maz = maz.to_frame(['TAZ', 'COUNTY', 'county_name', 'taz1454'])
-    mazi = maz_forecast_inputs.to_frame()
+    mazi = tm1_tm2_maz_forecast_inputs.to_frame()
     mazi_yr = str(year)[2:]
     households_df.maz_id = households_df.maz_id.fillna(213906)
     maz["hhpop"] = households_df.groupby('maz_id').persons.sum()
@@ -816,9 +807,10 @@ def travel_model_output(parcels, households, jobs, buildings,
         + maz['gq_type_othnon']
     tot_gqpop = maz.gq_tot_pop.sum()
 
-    rdf = regional_demographic_forecast.to_frame()
+    rdf = tm1_tm2_regional_demographic_forecast.to_frame()
 
-    tfi = taz_forecast_inputs.to_frame()
+    tfi = tm1_taz1_forecast_inputs.to_frame()
+    tfi.index = tfi.TAZ1454
     taz_df['gq_type_univ'] = maz.groupby('taz1454'
                                          ).gq_type_univ.sum().fillna(0)
     taz_df['gq_type_mil'] = maz.groupby('taz1454').gq_type_mil.sum().fillna(0)
@@ -937,18 +929,15 @@ def travel_model_output(parcels, households, jobs, buildings,
 
 
 @orca.step()
-def travel_model_2_output(parcels, households, jobs, buildings,
-                          maz, year, empsh_to_empsix, run_number,
-                          zone_forecast_inputs, maz_forecast_inputs,
-                          taz2_forecast_inputs, county_forecast_inputs,
-                          county_employment_forecast, taz_forecast_inputs,
-                          regional_demographic_forecast, regional_controls):
+def travel_model_2_output(parcels, households, jobs, buildings, maz, year, tm2_emp27_employment_shares, run_number,
+                          tm1_tm2_maz_forecast_inputs, tm2_taz2_forecast_inputs, tm2_occupation_shares, 
+                          tm1_tm2_regional_demographic_forecast, tm1_tm2_regional_controls):
     if year not in [2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]:
         # only summarize for years which are multiples of 5
         return
 
     maz = maz.to_frame(['TAZ', 'COUNTY', 'county_name', 'taz1454'])
-    rc = regional_controls.to_frame()
+    rc = tm1_tm2_regional_controls.to_frame()
 
     pcl = parcels.to_frame(['maz_id', 'acres'])
     maz['ACRES'] = pcl.groupby('maz_id').acres.sum()
@@ -983,12 +972,12 @@ def travel_model_2_output(parcels, households, jobs, buildings,
                                 [buildings, parcels],
                                 columns=['maz_id', 'residential_units'])
 
-    empsh_to_empsix = empsh_to_empsix.to_frame()
+    tm2_emp27_employment_shares = tm2_emp27_employment_shares.to_frame()
 
     def getsectorcounts(empsix, empsh):
         emp = jobs_df.query("empsix == '%s'" % empsix).\
             groupby('maz_id').size()
-        return emp * empsh_to_empsix.loc[empsh_to_empsix.empsh == empsh,
+        return emp * tm2_emp27_employment_shares.loc[tm2_emp27_employment_shares.empsh == empsh,
                                          str(year)].values[0]
 
     maz["ag"] = getsectorcounts("AGREMPN", "ag")
@@ -1040,7 +1029,7 @@ def travel_model_2_output(parcels, households, jobs, buildings,
 
     maz['num_hh'] = maz['tothh']
 
-    mazi = maz_forecast_inputs.to_frame()
+    mazi = tm1_tm2_maz_forecast_inputs.to_frame()
     mazi_yr = str(year)[2:]
     maz['gq_type_univ'] = mazi['gqpopu' + mazi_yr]
     maz['gq_type_mil'] = mazi['gqpopm' + mazi_yr]
@@ -1066,11 +1055,11 @@ def travel_model_2_output(parcels, households, jobs, buildings,
     maz['hh_size_2'] = maz.tothh.fillna(0) * mazi.shrs2_2010
     maz['hh_size_3'] = maz.tothh.fillna(0) * mazi.shrs3_2010
     maz['hh_size_4_plus'] = maz.tothh.fillna(0) * mazi.shs4_2010
-    rdf = regional_demographic_forecast.to_frame()
+    rdf = tm1_tm2_regional_demographic_forecast.to_frame()
     maz = adjust_hhsize(maz, year, rdf, tothh)
 
-    taz2 = pd.DataFrame(index=taz2_forecast_inputs.index)
-    t2fi = taz2_forecast_inputs.to_frame()
+    taz2 = pd.DataFrame(index=tm2_taz2_forecast_inputs.index)
+    t2fi = tm2_taz2_forecast_inputs.to_frame()
     taz2['hh'] = maz.groupby('TAZ').tothh.sum()
     taz2['hh_inc_30'] = maz.groupby('TAZ').hhincq1.sum().fillna(0)
     taz2['hh_inc_30_60'] = maz.groupby('TAZ').hhincq2.sum().fillna(0)
@@ -1105,8 +1094,8 @@ def travel_model_2_output(parcels, households, jobs, buildings,
     taz2 = adjust_hhkids(taz2, year, rdf, tothh)
     taz2.index.name = 'TAZ2'
 
-    cfi = county_forecast_inputs.to_frame()
-    county = pd.DataFrame(index=cfi.index)
+    county = pd.DataFrame(index=[[4, 5, 9, 7, 1, 2, 3, 6, 8]])
+
     county['pop'] = maz.groupby('county_name').POP.sum()
 
     county[['hh_wrks_1', 'hh_wrks_2', 'hh_wrks_3_plus']] =\
@@ -1117,7 +1106,7 @@ def travel_model_2_output(parcels, households, jobs, buildings,
     county['workers'] = county.hh_wrks_1 + county.hh_wrks_2 * 2\
         + county.hh_wrks_3_plus * 3.474036
 
-    cef = county_employment_forecast.to_frame()
+    cef = tm2_occupation_shares.to_frame()
     cef = cef.loc[cef.year == year].set_index('county_name')
     county['pers_occ_management'] = county.workers * cef.shr_occ_management
     county['pers_occ_management'] = round_series_match_target(
@@ -1197,12 +1186,12 @@ def scaled_resacre(mtcr, us_outr):
 
 
 def zone_forecast_inputs():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 'zone_forecast_inputs.csv'),
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 'zone_forecasts/tm1_taz1_forecast_inputs.csv'),
                        index_col="zone_id")
 
 
-def add_population(df, year, regional_controls):
-    rc = regional_controls
+def add_population(df, year, tm1_tm2_regional_controls):
+    rc = tm1_tm2_regional_controls
     target = rc.totpop.loc[year] - df.gqpop.sum()
     zfi = zone_forecast_inputs()
     s = df.tothh * zfi.meanhhsize
@@ -1214,8 +1203,8 @@ def add_population(df, year, regional_controls):
     return df
 
 
-def add_population_tm2(df, year, regional_controls):
-    rc = regional_controls
+def add_population_tm2(df, year, tm1_tm2_regional_controls):
+    rc = tm1_tm2_regional_controls
     target = rc.totpop.loc[year] - df.gqpop.sum()
     s = df.hhpop
     s = scale_by_target(s, target, .15)
@@ -1238,7 +1227,7 @@ def add_households(df, tothh):
 # estimated coefficients done by @mkreilly
 
 
-def add_employment(df, year, regional_controls):
+def add_employment(df, year, tm1_tm2_regional_controls):
 
     hhs_by_inc = df[["hhincq1", "hhincq2", "hhincq3", "hhincq4"]]
     hh_shares = hhs_by_inc.divide(hhs_by_inc.sum(axis=1), axis="index")
@@ -1258,7 +1247,7 @@ def add_employment(df, year, regional_controls):
 
     empres = empshare * df.totpop
 
-    rc = regional_controls
+    rc = tm1_tm2_regional_controls
     target = rc.empres.loc[year]
 
     empres = scale_by_target(empres, target)
@@ -1276,9 +1265,9 @@ def add_employment(df, year, regional_controls):
 
 
 # add age categories necessary for the TM
-def add_age_categories(df, year, regional_controls):
+def add_age_categories(df, year, tm1_tm2_regional_controls):
     zfi = zone_forecast_inputs()
-    rc = regional_controls
+    rc = tm1_tm2_regional_controls
 
     seed_matrix = zfi[["sh_age0004", "sh_age0519", "sh_age2044",
                        "sh_age4564", "sh_age65p"]].\
@@ -1373,8 +1362,8 @@ def adjust_hhwkrs(df, year, rdf, total_hh):
     return df
 
 
-def adjust_page(df, year, regional_controls):
-    rc = regional_controls
+def adjust_page(df, year, tm1_tm2_regional_controls):
+    rc = tm1_tm2_regional_controls
     rc['age0019'] = rc.age0004 + rc.age0519
     col_marginals = rc.loc[year,
                            ['age0019', 'age2044', 'age4564',

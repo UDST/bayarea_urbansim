@@ -147,19 +147,21 @@ def vacant_res_units(buildings, households):
 
 
 @orca.column('buildings', cache=True)
-def sqft_per_job(buildings, building_sqft_per_job, superdistricts,
-                 taz_geography, year):
-    sqft_per_job = buildings.\
-        building_type.fillna("O").map(building_sqft_per_job)
+def sqft_per_job(buildings, building_sqft_per_job, sqft_per_job_adjusters, telecommute_sqft_per_job_adjusters, taz_geography, base_year, year, run_setup):
+    
+    sqft_per_job = buildings.building_type.fillna("O").map(building_sqft_per_job)
 
-    # this factor changes all sqft per job according to which superdistrict
-    # the building is in - this is so denser areas can have lower sqft
-    # per job - this is a simple multiply so a number 1.1 increases the
-    # sqft per job by 10% and .9 decreases it by 10%
-    superdistrict = misc.reindex(
-        taz_geography.superdistrict, buildings.zone_id)
-    sqft_per_job = sqft_per_job * \
-        superdistrict.map(superdistricts['sqft_per_job_factor_{}'.format(year)])
+    superdistrict = misc.reindex(taz_geography.superdistrict, buildings.zone_id)
+
+    # this factor changes all sqft per job according to which superdistrict the building is in - this is so denser areas can have lower sqft per job
+    # this is a simple multiply so a number 1.1 increases the sqft per job by 10% and .9 decreases it by 10%
+
+    # if adjusters are enabled, adjust sqft_per_job rates for all years
+    if run_setup["run_telecommute_strategy"] and year != base_year:
+        sqft_per_job = sqft_per_job * superdistrict.map(telecommute_sqft_per_job_adjusters['sqft_per_job_factor_{}'.format(year)])
+	# if the telecommute strategy is enabled, instead adjust future year sqft_per_job rates with the factor for that year
+    elif run_setup["sqft_per_job_adjusters"]:
+        sqft_per_job = sqft_per_job * superdistrict.map(sqft_per_job_adjusters['sqft_per_job_factor'])
 
     return sqft_per_job
 
@@ -229,17 +231,21 @@ def historic(buildings):
 
 
 @orca.column('buildings', cache=True)
-def vmt_res_cat(buildings, vmt_fee_categories):
-    return misc.reindex(vmt_fee_categories.res_cat, buildings.zone_id)
+def vmt_res_cat(buildings, run_setup):
+    if run_setup['run_vmt_fee_res_for_res_strategy'] or run_setup["run_sb_743_strategy"]:
+        vmt_fee_categories = orca.get_table("vmt_fee_categories")
+        return misc.reindex(vmt_fee_categories.res_cat, buildings.zone_id)
 
 
 @orca.column('buildings', cache=True)
-def vmt_nonres_cat(buildings, vmt_fee_categories):
-    return misc.reindex(vmt_fee_categories.nonres_cat, buildings.zone_id)
+def vmt_nonres_cat(buildings, run_setup):
+    if (run_setup['run_vmt_fee_com_for_com_strategy'] or run_setup['run_vmt_fee_com_for_res_strategy']):
+        vmt_fee_categories = orca.get_table("vmt_fee_categories")
+        return misc.reindex(vmt_fee_categories.nonres_cat, buildings.zone_id)
 
 
 @orca.column('buildings', cache=True)
-def residential_price(buildings, residential_units, settings):
+def residential_price(buildings, residential_units, developer_settings):
     """
     This was originally an orca.step in the ual code.  This allows model steps
     like 'price_vars' and 'feasibility' to read directly from the buildings
@@ -284,7 +290,7 @@ def residential_price(buildings, residential_units, settings):
     means = residential_units.to_frame(cols).groupby(['building_id']).mean()
 
     # Convert monthly rent to equivalent sale price
-    cap_rate = settings.get('cap_rate')
+    cap_rate = developer_settings.get('cap_rate')
     means['unit_residential_rent'] = \
         means.unit_residential_rent * 12 / cap_rate
 
@@ -357,59 +363,60 @@ def height(parcels):
 
 
 @orca.column('parcels', cache=True)
-def vmt_res_cat(parcels, vmt_fee_categories):
-    return misc.reindex(vmt_fee_categories.res_cat, parcels.zone_id)
+def vmt_res_cat(parcels, run_setup):
+    if (run_setup['run_vmt_fee_com_for_com_strategy'] or run_setup['run_vmt_fee_com_for_res_strategy'] or run_setup["run_sb_743_strategy"]):
+        vmt_fee_categories = orca.get_table("vmt_fee_categories")
+        return misc.reindex(vmt_fee_categories.res_cat, parcels.zone_id)
 
 
 @orca.column('parcels', cache=True)
-def vmt_nonres_cat(parcels, vmt_fee_categories):
-    return misc.reindex(vmt_fee_categories.nonres_cat, parcels.zone_id)
+def vmt_nonres_cat(parcels, run_setup):
+    if run_setup['run_vmt_fee_res_for_res_strategy']:
+        vmt_fee_categories = orca.get_table("vmt_fee_categories")
+        return misc.reindex(vmt_fee_categories.nonres_cat, parcels.zone_id)
 
 
 # residential fees
 @orca.column('parcels', cache=True)
-def vmt_res_fees(parcels, policy, run_setup):
-    vmt_settings = policy["acct_settings"]["vmt_settings"]
-    res_fees = parcels.vmt_res_cat.map(vmt_settings["res_for_res_fee_amounts"]) if run_setup["run_vmt_fee_res_for_res_strategy"] else 0
-
-    return res_fees
+def vmt_res_fees(parcels, run_setup):
+    if run_setup['run_vmt_fee_res_for_res_strategy']:
+        account_strategies = orca.get_table("account_strategies")
+        vmt_settings = account_strategies["acct_settings"]["vmt_settings"]
+        res_fees = parcels.vmt_res_cat.map(vmt_settings["res_for_res_fee_amounts"]) if run_setup["run_vmt_fee_res_for_res_strategy"] else 0
+        return res_fees
 
 
 # commercial fees
 @orca.column('parcels', cache=True)
-def vmt_com_fees(parcels, policy, run_setup):
-    vmt_settings = policy["acct_settings"]["vmt_settings"]
-
-    com_for_res_fees = parcels.vmt_nonres_cat.map(vmt_settings["com_for_res_fee_amounts"]) if \
-        run_setup["run_vmt_fee_com_for_res_strategy"] else 0
-    com_for_com_fees = parcels.vmt_nonres_cat.map(vmt_settings["com_for_com_fee_amounts"]) if \
-        run_setup ["run_vmt_fee_com_for_com_strategy"] else 0
-    com_fees = com_for_res_fees + com_for_com_fees
-
-    return com_fees
+def vmt_com_fees(parcels, run_setup):
+    if (run_setup['run_vmt_fee_com_for_com_strategy'] or run_setup['run_vmt_fee_com_for_res_strategy']):
+        account_strategies = orca.get_table("account_strategies")
+        vmt_settings = account_strategies["acct_settings"]["vmt_settings"]
+        com_for_res_fees = parcels.vmt_nonres_cat.map(vmt_settings["com_for_res_fee_amounts"]) if \
+            run_setup["run_vmt_fee_com_for_res_strategy"] else 0
+        com_for_com_fees = parcels.vmt_nonres_cat.map(vmt_settings["com_for_com_fee_amounts"]) if \
+            run_setup ["run_vmt_fee_com_for_com_strategy"] else 0
+        com_fees = com_for_res_fees + com_for_com_fees
+        return com_fees
 
 
 # compute the fees per unit for each parcel
 # (since feees are specified spatially)
 @orca.column('parcels', cache=True)
-def fees_per_unit(parcels, policy, run_setup):
-    s = pd.Series(0, index=parcels.index)
-
+def fees_per_unit(parcels, run_setup):
     if run_setup["run_vmt_fee_res_for_res_strategy"]:
+        s = pd.Series(0, index=parcels.index)
         s += parcels.vmt_res_fees
-
-    return s
+        return s
 
 
 # since this is by sqft this implies commercial
 @orca.column('parcels', cache=True)
-def fees_per_sqft(parcels, policy, run_setup):
-    s = pd.Series(0, index=parcels.index)
-
+def fees_per_sqft(parcels, run_setup):
     if run_setup["run_vmt_fee_com_for_com_strategy"] or run_setup["run_vmt_fee_com_for_res_strategy"]:
+        s = pd.Series(0, index=parcels.index)
         s += parcels.vmt_com_fees
-
-    return s
+        return s
 
 
 @orca.column('parcels', cache=True)
@@ -492,10 +499,10 @@ def juris(parcels, parcels_geography):
 
 
 @orca.column('parcels', cache=True)
-def ave_sqft_per_unit(parcels, zones, settings):
+def ave_sqft_per_unit(parcels, zones, data_edits):
     s = misc.reindex(zones.ave_unit_sqft, parcels.zone_id)
 
-    clip = settings.get("ave_sqft_per_unit_clip", None)
+    clip = data_edits.get("ave_sqft_per_unit_clip", None)
     if clip is not None:
         s = s.clip(lower=clip['lower'], upper=clip['upper'])
 
@@ -512,7 +519,7 @@ def ave_sqft_per_unit(parcels, zones, settings):
       - threshold: 150
         max: 800
     '''
-    cfg = settings.get("clip_sqft_per_unit_based_on_dua", None)
+    cfg = data_edits.get("clip_sqft_per_unit_based_on_dua", None)
     if cfg is not None:
         for clip in cfg:
             s[parcels.max_dua >= clip["threshold"]] = clip["max"]
@@ -526,14 +533,11 @@ def ave_sqft_per_unit(parcels, zones, settings):
 def parcel_average_price(use, quantile=.5):
     if use == "residential":
         # get node price average and put it on parcels
-        s = misc.reindex(orca.get_table('nodes')[use],
-                         orca.get_table('parcels').node_id)
+        s = misc.reindex(orca.get_table('nodes')[use], orca.get_table('parcels').node_id)
 
-        cost_shifters = orca.get_table("parcels").cost_shifters
-        price_shifters = orca.get_table("parcels").price_shifters
-        taz2_shifters = orca.get_table("parcels").taz2_price_shifters
-
-        s = s / cost_shifters * price_shifters * taz2_shifters
+        if orca.get_injectable("run_setup")["cost_shifters"]:
+            cost_shifters = orca.get_table("parcels").cost_shifters
+            s = s / cost_shifters
 
         # just to make sure we're in a reasonable range
         return s.fillna(0).clip(150, 1250)
@@ -542,8 +546,7 @@ def parcel_average_price(use, quantile=.5):
         # just to keep from erroring
         return pd.Series(0, orca.get_table('parcels').index)
 
-    return misc.reindex(orca.get_table('nodes')[use],
-                        orca.get_table('parcels').node_id)
+    return misc.reindex(orca.get_table('nodes')[use], orca.get_table('parcels').node_id)
 
 
 #############################
@@ -555,7 +558,7 @@ def parcel_average_price(use, quantile=.5):
 
 @orca.injectable("parcel_is_allowed_func", autocall=False)
 def parcel_is_allowed(form):
-    settings = orca.get_injectable("settings")
+    zoning_adjusters = orca.get_injectable("zoning_adjusters")
     mapping = orca.get_injectable("mapping")
     form_to_btype = mapping["form_to_btype"]
 
@@ -582,9 +585,9 @@ def parcel_is_allowed(form):
 
     # this is a fun modification - when we get too much retail in jurisdictions
     # we can just eliminate all retail
-    if "eliminate_retail_zoning_from_juris" in settings and form == "retail":
+    if "eliminate_retail_zoning_from_juris" in zoning_adjusters and form == "retail":
         allowed *= ~orca.get_table("parcels").juris.isin(
-            settings["eliminate_retail_zoning_from_juris"])
+            zoning_adjusters["eliminate_retail_zoning_from_juris"])
 
     return allowed.astype("bool")
 
@@ -650,18 +653,6 @@ def is_sanfran(parcels_geography, buildings, parcels):
         reindex(parcels.index).fillna(False).astype('int')
 
 
-# returns a vector where parcels are ALLOWED to be built
-@orca.column('parcels')
-def parcel_rules(parcels):
-    # removes parcels with buildings < 1940,
-    # and single family homes on less then half an acre
-    s = (parcels.oldest_building < 1940) | \
-        ((parcels.total_residential_units == 1) &
-         (parcels.parcel_acres < .5)) | \
-        (parcels.parcel_size < 2000)
-    return (~s.reindex(parcels.index).fillna(False)).astype('int')
-
-
 @orca.column('parcels', cache=True)
 def total_non_residential_sqft(parcels, buildings):
     return buildings.non_residential_sqft.groupby(buildings.parcel_id).sum().\
@@ -697,7 +688,7 @@ def built_far(parcels):
 
 # actual columns start here
 @orca.column('parcels')
-def max_far(parcels_zoning_calculations, parcels, settings):
+def max_far(parcels_zoning_calculations, parcels, zoning_adjusters):
     # first we combine the zoning columns
     s = parcels_zoning_calculations.effective_max_far * ~parcels.nodev
 
@@ -706,7 +697,7 @@ def max_far(parcels_zoning_calculations, parcels, settings):
     s2 = parcels.urban_footprint.map({0: 0, 1: np.nan})
     s = pd.concat([s, s2], axis=1).min(axis=1)
 
-    if settings["dont_build_most_dense_building"]:
+    if zoning_adjusters["dont_build_most_dense_building"]:
         # in this case we shrink the zoning such that we don't built the
         # tallest building in a given zone
         # if there no building in the zone currently, we make the max_far = .2
@@ -728,7 +719,7 @@ def built_dua(parcels):
 
 
 @orca.column('parcels')
-def max_dua(parcels_zoning_calculations, parcels, settings):
+def max_dua(parcels_zoning_calculations, parcels, zoning_adjusters):
     # first we combine the zoning columns
     s = parcels_zoning_calculations.effective_max_dua * ~parcels.nodev
 
@@ -737,7 +728,7 @@ def max_dua(parcels_zoning_calculations, parcels, settings):
     s2 = parcels.urban_footprint.map({0: .01, 1: np.nan})
     s = pd.concat([s, s2], axis=1).min(axis=1)
 
-    if settings["dont_build_most_dense_building"]:
+    if zoning_adjusters["dont_build_most_dense_building"]:
         # in this case we shrink the zoning such that we don't built the
         # tallest building in a given zone
         # if there no building in the zone currently, we make the max_dua = 4
@@ -756,10 +747,10 @@ def general_type(parcels, buildings):
 
 # for debugging reasons this is split out into its own function
 @orca.column('parcels')
-def building_purchase_price_sqft(parcels, settings):
+def building_purchase_price_sqft(parcels, developer_settings):
     price = pd.Series(0, parcels.index)
     gentype = parcels.general_type
-    cap_rate = settings["cap_rate"]
+    cap_rate = developer_settings["cap_rate"]
     # all of these factors are above one which does some discouraging of
     # redevelopment - this will need to be recalibrated when the new
     # developer model comes into play
@@ -812,26 +803,13 @@ def county(parcels, mapping):
 
 
 @orca.column('parcels', cache=True)
-def cost_shifters(parcels, settings):
-    return parcels.county.map(settings["cost_shifters"])
-
-
-@orca.column('parcels', cache=True)
-def price_shifters(parcels, settings, policy):
-    if settings["pda_price_shifters"] is not None:
-        return parcels.pda_id.map(settings["pda_price_shifters"]).fillna(1.0)
-    else:
-        return pd.Series(1.0, parcels.index)
+def cost_shifters(parcels, cost_shifters):
+    return parcels.county.map(cost_shifters["cost_shifters"])
 
 
 @orca.column('parcels', cache=True)
 def taz2(parcels, maz):
     return misc.reindex(maz.TAZ, parcels.maz_id)
-
-
-@orca.column('parcels', cache=True)
-def taz2_price_shifters(parcels, taz2_price_shifters, year):
-    return parcels.taz2.map(taz2_price_shifters[str(year)]).fillna(1.0)
 
 
 @orca.column('parcels', cache=True)
@@ -856,8 +834,10 @@ def subregion(taz_geography, parcels):
 
 
 @orca.column('parcels', cache=True)
-def vmt_code(parcels, vmt_fee_categories):
-    return misc.reindex(vmt_fee_categories.res_cat, parcels.zone_id)
+def vmt_code(parcels, run_setup):
+    if run_setup['run_vmt_fee_res_for_res_strategy']:
+        vmt_fee_categories = orca.get_table("vmt_fee_categories")
+        return misc.reindex(vmt_fee_categories.res_cat, parcels.zone_id)
 
 
 @orca.column('parcels', cache=True)
@@ -1092,9 +1072,3 @@ def zoned_build_ratio(parcels_zoning_calculations):
     # build space
     return parcels_zoning_calculations.zoned_du_build_ratio + \
         parcels_zoning_calculations.zoned_far_build_ratio
-
-
-@orca.column('parcels_zoning_calculations')
-def zoned_du_underbuild_nodev(parcels, parcels_zoning_calculations):
-    return (parcels_zoning_calculations.zoned_du_underbuild *
-            parcels.parcel_rules).astype('int')

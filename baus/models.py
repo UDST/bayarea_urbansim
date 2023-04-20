@@ -6,7 +6,6 @@ import yaml
 
 import numpy as np
 import pandas as pd
-
 import orca
 import pandana.network as pdna
 from urbansim.developer import sqftproforma
@@ -27,44 +26,30 @@ def elcm_simulate(jobs, buildings, aggregations):
     """
     buildings.local["non_residential_rent"] = \
         buildings.local.non_residential_rent.fillna(0)
-    return utils.lcm_simulate("elcm.yaml", jobs, buildings, aggregations,
+    return utils.lcm_simulate("location_choice/elcm.yaml", jobs, buildings, aggregations,
                               "building_id", "job_spaces",
                               "vacant_job_spaces", cast=True)
 
 
 @orca.step()
-def households_transition(households, household_controls, year, settings):
+def households_transition(households, household_controls, year, transition_relocation_settings):
     s = orca.get_table('households').base_income_quartile.value_counts()
     print("Distribution by income before:\n", (s/s.sum()))
     ret = utils.full_transition(households,
                                 household_controls,
                                 year,
-                                settings['households_transition'],
+                                transition_relocation_settings['households_transition'],
                                 "building_id")
     s = orca.get_table('households').base_income_quartile.value_counts()
     print("Distribution by income after:\n", (s/s.sum()))
     return ret
 
 
-@orca.table(cache=True)
-def employment_relocation_rates():
-    df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "employment_relocation_rates.csv"))
-    df = df.set_index("zone_id").stack().reset_index()
-    df.columns = ["zone_id", "empsix", "rate"]
-    return df
-
-
-@orca.table(cache=True)
-def household_relocation_rates():
-    df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "household_relocation_rates.csv"))
-    return df
-
-
 # this is a list of parcel_ids which are to be treated as static
 @orca.injectable()
-def static_parcels(settings, parcels):
+def static_parcels(developer_settings, parcels):
     # list of geom_ids to not relocate
-    static_parcels = settings["static_parcels"]
+    static_parcels = developer_settings["static_parcels"]
     # geom_ids -> parcel_ids
     return geom_id_to_parcel_id(
         pd.DataFrame(index=static_parcels), parcels).index.values
@@ -142,92 +127,64 @@ def _proportional_jobs_model(
 
 
 @orca.step()
-def accessory_units(run_setup, year, buildings, parcels, policy):
-    if run_setup["run_adu_strategy"]:
-        add_units = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "accessory_units_policy.csv"), index_col="juris")[str(year)]
-    else:
-        add_units = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "accessory_units.csv"), index_col="juris")[str(year)]
+def accessory_units_strategy(run_setup, year, buildings, parcels, accessory_units):
+
+    add_units = accessory_units[str(year)]
+
     buildings_juris = misc.reindex(parcels.juris, buildings.parcel_id)
     res_buildings = buildings_juris[buildings.general_type == "Residential"]
+
     add_buildings = groupby_random_choice(res_buildings, add_units)
     add_buildings = pd.Series(add_buildings.index).value_counts()
     buildings.local.loc[add_buildings.index, "residential_units"] += add_buildings.values
 
 
 @orca.step()
-def proportional_elcm(jobs, households, buildings, parcels,
-                      year, run_number):
+def proportional_elcm(jobs, households, buildings, parcels, proportional_retail_jobs_forecast, 
+                      proportional_gov_ed_jobs_forecast):
 
-    juris_assumptions_df = pd.read_csv(os.path.join(
-        orca.get_injectable("inputs_dir"),
-        "juris_assumptions.csv"
-    ), index_col="juris")
+    juris_assumptions_df = proportional_retail_jobs_forecast.to_frame()
 
     # not a big fan of this - jobs with building_ids of -1 get dropped
     # by the merge so you have to grab the columns first and fill in
     # juris iff the building_id is != -1
     jobs_df = jobs.to_frame(["building_id", "empsix"])
-    df = orca.merge_tables(
-        target='jobs',
-        tables=[jobs, buildings, parcels],
-        columns=['juris', 'zone_id'])
+    df = orca.merge_tables(target='jobs', tables=[jobs, buildings, parcels], columns=['juris', 'zone_id'])
     jobs_df["juris"] = df["juris"]
     jobs_df["zone_id"] = df["zone_id"]
 
-    hh_df = orca.merge_tables(
-        target='households',
-        tables=[households, buildings, parcels],
-        columns=['juris', 'zone_id', 'county'])
+    hh_df = orca.merge_tables(target='households', tables=[households, buildings, parcels], columns=['juris', 'zone_id', 'county'])
 
     # the idea here is to make sure we don't lose local retail and gov't
     # jobs - there has to be some amount of basic services to support an
     # increase in population
 
-    buildings_df = orca.merge_tables(
-        target='buildings',
-        tables=[buildings, parcels],
-        columns=['juris', 'zone_id', 'general_type', 'vacant_job_spaces'])
+    buildings_df = orca.merge_tables(target='buildings', tables=[buildings, parcels], 
+                                     columns=['juris', 'zone_id', 'general_type', 'vacant_job_spaces'])
 
-    buildings_df = buildings_df.rename(columns={
-      'zone_id_x': 'zone_id', 'general_type_x': 'general_type'})
+    buildings_df = buildings_df.rename(columns={'zone_id_x': 'zone_id', 'general_type_x': 'general_type'})
 
     # location options are vacant job spaces in retail buildings - this will
     # overfill certain location because we don't have enough space
     building_subset = buildings_df[buildings_df.general_type == "Retail"]
-    location_options = building_subset.juris.repeat(
-        building_subset.vacant_job_spaces.clip(0))
+    location_options = building_subset.juris.repeat(building_subset.vacant_job_spaces.clip(0))
 
     print("Running proportional jobs model for retail")
 
-    s = _proportional_jobs_model(
-        # we now take the ratio of retail jobs to households as an input
-        # that is manipulable by the modeler - this is stored in a csv
-        # per jurisdiction
-        juris_assumptions_df.minimum_forecast_retail_jobs_per_household,
-        "RETEMPN",
-        "juris",
-        hh_df,
-        jobs_df,
-        location_options
-    )
+    # we now take the ratio of retail jobs to households as an input
+    # that is manipulable by the modeler - this is stored in a csv per jurisdiction
+    s = _proportional_jobs_model(juris_assumptions_df.minimum_forecast_retail_jobs_per_household,
+                                 "RETEMPN", "juris", hh_df, jobs_df, location_options)
 
     jobs.update_col_from_series("building_id", s, cast=True)
 
-    # first read the file from disk - it's small so no table source
-    taz_assumptions_df = pd.read_csv(os.path.join(
-        orca.get_injectable("inputs_dir"),
-        "taz_growth_rates_gov_ed.csv"
-    ), index_col="Taz")
+    taz_assumptions_df = proportional_gov_ed_jobs_forecast.to_frame()
 
     # we're going to multiply various aggregations of populations by factors
     # e.g. high school jobs are multiplied by county pop and so forth - this
     # is the dict of the aggregations of household counts
-    mapping_d = {
-        "TAZ Pop": hh_df["zone_id"].dropna().astype('int').value_counts(),
-        "County Pop": taz_assumptions_df.County.map(
-            hh_df["county"].value_counts()),
-        "Reg Pop": len(hh_df)
-    }
+    mapping_d = {"TAZ Pop": hh_df["zone_id"].dropna().astype('int').value_counts(), 
+                 "County Pop": taz_assumptions_df.County.map(hh_df["county"].value_counts()), "Reg Pop": len(hh_df)}
     # the factors are set up in relation to pop, not hh count
     pop_to_hh = .43
 
@@ -248,8 +205,7 @@ def proportional_elcm(jobs, households, buildings, parcels,
     # now go through and multiply each factor by the aggregation it applied to
     target_jobs = pd.Series(0, taz_assumptions_df.index)
     for col, mult in zip(taz_assumptions_df.columns, multipliers):
-        target_jobs += (taz_assumptions_df[col].astype('float') *
-                        mapping_d[mult] * pop_to_hh).fillna(0)
+        target_jobs += (taz_assumptions_df[col].astype('float') * mapping_d[mult] * pop_to_hh).fillna(0)
 
     target_jobs = target_jobs.astype('int')
 
@@ -257,75 +213,65 @@ def proportional_elcm(jobs, households, buildings, parcels,
 
     # location options are vacant job spaces in retail buildings - this will
     # overfill certain location because we don't have enough space
-    building_subset = buildings_df[
-        buildings.general_type.isin(["Office", "School"])]
-    location_options = building_subset.zone_id.repeat(
-        building_subset.vacant_job_spaces.clip(0))
+    building_subset = buildings_df[buildings.general_type.isin(["Office", "School"])]
+    location_options = building_subset.zone_id.repeat(building_subset.vacant_job_spaces.clip(0))
 
     # now do the same thing for gov't jobs
-    s = _proportional_jobs_model(
-        None,  # computing jobs directly
-        "OTHEMPN",
-        "zone_id",
-        hh_df,
-        jobs_df,
-        location_options,
-        target_jobs=target_jobs
-    )
+    # computing jobs directly
+    s = _proportional_jobs_model(None, "OTHEMPN", "zone_id", hh_df, jobs_df, location_options, target_jobs=target_jobs)
 
     jobs.update_col_from_series("building_id", s, cast=True)
 
 
 @orca.step()
-def jobs_relocation(jobs, employment_relocation_rates, years_per_iter,
-                    settings, static_parcels, buildings):
+def jobs_relocation(jobs, employment_relocation_rates, run_setup, employment_relocation_rates_adjusters, years_per_iter, settings, 
+	                static_parcels, buildings):
 
     # get buildings that are on those parcels
-    static_buildings = buildings.index[
-        buildings.parcel_id.isin(static_parcels)]
+    static_buildings = buildings.index[buildings.parcel_id.isin(static_parcels)]
 
-    df = pd.merge(jobs.to_frame(["zone_id", "empsix"]),
-                  employment_relocation_rates.local,
-                  on=["zone_id", "empsix"],
-                  how="left")
+    rates = employment_relocation_rates.local    
+    # update the relocation rates with the adjusters if adjusters are being used
+    if run_setup["employment_relocation_rates_adjusters"]:
+        rates.update(employment_relocation_rates_adjusters.to_frame())
 
+    rates = rates.stack().reset_index()
+    rates.columns = ["zone_id", "empsix", "rate"]
+
+    df = pd.merge(jobs.to_frame(["zone_id", "empsix"]), rates, on=["zone_id", "empsix"], how="left")
     df.index = jobs.index
 
-    # get the move rate for each job
-    rate = (df.rate * years_per_iter).clip(0, 1.0)
     # get random floats and move jobs if they're less than the rate
-    move = np.random.random(len(rate)) < rate
-
+    move = np.random.random(len(df.rate)) < df.rate
     # also don't move jobs that are on static parcels
     move &= ~jobs.building_id.isin(static_buildings)
 
     # get the index of the moving jobs
     index = jobs.index[move]
+    print("{} jobs are relocating".format(len(index)))
 
     # set jobs that are moving to a building_id of -1 (means unplaced)
-    jobs.update_col_from_series("building_id",
-                                pd.Series(-1, index=index))
+    jobs.update_col_from_series("building_id", pd.Series(-1, index=index))
 
 
 @orca.step()
-def household_relocation(households, household_relocation_rates,
-                         settings, static_parcels, buildings):
+def household_relocation(households, household_relocation_rates, run_setup, static_parcels, buildings):
 
     # get buildings that are on those parcels
-    static_buildings = buildings.index[
-        buildings.parcel_id.isin(static_parcels)]
+    static_buildings = buildings.index[buildings.parcel_id.isin(static_parcels)]
 
-    df = pd.merge(households.to_frame(["zone_id", "base_income_quartile",
-                                       "tenure"]),
-                  household_relocation_rates.local,
-                  on=["zone_id", "base_income_quartile", "tenure"],
-                  how="left")
-
+    rates = household_relocation_rates.local
+    # update the relocation rates with the renter protections strategy if applicable
+    if run_setup["run_renter_protections_strategy"]:
+        renter_protections_relocation_rates = orca.get_table("renter_protections_relocation_rates")
+        rates = pd.concat([rates, renter_protections_relocation_rates.to_frame()]).drop_duplicates(subset=["zone_id", "base_income_quartile", "tenure"], keep="last")
+        rates = rates.reset_index(drop=True)
+    
+    df = pd.merge(households.to_frame(["zone_id", "base_income_quartile", "tenure"]), rates, on=["zone_id", "base_income_quartile", "tenure"], how="left")
     df.index = households.index
 
     # get random floats and move households if they're less than the rate
     move = np.random.random(len(df.rate)) < df.rate
-
     # also don't move households that are on static parcels
     move &= ~households.building_id.isin(static_buildings)
 
@@ -334,8 +280,7 @@ def household_relocation(households, household_relocation_rates,
     print("{} households are relocating".format(len(index)))
 
     # set households that are moving to a building_id of -1 (means unplaced)
-    households.update_col_from_series("building_id",
-                                      pd.Series(-1, index=index), cast=True)
+    households.update_col_from_series("building_id", pd.Series(-1, index=index), cast=True)
 
 
 # this deviates from the step in urbansim_defaults only in how it deals with
@@ -344,7 +289,7 @@ def household_relocation(households, household_relocation_rates,
 # just adding capacity on an existing parcel, by adding one building at a time
 @orca.step()
 def scheduled_development_events(buildings, development_projects, demolish_events, summary, year, parcels, mapping, years_per_iter, 
-                                 parcels_geography, building_sqft_per_job, vmt_fee_categories, static_parcels, base_year):
+                                 parcels_geography, building_sqft_per_job, static_parcels, base_year, run_setup):
     # first demolish
     # 6/3/20: current approach is to grab projects from the simulation year
     # and previous four years, however the base year is treated differently,
@@ -390,8 +335,12 @@ def scheduled_development_events(buildings, development_projects, demolish_event
     new_buildings["subsidized"] = False
 
     new_buildings["zone_id"] = misc.reindex(parcels.zone_id, new_buildings.parcel_id)
-    new_buildings["vmt_res_cat"] = misc.reindex(vmt_fee_categories.res_cat, new_buildings.zone_id)
-    new_buildings["vmt_nonres_cat"] = misc.reindex(vmt_fee_categories.nonres_cat, new_buildings.zone_id)
+    if run_setup['run_vmt_fee_res_for_res_strategy'] or run_setup["run_sb743_strategy"]:
+        vmt_fee_categories = orca.get_table("vmt_fee_categories")
+        new_buildings["vmt_res_cat"] = misc.reindex(vmt_fee_categories.res_cat, new_buildings.zone_id)
+    if (run_setup['run_vmt_fee_com_for_com_strategy'] or run_setup['run_vmt_fee_com_for_res_strategy']):
+        vmt_fee_categories = orca.get_table("vmt_fee_categories")
+        new_buildings["vmt_nonres_cat"] = misc.reindex(vmt_fee_categories.nonres_cat, new_buildings.zone_id)
     del new_buildings["zone_id"]
 
     new_buildings["pda_id"] = parcels_geography.pda_id.loc[new_buildings.parcel_id].values
@@ -410,7 +359,7 @@ def scheduled_development_events(buildings, development_projects, demolish_event
 @orca.injectable(autocall=False)
 def supply_and_demand_multiplier_func(demand, supply):
     s = demand / supply
-    settings = orca.get_injectable('settings')
+    settings = orca.get_injectable('price_settings')
     print("Number of submarkets where demand exceeds supply:", len(s[s > 1.0]))
     # print "Raw relationship of supply and demand\n", s.describe()
     supply_correction = settings["price_equilibration"]
@@ -488,17 +437,17 @@ def add_extra_columns_func(df):
 
 
 @orca.step()
-def alt_feasibility(parcels, settings,
+def alt_feasibility(parcels, developer_settings,
                     parcel_sales_price_sqft_func,
                     parcel_is_allowed_func):
-    kwargs = settings['feasibility']
+    kwargs = developer_settings['feasibility']
     config = sqftproforma.SqFtProFormaConfig()
     config.parking_rates["office"] = 1.5
     config.parking_rates["retail"] = 1.5
     config.building_efficiency = .85
     config.parcel_coverage = .85
     # use the cap rate from settings.yaml
-    config.cap_rate = settings["cap_rate"]
+    config.cap_rate = developer_settings["cap_rate"]
 
     utils.run_feasibility(parcels,
                           parcel_sales_price_sqft_func,
@@ -515,14 +464,17 @@ def alt_feasibility(parcels, settings,
 
 @orca.step()
 def residential_developer(feasibility, households, buildings, parcels, year,
-                          settings, summary, form_to_btype_func,
+                          developer_settings, summary, form_to_btype_func,
                           add_extra_columns_func, parcels_geography,
-                          limits_settings, final_year,
-                          regional_controls):
+                          limits_settings, final_year, run_setup):
 
-    kwargs = settings['residential_developer']
-    rc = regional_controls.to_frame()
-    target_vacancy = rc.loc[year].st_res_vac
+    kwargs = developer_settings['residential_developer']
+
+    if run_setup["residential_vacancy_rate_mods"]:
+        res_vacancy = orca.get_table("residential_vacancy_rate_mods").to_frame()
+        target_vacancy =  res_vacancy.loc[year].st_res_vac
+    else:
+        target_vacancy =  kwargs["target_vacancy"]
 
     num_units = dev.compute_units_to_build(
         len(households),
@@ -645,9 +597,9 @@ def residential_developer(feasibility, households, buildings, parcels, year,
 
 @orca.step()
 def retail_developer(jobs, buildings, parcels, nodes, feasibility,
-                     settings, summary, add_extra_columns_func, net):
+                     developer_settings, summary, add_extra_columns_func, net):
 
-    dev_settings = settings['non_residential_developer']
+    dev_settings = developer_settings['non_residential_developer']
     all_units = dev.compute_units_to_build(
         len(jobs),
         buildings.job_spaces.sum(),
@@ -655,7 +607,7 @@ def retail_developer(jobs, buildings, parcels, nodes, feasibility,
 
     target = all_units * float(dev_settings['type_splits']["Retail"])
     # target here is in sqft
-    target *= settings["building_sqft_per_job"]["HS"]
+    target *= developer_settings["building_sqft_per_job"]["HS"]
 
     feasibility = feasibility.to_frame().loc[:, "retail"]
     feasibility = feasibility.dropna(subset=["max_profit"])
@@ -723,11 +675,11 @@ def retail_developer(jobs, buildings, parcels, nodes, feasibility,
 
 @orca.step()
 def office_developer(feasibility, jobs, buildings, parcels, year,
-                     settings, summary, form_to_btype_func,
+                     developer_settings, summary, form_to_btype_func,
                      add_extra_columns_func, parcels_geography,
                      limits_settings):
 
-    dev_settings = settings['non_residential_developer']
+    dev_settings = developer_settings['non_residential_developer']
 
     # I'm going to try a new way of computing this because the math the other
     # way is simply too hard.  Basically we used to try and apportion sectors
@@ -985,28 +937,28 @@ def make_network_from_settings(settings):
 
 
 @orca.injectable(cache=True)
-def net(settings):
+def net(accessibility_settings):
     nets = {}
-    pdna.reserve_num_graphs(len(settings["build_networks"]))
+    pdna.reserve_num_graphs(len(accessibility_settings["build_networks"]))
 
     # yeah, starting to hardcode stuff, not great, but can only
     # do nearest queries on the first graph I initialize due to crummy
     # limitation in pandana
-    for key in settings["build_networks"].keys():
+    for key in accessibility_settings["build_networks"].keys():
         nets[key] = make_network_from_settings(
-            settings['build_networks'][key]
+            accessibility_settings['build_networks'][key]
         )
 
     return nets
 
 
 @orca.step()
-def local_pois(settings):
+def local_pois(accessibility_settings):
     # because of the aforementioned limit of one netowrk at a time for the
     # POIS, as well as the large amount of memory used, this is now a
     # preprocessing step
     n = make_network(
-        settings['build_networks']['walk']['name'],
+        accessibility_settings['build_networks']['walk']['name'],
         "weight", 3000)
 
     n.init_pois(
@@ -1016,7 +968,7 @@ def local_pois(settings):
 
     cols = {}
 
-    locations = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 'bart_stations.csv'))
+    locations = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 'accessibility/pandana/bart_stations.csv'))
     n.set_pois("tmp", locations.lng, locations.lat)
     cols["bartdist"] = n.nearest_pois(3000, "tmp", num_pois=1)[1]
 
@@ -1032,7 +984,7 @@ def local_pois(settings):
 
 @orca.step()
 def neighborhood_vars(net):
-    nodes = networks.from_yaml(net["walk"], "neighborhood_vars.yaml")
+    nodes = networks.from_yaml(net["walk"], "accessibility/neighborhood_vars.yaml")
     nodes = nodes.replace(-np.inf, np.nan)
     nodes = nodes.replace(np.inf, np.nan)
     nodes = nodes.fillna(0)
@@ -1043,10 +995,10 @@ def neighborhood_vars(net):
 
 @orca.step()
 def regional_vars(net):
-    nodes = networks.from_yaml(net["drive"], "regional_vars.yaml")
+    nodes = networks.from_yaml(net["drive"], "accessibility/regional_vars.yaml")
     nodes = nodes.fillna(0)
 
-    nodes2 = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "regional_poi_distances.csv"),
+    nodes2 = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "accessibility/pandana/regional_poi_distances.csv"),
                          index_col="tmnode_id")
     nodes = pd.concat([nodes, nodes2], axis=1)
 
@@ -1055,12 +1007,12 @@ def regional_vars(net):
 
 
 @orca.step()
-def regional_pois(settings, landmarks):
+def regional_pois(accessibility_settings, landmarks):
     # because of the aforementioned limit of one netowrk at a time for the
     # POIS, as well as the large amount of memory used, this is now a
     # preprocessing step
     n = make_network(
-        settings['build_networks']['drive']['name'],
+        accessibility_settings['build_networks']['drive']['name'],
         "CTIMEV", 75)
 
     n.init_pois(
@@ -1082,7 +1034,7 @@ def regional_pois(settings, landmarks):
 
 @orca.step()
 def price_vars(net):
-    nodes2 = networks.from_yaml(net["walk"], "price_vars.yaml")
+    nodes2 = networks.from_yaml(net["walk"], "accessibility/price_vars.yaml")
     nodes2 = nodes2.fillna(0)
     print(nodes2.describe())
     nodes = orca.get_table('nodes')
