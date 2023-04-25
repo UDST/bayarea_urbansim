@@ -3,24 +3,22 @@ from __future__ import print_function
 import os
 import orca
 import pandas as pd
+from baus import datasources
 
 
 @orca.step()
-def parcel_summary(parcels, buildings, households, jobs, run_number, year, initial_year):
+def parcel_summary(parcels, buildings, households, jobs, run_number, year):
 
     if year not in [2010, 2015, 2035, 2050]:
          return
-    
-    # (1) print parcel data for model run year
-    df = parcels.to_frame(["geom_id", "x", "y", "total_job_spaces", "first_building_type"])
 
+    df = parcels.to_frame(["geom_id", "x", "y"])
     # add building data for parcels
-    building_df = orca.merge_tables('buildings', [parcels, buildings],
-                                    columns=['parcel_id', 'residential_units', 'deed_restricted_units', 
-                                             'preserved_units', 'inclusionary_units', 'subsidized_units'])
+    building_df = orca.merge_tables('buildings', [parcels, buildings], columns=['parcel_id', 'residential_units', 'deed_restricted_units',
+                                                                                'preserved_units', 'inclusionary_units', 'subsidized_units'])
     for col in building_df.columns:
         if col == 'parcel_id':
-            return
+            continue
         df[col] = building_df.groupby('parcel_id')[col].sum()
 
     # add households by quartile on each parcel
@@ -35,26 +33,32 @@ def parcel_summary(parcels, buildings, households, jobs, run_number, year, initi
         df[cat] = jobs_df[jobs_df.empsix == cat].parcel_id.value_counts()
     df["totemp"] = jobs_df.groupby('parcel_id').size()
 
-    # print parcel data by model year
-    df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_data_%d.csv" % (run_number, year)))
+    df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_summary_%d.csv" % (run_number, year)))
 
-    # (2) write parcel growth summaries for future years
-    if year not in [2010, 2015]:
-        print('calculate diff for year {}'.format(year))
-        df2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_data_%d.csv" %
-                          (run_number, initial_year)), index_col="parcel_id")
 
-        for col in df.columns:
-            if col in ["x", "y", "first_building_type", "juris"]:
-                continue
-            # fill na with 0 for parcels with no building in either base year or current year, otherwise it drops the data 
-            # during subtraction
-            df[col].fillna(0, inplace=True)
-            df2[col].fillna(0, inplace=True)
-            df[col] = df[col] - df2[col]
-            
-        # print parcel data growth for future year
-        df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_data_diff.csv" % run_number))
+@orca.step()
+def parcel_growth_summary(run_number, year, final_year):
+    
+    if year != final_year:
+        return
+
+    # use 2015 as the base year
+    df1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_summary_%d.csv" %
+                        (run_number, 2015)), index_col="parcel_id")
+    df2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_summary_%d.csv" %
+                        (run_number, final_year)), index_col="parcel_id")
+
+    for col in df1.columns:
+        if col in ["geom_id", "x", "y"]:
+            continue
+
+        # fill na with 0 otherwise it drops the parcel data during subtraction
+        df1[col].fillna(0, inplace=True)
+        df2[col].fillna(0, inplace=True)
+
+        df1[col] = df2[col] - df1[col]
+
+    df1.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_growth.csv" % run_number))
 
 
 @orca.step()
@@ -63,21 +67,17 @@ def building_summary(parcels, run_number, year, buildings):
     if year not in [2010, 2015, 2035, 2050]:
         return
 
-    df = orca.merge_tables(
-        'buildings',
+    df = orca.merge_tables('buildings',
         [parcels, buildings],
-        columns=['year_built', 'building_type',
-                 'residential_units', 'unit_price', 'zone_id', 
-                 'non_residential_sqft', 'vacant_res_units', 
-                 'deed_restricted_units', 'inclusionary_units',
-                 'preserved_units', 'subsidized_units', 'job_spaces',
-                 'x', 'y', 'geom_id', 'source'])
+        columns=['year_built', 'building_type', 'residential_units', 'unit_price', 'zone_id', 
+                 'non_residential_sqft', 'vacant_res_units', 'deed_restricted_units', 'inclusionary_units',
+                 'preserved_units', 'subsidized_units', 'job_spaces', 'x', 'y', 'geom_id', 'source'])
 
-    df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_building_data_%d.csv" % (run_number, year)))
+    df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_building_summary_%d.csv" % (run_number, year)))
 
 
 @orca.step()
-def diagnostic_output(households, buildings, parcels, taz, jobs, developer_settings, zones, year, summary, run_number, residential_units):
+def diagnostic_output(households, buildings, parcels, jobs, developer_settings, zones, year, summary, residential_units):
 
     households = households.to_frame()
     buildings = buildings.to_frame()
@@ -124,10 +124,6 @@ def diagnostic_output(households, buildings, parcels, taz, jobs, developer_setti
     zones['retail_to_res_units_ratio'] = zones.retail_sqft / zones.residential_units.replace(0, 1)
 
     summary.add_zone_output(zones, "diagnostic_outputs", year)
+        
 
-    # save the dropped buildings to a csv
-    if "dropped_buildings" in orca.orca._TABLES:
-        df = orca.get_table("dropped_buildings").to_frame()
-        print("Dropped buildings", df.describe())
-        df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_dropped_buildings.csv").format(run_number))
-        df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_dropped_buildings.csv").format(run_number))
+### VISUALIZER CALCS

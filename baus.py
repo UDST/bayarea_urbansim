@@ -249,20 +249,26 @@ def get_simulation_models():
         "elcm_simulate",            # displaced by new dev
 
         # save_intermediate_tables", # saves output for visualization
-
-        "simulation_validation",
-        "parcel_summary",
-        "building_summary",
-        "diagnostic_output",
-
         "calculate_vmt_fees",
         "calculate_jobs_housing_fees",
 
-        "geographic_summary",
-        "travel_model_output",
-        "travel_model_2_output",
+        # summary steps
+        "simulation_validation",
+        "diagnostic_output",
+
         "hazards_slr_summary",
         "hazards_eq_summary",
+
+        "parcel_summary",
+        "parcel_growth_summary",
+        "building_summary",
+
+        "geographic_summary",
+        "geographic_growth_summary",
+
+        "travel_model_output",
+        "travel_model_2_output",
+
         "slack_report"
 
     ]
@@ -369,15 +375,23 @@ def get_baseyear_models():
         "price_vars",
         # "scheduled_development_events",
 
+        # summary steps
         "simulation_validation",
-        "parcel_summary",
-        "building_summary",
-        "geographic_summary",
-        "travel_model_output",
-        "travel_model_2_output",
+        "diagnostic_output",
+
         "hazards_slr_summary",
         "hazards_eq_summary",
-        "diagnostic_output",
+
+        "parcel_summary",
+        "parcel_growth_summary",
+        "building_summary",
+
+        "geographic_summary",
+        "geographic_growth_summary",
+
+        "travel_model_output",
+        "travel_model_2_output",
+
         "slack_report"
     ]
 
