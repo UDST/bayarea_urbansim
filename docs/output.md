@@ -57,3 +57,14 @@ The table below contains brief descriptions of the disgnostic output tables of B
 | household_size | median household size of all households in a TAZ | float | BAUS "households" table; BAUS "households_preproc" table | XXX |
 | average_income | median income of all households in a TAZ | int | BAUS "households" table; BAUS "households_preproc" table | [summary.py](); MTC/ABAG household models? |
 
+### `parcel_output.csv` parcel-level attributes:
+
+| **Attribute** | **Description** | **Data Type** | **Source** | **Sub-model/step** |
+|-----------------|-----------|--------------|--------------|--------------|
+| XXX | XXX | XXX | XXX | XXX |
+
+### `dropping_buildings.csv` building-level attributes:
+
+| **Attribute** | **Description** | **Data Type** | **Source** | **Sub-model/step** |
+|-----------------|-----------|--------------|--------------|--------------|
+| XXX | XXX | XXX | XXX | XXX |
