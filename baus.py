@@ -122,6 +122,26 @@ if MAPS:
     from baus.utils import ue_config, ue_files
 
 
+@orca.step()
+def slack_report():
+
+    if SLACK and IN_YEAR:
+        dropped_devproj_geomid = orca.get_injectable("devproj_len") - orca.get_injectable("devproj_len_geomid")
+        dropped_devproj_proc =  orca.get_injectable("devproj_len_geomid") -  orca.get_injectable("devproj_len_proc")
+        slack.chat.post_message(
+            '#urbansim_sim_update',
+            'Development projects for run %d on %s: %d to start, '
+            '%d dropped by geom_id check, '
+            '%d dropped by processing'
+            % (run_num, host, orca.get_injectable("devproj_len"), dropped_devproj_geomid, dropped_devproj_proc), as_user=True)
+            
+    if SLACK and orca.get_injectable("unplaced_hh") > 0:
+        slack.chat.post_message(
+            '#urbansim_sim_update',
+            'WARNING: unplaced households in %d for run %d on %s'
+            % (year, run_num, host), as_user=True)
+
+
 def get_simulation_models():
 
     # ual has a slightly different set of models - might be able to get rid
@@ -230,7 +250,6 @@ def get_simulation_models():
 
         # save_intermediate_tables", # saves output for visualization
 
-        "topsheet",
         "simulation_validation",
         "parcel_summary",
         "building_summary",
@@ -241,7 +260,7 @@ def get_simulation_models():
 
         "geographic_summary",
         "travel_model_output",
-        # "travel_model_2_output",
+        "travel_model_2_output",
         "hazards_slr_summary",
         "hazards_eq_summary",
         "slack_report"
@@ -350,13 +369,12 @@ def get_baseyear_models():
         "price_vars",
         # "scheduled_development_events",
 
-        "topsheet",
         "simulation_validation",
         "parcel_summary",
         "building_summary",
         "geographic_summary",
         "travel_model_output",
-        # "travel_model_2_output",
+        "travel_model_2_output",
         "hazards_slr_summary",
         "hazards_eq_summary",
         "diagnostic_output",
@@ -376,26 +394,6 @@ def get_baseyear_models():
         models.remove("earthquake_demolish")
 
     return models
-
-
-@orca.step()
-def slack_report():
-
-    if SLACK and IN_YEAR:
-        dropped_devproj_geomid = orca.get_injectable("devproj_len") - orca.get_injectable("devproj_len_geomid")
-        dropped_devproj_proc =  orca.get_injectable("devproj_len_geomid") -  orca.get_injectable("devproj_len_proc")
-        slack.chat.post_message(
-            '#urbansim_sim_update',
-            'Development projects for run %d on %s: %d to start, '
-            '%d dropped by geom_id check, '
-            '%d dropped by processing'
-            % (run_num, host, orca.get_injectable("devproj_len"), dropped_devproj_geomid, dropped_devproj_proc), as_user=True)
-            
-    if SLACK and orca.get_injectable("unplaced_hh") > 0:
-        slack.chat.post_message(
-            '#urbansim_sim_update',
-            'WARNING: unplaced households in %d for run %d on %s'
-            % (year, run_num, host), as_user=True)
 
 
 def run_models(MODE):

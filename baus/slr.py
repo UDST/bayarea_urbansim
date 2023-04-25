@@ -6,12 +6,11 @@ import pandas as pd
 from urbansim_defaults import utils
 from baus import datasources
 from baus import variables
-from baus import summaries
 
 
 
 @orca.step()
-def slr_inundate(slr_progression, slr_parcel_inundation, year, parcels):
+def slr_inundate(slr_progression, slr_parcel_inundation, parcels):
 
     # inundated parcels are all parcels at or below the SLR progression level in that year
     slr_progression = slr_progression.to_frame()
@@ -36,7 +35,7 @@ def slr_inundate(slr_progression, slr_parcel_inundation, year, parcels):
 
 
 @orca.step()
-def slr_remove_dev(buildings, year, parcels, households, jobs):
+def slr_remove_dev(buildings, households, jobs):
 
     destroy_parcels = orca.get_table("destroy_parcels")
     slr_demolish = buildings.local[buildings.parcel_id.isin(destroy_parcels.index)]

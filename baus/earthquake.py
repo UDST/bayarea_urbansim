@@ -6,7 +6,6 @@ import pandas as pd
 from urbansim_defaults import utils
 from baus import datasources
 from baus import variables
-from baus import summaries
 
 from operator import itemgetter
 import itertools
