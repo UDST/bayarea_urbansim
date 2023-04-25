@@ -13,7 +13,7 @@ from urbansim.developer.developer import Developer as dev
 from urbansim.utils import misc, networks
 from urbansim_defaults import models, utils
 
-from baus import datasources, subsidies, summaries, variables
+from baus import datasources, subsidies, variables
 from baus.utils import \
     add_buildings, geom_id_to_parcel_id, groupby_random_choice, \
     parcel_id_to_geom_id, round_series_match_target
