@@ -38,4 +38,5 @@ plugins:
 extra:
   version:
     provider: mike
-    default: latest
+    default: main
+  
