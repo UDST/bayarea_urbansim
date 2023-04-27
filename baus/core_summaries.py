@@ -69,9 +69,9 @@ def building_summary(parcels, run_number, year, buildings):
 
     df = orca.merge_tables('buildings',
         [parcels, buildings],
-        columns=['year_built', 'building_type', 'residential_units', 'unit_price', 'zone_id', 
-                 'non_residential_sqft', 'vacant_res_units', 'deed_restricted_units', 'inclusionary_units',
-                 'preserved_units', 'subsidized_units', 'job_spaces', 'x', 'y', 'geom_id', 'source'])
+        columns=['parcel_id', 'year_built', 'building_type', 'residential_units', 'unit_price', 
+                 'non_residential_sqft', 'deed_restricted_units', 'inclusionary_units',
+                 'preserved_units', 'subsidized_units', 'job_spaces', 'source'])
 
     df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_building_summary_%d.csv" % (run_number, year)))
 
@@ -124,6 +124,3 @@ def diagnostic_output(households, buildings, parcels, jobs, developer_settings, 
     zones['retail_to_res_units_ratio'] = zones.retail_sqft / zones.residential_units.replace(0, 1)
 
     summary.add_zone_output(zones, "diagnostic_outputs", year)
-        
-
-### VISUALIZER CALCS

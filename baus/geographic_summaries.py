@@ -65,7 +65,7 @@ def geographic_summary(parcels, households, jobs, buildings, run_number, year):
 
 
 @orca.step()
-def geographic_growth_summary(final_year, run_number):
+def geographic_growth_summary(year, final_year, run_number):
     
     if year != final_year: 
         return
@@ -91,6 +91,3 @@ def geographic_growth_summary(final_year, run_number):
             df_merge[col+'_share_change'] =  df_merge[col+"_2050_share"] - df_merge[col+"_2015_share"]
         
         df_merge.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_summary_growth.csv").format(run_number, geography))
-
-
-### VISUALIZER CALCS

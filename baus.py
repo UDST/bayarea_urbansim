@@ -266,8 +266,13 @@ def get_simulation_models():
         "geographic_summary",
         "geographic_growth_summary",
 
-        "travel_model_output",
-        "travel_model_2_output",
+        "taz1_summary",
+        "maz_summary_marginals",
+        "taz2_marginals",
+        "county_marginals",
+        "regional_marginals",
+        "taz1_growth_summary",
+        "maz_growth_summary",
 
         "slack_report"
 
@@ -388,9 +393,14 @@ def get_baseyear_models():
 
         "geographic_summary",
         "geographic_growth_summary",
-
-        "travel_model_output",
-        "travel_model_2_output",
+        # travel model summaries
+        "taz1_summary",
+        "taz1_growth_summary",
+        "maz_summary_marginals",
+        "maz_growth_summary",
+        "taz2_marginals",
+        "county_marginals",
+        "regional_marginals",
 
         "slack_report"
     ]
