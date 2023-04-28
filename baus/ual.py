@@ -744,8 +744,9 @@ def _mtc_clip(table, col_name, price_settings, price_scale=1):
 @orca.step()
 def rsh_simulate(residential_units, aggregations, price_settings):
     """
-    This uses the MTC's model specification from rsh.yaml, but
-    generates unit-level price predictions rather than building-level.
+    Hedonic model that generates unit-level price predictions using MTC's model specification from rsh.yaml;
+    stores the price value in the "unit_residential_price' column of the "residential_units" table.
+    It uses the logsums from travel model.
 
     Data expectations
     -----------------
@@ -757,26 +758,15 @@ def rsh_simulate(residential_units, aggregations, price_settings):
                            out_fname='unit_residential_price')
 
     _mtc_clip(residential_units, 'unit_residential_price', price_settings)
-
-    # write out pricing data 
-    print('export rsh_simulate result')
-    rsh_simulate_export = orca.get_table("residential_units").to_frame()
-    rsh_simulate_export_csv = \
-        os.path.join(
-            orca.get_injectable("outputs_dir"), "interim\run{}_residential_units_rshSim_{}.csv".format(
-                orca.get_injectable("run_number"),
-                orca.get_injectable("year")
-            ))
-    rsh_simulate_export.to_csv(rsh_simulate_export_csv)
-
     return
 
 
 @orca.step()
 def rrh_simulate(residential_units, aggregations, price_settings):
     """
-    This uses an altered hedonic specification to generate
-    unit-level rent predictions.
+    Hedonic model that generages unit-level rent predictions using MTC's model specification from rrh.yaml;
+    stores the price value in the "unit_residential_rent' column of the "residential_units" table.
+    It does not use the logsums from travel model.
 
     Data expectations
     -----------------
@@ -787,19 +777,7 @@ def rrh_simulate(residential_units, aggregations, price_settings):
                            join_tbls=aggregations,
                            out_fname='unit_residential_rent')
 
-    _mtc_clip(residential_units, 'unit_residential_rent', price_settings, price_scale=0.05/12)
-    
-    # write out pricing data 
-    print('export rrh_simulate result')
-    rrh_simulate_export = orca.get_table("residential_units").to_frame()
-    rrh_simulate_export_csv = \
-        os.path.join(
-            orca.get_injectable("outputs_dir"), "interim\run{}_residential_units_rrhSim_{}.csv".format(
-                orca.get_injectable("run_number"),
-                orca.get_injectable("year")
-            ))
-    rrh_simulate_export.to_csv(rrh_simulate_export_csv)
-    
+    _mtc_clip(residential_units, 'unit_residential_rent', price_settings, price_scale=0.05/12)  
     return
 
 

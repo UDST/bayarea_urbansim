@@ -1006,6 +1006,16 @@ def local_pois(accessibility_settings):
 
 @orca.step()
 def neighborhood_vars(net):
+    """
+    Applies pandana to create 226060 network nodes (focusing on pedestrian level), deviding the region into 226060 neighborhoods; 
+    key variables that reflect neighborhood characteristics (existing units, hh, income, jobs, etc.) are gathered from various tables
+    (households, buildings, jobs) following certain rules defined in "neighborhood_vars.yaml", e.g. referencing radii (e.g. 1500, 3000),
+    aggregation method (75%, average, median, etc.), filter (e.g. residential vs non-residential buildings).
+    
+    The pandana network is based on the base year OSM network from the H5 file. 
+    How pandana works: quickly moves along the network, uses the H5 file has openstreet esiting year network to run a mini-travel model
+    (focusing on pedestrian level), get job conuts, etc. along the network.
+    """
     nodes = networks.from_yaml(net["walk"], "accessibility/neighborhood_vars.yaml")
     nodes = nodes.replace(-np.inf, np.nan)
     nodes = nodes.replace(np.inf, np.nan)
@@ -1056,20 +1066,22 @@ def regional_pois(accessibility_settings, landmarks):
 
 @orca.step()
 def price_vars(net):
+    """
+    Adds price variables to neighborhood_nodes, 4 new columns: 'residential', 'retail', 'office', 'industrial'.
+
+    The 'residential' field feeds into "parcel_sales_price_sqft_func" to get an adjusted (the shifters)
+    parcel-level residential price (average among all units on the same parcel):
+    https://github.com/BayAreaMetro/bayarea_urbansim/blob/820554cbabee51725c445b9fd211542db8876c9f/baus/variables.py#L538
+    https://github.com/BayAreaMetro/bayarea_urbansim/blob/820554cbabee51725c445b9fd211542db8876c9f/baus/variables.py#L333.
+
+    The adjusted residential price ("parcel_sales_price_sqft_func") then is applied in the feasibility model:
+    https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/models.py#L452,
+    corresponding to the "residential_sales_price_sqft" column.
+    
+    """
     nodes2 = networks.from_yaml(net["walk"], "accessibility/price_vars.yaml")
     nodes2 = nodes2.fillna(0)
     print(nodes2.describe())
     nodes = orca.get_table('nodes')
     nodes = nodes.to_frame().join(nodes2)
     orca.add_table("nodes", nodes)
-
-    # write out nodes with price info
-    print('export nodes with price_vars for year {}'.format(orca.get_injectable("year")))
-    nodes_export = orca.get_table('nodes').to_frame()
-    nodes_export_csv = \
-        os.path.join(
-            orca.get_injectable("outputs_dir"), "interim/run{}_nodes_priceVars_{}.csv".format(
-                orca.get_injectable("run_number"),
-                orca.get_injectable("year")
-            ))
-    nodes_export.to_csv(nodes_export_csv)
