@@ -50,6 +50,7 @@ import pandas as pd
 from pandas import DataFrame
 import numpy as np
 import geopandas as gpd
+import json
 import argparse, sys, logging, time, os, glob
 import yaml
 from typing import Any, Dict, Optional
@@ -1059,6 +1060,80 @@ def consolidate_taz_logsum(model_run_interim_dir: str,
     return agg_taz_logsum_df
 
 
+def extract_taz_diagostic_data(raw_zonal_json_dir: str,
+                               viz_file_dir: str):
+    """Extract key zone-level diagnostic data.
+
+    Args:
+        raw_zonal_json_dir (str): BAUS zonal diagnostic output file path
+        viz_file_dir (str): viz-ready file path
+    """
+    logger.info('extracting zonal diagnostic data from {}'.format(raw_zonal_json_dir))
+    # load the json file
+    with open(raw_zonal_json_dir) as json_file:
+        data = json.load(json_file)
+        logger.info('loaded {}'.format(raw_zonal_json_dir))
+    
+    # create an empty df to store the value
+    all_diagnostic_df = pd.DataFrame()
+    # all_tm_df = pd.DataFrame()
+
+    for i in data.keys():
+        if i not in ['index', 'years']:
+            dataset = data[i]
+            logger.info('{}: {}'.format(dataset['original_df'], i))
+            # print(len(dataset))
+            # print(dataset.keys())
+            if data[i]['original_df'] == 'diagnostic_outputs':
+                diagnostic_df = pd.DataFrame(dataset)[['2010', '2015', '2020', '2025', '2030', '2035', '2040', '2045', '2050']]
+                diagnostic_df['metric'] = i
+                all_diagnostic_df = pd.concat([all_diagnostic_df, diagnostic_df])
+            # print(type(data[i]))
+
+            # elif data[i]['original_df'] == 'travel_model_output':
+            #     tm_df = pd.DataFrame(dataset)[['2010', '2015', '2020', '2025', '2030', '2035', '2040', '2045', '2050']]
+            #     tm_df['metric'] = i
+            #     all_tm_df = pd.concat([all_tm_df, tm_df])
+    
+    # TODO: decide whether need to split the data into multiple df based on topic area
+    price_diagnostic_metrics = [
+        'price_shifters',
+        'residential_price', 
+        'unit_residential_price', 
+        'unit_residential_rent', 
+        'unit_residential_price_>_rent', 
+        'retail_rent', 
+        'office_rent', 
+        'industrial_rent']
+
+    developer_metrics = [
+        'zone_cml', 'zone_cnml', 'zone_combo_logsum',
+        'zoned_du', 'zoned_du_underbuild', 'zoned_du_underbuild_ratio', 
+        'building_count', 'residential_units', 'ave_unit_sqft', 'residential_vacancy', 
+        'non_residential_sqft', 'job_spaces', 'non_residential_vacancy', 
+        'retail_sqft', 'office_sqft', 'industrial_sqft', 'retail_to_res_units_ratio', 
+        'average_income', 'household_size', 
+    ]
+
+    logger.info(
+        'finished extracting, all_diagnostic_df contains the following metrics: {}'.format(all_diagnostic_df['metric']))
+    logger.debug(all_diagnostic_df.head())
+    
+    all_diagnostic_df = all_diagnostic_df.pivot(columns = 'metric').stack(0).reset_index()
+    logger.debug(all_diagnostic_df.head())
+    all_diagnostic_df.rename(columns = {'level_1': 'year'}, inplace=True)
+    all_diagnostic_df['TAZ1454'] = all_diagnostic_df['level_0'].apply(lambda x: x+1)
+    # print(list(price_df))
+    all_diagnostic_df.drop(columns=['level_0', 'metric'], inplace=True)
+    logger.debug(all_diagnostic_df.head())
+    logger.debug('all_diagnostic_df has {} rows'.format(all_diagnostic_df.shape[0]))
+    
+    # write out
+    logger.info('writing out to {}'.format(viz_file_dir))
+    all_diagnostic_df.to_csv(viz_file_dir, index=False)
+    return all_diagnostic_df
+
+
 def upload_df_to_redshift(df: DataFrame,
                           table_name: str,
                           s3_bucket: Optional[str] = 'fms-urbansim',
@@ -1158,6 +1233,9 @@ if __name__ == '__main__':
     EMP_CONTROL_FILE = os.path.join(RAW_INPUT_DIR, 'regional_controls', 'employment_controls.csv')
     ZMODS_FILE = os.path.join(RAW_INPUT_DIR, 'plan_strategies', 'zoning_mods.csv')
 
+    # INPUT - interim and diagnostic data
+    RAW_TAZ_DIAGNOSE_FILE = os.path.join(RAW_INTERIM_DIR, '{}_simulation_output.json'.format(RUN_ID))
+
     # INPUT - other helper data
     JURIS_NAME_CROSSWALK_FILE = 'M:\\Data\\Urban\\BAUS\\visualization_design\\data\\data_viz_ready\\crosswalks\\juris_county_id.csv'
     MODEL_RUN_INVENTORY_FILE = 'M:\\Data\\Urban\\BAUS\\visualization_design\\data\\model_run_inventory.csv'
@@ -1193,6 +1271,7 @@ if __name__ == '__main__':
 
     # OUTPUT - baus model interim data
     VIZ_TAZ_LOGSUM_FILE = os.path.join(VIZ_READY_DATA_DIR, '{}_taz_logsum.csv'.format(RUN_ID))
+    VIZ_TAZ_DIAGNOSE_FILE = os.path.join(VIZ_READY_DATA_DIR, '{}_taz_diagnose.csv'.format(RUN_ID))
 
     # OUTPUT - baus model outputs
     VIZ_TAZ_SUMMARY_FILE = os.path.join(VIZ_READY_DATA_DIR, '{}_taz_summary.csv'.format(RUN_ID))
@@ -1311,6 +1390,10 @@ if __name__ == '__main__':
     taz_logsum = consolidate_taz_logsum(RAW_INTERIM_DIR,
                                         RUN_ID,
                                         VIZ_TAZ_LOGSUM_FILE)
+    
+    # Diagnostic data
+    taz_diagostic = extract_taz_diagostic_data(RAW_TAZ_DIAGNOSE_FILE, 
+                                               VIZ_TAZ_DIAGNOSE_FILE)
 
     ############ process model output data
     
@@ -1370,6 +1453,7 @@ if __name__ == '__main__':
             VIZ_STRATEGY_PRESERVE_QUALIFY_FILE: housing_reserve_qualify,
 
             VIZ_TAZ_LOGSUM_FILE: taz_logsum,
+            VIZ_TAZ_DIAGNOSE_FILE: taz_diagostic,
 
             VIZ_TAZ_SUMMARY_FILE: taz_summaries_df,
             VIZ_JURIS_SUMMARY_FILE: juris_summaries_df,
