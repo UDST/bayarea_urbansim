@@ -13,7 +13,7 @@ TBD
 TBD
 
 ## Diagnostic Outputs
-The table below contains brief descriptions of the disgnostic output tables of BAUS.
+The tables below contains brief descriptions of the disgnostic output tables of BAUS.
 
 | **File name** | **Purpose** | **File type** |
 |---------------|-------------|---------------|
@@ -61,10 +61,83 @@ The table below contains brief descriptions of the disgnostic output tables of B
 
 | **Attribute** | **Description** | **Data Type** | **Source** | **Sub-model/step** |
 |-----------------|-----------|--------------|--------------|--------------|
-| XXX | XXX | XXX | XXX | XXX |
+| development_id | XXX | XXX | XXX | XXX |
+| SDEM | XXX | XXX | XXX | XXX |
+| building_type | XXX | XXX | XXX | XXX |
+| residential | XXX | XXX | XXX | XXX |
+| building_sqft | XXX | XXX | XXX | XXX |
+| non_residential_sqft | XXX | XXX | XXX | XXX |
+| job_spaces | XXX | XXX | XXX | XXX |
+| residential_sqft | XXX | XXX | XXX | XXX |
+| residential_units | XXX | XXX | XXX | XXX |
+| total_residential_units | XXX | XXX | XXX | XXX |
+| total_sqft | XXX | XXX | XXX | XXX |
+| source | XXX | XXX | XXX | XXX |
+| x | XXX | XXX | XXX | XXX |
+| y | XXX | XXX | XXX | XXX |
+| year_built | XXX | XXX | XXX | XXX |
 
 ### `dropping_buildings.csv` building-level attributes:
 
 | **Attribute** | **Description** | **Data Type** | **Source** | **Sub-model/step** |
 |-----------------|-----------|--------------|--------------|--------------|
 | XXX | XXX | XXX | XXX | XXX |
+
+
+## Interim table
+The tables below are interim data as input/output for sub-models.
+
+| **File name** | **Purpose** | **Output of Sub-model(s)** | **Input of Sub-model(s)** |
+|---------------|-------------|---------------|---------------|
+| [`feasibility`](#feasibility-attributes) | Parcel-level data on the development feasibilities of various development types given the zoning, development costs, and expected return. Only parcels where at least one development type is feasible is included. | created by alt_feasibility(); modified by subsidized_residential_feasibility() and policy_modifications_of_profit() | residential_developer(), office_developer(), retail_developer(), run_subsidized_developer(), subsidized_office_developer()
+| `parcel_output.csv` | Parcel-level attributes of parcels with development activities during the simulation time period. |CSV |
+| `dropping_buildings.csv` | XXX |CSV |
+
+### `fesibility` attributes
+`feasibility` contains two sets of development variables grouped by six development types (coded as `form`): `retail`, `industrial`, `office`, `residential`, `mixedresidential`, `mixedoffice`. For every development type, one set of variables are passed through from the parcels table as input for the feasibility evaluation; the other set of variables are the result of the feasibility evaluation.
+
+
+| **Attribute** | **Description** | **Data Type** | **Source** |
+|-----------------|-----------|--------------|--------------|
+| parcel_id | Parcel index | int |  |
+| oldest_building | ? | ? | pass_through from input parcel frame |
+| total_sqft | ? | ? | pass_through from input parcel frame |
+| total_residential_units | ? | ? | pass_through from input parcel frame |
+| max_far |  | int | pass_through from input parcel frame |
+| max_dua |  | int | pass_through from input parcel frame |
+| land_cost |  | int | pass_through from input parcel frame |
+| residential |  |  | pass_through from input parcel frame |
+| min_max_fars |  | int | pass_through from input parcel frame |
+| max_height |  | int | pass_through from input parcel frame |
+| building_purchase_price |  | int | pass_through from input parcel frame |
+| building_purchase_price_sqft |  |  | pass_through from input parcel frame |
+| residential_sales_price_sqft | https://app.asana.com/0/0/1201856230375726/f |  | pass_through from input parcel frame |
+| pda_pba40 |  |  | pass_through from input parcel frame |
+| pda_pba50  |  |  | pass_through from input parcel frame |
+| trich_id |  | str | pass_through from input parcel frame |
+| cat_id |  |  | pass_through from input parcel frame |
+| tra_id |  |  | pass_through from input parcel frame |
+| ppa_id |  |  | pass_through from input parcel frame |
+| sesit_id |  |  | pass_through from input parcel frame |
+| coc_id  |  |  | pass_through from input parcel frame |
+| juris |  |  | pass_through from input parcel frame |
+| county |  |  | pass_through from input parcel frame |
+| superdistrict |  |  | pass_through from input parcel frame |
+| geom_id |  |  | pass_through from input parcel frame |
+| vmt_res_cat |  |  | pass_through from input parcel frame |
+| vmt_nonres_cat |  |  | pass_through from input parcel frame |
+| parking_config | parking type, e.g. deck, surface | string | created by run_feasibility() |
+| building_sqft | The number of square feet for the building to build. Keep in mind this includes parking and common space. Will need a helpful function to convert from gross square feet to actual usable square feet in residential units. | float | created by run_feasibility() |
+| building_cost | The cost of constructing the building as given by the ave_cost_per_sqft from the cost model (for this FAR) and the number of square feet. | float | created by run_feasibility() |
+| parking_ratio | ? | ? | ? |
+| stories | ? | ? | ? |
+| total_cost | The cost of constructing the building plus the cost of acquisition of the current parcel/building. | float | created by run_feasibility() |
+| building_revenue | The NPV of the revenue for the building to be built, which is the number of square feet times the yearly rent divided by the cap rate (with a few adjustment factors including building efficiency). | float | created by run_feasibility() |
+| max_profit_far | The FAR of the maximum profit building (constrained by the max_far and max_height from the input dataframe). | float | created by run_feasibility() |
+| max_profit | The profit for the maximum profit building (constrained by the max_far and max_height from the input dataframe). | float | created by run_feasibility() |
+| residential_sqft |  | float | created by run_feasibility() |
+| non_residential_sqft |  | float | created by run_feasibility() |
+| fees |  |  | created by run_feasibility() |
+| policy_based_revenue_reduction |  | int | created by run_feasibility() |
+| deed_restricted_units |  | int | created by run_feasibility() |
+| inclusionary_units |  | int | created by run_feasibility() |
