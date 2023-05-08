@@ -11,51 +11,72 @@ from baus import datasources
 def geographic_summary(parcels, households, jobs, buildings, run_number, year):  
 
     households_df = orca.merge_tables('households', [parcels, buildings, households],
-        columns=['juris', 'superdistrict', 'county', 'persons', 'income', 'base_income_quartile',])
+        columns=['juris', 'superdistrict', 'county', 'subregion', 'base_income_quartile',])
 
     jobs_df = orca.merge_tables('jobs', [parcels, buildings, jobs],
-        columns=['juris', 'superdistrict', 'county', 'empsix'])
+        columns=['juris', 'superdistrict', 'county', 'subregion', 'empsix'])
 
     buildings_df = orca.merge_tables('buildings', [parcels, buildings],
         columns=['juris', 'superdistrict', 'county', 'building_type', 'residential_units',
-                 'deed_restricted_units', 'building_sqft', 'non_residential_sqft'])
+                 'deed_restricted_units', 'building_sqft', 'subregion', 'non_residential_sqft'])
 
-    geographies = ['juris', 'superdistrict', 'county']
+    #### summarize regional results ####
+    region = pd.DataFrame(data={'REGION': [1]})
+    
+    # households
+    region['tothh'] = households_df.size
+    region['hhincq1'] = households_df.query("base_income_quartile == 1").size
+    region['hhincq2'] = households_df.query("base_income_quartile == 2").size
+    region['hhincq3'] = households_df.query("base_income_quartile == 3").size
+    region['hhincq4'] = households_df.query("base_income_quartile == 4").size
+    # residential buildings
+    region['res_units'] = buildings_df.residential_units.sum() 
+    region['sfdu'] = buildings_df.query("building_type == 'HS' or building_type == 'HT'").residential_units.sum()
+    region['mfdu'] = buildings_df.query("building_type == 'HM' or building_type == 'MR'").residential_units.sum()
+
+    # employees by sector
+    region['totemp'] = jobs_df.size
+    region['agrempn'] = jobs_df.query("empsix == 'AGREMPN'").size
+    region['mwtempn'] = jobs_df.query("empsix == 'MWTEMPN'").size
+    region['retempn'] = jobs_df.query("empsix == 'RETEMPN'").size
+    region['fpsempn'] = jobs_df.query("empsix == 'FPSEMPN'").size
+    region['herempn'] = jobs_df.query("empsix == 'HEREMPN'").size
+    region['othempn'] = jobs_df.query("empsix == 'OTHEMPN'").size
+    # non-residential buildings
+    region['non_residential_sqft'] = buildings_df.non_residential_sqft.sum()
+
+    region.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_region_summary_{}.csv").format(run_number, year))
+
+    #### summarize by sub-regional geography ####
+    geographies = ['juris', 'superdistrict', 'county', 'subregion']
 
     for geography in geographies:
-        # create table with household/population summaries
-        summary_table = pd.pivot_table(households_df, values=['persons'], index=[geography], aggfunc=[np.size])
-        summary_table.columns = ['tothh']
-           
-        if geography == 'superdistrict':
-            all_summary_geographies = buildings_df[geography].unique()
-        else:
-            all_summary_geographies = parcels[geography].unique()
+        # create dataframe for the geography
+        summary_table = pd.DataFrame(index=buildings_df[geography].unique())
 
-        # fill na with 0 otherwise it drops the data during subtraction    
-        summary_table = summary_table.reindex(all_summary_geographies).fillna(0)
+        # households
+        summary_table['tothh'] = households_df.groupby(geography).size
+        summary_table['hhincq1'] = households_df.query("base_income_quartile == 1").groupby(geography).size
+        summary_table['hhincq2'] = households_df.query("base_income_quartile == 2").groupby(geography).size
+        summary_table['hhincq3'] = households_df.query("base_income_quartile == 3").groupby(geography).size
+        summary_table['hhincq4'] = households_df.query("base_income_quartile == 4").groupby(geography).size
 
-        # income quartile counts
-        summary_table['hhincq1'] = households_df.query("base_income_quartile == 1").groupby(geography).size()
-        summary_table['hhincq2'] = households_df.query("base_income_quartile == 2").groupby(geography).size()
-        summary_table['hhincq3'] = households_df.query("base_income_quartile == 3").groupby(geography).size()
-        summary_table['hhincq4'] = households_df.query("base_income_quartile == 4").groupby(geography).size()
         # residential buildings
-        summary_table['res_units'] = buildings_df.groupby(geography).residential_units.sum()
-        summary_table['deed_restricted_units'] = buildings_df.groupby(geography).deed_restricted_units.sum()   
+        summary_table['res_units'] = buildings_df.groupby(geography).residential_units.sum() 
         summary_table['sfdu'] = buildings_df.query("building_type == 'HS' or building_type == 'HT'").\
             groupby(geography).residential_units.sum()
         summary_table['mfdu'] = buildings_df.query("building_type == 'HM' or building_type == 'MR'").\
             groupby(geography).residential_units.sum()
 
         # employees by sector
-        summary_table['totemp'] = jobs_df.groupby(geography).size()
-        summary_table['agrempn'] = jobs_df.query("empsix == 'AGREMPN'").groupby(geography).size()
-        summary_table['mwtempn'] = jobs_df.query("empsix == 'MWTEMPN'").groupby(geography).size()
-        summary_table['retempn'] = jobs_df.query("empsix == 'RETEMPN'").groupby(geography).size()
-        summary_table['fpsempn'] = jobs_df.query("empsix == 'FPSEMPN'").groupby(geography).size()
-        summary_table['herempn'] = jobs_df.query("empsix == 'HEREMPN'").groupby(geography).size()
-        summary_table['othempn'] = jobs_df.query("empsix == 'OTHEMPN'").groupby(geography).size()
+        summary_table['totemp'] = jobs_df.groupby(geography).size
+        summary_table['agrempn'] = jobs_df.query("empsix == 'AGREMPN'").groupby(geography).size
+        summary_table['mwtempn'] = jobs_df.query("empsix == 'MWTEMPN'").groupby(geography).size
+        summary_table['retempn'] = jobs_df.query("empsix == 'RETEMPN'").groupby(geography).size
+        summary_table['fpsempn'] = jobs_df.query("empsix == 'FPSEMPN'").groupby(geography).size
+        summary_table['herempn'] = jobs_df.query("empsix == 'HEREMPN'").groupby(geography).size
+        summary_table['othempn'] = jobs_df.query("empsix == 'OTHEMPN'").groupby(geography).size
+
         # non-residential buildings
         summary_table['non_residential_sqft'] = buildings_df.groupby(geography)['non_residential_sqft'].sum()
    
@@ -70,7 +91,7 @@ def geographic_growth_summary(year, final_year, run_number):
     if year != final_year: 
         return
 
-    geographies = ['juris', 'superdistrict', 'county']
+    geographies = ['region', 'juris', 'superdistrict', 'county', 'subregion']
 
     for geography in geographies:
 
@@ -81,7 +102,6 @@ def geographic_growth_summary(year, final_year, run_number):
 
         columns = ['tothh', 'hhincq1', 'hhincq4', 'totemp', 'res_units', 'deed_restricted_units', 'non_residential_sqft']
     
-        #  absolute growth 
         for col in columns:
             df_merge[col+"_2015"] = df_merge[col+'_x']
             df_merge[col+"_2050"] = df_merge[col+'_y']

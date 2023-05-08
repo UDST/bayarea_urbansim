@@ -474,6 +474,11 @@ def superdistrict(parcels, taz_geography):
     return misc.reindex(taz_geography.superdistrict, parcels.zone_id)
 
 
+@orca.column('parcels', cache=True)
+def subregion(parcels, taz_geography):
+    return misc.reindex(taz_geography.subregion, parcels.zone_id)
+
+
 # perffoot is a dummy indicating the FOOTprint for the PERFormance targets
 @orca.column('parcels', cache=True)
 def urban_footprint(parcels, parcels_geography):

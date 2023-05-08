@@ -4,12 +4,13 @@ import os
 import sys
 import time
 import traceback
+from baus import datasources
 from baus import models
 from baus import slr
 from baus import earthquake
 from baus import ual
 from baus import validation
-from baus import core_summaries, metrics, geographic_summaries, travel_model_summaries, hazards_summaries
+from baus import core_summaries, plan_metrics, geographic_summaries, travel_model_summaries, hazards_summaries, affordable_housing_summaries
 import numpy as np
 import pandas as pd
 import orca
@@ -123,7 +124,7 @@ if MAPS:
 
 
 @orca.step()
-def slack_report():
+def slack_report(buildings, households):
 
     if SLACK and IN_YEAR:
         dropped_devproj_geomid = orca.get_injectable("devproj_len") - orca.get_injectable("devproj_len_geomid")
@@ -135,7 +136,7 @@ def slack_report():
             '%d dropped by processing'
             % (run_num, host, orca.get_injectable("devproj_len"), dropped_devproj_geomid, dropped_devproj_proc), as_user=True)
             
-    if SLACK and orca.get_injectable("unplaced_hh") > 0:
+    if SLACK and (len(households.building_id[households.building_id == -1])) > 0:
         slack.chat.post_message(
             '#urbansim_sim_update',
             'WARNING: unplaced households in %d for run %d on %s'
@@ -263,14 +264,22 @@ def get_simulation_models():
         "parcel_growth_summary",
         "building_summary",
 
+        "deed_restricted_units_summary",
+        "deed_restricted_units_growth_summary",
+
         "geographic_summary",
         "geographic_growth_summary",
 
+        "growth_geography_metrics",
+        "deed_restricted_units_metrics",
+        "household_income_metrics",
+
         "taz1_summary",
-        "maz_summary_marginals",
+        "maz_marginals",
+        "maz_summary",
         "taz2_marginals",
         "county_marginals",
-        "regional_marginals",
+        "region_marginals",
         "taz1_growth_summary",
         "maz_growth_summary",
 
@@ -388,19 +397,16 @@ def get_baseyear_models():
         "hazards_eq_summary",
 
         "parcel_summary",
-        "parcel_growth_summary",
         "building_summary",
 
         "geographic_summary",
-        "geographic_growth_summary",
-        # travel model summaries
+
         "taz1_summary",
-        "taz1_growth_summary",
-        "maz_summary_marginals",
-        "maz_growth_summary",
+        "maz_marginals",
+        "maz_summary",
         "taz2_marginals",
         "county_marginals",
-        "regional_marginals",
+        "region_marginals",
 
         "slack_report"
     ]
