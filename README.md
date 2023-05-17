@@ -3,7 +3,7 @@ DRAFT Bay Area UrbanSim (BAUS) Implementation
 
 [![Build Status](https://travis-ci.org/UDST/bayarea_urbansim.svg?branch=master)](https://travis-ci.org/UDST/bayarea_urbansim)
 
-This is the DRAFT UrbanSim implementation for the Bay Area. Policy documentation for the Bay Area model is available [here](http://data.mtc.ca.gov/bayarea_urbansim/) and documentation for the UrbanSim framework is available [here](https://udst.github.io/urbansim/).
+This is the DRAFT UrbanSim implementation for the Bay Area. Policy documentation for the Bay Area model is available [here](https://bayareametro.github.io/bayarea_urbansim/main/pba50/) and documentation for the UrbanSim framework is available [here](https://udst.github.io/urbansim/).
 
 ### Branches
 * `main` contains the most recent release
