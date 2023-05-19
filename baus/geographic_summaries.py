@@ -17,65 +17,53 @@ def geographic_summary(parcels, households, jobs, buildings, run_number, year):
         columns=['juris', 'superdistrict', 'county', 'subregion', 'empsix'])
 
     buildings_df = orca.merge_tables('buildings', [parcels, buildings],
-        columns=['juris', 'superdistrict', 'county', 'building_type', 'residential_units',
-                 'deed_restricted_units', 'building_sqft', 'subregion', 'non_residential_sqft'])
+        columns=['juris', 'superdistrict', 'county', 'subregion', 'building_type', 'residential_units', 'non_residential_sqft'])
 
     #### summarize regional results ####
-    region = pd.DataFrame(data={'REGION': [1]})
-    
+    region = pd.DataFrame(index=[0])
+
     # households
     region['tothh'] = households_df.size
-    region['hhincq1'] = households_df.query("base_income_quartile == 1").size
-    region['hhincq2'] = households_df.query("base_income_quartile == 2").size
-    region['hhincq3'] = households_df.query("base_income_quartile == 3").size
-    region['hhincq4'] = households_df.query("base_income_quartile == 4").size
-    # residential buildings
-    region['res_units'] = buildings_df.residential_units.sum() 
-    region['sfdu'] = buildings_df.query("building_type == 'HS' or building_type == 'HT'").residential_units.sum()
-    region['mfdu'] = buildings_df.query("building_type == 'HM' or building_type == 'MR'").residential_units.sum()
+    for quartile in [1, 2, 3, 4]:
+        region['hhincq'+str(quartile)] = households_df[households_df.base_income_quartile == quartile].size
 
     # employees by sector
     region['totemp'] = jobs_df.size
-    region['agrempn'] = jobs_df.query("empsix == 'AGREMPN'").size
-    region['mwtempn'] = jobs_df.query("empsix == 'MWTEMPN'").size
-    region['retempn'] = jobs_df.query("empsix == 'RETEMPN'").size
-    region['fpsempn'] = jobs_df.query("empsix == 'FPSEMPN'").size
-    region['herempn'] = jobs_df.query("empsix == 'HEREMPN'").size
-    region['othempn'] = jobs_df.query("empsix == 'OTHEMPN'").size
+    for empsix in [ 'AGREMPN', 'MWTEMPN', 'RETEMPN', 'FPSEMPN', 'HEREMPN', 'OTHEMPN']:
+        region[empsix] = jobs_df[jobs_df.empsix == empsix].size
+
+    # residential buildings
+    region['res_units'] = buildings_df.residential_units.sum() 
+    region['sfdu'] = buildings_df[(buildings_df.building_type == 'HS') | (buildings_df.building_type == 'HT')].residential_units.sum()
+    region['mfdu'] = buildings_df[(buildings_df.building_type == 'HM') | (buildings_df.building_type == 'MR')].residential_units.sum()
+    
     # non-residential buildings
     region['non_residential_sqft'] = buildings_df.non_residential_sqft.sum()
-
     region.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_region_summary_{}.csv").format(run_number, year))
 
     #### summarize by sub-regional geography ####
     geographies = ['juris', 'superdistrict', 'county', 'subregion']
 
     for geography in geographies:
-        # create dataframe for the geography
-        summary_table = pd.DataFrame(index=buildings_df[geography].unique())
+        summary_table = pd.DataFrame(index=[0])
 
         # households
-        summary_table['tothh'] = households_df.groupby(geography).size
-        summary_table['hhincq1'] = households_df.query("base_income_quartile == 1").groupby(geography).size
-        summary_table['hhincq2'] = households_df.query("base_income_quartile == 2").groupby(geography).size
-        summary_table['hhincq3'] = households_df.query("base_income_quartile == 3").groupby(geography).size
-        summary_table['hhincq4'] = households_df.query("base_income_quartile == 4").groupby(geography).size
+        summary_table['tothh'] = households_df.groupby(geography).size()
+        summary_table = pd.DataFrame(index=buildings_df[geography].unique())
+        for quartile in [1, 2, 3, 4]:
+            summary_table['hhincq'+str(quartile)] = households_df[households_df.base_income_quartile == quartile].groupby(geography).size()
 
         # residential buildings
         summary_table['res_units'] = buildings_df.groupby(geography).residential_units.sum() 
-        summary_table['sfdu'] = buildings_df.query("building_type == 'HS' or building_type == 'HT'").\
+        summary_table['sfdu'] = buildings_df[(buildings_df.building_type == 'HS') | (buildings_df.building_type == 'HT')].\
             groupby(geography).residential_units.sum()
-        summary_table['mfdu'] = buildings_df.query("building_type == 'HM' or building_type == 'MR'").\
+        summary_table['mfdu'] = buildings_df[(buildings_df.building_type == 'HM') | (buildings_df.building_type == 'MR')].\
             groupby(geography).residential_units.sum()
-
+        
         # employees by sector
-        summary_table['totemp'] = jobs_df.groupby(geography).size
-        summary_table['agrempn'] = jobs_df.query("empsix == 'AGREMPN'").groupby(geography).size
-        summary_table['mwtempn'] = jobs_df.query("empsix == 'MWTEMPN'").groupby(geography).size
-        summary_table['retempn'] = jobs_df.query("empsix == 'RETEMPN'").groupby(geography).size
-        summary_table['fpsempn'] = jobs_df.query("empsix == 'FPSEMPN'").groupby(geography).size
-        summary_table['herempn'] = jobs_df.query("empsix == 'HEREMPN'").groupby(geography).size
-        summary_table['othempn'] = jobs_df.query("empsix == 'OTHEMPN'").groupby(geography).size
+        summary_table['totemp'] = jobs_df.groupby(geography).size()
+        for empsix in ['AGREMPN', 'MWTEMPN', 'RETEMPN', 'FPSEMPN', 'HEREMPN', 'OTHEMPN']:
+            summary_table[empsix] = jobs_df[jobs_df.empsix == empsix].groupby(geography).size()
 
         # non-residential buildings
         summary_table['non_residential_sqft'] = buildings_df.groupby(geography)['non_residential_sqft'].sum()
@@ -88,26 +76,37 @@ def geographic_summary(parcels, households, jobs, buildings, run_number, year):
 @orca.step()
 def geographic_growth_summary(year, final_year, run_number):
     
-    if year != final_year: 
+    if year != 2015: 
         return
 
     geographies = ['region', 'juris', 'superdistrict', 'county', 'subregion']
 
     for geography in geographies:
 
+        geography_growth = pd.DataFrame(index=[0])
+
         # use 2015 as the base year
-        df1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_%s_summary_%d.csv" % (run_number, geography, 2015)))
-        df2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_%s_summary_%d.csv" % (run_number, geography, final_year)))
-        df_merge = df1.merge(df2, on = geography).fillna(0)
+        year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_%s_summary_%d.csv" % (run_number, geography, 2015)))
+        year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_%s_summary_%d.csv" % (run_number, geography, final_year)))
 
         columns = ['tothh', 'hhincq1', 'hhincq4', 'totemp', 'res_units', 'deed_restricted_units', 'non_residential_sqft']
     
         for col in columns:
-            df_merge[col+"_2015"] = df_merge[col+'_x']
-            df_merge[col+"_2050"] = df_merge[col+'_y']
-            df_merge[col+'_growth'] = df_merge[col+'_y'] - df_merge[col+'_x']
-            df_merge[col+"_2015_share"] = round(df_merge[col+'_x']/df_merge[col+'_x'].sum(), 2)
-            df_merge[col+"_2050_share"] = round(df_merge[col+'_y']/df_merge[col+'_y'].sum(), 2)            
-            df_merge[col+'_share_change'] =  df_merge[col+"_2050_share"] - df_merge[col+"_2015_share"]
-        
-        df_merge.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_summary_growth.csv").format(run_number, geography))
+            geography_growth[col+"_2015"] = year1[col]
+            geography_growth[col+"_2050"] = year2[col]
+            # growth in households/jobs/etc.
+            geography_growth[col+"growth"] = year2[col] - year1[col]
+
+            # percent change in geography's households/jobs/etc.
+            geography_growth[col+'_pct_change'] = round((year2[col] / year1[col] - 1), 2)
+
+            # percent geography's growth of households/jobs/etc. of all regional growth in households/jobs/etc.
+            geography_growth[col+'_pct_of_regional_growth'] = round(((geography_growth[col+"growth"]) / 
+                                                                     (year2[col].sum() - year1[col].sum()) * 100), 2)
+
+            # change in the regional share of households/jobs/etc. in the geography      
+            geography_growth[col+"_2015_regional_share"] = round(year1[col] / year1[col].sum(), 2)
+            geography_growth[col+"_2050_regional_share"] = round(year2[col] / year2[col].sum(), 2)            
+            geography_growth[col+'_regional_share_change'] = geography_growth[col+"_2050_share"] - geography_growth[col+"_2015_share"]
+    
+        geography_growth.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_summary_growth.csv").format(run_number, geography))
