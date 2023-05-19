@@ -1060,8 +1060,8 @@ def consolidate_taz_logsum(model_run_interim_dir: str,
     return agg_taz_logsum_df
 
 
-def extract_taz_diagostic_data(raw_zonal_json_dir: str,
-                               viz_file_dir: str):
+def extract_taz_diagnostic_data(raw_zonal_json_dir: str,
+                                viz_file_dir: str):
     """Extract key zone-level diagnostic data.
 
     Args:
@@ -1084,13 +1084,13 @@ def extract_taz_diagostic_data(raw_zonal_json_dir: str,
             logger.info('{}: {}'.format(dataset['original_df'], i))
             # print(len(dataset))
             # print(dataset.keys())
-            if data[i]['original_df'] == 'diagnostic_outputs':
+            if dataset['original_df'] == 'diagnostic_outputs':
                 diagnostic_df = pd.DataFrame(dataset)[['2010', '2015', '2020', '2025', '2030', '2035', '2040', '2045', '2050']]
                 diagnostic_df['metric'] = i
                 all_diagnostic_df = pd.concat([all_diagnostic_df, diagnostic_df])
-            # print(type(data[i]))
+            # print(type(dataset))
 
-            # elif data[i]['original_df'] == 'travel_model_output':
+            # elif dataset['original_df'] == 'travel_model_output':
             #     tm_df = pd.DataFrame(dataset)[['2010', '2015', '2020', '2025', '2030', '2035', '2040', '2045', '2050']]
             #     tm_df['metric'] = i
             #     all_tm_df = pd.concat([all_tm_df, tm_df])
@@ -1106,13 +1106,14 @@ def extract_taz_diagostic_data(raw_zonal_json_dir: str,
         'office_rent', 
         'industrial_rent']
 
-    developer_metrics = [
-        'zone_cml', 'zone_cnml', 'zone_combo_logsum',
+    logsum_metrics = ['zone_cml', 'zone_cnml', 'zone_combo_logsum']
+    household_vacancy_metrics = ['average_income', 'household_size', 'residential_vacancy', 'non_residential_vacancy']
+
+    development_metrics = [
         'zoned_du', 'zoned_du_underbuild', 'zoned_du_underbuild_ratio', 
-        'building_count', 'residential_units', 'ave_unit_sqft', 'residential_vacancy', 
-        'non_residential_sqft', 'job_spaces', 'non_residential_vacancy', 
-        'retail_sqft', 'office_sqft', 'industrial_sqft', 'retail_to_res_units_ratio', 
-        'average_income', 'household_size', 
+        'building_count', 'residential_units', 'ave_unit_sqft',  
+        'non_residential_sqft', 'job_spaces', 
+        'retail_sqft', 'office_sqft', 'industrial_sqft', 'retail_to_res_units_ratio'
     ]
 
     logger.info(
@@ -1123,8 +1124,8 @@ def extract_taz_diagostic_data(raw_zonal_json_dir: str,
     logger.debug(all_diagnostic_df.head())
     all_diagnostic_df.rename(columns = {'level_1': 'year'}, inplace=True)
     all_diagnostic_df['TAZ1454'] = all_diagnostic_df['level_0'].apply(lambda x: x+1)
-    # print(list(price_df))
-    all_diagnostic_df.drop(columns=['level_0', 'metric'], inplace=True)
+    # print(list(all_diagnostic_df))
+    all_diagnostic_df.drop(columns=['level_0'], inplace=True)
     logger.debug(all_diagnostic_df.head())
     logger.debug('all_diagnostic_df has {} rows'.format(all_diagnostic_df.shape[0]))
     
@@ -1392,8 +1393,8 @@ if __name__ == '__main__':
                                         VIZ_TAZ_LOGSUM_FILE)
     
     # Diagnostic data
-    taz_diagostic = extract_taz_diagostic_data(RAW_TAZ_DIAGNOSE_FILE, 
-                                               VIZ_TAZ_DIAGNOSE_FILE)
+    taz_diagnostic = extract_taz_diagnostic_data(RAW_TAZ_DIAGNOSE_FILE, 
+                                                 VIZ_TAZ_DIAGNOSE_FILE)
 
     ############ process model output data
     
@@ -1453,7 +1454,7 @@ if __name__ == '__main__':
             VIZ_STRATEGY_PRESERVE_QUALIFY_FILE: housing_reserve_qualify,
 
             VIZ_TAZ_LOGSUM_FILE: taz_logsum,
-            VIZ_TAZ_DIAGNOSE_FILE: taz_diagostic,
+            VIZ_TAZ_DIAGNOSE_FILE: taz_diagnostic,
 
             VIZ_TAZ_SUMMARY_FILE: taz_summaries_df,
             VIZ_JURIS_SUMMARY_FILE: juris_summaries_df,
