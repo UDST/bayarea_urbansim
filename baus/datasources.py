@@ -866,11 +866,44 @@ def accessory_units():
     return df
 
 
+# parcels-tract crosswalk that match the Urban Displacement Project census tract vintage
+@orca.table(cache=True)
+def parcel_tract_crosswalk():
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/crosswalks/parcel_tract_crosswalk.csv"))
+
+
+# Urban Displacement Project census tracts
+@orca.table(cache=True)
+def displacement_risk_tracts():
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/equity/udp_2017results.csv"))
+
+
+# Urban Displacement Project census tracts
+@orca.table(cache=True)
+def coc_tracts():
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/equity/COCs_ACS2018_tbl_TEMP.csv"))
+
+
+# Urban Displacement Project census tracts
+@orca.table(cache=True)
+def buildings_w_eq_codes():
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/hazards/buildings_w_earthquake_codes.csv"))
+
+
+# Urban Displacement Project census tracts
+@orca.table(cache=True)
+def eq_retrofit_lookup():
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/hazards/building_eq_categories.csv"))
+
+
 # this specifies the relationships between tables
 orca.broadcast('buildings', 'residential_units', cast_index=True, onto_on='building_id')
 orca.broadcast('residential_units', 'households', cast_index=True, onto_on='unit_id')
 orca.broadcast('parcels_geography', 'buildings', cast_index=True, onto_on='parcel_id')
 orca.broadcast('parcels', 'buildings', cast_index=True, onto_on='parcel_id')
+# adding
+orca.broadcast('buildings', 'households', cast_index=True, onto_on='building_id')
+orca.broadcast('buildings', 'jobs', cast_index=True, onto_on='building_id')
 # not defined in urbansim_Defaults
 orca.broadcast('tmnodes', 'buildings', cast_index=True, onto_on='tmnode_id')
 orca.broadcast('taz_geography', 'parcels', cast_index=True, onto_on='zone_id')
