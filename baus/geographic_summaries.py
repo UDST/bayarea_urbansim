@@ -34,7 +34,7 @@ def geographic_summary(parcels, households, jobs, buildings, run_number, year):
         region[empsix] = jobs_df[jobs_df.empsix == empsix].size
 
     # residential buildings
-    region['res_units'] = buildings_df.residential_units.sum() 
+    region['residential_units'] = buildings_df.residential_units.sum() 
     region['deed_restricted_units'] = buildings_df.deed_restricted_units.sum()  
     region['sfdu'] = buildings_df[(buildings_df.building_type == 'HS') | (buildings_df.building_type == 'HT')].residential_units.sum()
     region['mfdu'] = buildings_df[(buildings_df.building_type == 'HM') | (buildings_df.building_type == 'MR')].residential_units.sum()

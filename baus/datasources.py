@@ -37,6 +37,15 @@ def outputs_dir(run_setup):
     return run_setup['outputs_dir']
 
 
+# need to overwrite the summary injectable in urbansim_defaults and pass it 
+# our outputs_dir so that the SimulationSummaryData class uses it
+@orca.injectable("summary", cache=True)
+def simulation_summary_data(run_number, 
+                            zone_indicator_file=(os.path.join(orca.get_injectable("outputs_dir"), "simulation_output.json")),
+                            parcel_indicator_file=(os.path.join(orca.get_injectable("outputs_dir"), "parcel_output.json"))):
+    return utils.SimulationSummaryData(run_number)
+
+
 @orca.injectable('paths', cache=True)
 def paths():
     with open(os.path.join(misc.configs_dir(), "paths.yaml")) as f:
@@ -171,8 +180,13 @@ def initial_year():
 
 
 @orca.injectable()
+def initial_summary_year():
+    return 2010
+
+
+@orca.injectable()
 def final_year():
-    return 2050
+    return 2015
 
 
 @orca.injectable(cache=True)
