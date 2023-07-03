@@ -8,9 +8,9 @@ from urbansim.utils import misc
 from baus import datasources
 
 @orca.step()
-def deed_restricted_units_summary(parcels, buildings, year, initial_year, run_number):
+def deed_restricted_units_summary(parcels, buildings, year, initial_summary_year, final_year, run_number):
 
-    if year != 2010 or year != 2015:
+    if year != initial_summary_year and year != final_year:
         return
 
     # get buldings table and geography columns to tally deed restricted (dr) units
@@ -74,14 +74,15 @@ def deed_restricted_units_summary(parcels, buildings, year, initial_year, run_nu
         summary_table["h5_dr_units"] = buildings.groupby(geography)["h5_dr_units"].sum()
         summary_table["cs_dr_units"] = buildings.groupby(geography)["cs_dr_units"].sum()
 
+        summary_table = summary_table.sort_index()
         summary_table.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_dr_summary_{}.csv").\
                     format(run_number, geography, year))
         
 
 @orca.step()
-def deed_restricted_units_growth_summary(year, final_year, run_number):
+def deed_restricted_units_growth_summary(year, initial_summary_year, final_year, run_number):
     
-    if year != 2015: 
+    if year != final_year: 
         return
     
     dr_growth = pd.DataFrame(index=[0])
@@ -91,21 +92,22 @@ def deed_restricted_units_growth_summary(year, final_year, run_number):
     for geography in geographies:
 
         # use 2015 as the base year
-        year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_%s_dr_summary_%d.csv" % (run_number, geography, 2015)))
+        year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_%s_dr_summary_%d.csv" % (run_number, geography, initial_summary_year)))
         year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_%s_dr_summary_%d.csv" % (run_number, geography, final_year)))
 
         columns = ['total_dr_units', "inclusionary_units", "subsidized_units", "preserved_units", "public_lands_dr_units", 
                    "mall_office_dr_units", "opp_dr_units", "h5_dr_units", "cs_dr_units"]
     
         for col in columns:
-            dr_growth[col+"_2015"] = year1[col]
-            dr_growth[col+"_2050"] = year2[col]
+            dr_growth[col+"_"+str(initial_summary_year)] = year1[col]
+            dr_growth[col+"_"+str(final_year)] = year2[col]
             # growth in units
             dr_growth[col+'_growth'] = year2[col] - year1[col]
 
             # change in the regional share of units in the geography 
-            dr_growth[col+"_2015_share"] = round(year1[col] / year1[col].sum(), 2)
-            dr_growth[col+"_2050_share"] = round(year2[col] / year2[col].sum(), 2)            
-            dr_growth[col+'_share_change'] =  dr_growth[col+"_2050_share"] - dr_growth[col+"_2015_share"]
+            dr_growth[col+"_"+str(initial_summary_year)+"_share"] = round(year1[col] / year1[col].sum(), 2)
+            dr_growth[col+"_"+str(final_year)+"_share"] = round(year2[col] / year2[col].sum(), 2)            
+            dr_growth[col+'_share_change'] =  (dr_growth[col+"_"+str(final_year)+"_share"] - 
+                                                         dr_growth[col+"_"+str(initial_summary_year)+"_share"])
         
         dr_growth.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_dr_growth.csv").format(run_number, geography))

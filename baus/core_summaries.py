@@ -7,9 +7,9 @@ from baus import datasources
 
 
 @orca.step()
-def parcel_summary(parcels, buildings, households, jobs, run_number, year):
+def parcel_summary(parcels, buildings, households, jobs, run_number, year, initial_summary_year, final_year):
 
-    if year not in [2010, 2015, 2035, 2050]:
+    if year not in [initial_summary_year, 2020, 2035, final_year]:
          return
 
     df = parcels.to_frame(["geom_id", "x", "y"])
@@ -37,14 +37,13 @@ def parcel_summary(parcels, buildings, households, jobs, run_number, year):
 
 
 @orca.step()
-def parcel_growth_summary(run_number, year, final_year):
+def parcel_growth_summary(run_number, year, initial_summary_year, final_year):
     
     if year != final_year:
         return
 
-    # use 2015 as the base year
     df1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_summary_%d.csv" %
-                        (run_number, 2015)), index_col="parcel_id")
+                        (run_number, initial_summary_year)), index_col="parcel_id")
     df2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_summary_%d.csv" %
                         (run_number, final_year)), index_col="parcel_id")
 
@@ -62,9 +61,9 @@ def parcel_growth_summary(run_number, year, final_year):
 
 
 @orca.step()
-def building_summary(parcels, run_number, year, buildings):
+def building_summary(parcels, buildings, run_number, year, initial_summary_year, final_year):
 
-    if year not in [2010, 2015, 2035, 2050]:
+    if year not in [initial_summary_year, 2020, 2035, final_year]:
         return
 
     df = orca.merge_tables('buildings',
@@ -79,6 +78,9 @@ def building_summary(parcels, run_number, year, buildings):
 @orca.step()
 def diagnostic_output(households, buildings, parcels, jobs, developer_settings, zones, year, summary, residential_units):
 
+    # commented code has been ported from summaries.py to be consolidated in this interim/diagnostic output code
+    # TODO: the next summary cleaning PR will handle interim output for the BAUS visualizer
+
     households = households.to_frame()
     buildings = buildings.to_frame()
     parcels = parcels.to_frame()
@@ -91,6 +93,9 @@ def diagnostic_output(households, buildings, parcels, jobs, developer_settings, 
     zones['residential_units'] = buildings.groupby('zone_id').residential_units.sum()
     zones['job_spaces'] = buildings.groupby('zone_id').job_spaces.sum()
     tothh = households.zone_id.value_counts().reindex(zones.index).fillna(0)
+    ####
+    # summary_table['sq_ft_per_employee'] = summary_table['non_residential_sqft'] / summary_table['totemp']
+    ####
     zones['residential_vacancy'] = 1.0 - tothh / zones.residential_units.replace(0, 1)
     zones['non_residential_sqft'] = buildings.groupby('zone_id').non_residential_sqft.sum()
     totjobs = jobs.zone_id.value_counts().reindex(zones.index).fillna(0)
@@ -114,7 +119,15 @@ def diagnostic_output(households, buildings, parcels, jobs, developer_settings, 
     # this compares price to rent and shows us where price is greater
     # rents are monthly and a cap rate is applied in order to do the conversion
     zones['unit_residential_price_>_rent'] = (zones.unit_residential_price > (zones.unit_residential_rent * 12 / cap_rate)).astype('int')
-
+    ####
+    #if parcel_output is not None:
+    #    summary_table['inclusionary_revenue_reduction'] = parcel_output.groupby(geography).policy_based_revenue_reduction.sum()
+    #    summary_table['inclusionary_revenue_reduction_per_unit'] = summary_table.inclusionary_revenue_reduction / \
+    #        summary_table.inclusionary_units
+    #    summary_table['total_subsidy'] = parcel_output[parcel_output.subsidized_units > 0].\
+    #        groupby(geography).max_profit.sum() * -1    
+    #    summary_table['subsidy_per_unit'] = summary_table.total_subsidy / summary_table.subsidized_units  
+    ####
     zones['retail_rent'] = buildings[buildings.general_type == "Retail"].groupby('zone_id').non_residential_rent.quantile()
     zones['office_rent'] = buildings[buildings.general_type == "Office"].groupby('zone_id').non_residential_rent.quantile()
     zones['industrial_rent'] = buildings[buildings.general_type == "Industrial"].groupby('zone_id').non_residential_rent.quantile()
@@ -124,3 +137,15 @@ def diagnostic_output(households, buildings, parcels, jobs, developer_settings, 
     zones['retail_to_res_units_ratio'] = zones.retail_sqft / zones.residential_units.replace(0, 1)
 
     summary.add_zone_output(zones, "diagnostic_outputs", year)
+    #du = buildings.residential_units.sum()
+    #write("Number of residential units in buildings table = %d" % du)
+    #write("Residential vacancy rate = %.2f" % (1-0 - float(nhh)/du))
+    #du = buildings.deed_restricted_units.sum()
+
+    #write("Number of residential units in units table = %d" % len(residential_units))
+    #rent_own = residential_units.tenure.value_counts()
+    #write("Split of units by rent/own = %s" % str(rent_own))
+
+    #jsp = buildings.job_spaces.sum()
+    #write("Number of job spaces = %d" % jsp)
+    #write("Non-residential vacancy rate = %.2f" % (1-0 - float(nj)/jsp))

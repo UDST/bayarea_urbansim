@@ -9,17 +9,16 @@ from baus import datasources
 @orca.step()
 def hazards_slr_summary(run_setup, run_number, year):
 
-    if not run_setup['run_slr']:
+    if not run_setup['run_slr'] or len(orca.get_table("destroy_parcels")) < 1:
         return
     
     slr_summary = pd.DataFrame(index=[0])
 
     # impacted parcels
-    destroy_parcels = orca.get_table("destroy_parcels")
-    slr_summary["impacted_parcels"] = len(destroy_parcels)
+    slr_summary["impacted_parcels"] = len(orca.get_table("destroy_parcels"))
 
     # impacted buildings
-    if year == 2010:
+    if year == 2035:
         slr_demolish_tot = orca.get_table("slr_demolish").to_frame()
         orca.add_table("slr_demolish_tot", slr_demolish_tot)
     else:
@@ -30,7 +29,7 @@ def hazards_slr_summary(run_setup, run_number, year):
     slr_summary["impacted_sqft"] = slr_demolish_tot['building_sqft'].sum()
 
     # impacted households
-    if year == 2010:
+    if year == 2035:
         unplaced_hh_tot = orca.get_table("hh_unplaced_slr").to_frame()
         orca.add_table("unplaced_hh_tot", unplaced_hh_tot)
     else:
@@ -42,7 +41,7 @@ def hazards_slr_summary(run_setup, run_number, year):
         slr_summary["impacted_hhq"+str(quartile)] = (unplaced_hh_tot["base_income_quartile"] == quartile).sum()
 
     # employees by sector
-    if year == 2010:
+    if year == 2035:
         unplaced_jobs_tot = orca.get_table("jobs_unplaced_slr").to_frame()
         orca.add_table("unplaced_jobs_tot", unplaced_jobs_tot)
     else:
@@ -52,7 +51,7 @@ def hazards_slr_summary(run_setup, run_number, year):
     for empsix in ['AGREMPN', 'MWTEMPN', 'RETEMPN', 'FPSEMPN', 'HEREMPN', 'OTHEMPN']:
         slr_summary["impacted_jobs_"+str(empsix)] = (unplaced_jobs_tot["empsix"] == empsix).sum()
 
-    slr_summary.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_hazards_summary_%d.csv" % (run_number, year)))
+    slr_summary.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_slr_summary_%d.csv" % (run_number, year)))
 
 
 @orca.step()
@@ -104,7 +103,7 @@ def hazards_eq_summary(run_setup, run_number, year, parcels, buildings):
     eq_demolish['count'] = 1
     eq_demolish = eq_demolish.drop(['parcel_id', 'year_built', 'redfin_sale_year'], axis=1)
     eq_demolish = eq_demolish.groupby(['taz']).sum()
-    eq_demolish.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_hazards_eq_demolish_buildings_%d.csv"
+    eq_demolish.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_eq_demolish_buildings_%d.csv"
                                     % (run_number, year)))
 
     # print out retrofit buildings by TAZ
@@ -118,7 +117,7 @@ def hazards_eq_summary(run_setup, run_number, year, parcels, buildings):
         'non_residential_sqft', 'building_sqft', 'stories','redfin_sale_price', 'non_residential_rent',
         'deed_restricted_units', 'residential_price', 'count']]
     retrofit_bldgs_tot.to_csv(os.path.join(
-                orca.get_injectable("outputs_dir"), "run%d_hazards_eq_retrofit_buildings_%d.csv" % (run_number, year)))
+                orca.get_injectable("outputs_dir"), "run%d_eq_retrofit_buildings_%d.csv" % (run_number, year)))
 
     # print out buildings by TAZ around earthquake years
     if year not in [2030, 2035, 2050]:
@@ -131,4 +130,4 @@ def hazards_eq_summary(run_setup, run_number, year, parcels, buildings):
                         'building_sqft', 'stories', 'redfin_sale_price', 'non_residential_rent', 'deed_restricted_units',
                         'residential_price']]
     buildings.to_csv(os.path.join(
-        orca.get_injectable("outputs_dir"), "run%d_hazards_eq_buildings_list_%d.csv" % (run_number, year)))
+        orca.get_injectable("outputs_dir"), "run%d_eq_buildings_list_%d.csv" % (run_number, year)))

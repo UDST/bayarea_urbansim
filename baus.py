@@ -10,7 +10,7 @@ from baus import slr
 from baus import earthquake
 from baus import ual
 from baus import validation
-from baus import core_summaries, plan_metrics, geographic_summaries, travel_model_summaries, hazards_summaries, affordable_housing_summaries
+from baus import core_summaries, metrics, geographic_summaries, travel_model_summaries, hazards_summaries, affordable_housing_summaries
 import numpy as np
 import pandas as pd
 import orca
@@ -124,7 +124,7 @@ if MAPS:
 
 
 @orca.step()
-def slack_report(buildings, households):
+def slack_report(buildings, households, year):
 
     if SLACK and IN_YEAR:
         dropped_devproj_geomid = orca.get_injectable("devproj_len") - orca.get_injectable("devproj_len_geomid")
@@ -273,6 +273,11 @@ def get_simulation_models():
         "growth_geography_metrics",
         "deed_restricted_units_metrics",
         "household_income_metrics",
+        "jobs_housing_metrics",
+        "jobs_metrics",
+        "slr_metrics",
+        "earthquake_metrics",
+        "greenfield_metrics",
 
         "taz1_summary",
         "maz_marginals",
@@ -399,7 +404,18 @@ def get_baseyear_models():
         "parcel_summary",
         "building_summary",
 
+        "deed_restricted_units_summary",
+
         "geographic_summary",
+
+        "growth_geography_metrics",
+        "deed_restricted_units_metrics",
+        "household_income_metrics",
+        "jobs_housing_metrics",
+        "jobs_metrics",
+        "greenfield_metrics",
+        "slr_metrics",
+        "earthquake_metrics",
 
         "taz1_summary",
         "maz_marginals",

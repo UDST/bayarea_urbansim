@@ -17,10 +17,11 @@ def geographic_summary(parcels, households, jobs, buildings, run_number, year):
         columns=['juris', 'superdistrict', 'county', 'subregion', 'empsix'])
 
     buildings_df = orca.merge_tables('buildings', [parcels, buildings],
-        columns=['juris', 'superdistrict', 'county', 'subregion', 'building_type', 'residential_units', 'non_residential_sqft'])
+        columns=['juris', 'superdistrict', 'county', 'subregion', 'building_type', 
+                 'residential_units', 'deed_restricted_units', 'non_residential_sqft'])
 
     #### summarize regional results ####
-    region = pd.DataFrame(index=[0])
+    region = pd.DataFrame(index=['region'])
 
     # households
     region['tothh'] = households_df.size
@@ -34,6 +35,7 @@ def geographic_summary(parcels, households, jobs, buildings, run_number, year):
 
     # residential buildings
     region['res_units'] = buildings_df.residential_units.sum() 
+    region['deed_restricted_units'] = buildings_df.deed_restricted_units.sum()  
     region['sfdu'] = buildings_df[(buildings_df.building_type == 'HS') | (buildings_df.building_type == 'HT')].residential_units.sum()
     region['mfdu'] = buildings_df[(buildings_df.building_type == 'HM') | (buildings_df.building_type == 'MR')].residential_units.sum()
     
@@ -45,16 +47,16 @@ def geographic_summary(parcels, households, jobs, buildings, run_number, year):
     geographies = ['juris', 'superdistrict', 'county', 'subregion']
 
     for geography in geographies:
-        summary_table = pd.DataFrame(index=[0])
+        summary_table = pd.DataFrame(index=buildings_df[geography].unique())
 
         # households
         summary_table['tothh'] = households_df.groupby(geography).size()
-        summary_table = pd.DataFrame(index=buildings_df[geography].unique())
         for quartile in [1, 2, 3, 4]:
             summary_table['hhincq'+str(quartile)] = households_df[households_df.base_income_quartile == quartile].groupby(geography).size()
 
         # residential buildings
-        summary_table['res_units'] = buildings_df.groupby(geography).residential_units.sum() 
+        summary_table['residential_units'] = buildings_df.groupby(geography).residential_units.sum() 
+        summary_table['deed_restricted_units'] = buildings_df.groupby(geography).deed_restricted_units.sum() 
         summary_table['sfdu'] = buildings_df[(buildings_df.building_type == 'HS') | (buildings_df.building_type == 'HT')].\
             groupby(geography).residential_units.sum()
         summary_table['mfdu'] = buildings_df[(buildings_df.building_type == 'HM') | (buildings_df.building_type == 'MR')].\
@@ -66,7 +68,7 @@ def geographic_summary(parcels, households, jobs, buildings, run_number, year):
             summary_table[empsix] = jobs_df[jobs_df.empsix == empsix].groupby(geography).size()
 
         # non-residential buildings
-        summary_table['non_residential_sqft'] = buildings_df.groupby(geography)['non_residential_sqft'].sum()
+        summary_table['non_residential_sqft'] = buildings_df.groupby(geography)['non_residential_sqft'].sum().round(0)
    
         summary_table = summary_table.sort_index()
         summary_table.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_summary_{}.csv").\
@@ -74,9 +76,9 @@ def geographic_summary(parcels, households, jobs, buildings, run_number, year):
 
 
 @orca.step()
-def geographic_growth_summary(year, final_year, run_number):
+def geographic_growth_summary(year, final_year, initial_summary_year, run_number):
     
-    if year != 2015: 
+    if year != final_year: 
         return
 
     geographies = ['region', 'juris', 'superdistrict', 'county', 'subregion']
@@ -86,14 +88,14 @@ def geographic_growth_summary(year, final_year, run_number):
         geography_growth = pd.DataFrame(index=[0])
 
         # use 2015 as the base year
-        year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_%s_summary_%d.csv" % (run_number, geography, 2015)))
+        year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_%s_summary_%d.csv" % (run_number, geography, initial_summary_year)))
         year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_%s_summary_%d.csv" % (run_number, geography, final_year)))
 
-        columns = ['tothh', 'hhincq1', 'hhincq4', 'totemp', 'res_units', 'deed_restricted_units', 'non_residential_sqft']
+        columns = ['tothh', 'hhincq1', 'hhincq4', 'totemp', 'residential_units', 'deed_restricted_units', 'non_residential_sqft']
     
         for col in columns:
-            geography_growth[col+"_2015"] = year1[col]
-            geography_growth[col+"_2050"] = year2[col]
+            geography_growth[col+"_"+str(initial_summary_year)] = year1[col]
+            geography_growth[col+"_"+str(final_year)] = year2[col]
             # growth in households/jobs/etc.
             geography_growth[col+"growth"] = year2[col] - year1[col]
 
@@ -105,8 +107,9 @@ def geographic_growth_summary(year, final_year, run_number):
                                                                      (year2[col].sum() - year1[col].sum()) * 100), 2)
 
             # change in the regional share of households/jobs/etc. in the geography      
-            geography_growth[col+"_2015_regional_share"] = round(year1[col] / year1[col].sum(), 2)
-            geography_growth[col+"_2050_regional_share"] = round(year2[col] / year2[col].sum(), 2)            
-            geography_growth[col+'_regional_share_change'] = geography_growth[col+"_2050_share"] - geography_growth[col+"_2015_share"]
+            geography_growth[col+"_"+str(initial_summary_year)+"_regional_share"] = round(year1[col] / year1[col].sum(), 2)
+            geography_growth[col+"_"+str(final_year)+"_regional_share"] = round(year2[col] / year2[col].sum(), 2)            
+            geography_growth[col+'_regional_share_change'] = (geography_growth[col+"_"+str(final_year)+"_regional_share"] - 
+                                                              geography_growth[col+"_"+str(initial_summary_year)+"_regional_share"])
     
         geography_growth.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_summary_growth.csv").format(run_number, geography))

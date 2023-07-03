@@ -9,9 +9,10 @@ from baus import datasources
 
 
 @orca.step()
-def growth_geography_metrics(parcels, parcels_geography, buildings, households, jobs, run_number, year, final_year): 
+def growth_geography_metrics(parcels, parcels_geography, buildings, households, jobs, run_number, year, 
+                             initial_summary_year, final_year): 
 
-    if (year != 2010) and (year != 2015):
+    if year != initial_summary_year and year != final_year:
         return
 
     households_df = orca.merge_tables('households', [parcels, buildings, households, parcels_geography],
@@ -42,11 +43,11 @@ def growth_geography_metrics(parcels, parcels_geography, buildings, households, 
                                             "run{}_growth_geog_summary_{}.csv").format(run_number, year))
     
     # now calculate growth metrics
-    if year != 2015:
+    if year != final_year:
         return
     
-    year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_growth_geog_summary_%d.csv" % (run_number, 2010)))
-    year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_growth_geog_summary_%d.csv" % (run_number, 2050)))
+    year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_growth_geog_summary_%d.csv" % (run_number, initial_summary_year)))
+    year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_growth_geog_summary_%d.csv" % (run_number, final_year)))
 
     growth_geog_growth = pd.DataFrame(index=[0])
 
@@ -57,8 +58,8 @@ def growth_geography_metrics(parcels, parcels_geography, buildings, households, 
                 'gg_jobs', 'pda_jobs', 'gg_non_pda_jobs', 'hra_jobs', 'tra_jobs', 'hra_tra_jobs']
     
     for col in columns:
-        growth_geog_growth[col+"_y1"] = year1[col]
-        growth_geog_growth[col+"_y2"] = year2[col]
+        growth_geog_growth[col+"_"+str(initial_summary_year)] = year1[col]
+        growth_geog_growth[col+"_"+str(final_year)] = year2[col]
         # growth in units 
         growth_geog_growth[col+'_growth'] = year2[col] - year1[col]
         
@@ -74,9 +75,9 @@ def growth_geography_metrics(parcels, parcels_geography, buildings, households, 
 
 
 @orca.step()
-def deed_restricted_units_metrics(parcels, buildings, run_number, year, final_year, parcels_geography): 
+def deed_restricted_units_metrics(parcels, buildings, run_number, year, initial_summary_year, final_year, parcels_geography): 
 
-    if (year != 2010) and (year != 2015):
+    if year != initial_summary_year and year != final_year:
         return
     
     buildings_df = orca.merge_tables('buildings', [parcels, buildings, parcels_geography],
@@ -98,11 +99,11 @@ def deed_restricted_units_metrics(parcels, buildings, run_number, year, final_ye
 
     orca.add_table("dr_units_summary_"+str(year), dr_units_summary)
 
-    if year != 2015:
+    if year != final_year:
         return
     
-    dr_units_summary_y1 = orca.get_table("dr_units_summary_2010").to_frame()
-    dr_units_summary_y2 = orca.get_table("dr_units_summary_2015").to_frame()
+    dr_units_summary_y1 = orca.get_table(("dr_units_summary_{}").format(initial_summary_year)).to_frame()
+    dr_units_summary_y2 = orca.get_table(("dr_units_summary_{}").format(final_year)).to_frame()
 
     # percent of new units that are deed-restricted units, by growth geography
     dr_units_growth = pd.DataFrame(index=[0])
@@ -117,10 +118,10 @@ def deed_restricted_units_metrics(parcels, buildings, run_number, year, final_ye
 
 
 @orca.step()
-def household_income_metrics(year, final_year, parcels, buildings, households, parcels_geography,
+def household_income_metrics(year, initial_summary_year, final_year, parcels, buildings, households, parcels_geography,
                              parcel_tract_crosswalk, displacement_risk_tracts, coc_tracts, run_number):
     
-    if (year != 2010) and (year != 2015):
+    if year != initial_summary_year and year != final_year:
         return
     
     hh_df = orca.merge_tables('households', [parcels, buildings, households, parcels_geography], 
@@ -155,7 +156,7 @@ def household_income_metrics(year, final_year, parcels, buildings, households, p
                                              if hh_df[hh_df.coc_id > ''].size > 0 else 0).round(2)
     
     hh_inc_summary.to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
-                                                 "run{}_hh_inc_summary_{}.csv").format(run_number, year))
+                                                 "run{}_hh_inc_metrics_{}.csv").format(run_number, year))
 
     ### displacement and gentrification ###
     dis_tracts = displacement_risk_tracts.to_frame()
@@ -181,16 +182,16 @@ def household_income_metrics(year, final_year, parcels, buildings, households, p
     dis_tract_hhs['low_inc_share'] = dis_tract_hhs['low_inc_hh'] / dis_tract_hhs["hh_count"]
     coc_tract_hhs['low_inc_share'] = coc_tract_hhs['low_inc_hh'] / coc_tract_hhs["hh_count"]
 
-    orca.add_table("dis_tract_hhs"+str(year),  dis_tract_hhs)
-    orca.add_table("coc_tract_hhs"+str(year),  coc_tract_hhs)
+    orca.add_table("dis_tract_hhs_"+str(year),  dis_tract_hhs)
+    orca.add_table("coc_tract_hhs_"+str(year),  coc_tract_hhs)
 
-    if year != 2015:
+    if year != final_year:
         return
     
-    dis_hhs_change = orca.get_table("dis_tract_hhs_2010").to_frame().merge(
-                              orca.get_table("dis_tract_hhs_2015").to_frame(), suffixes=('_y1', '_y2'))
-    coc_hhs_change = orca.get_table("coc_tract_hhs_2010").to_frame().merge(
-                              orca.get_table("coc_tract_hhs_2015").to_frame(), suffixes=('_y1', '_y2'))
+    dis_hhs_change = orca.get_table(("dis_tract_hhs_{}").format(initial_summary_year)).to_frame().merge(
+                              orca.get_table(("dis_tract_hhs_{}").format(final_year)).to_frame(), suffixes=('_y1', '_y2'))
+    coc_hhs_change = orca.get_table(("coc_tract_hhs_{}").format(initial_summary_year)).to_frame().merge(
+                              orca.get_table(("coc_tract_hhs_{}").format(final_year)).to_frame(), suffixes=('_y1', '_y2'))
 
     tract_hhs_change = pd.DataFrame(index=[0])
 
@@ -212,9 +213,9 @@ def household_income_metrics(year, final_year, parcels, buildings, households, p
 
 
 @orca.step()
-def jobs_housing_metrics(parcels, buildings, jobs, households, run_number, year, final_year):
+def jobs_housing_metrics(parcels, buildings, jobs, households, run_number, year, initial_summary_year, final_year):
     
-    if year == 2010 or year == 2015:
+    if year == initial_summary_year or year == final_year:
 
         jobs_df = orca.merge_tables('jobs', [parcels, buildings, jobs], columns=['empsix', 'county'])
     
@@ -226,7 +227,7 @@ def jobs_housing_metrics(parcels, buildings, jobs, households, run_number, year,
         # county-level jobs-housing ratios
         parcels = parcels.to_frame()
         for county in parcels.county.unique():
-            jobs_housing_summary[str(county)+'jh_ratio'] = (jobs_df[jobs_df.county == county].size / 
+            jobs_housing_summary[str(county)+'_jh_ratio'] = (jobs_df[jobs_df.county == county].size / 
                                                             households_df[households_df.county == county].size).round(2)
 
         jobs_housing_summary.to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
@@ -234,9 +235,9 @@ def jobs_housing_metrics(parcels, buildings, jobs, households, run_number, year,
 
 
 @orca.step()
-def jobs_metrics(year, parcels, buildings, jobs, parcels_geography, final_year):
+def jobs_metrics(year, parcels, buildings, jobs, parcels_geography, run_number, initial_summary_year, final_year):
     
-    if (year == 2010) or (year == 2015):
+    if year == initial_summary_year or year == final_year:
 
         jobs_df = orca.merge_tables('jobs', [parcels, buildings, jobs, parcels_geography], columns=['empsix', 'ppa_id'])
 
@@ -247,16 +248,18 @@ def jobs_metrics(year, parcels, buildings, jobs, parcels_geography, final_year):
         jobs_summary['ppa_mfg_jobs'] = jobs_df[(jobs_df.ppa_id > '') & (jobs_df.empsix == 'MWTEMPN')].size
         orca.add_table("jobs_summary_"+str(year), jobs_summary)
 
-    if year == 2015:
+    if year == final_year:
          # now calculate growth metrics
-        jobs_summary_2015 = orca.get_table("jobs_summary_2010").to_frame()
-        jobs_summary_2050 = orca.get_table("jobs_summary_2015").to_frame()
+        jobs_summary_y1 = orca.get_table(("jobs_summary_{}").format(initial_summary_year)).to_frame()
+        jobs_summary_y2 = orca.get_table(("jobs_summary_{}").format(final_year)).to_frame()
         
         # job growth
         jobs_growth_summary = pd.DataFrame(index=[0])
         columns = ['tot_emp', 'ppa_jobs', 'mfg_jobs', 'ppa_mfg_jobs']
         for col in columns:
-            jobs_growth_summary[col+'_pct_growth'] = jobs_summary_2050[col] / jobs_summary_2015[col] - 1
+            jobs_growth_summary[col+'_pct_growth'] = jobs_summary_y2[col] / jobs_summary_y1[col] - 1
+
+        jobs_growth_summary.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_jobs_metrics_{}.csv").format(run_number, year))
 
     # TODO (short-term): where did low/mid/high wage jobs come from? confirm its from regional forecast output
         
@@ -267,7 +270,7 @@ def slr_metrics(parcels, buildings, parcels_geography, slr_parcel_inundation, ho
     # TODO (long-term): reconsider whether "2050 affected households" makes sense for the metric, 
     # since there should be no HH on these parcels
 
-    if year != 2015:
+    if year != final_year:
         return
 
     parcels = parcels.to_frame().merge(parcels_geography, on='parcel_id')
@@ -303,7 +306,7 @@ def slr_metrics(parcels, buildings, parcels_geography, slr_parcel_inundation, ho
 @orca.step()
 def earthquake_metrics(parcels_geography, buildings_w_eq_codes, eq_retrofit_lookup, households, year, final_year, run_number):
 
-    if year != 2015:
+    if year != final_year:
         return
     
     # TODO (long-term)- this seems to rely on a buildings -> earthquake code assignment from a certain run (which?)
@@ -362,13 +365,14 @@ def wildfire_metrics():
 
 
 @orca.step()
-def greenfield_metrics(buildings, parcels, run_number, year, final_year):
+def greenfield_metrics(buildings, parcels, run_number, year, initial_year, initial_summary_year, final_year):
 
-    if (year != 2010) and (year != 2015):
+    if year != initial_year and year != final_year:
         return
     
     # TODO (long-term)- update the urbanized area  used, this uses "Urbanize_Footprint" shapefile joined to parcels
     # most greenfield occurs in the baseyear here since the shapefile is older than the input data
+    # so also update the start year for the metric
     buildings_uf_df = orca.merge_tables('buildings', [parcels, buildings],
         columns=['urbanized', 'year_built', 'acres', 'residential_units', 'non_residential_sqft'])
     
@@ -376,7 +380,7 @@ def greenfield_metrics(buildings, parcels, run_number, year, final_year):
     buildings_out_uf = buildings_uf_df[(buildings_uf_df.year_built > 2010) & (buildings_uf_df.urbanized != 1)]
     orca.add_table("buildings_outside_urban_footprint_"+str(year), buildings_out_uf)
     
-    if year != 2015:
+    if year != final_year:
         return
     
     greenfield_metric = pd.DataFrame(index=[0])
@@ -384,10 +388,10 @@ def greenfield_metrics(buildings, parcels, run_number, year, final_year):
     # this uses observed data (Vital Signs?)
     greenfield_metric["annual_greenfield_development_acres_2015"] = 6642/2
     # this uses the model calculation
-    buildings_out_uf_2015 = orca.get_table("buildings_outside_urban_footprint_2010").to_frame()
-    buildings_out_uf_2050 = orca.get_table("buildings_outside_urban_footprint_2015").to_frame()
+    buildings_out_uf_2015 = orca.get_table(("buildings_outside_urban_footprint_{}").format(initial_summary_year)).to_frame()
+    buildings_out_uf_2050 = orca.get_table(("buildings_outside_urban_footprint_{}").format(final_year)).to_frame()
     greenfield_metric["annual_greenfield_dev_acres_2050"] = ((buildings_out_uf_2050["acres"].sum() - buildings_out_uf_2015["acres"].sum()) /
-                                                            (final_year - 2015))
+                                                            (final_year - initial_summary_year))
 
     greenfield_metric.to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
                                             "run{}_greenfield_metric_{}.csv".format(run_number, year)))

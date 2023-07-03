@@ -351,13 +351,13 @@ def taz1_summary(parcels, households, jobs, buildings, zones, maz, year, summary
 
 
 @orca.step()
-def taz1_growth_summary(year, final_year, run_number):
+def taz1_growth_summary(year, initial_summary_year, final_year, run_number):
 
     if year != final_year: 
         return
 
     # use 2015 as the base year
-    df1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_taz1_summary_%d.csv" % (run_number, 2015)))
+    df1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_taz1_summary_%d.csv" % (run_number, initial_summary_year)))
     df2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_taz1_summary_%d.csv" % (run_number, final_year)))
     df_merge = df1.merge(df2, on = 'TAZ').fillna(0)
     DF_merge = DF_merge.rename(columns={'SD_x': 'SD', 'COUNTY_x': 'COUNTY'})
@@ -503,13 +503,13 @@ def maz_summary(parcels, jobs, households, buildings, maz, year, tm2_emp27_emplo
 
 
 @orca.step()
-def maz_growth_summary(year, final_year, run_number):
+def maz_growth_summary(year, initial_summary_year, final_year, run_number):
 
     if year != final_year: 
         return
 
     # use 2015 as the base year
-    df1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_maz_summary_%d.csv" % (run_number, 2015)))
+    df1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_maz_summary_%d.csv" % (run_number, initial_summary_year)))
     df2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_maz_summary_%d.csv" % (run_number, final_year)))
     df_merge = df1.merge(df2, on = 'maz').fillna(0)
 
@@ -590,7 +590,7 @@ def county_marginals(maz_summary_df, taz2_summary_df, tm2_occupation_shares, run
     county[['hh_wrks_1', 'hh_wrks_2', 'hh_wrks_3_plus']] = taz2.groupby('county_name').agg({'hh_wrks_1': 'sum',
                                                                                             'hh_wrks_2': 'sum',
                                                                                             'hh_wrks_3_plus': 'sum'})
-    county['workers'] = county.hh_wrks_1 + county.hh_wrks_2 * 2 + county.hh_wrks_3_plus * 3.474036
+    county['workers'] = (county.hh_wrks_1 + county.hh_wrks_2 * 2 + county.hh_wrks_3_plus * 3.474036).round(0)
     cef = tm2_occupation_shares.to_frame()
     cef = cef.loc[cef.year == year].set_index('county_name')
     county['pers_occ_management'] = county.workers * cef.shr_occ_management
