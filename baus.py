@@ -39,7 +39,11 @@ S3 = False
 EVERY_NTH_YEAR = 5
 BRANCH = os.popen('git rev-parse --abbrev-ref HEAD').read()
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
+COMPARE_TO_NO_PROJECT = True
+NO_PROJECT = 611
 IN_YEAR, OUT_YEAR = 2010, 2050
+COMPARE_AGAINST_LAST_KNOWN_GOOD = False
+LAST_KNOWN_GOOD_RUN = 182 
 
 
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
@@ -577,3 +581,37 @@ if SLACK and MODE == "simulation":
         'Targets comparison is available at ' +
         'http://urbanforecast.com/runs/run%d_targets_comparison_2050.csv' %
         run_num, as_user=True)"""
+    
+    
+summary = ""
+if MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
+    # compute and write the difference report at the superdistrict level
+    prev_run = LAST_KNOWN_GOOD_RUN
+    # fetch the previous run off of the internet for comparison - the "last
+    # known good run" should always be available on EC2
+    df1 = pd.read_csv(("http://urbanforecast.com/runs/run%d_superdistrict" + "_summaries_2050.csv") % prev_run)
+    df1 = df1.set_index(df1.columns[0]).sort_index()
+
+    df2 = pd.read_csv((orca.get_injectable("outputs_dir")+"/run%d_superdistrict_summaries_2050.csv") % run_num)
+    df2 = df2.set_index(df2.columns[0]).sort_index()
+
+    supnames = pd.read_csv((orca.get_injectable("inputs_dir") + "/basis_inputs/crosswalks/superdistricts_geography.csv"), index_col="number").name
+
+    summary = compare_summary(df1, df2, supnames)
+    with open((orca.get_injectable("outputs_dir") + "/run%d_difference_report.log") % run_num, "w") as f:
+        f.write(summary)
+
+
+if SLACK and MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
+
+    if len(summary.strip()) != 0:
+        sum_lines = len(summary.strip().split("\n"))
+        slack.chat.post_message('#urbansim_sim_update', ('Difference report is available at ' +
+                                'http://urbanforecast.com/run/run%d_difference_report.log ' +  '- %d line(s)') 
+                                % (run_num, sum_lines), as_user=True)
+    else:
+        slack.chat.post_message('#urbansim_sim_update', "No differences with reference run.", as_user=True)
+
+if S3:
+    os.system('ls ' + orca.get_injectable("outputs_dir") + '/run%d_* ' % run_num + '| xargs -I file aws s3 cp file ' + 
+              's3://bayarea-urbansim-results')
