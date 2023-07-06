@@ -220,9 +220,9 @@ def adjust_hhkids(df, year, rdf, total_hh):
 ######################################################
 
 @orca.step()
-def taz1_summary(parcels, households, jobs, buildings, zones, maz, year, summary,
-                        run_number, base_year_summary_taz, taz_geography,  tm1_taz1_forecast_inputs, 
-                        tm1_tm2_maz_forecast_inputs, tm1_tm2_regional_demographic_forecast, tm1_tm2_regional_controls):
+def taz1_summary(parcels, households, jobs, buildings, zones, maz, year, run_number, base_year_summary_taz, taz_geography, 
+                 tm1_taz1_forecast_inputs, tm1_tm2_maz_forecast_inputs, tm1_tm2_regional_demographic_forecast, 
+                 tm1_tm2_regional_controls):
 
     # (1) add relevant geographies to TAZ summaries
     taz_df = pd.DataFrame(index=zones.index)

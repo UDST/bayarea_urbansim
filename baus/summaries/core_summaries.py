@@ -3,7 +3,6 @@ from __future__ import print_function
 import os
 import orca
 import pandas as pd
-from baus import datasources
 
 
 @orca.step()

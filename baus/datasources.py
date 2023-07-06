@@ -38,11 +38,11 @@ def outputs_dir(run_setup):
 
 
 # need to overwrite the summary injectable in urbansim_defaults and pass it 
-# our outputs_dir so that the SimulationSummaryData class uses it
+# our outputs_dir so that the urbansim SimulationSummaryData class uses it
 @orca.injectable("summary", cache=True)
-def simulation_summary_data(run_number, 
-                            zone_indicator_file=(os.path.join(orca.get_injectable("outputs_dir"), "simulation_output.json")),
-                            parcel_indicator_file=(os.path.join(orca.get_injectable("outputs_dir"), "parcel_output.json"))):
+def simulation_summary_data(run_number):
+    # , zone_indicator_file="..outputs/simulation_output.json",
+    #                        parcel_indicator_file="..outputs/parcel_output.json"
     return utils.SimulationSummaryData(run_number)
 
 

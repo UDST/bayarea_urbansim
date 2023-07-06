@@ -67,7 +67,7 @@ def growth_geography_metrics(parcels, parcels_geography, buildings, households, 
         growth_geog_growth[col+'_pct_change'] = year2[col] / year1[col] - 1
 
         # percent geography's growth of all regional growth in household or jobs
-        tot_growth = growth_geog_growth["totemp_growth"].sum() if col.contains('hh') else growth_geog_growth["tothh_growth"].sum()
+        tot_growth = growth_geog_growth["tothh_growth"].sum() if "hh" in col else growth_geog_growth["toemp_growth"].sum()
         growth_geog_growth[col+'_pct_of_regional_growth'] = (year2[col] - year1[col] / tot_growth) * 100
     
     growth_geog_growth.to_csv(os.path.join(orca.get_injectable("outputs_dir"), 

@@ -10,8 +10,9 @@ from baus import slr
 from baus import earthquake
 from baus import ual
 from baus import validation
-from baus import core_summaries, metrics, geographic_summaries, travel_model_summaries, \
-                    hazards_summaries, affordable_housing_summaries
+from baus.summaries import core_summaries, metrics, geographic_summaries, \
+                            travel_model_summaries, hazards_summaries, \
+                            affordable_housing_summaries
 import numpy as np
 import pandas as pd
 import orca
@@ -250,44 +251,7 @@ def get_simulation_models():
 
         # save_intermediate_tables", # saves output for visualization
         "calculate_vmt_fees",
-        "calculate_jobs_housing_fees",
-
-        # summary steps
-        "simulation_validation",
-        "diagnostic_output",
-
-        "hazards_slr_summary",
-        "hazards_eq_summary",
-
-        "parcel_summary",
-        "parcel_growth_summary",
-        "building_summary",
-
-        "deed_restricted_units_summary",
-        "deed_restricted_units_growth_summary",
-
-        "geographic_summary",
-        "geographic_growth_summary",
-
-        "growth_geography_metrics",
-        "deed_restricted_units_metrics",
-        "household_income_metrics",
-        "jobs_housing_metrics",
-        "jobs_metrics",
-        "slr_metrics",
-        "earthquake_metrics",
-        "greenfield_metrics",
-
-        "taz1_summary",
-        "maz_marginals",
-        "maz_summary",
-        "taz2_marginals",
-        "county_marginals",
-        "region_marginals",
-        "taz1_growth_summary",
-        "maz_growth_summary",
-
-        "slack_report"
+        "calculate_jobs_housing_fees"
 
     ]
 
@@ -332,9 +296,55 @@ def get_simulation_models():
 
     return models
 
+
+def get_summary_models():
+
+    summary_models = [
+
+        "simulation_validation",
+        "diagnostic_output",
+
+        "hazards_slr_summary",
+        "hazards_eq_summary",
+
+        "parcel_summary",
+        "parcel_growth_summary",
+        "building_summary",
+
+        "deed_restricted_units_summary",
+        "deed_restricted_units_growth_summary",
+
+        "geographic_summary",
+        "geographic_growth_summary",
+
+        "growth_geography_metrics",
+        "deed_restricted_units_metrics",
+        "household_income_metrics",
+        "jobs_housing_metrics",
+        "jobs_metrics",
+        "slr_metrics",
+        "earthquake_metrics",
+        "greenfield_metrics",
+
+        "taz1_summary",
+        "maz_marginals",
+        "maz_summary",
+        "taz2_marginals",
+        "county_marginals",
+        "region_marginals",
+        "taz1_growth_summary",
+        "maz_growth_summary",
+
+        "slack_report"
+
+    ]
+
+    return summary_models
+
 def get_baseyear_models():
 
-    models = [
+    baseyear_models = [
+        
         "slr_inundate",
         "slr_remove_dev",
         "eq_code_buildings",
@@ -390,10 +400,29 @@ def get_baseyear_models():
 
         "elcm_simulate",
 
-        "price_vars",
-        # "scheduled_development_events",
+        "price_vars"
+        # "scheduled_development_events"
 
-        # summary steps
+    ]
+
+    run_setup = orca.get_injectable("run_setup")
+
+    # sea level rise and sea level rise mitigation
+    if not run_setup["run_slr"]:
+        baseyear_models.remove("slr_inundate")
+        baseyear_models.remove("slr_remove_dev")
+
+    # earthquake and earthquake mitigation
+    if not run_setup["run_eq"]:
+        baseyear_models.remove("eq_code_buildings")
+        baseyear_models.remove("earthquake_demolish")
+
+    return baseyear_models
+
+def get_baseyear_summary_models():
+
+    baseyear_summary_models = [
+
         "simulation_validation",
         "diagnostic_output",
 
@@ -426,19 +455,7 @@ def get_baseyear_models():
         "slack_report"
     ]
 
-    run_setup = orca.get_injectable("run_setup")
-
-    # sea level rise and sea level rise mitigation
-    if not run_setup["run_slr"]:
-        models.remove("slr_inundate")
-        models.remove("slr_remove_dev")
-
-    # earthquake and earthquake mitigation
-    if not run_setup["run_eq"]:
-        models.remove("eq_code_buildings")
-        models.remove("earthquake_demolish")
-
-    return models
+    return baseyear_summary_models
 
 
 def run_models(MODE):
@@ -462,9 +479,14 @@ def run_models(MODE):
 
     elif MODE == "simulation":
 
+        run_setup = orca.get_injectable("run_setup")
+
         # see above for docs on this
         if not SKIP_BASE_YEAR:
             baseyear_models = get_baseyear_models()
+            if run_setup["run_summaries"]:
+                baseyear_models.extend(get_baseyear_summary_models())
+                print(baseyear_models)
             orca.run(baseyear_models, iter_vars=[IN_YEAR])
 
         # start the simulation in the next round - only the models above run
@@ -472,7 +494,11 @@ def run_models(MODE):
         years_to_run = range(IN_YEAR+EVERY_NTH_YEAR, OUT_YEAR+1,
                              EVERY_NTH_YEAR)
         models = get_simulation_models()
+        if run_setup["run_summaries"]:
+            models.extend(get_summary_models())
+            print(models)
         orca.run(models, iter_vars=years_to_run)
+        
 
     elif MODE == "estimation":
 
