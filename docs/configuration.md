@@ -1,5 +1,5 @@
 ### The configuration file structure for Bay Area UrbanSim (BAUS) and a description of each file. Model configurations files are stored in a `configs` folder in the model repository. They specify model settings such as model estimation constants and assumptions.
-&nbsp; 
+ 
 # bayarea_urbansim
 ## configs
 ### adjusters
@@ -10,7 +10,7 @@ development_caps_asserted.yaml| Caps on development, either residential or offic
 employment_relocation_rates_overwrites.csv| These overwrite the relocation rates in employment_relocation_rates.csv to calibrate the model, e.g. leave government sector jobs in San Francisco City Hall's TAZ.
 sqft_per_job_adjusters| Multipliers to the number of sqft used by each job, defined in the model's developer settings, which modify the number of jobs that can occupy a building. This is used to calibrate the model, e.g. reflect CBD job densities or adjust vacancy rates by superdistrict. The inputs file telecommute_sqft_per_job_adjusters.csv uses alternative multipliers for for the forecast years in place of these, if the strategy is enabled. (TODO: Disentangle the k-factors and the policy application in these two files. In the meantime, use both files as is done in the PBA50 No Project).
 zoning_adjusters.yaml| Adjusters used to modify the model's zoning data.
-&nbsp;   
+   
 ### accessibility
 **name**|**description**
 -----|-----
@@ -18,13 +18,13 @@ accessibility_settings.yaml| Settings for Pandana, the model's endogenous access
 neighborhood_vars.yaml| Settings for calculating local accessibility variables during the model run.
 regional_vars.yaml| Settings for calculating regional accessibility variables during the model run.
 price_vars.yaml| Settings for calculating local accessibility variables on price during the model run.
-&nbsp;
+
 ### developer
 **name**|**description**
 -----|-----
 developer_settings.yaml| Settings for the model's developer and feasibility models.
 residential_vacancy_rates.csv| Residential vacancy rates for the residential developer model, separated from the main developer settings into this file to allow them to vary by year.
-&nbsp;
+
 ### hedonics
 **name**|**description**
 -----|-----
@@ -32,7 +32,7 @@ price_settings.yaml| Settings for the model's price simulation and supplydemand 
 nrh.yaml| Non-residential hedonic price model specification.
 rrh.yaml| Residential rent hedonic price model specification.
 rsh.yaml| Residential sales hedonic price model specification.
-&nbsp;
+
 ### location_choice
 **name**|**description**
 -----|-----
@@ -56,16 +56,16 @@ renter|Renters|-|Renters|Renters Units|
 renter_lowincome|Renters|-|Low-Income Renters|Affordable Rental Units|
 renter_lowincome_no_unplaced|-|-|Renters|Affordable Rentual Units|
 renter_no_unplaced|Renters|-|Renters|Market Rate Rental Units|
-&nbsp;
+
 ### transition_relocation
 **name**|**description**
 -----|-----
 employment_relocation_rates.csv| A file with the probability of a job relocating during a time step in the forecast, by TAZ and by employment sector. Pairs with employment_relocation_rates.csv which overwrites the model probabilities with calibration factors.
 household_relocation_rates.csv| A file with the probability of a household relocating during a time step in the forecast, by TAZ, income, and tenure. Pairs with renter_protections_relocation_rates_overwrites.csv which overwrites model probabilities with different relocation rates when the renter protections strategy is enabled. 
 transition_relocation_settings.yaml| Settings for the transition and relocation models. 
-&nbsp;
+
 ### mapping.yaml
 Mapping used in the model to relate variables to one another.
-&nbsp;
+
 ### paths.yaml
 Variables that store file names for use in the model code.

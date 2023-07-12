@@ -1,5 +1,5 @@
 ### The inputs structure for Bay Area UrbanSim (BAUS) and a description of each input. Model input files are stored in an `inputs` folder to be called by the model. They are often run-specific and contain the data used to run the model, such as base year datasets and policy inputs.
-&nbsp;  
+ 
 # inputs
 ## accessibility
 ### pandana
@@ -17,7 +17,7 @@ logsums.csv| A set of base year logsums from the travel model.
 AccessibilityMarkets_[year].csv| A travel model output file that incorportates travel model run logsums into the forecast, by year.
 mandatoryAccessibilities_[year].csv| A travel model output file that incorportates travel model run logsums into the forecast, by year.
 nonMandatoryAccessibilities_[year].csv| A travel model output file that incorportates travel model run logsums into the forecast, by year.  
-&nbsp;
+
 ## basis_inputs (under construction)
 ### crosswalks
 **name**|**desription**
@@ -61,7 +61,7 @@ sfbay_craisglist.csv| Craigslist data to inform rental unit information and mode
 -----|-----
 zoning_parcels.csv| A lookup table from parcels to zoning_id, zoning area information, and a "nodev" flag (currently all set to 0).
 zoning_lookup.csv| The existing zoning for each jurisdiction, assigned to parcels with the "id" field. Fields include the city name, city id, and the name of the zoning. The active attributes are max_dua, max_far, and max_height, all of which must be respected by each development.  
-&nbsp;
+
 ## plan_strategies (optional)
 **name**|**description**
 -----|-----
@@ -75,13 +75,13 @@ renter_protections_relocation_rates_overwrites| The rows in this file overwrite 
 telecommute_sqft_per_job_adjusters| These are multipliers which adjust the sqft per job setting by superdistrict by year to represent changes from a telework strategy. (TODO: Disentangle the k-factors and the policy application within this file and sqft_per_job_adjusters.csv. In the meantime, use both files as is done in the PBA50 No Project).
 vmt_fee_zonecats.csv| This file pairs with the VMT Fee and SB-743 strategies. It provides VMT levels by TAZ1, which map to the corresponding price adjustments in the strategies.
 zoning_mods.csv| A file which allows you to upzone or downzone. If you enter a value in "dua_up" or "far_up", the model will apply that as the new zoning or maintain the existing zoning if it is higher. If you enter a value in "dua_down" or "far_down", the model will apply that as the zoning or maintain the existing zoning if it is lower. UGBs are also controlled using this file, using zoning changes to enforce them. This file is mapped to parcels using the field "zoningmodcat", which is the concatenated field of growth designations in parcels_geography.csv.
-&nbsp;  
+  
 ## regional_controls 
 **name**|**description**
 -----|-----
 employment_controls.csv| The total number of jobs in the region for the model to allocate, by year. The controls are provided by 6-sector job category.
 household_controls.csv| The total number of households in the region for the model to allocate, by year. The controls are provided by household income quartile.
-&nbsp;
+
 ## zone_forecasts
 **name**|**description**
 -----|-----
