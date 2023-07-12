@@ -84,8 +84,6 @@ def deed_restricted_units_growth_summary(year, initial_summary_year, final_year,
     
     if year != final_year: 
         return
-    
-    dr_growth = pd.DataFrame(index=[0])
 
     geographies = ['region', 'juris', 'superdistrict', 'county']
 
@@ -94,6 +92,8 @@ def deed_restricted_units_growth_summary(year, initial_summary_year, final_year,
         # use 2015 as the base year
         year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_%s_dr_summary_%d.csv" % (run_number, geography, initial_summary_year)))
         year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_%s_dr_summary_%d.csv" % (run_number, geography, final_year)))
+
+        dr_growth = pd.DataFrame(index=year1.index)
 
         columns = ['total_dr_units', "inclusionary_units", "subsidized_units", "preserved_units", "public_lands_dr_units", 
                    "mall_office_dr_units", "opp_dr_units", "h5_dr_units", "cs_dr_units"]
@@ -108,6 +108,7 @@ def deed_restricted_units_growth_summary(year, initial_summary_year, final_year,
             dr_growth[col+"_"+str(initial_summary_year)+"_share"] = round(year1[col] / year1[col].sum(), 2)
             dr_growth[col+"_"+str(final_year)+"_share"] = round(year2[col] / year2[col].sum(), 2)            
             dr_growth[col+'_share_change'] =  (dr_growth[col+"_"+str(final_year)+"_share"] - 
-                                                         dr_growth[col+"_"+str(initial_summary_year)+"_share"])
+                                               dr_growth[col+"_"+str(initial_summary_year)+"_share"])
         
+        dr_growth = dr_growth.transpose()
         dr_growth.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_dr_growth.csv").format(run_number, geography))

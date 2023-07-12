@@ -498,7 +498,7 @@ def maz_summary(parcels, jobs, households, buildings, maz, year, tm2_emp27_emplo
     maz_df['RetEmpDen'] = maz_df.RetEmp / maz_df.ACRES
     maz_df['PopDen'] = maz_df["pop"] / maz_df.ACRES
 
-    maz_df.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_maz_summaries_{}.csv".format(run_number, year)))
+    maz_df.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_maz_summary_{}.csv".format(run_number, year)))
     orca.add_table("maz_summary_df", maz_df)
 
 
@@ -532,9 +532,11 @@ def taz2_marginals(maz_summary_df, maz_marginals_df, tm2_taz2_forecast_inputs, t
     
     # (1) bring in taz2 dataframe
     taz2 = pd.DataFrame(index=tm2_taz2_forecast_inputs.index)
+    taz2.index.name = 'TAZ2'
 
     # (2) summarize maz vars for household income and population
     maz_summary_df = maz_summary_df.to_frame()
+    taz2['county_name'] = maz_summary_df.groupby('TAZ').county_name.first()
     taz2['tothh'] = maz_summary_df.groupby('TAZ').tothh.sum()
     taz2['hh_inc_30'] = maz_summary_df.groupby('TAZ').hhincq1.sum().fillna(0)
     taz2['hh_inc_30_60'] = maz_summary_df.groupby('TAZ').hhincq2.sum().fillna(0)
@@ -545,7 +547,7 @@ def taz2_marginals(maz_summary_df, maz_marginals_df, tm2_taz2_forecast_inputs, t
     taz2['pop_hhsize1'] = maz_marginals_df.groupby('TAZ').hh_size_1.sum()
     taz2['pop_hhsize2'] = maz_marginals_df.groupby('TAZ').hh_size_2.sum() * 2
     taz2['pop_hhsize3'] = maz_marginals_df.groupby('TAZ').hh_size_3.sum() * 3
-    taz2['pop_hhsize4'] = maz_marginals_df.groupby('TAZ').hh_size_4_plus.sum() * 4.781329
+    taz2['pop_hhsize4'] = (maz_marginals_df.groupby('TAZ').hh_size_4_plus.sum() * 4.781329).round(0)
     taz2['pop'] = taz2.pop_hhsize1 + taz2.pop_hhsize2 + taz2.pop_hhsize3 + taz2.pop_hhsize4
 
     # (3a) add person age, household workers, and presence of children using taz2 forecast inputs
@@ -566,9 +568,8 @@ def taz2_marginals(maz_summary_df, maz_marginals_df, tm2_taz2_forecast_inputs, t
     taz2 = adjust_page(taz2, year, tm1_tm2_regional_controls.to_frame())
     taz2 = adjust_hhkids(taz2, year, rdf, taz2.tothh.sum())
 
-    taz2['county_name'] = maz_summary_df.groupby('TAZ').county_name.first()
-    taz2.index.name = 'TAZ2'
-    taz2.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_taz2_marginals_{}.csv".format(run_number, year)))
+    taz2 = taz2.fillna(0)
+    taz2.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_taz2_marginals_{}.csv".format(run_number, year)))
     # save info to be used to produce county marginals
     orca.add_table("taz2_summary_df", taz2)
 

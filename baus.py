@@ -320,6 +320,7 @@ def get_summary_models():
         "growth_geography_metrics",
         "deed_restricted_units_metrics",
         "household_income_metrics",
+        "equity_metrics",
         "jobs_housing_metrics",
         "jobs_metrics",
         "slr_metrics",

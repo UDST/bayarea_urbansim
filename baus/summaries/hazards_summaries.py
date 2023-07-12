@@ -12,7 +12,7 @@ def hazards_slr_summary(run_setup, run_number, year):
     if not run_setup['run_slr'] or len(orca.get_table("destroy_parcels")) < 1:
         return
     
-    slr_summary = pd.DataFrame(index=[0])
+    slr_summary = pd.DataFrame()
 
     # impacted parcels
     slr_summary["impacted_parcels"] = len(orca.get_table("destroy_parcels"))
@@ -71,7 +71,7 @@ def hazards_eq_summary(run_setup, run_number, year, parcels, buildings):
     fragilities.value_counts().to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_eq_fragilities_summary_%d.csv"
                                     % (run_number, year)))
 
-    eq_summary = pd.DataFrame(index=[0])
+    eq_summary = pd.DataFrame()
 
     eq_buildings = orca.get_injectable("eq_buildings").to_frame()
     eq_summary["buildings_impacted"] = eq_buildings.size
@@ -96,6 +96,9 @@ def hazards_eq_summary(run_setup, run_number, year, parcels, buildings):
     jobs_unplaced_eq = orca.get_injectable("jobs_unplaced_eq").to_frame()
     for empsix in ['AGREMPN', 'MWTEMPN', 'RETEMPN', 'FPSEMPN', 'HEREMPN', 'OTHEMPN']:
         eq_summary["impacted_jobs_"+str(empsix)] = (jobs_unplaced_eq["empsix"] == empsix).sum()
+    
+    eq_summary.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_eq_summary_%d.csv"
+                                    % (run_number, year)))
 
     # print out demolished buildings by TAZ
     eq_demolish_taz = misc.reindex(parcels.zone_id, eq_demolish.parcel_id)
