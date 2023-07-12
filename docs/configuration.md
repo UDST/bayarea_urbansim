@@ -45,7 +45,7 @@ hlcm_renter.yaml| Household location choice model specification segmented by inc
 hlcm_renter_lowincome.yaml| This uses the same specification and estimated coefficients as hlcm_renter. The only difference is that it is used to only low income households to choose deed-restricted rental units.
 hlcm_renter_lowincome_no_unplaced.yaml| This uses the same specification and estimated coefficients as hlcm_renter, but allows renters of all incomes into deed-restricted rental units to cover any gaps in assignment.
 hlcm_renter_no_unplaced.yaml| This uses the same specification and estimated coefficients as hlcm_renter, but does another round of placement of renters, this time into non-deed-restricted rental units, to cover any gaps in assignment.
-### location choice cont.
+
 **HLCM Model**|**Estimation Choosers: Filters**|**Estimation Alternatives: Filters**|**Simulation Choosers: Filters**|**Simulation Alternatives: Filters**
 -----|-----|-----|-----|-----
 owner|Owners|-|Owners|Owner Units|

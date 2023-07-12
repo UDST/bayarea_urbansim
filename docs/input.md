@@ -11,6 +11,7 @@ landmarks.csv| Locations of a few major landmarks in the region for accessibilit
 regional_poi_distances.csv| The pre-computed distances from each travel model node to each landmark. 
 bart_stations.csv| A list of BART stations and their locations so that distance to BART can calculated.
 logsums.csv| A set of base year logsums from the travel model. 
+
 ### travel_model
 **name**|**description**
 -----|-----
@@ -30,23 +31,27 @@ maz_geography| A lookup between MAZ, TAZ2, and county.
 maz22_taz1454| A lookup between MAZ and TAZ1.
 superdistricts_geography.csv| A map of superdistrict numbers, names, and their subregion.
 taz_geography.csv| A lookup between TAZ1, supedisctrict, and county.
+
 ### edits
 **name**|**description**
 -----|-----
 data_edits.yaml| Settings for editing the input data in the model code, e.g. clipping values. 
 manual_edits.csv| Overrides the current h5 data using the table name, attribute name, and new value, so we don't have to generate a new one each time.
 household_building_id_overrides.csv| Moves households to match new city household totals during the data preprocessing.
-tpp_id_2016.csv| Updates tpp_ids after changes were made to the ids.  
+tpp_id_2016.csv| Updates tpp_ids after changes were made to the ids. 
+
 ### existing_policy
 **name**|**description**
 -----|-----
 development_caps.yaml| Base year job cap policies in place in jurisdictions (TODO: remove the asserted development capsk-factors entangled here.)
 inclusionary.yaml| Base year inclusionary zoning policies in place in jurisdictions (TODO: have all model runs inherit these, even if an inclusionary stratey is applied).
+
 ### hazards
 **name**|**desctiption**
 -----|-----
 slr_progression.csv| The sea level rise level, for each forecast year.
 slr_inundation.csv| The sea level rise level at which each inundation parcel becomes inundated, for each forecast year. Rows marked with "100" are parcels where sea level rise has been mitigated, either through planned projects or a plan strategy.
+
 ### parcels_buildings-agents
 **name**|**description**
 -----|-----
@@ -56,6 +61,7 @@ development_projects.csv| The list of projects that have happened since the base
 deed_restricted_zone_totals.csv| An approximate number of deed restricted units per TAZ to assign randomly within the TAZ.  
 baseyear_taz_controls.csv| Base year control totals by TAZ, to use for checking and refining inputs. The file includes number of units, vacancy rates, and employment by sector (TODO: add households).
 sfbay_craisglist.csv| Craigslist data to inform rental unit information and model tenure.
+
 ### zoning
 **name**|**description**
 -----|-----
