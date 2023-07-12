@@ -36,7 +36,7 @@ region_marginals_[year].csv | Region-level summaries of demographics used to cre
 &nbsp; 
 ### affordable housing summaries
 **name**|**description**
------|-----|
+-----|-----
 juris_dr_summary_[year].csv | Jurisdiction-level summary of deed-restricted units by type in a given year.
 juris_dr_growth.csv | Jurisdiction-level change in deed-restricted units by type between the model's base year and forecast year.
 superdistrict_dr_summary_[year].csv | Superdistrict-level summary of deed-restricted units by type in a given year.
