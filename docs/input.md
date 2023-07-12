@@ -1,8 +1,8 @@
-### The inputs structure for Bay Area UrbanSim (BAUS) and a description of each input. Model input files are stored in an `inputs` folder to be called by the model. They are often run-specific and contain the data used to run the model, such as base year datasets and policy inputs.
- 
-# inputs
-## accessibility
-### pandana
+## The inputs structure for Bay Area UrbanSim (BAUS) and a description of each input. Model input files are stored in an `inputs` folder to be called by the model. They are often run-specific and contain the data used to run the model, such as base year datasets and policy inputs.
+
+## inputs/
+## accessibility/
+### pandana/
 **name**|**description**
 -----|-----
 tmnet.h5| Travel model network information for calculating accessibility within the model using Pandana
@@ -12,15 +12,15 @@ regional_poi_distances.csv| The pre-computed distances from each travel model no
 bart_stations.csv| A list of BART stations and their locations so that distance to BART can calculated.
 logsums.csv| A set of base year logsums from the travel model. 
 
-### travel_model
+### travel_model/
 **name**|**description**
 -----|-----
 AccessibilityMarkets_[year].csv| A travel model output file that incorportates travel model run logsums into the forecast, by year.
 mandatoryAccessibilities_[year].csv| A travel model output file that incorportates travel model run logsums into the forecast, by year.
 nonMandatoryAccessibilities_[year].csv| A travel model output file that incorportates travel model run logsums into the forecast, by year.  
 
-## basis_inputs (under construction)
-### crosswalks
+## basis_inputs (in progress)/
+### crosswalks/
 **name**|**desription**
 -----|-----
 parcel_to_maz22.csv| A lookup table from parcels to Travel Model Two MAZs.
@@ -32,7 +32,7 @@ maz22_taz1454| A lookup between MAZ and TAZ1.
 superdistricts_geography.csv| A map of superdistrict numbers, names, and their subregion.
 taz_geography.csv| A lookup between TAZ1, supedisctrict, and county.
 
-### edits
+### edits/
 **name**|**description**
 -----|-----
 data_edits.yaml| Settings for editing the input data in the model code, e.g. clipping values. 
@@ -40,19 +40,19 @@ manual_edits.csv| Overrides the current h5 data using the table name, attribute 
 household_building_id_overrides.csv| Moves households to match new city household totals during the data preprocessing.
 tpp_id_2016.csv| Updates tpp_ids after changes were made to the ids. 
 
-### existing_policy
+### existing_policy/
 **name**|**description**
 -----|-----
 development_caps.yaml| Base year job cap policies in place in jurisdictions (TODO: remove the asserted development capsk-factors entangled here.)
 inclusionary.yaml| Base year inclusionary zoning policies in place in jurisdictions (TODO: have all model runs inherit these, even if an inclusionary stratey is applied).
 
-### hazards
+### hazards/
 **name**|**desctiption**
 -----|-----
 slr_progression.csv| The sea level rise level, for each forecast year.
 slr_inundation.csv| The sea level rise level at which each inundation parcel becomes inundated, for each forecast year. Rows marked with "100" are parcels where sea level rise has been mitigated, either through planned projects or a plan strategy.
 
-### parcels_buildings-agents
+### parcels_buildings-agents/
 **name**|**description**
 -----|-----
 bayarea_v3.h5| Base year database of households, jobs, buildings, and parcels. The data is pre-processed in pre-processing.py.
@@ -62,13 +62,13 @@ deed_restricted_zone_totals.csv| An approximate number of deed restricted units 
 baseyear_taz_controls.csv| Base year control totals by TAZ, to use for checking and refining inputs. The file includes number of units, vacancy rates, and employment by sector (TODO: add households).
 sfbay_craisglist.csv| Craigslist data to inform rental unit information and model tenure.
 
-### zoning
+### zoning/
 **name**|**description**
 -----|-----
 zoning_parcels.csv| A lookup table from parcels to zoning_id, zoning area information, and a "nodev" flag (currently all set to 0).
 zoning_lookup.csv| The existing zoning for each jurisdiction, assigned to parcels with the "id" field. Fields include the city name, city id, and the name of the zoning. The active attributes are max_dua, max_far, and max_height, all of which must be respected by each development.  
 
-## plan_strategies (optional)
+## plan_strategies (optional)/
 **name**|**description**
 -----|-----
 accessory_units.csv| A file to add accessory dwelling units to jurisdictions by year, simulating policy to allow or reduce barriers to ADU construction in jurisdictions (TODO: Make this a default policy).
@@ -82,13 +82,13 @@ telecommute_sqft_per_job_adjusters| These are multipliers which adjust the sqft 
 vmt_fee_zonecats.csv| This file pairs with the VMT Fee and SB-743 strategies. It provides VMT levels by TAZ1, which map to the corresponding price adjustments in the strategies.
 zoning_mods.csv| A file which allows you to upzone or downzone. If you enter a value in "dua_up" or "far_up", the model will apply that as the new zoning or maintain the existing zoning if it is higher. If you enter a value in "dua_down" or "far_down", the model will apply that as the zoning or maintain the existing zoning if it is lower. UGBs are also controlled using this file, using zoning changes to enforce them. This file is mapped to parcels using the field "zoningmodcat", which is the concatenated field of growth designations in parcels_geography.csv.
   
-## regional_controls 
+## regional_controls/ 
 **name**|**description**
 -----|-----
 employment_controls.csv| The total number of jobs in the region for the model to allocate, by year. The controls are provided by 6-sector job category.
 household_controls.csv| The total number of households in the region for the model to allocate, by year. The controls are provided by household income quartile.
 
-## zone_forecasts
+## zone_forecasts/
 **name**|**description**
 -----|-----
 taz_growth_rates_gov_ed.csv| This file has ratios of governement and education employment per population by County and TAZ. The files has two header rows| the first row is what the outcome attribute is and the second is the geography at which the ratio acts (either TAZ, County, or Regional).

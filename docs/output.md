@@ -1,5 +1,6 @@
-### The outputs of Bay Area UrbanSim (BAUS) and a description of each file. Model output files are written to an `outputs` folder during a BAUS model run.
-  
+## The outputs of Bay Area UrbanSim (BAUS) and a description of each file. Model output files are written to an `outputs` folder during a BAUS model run.
+
+## outputs/
 ### core summaries
 **name**|**description**
 -----|-----
