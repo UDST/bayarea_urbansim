@@ -2,7 +2,7 @@
 &nbsp;  
 ### core summaries
 **name**|**description**
------|-----|
+-----|-----
 parcel_summary_[year].csv | Development, households, and jobs on each parcel in a given year.
 parcel_growth_summary.csv | Change in development, households, and jobs on each parcel between the model's base year and forecast year.
 building_summary_[year].csv | Inventory of buildings in a given year, linked to the parcel they sit on.
@@ -10,7 +10,7 @@ diagnostic_output.csv | Interim model data.
 &nbsp; 
 ### geographic summaries
 **name**|**description**
------|-----|
+-----|-----
 jurisdiction_summary_[year].csv | Jurisdiction-level summary of development, households, and jobs in a given year.
 jurisdiction_summary_growth.csv | Jurisdiction-level change in development, households, and jobs between the model's base year and forecast year.
 superdistrict_summary_[year].csv | Superdistrict-level summary of development, households, and jobs in a given year.
@@ -24,7 +24,7 @@ region_summary_growth.csv | Regional change in development, households, and jobs
 &nbsp; 
 ### travel model summaries
 **name**|**description**
------|-----|
+-----|-----
 taz1_summary_[year].csv | TAZ1/TAZ1454-level summaries of development, households, jobs, demographics, and density attributes used for travel modeling.
 taz1_summary_growth.csv | TAZ1/TAZ1454-level change in development, households, jobs, demographics, and density attributes used for travel modeling.
 maz_marginals_[year].csv | MAZ-level summaries of households and demographics used to create the synthesized population for travel modeling.
@@ -48,7 +48,7 @@ region_dr_growth.csv | Region-level change in deed-restricted units by type betw
 &nbsp; 
 ### hazards summaries
 **name**|**description**
------|-----|
+-----|-----
 slr_summary_[year].csv | Sea level rise impacted parcels, buildings, households, and jobs in a given year.
 eq_codes_summary_[year].csv | Summary of earthquake codes assigned to buildings, in the earthquake year.
 eq_fragilities_summary_[year].csv |  SUmmary of fragilities assigned to buildings, in the earthquake year.
@@ -59,7 +59,7 @@ eq_buildings_list_[year].csv | Inventory of buildings in key earthquake years, b
 &nbsp;
 ### metrics
 **name**|**description**
------|-----|
+-----|-----
 growth_geog_summary_[year].csv | Households and jobs in growth geographies and combinations of growth geographies, by year.
 growth_geog_growth_summary_[year].csv | Change in households and jobs in growth geographies and combinations of growth geographies between the model's base year and forecast year.
 dr_units_metrics.csv | Change in deed-restricted units by HRA and COC.

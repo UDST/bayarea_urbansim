@@ -4,7 +4,7 @@
 ## accessibility
 ### pandana
 **name**|**description**
------|-----|
+-----|-----
 tmnet.h5| Travel model network information for calculating accessibility within the model using Pandana
 osm_bayarea4326.h5| Street network information for calculating accessibility within the model using Pandana
 landmarks.csv| Locations of a few major landmarks in the region for accessibility calculations.
@@ -13,7 +13,7 @@ bart_stations.csv| A list of BART stations and their locations so that distance 
 logsums.csv| A set of base year logsums from the travel model. 
 ### travel_model
 **name**|**description**
------|-----|
+-----|-----
 AccessibilityMarkets_[year].csv| A travel model output file that incorportates travel model run logsums into the forecast, by year.
 mandatoryAccessibilities_[year].csv| A travel model output file that incorportates travel model run logsums into the forecast, by year.
 nonMandatoryAccessibilities_[year].csv| A travel model output file that incorportates travel model run logsums into the forecast, by year.  
@@ -21,7 +21,7 @@ nonMandatoryAccessibilities_[year].csv| A travel model output file that incorpor
 ## basis_inputs (under construction)
 ### crosswalks
 **name**|**desription**
------|-----|
+-----|-----
 parcel_to_maz22.csv| A lookup table from parcels to Travel Model Two MAZs.
 parcel_to_taz1454sub.csv| A lookup table from parcels to Travel Model One TAZs.
 parcels_geography.csv| A lookup table from parcels to jurisdiction, growth geographies, UGB areas, greenfield areas, and a concatenation of these used to join these geographies zoning_mods.csv, to apply zoning rules within them. 
@@ -32,24 +32,24 @@ superdistricts_geography.csv| A map of superdistrict numbers, names, and their s
 taz_geography.csv| A lookup between TAZ1, supedisctrict, and county.
 ### edits
 **name**|**description**
------|-----|
+-----|-----
 data_edits.yaml| Settings for editing the input data in the model code, e.g. clipping values. 
 manual_edits.csv| Overrides the current h5 data using the table name, attribute name, and new value, so we don't have to generate a new one each time.
 household_building_id_overrides.csv| Moves households to match new city household totals during the data preprocessing.
 tpp_id_2016.csv| Updates tpp_ids after changes were made to the ids.  
 ### existing_policy
 **name**|**description**
------|-----|
+-----|-----
 development_caps.yaml| Base year job cap policies in place in jurisdictions (TODO: remove the asserted development capsk-factors entangled here.)
 inclusionary.yaml| Base year inclusionary zoning policies in place in jurisdictions (TODO: have all model runs inherit these, even if an inclusionary stratey is applied).
 ### hazards
 **name**|**desctiption**
------|-----|
+-----|-----
 slr_progression.csv| The sea level rise level, for each forecast year.
 slr_inundation.csv| The sea level rise level at which each inundation parcel becomes inundated, for each forecast year. Rows marked with "100" are parcels where sea level rise has been mitigated, either through planned projects or a plan strategy.
 ### parcels_buildings-agents
 **name**|**description**
------|-----|
+-----|-----
 bayarea_v3.h5| Base year database of households, jobs, buildings, and parcels. The data is pre-processed in pre-processing.py.
 costar.csv| Commercial data from CoStar, including non-residential price to inform the price model.
 development_projects.csv| The list of projects that have happened since the base data, or buildings in the development pipeline.  This file tends to have more attributes than we use in the model.
@@ -58,13 +58,13 @@ baseyear_taz_controls.csv| Base year control totals by TAZ, to use for checking 
 sfbay_craisglist.csv| Craigslist data to inform rental unit information and model tenure.
 ### zoning
 **name**|**description**
------|-----|
+-----|-----
 zoning_parcels.csv| A lookup table from parcels to zoning_id, zoning area information, and a "nodev" flag (currently all set to 0).
 zoning_lookup.csv| The existing zoning for each jurisdiction, assigned to parcels with the "id" field. Fields include the city name, city id, and the name of the zoning. The active attributes are max_dua, max_far, and max_height, all of which must be respected by each development.  
 &nbsp;
 ## plan_strategies (optional)
 **name**|**description**
------|-----|
+-----|-----
 accessory_units.csv| A file to add accessory dwelling units to jurisdictions by year, simulating policy to allow or reduce barriers to ADU construction in jurisdictions (TODO: Make this a default policy).
 account_strategies.yaml| This files contains the settings for all strategies in a model run that use accounts. The file may include account settings (e.g., how much to spend, where to spend) for| housing development bonds, office development bonds, OBAG funds, and VMT fees (which collect fees and then can spend the subsidies). 
 development_caps_strategy.yaml| A file that specifies a strategy to limit development (generally office development) to a certain number of residential units andor job spaces.
@@ -78,13 +78,13 @@ zoning_mods.csv| A file which allows you to upzone or downzone. If you enter a v
 &nbsp;  
 ## regional_controls 
 **name**|**description**
------|-----|
+-----|-----
 employment_controls.csv| The total number of jobs in the region for the model to allocate, by year. The controls are provided by 6-sector job category.
 household_controls.csv| The total number of households in the region for the model to allocate, by year. The controls are provided by household income quartile.
 &nbsp;
 ## zone_forecasts
 **name**|**description**
------|-----|
+-----|-----
 taz_growth_rates_gov_ed.csv| This file has ratios of governement and education employment per population by County and TAZ. The files has two header rows| the first row is what the outcome attribute is and the second is the geography at which the ratio acts (either TAZ, County, or Regional).
 prportional_retail_jobs_forecast.csv| This contains the field "minimum_forecast_retail_jobs_per_household" by jurisdiction, which is used to keep local numbers of retail jobs reasonable through the forecast.
 tm1_taz1_forecast_inputs.csv| This is closely related to regional_controls.csv. These are zone level inputs used for the process of generating variables for the travel model, while the other file contains regional-level controls. These inputs provide TAZ1454 information, used for Travel Model One summaries. 
