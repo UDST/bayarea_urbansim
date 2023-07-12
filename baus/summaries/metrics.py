@@ -39,7 +39,6 @@ def growth_geography_metrics(parcels, parcels_geography, buildings, households, 
     growth_geog_summary['tra_jobs'] = jobs_df[(jobs_df.tra_id > '')].size
     growth_geog_summary['hra_tra_jobs'] = jobs_df[(jobs_df.sesit_id == 'hra') & (jobs_df.tra_id > '')].size
 
-    growth_geog_summary = growth_geog_summary.transpose()
     growth_geog_summary.to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
                                             "run{}_growth_geography_summary_{}.csv").format(run_number, year))
     
@@ -162,8 +161,13 @@ def household_income_metrics(year, initial_summary_year, final_year, parcels, bu
                                                  "run{}_household_income_metrics_{}.csv").format(run_number, year))
 
 @orca.step()
-def equity_metrics(year, initial_summary_year, final_year, parcel_tract_crosswalk, displacement_risk_tracts, 
-                   coc_tracts, run_number):
+def equity_metrics(year, initial_summary_year, final_year, parcels, buildings, households, parcel_tract_crosswalk, 
+                   displacement_risk_tracts, coc_tracts, run_number):
+    
+    if year != initial_summary_year and year != final_year:
+        return
+    
+    hh_df = orca.merge_tables('households', [parcels, buildings, households], columns=['base_income_quartile'])
     
     dis_tracts = displacement_risk_tracts.to_frame()
     dis_tracts = dis_tracts[dis_tracts.DispRisk == 1]
