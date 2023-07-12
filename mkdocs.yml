@@ -14,6 +14,7 @@ nav:
     - Home: 'index.md'
     - Model Overview: 'model_overview.md'
     - User Guide: 'user_guide.md'
+    - Configuration: 'configuration.yaml'
     - Input: 'input.md'
     - Output: 'output.md'
     - PBA50: 'pba50.md'
