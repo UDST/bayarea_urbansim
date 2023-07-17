@@ -110,5 +110,4 @@ def deed_restricted_units_growth_summary(year, initial_summary_year, final_year,
             dr_growth[col+'_share_change'] =  (dr_growth[col+"_"+str(final_year)+"_share"] - 
                                                dr_growth[col+"_"+str(initial_summary_year)+"_share"])
         
-        dr_growth = dr_growth.transpose()
         dr_growth.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_dr_growth.csv").format(run_number, geography))

@@ -7,7 +7,7 @@ from baus import datasources
 
 
 @orca.step()
-def geographic_summary(parcels, households, jobs, buildings, run_number, year):  
+def geographic_summary(parcels, households, jobs, buildings, run_number, year, superdistricts_geography):  
 
     households_df = orca.merge_tables('households', [parcels, buildings, households],
         columns=['juris', 'superdistrict', 'county', 'subregion', 'base_income_quartile',])
@@ -47,7 +47,10 @@ def geographic_summary(parcels, households, jobs, buildings, run_number, year):
 
     for geography in geographies:
         summary_table = pd.DataFrame(index=buildings_df[geography].unique())
-
+        
+        # add superdistrict name 
+        if geography == 'superdistrict':
+            summary_table = summary_table.merge(superdistricts_geography.to_frame(), left_index=True, right_on='number')
         # households
         summary_table['tothh'] = households_df.groupby(geography).size()
         for quartile in [1, 2, 3, 4]:
@@ -111,5 +114,4 @@ def geographic_growth_summary(year, final_year, initial_summary_year, run_number
             geography_growth[col+'_regional_share_change'] = (geography_growth[col+"_"+str(final_year)+"_regional_share"] - 
                                                               geography_growth[col+"_"+str(initial_summary_year)+"_regional_share"])
     
-        geography_growth = geography_growth.transpose()
         geography_growth.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_summary_growth.csv").format(run_number, geography))

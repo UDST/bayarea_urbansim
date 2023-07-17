@@ -14,7 +14,8 @@ def parcel_summary(parcels, buildings, households, jobs, run_number, year, initi
     df = parcels.to_frame(["geom_id", "x", "y"])
     # add building data for parcels
     building_df = orca.merge_tables('buildings', [parcels, buildings], columns=['parcel_id', 'residential_units', 'deed_restricted_units',
-                                                                                'preserved_units', 'inclusionary_units', 'subsidized_units'])
+                                                                                'preserved_units', 'inclusionary_units', 'subsidized_units',
+                                                                                'non_residential_sqft'])
     for col in building_df.columns:
         if col == 'parcel_id':
             continue
@@ -32,6 +33,7 @@ def parcel_summary(parcels, buildings, households, jobs, run_number, year, initi
         df[cat] = jobs_df[jobs_df.empsix == cat].parcel_id.value_counts()
     df["totemp"] = jobs_df.groupby('parcel_id').size()
 
+    df = df.fillna(0)
     df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_summary_%d.csv" % (run_number, year)))
 
 
@@ -71,6 +73,7 @@ def building_summary(parcels, buildings, run_number, year, initial_summary_year,
                  'non_residential_sqft', 'deed_restricted_units', 'inclusionary_units',
                  'preserved_units', 'subsidized_units', 'job_spaces', 'source'])
 
+    df = df.fillna(0)
     df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_building_summary_%d.csv" % (run_number, year)))
 
 

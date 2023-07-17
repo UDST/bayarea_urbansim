@@ -359,21 +359,24 @@ def taz1_growth_summary(year, initial_summary_year, final_year, run_number):
     # use 2015 as the base year
     df1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_taz1_summary_%d.csv" % (run_number, initial_summary_year)))
     df2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_taz1_summary_%d.csv" % (run_number, final_year)))
-    df_merge = df1.merge(df2, on = 'TAZ').fillna(0)
-    DF_merge = DF_merge.rename(columns={'SD_x': 'SD', 'COUNTY_x': 'COUNTY'})
+
+    taz_summary = pd.DataFrame(index=[df1.index])
+    taz_summary['SD'] = df1['SD']
+    taz_summary['COUNTY'] = df1['COUNTY']
 
     columns = ['AGREMPN', 'FPSEMPN', 'HEREMPN', 'MWTEMPN', 'OTHEMPN', 'RETEMPN', 'TOTEMP', 'HHINCQ1',
                'HHINCQ2', 'HHINCQ3', 'HHINCQ4', 'TOTHH', 'TOTPOP', 'RES_UNITS', 'MFDU', 'SFDU']
 
     for col in columns:
-        df_merge[col+"_2015"] = df_merge[col+'_x']
-        df_merge[col+"_2050"] = df_merge[col+'_y']
-        df_merge[col+'_growth'] = df_merge[col+'_y'] - df_merge[col+'_x']
-        df_merge[col+"_2015_share"] = round(df_merge[col+'_x']/df_merge[col+'_x'].sum(), 2)
-        df_merge[col+"_2050_share"] = round(df_merge[col+'_y']/df_merge[col+'_y'].sum(), 2)            
-        df_merge[col+'_share_change'] =  df_merge[col+"_2050_share"] - df_merge[col+"_2015_share"]
+        taz_summary[col+"_"+str(initial_summary_year)] = df1[col]
+        taz_summary[col+"_"+str(final_year)] = df2[col]
+        taz_summary[col+'_growth'] = df2[col] - df1[col]
+        taz_summary[col+"_"+str(initial_summary_year)+"_share"] = round(df1[col]/df1[col].sum(), 2)
+        taz_summary[col+"_"+str(final_year)+"_share"] = round(df2[col]/df2[col].sum(), 2)            
+        taz_summary[col+'_share_change'] = (taz_summary[col+"_"+str(final_year)+"_share"] -  
+                                            taz_summary[col+"_"+str(initial_summary_year)+"_share"])
     
-    df_merge.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_taz1_summary_growth.csv").format(run_number))
+    taz_summary.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_taz1_summary_growth.csv").format(run_number))
 
 
 @orca.step()
@@ -511,19 +514,23 @@ def maz_growth_summary(year, initial_summary_year, final_year, run_number):
     # use 2015 as the base year
     df1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_maz_summary_%d.csv" % (run_number, initial_summary_year)))
     df2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_maz_summary_%d.csv" % (run_number, final_year)))
-    df_merge = df1.merge(df2, on = 'maz').fillna(0)
+    
+    maz_summary = pd.DataFrame(index=[df1.index])
+    maz_summary['TAZ'] = df1['TAZ']
+    maz_summary['county_name'] = df1['county_name']
 
     columns = ['tothh', 'pop', 'emp_total']
 
     for col in columns:
-        df_merge[col+"_2015"] = df_merge[col+'_x']
-        df_merge[col+"_2050"] = df_merge[col+'_y']
-        df_merge[col+'_growth'] = df_merge[col+'_y'] - df_merge[col+'_x']
-        df_merge[col+"_2015_share"] = round(df_merge[col+'_x']/df_merge[col+'_x'].sum(), 2)
-        df_merge[col+"_2050_share"] = round(df_merge[col+'_y']/df_merge[col+'_y'].sum(), 2)            
-        df_merge[col+'_share_change'] =  df_merge[col+"_2050_share"] - df_merge[col+"_2015_share"]
+        maz_summary[col+"_"+str(initial_summary_year)] = df1[col]
+        maz_summary[col+"_"+str(final_year)] = df2[col]
+        maz_summary[col+'_growth'] = df2[col] - df1[col]
+        maz_summary[col+"_"+str(initial_summary_year)+"_share"] = round(df1[col]/df1[col].sum(), 2)
+        maz_summary[col+"_"+str(final_year)+"_share"] = round(df2[col]/df2[col].sum(), 2)            
+        maz_summary[col+'_share_change'] = (maz_summary[col+"_"+str(final_year)+"_share"] -  
+                                            maz_summary[col+"_"+str(initial_summary_year)+"_share"])
     
-    df_merge.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_maz_summary_growth.csv").format(run_number))
+    maz_summary.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_maz_summary_growth.csv").format(run_number))
 
 
 @orca.step()
