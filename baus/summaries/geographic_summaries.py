@@ -107,7 +107,7 @@ def geographic_growth_summary(year, final_year, initial_summary_year, run_number
             geog_growth = geog_growth.rename(columns={"name_"+(str(initial_summary_year)): "name"})
             geog_growth = geog_growth.drop(columns=["name_"+(str(final_year))])
         
-        columns = ['tothh', 'hhincq1', 'hhincq4', 'totemp', 'residential_units', 'deed_restricted_units', 'non_residential_sqft']
+        columns = ['tothh', 'totemp', 'residential_units', 'deed_restricted_units', 'non_residential_sqft']
     
         for col in columns:
             # growth in households/jobs/etc.

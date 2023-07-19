@@ -365,8 +365,7 @@ def taz1_growth_summary(year, initial_summary_year, final_year, run_number):
                                      "ZONE_"+(str(initial_summary_year)): "ZONE"})
     taz_summary = taz_summary.drop(columns=["SD_"+(str(final_year)), "COUNTY_"+(str(final_year)), "ZONE_"+(str(final_year))])
 
-    columns = ['AGREMPN', 'FPSEMPN', 'HEREMPN', 'MWTEMPN', 'OTHEMPN', 'RETEMPN', 'TOTEMP', 'HHINCQ1',
-               'HHINCQ2', 'HHINCQ3', 'HHINCQ4', 'TOTHH', 'TOTPOP', 'RES_UNITS', 'MFDU', 'SFDU']
+    columns = ['TOTEMP', 'TOTHH', 'TOTPOP', 'RES_UNITS']
 
     for col in columns:
         taz_summary[col+'_growth'] = taz_summary[col+"_"+str(final_year)] - taz_summary[col+"_"+str(initial_summary_year)]
