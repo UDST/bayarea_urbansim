@@ -488,7 +488,6 @@ def run_models(MODE):
             baseyear_models = get_baseyear_models()
             if run_setup["run_summaries"]:
                 baseyear_models.extend(get_baseyear_summary_models())
-                print(baseyear_models)
             orca.run(baseyear_models, iter_vars=[IN_YEAR])
 
         # start the simulation in the next round - only the models above run
@@ -498,7 +497,6 @@ def run_models(MODE):
         models = get_simulation_models()
         if run_setup["run_summaries"]:
             models.extend(get_summary_models())
-            print(models)
         orca.run(models, iter_vars=years_to_run)
         
 

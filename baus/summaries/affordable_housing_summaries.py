@@ -8,7 +8,8 @@ from urbansim.utils import misc
 from baus import datasources
 
 @orca.step()
-def deed_restricted_units_summary(parcels, buildings, year, initial_summary_year, final_year, run_number):
+def deed_restricted_units_summary(parcels, buildings, year, initial_summary_year, final_year, run_number, 
+                                  superdistricts_geography):
 
     if year != initial_summary_year and year != final_year:
         return
@@ -33,7 +34,8 @@ def deed_restricted_units_summary(parcels, buildings, year, initial_summary_year
 
     #### regional deed restricted units summary ####
     # initialize region-level table
-    region_dr = pd.DataFrame(index={'region'})
+    region_dr = pd.DataFrame(index=['region'])
+    region_dr.index.name = 'region'
 
     # add total dr units
     region_dr ['total_dr_units'] = buildings.deed_restricted_units.sum()
@@ -56,8 +58,17 @@ def deed_restricted_units_summary(parcels, buildings, year, initial_summary_year
     geographies = ['juris', 'superdistrict', 'county']
     
     for geography in geographies:
+
+        # remove rows with null geography- seen with "county"
+        buildings = buildings[~pd.isna(buildings[geography])]
+
         # initialize a dataframe for the geography
         summary_table = pd.DataFrame(index=buildings[geography].unique())
+
+        # add superdistrict name 
+        if geography == 'superdistrict':
+            superdistricts_geography = superdistricts_geography.to_frame()
+            summary_table = summary_table.merge(superdistricts_geography[['name']], left_index=True, right_index=True)
 
         # add total dr units
         summary_table['total_dr_units'] = buildings.groupby(geography)["deed_restricted_units"].sum()
@@ -74,9 +85,10 @@ def deed_restricted_units_summary(parcels, buildings, year, initial_summary_year
         summary_table["h5_dr_units"] = buildings.groupby(geography)["h5_dr_units"].sum()
         summary_table["cs_dr_units"] = buildings.groupby(geography)["cs_dr_units"].sum()
 
+        summary_table.index.name = geography
         summary_table = summary_table.sort_index()
-        summary_table.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_dr_summary_{}.csv").\
-                    format(run_number, geography, year))
+        summary_table.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_dr_summary_{}.csv").\
+                                          format(run_number, geography, year))
         
 
 @orca.step()
@@ -93,21 +105,22 @@ def deed_restricted_units_growth_summary(year, initial_summary_year, final_year,
         year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_%s_dr_summary_%d.csv" % (run_number, geography, initial_summary_year)))
         year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_%s_dr_summary_%d.csv" % (run_number, geography, final_year)))
 
-        dr_growth = pd.DataFrame(index=year1.index)
+        dr_growth = year1.merge(year2, on=geography, suffixes=("_"+str(initial_summary_year), "_"+str(final_year)))
 
         columns = ['total_dr_units', "inclusionary_units", "subsidized_units", "preserved_units", "public_lands_dr_units", 
                    "mall_office_dr_units", "opp_dr_units", "h5_dr_units", "cs_dr_units"]
     
         for col in columns:
-            dr_growth[col+"_"+str(initial_summary_year)] = year1[col]
-            dr_growth[col+"_"+str(final_year)] = year2[col]
             # growth in units
-            dr_growth[col+'_growth'] = year2[col] - year1[col]
+            dr_growth[col+'_growth'] = dr_growth[col+"_"+str(final_year)] - dr_growth[col+"_"+str(initial_summary_year)]
 
             # change in the regional share of units in the geography 
-            dr_growth[col+"_"+str(initial_summary_year)+"_share"] = round(year1[col] / year1[col].sum(), 2)
-            dr_growth[col+"_"+str(final_year)+"_share"] = round(year2[col] / year2[col].sum(), 2)            
+            dr_growth[col+"_"+str(initial_summary_year)+"_share"] = (round(dr_growth[col+"_"+str(initial_summary_year)] / 
+                                                                           dr_growth[col+"_"+str(initial_summary_year)].sum(), 2))
+            dr_growth[col+"_"+str(final_year)+"_share"] = (round(dr_growth[col+"_"+str(final_year)] / 
+                                                                 dr_growth[col+"_"+str(final_year)].sum(), 2)   )         
             dr_growth[col+'_share_change'] =  (dr_growth[col+"_"+str(final_year)+"_share"] - 
                                                dr_growth[col+"_"+str(initial_summary_year)+"_share"])
         
+        dr_growth = dr_growth.fillna(0)
         dr_growth.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_dr_growth.csv").format(run_number, geography))
