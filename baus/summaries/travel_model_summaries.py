@@ -425,16 +425,16 @@ def maz_marginals(parcels, households, buildings, maz, year, run_number,
 
 @orca.step()
 def maz_summary(parcels, jobs, households, buildings, maz, year, tm2_emp27_employment_shares, run_number, 
-                tm1_tm2_regional_controls, maz_marginals_df, initial_summary_year, interim_summary_year, final_year):
+                tm1_tm2_regional_controls, initial_summary_year, interim_summary_year, final_year):
     
     if year not in [initial_summary_year, interim_summary_year, final_year]:
          return
-    
+
     # (1) intiialize maz dataframe
     maz_df = maz.to_frame(['TAZ', 'county_name'])
 
     # (2) get tothh from maz marginals dataframe
-    maz_marginals_df = maz_marginals_df.to_frame()
+    maz_marginals_df = orca.get_table("maz_marginals_df").to_frame()
     maz_df['tothh'] = maz_marginals_df['tothh']
 
     # (3) summarize household data by MAZ
@@ -547,18 +547,18 @@ def maz_growth_summary(year, initial_summary_year, final_year, run_number):
 
 
 @orca.step()
-def taz2_marginals(maz_summary_df, maz_marginals_df, tm2_taz2_forecast_inputs, tm1_tm2_regional_demographic_forecast, 
-                   tm1_tm2_regional_controls, run_number, year, initial_summary_year, interim_summary_year, final_year):
+def taz2_marginals(tm2_taz2_forecast_inputs, tm1_tm2_regional_demographic_forecast, tm1_tm2_regional_controls, 
+                   run_number, year, initial_summary_year, interim_summary_year, final_year):
     
     if year not in [initial_summary_year, interim_summary_year, final_year]:
          return
-    
+
     # (1) bring in taz2 dataframe
     taz2 = pd.DataFrame(index=tm2_taz2_forecast_inputs.index)
     taz2.index.name = 'TAZ2'
 
     # (2) summarize maz vars for household income and population
-    maz_summary_df = maz_summary_df.to_frame()
+    maz_summary_df = orca.get_table("maz_summary_df").to_frame()
     taz2['county_name'] = maz_summary_df.groupby('TAZ').county_name.first()
     taz2['tothh'] = maz_summary_df.groupby('TAZ').tothh.sum()
     taz2['hh_inc_30'] = maz_summary_df.groupby('TAZ').hhincq1.sum().fillna(0)
@@ -566,7 +566,7 @@ def taz2_marginals(maz_summary_df, maz_marginals_df, tm2_taz2_forecast_inputs, t
     taz2['hh_inc_60_100'] = maz_summary_df.groupby('TAZ').hhincq3.sum().fillna(0)
     taz2['hh_inc_100_plus'] = maz_summary_df.groupby('TAZ').hhincq4.sum().fillna(0)
     taz2['hhpop'] = maz_summary_df.groupby('TAZ').hhpop.sum()
-    maz_marginals_df = maz_marginals_df.to_frame()
+    maz_marginals_df = orca.get_table("maz_marginals_df").to_frame()
     taz2['pop_hhsize1'] = maz_marginals_df.groupby('TAZ').hh_size_1.sum()
     taz2['pop_hhsize2'] = maz_marginals_df.groupby('TAZ').hh_size_2.sum() * 2
     taz2['pop_hhsize3'] = maz_marginals_df.groupby('TAZ').hh_size_3.sum() * 3
@@ -598,17 +598,17 @@ def taz2_marginals(maz_summary_df, maz_marginals_df, tm2_taz2_forecast_inputs, t
 
 
 @orca.step()
-def county_marginals(maz_summary_df, taz2_summary_df, tm2_occupation_shares, run_number, year,
-                     initial_summary_year, interim_summary_year, final_year):
+def county_marginals(tm2_occupation_shares, run_number, year, initial_summary_year, 
+                     interim_summary_year, final_year):
 
     if year not in [initial_summary_year, interim_summary_year, final_year]:
          return
 
-    maz = maz_summary_df.to_frame()
-    taz2 = taz2_summary_df.to_frame()
+    maz = orca.get_table("maz_summary_df").to_frame()
+    taz2 = orca.get_table("taz2_summary_df").to_frame()
     
     # (1) initialize county dataframe
-    county = pd.DataFrame(index=maz_summary_df.county_name.unique())
+    county = pd.DataFrame(index=maz.county_name.unique())
 
     # (2) add population
     county['gqpop'] = maz.groupby('county_name').gqpop.sum()
@@ -638,13 +638,13 @@ def county_marginals(maz_summary_df, taz2_summary_df, tm2_occupation_shares, run
     
 
 @orca.step()
-def region_marginals(maz_marginals_df, run_number, year, initial_summary_year, interim_summary_year, final_year):
+def region_marginals(run_number, year, initial_summary_year, interim_summary_year, final_year):
 
     if year not in [initial_summary_year, interim_summary_year, final_year]:
          return
     
     # (1) get group quarters from MAZ summaries
-    maz_marginals_df = maz_marginals_df.to_frame()
+    maz_marginals_df = orca.get_table("maz_marginals_df").to_frame()
     tot_gqpop = maz_marginals_df['gq_tot_pop'].sum()
 
     # (2) create regional dataframe with group quarters total
