@@ -6,9 +6,10 @@ import pandas as pd
 
 
 @orca.step()
-def parcel_summary(parcels, buildings, households, jobs, run_number, year, initial_summary_year, final_year):
+def parcel_summary(parcels, buildings, households, jobs, run_number, year, initial_summary_year, 
+                   interim_summary_year, final_year):
 
-    if year not in [initial_summary_year, 2020, 2035, final_year]:
+    if year not in [initial_summary_year, interim_summary_year, final_year]:
          return
 
     df = parcels.to_frame(["geom_id", "x", "y"])
@@ -62,9 +63,9 @@ def parcel_growth_summary(run_number, year, initial_summary_year, final_year):
 
 
 @orca.step()
-def building_summary(parcels, buildings, run_number, year, initial_summary_year, final_year):
+def building_summary(parcels, buildings, run_number, year, initial_summary_year, final_year, interim_summary_year):
 
-    if year not in [initial_summary_year, 2020, 2035, final_year]:
+    if year not in [initial_summary_year, interim_summary_year, final_year]:
         return
 
     df = orca.merge_tables('buildings',
