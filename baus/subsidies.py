@@ -802,9 +802,7 @@ def subsidized_residential_feasibility(parcels, developer_settings, parcel_sales
     df = orca.get_table("feasibility").to_frame()
     df = df.stack(level=0).reset_index(level=1, drop=True)
     # this uses a surprising amount of disk space, don't write out for now
-    # df.to_csv("runs/run{}_feasibility_{}.csv".format(
-    #    orca.get_injectable("run_name"),
-    #    orca.get_injectable("year")))
+    # df.to_csv(os.path.join(orca.get_injectable("outputs_dir), "feasibility_{}.csv".format(orca.get_injectable("year")))
 
 
 @orca.step()

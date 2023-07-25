@@ -108,8 +108,8 @@ if INTERACT:
 run_name = orca.get_injectable("run_name")
 
 if LOGS:
-    print('***The Standard stream is being written to run{0}.log***'.format(run_name))
-    sys.stdout = sys.stderr = open(os.path.join(orca.get_injectable("outputs_dir"), "run%d.log") % run_name, 'w')
+    print('***The Standard stream is being written to {}.log***'.format(run_name))
+    sys.stdout = sys.stderr = open(os.path.join(orca.get_injectable("outputs_dir"), "%s.log") % run_name, 'w')
 
 if RANDOM_SEED:
     np.random.seed(12)
@@ -139,7 +139,7 @@ def slack_report(buildings, households, year):
     if SLACK and (len(households.building_id[households.building_id == -1])) > 0:
         slack.chat.post_message(
             '#urbansim_sim_update',
-            'WARNING: unplaced households in %d for run %d on %s'
+            'WARNING: unplaced households in %d for run %s on %s'
             % (year, run_name, host), as_user=True)
 
 
@@ -570,14 +570,14 @@ print("pandas version: %s" % pd.__version__)
 
 
 if SLACK and MODE == "simulation":
-    slack.chat.post_message('#urbansim_sim_update', 'Starting simulation %d on host %s' % (run_name, host), as_user=True)
+    slack.chat.post_message('#urbansim_sim_update', 'Starting simulation %s on host %s' % (run_name, host), as_user=True)
 
 try:
     run_models(MODE)
 except Exception as e:
     print(traceback.print_exc())
     if SLACK and MODE == "simulation":
-        slack.chat.post_message('#urbansim_sim_update', 'DANG!  Simulation failed for %d on host %s' % (run_name, host), as_user=True)
+        slack.chat.post_message('#urbansim_sim_update', 'DANG!  Simulation failed for %s on host %s' % (run_name, host), as_user=True)
     else:
         raise e
     sys.exit(0)

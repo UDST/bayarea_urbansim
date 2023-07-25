@@ -6,8 +6,7 @@ import pandas as pd
 
 
 @orca.step()
-def parcel_summary(parcels, buildings, households, jobs, run_name, year, initial_summary_year, 
-                   interim_summary_year, final_year):
+def parcel_summary(parcels, buildings, households, jobs, year, initial_summary_year, interim_summary_year, final_year):
 
     if year not in [initial_summary_year, interim_summary_year, final_year]:
          return
@@ -35,19 +34,19 @@ def parcel_summary(parcels, buildings, households, jobs, run_name, year, initial
     df["totemp"] = jobs_df.groupby('parcel_id').size()
 
     df = df.fillna(0)
-    df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_summary_%d.csv" % (run_name, year)))
+    df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/parcel_summary_%d.csv" % (year)))
 
 
 @orca.step()
-def parcel_growth_summary(run_name, year, initial_summary_year, final_year):
+def parcel_growth_summary(year, initial_summary_year, final_year):
     
     if year != final_year:
         return
 
-    df1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_summary_%d.csv" %
-                        (run_name, initial_summary_year)), index_col="parcel_id")
-    df2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_summary_%d.csv" %
-                        (run_name, final_year)), index_col="parcel_id")
+    df1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "parcel_summary_%d.csv" %
+                        (initial_summary_year)), index_col="parcel_id")
+    df2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "parcel_summary_%d.csv" %
+                        (final_year)), index_col="parcel_id")
 
     for col in df1.columns:
         if col in ["geom_id", "x", "y"]:
@@ -59,11 +58,11 @@ def parcel_growth_summary(run_name, year, initial_summary_year, final_year):
 
         df1[col] = df2[col] - df1[col]
 
-    df1.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_parcel_growth.csv" % run_name))
+    df1.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/parcel_growth.csv"))
 
 
 @orca.step()
-def building_summary(parcels, buildings, run_name, year, initial_summary_year, final_year, interim_summary_year):
+def building_summary(parcels, buildings, year, initial_summary_year, final_year, interim_summary_year):
 
     if year not in [initial_summary_year, interim_summary_year, final_year]:
         return
@@ -75,7 +74,7 @@ def building_summary(parcels, buildings, run_name, year, initial_summary_year, f
                  'preserved_units', 'subsidized_units', 'job_spaces', 'source'])
 
     df = df.fillna(0)
-    df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_building_summary_%d.csv" % (run_name, year)))
+    df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/run%d_building_summary_%d.csv" % (year)))
 
 
 @orca.step()

@@ -27,6 +27,11 @@ def run_setup():
         return yaml.load(f)
 
 
+@orca.injectable('run_name', cache=True)
+def inputs_dir(run_setup):
+    return os.path.join(run_setup["run_name"])
+
+
 @orca.injectable('inputs_dir', cache=True)
 def inputs_dir(run_setup):
     return run_setup['inputs_dir']
@@ -34,12 +39,7 @@ def inputs_dir(run_setup):
 
 @orca.injectable('outputs_dir', cache=True)
 def outputs_dir(run_setup):
-    return run_setup['outputs_dir']
-
-
-@orca.injectable()
-def run_name(run_setup):
-    return run_setup["run_name"]
+    return os.path.join(run_setup['outputs_dir'], run_setup["run_name"])
 
 
 # need to overwrite the summary injectable in urbansim_defaults and pass it 
