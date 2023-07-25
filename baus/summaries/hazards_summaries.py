@@ -7,7 +7,7 @@ from urbansim.utils import misc
 
 
 @orca.step()
-def hazards_slr_summary(run_setup, run_number, year):
+def hazards_slr_summary(run_setup, run_name, year):
 
     if not run_setup['run_slr'] or len(orca.get_table("destroy_parcels")) < 1:
         return
@@ -33,7 +33,7 @@ def hazards_slr_summary(run_setup, run_number, year):
         unplaced_hh_tot = orca.get_table("hh_unplaced_slr").to_frame()
         orca.add_table("unplaced_hh_tot", unplaced_hh_tot)
     else:
-        unplaced_hh_tot = orca.get_table(" unplaced_hh_tot").to_frame()
+        unplaced_hh_tot = orca.get_table("unplaced_hh_tot").to_frame()
         unplaced_hh_tot.append(orca.get_table("hh_unplaced_slr").to_frame())
 
     slr_summary["impacted_hh"] = unplaced_hh_tot.size
@@ -51,11 +51,11 @@ def hazards_slr_summary(run_setup, run_number, year):
     for empsix in ['AGREMPN', 'MWTEMPN', 'RETEMPN', 'FPSEMPN', 'HEREMPN', 'OTHEMPN']:
         slr_summary["impacted_jobs_"+str(empsix)] = (unplaced_jobs_tot["empsix"] == empsix).sum()
 
-    slr_summary.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_slr_summary_%d.csv" % (run_number, year)))
+    slr_summary.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_slr_summary_%d.csv" % (run_name, year)))
 
 
 @orca.step()
-def hazards_eq_summary(run_setup, run_number, year, parcels, buildings):
+def hazards_eq_summary(run_setup, run_name, year, parcels, buildings):
 
     if not run_setup['run_eq']:
         return
@@ -65,11 +65,11 @@ def hazards_eq_summary(run_setup, run_number, year, parcels, buildings):
     
     code = orca.get_injectable("code").to_frame()
     code.value_counts().to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_eq_codes_summary_%d.csv"
-                                    % (run_number, year)))
+                                    % (run_name, year)))
 
     fragilities = orca.get_injectable("fragilities").to_frame()
     fragilities.value_counts().to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_eq_fragilities_summary_%d.csv"
-                                    % (run_number, year)))
+                                    % (run_name, year)))
 
     eq_summary = pd.DataFrame()
 
@@ -98,7 +98,7 @@ def hazards_eq_summary(run_setup, run_number, year, parcels, buildings):
         eq_summary["impacted_jobs_"+str(empsix)] = (jobs_unplaced_eq["empsix"] == empsix).sum()
     
     eq_summary.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_eq_summary_%d.csv"
-                                    % (run_number, year)))
+                                    % (run_name, year)))
 
     # print out demolished buildings by TAZ
     eq_demolish_taz = misc.reindex(parcels.zone_id, eq_demolish.parcel_id)
@@ -107,7 +107,7 @@ def hazards_eq_summary(run_setup, run_number, year, parcels, buildings):
     eq_demolish = eq_demolish.drop(['parcel_id', 'year_built', 'redfin_sale_year'], axis=1)
     eq_demolish = eq_demolish.groupby(['taz']).sum()
     eq_demolish.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_eq_demolish_buildings_%d.csv"
-                                    % (run_number, year)))
+                                    % (run_name, year)))
 
     # print out retrofit buildings by TAZ
     if not run_setup['eq_mitigation']:
@@ -120,7 +120,7 @@ def hazards_eq_summary(run_setup, run_number, year, parcels, buildings):
         'non_residential_sqft', 'building_sqft', 'stories','redfin_sale_price', 'non_residential_rent',
         'deed_restricted_units', 'residential_price', 'count']]
     retrofit_bldgs_tot.to_csv(os.path.join(
-                orca.get_injectable("outputs_dir"), "run%d_eq_retrofit_buildings_%d.csv" % (run_number, year)))
+                orca.get_injectable("outputs_dir"), "run%d_eq_retrofit_buildings_%d.csv" % (run_name, year)))
 
     # print out buildings by TAZ around earthquake years
     if year not in [2030, 2035, 2050]:
@@ -133,4 +133,4 @@ def hazards_eq_summary(run_setup, run_number, year, parcels, buildings):
                         'building_sqft', 'stories', 'redfin_sale_price', 'non_residential_rent', 'deed_restricted_units',
                         'residential_price']]
     buildings.to_csv(os.path.join(
-        orca.get_injectable("outputs_dir"), "run%d_eq_buildings_list_%d.csv" % (run_number, year)))
+        orca.get_injectable("outputs_dir"), "run%d_eq_buildings_list_%d.csv" % (run_name, year)))

@@ -105,11 +105,11 @@ if INTERACT:
     code.interact(local=locals())
     sys.exit()
 
-run_num = orca.get_injectable("run_number")
+run_name = orca.get_injectable("run_name")
 
 if LOGS:
-    print('***The Standard stream is being written to run{0}.log***'.format(run_num))
-    sys.stdout = sys.stderr = open(os.path.join(orca.get_injectable("outputs_dir"), "run%d.log") % run_num, 'w')
+    print('***The Standard stream is being written to run{0}.log***'.format(run_name))
+    sys.stdout = sys.stderr = open(os.path.join(orca.get_injectable("outputs_dir"), "run%d.log") % run_name, 'w')
 
 if RANDOM_SEED:
     np.random.seed(12)
@@ -134,13 +134,13 @@ def slack_report(buildings, households, year):
             'Development projects for run %d on %s: %d to start, '
             '%d dropped by geom_id check, '
             '%d dropped by processing'
-            % (run_num, host, orca.get_injectable("devproj_len"), dropped_devproj_geomid, dropped_devproj_proc), as_user=True)
+            % (run_name, host, orca.get_injectable("devproj_len"), dropped_devproj_geomid, dropped_devproj_proc), as_user=True)
             
     if SLACK and (len(households.building_id[households.building_id == -1])) > 0:
         slack.chat.post_message(
             '#urbansim_sim_update',
             'WARNING: unplaced households in %d for run %d on %s'
-            % (year, run_num, host), as_user=True)
+            % (year, run_name, host), as_user=True)
 
 
 def get_simulation_models():
@@ -570,14 +570,14 @@ print("pandas version: %s" % pd.__version__)
 
 
 if SLACK and MODE == "simulation":
-    slack.chat.post_message('#urbansim_sim_update', 'Starting simulation %d on host %s' % (run_num, host), as_user=True)
+    slack.chat.post_message('#urbansim_sim_update', 'Starting simulation %d on host %s' % (run_name, host), as_user=True)
 
 try:
     run_models(MODE)
 except Exception as e:
     print(traceback.print_exc())
     if SLACK and MODE == "simulation":
-        slack.chat.post_message('#urbansim_sim_update', 'DANG!  Simulation failed for %d on host %s' % (run_num, host), as_user=True)
+        slack.chat.post_message('#urbansim_sim_update', 'DANG!  Simulation failed for %d on host %s' % (run_name, host), as_user=True)
     else:
         raise e
     sys.exit(0)
@@ -585,28 +585,28 @@ except Exception as e:
 print("Finished", time.ctime())
 
 if MAPS and MODE == "simulation" and 'travel_model_output' in get_simulation_models():
-    files_msg1, files_msg2 = ue_files(run_num)
-    config_resp = ue_config(run_num, host)
+    files_msg1, files_msg2 = ue_files(run_name)
+    config_resp = ue_config(run_name, host)
 
 if SLACK and MODE == "simulation":
-    slack.chat.post_message('#urbansim_sim_update', 'Completed simulation %d on host %s' % (run_num, host), as_user=True)
+    slack.chat.post_message('#urbansim_sim_update', 'Completed simulation %d on host %s' % (run_name, host), as_user=True)
 
     """slack.chat.post_message(
         '#sim_updates',
         'Urbanexplorer is available at ' +
-        'http://urbanforecast.com/sim_explorer%d.html' % run_num, as_user=True)
+        'http://urbanforecast.com/sim_explorer%d.html' % run_name, as_user=True)
 
     slack.chat.post_message(
         '#sim_updates',
         'Final topsheet is available at ' +
-        'http://urbanforecast.com/runs/run%d_topsheet_2050.log' % run_num,
+        'http://urbanforecast.com/runs/run%d_topsheet_2050.log' % run_name,
         as_user=True)
 
     slack.chat.post_message(
         '#sim_updates',
         'Targets comparison is available at ' +
         'http://urbanforecast.com/runs/run%d_targets_comparison_2050.csv' %
-        run_num, as_user=True)"""
+        run_name, as_user=True)"""
     
     
 summary = ""
@@ -618,13 +618,13 @@ if MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
     df1 = pd.read_csv(("http://urbanforecast.com/runs/run%d_superdistrict" + "_summaries_2050.csv") % prev_run)
     df1 = df1.set_index(df1.columns[0]).sort_index()
 
-    df2 = pd.read_csv((orca.get_injectable("outputs_dir")+"/run%d_superdistrict_summaries_2050.csv") % run_num)
+    df2 = pd.read_csv((orca.get_injectable("outputs_dir")+"/run%d_superdistrict_summaries_2050.csv") % run_name)
     df2 = df2.set_index(df2.columns[0]).sort_index()
 
     supnames = pd.read_csv((orca.get_injectable("inputs_dir") + "/basis_inputs/crosswalks/superdistricts_geography.csv"), index_col="number").name
 
     summary = compare_summary(df1, df2, supnames)
-    with open((orca.get_injectable("outputs_dir") + "/run%d_difference_report.log") % run_num, "w") as f:
+    with open((orca.get_injectable("outputs_dir") + "/run%d_difference_report.log") % run_name, "w") as f:
         f.write(summary)
 
 
@@ -634,10 +634,10 @@ if SLACK and MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
         sum_lines = len(summary.strip().split("\n"))
         slack.chat.post_message('#urbansim_sim_update', ('Difference report is available at ' +
                                 'http://urbanforecast.com/run/run%d_difference_report.log ' +  '- %d line(s)') 
-                                % (run_num, sum_lines), as_user=True)
+                                % (run_name, sum_lines), as_user=True)
     else:
         slack.chat.post_message('#urbansim_sim_update', "No differences with reference run.", as_user=True)
 
 if S3:
-    os.system('ls ' + orca.get_injectable("outputs_dir") + '/run%d_* ' % run_num + '| xargs -I file aws s3 cp file ' + 
+    os.system('ls ' + orca.get_injectable("outputs_dir") + '/run%d_* ' % run_name + '| xargs -I file aws s3 cp file ' + 
               's3://bayarea-urbansim-results')

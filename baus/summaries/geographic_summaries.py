@@ -7,7 +7,7 @@ from baus import datasources
 
 
 @orca.step()
-def geographic_summary(parcels, households, jobs, buildings, run_number, year, superdistricts_geography,
+def geographic_summary(parcels, households, jobs, buildings, run_name, year, superdistricts_geography,
                        initial_summary_year, interim_summary_year, final_year):  
 
     if year not in [initial_summary_year, interim_summary_year, final_year]:
@@ -45,7 +45,7 @@ def geographic_summary(parcels, households, jobs, buildings, run_number, year, s
     
     # non-residential buildings
     region['non_residential_sqft'] = buildings_df.non_residential_sqft.sum()
-    region.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_region_summary_{}.csv").format(run_number, year))
+    region.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_region_summary_{}.csv").format(run_name, year))
 
     #### summarize by sub-regional geography ####
     geographies = ['juris', 'superdistrict', 'county', 'subregion']
@@ -88,11 +88,11 @@ def geographic_summary(parcels, households, jobs, buildings, run_number, year, s
         summary_table.index.name = geography
         summary_table = summary_table.sort_index()
         summary_table.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_summary_{}.csv").\
-                                                    format(run_number, geography, year))
+                                                    format(run_name, geography, year))
 
 
 @orca.step()
-def geographic_growth_summary(year, final_year, initial_summary_year, run_number):
+def geographic_growth_summary(year, final_year, initial_summary_year, run_name):
     
     if year != final_year: 
         return
@@ -102,8 +102,8 @@ def geographic_growth_summary(year, final_year, initial_summary_year, run_number
     for geography in geographies:
 
         # use 2015 as the base year
-        year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_%s_summary_%d.csv" % (run_number, geography, initial_summary_year)))
-        year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_%s_summary_%d.csv" % (run_number, geography, final_year)))
+        year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_%s_summary_%d.csv" % (run_name, geography, initial_summary_year)))
+        year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "run%d_%s_summary_%d.csv" % (run_name, geography, final_year)))
 
         geog_growth = year1.merge(year2, on=geography, suffixes=("_"+str(initial_summary_year), "_"+str(final_year)))
 
@@ -136,4 +136,4 @@ def geographic_growth_summary(year, final_year, initial_summary_year, run_number
                                                          geog_growth[col+"_"+str(initial_summary_year)+"_regional_share"])
     
         geog_growth = geog_growth.fillna(0)
-        geog_growth.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_summary_growth.csv").format(run_number, geography))
+        geog_growth.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "run{}_{}_summary_growth.csv").format(run_name, geography))
