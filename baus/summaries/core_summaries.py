@@ -74,7 +74,7 @@ def building_summary(parcels, buildings, year, initial_summary_year, final_year,
                  'preserved_units', 'subsidized_units', 'job_spaces', 'source'])
 
     df = df.fillna(0)
-    df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/run%d_building_summary_%d.csv" % (year)))
+    df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/building_summary_%d.csv" % (year)))
 
 
 @orca.step()

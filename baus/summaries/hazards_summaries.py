@@ -9,10 +9,13 @@ from urbansim.utils import misc
 @orca.step()
 def hazards_slr_summary(run_setup, year):
 
-    if not run_setup['run_slr'] or len(orca.get_table("destroy_parcels")) < 1:
+    if not run_setup['run_slr']:
         return
     
-    slr_summary = pd.DataFrame()
+    if len(orca.get_table("slr_demolish")) < 1:
+        return
+    
+    slr_summary = pd.DataFrame(index=[0])
 
     # impacted parcels
     slr_summary["impacted_parcels"] = len(orca.get_table("destroy_parcels"))
@@ -30,11 +33,11 @@ def hazards_slr_summary(run_setup, year):
 
     # impacted households
     if year == 2035:
-        unplaced_hh_tot = orca.get_table("hh_unplaced_slr").to_frame()
-        orca.add_table("unplaced_hh_tot", unplaced_hh_tot)
+        unplaced_hh_tot = orca.get_injectable("hh_unplaced_slr")
+        orca.add_injectable("unplaced_hh_tot", unplaced_hh_tot)
     else:
-        unplaced_hh_tot = orca.get_table("unplaced_hh_tot").to_frame()
-        unplaced_hh_tot.append(orca.get_table("hh_unplaced_slr").to_frame())
+        unplaced_hh_tot = orca.get_injectable("unplaced_hh_tot")
+        unplaced_hh_tot.append(orca.get_injectable("hh_unplaced_slr"))
 
     slr_summary["impacted_hh"] = unplaced_hh_tot.size
     for quartile in [1, 2, 3, 4]:
@@ -42,16 +45,16 @@ def hazards_slr_summary(run_setup, year):
 
     # employees by sector
     if year == 2035:
-        unplaced_jobs_tot = orca.get_table("jobs_unplaced_slr").to_frame()
-        orca.add_table("unplaced_jobs_tot", unplaced_jobs_tot)
+        unplaced_jobs_tot = orca.get_injectable("jobs_unplaced_slr")
+        orca.add_injectable("unplaced_jobs_tot", unplaced_jobs_tot)
     else:
-        unplaced_jobs_tot = orca.get_table("unplaced_jobs_tot").to_frame()
-        unplaced_jobs_tot.append(orca.get_table("jobs_unplaced_slr").to_frame())
+        unplaced_jobs_tot = orca.get_injectable("unplaced_jobs_tot")
+        unplaced_jobs_tot.append(orca.get_injectable("jobs_unplaced_slr"))
 
     for empsix in ['AGREMPN', 'MWTEMPN', 'RETEMPN', 'FPSEMPN', 'HEREMPN', 'OTHEMPN']:
         slr_summary["impacted_jobs_"+str(empsix)] = (unplaced_jobs_tot["empsix"] == empsix).sum()
 
-    slr_summary.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "hazards_summaries/run%d_slr_summary_%d.csv" % (year)))
+    slr_summary.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "hazards_summaries/slr_summary_%d.csv" % (year)))
 
 
 @orca.step()
@@ -65,13 +68,13 @@ def hazards_eq_summary(run_setup, year, parcels, buildings):
     
     code = orca.get_injectable("code").to_frame()
     code.value_counts().to_csv(os.path.join(orca.get_injectable("outputs_dir"), "hazards_summaries/eq_codes_summary_%d.csv"
-                                    % ( year)))
+                                    % (year)))
 
     fragilities = orca.get_injectable("fragilities").to_frame()
     fragilities.value_counts().to_csv(os.path.join(orca.get_injectable("outputs_dir"), "hazards_summaries/eq_fragilities_summary_%d.csv"
                                     % (year)))
 
-    eq_summary = pd.DataFrame()
+    eq_summary = pd.DataFrame(index=[0])
 
     eq_buildings = orca.get_injectable("eq_buildings").to_frame()
     eq_summary["buildings_impacted"] = eq_buildings.size

@@ -131,7 +131,7 @@ def slack_report(buildings, households, year):
         dropped_devproj_proc =  orca.get_injectable("devproj_len_geomid") -  orca.get_injectable("devproj_len_proc")
         slack.chat.post_message(
             '#urbansim_sim_update',
-            'Development projects for run %d on %s: %d to start, '
+            'Development projects for run %s on %s: %d to start, '
             '%d dropped by geom_id check, '
             '%d dropped by processing'
             % (run_name, host, orca.get_injectable("devproj_len"), dropped_devproj_geomid, dropped_devproj_proc), as_user=True)

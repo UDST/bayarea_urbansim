@@ -393,9 +393,9 @@ def wildfire_metrics():
 
 
 @orca.step()
-def greenfield_metrics(buildings, parcels, year, initial_year, initial_summary_year, final_year):
+def greenfield_metrics(buildings, parcels, year, initial_summary_year, final_year):
 
-    if year != initial_year and year != final_year:
+    if year != initial_summary_year and year != final_year:
         return
     
     # TODO (long-term)- update the urbanized area  used, this uses "Urbanize_Footprint" shapefile joined to parcels
@@ -419,7 +419,7 @@ def greenfield_metrics(buildings, parcels, year, initial_year, initial_summary_y
     buildings_out_uf_2015 = orca.get_table(("buildings_outside_urban_footprint_{}").format(initial_summary_year)).to_frame()
     buildings_out_uf_2050 = orca.get_table(("buildings_outside_urban_footprint_{}").format(final_year)).to_frame()
     greenfield_metric["annual_greenfield_dev_acres_2050"] = (((buildings_out_uf_2050["acres"].sum() - buildings_out_uf_2015["acres"].sum()) /
-                                                            (final_year - initial_summary_year))).round(0)
+                                                              (final_year - initial_summary_year))).round(0)
     greenfield_metric = greenfield_metric.transpose()
     greenfield_metric.to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
                                             "metrics_summaries/greenfield_metric.csv"))
