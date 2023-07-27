@@ -1,4 +1,4 @@
-# This environment pins requirements at their versions as of Oct-2019, updated Apr-2020
+# This environment pins requirements at their versions as of Apr-2020
 # Compatible with both Python 2.7 and 3.6+
 
 # Install with: pip install -r requirements-2019.txt
