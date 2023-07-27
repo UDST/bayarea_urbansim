@@ -20,7 +20,7 @@ from baus.utils import compare_summary
 warnings.filterwarnings("ignore")
 
 # Suppress scientific notation in pandas output
-pd.set_option('display.float_format', lambda x: '%.3f' % x)
+pd.set_option("display.float_format", lambda x: "%.3f" % x)
 
 SLACK = MAPS = "URBANSIM_SLACK" in os.environ
 LOGS = True
@@ -29,15 +29,15 @@ INTERACT = False
 MODE = "simulation"
 S3 = False
 EVERY_NTH_YEAR = 5
-BRANCH = os.popen('git rev-parse --abbrev-ref HEAD').read()
-CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
+BRANCH = os.popen("git rev-parse --abbrev-ref HEAD").read()
+CURRENT_COMMIT = os.popen("git rev-parse HEAD").read()
 COMPARE_TO_NO_PROJECT = True
 NO_PROJECT = 611
 
 IN_YEAR, OUT_YEAR = 2010, 2050
 COMPARE_AGAINST_LAST_KNOWN_GOOD = False
 
-LAST_KNOWN_GOOD_RUN = 182 
+LAST_KNOWN_GOOD_RUN = 182
 
 
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
@@ -46,29 +46,54 @@ orca.add_injectable("base_year", IN_YEAR)
 
 orca.add_injectable("slack_enabled", SLACK)
 
-parser = argparse.ArgumentParser(description='Run UrbanSim models.')
+parser = argparse.ArgumentParser(description="Run UrbanSim models.")
 
 parser.add_argument(
-    '-c', action='store_true', dest='console',
-    help='run from the console (logs to stdout), no slack or maps')
+    "-c",
+    action="store_true",
+    dest="console",
+    help="run from the console (logs to stdout), no slack or maps",
+)
 
-parser.add_argument('-i', action='store_true', dest='interactive',
-                    help='enter interactive mode after imports')
+parser.add_argument(
+    "-i",
+    action="store_true",
+    dest="interactive",
+    help="enter interactive mode after imports",
+)
 
-parser.add_argument('-k', action='store_true', dest='skip_base_year',
-                    help='skip base year - used for debugging')
+parser.add_argument(
+    "-k",
+    action="store_true",
+    dest="skip_base_year",
+    help="skip base year - used for debugging",
+)
 
-parser.add_argument('-y', action='store', dest='out_year', type=int,
-                    help='The year to which to run the simulation.')
+parser.add_argument(
+    "-y",
+    action="store",
+    dest="out_year",
+    type=int,
+    help="The year to which to run the simulation.",
+)
 
-parser.add_argument('--mode', action='store', dest='mode',
-                    help='which mode to run (see code for mode options)')
+parser.add_argument(
+    "--mode",
+    action="store",
+    dest="mode",
+    help="which mode to run (see code for mode options)",
+)
 
-parser.add_argument('--random-seed', action='store_true', dest='random_seed',
-                    help='set a random seed for consistent stochastic output')
+parser.add_argument(
+    "--random-seed",
+    action="store_true",
+    dest="random_seed",
+    help="set a random seed for consistent stochastic output",
+)
 
-parser.add_argument('--disable-slack', action='store_true', dest='noslack',
-                    help='disable slack outputs')
+parser.add_argument(
+    "--disable-slack", action="store_true", dest="noslack", help="disable slack outputs"
+)
 
 options = parser.parse_args()
 
@@ -95,20 +120,24 @@ if options.noslack:
 
 if INTERACT:
     import code
+
     code.interact(local=locals())
     sys.exit()
 
 run_num = orca.get_injectable("run_number")
 
 if LOGS:
-    print('***The Standard stream is being written to run{0}.log***'.format(run_num))
-    sys.stdout = sys.stderr = open(os.path.join(orca.get_injectable("outputs_dir"), "run%d.log") % run_num, 'w')
+    print("***The Standard stream is being written to run{0}.log***".format(run_num))
+    sys.stdout = sys.stderr = open(
+        os.path.join(orca.get_injectable("outputs_dir"), "run%d.log") % run_num, "w"
+    )
 
 if RANDOM_SEED:
     np.random.seed(12)
 
 if SLACK:
     from slacker import Slacker
+
     slack = Slacker(os.environ["SLACK_TOKEN"])
     host = socket.gethostname()
 
@@ -122,89 +151,69 @@ def get_simulation_models():
     # of the old version soon
 
     models = [
-
         "slr_inundate",
         "slr_remove_dev",
         "eq_code_buildings",
         "earthquake_demolish",
-
-        "neighborhood_vars",    # street network accessibility
-        "regional_vars",        # road network accessibility
-
-        "nrh_simulate",         # non-residential rent hedonic
-
+        "neighborhood_vars",  # street network accessibility
+        "regional_vars",  # road network accessibility
+        "nrh_simulate",  # non-residential rent hedonic
         # uses conditional probabilities
         "household_relocation",
         "households_transition",
         # update building/unit/hh correspondence
         "reconcile_unplaced_households",
-
         "jobs_relocation",
         "jobs_transition",
-
         "balance_rental_and_ownership_hedonics",
-
         "price_vars",
         "scheduled_development_events",
-
         # preserve some units
         "preserve_affordable",
         # run the subsidized residential acct system
         "lump_sum_accounts",
         "subsidized_residential_developer_lump_sum_accts",
-
         # run the subsidized office acct system
         "office_lump_sum_accounts",
         "subsidized_office_developer_lump_sum_accts",
-
         "alt_feasibility",
         "subsidized_residential_feasibility",
         "subsidized_residential_developer_vmt",
-#        "subsidized_residential_feasibility",
-#        "subsidized_residential_developer_jobs_housing",
-
+        #        "subsidized_residential_feasibility",
+        #        "subsidized_residential_developer_jobs_housing",
         "residential_developer",
         "developer_reprocess",
         "retail_developer",
-
         "office_developer",
         "subsidized_office_developer_vmt",
-
         "accessory_units_strategy",
         "calculate_vmt_fees",
-
         # (for buildings that were removed)
         "remove_old_units",
         # set up units for new residential buildings
         "initialize_new_units",
         # update building/unit/hh correspondence
         "reconcile_unplaced_households",
-
-        "rsh_simulate",     # residential sales hedonic for units
-        "rrh_simulate",     # residential rental hedonic for units
-
+        "rsh_simulate",  # residential sales hedonic for units
+        "rrh_simulate",  # residential rental hedonic for units
         # (based on higher of predicted price or rent)
         "assign_tenure_to_new_units",
-
-        # we first put Q1 households only into deed-restricted units, 
-        # then any additional unplaced Q1 households, Q2, Q3, and Q4 
-        # households are placed in either deed-restricted units or 
+        # we first put Q1 households only into deed-restricted units,
+        # then any additional unplaced Q1 households, Q2, Q3, and Q4
+        # households are placed in either deed-restricted units or
         # market-rate units
         "hlcm_owner_lowincome_simulate",
         "hlcm_renter_lowincome_simulate",
-
         # allocate owners to vacant owner-occupied units
         "hlcm_owner_simulate",
         # allocate renters to vacant rental units
         "hlcm_renter_simulate",
-
         # we have to run the hlcm above before this one - we first want to
         # try and put unplaced households into their appropraite tenured
         # units and then when that fails, force them to place using the
         # code below.  technically the hlcms above could be moved above the
         # developer again, but we would have to run the hedonics twice and
         # also the assign_tenure_to_new_units twice.
-
         # force placement of any unplaced households, in terms of rent/own
         # is a noop except in the final simulation year
         # 09 11 2020 ET: enabled for all simulation years
@@ -215,31 +224,24 @@ def get_simulation_models():
         # 09 11 2020 ET: appears to be working
         "hlcm_renter_simulate_no_unplaced",
         "hlcm_renter_lowincome_simulate_no_unplaced",
-
         # update building/unit/hh correspondence
         "reconcile_placed_households",
-
-        "proportional_elcm",        # start with a proportional jobs model
-        "elcm_simulate",            # displaced by new dev
-
+        "proportional_elcm",  # start with a proportional jobs model
+        "elcm_simulate",  # displaced by new dev
         # save_intermediate_tables", # saves output for visualization
-
         "topsheet",
         "simulation_validation",
         "parcel_summary",
         "building_summary",
         "diagnostic_output",
-
         "calculate_vmt_fees",
         "calculate_jobs_housing_fees",
-
         "geographic_summary",
         "travel_model_output",
         # "travel_model_2_output",
         "hazards_slr_summary",
         "hazards_eq_summary",
-        "slack_report"
-
+        "slack_report",
     ]
 
     run_setup = orca.get_injectable("run_setup")
@@ -270,7 +272,10 @@ def get_simulation_models():
     if not run_setup["run_vmt_fee_com_for_com_strategy"]:
         models.remove("calculate_vmt_fees")
         models.remove("subsidized_office_developer_vmt")
-    if not run_setup["run_vmt_fee_com_for_res_strategy"] or run_setup["run_vmt_fee_res_for_res_strategy"]:
+    if (
+        not run_setup["run_vmt_fee_com_for_res_strategy"]
+        or run_setup["run_vmt_fee_res_for_res_strategy"]
+    ):
         models.remove("calculate_vmt_fees")
         models.remove("subsidized_residential_feasibility")
         models.remove("subsidized_residential_developer_vmt")
@@ -283,6 +288,7 @@ def get_simulation_models():
 
     return models
 
+
 def get_baseyear_models():
 
     models = [
@@ -290,41 +296,33 @@ def get_baseyear_models():
         "slr_remove_dev",
         "eq_code_buildings",
         "earthquake_demolish",
-
-        "neighborhood_vars",   # local accessibility vars
-        "regional_vars",       # regional accessibility vars
-
-        "rsh_simulate",    # residential sales hedonic for units
-        "rrh_simulate",    # residential rental hedonic for units
+        "neighborhood_vars",  # local accessibility vars
+        "regional_vars",  # regional accessibility vars
+        "rsh_simulate",  # residential sales hedonic for units
+        "rrh_simulate",  # residential rental hedonic for units
         "nrh_simulate",
-
         # (based on higher of predicted price or rent)
         "assign_tenure_to_new_units",
-
         # uses conditional probabilities
         "household_relocation",
         "households_transition",
         # update building/unit/hh correspondence
         "reconcile_unplaced_households",
         "jobs_transition",
-
-        # we first put Q1 households only into deed-restricted units, 
-        # then any additional unplaced Q1 households, Q2, Q3, and Q4 
-        # households are placed in either deed-restricted units or 
+        # we first put Q1 households only into deed-restricted units,
+        # then any additional unplaced Q1 households, Q2, Q3, and Q4
+        # households are placed in either deed-restricted units or
         # market-rate units
         "hlcm_owner_lowincome_simulate",
         "hlcm_renter_lowincome_simulate",
-
         # allocate owners to vacant owner-occupied units
         "hlcm_owner_simulate",
         # allocate renters to vacant rental units
         "hlcm_renter_simulate",
-
         # we have to run the hlcm above before this one - we first want
         # to try and put unplaced households into their appropraite
         # tenured units and then when that fails, force them to place
         # using the code below.
-
         # force placement of any unplaced households, in terms of
         # rent/own, is a noop except in the final simulation year
         # 09 11 2020 ET: enabled for all simulation years
@@ -335,15 +333,11 @@ def get_baseyear_models():
         # 09 11 2020 ET: appears to be working
         "hlcm_renter_simulate_no_unplaced",
         "hlcm_renter_lowincome_simulate_no_unplaced",
-
         # update building/unit/hh correspondence
         "reconcile_placed_households",
-
         "elcm_simulate",
-
         "price_vars",
         # "scheduled_development_events",
-
         "topsheet",
         "simulation_validation",
         "parcel_summary",
@@ -355,7 +349,7 @@ def get_baseyear_models():
         "hazards_eq_summary",
         "diagnostic_output",
         "environment_config",
-        "slack_report"
+        "slack_report",
     ]
 
     run_setup = orca.get_injectable("run_setup")
@@ -373,17 +367,18 @@ def get_baseyear_models():
     return models
 
 
-
 def run_models(MODE):
 
     if MODE == "preprocessing":
 
-        orca.run([
-            "preproc_jobs",
-            "preproc_households",
-            "preproc_buildings",
-            "initialize_residential_units"
-        ])
+        orca.run(
+            [
+                "preproc_jobs",
+                "preproc_households",
+                "preproc_buildings",
+                "initialize_residential_units",
+            ]
+        )
 
     elif MODE == "fetch_data":
 
@@ -402,28 +397,28 @@ def run_models(MODE):
 
         # start the simulation in the next round - only the models above run
         # for the IN_YEAR
-        years_to_run = range(IN_YEAR+EVERY_NTH_YEAR, OUT_YEAR+1,
-                             EVERY_NTH_YEAR)
+        years_to_run = range(IN_YEAR + EVERY_NTH_YEAR, OUT_YEAR + 1, EVERY_NTH_YEAR)
         models = get_simulation_models()
         orca.run(models, iter_vars=years_to_run)
 
     elif MODE == "estimation":
 
-        orca.run([
-
-            "neighborhood_vars",         # local accessibility variables
-            "regional_vars",             # regional accessibility variables
-            "rsh_estimate",              # residential sales hedonic
-            "nrh_estimate",              # non-res rent hedonic
-            "rsh_simulate",
-            "nrh_simulate",
-            "hlcm_estimate",             # household lcm
-            "elcm_estimate",             # employment lcm
-
-        ], iter_vars=[2010])
+        orca.run(
+            [
+                "neighborhood_vars",  # local accessibility variables
+                "regional_vars",  # regional accessibility variables
+                "rsh_estimate",  # residential sales hedonic
+                "nrh_estimate",  # non-res rent hedonic
+                "rsh_simulate",
+                "nrh_simulate",
+                "hlcm_estimate",  # household lcm
+                "elcm_estimate",  # employment lcm
+            ],
+            iter_vars=[2010],
+        )
 
         # Estimation steps
-        '''
+        """
         orca.run([
             "load_rental_listings", # required to estimate rental hedonic
             "neighborhood_vars",        # street network accessibility
@@ -434,22 +429,21 @@ def run_models(MODE):
             "hlcm_owner_estimate",  # estimate location choice owners
             "hlcm_renter_estimate", # estimate location choice renters
         ])
-        '''
+        """
 
     elif MODE == "feasibility":
 
-        orca.run([
-
-            "neighborhood_vars",            # local accessibility vars
-            "regional_vars",                # regional accessibility vars
-
-            "rsh_simulate",                 # residential sales hedonic
-            "nrh_simulate",                 # non-residential rent hedonic
-
-            "price_vars",
-            "subsidized_residential_feasibility"
-
-        ], iter_vars=[2010])
+        orca.run(
+            [
+                "neighborhood_vars",  # local accessibility vars
+                "regional_vars",  # regional accessibility vars
+                "rsh_simulate",  # residential sales hedonic
+                "nrh_simulate",  # non-residential rent hedonic
+                "price_vars",
+                "subsidized_residential_feasibility",
+            ],
+            iter_vars=[2010],
+        )
 
         # the whole point of this is to get the feasibility dataframe
         # for debugging
@@ -468,26 +462,38 @@ print("Current Commit : ", CURRENT_COMMIT.rstrip())
 print("Random Seed : ", RANDOM_SEED)
 
 if SLACK and MODE == "simulation":
-    slack.chat.post_message('#urbansim_sim_update', 'Starting simulation %d on host %s' % (run_num, host), as_user=True)
+    slack.chat.post_message(
+        "#urbansim_sim_update",
+        "Starting simulation %d on host %s" % (run_num, host),
+        as_user=True,
+    )
 
 try:
     run_models(MODE)
 except Exception as e:
     print(traceback.print_exc())
     if SLACK and MODE == "simulation":
-        slack.chat.post_message('#urbansim_sim_update', 'DANG!  Simulation failed for %d on host %s' % (run_num, host), as_user=True)
+        slack.chat.post_message(
+            "#urbansim_sim_update",
+            "DANG!  Simulation failed for %d on host %s" % (run_num, host),
+            as_user=True,
+        )
     else:
         raise e
     sys.exit(0)
 
 print("Finished", time.ctime())
 
-if MAPS and MODE == "simulation" and 'travel_model_output' in get_simulation_models():
+if MAPS and MODE == "simulation" and "travel_model_output" in get_simulation_models():
     files_msg1, files_msg2 = ue_files(run_num)
     config_resp = ue_config(run_num, host)
 
 if SLACK and MODE == "simulation":
-    slack.chat.post_message('#urbansim_sim_update', 'Completed simulation %d on host %s' % (run_num, host), as_user=True)
+    slack.chat.post_message(
+        "#urbansim_sim_update",
+        "Completed simulation %d on host %s" % (run_num, host),
+        as_user=True,
+    )
 
     """slack.chat.post_message(
         '#sim_updates',
@@ -513,16 +519,31 @@ if MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
     prev_run = LAST_KNOWN_GOOD_RUN
     # fetch the previous run off of the internet for comparison - the "last
     # known good run" should always be available on EC2
-    df1 = pd.read_csv(("http://urbanforecast.com/runs/run%d_superdistrict" + "_summaries_2050.csv") % prev_run)
+    df1 = pd.read_csv(
+        ("http://urbanforecast.com/runs/run%d_superdistrict" + "_summaries_2050.csv")
+        % prev_run
+    )
     df1 = df1.set_index(df1.columns[0]).sort_index()
 
-    df2 = pd.read_csv((orca.get_injectable("outputs_dir")+"/run%d_superdistrict_summaries_2050.csv") % run_num)
+    df2 = pd.read_csv(
+        (orca.get_injectable("outputs_dir") + "/run%d_superdistrict_summaries_2050.csv")
+        % run_num
+    )
     df2 = df2.set_index(df2.columns[0]).sort_index()
 
-    supnames = pd.read_csv((orca.get_injectable("inputs_dir") + "/basis_inputs/crosswalks/superdistricts_geography.csv"), index_col="number").name
+    supnames = pd.read_csv(
+        (
+            orca.get_injectable("inputs_dir")
+            + "/basis_inputs/crosswalks/superdistricts_geography.csv"
+        ),
+        index_col="number",
+    ).name
 
     summary = compare_summary(df1, df2, supnames)
-    with open((orca.get_injectable("outputs_dir") + "/run%d_difference_report.log") % run_num, "w") as f:
+    with open(
+        (orca.get_injectable("outputs_dir") + "/run%d_difference_report.log") % run_num,
+        "w",
+    ) as f:
         f.write(summary)
 
 
@@ -530,12 +551,26 @@ if SLACK and MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
 
     if len(summary.strip()) != 0:
         sum_lines = len(summary.strip().split("\n"))
-        slack.chat.post_message('#urbansim_sim_update', ('Difference report is available at ' +
-                                'http://urbanforecast.com/run/run%d_difference_report.log ' +  '- %d line(s)') 
-                                % (run_num, sum_lines), as_user=True)
+        slack.chat.post_message(
+            "#urbansim_sim_update",
+            (
+                "Difference report is available at "
+                + "http://urbanforecast.com/run/run%d_difference_report.log "
+                + "- %d line(s)"
+            )
+            % (run_num, sum_lines),
+            as_user=True,
+        )
     else:
-        slack.chat.post_message('#urbansim_sim_update', "No differences with reference run.", as_user=True)
+        slack.chat.post_message(
+            "#urbansim_sim_update", "No differences with reference run.", as_user=True
+        )
 
 if S3:
-    os.system('ls ' + orca.get_injectable("outputs_dir") + '/run%d_* ' % run_num + '| xargs -I file aws s3 cp file ' + 
-              's3://bayarea-urbansim-results')
+    os.system(
+        "ls "
+        + orca.get_injectable("outputs_dir")
+        + "/run%d_* " % run_num
+        + "| xargs -I file aws s3 cp file "
+        + "s3://bayarea-urbansim-results"
+    )

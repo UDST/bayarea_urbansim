@@ -42,39 +42,56 @@ def _create_empty_units(buildings):
     # The '.astype(int)' deals with a bug (?) where the developer model creates
     # floating-point unit counts
 
-    s = buildings.residential_units.fillna(0) >=\
-        buildings.deed_restricted_units.fillna(0)
+    s = buildings.residential_units.fillna(0) >= buildings.deed_restricted_units.fillna(
+        0
+    )
 
-    assert np.all(buildings.residential_units.fillna(0) >=
-                  buildings.deed_restricted_units.fillna(0))
+    assert np.all(
+        buildings.residential_units.fillna(0)
+        >= buildings.deed_restricted_units.fillna(0)
+    )
 
-    df = pd.DataFrame({
-        'unit_residential_price': 0.0,
-        'unit_residential_rent': 0.0,
-        'num_units': 1,
-        'building_id': np.repeat(
-            buildings.index.values,
-            buildings.residential_units.values.astype(int)
-        ),
-        # counter of the units in a building
-        'unit_num': np.concatenate([
-            np.arange(num_units)
-            for num_units in buildings.residential_units.values.astype(int)
-        ]),
-        # also identify deed restricted units
-        'deed_restricted': np.concatenate([
-            np.concatenate([
-                np.ones(restricted_units),
-                np.zeros(num_units - restricted_units)
-            ])
-            # iterate over number of units and deed restricted units too
-            for (num_units, restricted_units) in list(zip(
-                buildings.residential_units.values.astype(int),
-                buildings.deed_restricted_units.values.astype(int)
-            ))
-        ])
-    }).sort_values(by=['building_id', 'unit_num']).reset_index(drop=True)
-    df.index.name = 'unit_id'
+    df = (
+        pd.DataFrame(
+            {
+                "unit_residential_price": 0.0,
+                "unit_residential_rent": 0.0,
+                "num_units": 1,
+                "building_id": np.repeat(
+                    buildings.index.values,
+                    buildings.residential_units.values.astype(int),
+                ),
+                # counter of the units in a building
+                "unit_num": np.concatenate(
+                    [
+                        np.arange(num_units)
+                        for num_units in buildings.residential_units.values.astype(int)
+                    ]
+                ),
+                # also identify deed restricted units
+                "deed_restricted": np.concatenate(
+                    [
+                        np.concatenate(
+                            [
+                                np.ones(restricted_units),
+                                np.zeros(num_units - restricted_units),
+                            ]
+                        )
+                        # iterate over number of units and deed restricted units too
+                        for (num_units, restricted_units) in list(
+                            zip(
+                                buildings.residential_units.values.astype(int),
+                                buildings.deed_restricted_units.values.astype(int),
+                            )
+                        )
+                    ]
+                ),
+            }
+        )
+        .sort_values(by=["building_id", "unit_num"])
+        .reset_index(drop=True)
+    )
+    df.index.name = "unit_id"
     return df
 
 
@@ -108,21 +125,19 @@ def match_households_to_units(households, residential_units):
     hh = households
 
     # This code block is from Fletcher
-    unit_lookup = units.reset_index().set_index(['building_id', 'unit_num'])
-    hh = hh.sort_values(by=['building_id'], ascending=True)
+    unit_lookup = units.reset_index().set_index(["building_id", "unit_num"])
+    hh = hh.sort_values(by=["building_id"], ascending=True)
 
     building_counts = hh.building_id.value_counts().sort_index()
-    hh['unit_num'] = np.concatenate(
-        [np.arange(i) for i in building_counts.values])
+    hh["unit_num"] = np.concatenate([np.arange(i) for i in building_counts.values])
 
     unplaced = hh[hh.building_id == -1].index
     placed = hh[hh.building_id != -1].index
 
-    indexes = [tuple(t) for t in
-               hh.loc[placed, ['building_id', 'unit_num']].values]
+    indexes = [tuple(t) for t in hh.loc[placed, ["building_id", "unit_num"]].values]
 
-    hh.loc[placed, 'unit_id'] = unit_lookup.loc[indexes].unit_id.values
-    hh.loc[unplaced, 'unit_id'] = -1
+    hh.loc[placed, "unit_id"] = unit_lookup.loc[indexes].unit_id.values
+    hh.loc[unplaced, "unit_id"] = -1
 
     return hh
 
@@ -154,22 +169,30 @@ def assign_tenure_to_units(residential_units, households):
     # tenure comes from PUMS - this used to have values of 1 and 2 but
     # these values are now mapped to the string 'own' and 'rent' for clarity
 
-    units['tenure'] = np.nan
-    own = hh[(hh.tenure == 'own') & (hh.unit_id != -1)].unit_id.values
-    rent = hh[(hh.tenure == 'rent') & (hh.unit_id != -1)].unit_id.values
-    units.loc[own, 'tenure'] = 'own'
-    units.loc[rent, 'tenure'] = 'rent'
+    units["tenure"] = np.nan
+    own = hh[(hh.tenure == "own") & (hh.unit_id != -1)].unit_id.values
+    rent = hh[(hh.tenure == "rent") & (hh.unit_id != -1)].unit_id.values
+    units.loc[own, "tenure"] = "own"
+    units.loc[rent, "tenure"] = "rent"
 
-    print("Init unit tenure assignment: %d%% owner occupied, %d%% unfilled" %
-          (round(len(units[units.tenure == 'own'])*100 /
-           len(units[units.tenure.notnull()])),
-           round(len(units[units.tenure.isnull()])*100 / len(units))))
+    print(
+        "Init unit tenure assignment: %d%% owner occupied, %d%% unfilled"
+        % (
+            round(
+                len(units[units.tenure == "own"])
+                * 100
+                / len(units[units.tenure.notnull()])
+            ),
+            round(len(units[units.tenure.isnull()]) * 100 / len(units)),
+        )
+    )
 
     # Fill remaining units with random tenure assignment
     # TO DO: Make this weighted by existing allocation, rather than 50/50
     unfilled = units[units.tenure.isnull()].index
-    units.loc[unfilled, 'tenure'] = \
-        pd.Series(['rent', 'own']).sample(len(unfilled), replace=True).values
+    units.loc[unfilled, "tenure"] = (
+        pd.Series(["rent", "own"]).sample(len(unfilled), replace=True).values
+    )
 
     return residential_units
 
@@ -183,8 +206,8 @@ def initialize_residential_units(store):
     # units code together, and also I wanted the github diff to show how few
     # lines actually changed here I'm not editing code - just changing where
     # this code runs
-    households = store['households_preproc']
-    buildings = store['buildings_preproc']
+    households = store["households_preproc"]
+    buildings = store["buildings_preproc"]
 
     # fan out buildings into units
     units = _create_empty_units(buildings)
@@ -196,8 +219,8 @@ def initialize_residential_units(store):
     units = assign_tenure_to_units(units, households)
 
     # write to the hdfstore
-    store['households_preproc'] = households
-    store['residential_units_preproc'] = units
+    store["households_preproc"] = households
+    store["residential_units_preproc"] = units
 
 
 @orca.step()
@@ -226,28 +249,33 @@ def load_rental_listings():
         - 'zone_id' (int, may be missing, corresponds to index of 'zones')
     - adds broadcasts linking 'craigslist' to 'nodes', 'tmnodes', 'logsums'
     """
-    @orca.table('craigslist', cache=True)
+
+    @orca.table("craigslist", cache=True)
     def craigslist():
-        df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/parcels_buildings_agents/sfbay_craigslist.csv"))
-        net = orca.get_injectable('net')
-        df['node_id'] = net['walk'].get_node_ids(df['lon'], df['lat'])
-        df['tmnode_id'] = net['drive'].get_node_ids(df['lon'], df['lat'])
+        df = pd.read_csv(
+            os.path.join(
+                orca.get_injectable("inputs_dir"),
+                "basis_inputs/parcels_buildings_agents/sfbay_craigslist.csv",
+            )
+        )
+        net = orca.get_injectable("net")
+        df["node_id"] = net["walk"].get_node_ids(df["lon"], df["lat"])
+        df["tmnode_id"] = net["drive"].get_node_ids(df["lon"], df["lat"])
         # fill nans -- missing bedrooms are mostly studio apts
-        df['bedrooms'] = df.bedrooms.replace(np.nan, 1)
-        df['neighborhood'] = df.neighborhood.replace(np.nan, '')
+        df["bedrooms"] = df.bedrooms.replace(np.nan, 1)
+        df["neighborhood"] = df.neighborhood.replace(np.nan, "")
         return df
 
     # Is it simpler to just do this in the table definition since it
     # is never updated?
-    @orca.column('craigslist', 'zone_id', cache=True)
+    @orca.column("craigslist", "zone_id", cache=True)
     def zone_id(craigslist, parcels):
         return misc.reindex(parcels.zone_id, craigslist.node_id)
 
-    orca.broadcast('nodes', 'craigslist', cast_index=True, onto_on='node_id')
-    orca.broadcast('tmnodes', 'craigslist', cast_index=True,
-                   onto_on='tmnode_id')
-    orca.broadcast('zones', 'craigslist', cast_index=True, onto_on='zone_id')
-    orca.broadcast('logsums', 'craigslist', cast_index=True, onto_on='zone_id')
+    orca.broadcast("nodes", "craigslist", cast_index=True, onto_on="node_id")
+    orca.broadcast("tmnodes", "craigslist", cast_index=True, onto_on="tmnode_id")
+    orca.broadcast("zones", "craigslist", cast_index=True, onto_on="zone_id")
+    orca.broadcast("logsums", "craigslist", cast_index=True, onto_on="zone_id")
     return
 
 
@@ -300,36 +328,34 @@ def reconcile_placed_households(households, residential_units):
     #         ColumnSpec('building_id', foreign_key='buildings.building_id',
     #                    missing=False))))
 
-    hh = households.to_frame(['unit_id', 'building_id'])
-    hh.index.rename('household_id', inplace=True)
+    hh = households.to_frame(["unit_id", "building_id"])
+    hh.index.rename("household_id", inplace=True)
     hh = hh.reset_index()
     print("hh columns: %s" % hh.columns)
 
     # hh.index.name='household_id'
-    units = residential_units.to_frame(['building_id']).reset_index()
+    units = residential_units.to_frame(["building_id"]).reset_index()
 
     # Filter for households missing a 'building_id' but not a 'unit_id'
     hh = hh[(hh.building_id == -1) & (hh.unit_id != -1)]
 
     # Join building id's to the filtered households, using mapping
     # from the units table
-    hh = hh.drop('building_id', axis=1)
-    hh = pd.merge(hh, units, on='unit_id', how='left').\
-        set_index('household_id')
+    hh = hh.drop("building_id", axis=1)
+    hh = pd.merge(hh, units, on="unit_id", how="left").set_index("household_id")
     print("hh index.names: %s" % hh.index.names)
 
     print("%d movers updated" % len(hh))
-    households.update_col_from_series('building_id',
-                                      hh.building_id, cast=True)
+    households.update_col_from_series("building_id", hh.building_id, cast=True)
 
     # Verify final data characteristics
-    '''
+    """
     ot.assert_orca_spec(OrcaSpec(
         '', TableSpec(
             'households',
             ColumnSpec('building_id', foreign_key='buildings.building_id',
                        missing_val_coding=-1))))
-    '''
+    """
 
 
 @orca.step()
@@ -359,40 +385,38 @@ def reconcile_unplaced_households(households):
     """
 
     # Verify initial data characteristics
-    '''
+    """
     ot.assert_orca_spec(OrcaSpec(
         '',
         TableSpec(
             'households',
             ColumnSpec('unit_id', numeric=True, missing_val_coding=-1),
             ColumnSpec('building_id', numeric=True, missing_val_coding=-1))))
-    '''
+    """
 
     def _print_status():
-        print("Households not in a unit: %d" %
-              (households.unit_id == -1).sum())
-        print("Househing missing a unit: %d" %
-              households.unit_id.isnull().sum())
-        print("Households not in a building: %d" %
-              (households.building_id == -1).sum())
-        print("Househing missing a building: %d" %
-              households.building_id.isnull().sum())
+        print("Households not in a unit: %d" % (households.unit_id == -1).sum())
+        print("Househing missing a unit: %d" % households.unit_id.isnull().sum())
+        print("Households not in a building: %d" % (households.building_id == -1).sum())
+        print(
+            "Househing missing a building: %d" % households.building_id.isnull().sum()
+        )
 
     _print_status()
     print("Reconciling unplaced households...")
-    hh = households.to_frame(['building_id', 'unit_id'])
+    hh = households.to_frame(["building_id", "unit_id"])
 
     # Get indexes of households unplaced in buildings or in units
     bldg_unplaced = pd.Series(-1, index=hh[hh.building_id == -1].index)
     unit_unplaced = pd.Series(-1, index=hh[hh.unit_id == -1].index)
 
     # Update those households to be fully unplaced
-    households.update_col_from_series('building_id', unit_unplaced, cast=True)
-    households.update_col_from_series('unit_id', bldg_unplaced, cast=True)
+    households.update_col_from_series("building_id", unit_unplaced, cast=True)
+    households.update_col_from_series("unit_id", bldg_unplaced, cast=True)
     _print_status()
 
     # Verify final data characteristics
-    '''
+    """
     ot.assert_orca_spec(OrcaSpec(
         '',
         TableSpec(
@@ -401,7 +425,7 @@ def reconcile_unplaced_households(households):
                        missing_val_coding=-1),
             ColumnSpec('building_id', foreign_key='buildings.building_id',
                        missing_val_coding=-1))))
-    '''
+    """
 
 
 @orca.step()
@@ -428,33 +452,39 @@ def remove_old_units(buildings, residential_units):
     """
 
     # Verify initial data characteristics
-    '''
+    """
     ot.assert_orca_spec(OrcaSpec(
         '',
         TableSpec(
             'buildings', ColumnSpec('building_id', primary_key=True)),
         TableSpec(
             'residential_units', ColumnSpec('building_id', numeric=True))))
-    '''
+    """
 
     units = residential_units.to_frame(residential_units.local_columns)
     current_units = units[units.building_id.isin(buildings.index)]
 
-    print("Removing %d units from %d buildings that no longer exist" %
-          ((len(units) - len(current_units)),
-           (len(units.groupby('building_id')) -
-            len(current_units.groupby('building_id')))))
+    print(
+        "Removing %d units from %d buildings that no longer exist"
+        % (
+            (len(units) - len(current_units)),
+            (
+                len(units.groupby("building_id"))
+                - len(current_units.groupby("building_id"))
+            ),
+        )
+    )
 
-    orca.add_table('residential_units', current_units)
+    orca.add_table("residential_units", current_units)
 
     # Verify final data characteristics
-    '''
+    """
     ot.assert_orca_spec(OrcaSpec(
         '',
         TableSpec(
             'residential_units',
             ColumnSpec('building_id', foreign_key='buildings.building_id'))))
-    '''
+    """
 
 
 @orca.step()
@@ -480,7 +510,7 @@ def initialize_new_units(buildings, residential_units):
     """
 
     # Verify initial data characteristics
-    '''
+    """
     ot.assert_orca_spec(OrcaSpec(
         '',
         TableSpec(
@@ -491,11 +521,10 @@ def initialize_new_units(buildings, residential_units):
             'residential_units',
             ColumnSpec('unit_id', primary_key=True),
             ColumnSpec('building_id', foreign_key='buildings.building_id'))))
-    '''
+    """
 
     old_units = residential_units.to_frame(residential_units.local_columns)
-    bldgs = buildings.to_frame(['residential_units',
-                                'deed_restricted_units'])
+    bldgs = buildings.to_frame(["residential_units", "deed_restricted_units"])
 
     # Filter for residential buildings not currently represented in
     # the units table, and create new units
@@ -505,72 +534,81 @@ def initialize_new_units(buildings, residential_units):
 
     # Filter for residential buildings where ADUs were added and
     # create new units
-    old_units_by_bldg = old_units.groupby(['building_id']).agg(
-            {'unit_num': max,
-             'num_units': 'count'}).reset_index()
-    old_units_by_bldg.rename(columns={'num_units': 'num_units_old',
-                                      'unit_num': 'max_num_old'},
-                             inplace=True)
+    old_units_by_bldg = (
+        old_units.groupby(["building_id"])
+        .agg({"unit_num": max, "num_units": "count"})
+        .reset_index()
+    )
+    old_units_by_bldg.rename(
+        columns={"num_units": "num_units_old", "unit_num": "max_num_old"}, inplace=True
+    )
     old_bldgs = bldgs[bldgs.index.isin(old_units.building_id)]
     old_bldgs = old_bldgs[old_bldgs.residential_units > 0]
 
-    adu_bldgs = pd.merge(old_bldgs, old_units_by_bldg,
-                         left_index=True, right_on='building_id')
-    adu_bldgs['adu_count'] = \
-        adu_bldgs.residential_units - adu_bldgs.num_units_old
+    adu_bldgs = pd.merge(
+        old_bldgs, old_units_by_bldg, left_index=True, right_on="building_id"
+    )
+    adu_bldgs["adu_count"] = adu_bldgs.residential_units - adu_bldgs.num_units_old
     adu_bldgs = adu_bldgs[adu_bldgs.adu_count > 0]
 
     if len(adu_bldgs) > 0:
-        new_adus = pd.DataFrame({
-            'unit_residential_price': 0.0,
-            'unit_residential_rent': 0.0,
-            'num_units': 1,
-            'building_id': np.repeat(
-                adu_bldgs.building_id,
-                adu_bldgs.adu_count.values.astype(int)
-            ),
-            # counter of the AUDs in a building
-            'unit_num_adu': np.concatenate([
-                np.arange(num_adus)
-                for num_adus in adu_bldgs.adu_count.values.astype(int)
-            ]),
-            # ADUs are not deed restricted
-            'deed_restricted': 0.0,
-            'adu_count_start': np.repeat(
-                adu_bldgs.max_num_old+1,
-                adu_bldgs.adu_count.values.astype(int))
-        }).sort_values(by=['building_id',
-                           'unit_num_adu']).reset_index(drop=True)
+        new_adus = (
+            pd.DataFrame(
+                {
+                    "unit_residential_price": 0.0,
+                    "unit_residential_rent": 0.0,
+                    "num_units": 1,
+                    "building_id": np.repeat(
+                        adu_bldgs.building_id, adu_bldgs.adu_count.values.astype(int)
+                    ),
+                    # counter of the AUDs in a building
+                    "unit_num_adu": np.concatenate(
+                        [
+                            np.arange(num_adus)
+                            for num_adus in adu_bldgs.adu_count.values.astype(int)
+                        ]
+                    ),
+                    # ADUs are not deed restricted
+                    "deed_restricted": 0.0,
+                    "adu_count_start": np.repeat(
+                        adu_bldgs.max_num_old + 1,
+                        adu_bldgs.adu_count.values.astype(int),
+                    ),
+                }
+            )
+            .sort_values(by=["building_id", "unit_num_adu"])
+            .reset_index(drop=True)
+        )
 
         # update unit_num of ADUs to continue with the previous
         # unit_num of non-ADUs in the same buildings
-        new_adus.unit_num = \
-            new_adus.unit_num_adu + new_adus.adu_count_start
-        new_adus.drop(columns=['adu_count_start',
-                               'unit_num_adu'], inplace=True)
-        new_adus.index.name = 'unit_id'
+        new_adus.unit_num = new_adus.unit_num_adu + new_adus.adu_count_start
+        new_adus.drop(columns=["adu_count_start", "unit_num_adu"], inplace=True)
+        new_adus.index.name = "unit_id"
 
         new_units = dev.merge(new_units, new_adus)
     else:
-        print('No ADUs were built.')
+        print("No ADUs were built.")
 
     # Merge new units with old units and update the table
 
     all_units = dev.merge(old_units, new_units)
-    all_units.index.name = 'unit_id'
+    all_units.index.name = "unit_id"
 
-    print("Creating %d residential units for %d new buildings" %
-          (len(new_units), len(new_bldgs)))
+    print(
+        "Creating %d residential units for %d new buildings"
+        % (len(new_units), len(new_bldgs))
+    )
 
-    orca.add_table('residential_units', all_units)
+    orca.add_table("residential_units", all_units)
 
     # Verify final data characteristics
-    '''
+    """
     ot.assert_orca_spec(
         OrcaSpec('', TableSpec(
             'residential_units',
             ColumnSpec('unit_id', primary_key=True))))
-    '''
+    """
 
 
 @orca.step()
@@ -598,7 +636,7 @@ def assign_tenure_to_new_units(residential_units, households, developer_settings
     """
 
     # Verify initial data characteristics
-    '''
+    """
     # XXX can we restrict tenure to rent/own?
     ot.assert_orca_spec(
         OrcaSpec('', TableSpec(
@@ -606,31 +644,28 @@ def assign_tenure_to_new_units(residential_units, households, developer_settings
             ColumnSpec('tenure', missing_val_coding=np.nan),
             ColumnSpec('unit_residential_price', min=0),
             ColumnSpec('unit_residential_rent', min=0))))
-    '''
+    """
 
-    cols = ['tenure', 'unit_residential_price', 'unit_residential_rent',
-            'vacant_units']
+    cols = ["tenure", "unit_residential_price", "unit_residential_rent", "vacant_units"]
     units = residential_units.to_frame(cols)
 
     # Filter for units that are missing a tenure assignment
-    units = units[~units.tenure.isin(['own', 'rent'])]
+    units = units[~units.tenure.isin(["own", "rent"])]
 
     # Convert monthly rent to equivalent sale price
-    cap_rate = developer_settings.get('cap_rate')
-    units['unit_residential_rent'] = \
-        units.unit_residential_rent * 12 / cap_rate
+    cap_rate = developer_settings.get("cap_rate")
+    units["unit_residential_rent"] = units.unit_residential_rent * 12 / cap_rate
 
     # Assign tenure based on higher of price or adjusted rent
-    rental_units = (units.unit_residential_rent > units.unit_residential_price)
-    units.loc[~rental_units, 'tenure'] = 'own'
-    units.loc[rental_units, 'tenure'] = 'rent'
+    rental_units = units.unit_residential_rent > units.unit_residential_price
+    units.loc[~rental_units, "tenure"] = "own"
+    units.loc[rental_units, "tenure"] = "rent"
     units = unplaced_adjustment(households, units)
 
     print("Adding tenure assignment to %d new residential units" % len(units))
     print(units.describe())
 
-    residential_units.update_col_from_series(
-        'tenure', units.tenure, cast=True)
+    residential_units.update_col_from_series("tenure", units.tenure, cast=True)
 
 
 def unplaced_adjustment(households, units):
@@ -650,47 +685,49 @@ def unplaced_adjustment(households, units):
     units : pd.DataFrame with adjusted tenure assignments
 
     """
-    hh = households.to_frame(['unit_id', 'building_id', 'tenure'])
-    vacant_units = units[units['vacant_units'] > 0].copy()
-    vacant_units['rent_over_price'] = vacant_units['unit_residential_rent'] \
-        / vacant_units['unit_residential_price']
-    vacant_units['price_over_rent'] = vacant_units['unit_residential_price'] \
-        / vacant_units['unit_residential_rent']
+    hh = households.to_frame(["unit_id", "building_id", "tenure"])
+    vacant_units = units[units["vacant_units"] > 0].copy()
+    vacant_units["rent_over_price"] = (
+        vacant_units["unit_residential_rent"] / vacant_units["unit_residential_price"]
+    )
+    vacant_units["price_over_rent"] = (
+        vacant_units["unit_residential_price"] / vacant_units["unit_residential_rent"]
+    )
     min_new = {}
 
-    for tenure in ['own', 'rent']:
-        units_tenure = vacant_units[vacant_units['tenure'] == tenure]
+    for tenure in ["own", "rent"]:
+        units_tenure = vacant_units[vacant_units["tenure"] == tenure]
         vacant_units_tenure = units_tenure.vacant_units.sum()
-        unplaced_hh = hh[(hh['tenure'] == tenure) & (hh['unit_id'] == -1)]
+        unplaced_hh = hh[(hh["tenure"] == tenure) & (hh["unit_id"] == -1)]
         unplaced_hh = len(unplaced_hh.index)
         min_new[tenure] = max(unplaced_hh - vacant_units_tenure, 0)
 
-    complement = {'own': 'rent', 'rent': 'own'}
-    price = {'own': 'price_over_rent', 'rent': 'rent_over_price'}
+    complement = {"own": "rent", "rent": "own"}
+    price = {"own": "price_over_rent", "rent": "rent_over_price"}
 
-    for tenure in ['own', 'rent']:
-        units_tenure = vacant_units[vacant_units['tenure'] == tenure]
-        units_comp = vacant_units[vacant_units['tenure'] == complement[tenure]]
+    for tenure in ["own", "rent"]:
+        units_tenure = vacant_units[vacant_units["tenure"] == tenure]
+        units_comp = vacant_units[vacant_units["tenure"] == complement[tenure]]
 
-        if (min_new[complement[tenure]] < len(units_comp.index)) & \
-                (min_new[tenure] > len(units_tenure.index)):
+        if (min_new[complement[tenure]] < len(units_comp.index)) & (
+            min_new[tenure] > len(units_tenure.index)
+        ):
             missing_units = min_new[tenure] - len(units_tenure.index)
             extra_units = len(units_comp.index) - min_new[complement[tenure]]
             extra_units = int(min(missing_units, extra_units))
             extra_units = units_comp.nlargest(extra_units, price[tenure])
-            units.loc[extra_units.index, 'tenure'] = tenure
+            units.loc[extra_units.index, "tenure"] = tenure
 
     return units
 
 
 @orca.step()
-def save_intermediate_tables(households, buildings, parcels,
-                             jobs, zones, year):
+def save_intermediate_tables(households, buildings, parcels, jobs, zones, year):
     """
     This orca step saves intermediate versions of data tables, for developing
     visualization proofs of concept.
     """
-    filename = 'baus_' + str(year) + '.h5'
+    filename = "baus_" + str(year) + ".h5"
     for table in [households, buildings, parcels, jobs, zones]:
         table.to_frame().to_hdf(filename, table.name)
 
@@ -704,10 +741,11 @@ def save_intermediate_tables(households, buildings, parcels,
 
 # have to define this here because urbansim_defaults incorrectly calls the
 # outcome variable non_residential_price
-@orca.step('nrh_simulate')
+@orca.step("nrh_simulate")
 def nrh_simulate(buildings, aggregations):
-    return utils.hedonic_simulate('hedonics/nrh.yaml', buildings, aggregations,
-                                  "non_residential_rent")
+    return utils.hedonic_simulate(
+        "hedonics/nrh.yaml", buildings, aggregations, "non_residential_rent"
+    )
 
 
 @orca.step()
@@ -715,7 +753,7 @@ def rsh_estimate(buildings, aggregations):
     return utils.hedonic_estimate("/hedonics/rsh.yaml", buildings, aggregations)
 
 
-@orca.step('rrh_estimate')
+@orca.step("rrh_estimate")
 def rrh_estimate(craigslist, aggregations):
     """
     This model step estimates a residental rental hedonic using
@@ -725,9 +763,9 @@ def rrh_estimate(craigslist, aggregations):
     -----------------
     - 'craigslist' table and others, as defined in the yaml config
     """
-    return utils.hedonic_estimate(cfg='hedonics/rrh.yaml',
-                                  tbl=craigslist,
-                                  join_tbls=aggregations)
+    return utils.hedonic_estimate(
+        cfg="hedonics/rrh.yaml", tbl=craigslist, join_tbls=aggregations
+    )
 
 
 def _mtc_clip(table, col_name, price_settings, price_scale=1):
@@ -751,12 +789,14 @@ def rsh_simulate(residential_units, aggregations, price_settings):
     -----------------
     - tk
     """
-    utils.hedonic_simulate(cfg='hedonics/rsh.yaml',
-                           tbl=residential_units,
-                           join_tbls=aggregations,
-                           out_fname='unit_residential_price')
+    utils.hedonic_simulate(
+        cfg="hedonics/rsh.yaml",
+        tbl=residential_units,
+        join_tbls=aggregations,
+        out_fname="unit_residential_price",
+    )
 
-    _mtc_clip(residential_units, 'unit_residential_price', price_settings)
+    _mtc_clip(residential_units, "unit_residential_price", price_settings)
     return
 
 
@@ -770,12 +810,19 @@ def rrh_simulate(residential_units, aggregations, price_settings):
     -----------------
     - tk
     """
-    utils.hedonic_simulate(cfg='hedonics/rrh.yaml',
-                           tbl=residential_units,
-                           join_tbls=aggregations,
-                           out_fname='unit_residential_rent')
+    utils.hedonic_simulate(
+        cfg="hedonics/rrh.yaml",
+        tbl=residential_units,
+        join_tbls=aggregations,
+        out_fname="unit_residential_rent",
+    )
 
-    _mtc_clip(residential_units, 'unit_residential_rent', price_settings, price_scale=0.05/12)
+    _mtc_clip(
+        residential_units,
+        "unit_residential_rent",
+        price_settings,
+        price_scale=0.05 / 12,
+    )
     return
 
 
@@ -803,7 +850,7 @@ def households_relocation(households, settings):
     """
 
     # Verify expected data characteristics
-    '''
+    """
     # XXX restrict tenure to rent/own
     ot.assert_orca_spec(
         OrcaSpec('', TableSpec(
@@ -811,9 +858,9 @@ def households_relocation(households, settings):
             ColumnSpec('tenure', missing=False),
             ColumnSpec('building_id', numeric=True, missing_val_coding=-1),
             ColumnSpec('unit_id', numeric=True, missing_val_coding=-1))))
-    '''
+    """
 
-    rates = pd.DataFrame.from_dict(settings['relocation_rates'])
+    rates = pd.DataFrame.from_dict(settings["relocation_rates"])
 
     print("Total agents: %d" % len(households))
     print("Total currently unplaced: %d" % (households.unit_id == -1).sum())
@@ -822,11 +869,13 @@ def households_relocation(households, settings):
     # Initialize model, choose movers, and un-place them from buildings
     # and units
     m = RelocationModel(rates)
-    mover_ids = m.find_movers(households.to_frame(['unit_id', 'tenure']))
+    mover_ids = m.find_movers(households.to_frame(["unit_id", "tenure"]))
     households.update_col_from_series(
-        'building_id', pd.Series(-1, index=mover_ids), cast=True)
+        "building_id", pd.Series(-1, index=mover_ids), cast=True
+    )
     households.update_col_from_series(
-        'unit_id', pd.Series(-1, index=mover_ids), cast=True)
+        "unit_id", pd.Series(-1, index=mover_ids), cast=True
+    )
 
     print("Total currently unplaced: %d" % (households.unit_id == -1).sum())
     return
@@ -834,95 +883,127 @@ def households_relocation(households, settings):
 
 @orca.step()
 def hlcm_owner_estimate(households, residential_units, aggregations):
-    return utils.lcm_estimate(cfg="location_choice/hlcm_owner.yaml",
-                              choosers=households,
-                              chosen_fname="unit_id",
-                              buildings=residential_units,
-                              join_tbls=aggregations)
+    return utils.lcm_estimate(
+        cfg="location_choice/hlcm_owner.yaml",
+        choosers=households,
+        chosen_fname="unit_id",
+        buildings=residential_units,
+        join_tbls=aggregations,
+    )
 
 
 @orca.step()
 def hlcm_renter_estimate(households, residential_units, aggregations):
-    return utils.lcm_estimate(cfg="location_choice/hlcm_renter.yaml",
-                              choosers=households,
-                              chosen_fname="unit_id",
-                              buildings=residential_units,
-                              join_tbls=aggregations)
+    return utils.lcm_estimate(
+        cfg="location_choice/hlcm_renter.yaml",
+        choosers=households,
+        chosen_fname="unit_id",
+        buildings=residential_units,
+        join_tbls=aggregations,
+    )
 
 
 # use one core hlcm for the hlcms below, with different yaml files
-def hlcm_simulate(households, residential_units, aggregations,
-                  price_settings, yaml_name, equilibration_name):
+def hlcm_simulate(
+    households,
+    residential_units,
+    aggregations,
+    price_settings,
+    yaml_name,
+    equilibration_name,
+):
 
-    return utils.lcm_simulate(cfg="location_choice/"+yaml_name,
-                              choosers=households,
-                              buildings=residential_units,
-                              join_tbls=aggregations,
-                              out_fname='unit_id',
-                              supply_fname='num_units',
-                              vacant_fname='vacant_units',
-                              enable_supply_correction=price_settings.get(
-                                equilibration_name, None),
-                              cast=True)
+    return utils.lcm_simulate(
+        cfg="location_choice/" + yaml_name,
+        choosers=households,
+        buildings=residential_units,
+        join_tbls=aggregations,
+        out_fname="unit_id",
+        supply_fname="num_units",
+        vacant_fname="vacant_units",
+        enable_supply_correction=price_settings.get(equilibration_name, None),
+        cast=True,
+    )
 
 
 @orca.step()
-def hlcm_owner_simulate(households, residential_units,
-                        aggregations, price_settings):
+def hlcm_owner_simulate(households, residential_units, aggregations, price_settings):
 
     # Note that the submarket id (zone_id) needs to be in the table of
     # alternatives, for supply/demand equilibration, and needs to NOT be in the
     # choosers table, to avoid conflicting when the tables are joined
 
     # Pre-filter the alternatives to avoid over-pruning (PR 103)
-    correct_alternative_filters_sample(residential_units, households, 'own')
+    correct_alternative_filters_sample(residential_units, households, "own")
 
-    hlcm_simulate(orca.get_table('own_hh'), orca.get_table('own_units'),
-                  aggregations, price_settings, "hlcm_owner.yaml",
-                  'price_equilibration')
+    hlcm_simulate(
+        orca.get_table("own_hh"),
+        orca.get_table("own_units"),
+        aggregations,
+        price_settings,
+        "hlcm_owner.yaml",
+        "price_equilibration",
+    )
 
-    update_unit_ids(households, 'own')
+    update_unit_ids(households, "own")
 
 
 @orca.step()
-def hlcm_owner_lowincome_simulate(households, residential_units,
-                                  aggregations, price_settings):
+def hlcm_owner_lowincome_simulate(
+    households, residential_units, aggregations, price_settings
+):
 
     # Pre-filter the alternatives to avoid over-pruning (PR 103)
-    correct_alternative_filters_sample(residential_units, households, 'own')
+    correct_alternative_filters_sample(residential_units, households, "own")
 
-    hlcm_simulate(orca.get_table('own_hh'), orca.get_table('own_units'),
-                  aggregations, price_settings, "hlcm_owner_lowincome.yaml",
-                  'price_equilibration')
+    hlcm_simulate(
+        orca.get_table("own_hh"),
+        orca.get_table("own_units"),
+        aggregations,
+        price_settings,
+        "hlcm_owner_lowincome.yaml",
+        "price_equilibration",
+    )
 
-    update_unit_ids(households, 'own')
+    update_unit_ids(households, "own")
 
 
 @orca.step()
 def hlcm_renter_simulate(households, residential_units, aggregations, price_settings):
 
     # Pre-filter the alternatives to avoid over-pruning (PR 103)
-    correct_alternative_filters_sample(residential_units, households, 'rent')
+    correct_alternative_filters_sample(residential_units, households, "rent")
 
-    hlcm_simulate(orca.get_table('rent_hh'), orca.get_table('rent_units'),
-                  aggregations, price_settings, "hlcm_renter.yaml",
-                  'rent_equilibration')
+    hlcm_simulate(
+        orca.get_table("rent_hh"),
+        orca.get_table("rent_units"),
+        aggregations,
+        price_settings,
+        "hlcm_renter.yaml",
+        "rent_equilibration",
+    )
 
-    update_unit_ids(households, 'rent')
+    update_unit_ids(households, "rent")
 
 
 @orca.step()
-def hlcm_renter_lowincome_simulate(households, residential_units, aggregations,
-                                   price_settings):
+def hlcm_renter_lowincome_simulate(
+    households, residential_units, aggregations, price_settings
+):
 
     # Pre-filter the alternatives to avoid over-pruning (PR 103)
-    correct_alternative_filters_sample(residential_units, households, 'rent')
+    correct_alternative_filters_sample(residential_units, households, "rent")
 
-    hlcm_simulate(orca.get_table('rent_hh'), orca.get_table('rent_units'),
-                  aggregations, price_settings, "hlcm_renter_lowincome.yaml",
-                  'rent_equilibration')
+    hlcm_simulate(
+        orca.get_table("rent_hh"),
+        orca.get_table("rent_units"),
+        aggregations,
+        price_settings,
+        "hlcm_renter_lowincome.yaml",
+        "rent_equilibration",
+    )
 
-    update_unit_ids(households, 'rent')
+    update_unit_ids(households, "rent")
 
 
 def correct_alternative_filters_sample(residential_units, households, tenure):
@@ -947,17 +1028,16 @@ def correct_alternative_filters_sample(residential_units, households, tenure):
     """
     units = residential_units.to_frame()
     units_tenure = units[units.tenure == tenure]
-    units_name = tenure + '_units'
-    orca.add_table(units_name, units_tenure, cache=True, cache_scope='step')
+    units_name = tenure + "_units"
+    orca.add_table(units_name, units_tenure, cache=True, cache_scope="step")
 
     hh = households.to_frame()
     hh_tenure = hh[hh.tenure == tenure]
-    hh_name = tenure + '_hh'
-    orca.add_table(hh_name, hh_tenure, cache=True, cache_scope='step')
+    hh_name = tenure + "_hh"
+    orca.add_table(hh_name, hh_tenure, cache=True, cache_scope="step")
 
-    orca.broadcast('buildings', units_name,
-                   cast_index=True, onto_on='building_id')
-    orca.broadcast(units_name, hh_name, cast_index=True, onto_on='unit_id')
+    orca.broadcast("buildings", units_name, cast_index=True, onto_on="building_id")
+    orca.broadcast(units_name, hh_name, cast_index=True, onto_on="unit_id")
 
 
 def update_unit_ids(households, tenure):
@@ -977,11 +1057,10 @@ def update_unit_ids(households, tenure):
     None. unit_id column gets updated in the households table.
 
     """
-    unit_ids = households.to_frame(['unit_id'])
-    updated = orca.get_table(tenure+'_hh').to_frame(['unit_id'])
-    unit_ids.loc[unit_ids.index.isin(updated.index),
-                 'unit_id'] = updated['unit_id']
-    households.update_col_from_series('unit_id', unit_ids.unit_id, cast=True)
+    unit_ids = households.to_frame(["unit_id"])
+    updated = orca.get_table(tenure + "_hh").to_frame(["unit_id"])
+    unit_ids.loc[unit_ids.index.isin(updated.index), "unit_id"] = updated["unit_id"]
+    households.update_col_from_series("unit_id", unit_ids.unit_id, cast=True)
 
 
 # this opens the yaml file, deletes the predict filters and writes it to the
@@ -990,8 +1069,8 @@ def drop_tenure_predict_filters_from_yaml(in_yaml_name, out_yaml_name):
     fname = misc.config(in_yaml_name)
     cfg = yaml.load(open(fname))
     cfg["alts_predict_filters"] = None
-    if 'lowincome' not in in_yaml_name:
-        cfg["alts_predict_filters"] = 'deed_restricted == False'
+    if "lowincome" not in in_yaml_name:
+        cfg["alts_predict_filters"] = "deed_restricted == False"
     open(misc.config(out_yaml_name), "w").write(yaml.dump(cfg))
 
 
@@ -1002,27 +1081,32 @@ def drop_tenure_predict_filters_from_yaml(in_yaml_name, out_yaml_name):
 # allowing only Q1 into deed-restricted units exacerbates the tenure
 # units-households alignment issue
 @orca.step()
-def hlcm_owner_simulate_no_unplaced(households, residential_units,
-                                    year, final_year,
-                                    aggregations, price_settings):
+def hlcm_owner_simulate_no_unplaced(
+    households, residential_units, year, final_year, aggregations, price_settings
+):
 
     # only run in the last year, but make sure to run before summaries
     # if year != final_year:
     #     return
 
     drop_tenure_predict_filters_from_yaml(
-        "location_choice/hlcm_owner.yaml",
-        "location_choice/hlcm_owner_no_unplaced.yaml")
+        "location_choice/hlcm_owner.yaml", "location_choice/hlcm_owner_no_unplaced.yaml"
+    )
 
-    return hlcm_simulate(households, residential_units, aggregations,
-                         price_settings, "hlcm_owner_no_unplaced.yaml",
-                         "price_equilibration")
+    return hlcm_simulate(
+        households,
+        residential_units,
+        aggregations,
+        price_settings,
+        "hlcm_owner_no_unplaced.yaml",
+        "price_equilibration",
+    )
 
 
 @orca.step()
-def hlcm_owner_lowincome_simulate_no_unplaced(households, residential_units,
-                                              year, final_year,
-                                              aggregations, price_settings):
+def hlcm_owner_lowincome_simulate_no_unplaced(
+    households, residential_units, year, final_year, aggregations, price_settings
+):
 
     # only run in the last year, but make sure to run before summaries
     # if year != final_year:
@@ -1030,17 +1114,23 @@ def hlcm_owner_lowincome_simulate_no_unplaced(households, residential_units,
 
     drop_tenure_predict_filters_from_yaml(
         "location_choice/hlcm_owner_lowincome.yaml",
-        "location_choice/hlcm_owner_lowincome_no_unplaced.yaml")
+        "location_choice/hlcm_owner_lowincome_no_unplaced.yaml",
+    )
 
-    return hlcm_simulate(households, residential_units, aggregations,
-                         price_settings, "hlcm_owner_lowincome_no_unplaced.yaml",
-                         "price_equilibration")
+    return hlcm_simulate(
+        households,
+        residential_units,
+        aggregations,
+        price_settings,
+        "hlcm_owner_lowincome_no_unplaced.yaml",
+        "price_equilibration",
+    )
 
 
 @orca.step()
-def hlcm_renter_simulate_no_unplaced(households, residential_units,
-                                     year, final_year,
-                                     aggregations, price_settings):
+def hlcm_renter_simulate_no_unplaced(
+    households, residential_units, year, final_year, aggregations, price_settings
+):
 
     # only run in the last year, but make sure to run before summaries
     # if year != final_year:
@@ -1048,17 +1138,23 @@ def hlcm_renter_simulate_no_unplaced(households, residential_units,
 
     drop_tenure_predict_filters_from_yaml(
         "location_choice/hlcm_renter.yaml",
-        "location_choice/hlcm_renter_no_unplaced.yaml")
+        "location_choice/hlcm_renter_no_unplaced.yaml",
+    )
 
-    return hlcm_simulate(households, residential_units, aggregations,
-                         price_settings, "hlcm_renter_no_unplaced.yaml",
-                         "rent_equilibration")
+    return hlcm_simulate(
+        households,
+        residential_units,
+        aggregations,
+        price_settings,
+        "hlcm_renter_no_unplaced.yaml",
+        "rent_equilibration",
+    )
 
 
 @orca.step()
-def hlcm_renter_lowincome_simulate_no_unplaced(households, residential_units,
-                                               year, final_year,
-                                               aggregations, price_settings):
+def hlcm_renter_lowincome_simulate_no_unplaced(
+    households, residential_units, year, final_year, aggregations, price_settings
+):
 
     # only run in the last year, but make sure to run before summaries
     # if year != final_year:
@@ -1066,15 +1162,23 @@ def hlcm_renter_lowincome_simulate_no_unplaced(households, residential_units,
 
     drop_tenure_predict_filters_from_yaml(
         "location_choice/hlcm_renter_lowincome.yaml",
-        "location_choice/hlcm_renter_lowincome_no_unplaced.yaml")
+        "location_choice/hlcm_renter_lowincome_no_unplaced.yaml",
+    )
 
-    return hlcm_simulate(households, residential_units, aggregations,
-                         price_settings, "hlcm_renter_lowincome_no_unplaced.yaml",
-                         "rent_equilibration")
+    return hlcm_simulate(
+        households,
+        residential_units,
+        aggregations,
+        price_settings,
+        "hlcm_renter_lowincome_no_unplaced.yaml",
+        "rent_equilibration",
+    )
 
 
 @orca.step()
-def balance_rental_and_ownership_hedonics(households, developer_settings, residential_units):
+def balance_rental_and_ownership_hedonics(
+    households, developer_settings, residential_units
+):
 
     hh_rent_own = households.tenure.value_counts()
     unit_rent_own = residential_units.tenure.value_counts()
@@ -1088,8 +1192,7 @@ def balance_rental_and_ownership_hedonics(households, developer_settings, reside
     print("Renter utilization = %.3f" % renter_utilization)
 
     utilization_ratio = renter_utilization / owner_utilization
-    print("Ratio of renter utilization to owner utilization = %.3f" %
-          utilization_ratio)
+    print("Ratio of renter utilization to owner utilization = %.3f" % utilization_ratio)
 
     if "original_cap_rate" not in developer_settings:
         developer_settings["original_cap_rate"] = developer_settings["cap_rate"]
@@ -1106,7 +1209,8 @@ def balance_rental_and_ownership_hedonics(households, developer_settings, reside
     # here means renter utilization is higher than owner utilization
     # meaning rent price should go up meaning cap rate should go down
     # FIXME these might need a parameter to spread or narrow the impact
-    developer_settings["cap_rate"] = developer_settings["original_cap_rate"] /\
-        utilization_ratio
+    developer_settings["cap_rate"] = (
+        developer_settings["original_cap_rate"] / utilization_ratio
+    )
 
     print("New cap rate = %.2f" % developer_settings["cap_rate"])
