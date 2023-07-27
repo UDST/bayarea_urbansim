@@ -87,8 +87,8 @@ def geographic_summary(parcels, households, jobs, buildings, year, superdistrict
    
         summary_table.index.name = geography
         summary_table = summary_table.sort_index()
-        summary_table.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), "geographic_summaries/run{}_{}_summary_{}.csv").\
-                                                    format(run_name, geography, year))
+        summary_table.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), "geographic_summaries/{}_summary_{}.csv").\
+                                                    format(geography, year))
 
 
 @orca.step()
@@ -136,4 +136,4 @@ def geographic_growth_summary(year, final_year, initial_summary_year):
                                                          geog_growth[col+"_"+str(initial_summary_year)+"_regional_share"])
     
         geog_growth = geog_growth.fillna(0)
-        geog_growth.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "geographic_summaries/run{}_{}_summary_growth.csv").format(run_name, geography))
+        geog_growth.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "geographic_summaries/{}_summary_growth.csv").format(geography))
