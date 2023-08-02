@@ -43,9 +43,9 @@ def parcel_growth_summary(year, initial_summary_year, final_year):
     if year != final_year:
         return
 
-    df1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "parcel_summary_%d.csv" %
+    df1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/parcel_summary_%d.csv" %
                         (initial_summary_year)), index_col="parcel_id")
-    df2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "parcel_summary_%d.csv" %
+    df2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/parcel_summary_%d.csv" %
                         (final_year)), index_col="parcel_id")
 
     for col in df1.columns:
