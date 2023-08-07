@@ -10,7 +10,8 @@ Bay Area UrbanSim is written in Python and runs in a command line environment. I
 2. Clone this repository 
 3. Create a Python environment with the current dependencies: `conda env create -f baus-env-2020.yml`
 4. Activate the environment: `conda activate baus-env-2020`
-5. Download the model inputs folder, outputs folder structure, and `run_setup.yaml` file (ask an MTC contact for access)
-6. Store `run_setup.yaml` next to the `bayarea_urbansim` repository
-7. Specify I/O folder locations, model features to enable, and policy configurations in `run_setup.yaml`
-8. Run `python baus.py` from the main model directory (more info about the command line arguments: `python baus.py --help`)
+6. Store `run_setup.yaml` next to the  repository
+7. Specify `inputs` and `outputs` folder locations and `run_name` in `run_setup.yaml`
+8. Pull inputs into the model `inputs` folder (ask an MTC contact for access)
+9. In the `outputs` folder, use the `run_name` to establish an outputs folder for the run and copy the outputs folder structure into it
+10. Run `python baus.py` from the main model directory (more info about the command line arguments: `python baus.py --help`)
