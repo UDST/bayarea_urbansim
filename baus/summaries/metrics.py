@@ -46,8 +46,8 @@ def growth_geography_metrics(parcels, parcels_geography, buildings, households, 
     if year != final_year:
         return
     
-    year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "rgrowth_geography_summary_%d.csv" % (initial_summary_year)))
-    year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "growth_geography_summary_%d.csv" % (final_year)))
+    year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "metrics/growth_geography_summary_%d.csv" % (initial_summary_year)))
+    year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "metrics/growth_geography_summary_%d.csv" % (final_year)))
 
     growth_geog_growth = pd.DataFrame(index=[0])
 

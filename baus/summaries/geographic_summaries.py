@@ -102,8 +102,8 @@ def geographic_growth_summary(year, final_year, initial_summary_year):
     for geography in geographies:
 
         # use 2015 as the base year
-        year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "%s_summary_%d.csv" % (geography, initial_summary_year)))
-        year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "%s_summary_%d.csv" % (geography, final_year)))
+        year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "geographic_summaries/%s_summary_%d.csv" % (geography, initial_summary_year)))
+        year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "geographic_summaries/%s_summary_%d.csv" % (geography, final_year)))
 
         geog_growth = year1.merge(year2, on=geography, suffixes=("_"+str(initial_summary_year), "_"+str(final_year)))
 
