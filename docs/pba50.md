@@ -1,43 +1,16 @@
 # Plan Bay Area 2050
 
-Background: [Plan Bay Area 2050 project website](https://www.planbayarea.org/)
+Plan Bay Area 2050 is the most recent implementation of Bay Area UrbanSim. For all official Plan documents please see the [Plan Bay Area 2050 project website](https://www.planbayarea.org/)
 
 ## Scenarios
 
-#### S21: Blueprint Basic
-* This is the "base" scenario in the sense that we are doing it first and the others build off of it
-* Uses s21 control total files
-* Uses Blueprint Basic logsums
-* Uses s21 zoning modifications: major upzoning in all growth geogs
-* Has almost all strategies in
+#### Horizon
+#### Draft Blueprint
+#### Final Blueprint
+#### No Project
+#### EIR Alternative 1
+#### EIR Alternative 2
 
-#### s20: Baseline for PBA50
-* This is the "baseline" scenario in the sense that it doesn't have any pba50 changes and so it also has far lower control totals
-* Uses s20 control total files (these are minus the additional units built bc of housing policy in pba50)
-* Uses Baseline logsums (somewhat less congestion than others?)
-* Uses s20 zoning modifications: these are minimal in that the do typical No Project treatment (UGB, upzoning within) but may also need UGB expansion to fit control totals
-* Has no new strategies from PBA50
-
-#### s22: Blueprint Plus Fix It First
-* This is the higher funding scenario
-* Uses s22 control total files
-* Uses Blueprint Plus Fix It First logsums (very similar to s21 logsums)
-* Uses s22 zoning modifications: same as s21
-* Adds/modifies these strategies (working off of s210:
-    * adds incubator strategy
-    * increases size of affordable housing fund
-    * more slr protection
-
-#### s23: Blueprint Plus Crossing
-* This is the higher funding scenario plus the New Transbay Crossing
-* Uses s23 control total files
-* Uses Blueprint Plus Crossing logsums (moderately different from other scenarios)
-* Uses s23 zoning modifications: slightly higher upzoning than s21 and s22 at a few new/upgraded stations
-* Same strategies as s22
-
-#### s24: Final Blueprint
-* Builds off of s23
-* Includes both error correction and policy modifications
 
 ## Strategy Coding Technical Notes
 

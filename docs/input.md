@@ -1,6 +1,7 @@
 ## The inputs structure for Bay Area UrbanSim (BAUS) and a description of each input. Model input files are stored in an `inputs` folder to be called by the model. They are often run-specific and contain the data used to run the model, such as base year datasets and policy inputs.
 
 ## inputs/
+
 ## accessibility/
 ### pandana/
 **name**|**description**
@@ -11,7 +12,6 @@ landmarks.csv| Locations of a few major landmarks in the region for accessibilit
 regional_poi_distances.csv| The pre-computed distances from each travel model node to each landmark. 
 bart_stations.csv| A list of BART stations and their locations so that distance to BART can calculated.
 logsums.csv| A set of base year logsums from the travel model. 
-
 ### travel_model/
 **name**|**description**
 -----|-----
