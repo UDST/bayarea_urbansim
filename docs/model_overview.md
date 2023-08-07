@@ -4,8 +4,8 @@
 Bay Area UrbanSim (BAUS) is a microsimulation land use model used to forecast intraregional growth, study urban policies, and evaluate transportation projects at the Metropolitan Transportation Commission (MTC). UrbanSim simulates the movement of households and firms within the region and the construction of new buildings to hold those households and firms. In this manner, it is used to incrementally forecast potential future urban growth trajectories.
 
 BAUS is the middle model in an interactive suite of three model systems maintained by MTC: 
-- Regional economic and demographic information is supplied to BAUS from the REMI CGE model and related demographic processing scripts. BAUS outputs on housing production are used to adjust regional housing prices (and thus other variables) in REMI. 
-- Accessibillity information is supplied to BAUS from the Travel Model and influences real estate prices and household and employee location choices. BAUS outputs on the location of various types of households and employees are used to establish origins and destinations in the Travel Model.
+* Regional economic and demographic information is supplied to BAUS from the REMI CGE model and related demographic processing scripts. BAUS outputs on housing production are used to adjust regional housing prices (and thus other variables) in REMI. 
+* Accessibillity information is supplied to BAUS from the Travel Model and influences real estate prices and household and employee location choices. BAUS outputs on the location of various types of households and employees are used to establish origins and destinations in the Travel Model.
 
 ### BAUS Sub-Model Flow
 A series of sub-models generate the final model forecast. Sub-models run for 5-year periods, starting in the model's base year and running until the model's horizon year. The model's run file (baus.py) specifies these sub-models and the order in which they run. BAUS adds features on top of the core UrbanSim models, simulating real estate decisions such as subsidized housing and 
@@ -36,12 +36,4 @@ A series of sub-models generate the final model forecast. Sub-models run for 5-y
 
 
 ###  BAUS Scenarios
-
-The package of changes is then simulated to forecast its impact on the future urban landscape and these outcomes are often enterered into the travel model to predict future year travel patterns and greenhouse gas emmissions.
-
-#### BAUS Policies
-* Upzoning and downzoning, adding and removing allowable building types and setting the maximum building envelope.
-* Funding used to subsidize development on parcels and create affordable housing. 
-* Inclusionary housing rates which decrease revenues based on the AMI and inclusionary rates and in turn build affordable housing.
-* Develppment fees, including fmpact fees which impose a cost per unit or per sqft.
-* Profit increase policies, including CEQA Minimum parking requirements which 
+BAUS model runs modify policies and other levers to observe potential outcomes. These policies including upzoning, affordable housing subsidization, inclusionary housing, and more. Packages of changes are simulated to forecast impact on the future urban landscape and enterered into the travel model to predict future year travel patterns and greenhouse gas emmissions. For details on how each policy is implemented in the BAUS code, see [Policy Implementation]. 
