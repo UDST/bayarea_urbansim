@@ -618,6 +618,9 @@ def juris_ave_income(households, buildings, parcels_geography, parcels):
                           columns=["jurisdiction_id", "income"])
     # get median income by jurisdiction
     s = h.groupby(h.jurisdiction_id).income.quantile(.5)
+    # adding a fix here for negative incomes in the households table
+    # so that the later steps don't crash
+    s.loc[s < 1] = 1
     # map it to parcels - fill na with median for all areas
     # should probably remove the log transform and do that in the models
     return misc.reindex(s, parcels_geography.jurisdiction_id).\
