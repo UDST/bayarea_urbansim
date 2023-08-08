@@ -11,11 +11,11 @@ theme:
     - navigation.indexes
 
 nav:
-    - Model Overview: 'model_overview.md'
+    - Model: 'model.md'
+    - Scenarios: 'scenarios.md'
     - Configuration: 'configuration.md'
     - Input: 'input.md'
     - Output: 'output.md'
-    - Policy Implementation: 'policy_coding.md'
 
 plugins:
   - autorefs

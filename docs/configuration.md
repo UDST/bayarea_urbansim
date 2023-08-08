@@ -1,4 +1,5 @@
-## The configuration file structure for Bay Area UrbanSim (BAUS) and a description of each file. Model configurations files are stored in a `configs` folder in the model repository. They specify model settings such as model estimation constants and assumptions.
+### BAUS Configuration 
+The configuration file structure for Bay Area UrbanSim (BAUS) and a description of each file. Model configurations files are stored in a `configs` folder in the model repository. They specify model settings such as model estimation constants and assumptions.
 
 ## bayarea_urbnasim/configs
 ### adjusters/

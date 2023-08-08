@@ -1,7 +1,8 @@
-## The outputs of Bay Area UrbanSim (BAUS) and a description of each file. Model output files are written to an `outputs` folder during a BAUS model run.
+### BAUS Outputs 
+The outputs of BAUS and a description of each file. Model output files are written to an `outputs` folder during a BAUS model run.
 
-## outputs/
-### core summaries
+### outputs/
+#### core summaries
 **name**|**description**
 -----|-----
 parcel_summary_[year].csv | Development, households, and jobs on each parcel in a given year.
@@ -9,7 +10,7 @@ parcel_growth_summary.csv | Change in development, households, and jobs on each 
 building_summary_[year].csv | Inventory of buildings in a given year, linked to the parcel they sit on.
 diagnostic_output.csv | Interim model data.
  
-### geographic summaries
+#### geographic summaries
 **name**|**description**
 -----|-----
 jurisdiction_summary_[year].csv | Jurisdiction-level summary of development, households, and jobs in a given year.
@@ -23,7 +24,7 @@ subregion_summary_growth.csv | Subregion-level change in development, households
 region_summary_[year].csv | Regional summary of development, households, and jobs in a given year.
 region_summary_growth.csv | Regional change in development, households, and jobs between the model's base year and forecast year.
  
-### travel model summaries
+#### travel model summaries
 **name**|**description**
 -----|-----
 taz1_summary_[year].csv | TAZ1/TAZ1454-level summaries of development, households, jobs, demographics, and density attributes used for travel modeling.
@@ -35,7 +36,7 @@ taz2_marginals_[year].csv | TAZ2-level summaries of households and demographics 
 county_marginals_[year].csv | County-level summaries of demographics and jobs used to create the synthesized population for travel modeling.
 region_marginals_[year].csv | Region-level summaries of demographics used to create the synthesized population for travel modeling.
  
-### affordable housing summaries
+#### affordable housing summaries
 **name**|**description**
 -----|-----
 juris_dr_summary_[year].csv | Jurisdiction-level summary of deed-restricted units by type in a given year.
@@ -47,7 +48,7 @@ county_dr_growth | County-level change in deed-restricted units by type between 
 region_dr_summary_[year].csv | Region-level summary of deed-restricted units by type in a given year.
 region_dr_growth.csv | Region-level change in deed-restricted units by type between the model's base year and forecast year.
  
-### hazards summaries
+#### hazards summaries
 **name**|**description**
 -----|-----
 slr_summary_[year].csv | Sea level rise impacted parcels, buildings, households, and jobs in a given year.
@@ -58,7 +59,7 @@ eq_demolish_buildings_[year].csv | Inventory of buildings impacted by earthquake
 eq_demolish_buildings_[year].csv | Inventory of buildings retrofit for earthquake, by TAZ for the resilience team.
 eq_buildings_list_[year].csv | Inventory of buildings in key earthquake years, by TAZ for the resilience team.
 
-### metrics
+#### metrics
 **name**|**description**
 -----|-----
 growth_geog_summary_[year].csv | Households and jobs in growth geographies and combinations of growth geographies, by year.
