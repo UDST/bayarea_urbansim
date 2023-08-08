@@ -1,8 +1,7 @@
 ###  BAUS Scenarios
 BAUS model runs modify optional policies and other levers to observe potential outcomes. These policies including upzoning, affordable housing subsidization, inclusionary housing, and more. Packages of changes are simulated to forecast impact on the future urban landscape and are enterered into the travel model to predict future year travel patterns and greenhouse gas emmissions.
 
-
-
+![Alt text](BAUS-Scenario-Models.png)
 
 ### Hazards
 * Earthquake: Simulates the impact of an earthquake by destroying buildings based on their characteristics, displacing their inhabitants, and leaving them open to redevelopment.
