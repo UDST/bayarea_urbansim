@@ -589,7 +589,7 @@ if MAPS and MODE == "simulation" and 'travel_model_output' in get_simulation_mod
     config_resp = ue_config(run_name, host)
 
 if SLACK and MODE == "simulation":
-    slack.chat.post_message('#urbansim_sim_update', 'Completed simulation %d on host %s' % (run_name, host), as_user=True)
+    slack.chat.post_message('#urbansim_sim_update', 'Completed simulation %s on host %s' % (run_name, host), as_user=True)
 
     """slack.chat.post_message(
         '#sim_updates',
