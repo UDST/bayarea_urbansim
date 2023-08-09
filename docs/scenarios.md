@@ -1,51 +1,35 @@
 ###  BAUS Scenarios
-BAUS model runs modify optional policies and other levers to observe potential outcomes. Packages of changes are simulated to forecast impact on the future urban landscape and are enterered into the travel model to predict future year travel patterns and greenhouse gas emmissions.
+
+BAUS model runs have serveral optional levers that can be used to create a forecast scenario. These levers are used to observe potential outcomes of urban planning policies and natural hazards. Packages of changes can be applied to create modeling scenarios and forecast impacts on urban growth, equity, and the environment. Optional model features used to build BAUS scenarios are described below.
 
 ![Alt text](BAUS-Scenario-Models.png)
 
-### Hazards
-* Earthquake: Simulates the impact of an earthquake by destroying buildings based on their characteristics, displacing their inhabitants, and leaving them open to redevelopment.
-* Sea level rise: Simulates the impact of earthquakes and sea level rise by destroying buildings, displacing their inhabitants, and marking these parcels off-limits.
+### Earthquake Model
+This model simulates the impact of an earthquake occuring by destroying buildings based on a their locational likelihood of damage and their building attributes. Households and firms are displaced in the earthquake event to find new housing and job locations. The model then forecasts where redevelopment might occur. If mitigtion is applied in an earthquake simulation scenario, buildings are selected to be retrofit based on their building attributes, changing their damage likelihood.
 
+### Sea Level Rise Model
+Sea level rise model: The sea level rise model simulates the impact of sea level rise in a given year. Buildings impacted by sea level rise in that year are destroyed and their households and firms are displaced to search for new housing and job locations. A parcel that has been inundated sea level rise can no longer be developed. If mitigation is applied in a sea level rise simulation scenario, protected parcels are no longer impacted in their forecasted inundation year.
 
 ### Housing Preservation
-* Selects buildings to spend preservation funding on, by marking them as deed restricted units. The selection is not tied to price, and housing cost is calculated off model. 
-    * The buildings are randomly selected based on the total number of buildings to preserve within a geography. 
-    * The "deed restricted" column is updated in the residential units table, which is used to filter units in the household location choice models and assign Q1 households to deed restricted units. The "deed restricted units" and "preserved units" columns are updated in the buildings table.
+This model randomly selects buildings to preserve in BAUS based on preservation targets established by geography. All deed-restricted affordable housing units in the model are treated in two ways. The first is that they cannot be redeveloped when the developer models examine potential sites. The second is that low-income households receive priority to locate in them in the location choice models using the models filters.
 
 ### Inclusionary Zoning
-* Inclusionary zoning requirements set x% of new housing development have to be affordable. The default setting represents the existing requirements without plan strategy interventions. Plan strategies can set inclusionary rates at certain geographic level: 
-* Modeling Inclusionary Zoning in BAUS:
-    * [datasources.py](https://github.com/BayAreaMetro/bayarea_urbansim/blob/347fea11576a1f448f4056ffb143c4c4e4aadaa4/baus/datasources.py#L134) reads inclusionary strategy input and maps it to parcels using the corresponding field.
-    * In [subsidies.py](https://github.com/BayAreaMetro/bayarea_urbansim/blob/347fea11576a1f448f4056ffb143c4c4e4aadaa4/baus/subsidies.py), the [inclusionary_housing_revenue_reduction](https://github.com/BayAreaMetro/bayarea_urbansim/blob/347fea11576a1f448f4056ffb143c4c4e4aadaa4/baus/subsidies.py#L89) function calculates [median household AMI](https://github.com/BayAreaMetro/bayarea_urbansim/blob/347fea11576a1f448f4056ffb143c4c4e4aadaa4/baus/subsidies.py#L95), [feasible new affordable housing count and revenue_reduction amount](https://github.com/BayAreaMetro/bayarea_urbansim/blob/347fea11576a1f448f4056ffb143c4c4e4aadaa4/baus/subsidies.py#L144) of each inclusionary geography. 
+Inclusionary zoning sets a requirement that a percentage of new housing development must be affordable units. The default inclusionary settings in BAUS represent the existing requirements without plan strategy interventions. Scenario-based strategies can set inclusionary rates at a given geography level. The model calculates Area Median Income, feasible new affordable housing count, and revenue_reduction amount.
 
-### Profitability Adjustment Policies
-* One way to (indirectly) subsidize housing is to reduce housing development cost reduction, for example, SB743 CEQA reform, lowering parking requirements, etc. This is defined in [profitability_adjustment_policies](https://github.com/BayAreaMetro/bayarea_urbansim/blob/3ecf457e3cf3661992a3a3c5dba126fe1b33db8a/configs/policy.yaml#L1246). For each policy, [profitabiity_adjustment_formula](https://github.com/BayAreaMetro/bayarea_urbansim/blob/98f3b65ea4f29c1f2766659432e8a9d825eed56c/configs/policy.yaml#L1295) picks the parcels of a certain geography and then decreases the required profitability level needed for the model to build on those parcels, e.g. multiplying by 2.5% or 0.
-* Modeling Inclusionary Zoning in BAUS:
+### Housing Cost Reduction
+Reducing the cost of buildings housing can come in various forms: CEQA reform, lowering parking requirements, etc. These have the potential to make new projects profitable, especially when combined with other policies. For these policies, parcels within the specified geography decrease the required profitability level needed for the model to build on those parcels.
 
+### Transportation Impact Fees
+This policy is implemented by changing the cost of development in a zone based on the VMT in the area. Low VMT areas see a slight reduction in fees.
 
-### Affordable Housing Fund Lump Sum Accounts
-[Lump-sum accounts](https://github.com/BayAreaMetro/bayarea_urbansim/blob/54fe0d50d6f0d133ed3b8000abe0bdf3a955fd81/configs/policy.yaml#L1138) represent direct housing subsidies. Each county has a `lump-sum account` to hold all the available affordable housing funding for that county. BAUS assumes a constant [annual funding amount (an independent input)](https://github.com/BayAreaMetro/bayarea_urbansim/blob/54fe0d50d6f0d133ed3b8000abe0bdf3a955fd81/configs/policy.yaml#L1235), for each county during the plan period, doesn't consider inflation or fluctuations in funding availability over time. In each simulation iteration, funding available in each county's account equals the [annual amount multiplies by years per iteration (5 years in BAUS)](https://github.com/BayAreaMetro/bayarea_urbansim/blob/54fe0d50d6f0d133ed3b8000abe0bdf3a955fd81/baus/subsidies.py#L62). Residential development projects that are not feasible under market conditions are potentially qualified for subsidy. Final Blueprint requires the projects to be also located within the Growth Geography. A qualified project draws money from the corresponding account to fill the feasibility gap. Not all qualified projects will be subsidized.
-* Modeling Affordable Housing funds in BAUS:
-    * Set up the [account](https://github.com/BayAreaMetro/bayarea_urbansim/blob/03c7f27f0edf75edbba3ab663c9947fa7c1ef67a/baus/subsidies.py#L153) in policy.yaml
-    * Calculate each account's subsidy amount for each iteration and add it to [coffer](https://github.com/BayAreaMetro/bayarea_urbansim/blob/03c7f27f0edf75edbba3ab663c9947fa7c1ef67a/baus/subsidies.py#L45)
-    * Set up the filter in [`run_subsidized_developer()`](https://github.com/BayAreaMetro/bayarea_urbansim/blob/03c7f27f0edf75edbba3ab663c9947fa7c1ef67a/baus/subsidies.py#L859)
-    * Update the config in ['summaries.py'](https://github.com/BayAreaMetro/bayarea_urbansim/blob/54fe0d50d6f0d133ed3b8000abe0bdf3a955fd81/baus/summaries.py#L271)
-    * Check [`subsidized_residential_developer_lump_sum_accts()`](https://github.com/BayAreaMetro/bayarea_urbansim/blob/03c7f27f0edf75edbba3ab663c9947fa7c1ef67a/baus/subsidies.py#L1128) and make sure it is included in the model list in `baus.py`
+### Housing and Office Subsidies
+Subsidies provide funding to either residential or commerical projects to improve their feasibility. A user-specified funding amount is applied to each model time step Development projects that are not feasible under market conditions are potentially qualified for subsidy. A qualified project draws money from the corresponding account to fill the feasibility gap. Not all qualified projects will be subsidized. 
 
-### Office Lump Sum Account
-* Similar to the residential funding lump sum account, office lump sum account provides funding to subsidize office development in targeted areas.  
+### VMT Linkage Fees
+These fees on new commercial or residential development reflect transportation impacts associated with such development, focusing primarily on new commercial spaces or residential units anticipated to have high employment-related or residence-related vehicle miles traveled (VMT). The fees are applied to the specified geogrpahy on a $/sqft basis for commercial development and $/unit basis for residential development. They can be used on commercial development to subsidize residential development, on residential development to subsidize residential development, and on commercial development to subsidize commercial development. Each parcel in a given geography is assigned a user-specified fee based on its categorized VMT-level. 
 
-### VMT Fees / Transportation Impact Fees
-* Apply fees on new commercial or residential development that reflects transportation impacts associated with such development, focusing primarily on new commercial spaces or residential units anticipated to have high employment-related or residence-related vehicle miles traveled (VMT). The fees could be set at county, jurisdiction, or TAZ level, usually on a $/sqft basis for commercial development and $/unit basis for residential development. Draft Blueprint applies VMT on new office development based on the county and associated VMT per worker associated with the TAZ to incentivize development inside low-VMT job centers.
-* Modeling VMT Fees in BAUS:
-    * BAUS has three types of VMT fees - "com_for_res" (apply fees on commercial development to subsidize residential development), "res_for_res" (apply fees on residential development to subsidize residential development), and "com_for_com" (apply fees on commercial development to subsidize commercial development). 
-    * Each parcel is assigned a "vmt_res_cat" value and a "vmt_nonres_cat" value based on its categorized VMT-level. This is then mapped to the [fee table](https://mtcdrive.box.com/s/bh3hqzab817lu2m87gxr4o5l6dt39lep) to decide the fee amount for new residential and commercial development on the parcel.
-    * During each model iteration period (currently five years), [VMT fees collected from new development](https://github.com/BayAreaMetro/bayarea_urbansim/blob/680b9c3451013f7014becaf1de88b58053ff75b9/baus/subsidies.py#L282) go into one of the [two accounts](https://github.com/BayAreaMetro/bayarea_urbansim/blob/680b9c3451013f7014becaf1de88b58053ff75b9/baus/subsidies.py#L41) - "vmt_res_acct" and "vmt_com_acct" - for each geography (regional or sub-regional). Policies that aim to support/incentivize certain types of housing development or commercial activities can draw funding from respective account. In [Draft Blueprint](https://mtcdrive.box.com/s/bh3hqzab817lu2m87gxr4o5l6dt39lep), VMT fees revenue is not applied into any job/housing incentive, but is accumulated to help to understand how much revenue is raised to support other economy strategies.
+### Jobs-Housing Linkage Fee
+This policy is mechanically similar to transportatin impact fees, but is a regional jobs-housing linkage fee to generate funding for affordable housing when new office development occurs in job-rich places, thereby incentivizing more jobs to locate in housing-rich places. The $/sqft fee assigned to each geography is a composite fee based on the jobs-housing ratio and jobs-housing fit for both cities and counties. 
 
-### Jobs-housing Balance Fee
-* Apply a regional jobs-housing linkage fee to generate funding for affordable housing when new office development occurs in job-rich places, thereby incentivizing more jobs to locate in housing-rich places. The $/sqft fee assigned to each jurisdiction is a composite fee based on the jobs-housing ratio and jobs-housing fit for both cities and counties.
-* Modeling Jobs-Housing fee in BAUS:
-    * Jobs-housing fee is tracked in BAUS under the ["jobs_housing_com_for_res" account at the county level](https://github.com/BayAreaMetro/bayarea_urbansim/blob/622ddc296983e6d6110872913065fec0b2419193/baus/subsidies.py#L55), which is similar to the "com_for_res" account of the VMT strategy.
-    * In each model interation period, jobs-housing fees [applies to new office development in each county](https://github.com/BayAreaMetro/bayarea_urbansim/blob/622ddc296983e6d6110872913065fec0b2419193/baus/subsidies.py#L453) based on the [$/sqft level of jurisdiction](https://github.com/BayAreaMetro/bayarea_urbansim/blob/622ddc296983e6d6110872913065fec0b2419193/configs/policy.yaml#L1854) where the development occurs. The fees collected goes to each county's account. 
-    * The account then acts similarly to the county-level lump-sum account to [subsidize affordable housing](https://github.com/BayAreaMetro/bayarea_urbansim/blob/622ddc296983e6d6110872913065fec0b2419193/baus/subsidies.py#L917) in that county. 
+### Office and Residential Construction Caps
+These caps limit the number of new residential units and job spaces that can occur in a given geography. The default caps in BAUS are inherited in all model runs, including when scenario-based caps are added.
