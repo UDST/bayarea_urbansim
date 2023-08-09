@@ -2,15 +2,15 @@
 
 ## Model Overview
 
-![Core Models](Core-Models.png)
-
 Bay Area UrbanSim (BAUS) is a microsimulation land use model used to forecast intraregional growth, study urban policies, and evaluate transportation projects at the Metropolitan Transportation Commission (MTC). UrbanSim simulates the movement of households and firms within the region and the construction of new buildings to hold those households and firms. In this manner, it is used to incrementally forecast potential future urban growth trajectories. 
+
+![Core Models](Core-Models.png)
 
 ### BAUS Sub-Model Flow
 
-![Alt text](BAUS-Models.png)
+A series of sub-models generat
 
-A series of sub-models gener* Earthquake: Simulates the impact of an earthquake by destroying buildings based on their characteristics, displacing their inhabitants, and leaving them open to redevelopment.
+![Alt text](BAUS-Models.png)
 
 * Accessibility: Pandana is used in the model to calculate endogenous accessibility variables. These generally describe how close a parcel is to something (e.g., BART) or how many things are nearby a parcel (e.g., jobs), in turn influencing price models and location choice models. Both local (local street network from Open Street Map) and regional (travel model network) networks are used to compute these variables.
 
