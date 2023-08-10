@@ -4,11 +4,15 @@ import os
 import sys
 import time
 import traceback
+from baus import datasources
 from baus import models
 from baus import slr
 from baus import earthquake
 from baus import ual
 from baus import validation
+from baus.summaries import core_summaries, metrics, geographic_summaries, \
+                            travel_model_summaries, hazards_summaries, \
+                            affordable_housing_summaries
 import numpy as np
 import pandas as pd
 import orca
@@ -16,6 +20,11 @@ import socket
 import argparse
 import warnings
 from baus.utils import compare_summary
+import urbansim
+import urbansim_defaults
+import orca
+import orca_test
+import pandana
 
 warnings.filterwarnings("ignore")
 
@@ -33,10 +42,8 @@ BRANCH = os.popen('git rev-parse --abbrev-ref HEAD').read()
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
 COMPARE_TO_NO_PROJECT = True
 NO_PROJECT = 611
-
 IN_YEAR, OUT_YEAR = 2010, 2050
 COMPARE_AGAINST_LAST_KNOWN_GOOD = False
-
 LAST_KNOWN_GOOD_RUN = 182 
 
 
@@ -98,11 +105,11 @@ if INTERACT:
     code.interact(local=locals())
     sys.exit()
 
-run_num = orca.get_injectable("run_number")
+run_name = orca.get_injectable("run_name")
 
 if LOGS:
-    print('***The Standard stream is being written to run{0}.log***'.format(run_num))
-    sys.stdout = sys.stderr = open(os.path.join(orca.get_injectable("outputs_dir"), "run%d.log") % run_num, 'w')
+    print('***The Standard stream is being written to {}.log***'.format(run_name))
+    sys.stdout = sys.stderr = open(os.path.join(orca.get_injectable("outputs_dir"), "%s.log") % run_name, 'w')
 
 if RANDOM_SEED:
     np.random.seed(12)
@@ -114,6 +121,26 @@ if SLACK:
 
 if MAPS:
     from baus.utils import ue_config, ue_files
+
+
+@orca.step()
+def slack_report(buildings, households, year):
+
+    if SLACK and IN_YEAR:
+        dropped_devproj_geomid = orca.get_injectable("devproj_len") - orca.get_injectable("devproj_len_geomid")
+        dropped_devproj_proc =  orca.get_injectable("devproj_len_geomid") -  orca.get_injectable("devproj_len_proc")
+        slack.chat.post_message(
+            '#urbansim_sim_update',
+            'Development projects for run %s on %s: %d to start, '
+            '%d dropped by geom_id check, '
+            '%d dropped by processing'
+            % (run_name, host, orca.get_injectable("devproj_len"), dropped_devproj_geomid, dropped_devproj_proc), as_user=True)
+            
+    if SLACK and (len(households.building_id[households.building_id == -1])) > 0:
+        slack.chat.post_message(
+            '#urbansim_sim_update',
+            'WARNING: unplaced households in %d for run %s on %s'
+            % (year, run_name, host), as_user=True)
 
 
 def get_simulation_models():
@@ -223,22 +250,8 @@ def get_simulation_models():
         "elcm_simulate",            # displaced by new dev
 
         # save_intermediate_tables", # saves output for visualization
-
-        "topsheet",
-        "simulation_validation",
-        "parcel_summary",
-        "building_summary",
-        "diagnostic_output",
-
         "calculate_vmt_fees",
-        "calculate_jobs_housing_fees",
-
-        "geographic_summary",
-        "travel_model_output",
-        # "travel_model_2_output",
-        "hazards_slr_summary",
-        "hazards_eq_summary",
-        "slack_report"
+        "calculate_jobs_housing_fees"
 
     ]
 
@@ -283,9 +296,56 @@ def get_simulation_models():
 
     return models
 
+
+def get_summary_models():
+
+    summary_models = [
+
+        "simulation_validation",
+        "diagnostic_output",
+
+        "hazards_slr_summary",
+        "hazards_eq_summary",
+
+        "parcel_summary",
+        "parcel_growth_summary",
+        "building_summary",
+
+        "deed_restricted_units_summary",
+        "deed_restricted_units_growth_summary",
+
+        "geographic_summary",
+        "geographic_growth_summary",
+
+        "growth_geography_metrics",
+        "deed_restricted_units_metrics",
+        "household_income_metrics",
+        "equity_metrics",
+        "jobs_housing_metrics",
+        "jobs_metrics",
+        "slr_metrics",
+        "earthquake_metrics",
+        "greenfield_metrics",
+
+        "taz1_summary",
+        "maz_marginals",
+        "maz_summary",
+        "taz2_marginals",
+        "county_marginals",
+        "region_marginals",
+        "taz1_growth_summary",
+        "maz_growth_summary",
+
+        "slack_report"
+
+    ]
+
+    return summary_models
+
 def get_baseyear_models():
 
-    models = [
+    baseyear_models = [
+        
         "slr_inundate",
         "slr_remove_dev",
         "eq_code_buildings",
@@ -341,37 +401,63 @@ def get_baseyear_models():
 
         "elcm_simulate",
 
-        "price_vars",
-        # "scheduled_development_events",
+        "price_vars"
+        # "scheduled_development_events"
 
-        "topsheet",
-        "simulation_validation",
-        "parcel_summary",
-        "building_summary",
-        "geographic_summary",
-        "travel_model_output",
-        # "travel_model_2_output",
-        "hazards_slr_summary",
-        "hazards_eq_summary",
-        "diagnostic_output",
-        "environment_config",
-        "slack_report"
     ]
 
     run_setup = orca.get_injectable("run_setup")
 
     # sea level rise and sea level rise mitigation
     if not run_setup["run_slr"]:
-        models.remove("slr_inundate")
-        models.remove("slr_remove_dev")
+        baseyear_models.remove("slr_inundate")
+        baseyear_models.remove("slr_remove_dev")
 
     # earthquake and earthquake mitigation
     if not run_setup["run_eq"]:
-        models.remove("eq_code_buildings")
-        models.remove("earthquake_demolish")
+        baseyear_models.remove("eq_code_buildings")
+        baseyear_models.remove("earthquake_demolish")
 
-    return models
+    return baseyear_models
 
+def get_baseyear_summary_models():
+
+    baseyear_summary_models = [
+
+        "simulation_validation",
+        "diagnostic_output",
+
+        "hazards_slr_summary",
+        "hazards_eq_summary",
+
+        "parcel_summary",
+        "building_summary",
+
+        "deed_restricted_units_summary",
+
+        "geographic_summary",
+
+        "growth_geography_metrics",
+        "deed_restricted_units_metrics",
+        "household_income_metrics",
+        "equity_metrics",
+        "jobs_housing_metrics",
+        "jobs_metrics",
+        "slr_metrics",
+        "earthquake_metrics",
+        "greenfield_metrics",
+
+        "taz1_summary",
+        "maz_marginals",
+        "maz_summary",
+        "taz2_marginals",
+        "county_marginals",
+        "region_marginals",
+
+        "slack_report"
+    ]
+
+    return baseyear_summary_models
 
 
 def run_models(MODE):
@@ -395,9 +481,13 @@ def run_models(MODE):
 
     elif MODE == "simulation":
 
+        run_setup = orca.get_injectable("run_setup")
+
         # see above for docs on this
         if not SKIP_BASE_YEAR:
             baseyear_models = get_baseyear_models()
+            if run_setup["run_summaries"]:
+                baseyear_models.extend(get_baseyear_summary_models())
             orca.run(baseyear_models, iter_vars=[IN_YEAR])
 
         # start the simulation in the next round - only the models above run
@@ -405,7 +495,10 @@ def run_models(MODE):
         years_to_run = range(IN_YEAR+EVERY_NTH_YEAR, OUT_YEAR+1,
                              EVERY_NTH_YEAR)
         models = get_simulation_models()
+        if run_setup["run_summaries"]:
+            models.extend(get_summary_models())
         orca.run(models, iter_vars=years_to_run)
+        
 
     elif MODE == "estimation":
 
@@ -466,16 +559,25 @@ print("Started", time.ctime())
 print("Current Branch : ", BRANCH.rstrip())
 print("Current Commit : ", CURRENT_COMMIT.rstrip())
 print("Random Seed : ", RANDOM_SEED)
+print("python version: %s" % sys.version.split('|')[0])
+print("urbansim version: %s" % urbansim.__version__)
+print("urbansim_defaults version: %s" % urbansim_defaults.__version__)
+print("orca version: %s" % orca.__version__)
+print("orca_test version: %s" % orca_test.__version__)
+print("pandana version: %s" % pandana.__version__)
+print("numpy version: %s" % np.__version__)
+print("pandas version: %s" % pd.__version__)
+
 
 if SLACK and MODE == "simulation":
-    slack.chat.post_message('#urbansim_sim_update', 'Starting simulation %d on host %s' % (run_num, host), as_user=True)
+    slack.chat.post_message('#urbansim_sim_update', 'Starting simulation %s on host %s' % (run_name, host), as_user=True)
 
 try:
     run_models(MODE)
 except Exception as e:
     print(traceback.print_exc())
     if SLACK and MODE == "simulation":
-        slack.chat.post_message('#urbansim_sim_update', 'DANG!  Simulation failed for %d on host %s' % (run_num, host), as_user=True)
+        slack.chat.post_message('#urbansim_sim_update', 'DANG!  Simulation failed for %s on host %s' % (run_name, host), as_user=True)
     else:
         raise e
     sys.exit(0)
@@ -483,30 +585,30 @@ except Exception as e:
 print("Finished", time.ctime())
 
 if MAPS and MODE == "simulation" and 'travel_model_output' in get_simulation_models():
-    files_msg1, files_msg2 = ue_files(run_num)
-    config_resp = ue_config(run_num, host)
+    files_msg1, files_msg2 = ue_files(run_name)
+    config_resp = ue_config(run_name, host)
 
 if SLACK and MODE == "simulation":
-    slack.chat.post_message('#urbansim_sim_update', 'Completed simulation %d on host %s' % (run_num, host), as_user=True)
+    slack.chat.post_message('#urbansim_sim_update', 'Completed simulation %s on host %s' % (run_name, host), as_user=True)
 
     """slack.chat.post_message(
         '#sim_updates',
         'Urbanexplorer is available at ' +
-        'http://urbanforecast.com/sim_explorer%d.html' % run_num, as_user=True)
+        'http://urbanforecast.com/sim_explorer%d.html' % run_name, as_user=True)
 
     slack.chat.post_message(
         '#sim_updates',
         'Final topsheet is available at ' +
-        'http://urbanforecast.com/runs/run%d_topsheet_2050.log' % run_num,
+        'http://urbanforecast.com/runs/run%d_topsheet_2050.log' % run_name,
         as_user=True)
 
     slack.chat.post_message(
         '#sim_updates',
         'Targets comparison is available at ' +
         'http://urbanforecast.com/runs/run%d_targets_comparison_2050.csv' %
-        run_num, as_user=True)"""
-
-
+        run_name, as_user=True)"""
+    
+    
 summary = ""
 if MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
     # compute and write the difference report at the superdistrict level
@@ -516,13 +618,13 @@ if MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
     df1 = pd.read_csv(("http://urbanforecast.com/runs/run%d_superdistrict" + "_summaries_2050.csv") % prev_run)
     df1 = df1.set_index(df1.columns[0]).sort_index()
 
-    df2 = pd.read_csv((orca.get_injectable("outputs_dir")+"/run%d_superdistrict_summaries_2050.csv") % run_num)
+    df2 = pd.read_csv((orca.get_injectable("outputs_dir")+"/run%d_superdistrict_summaries_2050.csv") % run_name)
     df2 = df2.set_index(df2.columns[0]).sort_index()
 
     supnames = pd.read_csv((orca.get_injectable("inputs_dir") + "/basis_inputs/crosswalks/superdistricts_geography.csv"), index_col="number").name
 
     summary = compare_summary(df1, df2, supnames)
-    with open((orca.get_injectable("outputs_dir") + "/run%d_difference_report.log") % run_num, "w") as f:
+    with open((orca.get_injectable("outputs_dir") + "/run%d_difference_report.log") % run_name, "w") as f:
         f.write(summary)
 
 
@@ -532,10 +634,10 @@ if SLACK and MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
         sum_lines = len(summary.strip().split("\n"))
         slack.chat.post_message('#urbansim_sim_update', ('Difference report is available at ' +
                                 'http://urbanforecast.com/run/run%d_difference_report.log ' +  '- %d line(s)') 
-                                % (run_num, sum_lines), as_user=True)
+                                % (run_name, sum_lines), as_user=True)
     else:
         slack.chat.post_message('#urbansim_sim_update', "No differences with reference run.", as_user=True)
 
 if S3:
-    os.system('ls ' + orca.get_injectable("outputs_dir") + '/run%d_* ' % run_num + '| xargs -I file aws s3 cp file ' + 
+    os.system('ls ' + orca.get_injectable("outputs_dir") + '/run%d_* ' % run_name + '| xargs -I file aws s3 cp file ' + 
               's3://bayarea-urbansim-results')

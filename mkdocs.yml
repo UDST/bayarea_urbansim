@@ -11,15 +11,11 @@ theme:
     - navigation.indexes
 
 nav:
-    - Home: 'index.md'
-    - Model Overview: 'model_overview.md'
-    - User Guide: 'user_guide.md'
+    - Model: 'model.md'
+    - Scenarios: 'scenarios.md'
+    - Configuration: 'configuration.md'
     - Input: 'input.md'
     - Output: 'output.md'
-    - PBA50: 'pba50.md'
-    - Code Reference:
-        - models: models-reference.md
-        - subsidies: subsidies-reference.md
 
 plugins:
   - autorefs
