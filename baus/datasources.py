@@ -289,10 +289,8 @@ def baseyear_taz_controls():
 
 @orca.table(cache=True)
 def base_year_summary_taz(mapping):
-    df = pd.read_csv(os.path.join('output',
-                                  'baseyear_taz_summaries_2010.csv'),
-                     dtype={'taz1454': np.int64},
-                     index_col="zone_id")
+    df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "zone_forecasts/baseyear_taz_summaries.csv"), 
+                     dtype={'taz1454': np.int64}, index_col="zone_id")
     cmap = mapping["county_id_tm_map"]
     df['COUNTY_NAME'] = df.COUNTY.map(cmap)
     return df
