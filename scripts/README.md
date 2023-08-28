@@ -95,8 +95,11 @@ Also not used anymore, but serves this UrbanSim data as json in case there's a n
 the data using a webapp.
 
 ### vmt_compare.py
-
 Compare the household totals for two scenarios inside different VMT zones.  This is used
 to see if our VMT impact fees were successful in moving households out of higher VMT
 areas.
 
+## build_strategy.ipynb
+* build development-related strategy settings in `policy.yaml`
+* inclusionary housing setting: for Final Blueprint, reads `parcels_geography.csv` input, categorizes fbpchcat based on required inclusionary level. 
+* office lump sum subsidies: for Final Blueprint, creates account setting for receiving jurisdictions. 
