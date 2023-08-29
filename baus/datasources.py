@@ -28,7 +28,7 @@ def run_setup():
 
 
 @orca.injectable('run_name', cache=True)
-def inputs_dir(run_setup):
+def run_name(run_setup):
     return os.path.join(run_setup["run_name"])
 
 
@@ -40,15 +40,6 @@ def inputs_dir(run_setup):
 @orca.injectable('outputs_dir', cache=True)
 def outputs_dir(run_setup):
     return os.path.join(run_setup['outputs_dir'], run_setup["run_name"])
-
-
-# need to overwrite the summary injectable in urbansim_defaults and pass it 
-# our outputs_dir so that the urbansim SimulationSummaryData class uses it
-@orca.injectable("summary", cache=True)
-def simulation_summary_data(run_number):
-    return utils.SimulationSummaryData(run_number,
-                                       zone_indicator_file=(os.path.join(orca.get_injectable("outputs_dir"), "simulation_output.json")),
-                                       parcel_indicator_file=(os.path.join(orca.get_injectable("outputs_dir"), "parcel_output.json")))
 
 
 @orca.injectable('paths', cache=True)
@@ -251,6 +242,13 @@ def inclusionary_housing_settings(inclusionary, run_setup):
     return d
 
 
+# we only need this because we've written our own interim output code
+# and don't need urbansim to attempt to write another set
+@orca.injectable("summary", cache=True)
+def summary():
+    return np.nan
+
+
 @orca.injectable(cache=True)
 def building_sqft_per_job(developer_settings):
     return developer_settings['building_sqft_per_job']
@@ -289,10 +287,8 @@ def baseyear_taz_controls():
 
 @orca.table(cache=True)
 def base_year_summary_taz(mapping):
-    df = pd.read_csv(os.path.join('output',
-                                  'baseyear_taz_summaries_2010.csv'),
-                     dtype={'taz1454': np.int64},
-                     index_col="zone_id")
+    df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "zone_forecasts/baseyear_taz_summaries.csv"), 
+                     dtype={'taz1454': np.int64}, index_col="zone_id")
     cmap = mapping["county_id_tm_map"]
     df['COUNTY_NAME'] = df.COUNTY.map(cmap)
     return df

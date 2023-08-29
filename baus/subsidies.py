@@ -546,8 +546,6 @@ def subsidized_office_developer(feasibility, coffer, formula, year, add_extra_co
 
     add_buildings(buildings, devs)
 
-    summary.add_parcel_output(devs)
-
 
 def run_subsidized_developer(feasibility, parcels, buildings, households, acct_settings, developer_settings, account, year, form_to_btype_func, 
                              add_extra_columns_func, summary, create_deed_restricted=False, policy_name="Unnamed"):
@@ -762,8 +760,6 @@ def run_subsidized_developer(feasibility, parcels, buildings, households, acct_s
 
     new_buildings["subsidized"] = True
     new_buildings["policy_name"] = policy_name
-
-    summary.add_parcel_output(new_buildings)
 
 
 @orca.step()

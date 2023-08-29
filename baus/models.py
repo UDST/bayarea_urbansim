@@ -353,8 +353,6 @@ def scheduled_development_events(buildings, development_projects, demolish_event
     new_buildings["juris_sesit"] = parcels_geography.juris_sesit.loc[new_buildings.parcel_id].values
     new_buildings["juris_coc"] = parcels_geography.juris_coc.loc[new_buildings.parcel_id].values
 
-    summary.add_parcel_output(new_buildings)
-
 
 @orca.injectable(autocall=False)
 def supply_and_demand_multiplier_func(demand, supply):
@@ -592,8 +590,6 @@ def residential_developer(feasibility, households, buildings, parcels, year,
                     val = new_buildings.loc[index, col]
                     new_buildings.loc[index, col] = val * overshoot_pct
 
-        summary.add_parcel_output(new_buildings)
-
 
 @orca.step()
 def retail_developer(jobs, buildings, parcels, nodes, feasibility,
@@ -669,8 +665,6 @@ def retail_developer(jobs, buildings, parcels, nodes, feasibility,
     devs = add_extra_columns_func(devs)
 
     add_buildings(buildings, devs)
-
-    summary.add_parcel_output(devs)
 
 
 @orca.step()
@@ -774,8 +768,6 @@ def office_developer(feasibility, jobs, buildings, parcels, year,
             if new_buildings is not None:
                 new_buildings["subsidized"] = False
 
-            summary.add_parcel_output(new_buildings)
-
 
 @orca.step()
 def developer_reprocess(buildings, year, years_per_iter, jobs,
@@ -859,7 +851,6 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
     new_buildings["job_spaces"] = \
         (new_buildings.non_residential_sqft / 445.0).astype('int')
     new_buildings["net_units"] = new_buildings.job_spaces
-    summary.add_parcel_output(new_buildings)
 
     # got to get the frame again because we just added rows
     buildings = orca.get_table('buildings')

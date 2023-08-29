@@ -2,10 +2,6 @@ import argparse
 import os
 
 
-
-
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--run_counts', type=int, help='How many times to run the model?')
@@ -17,4 +13,4 @@ if __name__ == '__main__':
         run_counts = args.run_counts
         
         for i in range(run_counts):
-            os.system("python baus.py --mode simulation --disable-slack --random-seed")
+            os.system("python baus.py")

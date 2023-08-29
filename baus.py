@@ -302,14 +302,15 @@ def get_summary_models():
     summary_models = [
 
         "simulation_validation",
-        "diagnostic_output",
-
-        "hazards_slr_summary",
-        "hazards_eq_summary",
+        "interim_zone_output",
+        "new_buildings_summary",
 
         "parcel_summary",
         "parcel_growth_summary",
         "building_summary",
+
+        "hazards_slr_summary",
+        "hazards_eq_summary",
 
         "deed_restricted_units_summary",
         "deed_restricted_units_growth_summary",
@@ -425,13 +426,12 @@ def get_baseyear_summary_models():
     baseyear_summary_models = [
 
         "simulation_validation",
-        "diagnostic_output",
-
-        "hazards_slr_summary",
-        "hazards_eq_summary",
 
         "parcel_summary",
         "building_summary",
+
+        "hazards_slr_summary",
+        "hazards_eq_summary",
 
         "deed_restricted_units_summary",
 
@@ -548,8 +548,8 @@ def run_models(MODE):
         # for debugging
         df = orca.get_table("feasibility").to_frame()
         df = df.stack(level=0).reset_index(level=1, drop=True)
-        df.to_csv("output/feasibility.csv")
-
+        df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "feasibility.csv"))
+        
     else:
 
         raise "Invalid mode"
