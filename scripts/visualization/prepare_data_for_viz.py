@@ -146,7 +146,7 @@ parcel_output_cols = ['development_id', 'SDEM', 'building_sqft', 'building_type'
 
 
 ############ functions
-
+# TODO: potentially add cost-shifter to TAZ diagnostic table
 def extract_modeling_settings(setting_yaml_file: str,
                               viz_file_dir: str,
                               get_cost_shifter: bool=True):
@@ -1025,39 +1025,39 @@ def simplify_parcel_output(model_run_output_dir: str,
         return None
 
 
-def consolidate_taz_logsum(model_run_interim_dir: str,
-                           model_run_id: str,
-                           viz_file_dir: str):
-    """Consolidate TAZ logsum data used in rsh model.
+# def consolidate_taz_logsum(model_run_interim_dir: str,
+#                            model_run_id: str,
+#                            viz_file_dir: str):
+#     """Consolidate TAZ logsum data used in rsh model.
 
-    Args:
-        model_run_output_dir (str): model output folder path
-        model_run_id (str): model run id, e.g. 'run182'
-        viz_file_dir (str): viz-ready file path
-    """
-    # collect all TAZ logsum files
-    all_logsum_files = glob.glob(model_run_interim_dir + "\{}_taz_logsums_*.csv".format(model_run_id))
+#     Args:
+#         model_run_output_dir (str): model output folder path
+#         model_run_id (str): model run id, e.g. 'run182'
+#         viz_file_dir (str): viz-ready file path
+#     """
+#     # collect all TAZ logsum files
+#     all_logsum_files = glob.glob(model_run_interim_dir + "\{}_taz_logsums_*.csv".format(model_run_id))
 
-    # only need 2015 (for 2015-2025 simulation), and 2030 (for 2030-2050 similation)
-    keep_logsum_files = [file for file in all_logsum_files if ('_2015' in file) or ('_2030' in file)]
+#     # only need 2015 (for 2015-2025 simulation), and 2030 (for 2030-2050 similation)
+#     keep_logsum_files = [file for file in all_logsum_files if ('_2015' in file) or ('_2030' in file)]
 
-    agg_taz_logsum_df = pd.DataFrame()
+#     agg_taz_logsum_df = pd.DataFrame()
 
-    for file in keep_logsum_files:
-        # print(i)
-        filename = os.path.basename(file)
-        year_tag = filename.split('.csv')[0][-4:]
-        # print(year_tag)
+#     for file in keep_logsum_files:
+#         # print(i)
+#         filename = os.path.basename(file)
+#         year_tag = filename.split('.csv')[0][-4:]
+#         # print(year_tag)
         
-        taz_logsum_df = pd.read_csv(file)
-        taz_logsum_df['year'] = year_tag
+#         taz_logsum_df = pd.read_csv(file)
+#         taz_logsum_df['year'] = year_tag
         
-        agg_taz_logsum_df = pd.concat([agg_taz_logsum_df, taz_logsum_df])
+#         agg_taz_logsum_df = pd.concat([agg_taz_logsum_df, taz_logsum_df])
         
-    # write out
-    agg_taz_logsum_df.to_csv(viz_file_dir, index=False)
+#     # write out
+#     agg_taz_logsum_df.to_csv(viz_file_dir, index=False)
 
-    return agg_taz_logsum_df
+#     return agg_taz_logsum_df
 
 
 def extract_taz_diagnostic_data(raw_zonal_json_dir: str,
@@ -1095,7 +1095,7 @@ def extract_taz_diagnostic_data(raw_zonal_json_dir: str,
             #     tm_df['metric'] = i
             #     all_tm_df = pd.concat([all_tm_df, tm_df])
     
-    # TODO: decide whether need to split the data into multiple df based on topic area
+    # TODO: decide whether want to keep only some fields, and/or whether need to split the data into multiple df based on topic area
     price_diagnostic_metrics = [
         'price_shifters',
         'residential_price', 
@@ -1387,10 +1387,10 @@ if __name__ == '__main__':
 
     ############ process model interim data
 
-    # TAZ logsum data
-    taz_logsum = consolidate_taz_logsum(RAW_INTERIM_DIR,
-                                        RUN_ID,
-                                        VIZ_TAZ_LOGSUM_FILE)
+    # # TAZ logsum data
+    # taz_logsum = consolidate_taz_logsum(RAW_INTERIM_DIR,
+    #                                     RUN_ID,
+    #                                     VIZ_TAZ_LOGSUM_FILE)
     
     # Diagnostic data
     taz_diagnostic = extract_taz_diagnostic_data(RAW_TAZ_DIAGNOSE_FILE, 
