@@ -482,12 +482,6 @@ def taz(zones):
 
 
 @orca.table(cache=True)
-def parcel_rejections():
-    url = "https://forecast-feedback.firebaseio.com/parcelResults.json"
-    return pd.read_json(url, orient="index").set_index("geomId")
-
-
-@orca.table(cache=True)
 def parcels_geography(parcels):
 
     file = os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/crosswalks/2021_02_25_parcels_geography.csv")
