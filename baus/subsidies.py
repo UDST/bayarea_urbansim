@@ -546,8 +546,6 @@ def subsidized_office_developer(feasibility, coffer, formula, year, add_extra_co
 
     add_buildings(buildings, devs)
 
-    summary.add_parcel_output(devs)
-
 
 def run_subsidized_developer(feasibility, parcels, buildings, households, acct_settings, developer_settings, account, year, form_to_btype_func, 
                              add_extra_columns_func, summary, create_deed_restricted=False, policy_name="Unnamed"):
@@ -763,8 +761,6 @@ def run_subsidized_developer(feasibility, parcels, buildings, households, acct_s
     new_buildings["subsidized"] = True
     new_buildings["policy_name"] = policy_name
 
-    summary.add_parcel_output(new_buildings)
-
 
 @orca.step()
 def subsidized_residential_feasibility(parcels, developer_settings, parcel_sales_price_sqft_func, parcel_is_allowed_func, 
@@ -802,9 +798,7 @@ def subsidized_residential_feasibility(parcels, developer_settings, parcel_sales
     df = orca.get_table("feasibility").to_frame()
     df = df.stack(level=0).reset_index(level=1, drop=True)
     # this uses a surprising amount of disk space, don't write out for now
-    # df.to_csv("runs/run{}_feasibility_{}.csv".format(
-    #    orca.get_injectable("run_number"),
-    #    orca.get_injectable("year")))
+    # df.to_csv(os.path.join(orca.get_injectable("outputs_dir), "feasibility_{}.csv".format(orca.get_injectable("year")))
 
 
 @orca.step()

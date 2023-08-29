@@ -13,7 +13,7 @@ from urbansim.developer.developer import Developer as dev
 from urbansim.utils import misc, networks
 from urbansim_defaults import models, utils
 
-from baus import datasources, subsidies, summaries, variables
+from baus import datasources, subsidies, variables
 from baus.utils import \
     add_buildings, geom_id_to_parcel_id, groupby_random_choice, \
     parcel_id_to_geom_id, round_series_match_target
@@ -335,7 +335,7 @@ def scheduled_development_events(buildings, development_projects, demolish_event
     new_buildings["subsidized"] = False
 
     new_buildings["zone_id"] = misc.reindex(parcels.zone_id, new_buildings.parcel_id)
-    if run_setup['run_vmt_fee_res_for_res_strategy'] or ["run_sb743_strategy"]:
+    if run_setup['run_vmt_fee_res_for_res_strategy'] or run_setup["run_sb_743_strategy"]:
         vmt_fee_categories = orca.get_table("vmt_fee_categories")
         new_buildings["vmt_res_cat"] = misc.reindex(vmt_fee_categories.res_cat, new_buildings.zone_id)
     if (run_setup['run_vmt_fee_com_for_com_strategy'] or run_setup['run_vmt_fee_com_for_res_strategy']):
@@ -352,8 +352,6 @@ def scheduled_development_events(buildings, development_projects, demolish_event
     new_buildings["juris_ppa"] = parcels_geography.juris_ppa.loc[new_buildings.parcel_id].values
     new_buildings["juris_sesit"] = parcels_geography.juris_sesit.loc[new_buildings.parcel_id].values
     new_buildings["juris_coc"] = parcels_geography.juris_coc.loc[new_buildings.parcel_id].values
-
-    summary.add_parcel_output(new_buildings)
 
 
 @orca.injectable(autocall=False)
@@ -614,8 +612,6 @@ def residential_developer(feasibility, households, buildings, parcels, year,
                     val = new_buildings.loc[index, col]
                     new_buildings.loc[index, col] = val * overshoot_pct
 
-        summary.add_parcel_output(new_buildings)
-
 
 @orca.step()
 def retail_developer(jobs, buildings, parcels, nodes, feasibility,
@@ -691,8 +687,6 @@ def retail_developer(jobs, buildings, parcels, nodes, feasibility,
     devs = add_extra_columns_func(devs)
 
     add_buildings(buildings, devs)
-
-    summary.add_parcel_output(devs)
 
 
 @orca.step()
@@ -796,8 +790,6 @@ def office_developer(feasibility, jobs, buildings, parcels, year,
             if new_buildings is not None:
                 new_buildings["subsidized"] = False
 
-            summary.add_parcel_output(new_buildings)
-
 
 @orca.step()
 def developer_reprocess(buildings, year, years_per_iter, jobs,
@@ -881,7 +873,6 @@ def developer_reprocess(buildings, year, years_per_iter, jobs,
     new_buildings["job_spaces"] = \
         (new_buildings.non_residential_sqft / 445.0).astype('int')
     new_buildings["net_units"] = new_buildings.job_spaces
-    summary.add_parcel_output(new_buildings)
 
     # got to get the frame again because we just added rows
     buildings = orca.get_table('buildings')

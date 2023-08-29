@@ -1,2 +1,0 @@
-# Subsidies module
-::: baus.subsidies
