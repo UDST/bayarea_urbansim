@@ -31,21 +31,15 @@ warnings.filterwarnings("ignore")
 # Suppress scientific notation in pandas output
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
 
-SLACK = MAPS = "URBANSIM_SLACK" in os.environ
 LOGS = True
 RANDOM_SEED = True
 INTERACT = False
 MODE = "simulation"
-S3 = False
 EVERY_NTH_YEAR = 5
 BRANCH = os.popen('git rev-parse --abbrev-ref HEAD').read()
 CURRENT_COMMIT = os.popen('git rev-parse HEAD').read()
-COMPARE_TO_NO_PROJECT = True
-NO_PROJECT = 611
 IN_YEAR, OUT_YEAR = 2010, 2050
-COMPARE_AGAINST_LAST_KNOWN_GOOD = False
-LAST_KNOWN_GOOD_RUN = 182 
-
+SLACK = "URBANSIM_SLACK" in os.environ
 
 orca.add_injectable("years_per_iter", EVERY_NTH_YEAR)
 
@@ -80,10 +74,10 @@ parser.add_argument('--disable-slack', action='store_true', dest='noslack',
 options = parser.parse_args()
 
 if options.console:
-    SLACK = MAPS = LOGS = False
+    SLACK = LOGS = False
 
 if options.interactive:
-    SLACK = MAPS = LOGS = False
+    SLACK  = LOGS = False
     INTERACT = True
 
 if options.out_year:
@@ -105,8 +99,6 @@ if INTERACT:
     code.interact(local=locals())
     sys.exit()
 
-run_name = orca.get_injectable("run_name")
-
 if LOGS:
     print('***The Standard stream is being written to {}.log***'.format(run_name))
     sys.stdout = sys.stderr = open(os.path.join(orca.get_injectable("outputs_dir"), "%s.log") % run_name, 'w')
@@ -119,12 +111,8 @@ if SLACK:
     slack = Slacker(os.environ["SLACK_TOKEN"])
     host = socket.gethostname()
 
-if MAPS:
-    from baus.utils import ue_config, ue_files
-
-
 @orca.step()
-def slack_report(buildings, households, year):
+def slack_report(households, year):
 
     if SLACK and IN_YEAR:
         dropped_devproj_geomid = orca.get_injectable("devproj_len") - orca.get_injectable("devproj_len_geomid")
@@ -528,32 +516,11 @@ def run_models(MODE):
             "hlcm_renter_estimate", # estimate location choice renters
         ])
         '''
-
-    elif MODE == "feasibility":
-
-        orca.run([
-
-            "neighborhood_vars",            # local accessibility vars
-            "regional_vars",                # regional accessibility vars
-
-            "rsh_simulate",                 # residential sales hedonic
-            "nrh_simulate",                 # non-residential rent hedonic
-
-            "price_vars",
-            "subsidized_residential_feasibility"
-
-        ], iter_vars=[2010])
-
-        # the whole point of this is to get the feasibility dataframe
-        # for debugging
-        df = orca.get_table("feasibility").to_frame()
-        df = df.stack(level=0).reset_index(level=1, drop=True)
-        df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "feasibility.csv"))
         
     else:
 
         raise "Invalid mode"
-
+    
 
 print("Started", time.ctime())
 print("Current Branch : ", BRANCH.rstrip())
@@ -584,60 +551,5 @@ except Exception as e:
 
 print("Finished", time.ctime())
 
-if MAPS and MODE == "simulation" and 'travel_model_output' in get_simulation_models():
-    files_msg1, files_msg2 = ue_files(run_name)
-    config_resp = ue_config(run_name, host)
-
 if SLACK and MODE == "simulation":
     slack.chat.post_message('#urbansim_sim_update', 'Completed simulation %s on host %s' % (run_name, host), as_user=True)
-
-    """slack.chat.post_message(
-        '#sim_updates',
-        'Urbanexplorer is available at ' +
-        'http://urbanforecast.com/sim_explorer%d.html' % run_name, as_user=True)
-
-    slack.chat.post_message(
-        '#sim_updates',
-        'Final topsheet is available at ' +
-        'http://urbanforecast.com/runs/run%d_topsheet_2050.log' % run_name,
-        as_user=True)
-
-    slack.chat.post_message(
-        '#sim_updates',
-        'Targets comparison is available at ' +
-        'http://urbanforecast.com/runs/run%d_targets_comparison_2050.csv' %
-        run_name, as_user=True)"""
-    
-    
-summary = ""
-if MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
-    # compute and write the difference report at the superdistrict level
-    prev_run = LAST_KNOWN_GOOD_RUN
-    # fetch the previous run off of the internet for comparison - the "last
-    # known good run" should always be available on EC2
-    df1 = pd.read_csv(("http://urbanforecast.com/runs/run%d_superdistrict" + "_summaries_2050.csv") % prev_run)
-    df1 = df1.set_index(df1.columns[0]).sort_index()
-
-    df2 = pd.read_csv((orca.get_injectable("outputs_dir")+"/run%d_superdistrict_summaries_2050.csv") % run_name)
-    df2 = df2.set_index(df2.columns[0]).sort_index()
-
-    supnames = pd.read_csv((orca.get_injectable("inputs_dir") + "/basis_inputs/crosswalks/superdistricts_geography.csv"), index_col="number").name
-
-    summary = compare_summary(df1, df2, supnames)
-    with open((orca.get_injectable("outputs_dir") + "/run%d_difference_report.log") % run_name, "w") as f:
-        f.write(summary)
-
-
-if SLACK and MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
-
-    if len(summary.strip()) != 0:
-        sum_lines = len(summary.strip().split("\n"))
-        slack.chat.post_message('#urbansim_sim_update', ('Difference report is available at ' +
-                                'http://urbanforecast.com/run/run%d_difference_report.log ' +  '- %d line(s)') 
-                                % (run_name, sum_lines), as_user=True)
-    else:
-        slack.chat.post_message('#urbansim_sim_update', "No differences with reference run.", as_user=True)
-
-if S3:
-    os.system('ls ' + orca.get_injectable("outputs_dir") + '/run%d_* ' % run_name + '| xargs -I file aws s3 cp file ' + 
-              's3://bayarea-urbansim-results')
