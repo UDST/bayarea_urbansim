@@ -42,15 +42,6 @@ def outputs_dir(run_setup):
     return os.path.join(run_setup['outputs_dir'], run_setup["run_name"])
 
 
-# need to overwrite the summary injectable in urbansim_defaults and pass it 
-# our outputs_dir so that the urbansim SimulationSummaryData class uses it
-@orca.injectable("summary", cache=True)
-def simulation_summary_data():
-    return utils.SimulationSummaryData(run_number = np.nan,
-                                       zone_indicator_file=(os.path.join(orca.get_injectable("outputs_dir"), "simulation_output.json")),
-                                       parcel_indicator_file=(os.path.join(orca.get_injectable("outputs_dir"), "parcel_output.json")))
-
-
 @orca.injectable('paths', cache=True)
 def paths():
     with open(os.path.join(misc.configs_dir(), "paths.yaml")) as f:
@@ -249,6 +240,13 @@ def inclusionary_housing_settings(inclusionary, run_setup):
             d[geog] = item["amount"]
 
     return d
+
+
+# we only need this because we've written our own interim output code
+# and don't need urbansim to attempt to write another set
+@orca.injectable("summary", cache=True)
+def summary():
+    return np.nan
 
 
 @orca.injectable(cache=True)
