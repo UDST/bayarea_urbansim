@@ -10,8 +10,9 @@ from baus import datasources
 def geographic_summary(parcels, households, jobs, buildings, year, superdistricts_geography,
                        initial_summary_year, interim_summary_year, final_year):  
 
-    if year not in [initial_summary_year, interim_summary_year, final_year]:
-         return
+    # Commenting this out so we get geographic summaries for all years - DSL 2023-08-31
+    # if year not in [initial_summary_year, interim_summary_year, final_year]:
+    #      return
 
     households_df = orca.merge_tables('households', [parcels, buildings, households],
         columns=['juris', 'superdistrict', 'county', 'subregion', 'base_income_quartile',])

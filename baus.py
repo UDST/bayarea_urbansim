@@ -454,7 +454,7 @@ def get_baseyear_summary_models():
         "county_marginals",
         "region_marginals",
 
-        "slack_report"
+        # "slack_report"
     ]
 
     return baseyear_summary_models
