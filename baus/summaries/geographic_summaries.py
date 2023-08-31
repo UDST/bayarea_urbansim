@@ -10,7 +10,7 @@ from baus import datasources
 def geographic_summary(parcels, households, jobs, buildings, year, superdistricts_geography,
                        initial_summary_year, interim_summary_year, final_year):  
 
-    # Commenting this out so we get geographic summaries for all years - DSL 2023-08-31
+    # Commenting this out so we get geographic summaries for all years
     # if year not in [initial_summary_year, interim_summary_year, final_year]:
     #      return
 
