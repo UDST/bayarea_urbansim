@@ -222,7 +222,7 @@ def adjust_hhkids(df, year, rdf, total_hh):
 @orca.step()
 def taz1_summary(parcels, households, jobs, buildings, zones, maz, year, base_year_summary_taz, taz_geography, 
                  tm1_taz1_forecast_inputs, tm1_tm2_maz_forecast_inputs, tm1_tm2_regional_demographic_forecast, 
-                 tm1_tm2_regional_controls, initial_summary_year, interim_summary_year, final_year):
+                 tm1_tm2_regional_controls, initial_summary_year, interim_summary_year, final_year, run_name):
     
     if year not in [initial_summary_year, interim_summary_year, final_year]:
          return
@@ -350,11 +350,11 @@ def taz1_summary(parcels, households, jobs, buildings, zones, maz, year, base_ye
     taz_df.index.name = 'TAZ'
     # uppercase columns to match travel model template
     taz_df.columns = [x.upper() for x in taz_df.columns]
-    taz_df.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/taz1_summary_{}.csv").format(year))
+    taz_df.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/{}_taz1_summary_{}.csv").format(run_name, year))
 
 
 @orca.step()
-def taz1_growth_summary(year, initial_summary_year, final_year):
+def taz1_growth_summary(year, initial_summary_year, final_year, run_name):
 
     if year != final_year: 
         return
@@ -371,7 +371,18 @@ def taz1_growth_summary(year, initial_summary_year, final_year):
     columns = ['TOTEMP', 'TOTHH', 'TOTPOP', 'RES_UNITS']
 
     for col in columns:
-        taz_summary[col+'_growth'] = taz_summary[col+"_"+str(final_year)] - taz_summary[col+"_"+str(initial_summary_year)]
+
+        taz_summary[col+"_growth"] = (taz_summary[col+"_"+str(final_year)] - 
+                                      taz_summary[col+"_"+str(initial_summary_year)])
+
+        # percent change in geography's households/jobs/etc.
+        taz_summary[col+'_pct_change'] = (round((taz_summary[col+"_"+str(final_year)] / 
+                                                  taz_summary[col+"_"+str(initial_summary_year)] - 1) * 100, 2))
+
+        # percent geography's growth of households/jobs/etc. of all regional growth in households/jobs/etc.
+        taz_summary[col+'_pct_of_regional_growth'] = (round(((taz_summary[col+"_growth"]) / 
+                                                              (taz_summary[col+"_"+str(final_year)].sum() - 
+                                                              taz_summary[col+"_"+str(initial_summary_year)].sum())) * 100, 2))
         
         taz_summary[col+"_"+str(initial_summary_year)+"_share"] = (round(taz_summary[col+"_"+str(initial_summary_year)] / 
                                                                          taz_summary[col+"_"+str(initial_summary_year)].sum(), 2))
@@ -380,7 +391,7 @@ def taz1_growth_summary(year, initial_summary_year, final_year):
         taz_summary[col+'_share_change'] = (taz_summary[col+"_"+str(final_year)+"_share"] -  
                                             taz_summary[col+"_"+str(initial_summary_year)+"_share"])
     
-    taz_summary.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/taz1_summary_growth.csv"))
+    taz_summary.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/{}_taz1_summary_growth.csv").format(run_name))
 
 
 @orca.step()

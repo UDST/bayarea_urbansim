@@ -6,7 +6,7 @@ import pandas as pd
 
 
 @orca.step()
-def parcel_summary(parcels, buildings, households, jobs, year, initial_summary_year, interim_summary_year, final_year):
+def parcel_summary(run_name, parcels, buildings, households, jobs, year, initial_summary_year, interim_summary_year, final_year):
 
     if year not in [initial_summary_year, interim_summary_year, final_year]:
          return
@@ -34,7 +34,7 @@ def parcel_summary(parcels, buildings, households, jobs, year, initial_summary_y
     df["totemp"] = jobs_df.groupby('parcel_id').size()
 
     df = df.fillna(0)
-    df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/parcel_summary_%d.csv" % (year)))
+    df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/{}_parcel_summary_%d.csv" % (run_name, year)))
 
 
 @orca.step()
@@ -62,7 +62,7 @@ def parcel_growth_summary(year, initial_summary_year, final_year):
 
 
 @orca.step()
-def building_summary(parcels, buildings, year, initial_summary_year, final_year, interim_summary_year):
+def building_summary(run_name, parcels, buildings, year, initial_summary_year, final_year, interim_summary_year):
 
     if year not in [initial_summary_year, interim_summary_year, final_year]:
         return
@@ -74,26 +74,26 @@ def building_summary(parcels, buildings, year, initial_summary_year, final_year,
                  'preserved_units', 'subsidized_units', 'job_spaces', 'source'])
 
     df = df.fillna(0)
-    df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/building_summary_%d.csv" % (year)))
+    df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/{}_building_summary_%d.csv" % (run_name, year)))
 
 
 @orca.step()
-def new_buildings_summary(parcels, buildings, year, final_year):
+def new_buildings_summary(run_name, parcels, buildings, year, final_year):
 
-#    if year != final_year:
-#        return
+    if year != final_year:
+        return
 
     df = orca.merge_tables('buildings', [parcels, buildings])    
     df = df[~df.source.isin(["h5_inputs"])]
 
     df = df.fillna(0)
-    df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/new_building_summary.csv"))
+    df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/{}_new_building_summary.csv").format(run_name))
 
 
 @orca.step()
-def interim_zone_output(households, buildings, residential_units, parcels, jobs, zones, year):
+def interim_zone_output(run_name, households, buildings, residential_units, parcels, jobs, zones, year):
 
-    # TODO: do we want this to be MAZ?
+    # TODO: currently TAZ, do we want this to be MAZ?
     zones = pd.DataFrame(index=zones.index)
 
     parcels = parcels.to_frame()
@@ -122,4 +122,28 @@ def interim_zone_output(households, buildings, residential_units, parcels, jobs,
     zones['residential_rent'] = residential_units.groupby('zone_id').unit_residential_rent.quantile()
     zones['non_residential_rent'] = buildings.groupby('zone_id').non_residential_rent.quantile()
 
-    zones.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/interim_zone_output_%d.csv" % (year)))
+    zones.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/{}_interim_zone_output_%d.csv" % (run_name, year)))
+
+
+@orca.step()
+def all_zone_output(run_name, zones, year, final_year):
+
+    if not final_year:
+        return
+    
+    # TODO: currently TAZ, do we want this to be MAZ?
+    all_zones = pd.DataFrame(index=zones.index)
+
+    all_zones.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/{}_interim_zone_output_%d.csv" % (run_name, year)))
+
+
+@orca.step()
+def feasibility_table_output(run_name, feasibility_before_policy, feasibility_after_policy, year):
+
+    # created by alt_feasibility(); 
+    # modified by subsidized_residential_feasibility() and policy_modifications_of_profit()
+    # residential_developer(), office_developer(), retail_developer(), run_subsidized_developer(), subsidized_office_developer()
+
+    feasibility_before_policy.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "{}_feasibility_before_policy_%d.csv" % (run_name, year)))
+
+    feasibility_after_policy.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "{}_feasibility_after_policy%d.csv" % (run_name, year)))

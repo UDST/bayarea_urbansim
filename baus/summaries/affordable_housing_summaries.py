@@ -3,12 +3,10 @@ from __future__ import print_function
 import os
 import orca
 import pandas as pd
-from baus.utils import format_df
-from urbansim.utils import misc
 from baus import datasources
 
 @orca.step()
-def deed_restricted_units_summary(parcels, buildings, year, initial_summary_year, final_year, superdistricts_geography):
+def deed_restricted_units_summary(run_name, parcels, buildings, year, initial_summary_year, final_year, superdistricts_geography):
 
     if year != initial_summary_year and year != final_year:
         return
@@ -51,7 +49,8 @@ def deed_restricted_units_summary(parcels, buildings, year, initial_summary_year
     region_dr["h5_dr_units"] = buildings.h5_dr_units.sum()
     region_dr["cs_dr_units"] = buildings.cs_dr_units.sum()
 
-    region_dr.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "affordable_housing_summaries/region_dr_summary_{}.csv").format(year))
+    region_dr.to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
+                                  "affordable_housing_summaries/{}_region_dr_summary_{}.csv").format(run_name, year))
 
     #### geographic deed restricted units summary ####
     geographies = ['juris', 'superdistrict', 'county']
@@ -86,12 +85,12 @@ def deed_restricted_units_summary(parcels, buildings, year, initial_summary_year
 
         summary_table.index.name = geography
         summary_table = summary_table.sort_index()
-        summary_table.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), "affordable_housing_summaries/{}_dr_summary_{}.csv").\
-                                          format(geography, year))
+        summary_table.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), "affordable_housing_summaries/{}_{}_dr_summary_{}.csv").\
+                                          format(run_name, geography, year))
         
 
 @orca.step()
-def deed_restricted_units_growth_summary(year, initial_summary_year, final_year):
+def deed_restricted_units_growth_summary(year, initial_summary_year, final_year, run_name):
     
     if year != final_year: 
         return
@@ -122,4 +121,4 @@ def deed_restricted_units_growth_summary(year, initial_summary_year, final_year)
                                                dr_growth[col+"_"+str(initial_summary_year)+"_share"])
         
         dr_growth = dr_growth.fillna(0)
-        dr_growth.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "affordable_housing_summaries/{}_dr_growth.csv").format(geography))
+        dr_growth.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "affordable_housing_summaries/{}_{}_dr_growth.csv").format(run_name, geography))
