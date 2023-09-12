@@ -42,6 +42,11 @@ def outputs_dir(run_setup):
     return os.path.join(run_setup['outputs_dir'], run_setup["run_name"])
 
 
+@orca.injectable('viz_dir', cache=True)
+def viz_dir(run_setup):
+    return os.path.join(run_setup['viz_dir'])
+
+
 @orca.injectable('paths', cache=True)
 def paths():
     with open(os.path.join(misc.configs_dir(), "paths.yaml")) as f:
