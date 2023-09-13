@@ -589,6 +589,12 @@ def manual_edits():
     return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/edits/manual_edits.csv"))
 
 
+@orca.table(cache=True)
+def parcel_rejections():
+    url = "https://forecast-feedback.firebaseio.com/parcelResults.json"
+    return pd.read_json(url, orient="index").set_index("geomId")
+
+
 def reprocess_dev_projects(df):
     # if dev projects with the same parcel id have more than one build
     # record, we change the later ones to add records - we don't want to

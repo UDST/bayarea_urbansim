@@ -34,7 +34,7 @@ def parcel_summary(run_name, parcels, buildings, households, jobs, year, initial
     df["totemp"] = jobs_df.groupby('parcel_id').size()
 
     df = df.fillna(0)
-    df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/{}_parcel_summary_%d.csv" % (run_name, year)))
+    df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/%s_parcel_summary_%d.csv" % (run_name, year)))
 
 
 @orca.step()
@@ -74,7 +74,7 @@ def building_summary(run_name, parcels, buildings, year, initial_summary_year, f
                  'preserved_units', 'subsidized_units', 'job_spaces', 'source'])
 
     df = df.fillna(0)
-    df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/{}_building_summary_%d.csv" % (run_name, year)))
+    df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/%s_building_summary_%d.csv" % (run_name, year)))
 
 
 @orca.step()
@@ -87,7 +87,7 @@ def new_buildings_summary(run_name, parcels, buildings, year, final_year):
     df = df[~df.source.isin(["h5_inputs"])]
 
     df = df.fillna(0)
-    df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/{}_new_building_summary.csv").format(run_name))
+    df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/%s_new_building_summary.csv" % (run_name)))
 
 
 @orca.step()
@@ -122,7 +122,7 @@ def interim_zone_output(run_name, households, buildings, residential_units, parc
     zones['residential_rent'] = residential_units.groupby('zone_id').unit_residential_rent.quantile()
     zones['non_residential_rent'] = buildings.groupby('zone_id').non_residential_rent.quantile()
 
-    zones.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/{}_interim_zone_output_%d.csv" % (run_name, year)))
+    zones.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/%s_interim_zone_output_%d.csv" % (run_name, year)))
 
 
 @orca.step()
@@ -134,7 +134,7 @@ def all_zone_output(run_name, zones, year, final_year):
     # TODO: currently TAZ, do we want this to be MAZ?
     all_zones = pd.DataFrame(index=zones.index)
 
-    all_zones.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/{}_interim_zone_output_%d.csv" % (run_name, year)))
+    all_zones.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/%s_interim_zone_output_%d.csv" % (run_name, year)))
 
 
 @orca.step()
@@ -144,6 +144,6 @@ def feasibility_table_output(run_name, feasibility_before_policy, feasibility_af
     # modified by subsidized_residential_feasibility() and policy_modifications_of_profit()
     # residential_developer(), office_developer(), retail_developer(), run_subsidized_developer(), subsidized_office_developer()
 
-    feasibility_before_policy.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "{}_feasibility_before_policy_%d.csv" % (run_name, year)))
+    feasibility_before_policy.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "%s_feasibility_before_policy_%d.csv" % (run_name, year)))
 
-    feasibility_after_policy.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "{}_feasibility_after_policy%d.csv" % (run_name, year)))
+    feasibility_after_policy.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "%s_feasibility_after_policy%d.csv" % (run_name, year)))
