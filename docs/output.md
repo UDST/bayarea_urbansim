@@ -10,7 +10,7 @@ parcel_growth_summary.csv | Change in development, households, and jobs on each 
 building_summary_[year].csv | Inventory of buildings in a given year, linked to the parcel they sit on.
 new_buildings_summary.csv | Inventory of all buildings built during the simulation.
 interim_zone_output_[year].csv | Interim model data at the TAZ level.
-feasibility.csv | Parcel-level data on the development feasibilities of various development types given the zoning, development costs, and expected return. Only parcels where at least one development type is feasible is included. | 
+feasibility.csv | Parcel-level data on the development feasibilities of various development types given the zoning, development costs, and expected return. Contains two sets of development variables grouped by six development types (coded as `form`): `retail`, `industrial`, `office`, `residential`, `mixedresidential`, `mixedoffice`. For every development type, one set of variables are passed through from the parcels table as input for the feasibility evaluation; the other set of variables are the result of the feasibility evaluation.Only parcels where at least one development type is feasible are included. | 
  
 #### geographic summaries
 **name**|**description**
@@ -77,16 +77,10 @@ greenfield_metric.csv | Change in annual greenfield development acres.
 
 
 
-
-
-
-
-
-### `interim_zone_output.csv` zone-level diagnostic attributes:
+### `interim_zone_output.csv`
 
 | **Attribute** | **Description** | **Data Type** | **Source** | **Sub-model/step** |
 |-----------------|-----------|--------------|--------------|--------------|
-
 | unit_residential_price | median residential price of all residential units in a TAZ | float | BAUS "residential_units" table | [rsh_simulate()](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/ual.py#L745) || unit_residential_rent | median residential monthly rent of all residential units in a TAZ | float | BAUS "residential_units" table | [rrh_simulate()](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/ual.py#L764) |
 | unit_residential_price_>_rent | 1 or 0 representing if the TAZ-level per-unit residential price is higher than annualized rent divided by [cap_rate](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/configs/developer/developer_settings.yaml#L2). | int | BAUS "residential_units" table and "developer_settings" | [summary.py](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/summaries.py#L265) |
 | residential_price | median per sq.ft. residential price of all residential buildings in a TAZ (based on general building type); currently used only for estimation, not for simulation | float | "buildings" table  | [residential_price()](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/variables.py#L248) |
@@ -102,7 +96,7 @@ greenfield_metric.csv | Change in annual greenfield development acres.
 | non_residential_vacancy | percentage of job_spaces in a TAZ that are not occupied by a job | float | BAUS "jobs" table, BAUS "buildings" table | XXX |
 | average_income | median income of all households in a TAZ | int | BAUS "households" table; BAUS "households_preproc" table | [summary.py](); MTC/ABAG household models? |
 
-### `parcel_output.csv` parcel-level attributes:
+### `new_building_summary.csv`
 
 | **Attribute** | **Description** | **Data Type** | **Source** | **Sub-model/step** |
 |-----------------|-----------|--------------|--------------|--------------|
@@ -122,8 +116,7 @@ greenfield_metric.csv | Change in annual greenfield development acres.
 | y | XXX | XXX | XXX | XXX |
 | year_built | XXX | XXX | XXX | XXX |
 
-### `fesibility` attributes
-`feasibility` contains two sets of development variables grouped by six development types (coded as `form`): `retail`, `industrial`, `office`, `residential`, `mixedresidential`, `mixedoffice`. For every development type, one set of variables are passed through from the parcels table as input for the feasibility evaluation; the other set of variables are the result of the feasibility evaluation.
+### `feasibility.csv`
 
 | **Attribute** | **Description** | **Data Type** | **Source** |
 |-----------------|-----------|--------------|--------------|

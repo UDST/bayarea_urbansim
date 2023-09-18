@@ -38,15 +38,15 @@ def parcel_summary(run_name, parcels, buildings, households, jobs, year, initial
 
 
 @orca.step()
-def parcel_growth_summary(year, initial_summary_year, final_year):
+def parcel_growth_summary(year, run_name, initial_summary_year, final_year):
     
     if year != final_year:
         return
 
-    df1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/parcel_summary_%d.csv" %
-                        (initial_summary_year)), index_col="parcel_id")
-    df2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/parcel_summary_%d.csv" %
-                        (final_year)), index_col="parcel_id")
+    df1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/%s_parcel_summary_%d.csv" %
+                        (run_name, initial_summary_year)), index_col="parcel_id")
+    df2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/%s_parcel_summary_%d.csv" %
+                        (run_name, final_year)), index_col="parcel_id")
 
     for col in df1.columns:
         if col in ["geom_id", "x", "y"]:
@@ -86,6 +86,8 @@ def new_buildings_summary(run_name, parcels, buildings, year, final_year):
     df = orca.merge_tables('buildings', [parcels, buildings])    
     df = df[~df.source.isin(["h5_inputs"])]
 
+    df["run_name"] = run_name
+
     df = df.fillna(0)
     df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/%s_new_building_summary.csv" % (run_name)))
 
@@ -95,6 +97,8 @@ def interim_zone_output(run_name, households, buildings, residential_units, parc
 
     # TODO: currently TAZ, do we want this to be MAZ?
     zones = pd.DataFrame(index=zones.index)
+
+    zones["run_name"] = run_name
 
     parcels = parcels.to_frame()
     buildings = buildings.to_frame()

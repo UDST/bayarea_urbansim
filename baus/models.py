@@ -453,31 +453,13 @@ def alt_feasibility(parcels, developer_settings,
                           config=config,
                           **kwargs)
     
-    # write out feasibility results
-    print('export parcel feasibility before policy-based profit modification for year {}'.format(
-        orca.get_injectable("year")))
-    feasibility_before_policy = orca.get_table("feasibility").to_frame()
-    feasibility_before_policy_csv = \
-        os.path.join(
-            orca.get_injectable("outputs_dir"), "interim/run{}_feasibility_before_policy_{}.csv".format(
-                orca.get_injectable("run_number"),
-                orca.get_injectable("year")
-            ))
-    feasibility_before_policy.to_csv(feasibility_before_policy_csv)
+    # save feasibility table state for summaries
+    orca.add_injectable("feasibility_before_policy", orca.get_table("feasibility").to_frame())
 
-    f = subsidies.policy_modifications_of_profit(
-        orca.get_table('feasibility').to_frame(),
-        parcels)
+    f = subsidies.policy_modifications_of_profit(orca.get_table('feasibility').to_frame(),parcels)
 
-    print('export parcel feasibility after policy-based profit modification for year {}'.format(
-        orca.get_injectable("year")))
-    feasibility_after_policy_csv = \
-        os.path.join(
-            orca.get_injectable("outputs_dir"), "interim/run{}_feasibility_after_policy_{}.csv".format(
-                orca.get_injectable("run_number"),
-                orca.get_injectable("year")
-            ))
-    f.to_csv(feasibility_after_policy_csv)
+    # save feasibility table state for summaries
+    orca.add_injectable("feasibility_after_policy", f)
 
     orca.add_table("feasibility", f)
 
