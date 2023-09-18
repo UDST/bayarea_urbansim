@@ -104,6 +104,8 @@ def deed_restricted_units_growth_summary(year, initial_summary_year, final_year,
         year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "affordable_housing_summaries/%s_dr_summary_%d.csv" % (geography, final_year)))
 
         dr_growth = year1.merge(year2, on=geography, suffixes=("_"+str(initial_summary_year), "_"+str(final_year)))
+        
+        dr_growth["run_name"] = run_name
 
         columns = ['total_dr_units', "inclusionary_units", "subsidized_units", "preserved_units", "public_lands_dr_units", 
                    "mall_office_dr_units", "opp_dr_units", "h5_dr_units", "cs_dr_units"]

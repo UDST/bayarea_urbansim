@@ -45,7 +45,7 @@ def geographic_summary(parcels, households, jobs, buildings, year, superdistrict
     
     # non-residential buildings
     region['non_residential_sqft'] = buildings_df.non_residential_sqft.sum()
-    region.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "geographic_summaries/region_summary_{}.csv").format(year))
+    region.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "geographic_summaries/{}_region_summary_{}.csv").format(run_name, year))
 
     #### summarize by sub-regional geography ####
     geographies = ['juris', 'superdistrict', 'county', 'subregion']
@@ -108,7 +108,9 @@ def geographic_growth_summary(year, final_year, initial_summary_year, run_name):
 
         geog_growth = year1.merge(year2, on=geography, suffixes=("_"+str(initial_summary_year), "_"+str(final_year)))
 
-        if geography == 'superdistict':
+        geog_growth["run_name"] = run_name
+
+        if geography == 'superdistrict':
             geog_growth = geog_growth.rename(columns={"name_"+(str(initial_summary_year)): "name"})
             geog_growth = geog_growth.drop(columns=["name_"+(str(final_year))])
         

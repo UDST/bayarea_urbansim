@@ -360,13 +360,15 @@ def taz1_growth_summary(year, initial_summary_year, final_year, run_name):
         return
 
     # use 2015 as the base year
-    year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/taz1_summary_%d.csv" % (initial_summary_year)))
-    year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/taz1_summary_%d.csv" % (final_year)))
+    year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/{}_taz1_summary_%d.csv" % (run_name, initial_summary_year)))
+    year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/{}_taz1_summary_%d.csv" % (run_name, final_year)))
 
     taz_summary = year1.merge(year2, on='TAZ', suffixes=("_"+str(initial_summary_year), "_"+str(final_year)))
     taz_summary = taz_summary.rename(columns={"SD_"+(str(initial_summary_year)): "SD", "COUNTY_"+(str(initial_summary_year)): "COUNTY",
                                      "ZONE_"+(str(initial_summary_year)): "ZONE"})
     taz_summary = taz_summary.drop(columns=["SD_"+(str(final_year)), "COUNTY_"+(str(final_year)), "ZONE_"+(str(final_year))])
+
+    taz_summary["run_name"] = run_name
 
     columns = ['TOTEMP', 'TOTHH', 'TOTPOP', 'RES_UNITS']
 
@@ -397,7 +399,7 @@ def taz1_growth_summary(year, initial_summary_year, final_year, run_name):
 @orca.step()
 def maz_marginals(parcels, households, buildings, maz, year,
                   tm1_tm2_maz_forecast_inputs, tm1_tm2_regional_demographic_forecast, initial_summary_year, 
-                  interim_summary_year, final_year):
+                  interim_summary_year, final_year, run_name):
     
     if year not in [initial_summary_year, interim_summary_year, final_year]:
          return
@@ -430,13 +432,14 @@ def maz_marginals(parcels, households, buildings, maz, year,
     rdf = tm1_tm2_regional_demographic_forecast.to_frame()
     maz_m = adjust_hhsize(maz_m, year, rdf, maz_m.tothh.sum())
 
-    maz_m.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/maz_marginals_{}.csv".format(year)))
+    maz_m.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
+                                        "travel_model_summaries/{}_maz_marginals_{}.csv".format(run_name, year)))
     orca.add_table("maz_marginals_df", maz_m)
 
 
 @orca.step()
 def maz_summary(parcels, jobs, households, buildings, maz, year, tm2_emp27_employment_shares, 
-                tm1_tm2_regional_controls, initial_summary_year, interim_summary_year, final_year):
+                tm1_tm2_regional_controls, initial_summary_year, interim_summary_year, final_year, run_name):
     
     if year not in [initial_summary_year, interim_summary_year, final_year]:
          return
@@ -523,23 +526,26 @@ def maz_summary(parcels, jobs, households, buildings, maz, year, tm2_emp27_emplo
     maz_df['RetEmpDen'] = maz_df.RetEmp / maz_df.ACRES
     maz_df['PopDen'] = maz_df["pop"] / maz_df.ACRES
 
-    maz_df.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/maz_summary_{}.csv".format(year)))
+    maz_df.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
+                                         "travel_model_summaries/{}_maz_summary_{}.csv".format(run_name, year)))
     orca.add_table("maz_summary_df", maz_df)
 
 
 @orca.step()
-def maz_growth_summary(year, initial_summary_year, final_year):
+def maz_growth_summary(year, initial_summary_year, final_year, run_name):
 
     if year != final_year: 
         return
 
     # use 2015 as the base year
-    year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/maz_summary_%d.csv" % (initial_summary_year)))
-    year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/maz_summary_%d.csv" % (final_year)))
+    year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/{}_maz_summary_%d.csv" % (run_name, initial_summary_year)))
+    year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/{}_maz_summary_%d.csv" % (run_name, final_year)))
 
     maz_summary = year1.merge(year2, on='MAZ', suffixes=("_"+str(initial_summary_year), "_"+str(final_year)))
     maz_summary = maz_summary.rename(columns={"TAZ_"+(str(initial_summary_year)): "TAZ", "county_name_"+(str(initial_summary_year)): "county_name"})
     maz_summary = maz_summary.drop(columns=["TAZ_"+(str(final_year)), "county_name_"+(str(final_year))])
+
+    maz_summary["run_name"] = run_name
 
     columns = ['tothh', 'pop', 'emp_total']
 
@@ -559,7 +565,7 @@ def maz_growth_summary(year, initial_summary_year, final_year):
 
 @orca.step()
 def taz2_marginals(tm2_taz2_forecast_inputs, tm1_tm2_regional_demographic_forecast, tm1_tm2_regional_controls, 
-                   year, initial_summary_year, interim_summary_year, final_year):
+                   year, initial_summary_year, interim_summary_year, final_year, run_name):
     
     if year not in [initial_summary_year, interim_summary_year, final_year]:
          return
@@ -603,14 +609,14 @@ def taz2_marginals(tm2_taz2_forecast_inputs, tm1_tm2_regional_demographic_foreca
     taz2 = adjust_hhkids(taz2, year, rdf, taz2.tothh.sum())
 
     taz2 = taz2.fillna(0)
-    taz2.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/taz2_marginals_{}.csv".format(year)))
+    taz2.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/{}_taz2_marginals_{}.csv".format(run_name, year)))
     # save info to be used to produce county marginals
     orca.add_table("taz2_summary_df", taz2)
 
 
 @orca.step()
 def county_marginals(tm2_occupation_shares, year, initial_summary_year, 
-                     interim_summary_year, final_year):
+                     interim_summary_year, final_year, run_name):
 
     if year not in [initial_summary_year, interim_summary_year, final_year]:
          return
@@ -645,11 +651,11 @@ def county_marginals(tm2_occupation_shares, year, initial_summary_year,
     county['pers_occ_military'] = county.workers * cef.shr_occ_military
     county['pers_occ_military'] = round_series_match_target(county['pers_occ_military'], np.round(county['pers_occ_military'].sum()), 0)
 
-    county.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/county_marginals_{}.csv".format(year)))
+    county.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/{}_county_marginals_{}.csv".format(run_name, year)))
     
 
 @orca.step()
-def region_marginals(year, initial_summary_year, interim_summary_year, final_year):
+def region_marginals(year, initial_summary_year, interim_summary_year, final_year, run_name):
 
     if year not in [initial_summary_year, interim_summary_year, final_year]:
          return
@@ -662,4 +668,4 @@ def region_marginals(year, initial_summary_year, interim_summary_year, final_yea
     region_m = pd.DataFrame(data={'REGION': [1], 'gq_num_hh_region': [tot_gqpop]})
     
     region_m.to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
-                                 "travel_model_summaries/region_marginals_{}.csv").format(year), index=False)
+                                 "travel_model_summaries/{}_region_marginals_{}.csv").format(run_name, year), index=False)
