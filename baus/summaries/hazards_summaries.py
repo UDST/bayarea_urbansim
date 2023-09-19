@@ -100,8 +100,8 @@ def hazards_eq_summary(run_setup, run_name, year, parcels, buildings):
     for empsix in ['AGREMPN', 'MWTEMPN', 'RETEMPN', 'FPSEMPN', 'HEREMPN', 'OTHEMPN']:
         eq_summary["impacted_jobs_"+str(empsix)] = (jobs_unplaced_eq["empsix"] == empsix).sum()
     
-    eq_summary.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "hazards_summaries/eq_summary_%d.csv"
-                                    % (year)))
+    eq_summary.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "hazards_summaries/{}_eq_summary_%d.csv"
+                                    % (run_name, year)))
 
     # print out demolished buildings by TAZ
     eq_demolish_taz = misc.reindex(parcels.zone_id, eq_demolish.parcel_id)
@@ -109,7 +109,7 @@ def hazards_eq_summary(run_setup, run_name, year, parcels, buildings):
     eq_demolish['count'] = 1
     eq_demolish = eq_demolish.drop(['parcel_id', 'year_built', 'redfin_sale_year'], axis=1)
     eq_demolish = eq_demolish.groupby(['taz']).sum()
-    eq_demolish.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "hazards_summaries/{}_eq_demolish_buildings_%d.csv"
+    eq_demolish.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "hazards_summaries/%s_eq_demolish_buildings_%d.csv"
                                     % (run_name, year)))
 
     # print out retrofit buildings by TAZ
@@ -123,7 +123,7 @@ def hazards_eq_summary(run_setup, run_name, year, parcels, buildings):
         'non_residential_sqft', 'building_sqft', 'stories','redfin_sale_price', 'non_residential_rent',
         'deed_restricted_units', 'residential_price', 'count']]
     retrofit_bldgs_tot.to_csv(os.path.join(
-                orca.get_injectable("outputs_dir"), "hazards_summaries/eq_retrofit_buildings_%d.csv" % (year)))
+                orca.get_injectable("outputs_dir"), "hazards_summaries/%s_eq_retrofit_buildings_%d.csv" % (run_name, year)))
 
     # print out buildings by TAZ around earthquake years
     if year not in [2030, 2035, 2050]:
