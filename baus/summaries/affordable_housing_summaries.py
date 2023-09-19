@@ -100,8 +100,8 @@ def deed_restricted_units_growth_summary(year, initial_summary_year, final_year,
     for geography in geographies:
 
         # use 2015 as the base year
-        year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "affordable_housing_summaries/%s_dr_summary_%d.csv" % (geography, initial_summary_year)))
-        year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "affordable_housing_summaries/%s_dr_summary_%d.csv" % (geography, final_year)))
+        year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "affordable_housing_summaries/%s_%s_dr_summary_%d.csv" % (run_name, geography, initial_summary_year)))
+        year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "affordable_housing_summaries/%s_%s_dr_summary_%d.csv" % (run_name, geography, final_year)))
 
         dr_growth = year1.merge(year2, on=geography, suffixes=("_"+str(initial_summary_year), "_"+str(final_year)))
         

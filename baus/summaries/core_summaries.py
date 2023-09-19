@@ -58,7 +58,7 @@ def parcel_growth_summary(year, run_name, initial_summary_year, final_year):
 
         df1[col] = df2[col] - df1[col]
 
-    df1.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/parcel_growth.csv"))
+    df1.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/{}_parcel_growth.csv").format(run_name))
 
 
 @orca.step()
