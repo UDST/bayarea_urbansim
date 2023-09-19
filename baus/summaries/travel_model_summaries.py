@@ -360,8 +360,8 @@ def taz1_growth_summary(year, initial_summary_year, final_year, run_name):
         return
 
     # use 2015 as the base year
-    year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/{}_taz1_summary_%d.csv" % (run_name, initial_summary_year)))
-    year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/{}_taz1_summary_%d.csv" % (run_name, final_year)))
+    year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/%s_taz1_summary_%d.csv" % (run_name, initial_summary_year)))
+    year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/%s_taz1_summary_%d.csv" % (run_name, final_year)))
 
     taz_summary = year1.merge(year2, on='TAZ', suffixes=("_"+str(initial_summary_year), "_"+str(final_year)))
     taz_summary = taz_summary.rename(columns={"SD_"+(str(initial_summary_year)): "SD", "COUNTY_"+(str(initial_summary_year)): "COUNTY",
@@ -538,8 +538,8 @@ def maz_growth_summary(year, initial_summary_year, final_year, run_name):
         return
 
     # use 2015 as the base year
-    year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/{}_maz_summary_%d.csv" % (run_name, initial_summary_year)))
-    year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/{}_maz_summary_%d.csv" % (run_name, final_year)))
+    year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/%s_maz_summary_%d.csv" % (run_name, initial_summary_year)))
+    year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/%s_maz_summary_%d.csv" % (run_name, final_year)))
 
     maz_summary = year1.merge(year2, on='MAZ', suffixes=("_"+str(initial_summary_year), "_"+str(final_year)))
     maz_summary = maz_summary.rename(columns={"TAZ_"+(str(initial_summary_year)): "TAZ", "county_name_"+(str(initial_summary_year)): "county_name"})
@@ -560,7 +560,7 @@ def maz_growth_summary(year, initial_summary_year, final_year, run_name):
         maz_summary[col+'_share_change'] = (maz_summary[col+"_"+str(final_year)+"_share"] -  
                                             maz_summary[col+"_"+str(initial_summary_year)+"_share"])
     
-    maz_summary.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/maz_summary_growth.csv"))
+    maz_summary.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/{}_maz_summary_growth.csv").format(run_name))
 
 
 @orca.step()

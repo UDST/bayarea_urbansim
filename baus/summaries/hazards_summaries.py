@@ -100,7 +100,7 @@ def hazards_eq_summary(run_setup, run_name, year, parcels, buildings):
     for empsix in ['AGREMPN', 'MWTEMPN', 'RETEMPN', 'FPSEMPN', 'HEREMPN', 'OTHEMPN']:
         eq_summary["impacted_jobs_"+str(empsix)] = (jobs_unplaced_eq["empsix"] == empsix).sum()
     
-    eq_summary.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "hazards_summaries/{}_eq_summary_%d.csv"
+    eq_summary.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "hazards_summaries/%s_eq_summary_%d.csv"
                                     % (run_name, year)))
 
     # print out demolished buildings by TAZ
@@ -136,4 +136,4 @@ def hazards_eq_summary(run_setup, run_name, year, parcels, buildings):
                         'building_sqft', 'stories', 'redfin_sale_price', 'non_residential_rent', 'deed_restricted_units',
                         'residential_price']]
     buildings.to_csv(os.path.join(
-        orca.get_injectable("outputs_dir"), "hazards_summaries/{}_eq_buildings_list_%d.csv" % (run_name, year)))
+        orca.get_injectable("outputs_dir"), "hazards_summaries/%s_eq_buildings_list_%d.csv" % (run_name, year)))
