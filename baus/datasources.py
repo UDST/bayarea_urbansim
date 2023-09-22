@@ -42,6 +42,11 @@ def outputs_dir(run_setup):
     return os.path.join(run_setup['outputs_dir'], run_setup["run_name"])
 
 
+@orca.injectable('viz_dir', cache=True)
+def viz_dir(run_setup):
+    return os.path.join(run_setup['viz_dir'])
+
+
 @orca.injectable('paths', cache=True)
 def paths():
     with open(os.path.join(misc.configs_dir(), "paths.yaml")) as f:
@@ -482,12 +487,6 @@ def taz(zones):
 
 
 @orca.table(cache=True)
-def parcel_rejections():
-    url = "https://forecast-feedback.firebaseio.com/parcelResults.json"
-    return pd.read_json(url, orient="index").set_index("geomId")
-
-
-@orca.table(cache=True)
 def parcels_geography(parcels):
 
     file = os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/crosswalks/2021_02_25_parcels_geography.csv")
@@ -588,6 +587,12 @@ def accessibilities_segmentation(year, run_setup):
 @orca.table(cache=True)
 def manual_edits():
     return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/edits/manual_edits.csv"))
+
+
+@orca.table(cache=True)
+def parcel_rejections():
+    url = "https://forecast-feedback.firebaseio.com/parcelResults.json"
+    return pd.read_json(url, orient="index").set_index("geomId")
 
 
 def reprocess_dev_projects(df):
