@@ -9,10 +9,18 @@ def copy_files_to_viz_loc(run_name, outputs_dir, viz_dir):
 
     # copy files to BAUS output to the Visualizer storage location
     # and add a run_name column for use in Tableau
+
+    new_buildings = pd.read_csv(os.path.join(outputs_dir, "core_summaries/{}_new_buildings_summary.csv").format(run_name))
+    new_buildings["run_name"] = run_name
+    new_buildings.to_csv(os.path.join(viz_dir, "{}_new_buildings_summary.csv").format(run_name))
     
     taz_output_file = pd.read_csv(os.path.join(outputs_dir, "travel_model_summaries/{}_taz1_summary_growth.csv").format(run_name))
     taz_output_file["run_name"] = run_name
     taz_output_file.to_csv(os.path.join(viz_dir, "{}_taz1_summary_growth.csv").format(run_name))
+    
+    interim_taz_output_file = pd.read_csv(os.path.join(outputs_dir, "core_summaries/{}_interim_zone_output_allyears.csv").format(run_name))
+    interim_taz_output_file["run_name"] = run_name
+    interim_taz_output_file.to_csv(os.path.join(viz_dir, "{}_interim_zone_output_allyears.csv").format(run_name))
 
     for geog in ["juris", "superdistrict", "county"]:
         output_file = pd.read_csv(os.path.join(outputs_dir, "geographic_summaries/{}_{}_summary_growth.csv").format(run_name, geog))
@@ -34,4 +42,4 @@ def add_to_model_run_inventory_file(run_name):
         model_run_inventory.loc[len(model_run_inventory.index)] = run_name
 
     # write out the updated inventory table
-    model_run_inventory.to_csv(os.path.join(orca.get_injectable("viz_dir"), "model_run_inventory.csv"))
+    model_run_inventory.to_csv(os.path.join(orca.get_injectable("viz_dir"), "model_run_inventory.csv"), index=False)
