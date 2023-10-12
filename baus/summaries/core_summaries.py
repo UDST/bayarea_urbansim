@@ -86,19 +86,27 @@ def new_buildings_summary(run_name, parcels, buildings, year, final_year):
     df = orca.merge_tables('buildings', [parcels, buildings])    
     df = df[~df.source.isin(["h5_inputs"])]
 
+    df = df[['parcel_id', 'building_type', 'building_sqft', 'deed_restricted_units', 'year_built',
+             'non_residential_sqft', 'residential_price', 'residential_units', 'source',	
+             'vacant_residential_units', 'vacant_job_spaces', 'vacant_res_units', 'price_per_sqft',	'unit_price',	
+             'land_value',	'acres', 'x', 'y', 'parcel_acres', 'total_residential_units',	'total_job_spaces',	
+             'zoned_du', 'zoned_du_underbuild', 'sdem', 'pda_id', 'cat_id',	'tra_id', 'sesit_id', 'ppa_id',	'coc_id',	
+             'urbanized', 'manual_nodev', 'total_non_residential_sqft',	'nodev',	
+             'built_far', 'max_far', 'built_dua', 'max_dua', 'building_purchase_price_sqft',	
+             'building_purchase_price',	'land_cost', 'slr_nodev']]
+
     df["run_name"] = run_name
 
     df = df.fillna(0)
-    df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/%s_new_building_summary.csv" % (run_name)))
+    df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/%s_new_buildings_summary.csv" % (run_name)))
 
 
 @orca.step()
-def interim_zone_output(run_name, households, buildings, residential_units, parcels, jobs, zones, year):
+def interim_zone_output(run_name, households, buildings, residential_units, parcels, jobs, zones, year,
+                        initial_summary_year, final_year):
 
     # TODO: currently TAZ, do we want this to be MAZ?
     zones = pd.DataFrame(index=zones.index)
-
-    zones["run_name"] = run_name
 
     parcels = parcels.to_frame()
     buildings = buildings.to_frame()
@@ -128,26 +136,18 @@ def interim_zone_output(run_name, households, buildings, residential_units, parc
 
     zones.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/%s_interim_zone_output_%d.csv" % (run_name, year)))
 
+    # now add all interim zone output to a single dataframe
 
-@orca.step()
-def all_zone_output(run_name, zones, year, final_year):
+    zones = zones.add_suffix("_"+str(year))
 
-    if not final_year:
-        return
-    
-    # TODO: currently TAZ, do we want this to be MAZ?
-    all_zones = pd.DataFrame(index=zones.index)
+    if year == initial_summary_year:
+        all_years = pd.DataFrame(index=zones.index)
+    else:
+        all_years = orca.get_table("interim_zone_output_all").to_frame()
+        
+    all_years = all_years.merge(zones, left_index=True, right_index=True)
+    orca.add_table("interim_zone_output_all", all_years)
 
-    all_zones.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries/%s_interim_zone_output_%d.csv" % (run_name, year)))
-
-
-@orca.step()
-def feasibility_table_output(run_name, feasibility_before_policy, feasibility_after_policy, year):
-
-    # created by alt_feasibility(); 
-    # modified by subsidized_residential_feasibility() and policy_modifications_of_profit()
-    # residential_developer(), office_developer(), retail_developer(), run_subsidized_developer(), subsidized_office_developer()
-
-    feasibility_before_policy.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "%s_feasibility_before_policy_%d.csv" % (run_name, year)))
-
-    feasibility_after_policy.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "%s_feasibility_after_policy%d.csv" % (run_name, year)))
+    if year == final_year:
+        all_years.to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
+                                      "core_summaries/%s_interim_zone_output_allyears.csv" % (run_name)))
