@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import os
+import pathlib
 import orca
 import pandas as pd
 import numpy as np
@@ -352,7 +353,9 @@ def taz1_summary(parcels, households, jobs, buildings, zones, maz, year, base_ye
     taz_df.index.name = 'TAZ'
     # uppercase columns to match travel model template
     taz_df.columns = [x.upper() for x in taz_df.columns]
-    taz_df.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/taz1_summary_{}.csv").format(year))
+    tmsum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "travel_model_summaries"
+    tmsum_output_dir.mkdir(parents=True, exist_ok=True)
+    taz_df.fillna(0).to_csv(tmsum_output_dir / "taz1_summary_{}.csv".format(year))
 
 
 @orca.step()

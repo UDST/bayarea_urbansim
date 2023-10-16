@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import os
+import pathlib
 import orca
 import pandas as pd
 from baus.utils import format_df
@@ -51,7 +52,9 @@ def deed_restricted_units_summary(parcels, buildings, year, initial_summary_year
     region_dr["h5_dr_units"] = buildings.h5_dr_units.sum()
     region_dr["cs_dr_units"] = buildings.cs_dr_units.sum()
 
-    region_dr.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "affordable_housing_summaries/region_dr_summary_{}.csv").format(year))
+    affhousum_output_dir =  pathlib.Path(orca.get_injectable("outputs_dir")) / "affordable_housing_summaries"
+    affhousum_output_dir.mkdir(parents=True, exist_ok=True)
+    region_dr.to_csv(affhousum_output_dir / "region_dr_summary_{}.csv".format(year))
 
     #### geographic deed restricted units summary ####
     geographies = ['juris', 'superdistrict', 'county']
@@ -86,8 +89,10 @@ def deed_restricted_units_summary(parcels, buildings, year, initial_summary_year
 
         summary_table.index.name = geography
         summary_table = summary_table.sort_index()
-        summary_table.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), "affordable_housing_summaries/{}_dr_summary_{}.csv").\
-                                          format(geography, year))
+
+        affhousum_output_dir =  pathlib.Path(orca.get_injectable("outputs_dir")) / "affordable_housing_summaries"
+        affhousum_output_dir.mkdir(parents=True, exist_ok=True)
+        summary_table.fillna(0).to_csv(affhousum_output_dir / "{}_dr_summary_{}.csv".format(geography, year))
         
 
 @orca.step()
@@ -122,4 +127,7 @@ def deed_restricted_units_growth_summary(year, initial_summary_year, final_year)
                                                dr_growth[col+"_"+str(initial_summary_year)+"_share"])
         
         dr_growth = dr_growth.fillna(0)
-        dr_growth.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "affordable_housing_summaries/{}_dr_growth.csv").format(geography))
+        
+        affhousum_output_dir =  pathlib.Path(orca.get_injectable("outputs_dir")) / "affordable_housing_summaries"
+        affhousum_output_dir.mkdir(parents=True, exist_ok=True)
+        dr_growth.to_csv(affhousum_output_dir / "{}_dr_growth.csv".format(geography))

@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import os
+import pathlib
 import orca
 import pandas as pd
 from baus import datasources
@@ -46,7 +47,9 @@ def geographic_summary(parcels, households, jobs, buildings, year, superdistrict
     
     # non-residential buildings
     region['non_residential_sqft'] = buildings_df.non_residential_sqft.sum()
-    region.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "geographic_summaries/region_summary_{}.csv").format(year))
+    geosum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "geographic_summaries"
+    geosum_output_dir.mkdir(parents=True, exist_ok=True)
+    region.to_csv(geosum_output_dir / "region_summary_{}.csv".format(year))
 
     #### summarize by sub-regional geography ####
     geographies = ['juris', 'superdistrict', 'county', 'subregion']

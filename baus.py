@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import os
+import pathlib
 import sys
 import time
 import traceback
@@ -106,10 +107,12 @@ if INTERACT:
     sys.exit()
 
 run_name = orca.get_injectable("run_name")
+outputs_dir = pathlib.Path(orca.get_injectable("outputs_dir"))
+outputs_dir.mkdir(parents=True, exist_ok=True)
 
 if LOGS:
     print('***The Standard stream is being written to {}.log***'.format(run_name))
-    sys.stdout = sys.stderr = open(os.path.join(orca.get_injectable("outputs_dir"), "%s.log") % run_name, 'w')
+    sys.stdout = sys.stderr = open(outputs_dir / "{}.log".format(run_name), 'w')
 
 if RANDOM_SEED:
     np.random.seed(12)
@@ -548,7 +551,7 @@ def run_models(MODE):
         # for debugging
         df = orca.get_table("feasibility").to_frame()
         df = df.stack(level=0).reset_index(level=1, drop=True)
-        df.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "feasibility.csv"))
+        df.to_csv( outputs_dir / "feasibility.csv")
         
     else:
 
@@ -568,6 +571,8 @@ print("pandana version: %s" % pandana.__version__)
 print("numpy version: %s" % np.__version__)
 print("pandas version: %s" % pd.__version__)
 
+print("SLACK: {}".format(SLACK))
+print("MODE: {}".format(MODE))
 
 if SLACK and MODE == "simulation":
     slack.chat.post_message('#urbansim_sim_update', 'Starting simulation %s on host %s' % (run_name, host), as_user=True)
@@ -618,13 +623,13 @@ if MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
     df1 = pd.read_csv(("http://urbanforecast.com/runs/run%d_superdistrict" + "_summaries_2050.csv") % prev_run)
     df1 = df1.set_index(df1.columns[0]).sort_index()
 
-    df2 = pd.read_csv((orca.get_injectable("outputs_dir")+"/run%d_superdistrict_summaries_2050.csv") % run_name)
+    df2 = pd.read_csv(outputs_dir / "run{}_superdistrict_summaries_2050.csv".format(run_name))
     df2 = df2.set_index(df2.columns[0]).sort_index()
 
     supnames = pd.read_csv((orca.get_injectable("inputs_dir") + "/basis_inputs/crosswalks/superdistricts_geography.csv"), index_col="number").name
 
     summary = compare_summary(df1, df2, supnames)
-    with open((orca.get_injectable("outputs_dir") + "/run%d_difference_report.log") % run_name, "w") as f:
+    with open(outputs_dir / "run{}_difference_report.log".format(run_name), "w") as f:
         f.write(summary)
 
 
@@ -639,5 +644,5 @@ if SLACK and MODE == "simulation" and COMPARE_AGAINST_LAST_KNOWN_GOOD:
         slack.chat.post_message('#urbansim_sim_update', "No differences with reference run.", as_user=True)
 
 if S3:
-    os.system('ls ' + orca.get_injectable("outputs_dir") + '/run%d_* ' % run_name + '| xargs -I file aws s3 cp file ' + 
+    os.system('ls ' + (outputs_dir / 'run{}_*'.format(run_name)) + ' | xargs -I file aws s3 cp file ' + 
               's3://bayarea-urbansim-results')
