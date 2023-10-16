@@ -13,7 +13,7 @@ theme:
 
 nav:
     - Home: 'index.md'
-    - Model Overview: 'model_overview.md'
+    - Configuration: 'configuration.md'
     - User Guide: 'user_guide.md'
     - Input: 'input.md'
     - Output: 'output.md'

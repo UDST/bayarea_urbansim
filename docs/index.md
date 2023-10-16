@@ -18,7 +18,7 @@ Bay Area UrbanSim (BAUS) is a land use or urban economic model used to forecast 
 <!--     mkdocs.yml              # The configuration file.
     docs/
         index.md            # The documentation homepage.
-        model_overview.md   #
+        configuration.md   #
         user_guide.md       # Other markdown pages, images and other files.
         input.md
         output.md
