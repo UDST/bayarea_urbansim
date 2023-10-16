@@ -14,10 +14,10 @@ theme:
 nav:
     - Home: 'index.md'
     - Configuration: 'configuration.md'
-    - User Guide: 'user_guide.md'
+    - Model: 'model.md'
     - Input: 'input.md'
     - Output: 'output.md'
-    - PBA50: 'pba50.md'
+    - Scenarios: 'scenarios.md'
 
 plugins:
   - autorefs
