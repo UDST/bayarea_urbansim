@@ -14,7 +14,6 @@ theme:
 nav:
     - Home: 'index.md'
     - Configuration: 'configuration.md'
-    - Model: 'model.md'
     - Input: 'input.md'
     - Output: 'output.md'
     - Scenarios: 'scenarios.md'
