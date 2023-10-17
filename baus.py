@@ -10,7 +10,7 @@ from baus.tests import validation
 from baus.summaries import \
     core_summaries, geographic_summaries, affordable_housing_summaries, \
     hazards_summaries, metrics, travel_model_summaries
-from baus.visualization import push_model_files
+from visualization import push_model_files
 import numpy as np
 import pandas as pd
 import orca
