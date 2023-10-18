@@ -28,17 +28,6 @@ Does the same as the above for household categories and total household counts.
 Uses the file at data/rhna_by_juris.csv to make sure totals from an simulation run
 exceed the RHNA totals.
 
-### county_summaries.py
-
-A script which computes basic summaries of households and jobs and units by county
-and writes it to an Excel file (multiple worksheets for multiple runs).
-
-### explorer.py
-
-Run UrbanSim Explorer - takes a scenario number as an argument.  In theory this is done
-every time the simulation runs (generates an output map to explore), so this only needs
-to be run if something went wrong in generating that file.
-
 ### export.py
 
 Combine a couple of dataframes, all keyed on parcel_id, keep important attribuets, and
@@ -51,20 +40,15 @@ large - we should review these by hand.
 
 ### fix_zoning_missing_id.py
 
-This is Tom's code.
-
-This script was written to find parcels that have a zoning name assigned to them but which don't have an entry in the `data/zoning_lookup.csv`. Example instances of where this might happen are if a city adds a newly named zoning code or where we might not have assigned zoning at all, which seems to have happened often with parks, the working assumption being that a park would never be re-developed. This is probably an assumption worth testing. 
-
-To use it, run:
-
-`python scripts/fix_zoning_missing_id.py`
-
-The script will print out a summary of parcels with null zoning values by city. It will also look up strings for each city in the zoning_lookup.csv `name` column and then assign the appropriate id if its finds one. Note that it will write the results back out to a `zoning_parcels.csv` file preceded by todays date. 
-
-### import_mongo.py
-
-This is not used, but is pretty awesome.  It gets numpy arrays from Mongo and is very fast - use
-if ever storing data in Mongo.
+This script was written to find parcels that have a zoning name assigned to them but which 
+don't have an entry in the `data/zoning_lookup.csv`. Example instances of where this might 
+happen are if a city adds a newly named zoning code or where we might not have assigned 
+zoning at all, which seems to have happened often with parks, the working assumption being 
+that a park would never be re-developed. This is probably an assumption worth testing. 
+The script will print out a summary of parcels with null zoning values by city. It will 
+also look up strings for each city in the zoning_lookup.csv `name` column and then assign 
+the appropriate id if its finds one. Note that it will write the results back out to a 
+`zoning_parcels.csv` file preceded by todays date. 
 
 ### make_net_from_shapefile.py
 
@@ -95,11 +79,14 @@ Also not used anymore, but serves this UrbanSim data as json in case there's a n
 the data using a webapp.
 
 ### vmt_compare.py
+
 Compare the household totals for two scenarios inside different VMT zones.  This is used
 to see if our VMT impact fees were successful in moving households out of higher VMT
 areas.
 
-## build_strategy.ipynb
+### build_strategy.ipynb
+
 * build development-related strategy settings in `policy.yaml`
-* inclusionary housing setting: for Final Blueprint, reads `parcels_geography.csv` input, categorizes fbpchcat based on required inclusionary level. 
+* inclusionary housing setting: for Final Blueprint, reads `parcels_geography.csv` input, 
+categorizes fbpchcat based on required inclusionary level. 
 * office lump sum subsidies: for Final Blueprint, creates account setting for receiving jurisdictions. 

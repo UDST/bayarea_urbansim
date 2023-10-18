@@ -4,12 +4,10 @@ import os
 import pathlib
 import orca
 import pandas as pd
-from baus.utils import format_df
-from urbansim.utils import misc
 from baus import datasources
 
 @orca.step()
-def deed_restricted_units_summary(parcels, buildings, year, initial_summary_year, final_year, superdistricts_geography):
+def deed_restricted_units_summary(run_name, parcels, buildings, year, initial_summary_year, final_year, superdistricts_geography):
 
     if year != initial_summary_year and year != final_year:
         return
@@ -54,7 +52,7 @@ def deed_restricted_units_summary(parcels, buildings, year, initial_summary_year
 
     affhousum_output_dir =  pathlib.Path(orca.get_injectable("outputs_dir")) / "affordable_housing_summaries"
     affhousum_output_dir.mkdir(parents=True, exist_ok=True)
-    region_dr.to_csv(affhousum_output_dir / "region_dr_summary_{}.csv".format(year))
+    region_dr.to_csv(affhousum_output_dir / "{}_region_dr_summary_{}.csv".format(run_name, year))
 
     #### geographic deed restricted units summary ####
     geographies = ['juris', 'superdistrict', 'county']
@@ -92,11 +90,11 @@ def deed_restricted_units_summary(parcels, buildings, year, initial_summary_year
 
         affhousum_output_dir =  pathlib.Path(orca.get_injectable("outputs_dir")) / "affordable_housing_summaries"
         affhousum_output_dir.mkdir(parents=True, exist_ok=True)
-        summary_table.fillna(0).to_csv(affhousum_output_dir / "{}_dr_summary_{}.csv".format(geography, year))
+        summary_table.fillna(0).to_csv(affhousum_output_dir / "{}_{}_dr_summary_{}.csv".format(run_name, geography, year))
         
 
 @orca.step()
-def deed_restricted_units_growth_summary(year, initial_summary_year, final_year):
+def deed_restricted_units_growth_summary(year, initial_summary_year, final_year, run_name):
     
     if year != final_year: 
         return
@@ -106,10 +104,12 @@ def deed_restricted_units_growth_summary(year, initial_summary_year, final_year)
     for geography in geographies:
 
         # use 2015 as the base year
-        year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "affordable_housing_summaries/%s_dr_summary_%d.csv" % (geography, initial_summary_year)))
-        year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "affordable_housing_summaries/%s_dr_summary_%d.csv" % (geography, final_year)))
+        year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "affordable_housing_summaries/%s_%s_dr_summary_%d.csv" % (run_name, geography, initial_summary_year)))
+        year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "affordable_housing_summaries/%s_%s_dr_summary_%d.csv" % (run_name, geography, final_year)))
 
         dr_growth = year1.merge(year2, on=geography, suffixes=("_"+str(initial_summary_year), "_"+str(final_year)))
+        
+        dr_growth["run_name"] = run_name
 
         columns = ['total_dr_units', "inclusionary_units", "subsidized_units", "preserved_units", "public_lands_dr_units", 
                    "mall_office_dr_units", "opp_dr_units", "h5_dr_units", "cs_dr_units"]
@@ -130,4 +130,4 @@ def deed_restricted_units_growth_summary(year, initial_summary_year, final_year)
         
         affhousum_output_dir =  pathlib.Path(orca.get_injectable("outputs_dir")) / "affordable_housing_summaries"
         affhousum_output_dir.mkdir(parents=True, exist_ok=True)
-        dr_growth.to_csv(affhousum_output_dir / "{}_dr_growth.csv".format(geography))
+        dr_growth.to_csv(affhousum_output_dir / "{}_{}_dr_growth.csv".format(run_name, geography))

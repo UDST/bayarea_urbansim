@@ -7,7 +7,7 @@ import pandas as pd
 
 
 @orca.step()
-def parcel_summary(parcels, buildings, households, jobs, year, initial_summary_year, interim_summary_year, final_year):
+def parcel_summary(run_name, parcels, buildings, households, jobs, year, initial_summary_year, interim_summary_year, final_year):
 
     if year not in [initial_summary_year, interim_summary_year, final_year]:
          return
@@ -37,18 +37,19 @@ def parcel_summary(parcels, buildings, households, jobs, year, initial_summary_y
     df = df.fillna(0)
     coresum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "core_summaries"
     coresum_output_dir.mkdir(parents=True, exist_ok=True)
-    df.to_csv(coresum_output_dir /"parcel_summary_{}.csv".format(year))
+    df.to_csv(coresum_output_dir /"%s_parcel_summary_{}.csv".format(run_name, year))
 
 
 @orca.step()
-def parcel_growth_summary(year, initial_summary_year, final_year):
+def parcel_growth_summary(year, run_name, initial_summary_year, final_year):
     
     if year != final_year:
         return
 
     coresum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "core_summaries"
     initial_parcel_file = coresum_output_dir / "parcel_summary_{}.csv".format(initial_summary_year)
-    print("initial_parcel_file resikve:{} exists:{}".format(initial_parcel_file.resolve(), initial_parcel_file.exists()))
+    print("initial_parcel_file resolve:{} exists:{}".format(initial_parcel_file.resolve(), initial_parcel_file.exists()))
+
     df1 = pd.read_csv(coresum_output_dir / "parcel_summary_{}.csv".format(initial_summary_year), 
                       index_col="parcel_id")
     df2 = pd.read_csv(coresum_output_dir / "parcel_summary_{}.csv".format(final_year),
@@ -66,12 +67,12 @@ def parcel_growth_summary(year, initial_summary_year, final_year):
 
     coresum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "core_summaries"
     coresum_output_dir.mkdir(parents=True, exist_ok=True)
-    df1.to_csv(coresum_output_dir / "parcel_growth.csv")
+    df1.to_csv(coresum_output_dir / f"{run_name}_parcel_growth.csv")
     
 
 
 @orca.step()
-def building_summary(parcels, buildings, year, initial_summary_year, final_year, interim_summary_year):
+def building_summary(run_name, parcels, buildings, year, initial_summary_year, final_year, interim_summary_year):
 
     if year not in [initial_summary_year, interim_summary_year, final_year]:
         return
@@ -85,28 +86,40 @@ def building_summary(parcels, buildings, year, initial_summary_year, final_year,
     df = df.fillna(0)
     coresum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "core_summaries"
     coresum_output_dir.mkdir(parents=True, exist_ok=True)
-    df.to_csv(coresum_output_dir / "building_summary_{}.csv".format(year))
+    df.to_csv(coresum_output_dir / "{}_building_summary_{}.csv".format(run_name, year))
 
 
 @orca.step()
-def new_buildings_summary(parcels, buildings, year, final_year):
+def new_buildings_summary(run_name, parcels, buildings, year, final_year):
 
-#    if year != final_year:
-#        return
+    if year != final_year:
+        return
 
     df = orca.merge_tables('buildings', [parcels, buildings])    
     df = df[~df.source.isin(["h5_inputs"])]
 
+    df = df[['parcel_id', 'building_type', 'building_sqft', 'deed_restricted_units', 'year_built',
+             'non_residential_sqft', 'residential_price', 'residential_units', 'source',	
+             'vacant_residential_units', 'vacant_job_spaces', 'vacant_res_units', 'price_per_sqft',	'unit_price',	
+             'land_value',	'acres', 'x', 'y', 'parcel_acres', 'total_residential_units',	'total_job_spaces',	
+             'zoned_du', 'zoned_du_underbuild', 'sdem', 'pda_id', 'cat_id',	'tra_id', 'sesit_id', 'ppa_id',	'coc_id',	
+             'urbanized', 'manual_nodev', 'total_non_residential_sqft',	'nodev',	
+             'built_far', 'max_far', 'built_dua', 'max_dua', 'building_purchase_price_sqft',	
+             'building_purchase_price',	'land_cost', 'slr_nodev']]
+
+    df["run_name"] = run_name
+
     df = df.fillna(0)
     coresum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "core_summaries"
     coresum_output_dir.mkdir(parents=True, exist_ok=True)
-    df.to_csv(coresum_output_dir / "new_building_summary.csv")
+    df.to_csv(coresum_output_dir / "{}_new_buildings_summary.csv".format(run_name))
 
 
 @orca.step()
-def interim_zone_output(households, buildings, residential_units, parcels, jobs, zones, year):
+def interim_zone_output(run_name, households, buildings, residential_units, parcels, jobs, zones, year,
+                        initial_summary_year, final_year):
 
-    # TODO: do we want this to be MAZ?
+    # TODO: currently TAZ, do we want this to be MAZ?
     zones = pd.DataFrame(index=zones.index)
 
     parcels = parcels.to_frame()
@@ -137,4 +150,20 @@ def interim_zone_output(households, buildings, residential_units, parcels, jobs,
 
     coresum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "core_summaries"
     coresum_output_dir.mkdir(parents=True, exist_ok=True)
-    zones.to_csv(coresum_output_dir / "interim_zone_output_{}.csv".format(year))
+    zones.to_csv(coresum_output_dir / "{}_interim_zone_output_{}.csv".format(run_name, year))
+
+    # now add all interim zone output to a single dataframe
+
+    zones = zones.add_suffix("_"+str(year))
+
+    if year == initial_summary_year:
+        all_years = pd.DataFrame(index=zones.index)
+    else:
+        all_years = orca.get_table("interim_zone_output_all").to_frame()
+        
+    all_years = all_years.merge(zones, left_index=True, right_index=True)
+    orca.add_table("interim_zone_output_all", all_years)
+
+    if year == final_year:
+        all_years.to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
+                                      "core_summaries/%s_interim_zone_output_allyears.csv" % (run_name)))

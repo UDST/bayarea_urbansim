@@ -1,5 +1,4 @@
 Bay Area UrbanSim (BAUS) Implementation
-=======
 
 This is the UrbanSim implementation for the Bay Area. Documentation for the UrbanSim framework is available [here](https://udst.github.io/urbansim/). All documentation for Bay Area Urbansim is at: http://bayareametro.github.io/bayarea_urbansim/main/
 
@@ -8,15 +7,9 @@ Bay Area UrbanSim is written in Python and runs in a command line environment. I
 
 1. Install the Anaconda Python distribution (not strictly required, but makes things easier and more reliable)
 2. Clone this repository 
-3. Create a Python environment with the current dependencies: `conda env create -f baus-env-2020.yml`
-4. Activate the environment: `conda activate baus-env-2020`
+3. Create a Python environment with the current dependencies: `conda env create -f baus-env-2023.yml`
+4. Activate the environment: `conda activate baus-env-2023`
 6. Store `run_setup.yaml` next to the repository (ask an MTC contact for access) and use it to specify the `inputs` and `outputs` folder locations and `run_name`
 7. Pull inputs into the model `inputs` folder (ask an MTC contact for access)
-8. Run `python baus.py` from the main model directory (more info about the command line arguments: `python baus.py --help`)
-
-To send messages to slack:
-0. Install `slacker` python module
-1. Set `SLACK_TOKEN` environment variable to be the token for slack authentication
-2. Set `URBANSIM_SLACK` environment variable to 1
-
-Todo: Document `MAPS`, AWS S3 functionality.  Does this still work?
+8. Establish an outputs folder in the `outputs` folder using the `run_name` as the folder name, and copy the outputs folder structure into it (ask an MTC contact for access)
+10. Run `python baus.py` from the main model directory (more info about the command line arguments: `python baus.py --help`)

@@ -9,7 +9,7 @@ from baus import datasources
 
 @orca.step()
 def geographic_summary(parcels, households, jobs, buildings, year, superdistricts_geography,
-                       initial_summary_year, interim_summary_year, final_year):  
+                       initial_summary_year, interim_summary_year, final_year, run_name):  
 
     # Commenting this out so we get geographic summaries for all years - DSL 2023-08-31
     # if year not in [initial_summary_year, interim_summary_year, final_year]:
@@ -49,7 +49,7 @@ def geographic_summary(parcels, households, jobs, buildings, year, superdistrict
     region['non_residential_sqft'] = buildings_df.non_residential_sqft.sum()
     geosum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "geographic_summaries"
     geosum_output_dir.mkdir(parents=True, exist_ok=True)
-    region.to_csv(geosum_output_dir / "region_summary_{}.csv".format(year))
+    region.to_csv(geosum_output_dir / "{}_region_summary_{}.csv".format(run_name, year))
 
     #### summarize by sub-regional geography ####
     geographies = ['juris', 'superdistrict', 'county', 'subregion']
@@ -91,12 +91,13 @@ def geographic_summary(parcels, households, jobs, buildings, year, superdistrict
    
         summary_table.index.name = geography
         summary_table = summary_table.sort_index()
-        summary_table.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), "geographic_summaries/{}_summary_{}.csv").\
-                                                    format(geography, year))
+        summary_table.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
+                                                    "geographic_summaries/{}_{}_summary_{}.csv").\
+                                                    format(run_name, geography, year))
 
 
 @orca.step()
-def geographic_growth_summary(year, final_year, initial_summary_year):
+def geographic_growth_summary(year, final_year, initial_summary_year, run_name):
     
     if year != final_year: 
         return
@@ -106,12 +107,14 @@ def geographic_growth_summary(year, final_year, initial_summary_year):
     for geography in geographies:
 
         # use 2015 as the base year
-        year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "geographic_summaries/%s_summary_%d.csv" % (geography, initial_summary_year)))
-        year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "geographic_summaries/%s_summary_%d.csv" % (geography, final_year)))
+        year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "geographic_summaries/%s_%s_summary_%d.csv" % (run_name, geography, initial_summary_year)))
+        year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "geographic_summaries/%s_%s_summary_%d.csv" % (run_name, geography, final_year)))
 
         geog_growth = year1.merge(year2, on=geography, suffixes=("_"+str(initial_summary_year), "_"+str(final_year)))
 
-        if geography == 'superdistict':
+        geog_growth["run_name"] = run_name
+
+        if geography == 'superdistrict':
             geog_growth = geog_growth.rename(columns={"name_"+(str(initial_summary_year)): "name"})
             geog_growth = geog_growth.drop(columns=["name_"+(str(final_year))])
         
@@ -140,4 +143,5 @@ def geographic_growth_summary(year, final_year, initial_summary_year):
                                                          geog_growth[col+"_"+str(initial_summary_year)+"_regional_share"])
     
         geog_growth = geog_growth.fillna(0)
-        geog_growth.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "geographic_summaries/{}_summary_growth.csv").format(geography))
+        geog_growth.to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
+                                        "geographic_summaries/{}_{}_summary_growth.csv").format(run_name, geography))

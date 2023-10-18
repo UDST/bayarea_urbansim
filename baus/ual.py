@@ -744,8 +744,9 @@ def _mtc_clip(table, col_name, price_settings, price_scale=1):
 @orca.step()
 def rsh_simulate(residential_units, aggregations, price_settings):
     """
-    This uses the MTC's model specification from rsh.yaml, but
-    generates unit-level price predictions rather than building-level.
+    Hedonic model that generates unit-level price predictions using MTC's model specification from rsh.yaml;
+    stores the price value in the "unit_residential_price' column of the "residential_units" table.
+    It uses the logsums from travel model.
 
     Data expectations
     -----------------
@@ -763,8 +764,9 @@ def rsh_simulate(residential_units, aggregations, price_settings):
 @orca.step()
 def rrh_simulate(residential_units, aggregations, price_settings):
     """
-    This uses an altered hedonic specification to generate
-    unit-level rent predictions.
+    Hedonic model that generages unit-level rent predictions using MTC's model specification from rrh.yaml;
+    stores the price value in the "unit_residential_rent' column of the "residential_units" table.
+    It does not use the logsums from travel model.
 
     Data expectations
     -----------------
@@ -775,7 +777,7 @@ def rrh_simulate(residential_units, aggregations, price_settings):
                            join_tbls=aggregations,
                            out_fname='unit_residential_rent')
 
-    _mtc_clip(residential_units, 'unit_residential_rent', price_settings, price_scale=0.05/12)
+    _mtc_clip(residential_units, 'unit_residential_rent', price_settings, price_scale=0.05/12)  
     return
 
 
