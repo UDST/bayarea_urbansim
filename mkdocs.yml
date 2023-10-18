@@ -3,6 +3,7 @@ site_url: http://bayareametro.github.io/bayarea_urbansim/
 repo_url: https://github.com/BayAreaMetro/bayarea_urbansim
 
 theme: 
+    # name: readthedocs
     name: material
     features:
     - navigation.tabs
@@ -11,28 +12,17 @@ theme:
     - navigation.indexes
 
 nav:
-    - Model: 'model.md'
-    - Scenarios: 'scenarios.md'
+    - Home: 'index.md'
     - Configuration: 'configuration.md'
     - Input: 'input.md'
     - Output: 'output.md'
+    - Scenarios: 'scenarios.md'
 
 plugins:
   - autorefs
-  - search
-  - mkdocstrings:
-      default_handler: python
-      handlers:
-        python:
-          rendering:
-            show_root_heading: true
-            show_source: true
-      watch:
-        - baus
   - mike:
 
 extra:
   version:
     provider: mike
-    default: main
-  
+    default: latest
