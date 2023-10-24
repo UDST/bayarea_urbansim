@@ -37,7 +37,7 @@ def parcel_summary(run_name, parcels, buildings, households, jobs, year, initial
     df = df.fillna(0)
     coresum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "core_summaries"
     coresum_output_dir.mkdir(parents=True, exist_ok=True)
-    df.to_csv(coresum_output_dir /"%s_parcel_summary_{}.csv".format(run_name, year))
+    df.to_csv(coresum_output_dir / f"{run_name}_parcel_summary_{year}.csv")
 
 
 @orca.step()
@@ -47,12 +47,11 @@ def parcel_growth_summary(year, run_name, initial_summary_year, final_year):
         return
 
     coresum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "core_summaries"
-    initial_parcel_file = coresum_output_dir / "parcel_summary_{}.csv".format(initial_summary_year)
+    initial_parcel_file = coresum_output_dir / f"{run_name}_parcel_summary_{initial_summary_year}.csv"
     print("initial_parcel_file resolve:{} exists:{}".format(initial_parcel_file.resolve(), initial_parcel_file.exists()))
 
-    df1 = pd.read_csv(coresum_output_dir / "parcel_summary_{}.csv".format(initial_summary_year), 
-                      index_col="parcel_id")
-    df2 = pd.read_csv(coresum_output_dir / "parcel_summary_{}.csv".format(final_year),
+    df1 = pd.read_csv(initial_parcel_file, index_col="parcel_id")
+    df2 = pd.read_csv(coresum_output_dir / f"{run_name}_parcel_summary_{final_year}.csv",
                       index_col="parcel_id")
 
     for col in df1.columns:
@@ -156,10 +155,10 @@ def interim_zone_output(run_name, households, buildings, residential_units, parc
 
     zones = zones.add_suffix("_"+str(year))
 
-    if year == initial_summary_year:
-        all_years = pd.DataFrame(index=zones.index)
-    else:
+    try:
         all_years = orca.get_table("interim_zone_output_all").to_frame()
+    except KeyError:
+        all_years = pd.DataFrame(index=zones.index)
         
     all_years = all_years.merge(zones, left_index=True, right_index=True)
     orca.add_table("interim_zone_output_all", all_years)
