@@ -59,17 +59,6 @@ hlcm_renter_lowincome.yaml| This uses the same specification and estimated coeff
 hlcm_renter_lowincome_no_unplaced.yaml| This uses the same specification and estimated coefficients as hlcm_renter, but allows renters of all incomes into deed-restricted rental units to cover any gaps in assignment.
 hlcm_renter_no_unplaced.yaml| This uses the same specification and estimated coefficients as hlcm_renter, but does another round of placement of renters, this time into non-deed-restricted rental units, to cover any gaps in assignment.
 
-**HLCM Model**|**Estimation Choosers: Filters**|**Estimation Alternatives: Filters**|**Simulation Choosers: Filters**|**Simulation Alternatives: Filters**
------|-----|-----|-----|-----
-owner|Owners|-|Owners|Owner Units|
-owner_lowincome|Owners|-|Low-Income Owners| Affordable Owner Units|
-owner_lowincome_no_unplaced|-|-|Owners|Affordable Owner Units|
-owner_no_unplaced|Owners|-|Owners| Market-Rate Owner Units|
-renter|Renters|-|Renters|Renters Units|
-renter_lowincome|Renters|-|Low-Income Renters|Affordable Rental Units|
-renter_lowincome_no_unplaced|-|-|Renters|Affordable Rentual Units|
-renter_no_unplaced|Renters|-|Renters|Market Rate Rental Units|
-
 ### transition_relocation/
 **name**|**description**
 -----|-----
