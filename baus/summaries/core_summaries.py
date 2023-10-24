@@ -115,22 +115,23 @@ def interim_zone_output(run_name, households, buildings, residential_units, parc
     households = households.to_frame()
     jobs = jobs.to_frame()
 
-    # CAPACITY
-    zones['zoned_du'] = parcels.groupby('zone_id').zoned_du.sum()
-    zones['zoned_du_underbuild'] = parcels.groupby('zone_id').zoned_du_underbuild.sum()
-    zones['zoned_du_underbuild_ratio'] = zones.zoned_du_underbuild / zones.zoned_du
-
-    zones['residential_units'] = buildings.groupby('zone_id').residential_units.sum()
+    zones['non_residential_sqft'] = buildings.groupby('zone_id').non_residential_sqft.sum()
     zones['job_spaces'] = buildings.groupby('zone_id').job_spaces.sum()
+    
+    zones['residential_units'] = buildings.groupby('zone_id').residential_units.sum()
     zones["deed_restricted_units"] = buildings.groupby('zone_id').deed_restricted_units.sum()
     zones["preserved_units"] = buildings.groupby('zone_id').preserved_units.sum()
     zones["inclusionary_units"] = buildings.groupby('zone_id').inclusionary_units.sum()
     zones["subsidized_units"] = buildings.groupby('zone_id').subsidized_units.sum()
 
+    # CAPACITY
+    zones['zoned_du'] = parcels.groupby('zone_id').zoned_du.sum()
+    zones['zoned_du_underbuild'] = parcels.groupby('zone_id').zoned_du_underbuild.sum()
+    zones['zoned_du_underbuild_ratio'] = zones.zoned_du_underbuild / zones.zoned_du
+
     # VACANCY
     tothh = households.zone_id.value_counts().reindex(zones.index).fillna(0)
     zones['residential_vacancy'] = 1.0 - tothh / zones.residential_units.replace(0, 1)
-    zones['non_residential_sqft'] = buildings.groupby('zone_id').non_residential_sqft.sum()
     totjobs = jobs.zone_id.value_counts().reindex(zones.index).fillna(0)
     zones['non_residential_vacancy'] = 1.0 - totjobs / zones.job_spaces.replace(0, 1)
 
