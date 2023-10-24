@@ -14,8 +14,8 @@ feasibility.csv | Parcel-level data on the development feasibilities of various 
 
 #### `interim_zone_output.csv`
 
-| **attribute** | **description** | **source** |
-|-----------------|-----------|--------------|--------------|--------------|
+**attribute** | **description** | **source** |
+-----|-----|-----
 unit_residential_price | median residential price of all residential units in a TAZ | BAUS "residential_units" table | [rsh_simulate](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/ual.py#L745)
 unit_residential_rent | median residential monthly rent of all residential units in a TAZ | BAUS "residential_units" table | [rrh_simulate()](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/ual.py#L764) |
 | unit_residential_price_>_rent | 1 or 0 representing if the TAZ-level per-unit residential price is higher than annualized rent divided by [cap_rate](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/configs/developer/developer_settings.yaml#L2). | int | BAUS "residential_units" table and "developer_settings" | [summary.py](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/summaries.py#L265) |
@@ -34,7 +34,7 @@ unit_residential_rent | median residential monthly rent of all residential units
 
 ### `new_buildings_summary.csv`
 
-| **Attribute** | **Description** | **Data Type** | **Source** | **Sub-model/step** |
+| **attribute** | **description** | **source** |
 |-----------------|-----------|--------------|--------------|--------------|
 | building_type | XXX | XXX | XXX | XXX |
 | residential | XXX | XXX | XXX | XXX |
