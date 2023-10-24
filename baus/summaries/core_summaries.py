@@ -87,6 +87,7 @@ def new_buildings_summary(run_name, parcels, buildings, year, final_year):
     df = df[~df.source.isin(["h5_inputs"])]
 
     df = df[['parcel_id', 'building_type', 'building_sqft', 'deed_restricted_units', 'year_built',
+             'preserved_units', 'inclusionary_units', 'subsidized_units',
              'non_residential_sqft', 'residential_price', 'residential_units', 'source',	
              'vacant_residential_units', 'vacant_job_spaces', 'vacant_res_units', 'price_per_sqft',	'unit_price',	
              'land_value',	'acres', 'x', 'y', 'parcel_acres', 'total_residential_units',	'total_job_spaces',	
@@ -121,6 +122,10 @@ def interim_zone_output(run_name, households, buildings, residential_units, parc
 
     zones['residential_units'] = buildings.groupby('zone_id').residential_units.sum()
     zones['job_spaces'] = buildings.groupby('zone_id').job_spaces.sum()
+    zones["deed_restricted_units"] = buildings.groupby('zone_id').deed_restricted_units.sum()
+    zones["preserved_units"] = buildings.groupby('zone_id').preserved_units.sum()
+    zones["inclusionary_units"] = buildings.groupby('zone_id').inclusionary_units.sum()
+    zones["subsidized_units"] = buildings.groupby('zone_id').subsidized_units.sum()
 
     # VACANCY
     tothh = households.zone_id.value_counts().reindex(zones.index).fillna(0)
