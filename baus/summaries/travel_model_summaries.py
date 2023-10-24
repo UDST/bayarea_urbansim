@@ -354,7 +354,7 @@ def taz1_summary(parcels, households, jobs, buildings, zones, maz, year, base_ye
 
 
 @orca.step()
-def taz1_growth_summary(year, initial_summary_year, final_year, run_name):
+def taz1_growth_summary(year, initial_summary_year, final_year, run_name, buildings):
 
     if year != final_year: 
         return
