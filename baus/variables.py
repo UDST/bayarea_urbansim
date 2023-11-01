@@ -638,15 +638,10 @@ def newest_building(parcels, buildings):
 # this returns the set of parcels which have been marked as
 # disapproved by "the button" - only equals true when disallowed
 @orca.column('parcels', cache=True)
-def manual_nodev(parcel_rejections, parcels):
-    df1 = parcels.to_frame(['x', 'y']).dropna(subset=['x', 'y'])
-    df2 = parcel_rejections.to_frame(['lng', 'lat'])
-    df2 = df2[parcel_rejections.state == "denied"]
-    df2 = df2[["lng", "lat"]]  # need to change the order
-    ind = nearest_neighbor(df1, df2)
-
-    s = pd.Series(False, parcels.index)
-    s.loc[ind.flatten()] = True
+def manual_nodev(parcel_rejections):
+    df = parcel_rejections.to_frame()
+    df = df[df.state == "denied"]
+    s = df.parcelId
     return s.astype('int')
 
 
