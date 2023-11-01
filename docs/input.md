@@ -12,7 +12,8 @@ osm_bayarea4326.h5| Street network information for calculating accessibility wit
 landmarks.csv| Locations of a few major landmarks in the region for accessibility calculations.
 regional_poi_distances.csv| The pre-computed distances from each travel model node to each landmark. 
 bart_stations.csv| A list of BART stations and their locations so that distance to BART can calculated.
-logsums.csv| A set of base year logsums from the travel model. 
+logsums.csv| A set of base year logsums from the travel model.
+ 
 #### travel_model/
 **name**|**description**
 -----|-----
