@@ -414,7 +414,7 @@ if SLACK and MODE == "simulation":
     except SlackApiError as e:
         assert e.response["ok"] is False
         assert e.response["error"]  
-    print(f"Slack Channel Connection Error: {e.response['error']}")
+        print(f"Slack Channel Connection Error: {e.response['error']}")
 
 try:
     run_models(MODE)
