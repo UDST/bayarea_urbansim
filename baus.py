@@ -30,10 +30,11 @@ IN_YEAR, OUT_YEAR = 2010, 2050
 
 SLACK = "URBANSIM_SLACK" in os.environ
 if SLACK:
-    from slacker import Slacker
-    slack = Slacker(os.environ["SLACK_TOKEN"])
     host = socket.gethostname()
-
+    from slack_sdk import WebClient
+    from slack_sdk.errors import SlackApiError
+    client = WebClient(token=os.environ["SLACK_TOKEN"])
+    slack_channel = "#urbansim_sim_update"
 
 SET_RANDOM_SEED = True
 if SET_RANDOM_SEED:
@@ -406,19 +407,30 @@ print("pandas version: %s" % pd.__version__)
 
 
 if SLACK and MODE == "simulation":
-    slack.chat.post_message('#urbansim_sim_update', 'Starting simulation %s on host %s' % (run_name, host), as_user=True)
+    slack_start_message = f'Starting simulation {run_name} on host {host}'
+    try:
+        # For first slack channel posting of a run, catch any auth errors
+        response = client.chat_postMessage(channel=slack_channel,text=slack_start_message)
+    except SlackApiError as e:
+        assert e.response["ok"] is False
+        assert e.response["error"]  
+    print(f"Slack Channel Connection Error: {e.response['error']}")
 
 try:
     run_models(MODE)
 except Exception as e:
     print(traceback.print_exc())
     if SLACK and MODE == "simulation":
-        slack.chat.post_message('#urbansim_sim_update', 'DANG!  Simulation failed for %s on host %s' % (run_name, host), as_user=True)
+        slack_fail_message = f'DANG!  Simulation failed for {run_name} on host {host}'
+        response = client.chat_postMessage(channel=slack_channel,text=slack_fail_message)
+
     else:
         raise e
     sys.exit(0)
 
 if SLACK and MODE == "simulation":
-    slack.chat.post_message('#urbansim_sim_update', 'Completed simulation %s on host %s' %  (run_name, host), as_user=True)
+    slack_completion_message = f'Completed simulation {run_name} on host {host}'
+    response = client.chat_postMessage(channel=slack_channel,text=slack_completion_message)
+
                                                                                             
 print("Finished", time.ctime())         
