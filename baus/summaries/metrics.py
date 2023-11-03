@@ -5,6 +5,11 @@ import orca
 import pandas as pd
 from baus import datasources
 
+# ensure output directories are created before attempting to write to them
+
+folder_stub = 'metrics'
+target_path = os.path.join(orca.get_injectable("outputs_dir"), folder_stub)
+os.makedirs(target_path, exist_ok=True)
 
 @orca.step()
 def growth_geography_metrics(parcels, parcels_geography, buildings, households, jobs, year, 
