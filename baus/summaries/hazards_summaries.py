@@ -5,6 +5,11 @@ import orca
 import pandas as pd
 from urbansim.utils import misc
 
+# ensure output directories are created before attempting to write to them
+
+folder_stub = 'hazards_summaries'
+target_path = os.path.join(orca.get_injectable("outputs_dir"), folder_stub)
+os.makedirs(target_path, exist_ok=True)
 
 @orca.step()
 def hazards_slr_summary(run_setup, run_name, year):
