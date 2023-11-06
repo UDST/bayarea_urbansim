@@ -26,3 +26,7 @@ Bay Area UrbanSim is written in Python and runs in a command line environment. I
 * Configure the location that BAUS will write the visualizer files to in `run_setup.yaml` (stored on MTC's Box account for internal visualization)
 * Open the visualizer from the BAUS repository to explore the model run, and/or
 * Open the visualizer from the BAUS repository and publish it to the web (hosted on using MTC's Tableau). At this time runs can be removed from `model_run_inventory.csv` to select the runs to be shown on the web tool
+
+
+## Documentation
+* See the repository's `gh-pages` branch for instructions on installing the BAUS documentation packages and submittings documentation
