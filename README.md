@@ -17,10 +17,11 @@ Bay Area UrbanSim is written in Python and runs in a command line environment. I
 
 
 ## Optional Slack Messenger 
-* Configure Amazon Web Services (AWS) to get s3 permission (you will need an appropriately configured AWS credentials file from your MTC contact) 
-* Install AWS SDK for Python -- boto3 using `pip install boto3`
-* Install Slacker to use Slack API using `pip install slacker` (you will need an appropriate slack token to access the slack bot from your MTC contact)
+* Install the Slack SDK using `pip install slack_sdk`
+* Set up environment variable using the bot token: Right click on “This PC” -> Properties -> Advanced system settings -> Environment Variables -> click “New” under “User variables”.
+* Set environment variable `SLACK_TOKEN = token` (you will need an appropriate slack token from your MTC contact)
 * Set environment variable `URBANSIM_SLACK = TRUE`
+
 
 ## Optional Model Run Visualizer
 * Configure the location that BAUS will write the visualizer files to in `run_setup.yaml` (stored on MTC's Box account for internal visualization)
