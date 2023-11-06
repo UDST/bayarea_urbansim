@@ -149,7 +149,8 @@ def vacant_res_units(buildings, households):
 @orca.column('buildings', cache=True)
 def sqft_per_job(buildings, building_sqft_per_job, sqft_per_job_adjusters, telecommute_sqft_per_job_adjusters, taz_geography, base_year, year, run_setup):
     
-    sqft_per_job = buildings.building_type.fillna("O").map(building_sqft_per_job)
+    # data hack here, setting missing building type data to OF - should be handled upstream
+    sqft_per_job = buildings.building_type.fillna("OF").map(building_sqft_per_job)
 
     superdistrict = misc.reindex(taz_geography.superdistrict, buildings.zone_id)
 

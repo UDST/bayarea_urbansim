@@ -5,6 +5,13 @@ import orca
 import pandas as pd
 
 
+# ensure output directories are created before attempting to write to them
+
+folder_stub = 'core_summaries'
+target_path = os.path.join(orca.get_injectable("outputs_dir"), folder_stub)
+os.makedirs(target_path, exist_ok=True)
+
+
 @orca.step()
 def parcel_summary(run_name, parcels, buildings, households, jobs, year, initial_summary_year, interim_summary_year, final_year):
 
