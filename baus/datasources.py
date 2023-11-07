@@ -592,7 +592,7 @@ def manual_edits():
 @orca.table(cache=True)
 def parcel_rejections():
     url = "https://forecast-feedback.firebaseio.com/parcelResults.json"
-    return pd.read_json(url, orient="index").set_index("geomId")
+    return pd.read_json(url, orient="index").reset_index()
 
 
 def reprocess_dev_projects(df):
