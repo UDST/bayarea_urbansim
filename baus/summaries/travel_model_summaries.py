@@ -8,6 +8,12 @@ import numpy as np
 from baus.utils import round_series_match_target, scale_by_target, simple_ipf
 from baus import datasources
 
+# ensure output directories are created before attempting to write to them
+
+folder_stub = 'travel_model_summaries'
+target_path = os.path.join(orca.get_injectable("outputs_dir"), folder_stub)
+os.makedirs(target_path, exist_ok=True)
+
 ######################################################
 ### functions for producing travel model variables ###
 ######################################################
@@ -301,6 +307,7 @@ def taz1_summary(parcels, households, jobs, buildings, zones, maz, year, base_ye
     taz_df['hh_wrks_3_plus'] = taz_df['tothh'] * zfi.shrw3_2010
     taz_df['hh_kids_no'] = taz_df['tothh'] * zfi.shrn_2010
     taz_df['hh_kids_yes'] = taz_df['tothh'] * zfi.shry_2010
+    
     # (6b) adjust those same household variables with the regional demographic forecast
     rdf = tm1_tm2_regional_demographic_forecast.to_frame()
     taz_df = adjust_hhsize(taz_df, year, rdf, taz_df.tothh.sum())
@@ -359,7 +366,7 @@ def taz1_summary(parcels, households, jobs, buildings, zones, maz, year, base_ye
 
 
 @orca.step()
-def taz1_growth_summary(year, initial_summary_year, final_year, run_name):
+def taz1_growth_summary(year, initial_summary_year, final_year, run_name, buildings):
 
     if year != final_year: 
         return
