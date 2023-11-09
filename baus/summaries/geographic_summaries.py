@@ -6,6 +6,11 @@ import orca
 import pandas as pd
 from baus import datasources
 
+# ensure output directories are created before attempting to write to them
+
+folder_stub = 'geographic_summaries'
+target_path = os.path.join(orca.get_injectable("outputs_dir"), folder_stub)
+os.makedirs(target_path, exist_ok=True)
 
 @orca.step()
 def geographic_summary(parcels, households, jobs, buildings, year, superdistricts_geography,

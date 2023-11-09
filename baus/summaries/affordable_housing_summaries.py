@@ -6,6 +6,12 @@ import orca
 import pandas as pd
 from baus import datasources
 
+# ensure output directories are created before attempting to write to them
+
+folder_stub = 'affordable_housing_summaries'
+target_path = os.path.join(orca.get_injectable("outputs_dir"), folder_stub)
+os.makedirs(target_path, exist_ok=True)
+
 @orca.step()
 def deed_restricted_units_summary(run_name, parcels, buildings, year, initial_summary_year, final_year, superdistricts_geography):
 
