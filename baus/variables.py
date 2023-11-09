@@ -150,7 +150,7 @@ def vacant_res_units(buildings, households):
 def sqft_per_job(buildings, building_sqft_per_job, sqft_per_job_adjusters, telecommute_sqft_per_job_adjusters, taz_geography, base_year, year, run_setup):
     
     # data hack here, setting missing building type data to OF - should be handled upstream
-    sqft_per_job = buildings.building_type.fillna("OF").map(building_sqft_per_job)
+    sqft_per_job = buildings.building_type.fillna("O").map(building_sqft_per_job)
 
     superdistrict = misc.reindex(taz_geography.superdistrict, buildings.zone_id)
 
@@ -639,15 +639,10 @@ def newest_building(parcels, buildings):
 # this returns the set of parcels which have been marked as
 # disapproved by "the button" - only equals true when disallowed
 @orca.column('parcels', cache=True)
-def manual_nodev(parcel_rejections, parcels):
-    df1 = parcels.to_frame(['x', 'y']).dropna(subset=['x', 'y'])
-    df2 = parcel_rejections.to_frame(['lng', 'lat'])
-    df2 = df2[parcel_rejections.state == "denied"]
-    df2 = df2[["lng", "lat"]]  # need to change the order
-    ind = nearest_neighbor(df1, df2)
-
-    s = pd.Series(False, parcels.index)
-    s.loc[ind.flatten()] = True
+def manual_nodev(parcel_rejections):
+    df = parcel_rejections.to_frame()
+    df = df[df.state == "denied"]
+    s = df.parcelId
     return s.astype('int')
 
 
