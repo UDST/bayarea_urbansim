@@ -42,11 +42,11 @@ rsh.yaml| Residential sales hedonic price model specification.
 -----|-----
 elcm.yaml| Employment location choice model specification, segemented by six employment sectors.
 hlcm_owner.yaml| Household location choice model specification segmented by income quartiles. The models are estimated for owner households.
-hlcm_owner_lowincome.yaml| This uses the same specification and estimated coefficients as hlcm_owner. The only difference is that it is used to only low income households to choose deed-restricted owner units.
+hlcm_owner_lowincome.yaml| This uses the same specification and estimated coefficients as hlcm_owner. The only difference is that it is used to only allow low income households to choose deed-restricted owner units.
 hlcm_owner_lowincome_no_unplaced.yaml| This uses the same specification and estimated coefficients as hlcm_owner, but allows owners of all incomes into deed-restricted owner units to cover any gaps in assignment.
 hlcm_owner_no_unplaced.yaml| This uses the same specification and estimated coefficients as hlcm_owner, but does another round of placements of owners, this time into non-deed-restricted owner units, to cover any gaps in assignment.
 hlcm_renter.yaml| Household location choice model specification segmented by income quartiles. The models are estimated for rental households.
-hlcm_renter_lowincome.yaml| This uses the same specification and estimated coefficients as hlcm_renter. The only difference is that it is used to only low income households to choose deed-restricted rental units.
+hlcm_renter_lowincome.yaml| This uses the same specification and estimated coefficients as hlcm_renter. The only difference is that it is used to only allow low income households to choose deed-restricted rental units.
 hlcm_renter_lowincome_no_unplaced.yaml| This uses the same specification and estimated coefficients as hlcm_renter, but allows renters of all incomes into deed-restricted rental units to cover any gaps in assignment.
 hlcm_renter_no_unplaced.yaml| This uses the same specification and estimated coefficients as hlcm_renter, but does another round of placement of renters, this time into non-deed-restricted rental units, to cover any gaps in assignment.
 

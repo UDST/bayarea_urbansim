@@ -26,29 +26,28 @@ subsidized_units | total number of subsidized units built with bonds, fees, etc.
 zoned_du | maximum number of dwelling units allowed on all parcels in a TAZ | [zoned_du()](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/variables.py#L957)
 zoned_du_underbuild | additional dwelling units allowed on all parcels in a TAZ given existing development conditions, 0 if the additional units are not at least half of existing development | [zoned_du_underbuild()](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/variables.py#L1037) 
 zoned_du_underbuild_ratio | ratio of additional allowable residential units to maximum allowable residential units |[zoned_du_build_ratio()](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/variables.py#L1053)
-unit_residential_price | median residential price of all residential units in a TAZ | [rsh_simulate()](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/ual.py#L745)
-unit_residential_rent | median residential monthly rent of all residential units in a TAZ | [rrh_simulate()](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/ual.py#L764)
-non_residential_rent | median residential monthly rent of all residential units in a TAZ | [rrh_simulate()](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/ual.py#L708)
+residential_price | median residential price per sqft of all residential units in a TAZ | [rsh_simulate()](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/ual.py#L745)
+residential_rent | median residential monthly rent per sqft of all residential units in a TAZ | [rrh_simulate()](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/ual.py#L764)
+non_residential_rent | median logged non-residential monthly rent of all non-residential units in a TAZ | [nrh_simulate()](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/ual.py#L708)
 residential_vacancy | percentage of residential units in a TAZ that are not occupied by a household | summary calculations
 non_residential_vacancy | percentage of job_spaces in a TAZ that are not occupied by a job | summary calculations
 
 ### `new_buildings_summary.csv`
 
-**attribute** | **description** | **source**
------|-----|-----
-building_type | |
-source | |
-deed_restricted_units | |
-subsidized_units | |
-inclusionary_units | |
-preserved_units | |
-residential_units | |
-total_residential_units | |
-total_nonresidential_sqft | |
-job_spaces | |
-x | |
-y | |
-year_built | |
+**attribute** | **description**
+-----|-----
+building_type | The BAUS building type (link to BASIS definitions of these)
+source | The source of the building input data or simulated building (like to BASIS definitions of these)
+deed_restricted_units | the number of deed-restricted units in a building from the model input data or model simulation. This includes subsidized units, inclusionary units, preserved units, deed-restricted units from plan strategy projects, and base year deed-restricted units. 
+subsidized_units | the number of subsidized units in a building consttructed by the model's subsidized developer model 
+inclusionary_units | the number of inclusionary housing units in a building built by the market rate developer model when inclusionary zoning policies are present (this can come from existing jursidiction policies or plan strategies)
+preserved_units | the number of units preserved in a building by the model's preservation model when preservation funding is present 
+total_residential_units | total number of non-residential sqft 
+total_nonresidential_sqft | total number of non-residential sqft in a buiding 
+job_spaces | the total number of job space in a building, derived from the non-residential sqft at the model's sqft_per_job assumptions by building type
+x | the x coordinate of the project, relating to its parcel 
+y | the y coordinate of the project, relating to its parcel 
+year_built | the year the project was constructed, either from the model input data or simulation year it was built
 
  
 #### geographic summaries
@@ -69,7 +68,6 @@ region_summary_growth.csv | Regional change in development, households, and jobs
 **name**|**description**
 -----|-----
 taz1_summary_[year].csv | TAZ1/TAZ1454-level summaries of development, households, jobs, demographics, and density attributes used for travel modeling.
-See data dictionary in the travel model repository [here](https://github.com/BayAreaMetro/modeling-website/wiki/TazData)
 taz1_summary_growth.csv | TAZ1/TAZ1454-level change in development, households, jobs, demographics, and density attributes used for travel modeling.
 maz_marginals_[year].csv | MAZ-level summaries of households and demographics used to create the synthesized population for travel modeling.
 maz_summary_[year].csv | MAZ-level summaries of development, households, jobs, and density attributes used for travel modeling.
@@ -77,6 +75,9 @@ maz_summary_growth.csv | MAZ-level change in development, households, jobs, and 
 taz2_marginals_[year].csv | TAZ2-level summaries of households and demographics used to create the synthesized population for travel modeling.
 county_marginals_[year].csv | County-level summaries of demographics and jobs used to create the synthesized population for travel modeling.
 region_marginals_[year].csv | Region-level summaries of demographics used to create the synthesized population for travel modeling.
+
+`#### `interim_zone_output.csv`
+See data dictionary in the travel model repository [here](https://github.com/BayAreaMetro/modeling-website/wiki/TazData)`
  
 #### affordable housing summaries
 **name**|**description**

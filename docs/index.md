@@ -36,18 +36,7 @@ The for-profit real estate development model in BAUS samples locations in the re
 In many simulations, a similar **not-for-profit real estate development process** produces affordable housing units based on money available within BAUS affordable housing funding accounts.
 
 ### Household & Firm Location Choice Models
-Households and firms are assigned to new locations based on logistic regresssion models that capture the preferences of particular segments of households and jobs (e.g., lower income households, retail jobs). Household location choice models are **separated by housing tenure.** Additional household location choice models are also run that ensure **low-income households are given priority for affordable housing units**, allowing affordable housing to be explicity modeled in BAUS.
-
-**HLCM Model**|**Estimation Choosers: Filters**|**Estimation Alternatives: Filters**|**Simulation Choosers: Filters**|**Simulation Alternatives: Filters**
------|-----|-----|-----|-----
-owner|Owners|-|Owners|Owner Units|
-owner_lowincome|Owners|-|Low-Income Owners| Affordable Owner Units|
-owner_lowincome_no_unplaced|-|-|Owners|Affordable Owner Units|
-owner_no_unplaced|Owners|-|Owners| Market-Rate Owner Units|
-renter|Renters|-|Renters|Renters Units|
-renter_lowincome|Renters|-|Low-Income Renters|Affordable Rental Units|
-renter_lowincome_no_unplaced|-|-|Renters|Affordable Rentual Units|
-renter_no_unplaced|Renters|-|Renters|Market Rate Rental Units|
+Households and firms are assigned to new locations based on logistic regresssion models that capture the preferences of particular segments of households and jobs (e.g., lower income households, retail jobs). Household location choice models are separated by **housing tenure.** Currently, a housing unit's tenure type is determined by the household's tenure status, while the tenure type of new units is determined by comparing rent vs price revenues. Additional household location choice models are also run that place househlds in **market rate and affordable housing units**. These models ensure low-income households are given priority for affordable housing units, allowing affordable housing to be explicity modeled in BAUS.
 
 ### Institutional Jobs Model
 Particular industry sectors which don't follow traditional market economics are forecast separately from. For government and education jobs, the number of jobs grow over the simulation period in proportion to their zonal shares. The buildings that house these jobs are off-limits from redevelopment.
