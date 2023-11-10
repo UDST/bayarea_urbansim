@@ -76,8 +76,8 @@ taz2_marginals_[year].csv | TAZ2-level summaries of households and demographics 
 county_marginals_[year].csv | County-level summaries of demographics and jobs used to create the synthesized population for travel modeling.
 region_marginals_[year].csv | Region-level summaries of demographics used to create the synthesized population for travel modeling.
 
-`#### `interim_zone_output.csv`
-See data dictionary in the travel model repository [here](https://github.com/BayAreaMetro/modeling-website/wiki/TazData)`
+`#### interim_zone_output.csv`
+See data dictionary in the travel model repository [here](https://github.com/BayAreaMetro/modeling-website/wiki/TazData)
  
 #### affordable housing summaries
 **name**|**description**
