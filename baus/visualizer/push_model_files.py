@@ -34,8 +34,8 @@ def add_to_model_run_inventory_file(run_name):
     # check for the model run inventory file to add the run to
     try:
         model_run_inventory = pd.read_csv(os.path.join(orca.get_injectable("viz_dir"), "model_run_inventory.csv"))
-    except:
-        model_run_inventory = pd.DataFrame(columns={[run_name]}) 
+    except FileNotFoundError:
+        model_run_inventory = pd.DataFrame(columns=['run_name']) 
 
     # append the run name to the list if not already there
     if run_name not in list(model_run_inventory['run_name']):

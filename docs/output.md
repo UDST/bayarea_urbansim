@@ -10,7 +10,45 @@ parcel_growth_summary.csv | Change in development, households, and jobs on each 
 building_summary_[year].csv | Inventory of buildings in a given year, linked to the parcel they sit on.
 new_buildings_summary.csv | Inventory of all buildings built during the simulation.
 interim_zone_output_[year].csv | Interim model data at the TAZ level.
-feasibility.csv | Parcel-level data on the development feasibilities of various development types given the zoning, development costs, and expected return. Contains two sets of development variables grouped by six development types (coded as `form`): `retail`, `industrial`, `office`, `residential`, `mixedresidential`, `mixedoffice`. For every development type, one set of variables are passed through from the parcels table as input for the feasibility evaluation; the other set of variables are the result of the feasibility evaluation.Only parcels where at least one development type is feasible are included. | 
+feasibility.csv | Parcel-level data on the development feasibilities of various development types given the zoning, development costs, and expected return. Contains two sets of development variables grouped by six development types (coded as `form`): `retail`, `industrial`, `office`, `residential`, `mixedresidential`, `mixedoffice`. For every development type, one set of variables are passed through from the parcels table as input for the feasibility evaluation; the other set of variables are the result of the feasibility evaluation.Only parcels where at least one development type is feasible are included.
+
+#### `interim_zone_output.csv`
+
+**attribute** | **description** | **source**
+-----|-----|-----
+non_residential_sqft | total sq.ft. of all non-residential buildings in a TAZ | non-residential developer model
+job_spaces | total number of jobs that can be accommodated by non-residential space in a TAZ | buildings table; sq.ft. per job settings
+residential_units | total number of residential units in a TAZ | residential developer model
+deed_restricted_units | total number of deed resitricuted units in a TAZ | data inputs, development pipeline, developer model, subsidized developer model, preservation model
+preserved_units | total number of units preserved in a TAZ | preservation model
+inclusionary_units | total number of inclusionary units built in market rate buildings in a TAZ | developer model
+subsidized_units | total number of subsidized units built with bonds, fees, etc. | subsidized developer model
+zoned_du | maximum number of dwelling units allowed on all parcels in a TAZ | [zoned_du()](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/variables.py#L957)
+zoned_du_underbuild | additional dwelling units allowed on all parcels in a TAZ given existing development conditions, 0 if the additional units are not at least half of existing development | [zoned_du_underbuild()](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/variables.py#L1037) 
+zoned_du_underbuild_ratio | ratio of additional allowable residential units to maximum allowable residential units |[zoned_du_build_ratio()](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/variables.py#L1053)
+residential_price | median residential price per sqft of all residential units in a TAZ | [rsh_simulate()](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/ual.py#L745)
+residential_rent | median residential monthly rent per sqft of all residential units in a TAZ | [rrh_simulate()](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/ual.py#L764)
+non_residential_rent | median logged non-residential monthly rent of all non-residential units in a TAZ | [nrh_simulate()](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/ual.py#L708)
+residential_vacancy | percentage of residential units in a TAZ that are not occupied by a household | summary calculations
+non_residential_vacancy | percentage of job_spaces in a TAZ that are not occupied by a job | summary calculations
+
+### `new_buildings_summary.csv`
+
+**attribute** | **description**
+-----|-----
+building_type | The BAUS building type (link to BASIS definitions of these)
+source | The source of the building input data or simulated building (like to BASIS definitions of these)
+deed_restricted_units | the number of deed-restricted units in a building from the model input data or model simulation. This includes subsidized units, inclusionary units, preserved units, deed-restricted units from plan strategy projects, and base year deed-restricted units. 
+subsidized_units | the number of subsidized units in a building consttructed by the model's subsidized developer model 
+inclusionary_units | the number of inclusionary housing units in a building built by the market rate developer model when inclusionary zoning policies are present (this can come from existing jursidiction policies or plan strategies)
+preserved_units | the number of units preserved in a building by the model's preservation model when preservation funding is present 
+total_residential_units | total number of non-residential sqft 
+total_nonresidential_sqft | total number of non-residential sqft in a buiding 
+job_spaces | the total number of job space in a building, derived from the non-residential sqft at the model's sqft_per_job assumptions by building type
+x | the x coordinate of the project, relating to its parcel 
+y | the y coordinate of the project, relating to its parcel 
+year_built | the year the project was constructed, either from the model input data or simulation year it was built
+
  
 #### geographic summaries
 **name**|**description**
@@ -37,6 +75,9 @@ maz_summary_growth.csv | MAZ-level change in development, households, jobs, and 
 taz2_marginals_[year].csv | TAZ2-level summaries of households and demographics used to create the synthesized population for travel modeling.
 county_marginals_[year].csv | County-level summaries of demographics and jobs used to create the synthesized population for travel modeling.
 region_marginals_[year].csv | Region-level summaries of demographics used to create the synthesized population for travel modeling.
+
+`#### interim_zone_output.csv`
+See data dictionary in the travel model repository [here](https://github.com/BayAreaMetro/modeling-website/wiki/TazData)
  
 #### affordable housing summaries
 **name**|**description**
@@ -74,48 +115,3 @@ jobs_metrics.csv | Change in PPA and manufacturing jobs.
 slr_metrics.csv | Sea level rise affected and protected total households, low-income households and COC households.
 earthquake_metrics.csv | Total housing units retrofit and total retrofit cost, for all units and for COC units. Earthquake affected and protected total households, low-income households, and COC households.
 greenfield_metric.csv | Change in annual greenfield development acres.
-
-
-
-### `interim_zone_output.csv`
-
-| **Attribute** | **Description** | **Data Type** | **Source** | **Sub-model/step** |
-|-----------------|-----------|--------------|--------------|--------------|
-| unit_residential_price | median residential price of all residential units in a TAZ | float | BAUS "residential_units" table | [rsh_simulate()](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/ual.py#L745) || unit_residential_rent | median residential monthly rent of all residential units in a TAZ | float | BAUS "residential_units" table | [rrh_simulate()](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/ual.py#L764) |
-| unit_residential_price_>_rent | 1 or 0 representing if the TAZ-level per-unit residential price is higher than annualized rent divided by [cap_rate](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/configs/developer/developer_settings.yaml#L2). | int | BAUS "residential_units" table and "developer_settings" | [summary.py](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/summaries.py#L265) |
-| residential_price | median per sq.ft. residential price of all residential buildings in a TAZ (based on general building type); currently used only for estimation, not for simulation | float | "buildings" table  | [residential_price()](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/variables.py#L248) |
-| zoned_du | maximum number of dwelling units allowed on all parcels in a TAZ | int | BAUS "parcels" table | [zoned_du()](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/variables.py#L957) |
-| zoned_du_underbuild | additional dwelling units allowed on all parcels in a TAZ given existing development conditions, 0 if the additional units are not at least half of existing development | int | BAUS "parcels" table | [zoned_du_underbuild()](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/variables.py#L1037) 
-| zoned_du_underbuild_ratio | ratio of additional allowable residential units to maximum allowable residential units | int | BAUS "zones" table | [zoned_du_build_ratio()]() |
-| building_count | total number of residential buildings in a TAZ, based on general building type | int | BAUS "buildings" table | XXX |
-| residential_units | total number of residential units in a TAZ | int | BAUS "buildings" table | XXX |
-| ave_unit_sqft | 0.6 quantile of building-level average residential unit size of all builidings in a TAZ | int | BAUS "building" table | [ave_unit_sqft()](https://github.com/BayAreaMetro/bayarea_urbansim/blob/900cfd8674be3569ae42cc0afb532ee12581188f/baus/variables.py#L943) |
-| residential_vacancy | percentage of residential units in a TAZ that are not occupied by a household | float | BAUS "households" table, BAUS "buildings" table | BAUS [summary.py]() |
-| non_residential_sqft | total sq.ft. of all non-residential buildings in a TAZ | int | BAUS "buildings" table | XXX |
-| job_spaces | total number of jobs that can be accommodated by non-residential space in a TAZ | int | BAUS "building" table; sq.ft. per job setting | XXX |
-| non_residential_vacancy | percentage of job_spaces in a TAZ that are not occupied by a job | float | BAUS "jobs" table, BAUS "buildings" table | XXX |
-| average_income | median income of all households in a TAZ | int | BAUS "households" table; BAUS "households_preproc" table | [summary.py](); MTC/ABAG household models? |
-
-### `new_buildings_summary.csv`
-
-| **Attribute** | **Description** | **Data Type** | **Source** | **Sub-model/step** |
-|-----------------|-----------|--------------|--------------|--------------|
-| development_id | XXX | XXX | XXX | XXX |
-| SDEM | XXX | XXX | XXX | XXX |
-| building_type | XXX | XXX | XXX | XXX |
-| residential | XXX | XXX | XXX | XXX |
-| building_sqft | XXX | XXX | XXX | XXX |
-| non_residential_sqft | XXX | XXX | XXX | XXX |
-| job_spaces | XXX | XXX | XXX | XXX |
-| residential_sqft | XXX | XXX | XXX | XXX |
-| residential_units | XXX | XXX | XXX | XXX |
-| total_residential_units | XXX | XXX | XXX | XXX |
-| total_sqft | XXX | XXX | XXX | XXX |
-| source | XXX | XXX | XXX | XXX |
-| x | XXX | XXX | XXX | XXX |
-| y | XXX | XXX | XXX | XXX |
-| year_built | XXX | XXX | XXX | XXX |
-
-### `taz1_summary_growth.csv`
-
-https://github.com/BayAreaMetro/modeling-website/wiki/TazData

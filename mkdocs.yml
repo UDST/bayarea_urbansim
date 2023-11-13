@@ -12,11 +12,11 @@ theme:
     - navigation.indexes
 
 nav:
-    - Home: 'index.md'
+    - Model: 'index.md'
+    - Scenarios: 'scenarios.md'
     - Configuration: 'configuration.md'
     - Input: 'input.md'
     - Output: 'output.md'
-    - Scenarios: 'scenarios.md'
 
 plugins:
   - autorefs

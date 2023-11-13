@@ -8,12 +8,6 @@ import sys
 from urbansim_defaults.utils import _remove_developed_buildings
 from urbansim.developer.developer import Developer as dev
 import itertools as it
-# for urbanforecast.com visualizer
-if "URBANSIM_SLACK" in os.environ:
-    #import boto3
-    import time
-    import requests
-    import json
 
 
 #####################
