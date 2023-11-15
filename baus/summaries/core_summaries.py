@@ -115,12 +115,22 @@ def interim_zone_output(run_name, households, buildings, residential_units, parc
 
     # TODO: currently TAZ, do we want this to be MAZ?
     zones = pd.DataFrame(index=zones.index)
+    
+    parcels = parcels.to_frame()
+    parcels["zone_id_x"] = parcels.zone_id
+    orca.add_table('parcels', parcels)
+    parcels = orca.get_table("parcels")
+
+    households = orca.merge_tables('households', 
+                                   [parcels, buildings, households], columns=['zone_id', 'zone_id_x', 'base_income_quartile'])
+    households["zone_id"] = households.zone_id_x
+    
+    jobs = orca.merge_tables('jobs', [parcels, buildings, jobs], columns=['zone_id', 'zone_id_x', 'empsix'])
+    jobs["zone_id"] = jobs.zone_id_x
 
     parcels = parcels.to_frame()
     buildings = buildings.to_frame()
     residential_units = residential_units.to_frame()
-    households = households.to_frame()
-    jobs = jobs.to_frame()
 
     zones['non_residential_sqft'] = buildings.groupby('zone_id').non_residential_sqft.sum()
     zones['job_spaces'] = buildings.groupby('zone_id').job_spaces.sum()
