@@ -613,7 +613,7 @@ def reprocess_dev_projects(df):
 # shared between demolish and build tables below
 def get_dev_projects_table(parcels):
     df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 
-                     "basis_inputs/parcels_buildings_agents/development_pipeline_with_basis_buildings.csv"), 
+                     "basis_inputs/parcels_buildings_agents/development_pipeline_with_basis_buildings_nov2023.csv"), 
                      dtype={'PARCEL_ID': np.int64, 'geom_id':   np.int64})
     df = reprocess_dev_projects(df)
     orca.add_injectable("devproj_len", len(df))
