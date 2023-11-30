@@ -112,6 +112,9 @@ def new_buildings_summary(run_name, parcels, buildings, year, final_year):
 @orca.step()
 def interim_zone_output(run_name, households, buildings, residential_units, parcels, jobs, zones, year,
                         initial_summary_year, final_year):
+    
+    if year < initial_summary_year:
+        return
 
     # TODO: currently TAZ, do we want this to be MAZ?
     zones = pd.DataFrame(index=zones.index)
