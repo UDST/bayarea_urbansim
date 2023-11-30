@@ -182,7 +182,7 @@ def initial_year():
 
 @orca.injectable()
 def initial_summary_year():
-    return 2015
+    return 2020
 
 
 @orca.injectable()
