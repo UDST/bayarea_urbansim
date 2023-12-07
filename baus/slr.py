@@ -21,6 +21,7 @@ def slr_inundate(slr_progression, slr_parcel_inundation, year, parcels):
     # tag parcels that are indundated in the current year
     # slr mitigation is applied by modifying the set of inundated parcels in the list
     slr_parcel_inundation = slr_parcel_inundation.to_frame()
+    slr_parcel_inundation = slr_parcel_inundation[slr_parcel_inundation.mitigation != 'TRUE']
     orca.add_injectable("slr_mitigation",'applied')
 
     destroy_parcels = slr_parcel_inundation.query('inundation<=@inundation_yr').astype('bool')
