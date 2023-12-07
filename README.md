@@ -10,7 +10,7 @@ Bay Area UrbanSim is written in Python and runs in a command line environment. I
 2. Clone this repository 
 3. Create a Python environment with the current dependencies: `conda env create -f baus-env-2023.yml`
 4. Activate the environment: `conda activate baus-env-2023`
-6. Use `run_setup.yaml` to specify the `inputs` and `outputs` folder locations and `run_name`
+6. Use `run_setup.yaml` to specify the `inputs` and `outputs` folder locations and a `run_name`
 7. Pull inputs into the model `inputs` folder (ask an MTC contact for access)
 8. Run `python baus.py` from the main model directory (more info about the command line arguments: `python baus.py --help`)
 
@@ -22,9 +22,9 @@ Bay Area UrbanSim is written in Python and runs in a command line environment. I
 
 
 ## Optional Model Run Visualizer
-* Configure the location that BAUS will write the visualizer files to in `run_setup.yaml` (stored on MTC's Box account for internal visualization)
+* Configure the location that BAUS will write the visualizer files to in `run_setup.yaml` (stored on MTC's servers for internal visualization)
 * Open the visualizer from the BAUS repository to explore the model run, and/or
-* Open the visualizer from the BAUS repository and publish it to the web (hosted on using MTC's Tableau). At this time runs can be removed from `model_run_inventory.csv` to select the runs to be shown on the web tool
+* Open the visualizer from the BAUS repository and publish it to the web (hosted on MTC's Tableau account). At this time runs can be removed from `model_run_inventory.csv` to select the runs to be shown on the web tool
 
 
 ## Documentation

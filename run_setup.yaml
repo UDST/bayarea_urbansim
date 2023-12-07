@@ -1,22 +1,28 @@
-# RUN NAME
-run_name: "PBA50Plus_DBP_InitialRun_test"
+# MODEL SETUP
 
-# PATHS FOR INPUTS AND OUTPUTS
-inputs_dir: '../inputs'
-outputs_dir: '../outputs'
+# a run name for the model run
+run_name: "example_run_name"
 
-# OPTIONAL RUN VALIDATION
-run_simulation_validation: True 
+# where to read the model inputs from
+inputs_dir: '../example_inputs_directory'
+# where to write the model outputs to
+outputs_dir: '../example_outputs_directory'
 
-# OPTIONAL SUMMARY WRITING
+# run the model steps that perform validation tests
+run_simulation_validation: True
+
+# run the model steps that produce model summaries
 run_summaries: True
 
-# OPTIONAL VISUALIZER
+# run the model steps that prepares model outputs to become visuazlier inputs
 run_visualizer: True
-viz_dir: '../../BAUS_Visualizer_PBA50Plus_Files'
+# where to write the model output / visuazlier inputs to
+viz_dir: '../../example_viz_directory'
 
 
-# ADJUSTERS
+# MODEL ADJUSTERS
+# enable or disable model adjusters defined in https://bayareametro.github.io/bayarea_urbansim/main/configuration/
+
 employment_relocation_rates_adjusters: True
 
 sqft_per_job_adjusters: True
@@ -31,13 +37,13 @@ residential_vacancy_rate_mods: True
 
 
 # SEA LEVEL RISE
-# sea level rise and sea level rise mitigation
+# enable or disable sea level rise and sea level rise mitigation
 # if sea level rise is activated, there is either no project or scenario-based mitigation
 run_slr: True
 
 
 # EARTHQUAKE
-# earthquake and earthquake mitigation
+# enable or disable earthquake and earthquake mitigation
 run_eq: False
 run_eq_mitigation: False
 
@@ -52,15 +58,17 @@ logsum_year2: 2050
 
 
 # POLICY
+# enable or disable existing policies
 
 # SB-743 - permanently activated as now legislated policy
 run_sb_743_strategy: True
 
 
 # PLAN STRATEGIES
+# enable or disable plan strategies defined in https://bayareametro.github.io/bayarea_urbansim/main/input/
 
 # RENTER PROTECTIONS STRATEGY
-run_renter_protections_strategy: True
+run_renter_protections_strategy: False
 
 
 # JOB CAP STRATEGY
@@ -68,7 +76,7 @@ run_job_cap_strategy: False
 
 
 # INCLUSIONARY HOUSING STRATEGY
-run_inclusionary_strategy: True
+run_inclusionary_strategy: False
 
 
 # LUMP SUM ACCOUNT STRATEGIES
@@ -78,19 +86,19 @@ run_capital_gains_tax_strategy: False
 
 run_parcel_tax_strategy: False
 
-run_housing_bond_strategy: True
+run_housing_bond_strategy: False
 # sub-accounts
-run_alameda_housing_bond_strategy: True
-run_contra_costa_housing_bond_strategy: True
-run_marin_housing_bond_strategy: True
-run_napa_housing_bond_strategy: True
-run_san_francisco_housing_bond_strategy: True
-run_san_mateo_housing_bond_strategy: True
-run_santa_clara_housing_bond_strategy: True
-run_solano_housing_bond_strategy: True
-run_sonoma_housing_bond_strategy: True
+run_alameda_housing_bond_strategy: False
+run_contra_costa_housing_bond_strategy: False
+run_marin_housing_bond_strategy: False
+run_napa_housing_bond_strategy: False
+run_san_francisco_housing_bond_strategy: False
+run_san_mateo_housing_bond_strategy: False
+run_santa_clara_housing_bond_strategy: False
+run_solano_housing_bond_strategy: False
+run_sonoma_housing_bond_strategy: False
 
-run_office_bond_strategy: True
+run_office_bond_strategy: False
 
 run_vmt_fee_strategy: False
 # sub-strategies
@@ -106,21 +114,21 @@ run_ceqa_streamlining_strategy: False
 
 run_reduce_parking_requirements_strategy: False
 
-run_reduce_housing_costs_tier1_strategy: True
-run_reduce_housing_costs_tier2_strategy: True
-run_reduce_housing_costs_tier3_strategy: True
+run_reduce_housing_costs_tier1_strategy: False
+run_reduce_housing_costs_tier2_strategy: False
+run_reduce_housing_costs_tier3_strategy: False
 
 run_land_value_tax_strategy: False
 
 
 # AFFORDABLE HOUSING PRESERVATION STRATEGY
-run_housing_preservation_strategy: True
+run_housing_preservation_strategy: False
 
 
 # TELECOMMUTE STRATEGIES
 
-run_telecommute_strategy: True
+run_telecommute_strategy: False
 
 
 # ACCESSORY DWELLING UNIT POLICY
-run_adu_strategy: True
+run_adu_strategy: False
