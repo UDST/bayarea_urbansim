@@ -592,7 +592,7 @@ def manual_edits():
 @orca.table(cache=True)
 def parcel_rejections():
     url = "https://forecast-feedback.firebaseio.com/parcelResults.json"
-    return pd.read_json(url, orient="index").set_index("geomId")
+    return pd.read_json(url, orient="index").reset_index()
 
 
 def reprocess_dev_projects(df):
@@ -611,11 +611,25 @@ def reprocess_dev_projects(df):
 
 
 # shared between demolish and build tables below
-def get_dev_projects_table(parcels):
+def get_dev_projects_table(parcels, run_setup):
     df = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 
-                     "basis_inputs/parcels_buildings_agents/development_pipeline_with_basis_buildings.csv"), 
+                     "basis_inputs/parcels_buildings_agents/development_pipeline_with_basis_buildings_nov2023.csv"), 
                      dtype={'PARCEL_ID': np.int64, 'geom_id':   np.int64})
     df = reprocess_dev_projects(df)
+
+    # Optionally - if flag set to use housing element pipeline, load that and append:
+    if run_setup.get('use_housing_element_pipeline',False):
+        
+
+        he_pipe = pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), 
+                                           "basis_inputs/parcels_buildings_agents",
+                                           "he_pipeline_updated_dec2023.csv"),
+                                           dtype={'parcel_id': np.int64})
+        he_pipe = he_pipe.rename(columns={'parcel_id':'PARCEL_ID'})
+
+        he_pipe = he_pipe['geom_id'] = parcel_id_to_geom_id(he_pipe.PARCEL_ID)
+        df = pd.concat([df,he_pipe],axis=0)
+
     orca.add_injectable("devproj_len", len(df))
 
     df = df.dropna(subset=['geom_id'])
@@ -636,16 +650,16 @@ def get_dev_projects_table(parcels):
 
 
 @orca.table(cache=True)
-def demolish_events(parcels):
-    df = get_dev_projects_table(parcels)
+def demolish_events(parcels, run_setup):
+    df = get_dev_projects_table(parcels, run_setup)
 
     # keep demolish and build records
     return df[df.action.isin(["demolish", "build"])]
 
 
 @orca.table(cache=True)
-def development_projects(parcels, mapping):
-    df = get_dev_projects_table(parcels)
+def development_projects(parcels, mapping, run_setup):
+    df = get_dev_projects_table(parcels, run_setup)
 
     for col in [
             'residential_sqft', 'residential_price', 'non_residential_rent']:
@@ -686,6 +700,7 @@ def development_projects(parcels, mapping):
     print(df[orca.get_table('buildings').local_columns].describe())
 
     return df
+
 
 
 def print_error_if_not_available(store, table):
