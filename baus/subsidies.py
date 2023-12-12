@@ -55,9 +55,10 @@ def coffer(account_strategies):
 
 
 @orca.step()
-def preserve_affordable(year, base_year, preservation, residential_units, taz_geography, buildings, parcels_geography):
+def preserve_affordable(year, base_year, preservation, residential_units, taz_geography,
+                        buildings, parcels_geography, initial_summary_year):
 
-    if year < 2025: 
+    if not year > initial_summary_year:
         return
     
     # join several geography columns to units table so that we can apply units
