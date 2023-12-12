@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import os
+import pathlib
 import orca
 import pandas as pd
 from baus import datasources
@@ -15,8 +16,9 @@ os.makedirs(target_path, exist_ok=True)
 def geographic_summary(parcels, households, jobs, buildings, year, superdistricts_geography,
                        initial_summary_year, interim_summary_year, final_year, run_name):  
 
-    if year not in [initial_summary_year, interim_summary_year, final_year]:
-         return
+    # Commenting this out so we get geographic summaries for all years - DSL 2023-08-31
+    # if year not in [initial_summary_year, interim_summary_year, final_year]:
+    #      return
 
     households_df = orca.merge_tables('households', [parcels, buildings, households],
         columns=['juris', 'superdistrict', 'county', 'subregion', 'base_income_quartile',])
@@ -50,7 +52,9 @@ def geographic_summary(parcels, households, jobs, buildings, year, superdistrict
     
     # non-residential buildings
     region['non_residential_sqft'] = buildings_df.non_residential_sqft.sum()
-    region.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "geographic_summaries/{}_region_summary_{}.csv").format(run_name, year))
+    geosum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "geographic_summaries"
+    geosum_output_dir.mkdir(parents=True, exist_ok=True)
+    region.to_csv(geosum_output_dir / "{}_region_summary_{}.csv".format(run_name, year))
 
     #### summarize by sub-regional geography ####
     geographies = ['juris', 'superdistrict', 'county', 'subregion']

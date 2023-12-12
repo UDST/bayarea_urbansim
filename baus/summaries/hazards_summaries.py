@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import os
+import pathlib
 import orca
 import pandas as pd
 from urbansim.utils import misc
@@ -59,7 +60,9 @@ def hazards_slr_summary(run_setup, run_name, year):
     for empsix in ['AGREMPN', 'MWTEMPN', 'RETEMPN', 'FPSEMPN', 'HEREMPN', 'OTHEMPN']:
         slr_summary["impacted_jobs_"+str(empsix)] = (unplaced_jobs_tot["empsix"] == empsix).sum()
 
-    slr_summary.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "hazards_summaries/%s_slr_summary_%d.csv" % (run_name, year)))
+    hazsumm_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "hazards_summaries"
+    hazsumm_output_dir.mkdir(parents=True, exist_ok=True)
+    slr_summary.to_csv(hazsumm_output_dir / "{}_slr_summary_{}.csv".format(run_name, year))
 
 
 @orca.step()
@@ -72,12 +75,12 @@ def hazards_eq_summary(run_setup, run_name, year, parcels, buildings):
         return
     
     code = orca.get_injectable("code").to_frame()
-    code.value_counts().to_csv(os.path.join(orca.get_injectable("outputs_dir"), "hazards_summaries/%s_eq_codes_summary_%d.csv"
-                                    % (run_name, year)))
+    hazsumm_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "hazards_summaries"
+    hazsumm_output_dir.mkdir(parents=True, exist_ok=True)
+    code.value_counts().to_csv(hazsumm_output_dir / "{}_eq_codes_summary_{}.csv".format(run_name, year))
 
     fragilities = orca.get_injectable("fragilities").to_frame()
-    fragilities.value_counts().to_csv(os.path.join(orca.get_injectable("outputs_dir"), "hazards_summaries/%s_eq_fragilities_summary_%d.csv"
-                                    % (run_name, year)))
+    fragilities.value_counts().to_csv(hazsumm_output_dir / "{}_eq_fragilities_summary_{}.csv".format(run_name, year))
 
     eq_summary = pd.DataFrame(index=[0])
 
@@ -105,8 +108,7 @@ def hazards_eq_summary(run_setup, run_name, year, parcels, buildings):
     for empsix in ['AGREMPN', 'MWTEMPN', 'RETEMPN', 'FPSEMPN', 'HEREMPN', 'OTHEMPN']:
         eq_summary["impacted_jobs_"+str(empsix)] = (jobs_unplaced_eq["empsix"] == empsix).sum()
     
-    eq_summary.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "hazards_summaries/%s_eq_summary_%d.csv"
-                                    % (run_name, year)))
+    eq_summary.to_csv(hazsumm_output_dir / "{}_eq_summary_{}.csv".format(run_name, year))
 
     # print out demolished buildings by TAZ
     eq_demolish_taz = misc.reindex(parcels.zone_id, eq_demolish.parcel_id)
@@ -114,8 +116,7 @@ def hazards_eq_summary(run_setup, run_name, year, parcels, buildings):
     eq_demolish['count'] = 1
     eq_demolish = eq_demolish.drop(['parcel_id', 'year_built', 'redfin_sale_year'], axis=1)
     eq_demolish = eq_demolish.groupby(['taz']).sum()
-    eq_demolish.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "hazards_summaries/%s_eq_demolish_buildings_%d.csv"
-                                    % (run_name, year)))
+    eq_demolish.to_csv(hazsumm_output_dir / "{}_eq_demolish_buildings_{}.csv".format(run_name, year))
 
     # print out retrofit buildings by TAZ
     if not run_setup['eq_mitigation']:
@@ -127,8 +128,7 @@ def hazards_eq_summary(run_setup, run_name, year, parcels, buildings):
     retrofit_bldgs_tot = retrofit_bldgs_tot[['taz', 'residential_units', 'residential_sqft',
         'non_residential_sqft', 'building_sqft', 'stories','redfin_sale_price', 'non_residential_rent',
         'deed_restricted_units', 'residential_price', 'count']]
-    retrofit_bldgs_tot.to_csv(os.path.join(
-                orca.get_injectable("outputs_dir"), "hazards_summaries/%s_eq_retrofit_buildings_%d.csv" % (run_name, year)))
+    retrofit_bldgs_tot.to_csv(hazsumm_output_dir / "{}_eq_retrofit_buildings_{}.csv".format(run_name, year))
 
     # print out buildings by TAZ around earthquake years
     if year not in [2030, 2035, 2050]:
@@ -140,5 +140,4 @@ def hazards_eq_summary(run_setup, run_name, year, parcels, buildings):
     buildings = buildings[['taz', 'count', 'residential_units', 'residential_sqft', 'non_residential_sqft',
                         'building_sqft', 'stories', 'redfin_sale_price', 'non_residential_rent', 'deed_restricted_units',
                         'residential_price']]
-    buildings.to_csv(os.path.join(
-        orca.get_injectable("outputs_dir"), "hazards_summaries/%s_eq_buildings_list_%d.csv" % (run_name, year)))
+    buildings.to_csv(hazsumm_output_dir / "{}_eq_buildings_list_{}.csv".format(run_name, year))

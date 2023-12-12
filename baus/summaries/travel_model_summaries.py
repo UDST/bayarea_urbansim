@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import os
+import pathlib
 import orca
 import pandas as pd
 import numpy as np
@@ -230,8 +231,10 @@ def taz1_summary(parcels, households, jobs, buildings, zones, maz, year, base_ye
                  tm1_taz1_forecast_inputs, tm1_tm2_maz_forecast_inputs, tm1_tm2_regional_demographic_forecast, 
                  tm1_tm2_regional_controls, initial_summary_year, interim_summary_year, final_year, run_name):
     
-    if year not in [initial_summary_year, interim_summary_year, final_year]:
-         return
+    # Commenting this out so we get taz1 summaries for every year.
+    # It's about 90 seconds a pop so not great, not terrible
+    # if year not in [initial_summary_year, interim_summary_year, final_year]:
+    #     return
 
     # (1) add relevant geographies to TAZ summaries
     taz_df = pd.DataFrame(index=zones.index)
@@ -357,7 +360,9 @@ def taz1_summary(parcels, households, jobs, buildings, zones, maz, year, base_ye
     taz_df.index.name = 'TAZ'
     # uppercase columns to match travel model template
     taz_df.columns = [x.upper() for x in taz_df.columns]
-    taz_df.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/{}_taz1_summary_{}.csv").format(run_name, year))
+    tmsum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "travel_model_summaries"
+    tmsum_output_dir.mkdir(parents=True, exist_ok=True)
+    taz_df.fillna(0).to_csv(tmsum_output_dir / f"{run_name}_taz1_summary_{year}.csv")
 
 
 @orca.step()
