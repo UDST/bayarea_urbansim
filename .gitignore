@@ -20,3 +20,4 @@ configs/hlcm_renter_lowincome_no_unplaced.yaml
 configs/hlcm_owner_lowincome_no_unplaced.yaml
 .DS_Store
 site/*
+run_setup.yaml
