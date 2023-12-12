@@ -21,7 +21,7 @@ import urbansim_defaults
 import orca
 import orca_test
 import pandana
-import yaml
+import shutil
 
 
 MODE = "simulation"
@@ -390,8 +390,7 @@ def run_models(MODE):
         raise "Invalid mode"
 
 print('***Copying run_setup.yaml to output directory')
-with open(os.path.join(orca.get_injectable("outputs_dir"), "run_setup.yaml"), 'w') as f:
-    yaml.dump(orca.get_injectable("run_setup"), f, sort_keys=False)
+shutil.copyfile("run_setup.yaml", os.path.join(orca.get_injectable("outputs_dir"), "run_setup.yaml"))
 
 print('***The Standard stream is being written to {}.log***'.format(run_name))
 sys.stdout = sys.stderr = open(os.path.join(orca.get_injectable("outputs_dir"), "%s.log") % run_name, 'w')
