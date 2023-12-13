@@ -1,16 +1,8 @@
 from __future__ import print_function
 
-import os
 import pathlib
 import orca
 import pandas as pd
-
-
-# ensure output directories are created before attempting to write to them
-
-folder_stub = 'core_summaries'
-target_path = os.path.join(orca.get_injectable("outputs_dir"), folder_stub)
-os.makedirs(target_path, exist_ok=True)
 
 
 @orca.step()
@@ -55,7 +47,7 @@ def parcel_growth_summary(year, run_name, initial_summary_year, final_year):
 
     coresum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "core_summaries"
     initial_parcel_file = coresum_output_dir / f"{run_name}_parcel_summary_{initial_summary_year}.csv"
-    print("initial_parcel_file resolve:{} exists:{}".format(initial_parcel_file.resolve(), initial_parcel_file.exists()))
+    print(f"initial_parcel_file resolve:{initial_parcel_file.resolve()} exists:{initial_parcel_file.exists()}")
 
     df1 = pd.read_csv(initial_parcel_file, index_col="parcel_id")
     df2 = pd.read_csv(coresum_output_dir / f"{run_name}_parcel_summary_{final_year}.csv",
@@ -92,7 +84,7 @@ def building_summary(run_name, parcels, buildings, year, initial_summary_year, f
     df = df.fillna(0)
     coresum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "core_summaries"
     coresum_output_dir.mkdir(parents=True, exist_ok=True)
-    df.to_csv(coresum_output_dir / "{}_building_summary_{}.csv".format(run_name, year))
+    df.to_csv(coresum_output_dir / f"{run_name}_building_summary_{year}.csv")
 
 
 @orca.step()
@@ -119,7 +111,7 @@ def new_buildings_summary(run_name, parcels, buildings, year, final_year):
     df = df.fillna(0)
     coresum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "core_summaries"
     coresum_output_dir.mkdir(parents=True, exist_ok=True)
-    df.to_csv(coresum_output_dir / "{}_new_buildings_summary.csv".format(run_name))
+    df.to_csv(coresum_output_dir / f"{run_name}_new_buildings_summary.csv")
 
 
 @orca.step()
@@ -172,7 +164,7 @@ def interim_zone_output(run_name, households, buildings, residential_units, parc
 
     coresum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "core_summaries"
     coresum_output_dir.mkdir(parents=True, exist_ok=True)
-    zones.to_csv(coresum_output_dir / "{}_interim_zone_output_{}.csv".format(run_name, year))
+    zones.to_csv(coresum_output_dir / f"{run_name}_interim_zone_output_{year}.csv")
 
     # now add all interim zone output to a single dataframe
 
@@ -187,5 +179,6 @@ def interim_zone_output(run_name, households, buildings, residential_units, parc
     orca.add_table("interim_zone_output_all", all_years)
 
     if year == final_year:
-        all_years.to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
-                                      "core_summaries/%s_interim_zone_output_allyears.csv" % (run_name)))
+        coresum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "core_summaries"
+        coresum_output_dir.mkdir(parents=True, exist_ok=True)
+        all_years.to_csv(coresum_output_dir / f"{run_name}_interim_zone_output_allyears.csv")

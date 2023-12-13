@@ -1,16 +1,10 @@
 from __future__ import print_function
 
-import os
 import pathlib
 import orca
 import pandas as pd
 from baus import datasources
 
-# ensure output directories are created before attempting to write to them
-
-folder_stub = 'geographic_summaries'
-target_path = os.path.join(orca.get_injectable("outputs_dir"), folder_stub)
-os.makedirs(target_path, exist_ok=True)
 
 @orca.step()
 def geographic_summary(parcels, households, jobs, buildings, year, superdistricts_geography,
@@ -54,7 +48,7 @@ def geographic_summary(parcels, households, jobs, buildings, year, superdistrict
     region['non_residential_sqft'] = buildings_df.non_residential_sqft.sum()
     geosum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "geographic_summaries"
     geosum_output_dir.mkdir(parents=True, exist_ok=True)
-    region.to_csv(geosum_output_dir / "{}_region_summary_{}.csv".format(run_name, year))
+    region.to_csv(geosum_output_dir / f"{run_name}_region_summary_{year}.csv")
 
     #### summarize by sub-regional geography ####
     geographies = ['juris', 'superdistrict', 'county', 'subregion']
@@ -96,9 +90,7 @@ def geographic_summary(parcels, households, jobs, buildings, year, superdistrict
    
         summary_table.index.name = geography
         summary_table = summary_table.sort_index()
-        summary_table.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
-                                                    "geographic_summaries/{}_{}_summary_{}.csv").\
-                                                    format(run_name, geography, year))
+        summary_table.fillna(0).to_csv(geosum_output_dir / f"{run_name}_{geography}_summary_{year}.csv")
 
 
 @orca.step()
@@ -108,12 +100,14 @@ def geographic_growth_summary(year, final_year, initial_summary_year, run_name):
         return
 
     geographies = ['region', 'juris', 'superdistrict', 'county', 'subregion']
+    geosum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "geographic_summaries"
+    geosum_output_dir.mkdir(parents=True, exist_ok=True)
 
     for geography in geographies:
 
         # use 2015 as the base year
-        year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "geographic_summaries/%s_%s_summary_%d.csv" % (run_name, geography, initial_summary_year)))
-        year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "geographic_summaries/%s_%s_summary_%d.csv" % (run_name, geography, final_year)))
+        year1 = pd.read_csv(geosum_output_dir / f"{run_name}_{geography}_summary_{initial_summary_year}.csv")
+        year2 = pd.read_csv(geosum_output_dir / f"{run_name}_{geography}_summary_{final_year}.csv")
 
         geog_growth = year1.merge(year2, on=geography, suffixes=("_"+str(initial_summary_year), "_"+str(final_year)))
 
@@ -147,6 +141,4 @@ def geographic_growth_summary(year, final_year, initial_summary_year, run_name):
             geog_growth[col+'_regional_share_change'] = (geog_growth[col+"_"+str(final_year)+"_regional_share"] - 
                                                          geog_growth[col+"_"+str(initial_summary_year)+"_regional_share"])
     
-        geog_growth = geog_growth.fillna(0)
-        geog_growth.to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
-                                        "geographic_summaries/{}_{}_summary_growth.csv").format(run_name, geography))
+        geog_growth.fillna(0).to_csv(geosum_output_dir / f"{run_name}_{geography}_summary_growth.csv")
