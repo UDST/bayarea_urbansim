@@ -1,15 +1,10 @@
 from __future__ import print_function
 
-import os
+import pathlib
 import orca
 import pandas as pd
 from baus import datasources
 
-# ensure output directories are created before attempting to write to them
-
-folder_stub = 'metrics'
-target_path = os.path.join(orca.get_injectable("outputs_dir"), folder_stub)
-os.makedirs(target_path, exist_ok=True)
 
 @orca.step()
 def growth_geography_metrics(parcels, parcels_geography, buildings, households, jobs, year, 
@@ -42,15 +37,16 @@ def growth_geography_metrics(parcels, parcels_geography, buildings, households, 
     growth_geog_summary['tra_jobs'] = jobs_df[(jobs_df.tra_id > '')].size
     growth_geog_summary['hra_tra_jobs'] = jobs_df[(jobs_df.sesit_id == 'hra') & (jobs_df.tra_id > '')].size
 
-    growth_geog_summary.to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
-                                            "metrics/{}_growth_geography_summary_{}.csv").format(run_name, year))
+    metrics_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "metrics"
+    metrics_output_dir.mkdir(parents=True, exist_ok=True)
+    growth_geog_summary.to_csv(metrics_output_dir / f"{run_name}_growth_geography_summary_{year}.csv")
     
     # now calculate growth metrics
     if year != final_year:
         return
     
-    year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "metrics/%s_growth_geography_summary_%d.csv" % (run_name, initial_summary_year)))
-    year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "metrics/%s_growth_geography_summary_%d.csv" % (run_name, final_year)))
+    year1 = pd.read_csv(metrics_output_dir / f"{run_name}_growth_geography_summary_{initial_summary_year}.csv")
+    year2 = pd.read_csv(metrics_output_dir / f"{run_name}_growth_geography_summary_{final_year}.csv")
 
     growth_geog_growth = pd.DataFrame(index=[0])
 
@@ -74,8 +70,7 @@ def growth_geography_metrics(parcels, parcels_geography, buildings, households, 
         growth_geog_growth[col+'_pct_of_regional_growth'] = ((year2[col] - year1[col] / tot_growth) * 100).round(2)
     
     growth_geog_growth = growth_geog_growth.fillna(0)
-    growth_geog_growth.to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
-                                           "metrics/{}_growth_geography_growth_summary.csv").format(run_name))
+    growth_geog_growth.to_csv(metrics_output_dir / f"{run_name}_growth_geography_growth_summary.csv")
 
 
 @orca.step()
@@ -106,8 +101,8 @@ def deed_restricted_units_metrics(parcels, buildings, year, initial_summary_year
     if year != final_year:
         return
     
-    dr_units_summary_y1 = orca.get_table(("dr_units_summary_{}").format(initial_summary_year)).to_frame()
-    dr_units_summary_y2 = orca.get_table(("dr_units_summary_{}").format(final_year)).to_frame()
+    dr_units_summary_y1 = orca.get_table(f"dr_units_summary_{initial_summary_year}").to_frame()
+    dr_units_summary_y2 = orca.get_table(f"dr_units_summary_{final_year}").to_frame()
     
     dr_units_growth = pd.DataFrame(index=['total'])
 
@@ -120,7 +115,10 @@ def deed_restricted_units_metrics(parcels, buildings, year, initial_summary_year
                                                 (dr_units_summary_y2["res_units_coc"] - dr_units_summary_y1["res_units_coc"])).round(2)
 
     dr_units_growth = dr_units_growth.fillna(0).transpose()
-    dr_units_growth.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "metrics/{}_dr_units_metrics.csv").format(run_name))
+
+    metrics_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "metrics"
+    metrics_output_dir.mkdir(parents=True, exist_ok=True)
+    dr_units_growth.to_csv(metrics_output_dir / f"{run_name}_dr_units_metrics.csv")
 
 
 @orca.step()
@@ -162,8 +160,10 @@ def household_income_metrics(year, initial_summary_year, final_year, parcels, bu
                                              if hh_df[hh_df.coc_id > ''].size > 0 else 0).round(2)
     
     hh_inc_summary = hh_inc_summary.transpose()
-    hh_inc_summary.to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
-                                                 "metrics/{}_household_income_metrics_{}.csv").format(run_name, year))
+
+    metrics_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "metrics"
+    metrics_output_dir.mkdir(parents=True, exist_ok=True)
+    hh_inc_summary.to_csv(metrics_output_dir / f"{run_name}_household_income_metrics_{year}.csv")
 
 @orca.step()
 def equity_metrics(year, initial_summary_year, final_year, parcels, buildings, households, parcel_tract_crosswalk, 
@@ -203,13 +203,13 @@ def equity_metrics(year, initial_summary_year, final_year, parcels, buildings, h
     if year != final_year:
         return
     
-    dis_tract_hhs_y1 = orca.get_table(("dis_tract_hhs_{}").format(initial_summary_year)).to_frame()
-    dis_tract_hhs_y2 = orca.get_table(("dis_tract_hhs_{}").format(final_year)).to_frame()
+    dis_tract_hhs_y1 = orca.get_table(f"dis_tract_hhs_{initial_summary_year}").to_frame()
+    dis_tract_hhs_y2 = orca.get_table(f"dis_tract_hhs_{final_year}").to_frame()
     dis_tract_hhs_change = dis_tract_hhs_y1.merge(dis_tract_hhs_y2, left_index=True, right_index=True, suffixes=('_y1', '_y2'))
     dis_tract_hhs_change.name = 'dis_tracts'
 
-    coc_tract_hhs_y1 = orca.get_table(("coc_tract_hhs_{}").format(initial_summary_year)).to_frame()
-    coc_tract_hhs_y2 = orca.get_table(("coc_tract_hhs_{}").format(final_year)).to_frame()
+    coc_tract_hhs_y1 = orca.get_table(f"coc_tract_hhs_{initial_summary_year}").to_frame()
+    coc_tract_hhs_y2 = orca.get_table(f"coc_tract_hhs_{final_year}").to_frame()
     coc_tract_hhs_change = coc_tract_hhs_y1.merge(coc_tract_hhs_y2, left_index=True, right_index=True, suffixes=('_y1', '_y2'))
     coc_tract_hhs_change.name = 'coc_tracts'
 
@@ -227,8 +227,10 @@ def equity_metrics(year, initial_summary_year, final_year, parcels, buildings, h
                                             ((df[df.ten_pct_low_inc_share_change == 1].size / df.size) * 100).round(2)
 
     tract_hhs_change = tract_hhs_change.fillna(0).transpose()
-    tract_hhs_change.to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
-                                             "metrics/{}_equity_metrics.csv").format(run_name))
+
+    metrics_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "metrics"
+    metrics_output_dir.mkdir(parents=True, exist_ok=True)
+    tract_hhs_change.to_csv(metrics_output_dir / f"{run_name}_equity_metrics.csv")
 
     # TODO (short-term): how was a growth geography neighborhood determined?
 
@@ -254,8 +256,10 @@ def jobs_housing_metrics(parcels, buildings, jobs, households, year, initial_sum
                                                             households_df[households_df.county == county].size).round(2)
         
         jobs_housing_summary = jobs_housing_summary.fillna(0).transpose()
-        jobs_housing_summary.to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
-                                                 "metrics/{}_jobs_housing_metrics_{}.csv").format(run_name, year))
+
+        metrics_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "metrics"
+        metrics_output_dir.mkdir(parents=True, exist_ok=True)
+        jobs_housing_summary.to_csv(metrics_output_dir / f"{run_name}_jobs_housing_metrics_{year}.csv")
 
 
 @orca.step()
@@ -274,8 +278,8 @@ def jobs_metrics(year, parcels, buildings, jobs, parcels_geography, initial_summ
 
     if year == final_year:
          # now calculate growth metrics
-        jobs_summary_y1 = orca.get_table(("jobs_summary_{}").format(initial_summary_year)).to_frame()
-        jobs_summary_y2 = orca.get_table(("jobs_summary_{}").format(final_year)).to_frame()
+        jobs_summary_y1 = orca.get_table(f"jobs_summary_{initial_summary_year}").to_frame()
+        jobs_summary_y2 = orca.get_table(f"jobs_summary_{final_year}").to_frame()
         
         # job growth
         jobs_growth_summary = pd.DataFrame(index=['total'])
@@ -284,7 +288,10 @@ def jobs_metrics(year, parcels, buildings, jobs, parcels_geography, initial_summ
             jobs_growth_summary[col+'_pct_growth'] = ((jobs_summary_y2[col] / jobs_summary_y1[col] - 1) * 100).round(2)
 
         jobs_growth_summary = jobs_growth_summary.fillna(0).transpose()
-        jobs_growth_summary.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "metrics/{}_jobs_metrics_{}.csv").format(run_name, year))
+
+        metrics_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "metrics"
+        metrics_output_dir.mkdir(parents=True, exist_ok=True)
+        jobs_growth_summary.to_csv(metrics_output_dir / f"{run_name}_jobs_metrics_{year}.csv")
 
     # TODO (short-term): where did low/mid/high wage jobs come from? confirm its from regional forecast output
         
@@ -325,9 +332,10 @@ def slr_metrics(run_setup, parcels, buildings, parcels_geography, slr_parcel_inu
                                                      (hh_df.inundation == 36) | (hh_df.inundation == 100))].size
     slr_metrics["pct_slr_coc_hhs_protected"] = (slr_metrics["protected_coc_households"] / slr_metrics["affected_coc_households"]) * 100
 
-    slr_metrics.fillna(0).transpose()
-    slr_metrics.to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
-                                              "metrics/{}_slr_metrics_{}.csv".format(run_name, year)))
+    slr_metrics = slr_metrics.fillna(0).transpose()  # Assigned this back to slr_metrics; previously it wasn't saving the results anywhere - DSL
+    metrics_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "metrics"
+    metrics_output_dir.mkdir(parents=True, exist_ok=True)
+    slr_metrics.to_csv(metrics_output_dir / f"{run_name}_slr_metrics_{year}.csv")
 
 
 @orca.step()
@@ -383,8 +391,10 @@ def earthquake_metrics(run_setup, parcels_geography, buildings_w_eq_codes, eq_re
     eq_metrics["pct_slr_coc_hhs_protected"] = (eq_metrics["protected_coc_households"] / eq_metrics["affected_coc_households"]) * 100
 
     eq_metrics = eq_metrics.transpose()
-    eq_metrics.to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
-                                              "metrics/{}_earthquake_metrics_{}.csv".format(run_name, year)))
+
+    metrics_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "metrics"
+    metrics_output_dir.mkdir(parents=True, exist_ok=True)
+    eq_metrics.to_csv(metrics_output_dir / f"{run_name}_earthquake_metrics_{year}.csv")
     
 
 @orca.step()
@@ -419,10 +429,13 @@ def greenfield_metrics(buildings, parcels, year, initial_summary_year, final_yea
     # this uses observed data (Vital Signs?)
     greenfield_metric["annual_greenfield_development_acres_2015"] = 6642/2
     # this uses the model calculation
-    buildings_out_uf_2015 = orca.get_table(("buildings_outside_urban_footprint_{}").format(initial_summary_year)).to_frame()
-    buildings_out_uf_2050 = orca.get_table(("buildings_outside_urban_footprint_{}").format(final_year)).to_frame()
+    # We should rename these variables and potentially update 2015 observed data because initial_summary_year is not always 2015 - DSL
+    buildings_out_uf_2015 = orca.get_table(f"buildings_outside_urban_footprint_{initial_summary_year}").to_frame()
+    buildings_out_uf_2050 = orca.get_table(f"buildings_outside_urban_footprint_{final_year}").to_frame()
     greenfield_metric["annual_greenfield_dev_acres_2050"] = (((buildings_out_uf_2050["acres"].sum() - buildings_out_uf_2015["acres"].sum()) /
                                                               (final_year - initial_summary_year))).round(0)
     greenfield_metric = greenfield_metric.transpose()
-    greenfield_metric.to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
-                                            "metrics/{}_greenfield_metric.csv").format(run_name))
+
+    metrics_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "metrics"
+    metrics_output_dir.mkdir(parents=True, exist_ok=True)
+    greenfield_metric.to_csv(metrics_output_dir / f"{run_name}_greenfield_metric.csv")

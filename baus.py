@@ -1,5 +1,6 @@
 from __future__ import print_function
 import os
+import pathlib
 import sys
 import time
 import traceback
@@ -69,6 +70,8 @@ orca.add_injectable("final_year", OUT_YEAR)
 
 run_setup = orca.get_injectable("run_setup")
 run_name = orca.get_injectable("run_name")
+outputs_dir = pathlib.Path(orca.get_injectable("outputs_dir"))
+outputs_dir.mkdir(parents=True, exist_ok=True)
 
 
 def run_models(MODE):
@@ -408,6 +411,8 @@ print("pandana version: %s" % pandana.__version__)
 print("numpy version: %s" % np.__version__)
 print("pandas version: %s" % pd.__version__)
 
+print("SLACK: {}".format(SLACK))
+print("MODE: {}".format(MODE))
 
 if SLACK and MODE == "simulation":
     slack_start_message = f'Starting simulation {run_name} on host {host}'

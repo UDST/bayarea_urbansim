@@ -1,17 +1,12 @@
 from __future__ import print_function
 
-import os
+import pathlib
 import orca
 import pandas as pd
 import numpy as np
 from baus.utils import round_series_match_target, scale_by_target, simple_ipf
 from baus import datasources
 
-# ensure output directories are created before attempting to write to them
-
-folder_stub = 'travel_model_summaries'
-target_path = os.path.join(orca.get_injectable("outputs_dir"), folder_stub)
-os.makedirs(target_path, exist_ok=True)
 
 ######################################################
 ### functions for producing travel model variables ###
@@ -230,8 +225,10 @@ def taz1_summary(parcels, households, jobs, buildings, zones, maz, year, base_ye
                  tm1_taz1_forecast_inputs, tm1_tm2_maz_forecast_inputs, tm1_tm2_regional_demographic_forecast, 
                  tm1_tm2_regional_controls, initial_summary_year, interim_summary_year, final_year, run_name):
     
-    if year not in [initial_summary_year, interim_summary_year, final_year]:
-         return
+    # Commenting this out so we get taz1 summaries for every year.
+    # It's about 90 seconds a pop so not great, not terrible
+    # if year not in [initial_summary_year, interim_summary_year, final_year]:
+    #     return
 
     # (1) add relevant geographies to TAZ summaries
     taz_df = pd.DataFrame(index=zones.index)
@@ -357,7 +354,9 @@ def taz1_summary(parcels, households, jobs, buildings, zones, maz, year, base_ye
     taz_df.index.name = 'TAZ'
     # uppercase columns to match travel model template
     taz_df.columns = [x.upper() for x in taz_df.columns]
-    taz_df.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/{}_taz1_summary_{}.csv").format(run_name, year))
+    tmsum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "travel_model_summaries"
+    tmsum_output_dir.mkdir(parents=True, exist_ok=True)
+    taz_df.fillna(0).to_csv(tmsum_output_dir / f"{run_name}_taz1_summary_{year}.csv")
 
 
 @orca.step()
@@ -365,10 +364,13 @@ def taz1_growth_summary(year, initial_summary_year, final_year, run_name, buildi
 
     if year != final_year: 
         return
+    
+    tmsum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "travel_model_summaries"
+    tmsum_output_dir.mkdir(parents=True, exist_ok=True)
 
     # use 2015 as the base year
-    year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/%s_taz1_summary_%d.csv" % (run_name, initial_summary_year)))
-    year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/%s_taz1_summary_%d.csv" % (run_name, final_year)))
+    year1 = pd.read_csv(tmsum_output_dir / f"{run_name}_taz1_summary_{initial_summary_year}.csv")
+    year2 = pd.read_csv(tmsum_output_dir / f"{run_name}_taz1_summary_{final_year}.csv")
 
     taz_summary = year1.merge(year2, on='TAZ', suffixes=("_"+str(initial_summary_year), "_"+str(final_year)))
     taz_summary = taz_summary.rename(columns={"SD_"+(str(initial_summary_year)): "SD", "COUNTY_"+(str(initial_summary_year)): "COUNTY",
@@ -400,7 +402,7 @@ def taz1_growth_summary(year, initial_summary_year, final_year, run_name, buildi
         taz_summary[col+'_share_change'] = (taz_summary[col+"_"+str(final_year)+"_share"] -  
                                             taz_summary[col+"_"+str(initial_summary_year)+"_share"])
     
-    taz_summary.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/{}_taz1_summary_growth.csv").format(run_name))
+    taz_summary.fillna(0).to_csv(tmsum_output_dir / f"{run_name}_taz1_summary_growth.csv")
 
 
 @orca.step()
@@ -439,8 +441,9 @@ def maz_marginals(parcels, households, buildings, maz, year,
     rdf = tm1_tm2_regional_demographic_forecast.to_frame()
     maz_m = adjust_hhsize(maz_m, year, rdf, maz_m.tothh.sum())
 
-    maz_m.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
-                                        "travel_model_summaries/{}_maz_marginals_{}.csv".format(run_name, year)))
+    tmsum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "travel_model_summaries"
+    tmsum_output_dir.mkdir(parents=True, exist_ok=True)
+    maz_m.fillna(0).to_csv(tmsum_output_dir / f"{run_name}_maz_marginals_{year}.csv")
     orca.add_table("maz_marginals_df", maz_m)
 
 
@@ -533,8 +536,9 @@ def maz_summary(parcels, jobs, households, buildings, maz, year, tm2_emp27_emplo
     maz_df['RetEmpDen'] = maz_df.RetEmp / maz_df.ACRES
     maz_df['PopDen'] = maz_df["pop"] / maz_df.ACRES
 
-    maz_df.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
-                                         "travel_model_summaries/{}_maz_summary_{}.csv".format(run_name, year)))
+    tmsum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "travel_model_summaries"
+    tmsum_output_dir.mkdir(parents=True, exist_ok=True)
+    maz_df.fillna(0).to_csv(tmsum_output_dir / f"{run_name}_maz_summary_{year}.csv")
     orca.add_table("maz_summary_df", maz_df)
 
 
@@ -543,10 +547,13 @@ def maz_growth_summary(year, initial_summary_year, final_year, run_name):
 
     if year != final_year: 
         return
+    
+    tmsum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "travel_model_summaries"
+    tmsum_output_dir.mkdir(parents=True, exist_ok=True)
 
     # use 2015 as the base year
-    year1 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/%s_maz_summary_%d.csv" % (run_name, initial_summary_year)))
-    year2 = pd.read_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/%s_maz_summary_%d.csv" % (run_name, final_year)))
+    year1 = pd.read_csv(tmsum_output_dir / f"{run_name}_maz_summary_{initial_summary_year}.csv")
+    year2 = pd.read_csv(tmsum_output_dir / f"{run_name}_maz_summary_{final_year}.csv")
 
     maz_summary = year1.merge(year2, on='MAZ', suffixes=("_"+str(initial_summary_year), "_"+str(final_year)))
     maz_summary = maz_summary.rename(columns={"TAZ_"+(str(initial_summary_year)): "TAZ", "county_name_"+(str(initial_summary_year)): "county_name"})
@@ -567,7 +574,7 @@ def maz_growth_summary(year, initial_summary_year, final_year, run_name):
         maz_summary[col+'_share_change'] = (maz_summary[col+"_"+str(final_year)+"_share"] -  
                                             maz_summary[col+"_"+str(initial_summary_year)+"_share"])
     
-    maz_summary.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/{}_maz_summary_growth.csv").format(run_name))
+    maz_summary.fillna(0).to_csv(tmsum_output_dir / f"{run_name}_maz_summary_growth.csv")
 
 
 @orca.step()
@@ -616,7 +623,9 @@ def taz2_marginals(tm2_taz2_forecast_inputs, tm1_tm2_regional_demographic_foreca
     taz2 = adjust_hhkids(taz2, year, rdf, taz2.tothh.sum())
 
     taz2 = taz2.fillna(0)
-    taz2.to_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/{}_taz2_marginals_{}.csv".format(run_name, year)))
+    tmsum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "travel_model_summaries"
+    tmsum_output_dir.mkdir(parents=True, exist_ok=True)
+    taz2.to_csv(tmsum_output_dir / f"{run_name}_taz2_marginals_{year}.csv")
     # save info to be used to produce county marginals
     orca.add_table("taz2_summary_df", taz2)
 
@@ -658,7 +667,9 @@ def county_marginals(tm2_occupation_shares, year, initial_summary_year,
     county['pers_occ_military'] = county.workers * cef.shr_occ_military
     county['pers_occ_military'] = round_series_match_target(county['pers_occ_military'], np.round(county['pers_occ_military'].sum()), 0)
 
-    county.fillna(0).to_csv(os.path.join(orca.get_injectable("outputs_dir"), "travel_model_summaries/{}_county_marginals_{}.csv".format(run_name, year)))
+    tmsum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "travel_model_summaries"
+    tmsum_output_dir.mkdir(parents=True, exist_ok=True)
+    county.fillna(0).to_csv(tmsum_output_dir / f"{run_name}_county_marginals_{year}.csv")
     
 
 @orca.step()
@@ -674,5 +685,6 @@ def region_marginals(year, initial_summary_year, interim_summary_year, final_yea
     # (2) create regional dataframe with group quarters total
     region_m = pd.DataFrame(data={'REGION': [1], 'gq_num_hh_region': [tot_gqpop]})
     
-    region_m.to_csv(os.path.join(orca.get_injectable("outputs_dir"), 
-                                 "travel_model_summaries/{}_region_marginals_{}.csv").format(run_name, year), index=False)
+    tmsum_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "travel_model_summaries"
+    tmsum_output_dir.mkdir(parents=True, exist_ok=True)
+    region_m.to_csv(tmsum_output_dir / f"{run_name}_region_marginals_{year}.csv")

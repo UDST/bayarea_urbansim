@@ -1,5 +1,4 @@
 Bay Area UrbanSim (BAUS) Implementation
-=======
 
 This is the UrbanSim implementation for the Bay Area. Documentation for the UrbanSim framework is available [here](https://udst.github.io/urbansim/). All documentation for Bay Area Urbansim is at: http://bayareametro.github.io/bayarea_urbansim/main/
 
