@@ -21,4 +21,5 @@ configs/hlcm_owner_lowincome_no_unplaced.yaml
 **/*[Cc][Oo][Ss][Tt][Aa][Rr]*.csv
 .DS_Store
 site/*
+run_setup.yaml
 *.twbr

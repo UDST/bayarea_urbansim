@@ -23,7 +23,7 @@ import yaml
 # this is similar to the code for settings in urbansim_defaults
 @orca.injectable('run_setup', cache=True)
 def run_setup():
-    with open("../run_setup.yaml") as f:
+    with open("run_setup.yaml") as f:
         return yaml.load(f)
 
 
