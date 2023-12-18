@@ -2,8 +2,8 @@
 run_name: "PBA50Plus_DBP_InitialRun"
 
 # PATHS FOR INPUTS AND OUTPUTS
-inputs_dir: 'M:/urban_modeling/baus/PBA50Plus/PBA50Plus_DBP_InitialRun/inputs'
-outputs_dir: 'M:/urban_modeling/baus/PBA50Plus/PBA50Plus_DBP_InitialRun/inputs'
+inputs_dir: 'M:/urban_modeling/baus/BAUS Inputs'
+outputs_dir: 'M:/urban_modeling/baus/PBA50Plus'
 
 # OPTIONAL RUN VALIDATION
 run_simulation_validation: True 
