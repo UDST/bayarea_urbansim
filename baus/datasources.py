@@ -11,6 +11,7 @@ from baus import preprocessing
 from baus.utils import geom_id_to_parcel_id, parcel_id_to_geom_id
 from baus.utils import nearest_neighbor
 import yaml
+import shutil
 
 
 #####################
@@ -197,7 +198,12 @@ def final_year():
 
 @orca.injectable(cache=True)
 def store(paths):
-    return pd.HDFStore(os.path.join(orca.get_injectable("inputs_dir"), paths["store"]))
+    # retrieve h5 from inputs folder
+    h5 = os.path.join(orca.get_injectable("inputs_dir"), paths["store"])
+    # copy it to outputs folder for reading and writing during run time
+    shutil.copyfile(h5, os.path.join(orca.get_injectable("outputs_dir"), "core_summaries", "{}_h5_input").format(run_name))
+    # use the copied version for the model run
+    return pd.HDFStore(os.path.join(orca.get_injectable("outputs_dir"), "core_summaries", "{}_h5_input").format(run_name))
 
 
 @orca.injectable(cache=True)
