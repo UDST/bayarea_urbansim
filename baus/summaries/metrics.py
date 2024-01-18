@@ -27,7 +27,7 @@ def growth_geography_metrics(parcels, parcels_geography, buildings, households, 
     growth_geog_summary['gg_non_pda_hh'] = households_df[(households_df.gg_id > '') & (households_df.pda_id == '')].size
     growth_geog_summary['hra_hh'] = households_df[(households_df.sesit_id == 'hra') | (households_df.sesit_id == 'hradis')].size
     growth_geog_summary['tra_hh'] = households_df[households_df.tra_id > ''].size
-    growth_geog_summary['hra_tra_hh'] = households_df[(households_df.sesit_id == 'hra') & (households_df.tra_id > '')].size
+    growth_geog_summary['hra_tra_hh'] = households_df[(households_df.sesit_id.isin(['hra', 'hradis'])) & (households_df.tra_id > '')].size
     # jobs in growth geographies
     growth_geog_summary['totemp'] = jobs_df.size
     growth_geog_summary['gg_jobs'] = jobs_df[jobs_df.gg_id > ''].size
@@ -35,7 +35,7 @@ def growth_geography_metrics(parcels, parcels_geography, buildings, households, 
     growth_geog_summary['gg_non_pda_jobs'] = jobs_df[(jobs_df.gg_id > '') & (jobs_df.pda_id == '')].size
     growth_geog_summary['hra_jobs'] = jobs_df[(jobs_df.sesit_id == 'hra') | (jobs_df.sesit_id == 'hradis')].size
     growth_geog_summary['tra_jobs'] = jobs_df[(jobs_df.tra_id > '')].size
-    growth_geog_summary['hra_tra_jobs'] = jobs_df[(jobs_df.sesit_id == 'hra') & (jobs_df.tra_id > '')].size
+    growth_geog_summary['hra_tra_jobs'] = jobs_df[(jobs_df.sesit_id.isin(['hra', 'hradis'])) & (jobs_df.tra_id > '')].size
 
     metrics_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "metrics"
     metrics_output_dir.mkdir(parents=True, exist_ok=True)
