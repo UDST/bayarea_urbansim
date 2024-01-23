@@ -187,7 +187,7 @@ def equity_metrics(year, initial_summary_year, final_year, parcels, buildings, h
                                                            merge(coc_tracts, on='tract_id', how='left')
 
     # flag low income households in households table
-    hh_df.loc[((hh_df.base_income_quartile == 1) | (hh_df.base_income_quartile == 2)), "low_inc_hh"] = 1
+    hh_df.loc[(hh_df.base_income_quartile == 1), "low_inc_hh"] = 1
     # add a household counter for all household
     hh_df["hh_count"] = 1
     # group households table by displacement tracts and coc tracts
