@@ -131,19 +131,19 @@ def household_income_metrics(year, initial_summary_year, final_year, parcels, bu
     hh_df = orca.merge_tables('households', [parcels, buildings, households, parcels_geography], 
                               columns=['base_income_quartile', 'gg_id', 'pda_id', 'tra_id', 'sesit_id', 'coc_id'])
     
-    ### low income households ###
+    ### low income households ###   
     hh_inc_summary = pd.DataFrame(index=['total'])
 
     #  total number of LIHH and low LIHH as a share of all HH
-    hh_inc_summary['low_inc_hh'] = hh_df[(hh_df.base_income_quartile == 1) | (hh_df.base_income_quartile == 2)].size
+    hh_inc_summary['low_inc_hh'] = hh_df[hh_df.base_income_quartile == 1].size
     hh_inc_summary['low_inc_hh_tra_hra'] = hh_df[((hh_df.tra_id > '') & ((hh_df.sesit_id == 'hra') | (hh_df.sesit_id == 'hradis'))) &
-                                                ((hh_df.base_income_quartile == 1) | (hh_df.base_income_quartile == 2))].size
+                                                (hh_df.base_income_quartile == 1)].size
     hh_inc_summary['low_inc_hh_tra'] = hh_df[(hh_df.tra_id > '') &
-                                                ((hh_df.base_income_quartile == 1) | (hh_df.base_income_quartile == 2))].size
+                                                (hh_df.base_income_quartile == 1)].size
     hh_inc_summary['low_inc_hh_hra'] = hh_df[((hh_df.sesit_id == 'hra') | (hh_df.sesit_id == 'hradis')) &
-                                                ((hh_df.base_income_quartile == 1) | (hh_df.base_income_quartile == 2))].size
+                                                (hh_df.base_income_quartile == 1)].size
     hh_inc_summary['low_inc_hh_coc'] = hh_df[(hh_df.coc_id > '') &
-                                                ((hh_df.base_income_quartile == 1) | (hh_df.base_income_quartile == 2))].size
+                                                (hh_df.base_income_quartile == 1)].size
     
     # total number of LIHHs by growth geography and LIHH by growth geography as a share of all households
     hh_inc_summary['low_inc_hh_share'] = (hh_inc_summary['low_inc_hh'] / hh_df.size).round(2)
