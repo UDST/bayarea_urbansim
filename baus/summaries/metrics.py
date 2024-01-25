@@ -238,7 +238,8 @@ def equity_metrics(year, initial_summary_year, final_year, parcels, buildings, h
 @orca.step()
 def jobs_housing_metrics(parcels, buildings, jobs, households, year, initial_summary_year, final_year, run_name):
     
-    if year == initial_summary_year or year == final_year:
+    if year != initial_summary_year and year != final_year:
+        return
 
         jobs_df = orca.merge_tables('jobs', [parcels, buildings, jobs], columns=['empsix', 'county'])
     
