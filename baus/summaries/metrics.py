@@ -234,48 +234,47 @@ def equity_metrics(year, initial_summary_year, final_year, parcels, buildings, h
 
     # TODO (short-term): how was a growth geography neighborhood determined?
 
+
 @orca.step()
 def jobs_housing_metrics(parcels, buildings, jobs, households, year, initial_summary_year, final_year, run_name):
 
-    if year != initial_summary_year and year != final_year:
-        return
+    if year == initial_summary_year or year == final_year:
+        
+        jobs_df = orca.merge_tables('jobs', [parcels, buildings, jobs], columns=['empsix', 'county'])
     
-    jobs_df = orca.merge_tables('jobs', [parcels, buildings, jobs], columns=['empsix', 'county'])
-    
-    households_df = orca.merge_tables('households', [parcels, buildings, households], columns=['base_income_quartile', 'county'])
+        households_df = orca.merge_tables('households', [parcels, buildings, households], columns=['base_income_quartile', 'county'])
 
-    jobs_housing_summary = pd.DataFrame(index=['jobs_housing_ratio'])
-    # regional jobs-housing ratio
-    jobs_housing_summary['Regional'] = (jobs_df.size / households_df.size).round(2)
-    # county-level jobs-housing ratios
-    parcels = parcels.to_frame()
-    for county in parcels.county.unique():
-        if pd.isna(county):
-            continue
-    jobs_housing_summary[str(county)] = (jobs_df[jobs_df.county == county].size / 
+        jobs_housing_summary = pd.DataFrame(index=['jobs_housing_ratio'])
+        # regional jobs-housing ratio
+        jobs_housing_summary['Regional'] = (jobs_df.size / households_df.size).round(2)
+        # county-level jobs-housing ratios
+        parcels = parcels.to_frame()
+        for county in parcels.county.unique():
+            if pd.isna(county):
+                continue
+        jobs_housing_summary[str(county)] = (jobs_df[jobs_df.county == county].size / 
                                                             households_df[households_df.county == county].size).round(2)
         
-    jobs_housing_summary = jobs_housing_summary.fillna(0).transpose()
+        jobs_housing_summary = jobs_housing_summary.fillna(0).transpose()
 
-    metrics_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "metrics"
-    metrics_output_dir.mkdir(parents=True, exist_ok=True)
-    jobs_housing_summary.to_csv(metrics_output_dir / f"{run_name}_jobs_housing_metrics_{year}.csv")
+        metrics_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "metrics"
+        metrics_output_dir.mkdir(parents=True, exist_ok=True)
+        jobs_housing_summary.to_csv(metrics_output_dir / f"{run_name}_jobs_housing_metrics_{year}.csv")
 
 
 @orca.step()
 def jobs_metrics(year, parcels, buildings, jobs, parcels_geography, initial_summary_year, final_year, run_name):
     
-    if year != initial_summary_year and year != final_year:
-        return
+    if year == initial_summary_year or year == final_year:
 
-    jobs_df = orca.merge_tables('jobs', [parcels, buildings, jobs, parcels_geography], columns=['empsix', 'ppa_id'])
+        jobs_df = orca.merge_tables('jobs', [parcels, buildings, jobs, parcels_geography], columns=['empsix', 'ppa_id'])
 
-    jobs_summary = pd.DataFrame(index=['total'])
-    jobs_summary['totemp'] = jobs_df.size
-    jobs_summary['ppa_jobs'] = jobs_df[jobs_df.ppa_id > ''].size
-    jobs_summary['mfg_jobs'] = jobs_df[jobs_df.empsix == 'MWTEMPN'].size
-    jobs_summary['ppa_mfg_jobs'] = jobs_df[(jobs_df.ppa_id > '') & (jobs_df.empsix == 'MWTEMPN')].size
-    orca.add_table("jobs_summary_"+str(year), jobs_summary)
+        jobs_summary = pd.DataFrame(index=['total'])
+        jobs_summary['totemp'] = jobs_df.size
+        jobs_summary['ppa_jobs'] = jobs_df[jobs_df.ppa_id > ''].size
+        jobs_summary['mfg_jobs'] = jobs_df[jobs_df.empsix == 'MWTEMPN'].size
+        jobs_summary['ppa_mfg_jobs'] = jobs_df[(jobs_df.ppa_id > '') & (jobs_df.empsix == 'MWTEMPN')].size
+        orca.add_table("jobs_summary_"+str(year), jobs_summary)
 
     if year == final_year:
          # now calculate growth metrics
