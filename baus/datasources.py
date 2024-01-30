@@ -921,7 +921,7 @@ def displacement_risk_tracts():
 # Urban Displacement Project census tracts
 @orca.table(cache=True)
 def coc_tracts():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/equity/COCs_ACS2018_tbl_TEMP.csv"))
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/equity/epc_acs2022.csv"))
 
 
 # Urban Displacement Project census tracts
