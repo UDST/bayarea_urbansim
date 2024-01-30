@@ -489,7 +489,7 @@ def taz(zones):
 @orca.table(cache=True)
 def parcels_geography(parcels):
 
-    file = os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/crosswalks/parcels_geography_2024_01_19.csv")
+    file = os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/crosswalks/parcels_geography_2024_01_30.csv")
     print('Versin of parcels_geography: {}'.format(file))
     df = pd.read_csv(file, dtype={'PARCEL_ID': np.int64, 'geom_id': np.int64, 'jurisdiction_id': np.int64},index_col="geom_id")
     df = geom_id_to_parcel_id(df, parcels)
