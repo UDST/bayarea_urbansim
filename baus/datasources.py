@@ -915,7 +915,7 @@ def parcel_tract_crosswalk():
 # Urban Displacement Project census tracts
 @orca.table(cache=True)
 def displacement_risk_tracts():
-    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/equity/tracts_dis_2024.csv"))
+    return pd.read_csv(os.path.join(orca.get_injectable("inputs_dir"), "basis_inputs/equity/tracts_dis_numeric_2024.csv"))
 
 
 # Urban Displacement Project census tracts
