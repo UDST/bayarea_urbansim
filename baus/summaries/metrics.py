@@ -165,74 +165,89 @@ def household_income_metrics(year, initial_summary_year, final_year, parcels, bu
     metrics_output_dir.mkdir(parents=True, exist_ok=True)
     hh_inc_summary.to_csv(metrics_output_dir / f"{run_name}_household_income_metrics_{year}.csv")
 
+
 @orca.step()
-def equity_metrics(year, initial_summary_year, final_year, parcels, buildings, households, parcel_tract_crosswalk, 
-                   displacement_risk_tracts, coc_tracts, run_name):
+def equity_metrics(year, initial_summary_year, final_year, parcels, buildings, households, parcel_tract_crosswalk,
+                   displacement_risk_tracts, run_name): 
     
-    if year != initial_summary_year and year != final_year:
+    if year not in [initial_summary_year, 2025, final_year]:
         return
     
     hh_df = orca.merge_tables('households', [parcels, buildings, households], columns=['base_income_quartile'])
-    
+
     dis_tracts = displacement_risk_tracts.to_frame()
-    dis_tracts = dis_tracts[dis_tracts.DispRisk == 1]
-    dis_tracts["dis_tract_id"] = dis_tracts.Tract.copy()
+    dis_tracts = dis_tracts[dis_tracts.dis_id ==  1]
+    dis_tracts["dis_tract_id"] = dis_tracts.tract_id.copy()
     
-    coc_tracts = coc_tracts.to_frame()
-    coc_tracts = coc_tracts[coc_tracts.coc_flag_pba2050 == 1]
-    coc_tracts["coc_tract_id"] = coc_tracts.tract_id.copy()
-
     hh_df = hh_df.merge(parcel_tract_crosswalk.to_frame(), on='parcel_id', how='left').merge(dis_tracts, 
-                                                           left_on='tract_id', right_on='Tract', how='left').\
-                                                           merge(coc_tracts, on='tract_id', how='left')
-
+                                                           on='tract_id', how='left')
+    
     # flag low income households in households table
     hh_df.loc[(hh_df.base_income_quartile == 1), "low_inc_hh"] = 1
+
     # add a household counter for all household
     hh_df["hh_count"] = 1
-    # group households table by displacement tracts and coc tracts
-    dis_tract_hhs = hh_df.groupby("dis_tract_id").sum()
-    coc_tract_hhs = hh_df.groupby("coc_tract_id").sum()
-    # add share of households that are low income for displacement tracts and coc tracts
-    dis_tract_hhs['low_inc_share'] = dis_tract_hhs['low_inc_hh'] / dis_tract_hhs["hh_count"]
-    coc_tract_hhs['low_inc_share'] = coc_tract_hhs['low_inc_hh'] / coc_tract_hhs["hh_count"]
 
-    orca.add_table("dis_tract_hhs_"+str(year), dis_tract_hhs)
-    orca.add_table("coc_tract_hhs_"+str(year), coc_tract_hhs)
+    # group households table by displacement tracts
+    dis_tract_hhs = hh_df.groupby("dis_tract_id").sum()
+
+    # filter rows where tra_id == 1 or hra_id == 1, epc == 1, majority_gg == 1, or combinations of them
+    dis_tract_hhs_tra = dis_tract_hhs[dis_tract_hhs['tra_id'] > 0]
+    dis_tract_hhs_hra = dis_tract_hhs[dis_tract_hhs['hra_id'] > 0]
+    dis_tract_hhs_gg = dis_tract_hhs[dis_tract_hhs['majority_gg'] > 0]
+    dis_tract_hhs_epc = dis_tract_hhs[dis_tract_hhs['epc_id'] > 0]
+    
+    dis_tract_hhs_tra_hra = dis_tract_hhs[(dis_tract_hhs['tra_id'] > 0) & (dis_tract_hhs['hra_id'] > 0)]
+    dis_tract_hhs_tra_epc = dis_tract_hhs[(dis_tract_hhs['tra_id'] > 0) & (dis_tract_hhs['epc_id'] > 0)]
+    dis_tract_hhs_tra_gg = dis_tract_hhs[(dis_tract_hhs['tra_id'] > 0) & (dis_tract_hhs['majority_gg'] > 0)]
+    dis_tract_hhs_hra_gg = dis_tract_hhs[(dis_tract_hhs['hra_id'] > 0) & (dis_tract_hhs['majority_gg'] > 0)]
+    dis_tract_hhs_epc_gg = dis_tract_hhs[(dis_tract_hhs['epc_id'] > 0) & (dis_tract_hhs['majority_gg'] > 0)]
+    dis_tract_hhs_hra_epc = dis_tract_hhs[(dis_tract_hhs['hra_id'] > 0) & (dis_tract_hhs['epc_id'] > 0)]
+
+    # add share of households that are low income for each group
+    dataframes = [dis_tract_hhs, dis_tract_hhs_tra, dis_tract_hhs_hra, dis_tract_hhs_gg, dis_tract_hhs_epc, 
+                  dis_tract_hhs_tra_hra, dis_tract_hhs_tra_epc, dis_tract_hhs_tra_gg, dis_tract_hhs_hra_gg, dis_tract_hhs_epc_gg,
+                  dis_tract_hhs_hra_epc]
+    for df in dataframes:
+        df['low_inc_share'] = df['low_inc_hh'] / df["hh_count"]
+
+    # Corresponding names for your DataFrames
+    table_names = ["dis_tract_hhs", "dis_tract_hhs_tra", "dis_tract_hhs_hra", "dis_tract_hhs_gg", "dis_tract_hhs_epc", 
+         "dis_tract_hhs_tra_hra", "dis_tract_hhs_tra_epc", "dis_tract_hhs_tra_gg", "dis_tract_hhs_hra_gg", 
+         "dis_tract_hhs_epc_gg", "dis_tract_hhs_hra_epc"]
+
+    # add the tables to orca
+    for name, df in zip(table_names, dataframes):
+        orca.add_table(f"{name}_{year}", df)
 
     if year != final_year:
         return
-    
-    dis_tract_hhs_y1 = orca.get_table(f"dis_tract_hhs_{initial_summary_year}").to_frame()
-    dis_tract_hhs_y2 = orca.get_table(f"dis_tract_hhs_{final_year}").to_frame()
-    dis_tract_hhs_change = dis_tract_hhs_y1.merge(dis_tract_hhs_y2, left_index=True, right_index=True, suffixes=('_y1', '_y2'))
-    dis_tract_hhs_change.name = 'dis_tracts'
-
-    coc_tract_hhs_y1 = orca.get_table(f"coc_tract_hhs_{initial_summary_year}").to_frame()
-    coc_tract_hhs_y2 = orca.get_table(f"coc_tract_hhs_{final_year}").to_frame()
-    coc_tract_hhs_change = coc_tract_hhs_y1.merge(coc_tract_hhs_y2, left_index=True, right_index=True, suffixes=('_y1', '_y2'))
-    coc_tract_hhs_change.name = 'coc_tracts'
 
     tract_hhs_change = pd.DataFrame(index=['total'])
 
-    for df in [dis_tract_hhs_change, coc_tract_hhs_change]:
+    for table_name in table_names:
+        df_y1 = orca.get_table(f"{table_name}_{initial_summary_year}").to_frame()
+        df_y2 = orca.get_table(f"{table_name}_{final_year}").to_frame()
+        df_change = df_y1.merge(df_y2, left_index=True, right_index=True, suffixes=('_y1', '_y2'))
+        df_change.name = table_name
 
-        df["low_inc_hh_change"] = (df['low_inc_hh_y2'] - df['low_inc_hh_y1'])
-        df.loc[(df['low_inc_hh_change'] < 0), "low_inc_hh_loss"] = 1
-        tract_hhs_change[df.name+"_pct_tracts_low_inc_loss"] = ((df[df.low_inc_hh_loss == 1].size / df.size) * 100).round(2)
+        # Gentrification - flagging tracts where the number of low-income households decreased
+        df_change["low_inc_hh_change"] = (df_change['low_inc_hh_y2'] - df_change['low_inc_hh_y1'])
+        df_change.loc[(df_change['low_inc_hh_change'] < 0), "low_inc_hh_loss"] = 1
+        tract_hhs_change[df_change.name+"_pct_tracts_low_inc_loss"] = \
+            ((df_change[df_change.low_inc_hh_loss == 1].size / df_change.size) * 100).round(2)
 
-        df["low_inc_hh_share_change"] = (df['low_inc_share_y1'] - df['low_inc_share_y2'])
-        df.loc[(df['low_inc_hh_share_change'] > -.10), "ten_pct_low_inc_share_change"] = 1
-        tract_hhs_change[df.name+"_pct_ten_pct_low_inc_share_change"] = \
-                                            ((df[df.ten_pct_low_inc_share_change == 1].size / df.size) * 100).round(2)
+        # Displacement - flagging tracts where the share of low-income households changed by more than 10%
+        df_change["low_inc_hh_share_change"] = (df_change['low_inc_share_y1'] - df_change['low_inc_share_y2'])
+        df_change.loc[(df_change['low_inc_hh_share_change'] > -.10), "ten_pct_low_inc_share_change"] = 1
+        tract_hhs_change[df_change.name+"_pct_ten_pct_low_inc_share_change"] = \
+            ((df_change[df_change.ten_pct_low_inc_share_change == 1].size / df_change.size) * 100).round(2)
 
     tract_hhs_change = tract_hhs_change.fillna(0).transpose()
 
     metrics_output_dir = pathlib.Path(orca.get_injectable("outputs_dir")) / "metrics"
     metrics_output_dir.mkdir(parents=True, exist_ok=True)
     tract_hhs_change.to_csv(metrics_output_dir / f"{run_name}_equity_metrics.csv")
-
-    # TODO (short-term): how was a growth geography neighborhood determined?
 
 
 @orca.step()
@@ -274,7 +289,7 @@ def jobs_metrics(year, parcels, buildings, jobs, parcels_geography, initial_summ
         jobs_summary['ppa_jobs'] = jobs_df[jobs_df.ppa_id > ''].size
         jobs_summary['mfg_jobs'] = jobs_df[jobs_df.empsix == 'MWTEMPN'].size
         jobs_summary['ppa_mfg_jobs'] = jobs_df[(jobs_df.ppa_id > '') & (jobs_df.empsix == 'MWTEMPN')].size
-        orca.add_table("jobs_summary_"+str(year), jobs_summary)
+        orca.add_   table("jobs_summary_"+str(year), jobs_summary)
 
     if year == final_year:
          # now calculate growth metrics
